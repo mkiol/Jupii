@@ -1,0 +1,108 @@
+libupnpp3 (0.15.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Small volume control fix (events carried wrong value if device range
+    was not 0-100).
+  * Fix crash on service object delete (callback table not cleared).
+  * Improved reliability of discovery.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 21 Jun 2017 07:37:00 +0100
+ 
+libupnpp3 (0.15.2-1) unstable; urgency=low
+
+  * Enable controlling Linn Songcast Receiver by processing "Waiting" state
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 19 May 2017 10:11:00 +0100
+ 
+libupnpp3 (0.15.1-1) unstable; urgency=low
+
+  * Portability: get rid of frivolous use of std::future
+  * pkg-config data
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 02 Oct 2016 12:31:00 +0100
+ 
+libupnpp2 (0.14.1-1) unstable; urgency=low
+
+  * Fix bug which could lead to crash after a failed init of the Radio
+    service (e.g. if Python2 was not found).
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 07 Feb 2016 09:17:00 +0100
+ 
+libupnpp2 (0.14.0-1) unstable; urgency=low
+
+  * No broadcasting of full state every 10S
+  * Songcast:  look at Receiver service state even if it is not
+    the current Source
+  * Remove excess unquote for radio metadata (issues with special chars)
+  * Add interface to retrieve version info
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 04 Feb 2016 17:55:00 +0100
+
+libupnpp2 (0.13.1-1) unstable; urgency=low
+
+  * Small hack to help managing upmpdcli Renderers in SenderReceiver mode
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 23 Dec 2015 10:19:00 +0100
+
+libupnpp2 (0.13.0-1) unstable; urgency=low
+
+  * Added utility methods for managing Songcast Senders and Receivers
+  * Interface to OpenHome Sender service
+  * Added or improved interfaces to OpenHome services: Product, Info, Radio, 
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 12 Dec 2015 11:01:00 +0100
+
+libupnpp2 (0.12.1-1) unstable; urgency=low
+
+  * Add forgotten include file in dist
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 10 Aug 2015 11:01:00 +0200
+
+libupnpp2 (0.12.0-1) unstable; urgency=low
+
+  * Windows port
+  * Allow services to be internally active but externally invisible
+    (disable eventing). This was previously doable by editing the
+    description data in the device implementation but would cause error
+    messages. 
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 10 Aug 2015 08:32:00 +0200
+
+libupnpp2 (0.11.0-1) unstable; urgency=low
+
+  * Control-side interface to OpenHome Receiver service.
+  * Misc small improvements.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 05 May 2015 13:18:00 +0200
+
+libupnpp1 (0.10.0-1) unstable; urgency=low
+
+  * Control: support pure OpenHome renderers like bubbleupnp server
+  * API/ABI cleanup 
+  * Avoid "service not implemented" error messages by deferring service
+    start after end of callbacks setup.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 21 Jan 2014 07:42:00 +0200
+
+libupnpp (0.9.0-1) unstable; urgency=low
+
+  * Again: small fixes and improvements mostly to the control side 
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 12 Nov 2014 17:52:00 +0200
+
+libupnpp (0.8.6-1) unstable; urgency=low
+
+  * Small fixes and improvements mostly to the control side 
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 30 Oct 2014 12:54:00 +0200
+
+libupnpp (0.8.5-1) unstable; urgency=low
+
+  * Separate runtime and development packages.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 13 Oct 2014 16:20:00 +0200
+
+libupnpp (0.8.4-1) unstable; urgency=low
+
+  * First version separated from the upmpdcli source tree. Same as 0.8.3
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 12 Oct 2014 15:36:00 +0200

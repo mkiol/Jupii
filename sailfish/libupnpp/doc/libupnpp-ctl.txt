@@ -1,0 +1,141 @@
+= Libupnpp for Control Points
+
+Libupnpp is a C++ wrapper for libupnp, a.k.a Portable UPnP, which is a
+direct descendant of the Open Source SDK released by Intel in support of
+UPnP development.
+
+The Control Point side of libupnpp allows a C++ program to discover
+devices, and exchange commands and status with them.
+
+The library has a number of predefined modules for controlling specific
+AVTransport or OpenHome audio services, and it is relatively easy to add
+modules for other services externally (the internal modules have no more
+access to library internals than an external module would).
+
+Limitations:
+
+- The underlying libupnp only supports a single IP interface.
+- The libupnpp methods are blocking, it is supposed that you will be using
+  threads to achieve any needed parallelism in your program.
+
+== The Library object
+
+The library is represented by a global singleton with a number of utility
+methods, mostly related to setting parameters for the underlying libupnp
+library.
+
+The link:refdoc/html/classUPnPP_1_1LibUPnP.html#a00ef52e413804a5f6dca74e2459749c7[instanciation call] takes a number of arguments to specify
+non-default values, e.g. for the IP address or interface to use.
+
+If you have no need for the non-default parameter values, or the utility
+methods, there is no necessity to explicitly instanciate the library
+object, this will be done internally as needed.
+
+
+== Discovery
+
+The UPnP Discovery framework allows searching for devices on a network and
+maintaining a directory of active devices.
+
+Libupnpp implements this function with the
+link:refdoc/html/classUPnPClient_1_1UPnPDeviceDirectory.html[UPnPDeviceDirectory]
+class, which is instanciated as a single object.
+
+Example code for accessing a device for which you know the 'friendly name':
+
+----
+    auto *superdir = UPnPClient::UPnPDeviceDirectory::getTheDir();
+
+    UPnPClient::UPnPDeviceDesc devicedesc;
+    bool ok = superdir->getDevByFName(name, devicedesc);
+
+----
+
+
+
+== Description
+
+UPnP devices describe their capabilities in XML documents which can be
+retrieved from them through HTTP.
+
+In libupnpp, the content of the main description document for a given
+device is provided by a
+link:refdoc/html/classUPnPClient_1_1UPnPDeviceDesc.html[UPnPClient::UPnPDeviceDesc]
+object.
+
+If you are mostly using the devices and services predefined in the library,
+this is largely an opaque structure, which you will get through the
+discovery interface, and pass to an actual device constructor.
+
+== Devices
+
+UPnP device are entities which can contain other, embedded devices, and
+services.
+
+Embedded devices are quite rare, and in my experience badly supported by
+typical control points.
+
+In general, the service is the interesting entity, and the wise approach is
+the Pythonic "quacks like a duck" one: if a device has the service you
+need, you can use it.
+
+For example the predefined 'MediaRenderer' class in libupnpp does not even
+bother to verify its own type when built from a description: it just
+provides methods to query and retrieve handles to interesting services
+usually found in a Media Renderer (both OpenHome and UPnP AV). In most
+cases, not all services will be available, and the caller will compose an "a
+la carte" object to serve its need (e.g. using either UPnP AV Rendering
+Control or OpenHome Volume for controlling volume, depending on
+availability).
+
+As another example, the 'myrdcvolume' program from the libupnpp samples
+shows how to implement a service interface without using the predefined
+ones. It does not bother with the device type either (actually it does not
+bother at all with a device object), but just checks for the existence of
+the appropriate service
+(i.e. 'urn:schemas-upnp-org:service:RenderingControl'), and action
+('Volume').
+
+The library predefines two device classes, for Media Server devices and
+Media Renderer ones. In both cases the only use for the class is to retrieve
+handles to the underlying services.
+
+
+== Services
+
+Most UPnP functionality is provided through services, which are end points
+implemented inside a device, callable through HTTP/SOAP.
+
+libupnpp provides a set of easy C++ interfaces for most UPnP audio services
+(some of which also work with video). You will usually not need to bother
+constructing the service interface objects: rather you will let the device
+classes do it and return a handle (but there is nothing to prevent you from
+building the service objects directly).
+
+It also has helper functions for helping with the independant implementation
+of a service interface. 
+
+== Predefined Service classes
+
+* link:refdoc/html/classUPnPClient_1_1RenderingControl.html[UPnP AV
+  Rendering Control] 
+* link:refdoc/html/classUPnPClient_1_1AVTransport.html[UpnP AV AVTransport]
+* link:refdoc/html/classUPnPClient_1_1OHPlaylist.html[Open Home Playlist]
+* link:refdoc/html/classUPnPClient_1_1OHInfo.html[Open Home Info]
+* link:refdoc/html/classUPnPClient_1_1OHProduct.html[Open Home  Product]
+* link:refdoc/html/classUPnPClient_1_1OHRadio.html[Open Home Radio]
+* link:refdoc/html/classUPnPClient_1_1OHTime.html[Open Home Time]
+* link:refdoc/html/classUPnPClient_1_1OHVolume.html[Open Home Volume]
+* link:refdoc/html/classUPnPClient_1_1OHReceiver.html[Open Home Songcast
+  Receiver] 
+* link:refdoc/html/classUPnPClient_1_1OHSender.html[Open Home Songcast Sender]
+
+The role of most methods in these classes is to marshal the input data into
+SOAP format, perform the SOAP call, then marshal and return the output
+data. They are all synchronous.
+
+== Implementing a Service class
+
+== Eventing
+
+== Logging
