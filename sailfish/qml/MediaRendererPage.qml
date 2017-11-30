@@ -339,14 +339,17 @@ Page {
             }
         }
 
-        delegate: ListItem {
+        delegate: SimpleListItem {
             id: listItem
 
-            property color primaryColor: down||model.active ? Theme.highlightColor : Theme.primaryColor
+            property color primaryColor: highlighted || model.active ?
+                                         Theme.highlightColor : Theme.primaryColor
 
             visible: root.inited && !root.busy
 
-            contentHeight: Theme.itemSizeMedium
+            icon.source: model.icon + "?" + primaryColor
+            title.text: model.name
+            title.color: primaryColor
 
             onClicked: {
                 if (!model.active)
@@ -368,40 +371,6 @@ Page {
                         if (!model.active)
                             root.playItem(model.path)
                     }
-                }
-            }
-
-            Image {
-                id: icon
-                anchors {
-                    left: parent.left
-                    leftMargin: Theme.horizontalPageMargin
-                    verticalCenter: parent.verticalCenter
-                }
-                source: model.icon + "?" + primaryColor
-                height: Theme.iconSizeMedium
-                width: Theme.iconSizeMedium
-            }
-
-            Column {
-                anchors {
-                    left: icon.right
-                    right: parent.right
-                    verticalCenter: parent.verticalCenter
-                    leftMargin: Theme.paddingLarge
-                    rightMargin: Theme.paddingLarge
-                }
-                spacing: Theme.paddingSmall
-
-                Label {
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                    }
-                    truncationMode: TruncationMode.Fade
-                    font.pixelSize: Theme.fontSizeMedium
-                    color: listItem.primaryColor
-                    text: model.name
                 }
             }
         }

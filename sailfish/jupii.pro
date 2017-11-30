@@ -49,7 +49,7 @@ SOURCES += \
     src/playlistmodel.cpp
 
 OTHER_FILES += \
-    rpm/jupii.in \
+    rpm/jupii.changes.in \
     rpm/jupii.yaml \
     translations/*.ts \
     harbour-jupii.desktop
@@ -60,7 +60,6 @@ DISTFILES += \
     qml/CoverPage.qml \
     qml/Spacer.qml \
     qml/Notification.qml \
-    qml/DeviceItem.qml \
     qml/DeviceInfoPage.qml \
     qml/AttValue.qml \
     qml/SettingsPage.qml \

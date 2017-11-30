@@ -11,25 +11,49 @@ import Sailfish.Silica 1.0
 ListItem {
     id: root
 
-    property string name
+    property alias title: _title
+    property alias icon: _icon
+    property alias defaultIcon: _dicon
 
     contentHeight: Theme.itemSizeMedium
+
     anchors {
         left: parent.left
         right: parent.right
     }
 
+    Image {
+        id: _icon
+        anchors {
+            left: parent.left
+            leftMargin: Theme.horizontalPageMargin
+            verticalCenter: parent.verticalCenter
+        }
+
+        height: Theme.iconSizeMedium
+        width: Theme.iconSizeMedium
+
+        Image {
+            id: _dicon
+            anchors.fill: parent
+            visible: icon.status !== Image.Ready
+        }
+    }
+
     Label {
-         text: root.name
+        id: _title
 
-         anchors {
-             left: parent.left
-             right: parent.right
-             leftMargin: Theme.horizontalPageMargin;
-             rightMargin: Theme.horizontalPageMargin;
-             verticalCenter: parent.verticalCenter
-         }
+        truncationMode: TruncationMode.Fade
 
-         color: root.highlighted ? Theme.highlightColor : Theme.primaryColor
+        anchors {
+            left: _icon.status !== Image.Ready &&
+                  _dicon.status !== Image.Ready ? parent.left : _icon.right
+            right: parent.right
+            leftMargin: Theme.horizontalPageMargin;
+            rightMargin: Theme.horizontalPageMargin;
+            verticalCenter: parent.verticalCenter
+        }
+
+        color: root.highlighted ? Theme.highlightColor : Theme.primaryColor
     }
 }

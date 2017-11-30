@@ -80,9 +80,11 @@ Page {
             }
         }
 
-        delegate: DeviceItem {
-            devModel: model
-
+        delegate: SimpleListItem {
+            title.text: model.title
+            icon.source: model.icon
+            defaultIcon.source: "image://icons/icon-m-device?" + (highlighted ?
+                                    Theme.highlightColor : Theme.primaryColor)
             visible: !directory.busy && directory.inited
 
             menu: ContextMenu {
@@ -91,25 +93,6 @@ Page {
                     onClicked: {
                         pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),{udn: model.id})
                     }
-                }
-
-                MenuItem {
-                    text: model.fav ? qsTr("Remove from favorites") : qsTr("Add to favorites")
-                    onClicked: {
-                        if (model.fav) {
-                            settings.asyncRemoveFavDevice(model.id)
-                        } else {
-                            settings.asyncAddFavDevice(model.id)
-                        }
-                    }
-                }
-            }
-
-            onFavClicked: {
-                if (model.fav) {
-                    settings.asyncRemoveFavDevice(model.id)
-                } else {
-                    settings.asyncAddFavDevice(model.id)
                 }
             }
 

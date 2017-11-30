@@ -40,8 +40,8 @@ using namespace std;
 static const char* APP_NAME = "Jupii";
 static const char* AUTHOR = "Michal Kosciesza <michal@mkiol.net>";
 static const char* PAGE = "https://github.com/mkiol/Jupii";
-static const char* LICENSE = "http://unlicense.org";
-static const char* VERSION = "0.9.0";
+static const char* LICENSE = "http://mozilla.org/MPL/2.0/";
+static const char* VERSION = "0.9.1";
 
 int main(int argc, char *argv[])
 {

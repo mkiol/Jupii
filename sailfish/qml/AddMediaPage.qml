@@ -34,21 +34,27 @@ Page {
             }
 
             SimpleListItem {
-                name: qsTr("Music")
+                title.text: qsTr("Music")
+                icon.source: "image://theme/icon-m-file-audio?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(musicPickerPage)
                 }
             }
 
             SimpleListItem {
-                name: qsTr("Video")
+                title.text: qsTr("Video")
+                icon.source: "image://theme/icon-m-file-video?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(videoPickerPage)
                 }
             }
 
             SimpleListItem {
-                name: qsTr("Image")
+                title.text: qsTr("Image")
+                icon.source: "image://theme/icon-m-file-image?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
                 visible: settings.imageSupported
                 onClicked: {
                     pageStack.replace(imagePickerPage)
@@ -56,7 +62,9 @@ Page {
             }
 
             SimpleListItem {
-                name: qsTr("File")
+                title.text: qsTr("File")
+                icon.source: "image://theme/icon-m-file-other?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(filePickerPage)
                 }

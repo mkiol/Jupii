@@ -43,7 +43,7 @@ Page {
             }
 
             PaddedLabel {
-                text: qsTr("UPnP/DLNA client for Sailfish OS");
+                text: qsTr("Stream content from your mobile to UPnP/DLNA devices");
             }
 
             /*Button {
@@ -65,7 +65,7 @@ Page {
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
                 textFormat: Text.RichText
-                text: qsTr("Juppi is subject to the terms of the Mozilla Public " +
+                text: qsTr("Jupii is subject to the terms of the Mozilla Public " +
                            "License, v. 2.0. If a copy of the MPL was not distributed with this " +
                            "file, You can obtain one at http://mozilla.org/MPL/2.0/.")
             }
