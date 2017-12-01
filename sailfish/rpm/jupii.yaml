@@ -1,18 +1,18 @@
 Name: harbour-jupii
 Summary: Jupii
-Version: 0.9.0
+Version: 0.9.1
 Release: 1
 # The contents of the Group field should be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
 Group: Qt/Qt
-URL: http://example.org/
+URL: http://mozilla.org/MPL/2.0/
 License: LICENSE
 # This must be generated before uploading a package to a remote build service.
 # Usually this line does not need to be modified.
 Sources:
 - '%{name}-%{version}.tar.bz2'
 Description: |
-  UPnP/DLNA client for Sailfish OS
+  Stream content from your mobile to UPnP/DLNA devices
 Configure: none
 # The qtc5 builder inserts macros to allow QtCreator to have fine
 # control over qmake/make execution

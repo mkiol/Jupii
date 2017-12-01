@@ -1,11 +1,14 @@
 # Jupii
-The UPnP/DLNA client for Sailfish OS. It allows to stream files from mobile to UPnP/DLNA devices.
+The UPnP/DLNA client for Sailfish OS. It allows to stream content files from the mobile to UPnP/DLNA devices.
 
 ## Features
 Following features are currently supported:
 - Discovery of UPnP devices in a local network
 - Remote control (Play, Pause, Next, Prev, Seek, Volume up/down)
-- Streaming of content (Music, Video, Images) from mobile to UPnP devices
+- Streaming of content (Music, Video, Images) from the mobile to UPnP devices
+
+## Role in UPnP architecture
+Jupii is a client of AVTransport and RenderingControl services. It connects to devices that implement MediaRenderer role. In order to share content from the mobile, Jupii starts local HTTP streaming server.
 
 ## Third-party components
 Jupii relies on following third-party open source components:

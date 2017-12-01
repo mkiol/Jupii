@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Thu Nov 30 2017 Michal Kosciesza <michal@mkiol.net> 0.9.1-1
+- Icons in Add content menu
+- Minor bug fixes & UI improvements
+
 * Tue Nov 28 2017 Michal Kosciesza <michal@mkiol.net> 0.9.0-1
 - First beta release
 
