@@ -11,9 +11,9 @@ import Sailfish.Silica 1.0
 Page {
     id: root
 
-    property var musicPickerPage
-    property var videoPickerPage
-    property var imagePickerPage
+    property var musicPickerDialog
+    property var videoPickerDialog
+    property var imagePickerDialog
     property var filePickerPage
 
     SilicaFlickable {
@@ -38,7 +38,7 @@ Page {
                 icon.source: "image://theme/icon-m-file-audio?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(musicPickerPage)
+                    pageStack.replace(musicPickerDialog)
                 }
             }
 
@@ -47,7 +47,7 @@ Page {
                 icon.source: "image://theme/icon-m-file-video?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(videoPickerPage)
+                    pageStack.replace(videoPickerDialog)
                 }
             }
 
@@ -57,7 +57,7 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
                 visible: settings.imageSupported
                 onClicked: {
-                    pageStack.replace(imagePickerPage)
+                    pageStack.replace(imagePickerDialog)
                 }
             }
 

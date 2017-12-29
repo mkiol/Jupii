@@ -26,19 +26,31 @@ int PlayListModel::getActiveItemIndex() const
     return m_activeItemIndex;
 }
 
-void PlayListModel::addItem(const QString& path)
+void PlayListModel::addItems(const QStringList& paths)
+{
+    QStringList n_paths;
+
+    for (auto& path : paths) {
+        if (addItem(path))
+            n_paths << path;
+    }
+
+    emit itemsAdded(n_paths);
+}
+
+bool PlayListModel::addItem(const QString& path)
 {
     if (find(path) != 0) {
         qWarning() << "File" << path << "already added";
         emit error(E_FileExists);
-        return;
+        return false;
     }
 
     QFileInfo file(path);
 
     if (!file.exists()) {
         qWarning() << "File" << path << "doesn't exist";
-        return;
+        return false;
     }
 
     FileMetaData metaData;
@@ -74,7 +86,7 @@ void PlayListModel::addItem(const QString& path)
                            metaData.icon,
                            false,
                            this));
-    emit itemAdded(path);
+    return true;
 }
 
 

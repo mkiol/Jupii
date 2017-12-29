@@ -10,6 +10,7 @@
 
 #include <QAbstractListModel>
 #include <QString>
+#include <QStringList>
 #include <QList>
 #include <QMap>
 #include <QHash>
@@ -102,18 +103,19 @@ public:
     int getActiveItemIndex() const;
 
 signals:
-    void itemAdded(const QString &path);
+    void itemsAdded(const QStringList& paths);
     void error(ErrorType code);
     int activeItemChanged();
 
 public slots:
-    void addItem(const QString& path);
+    void addItems(const QStringList& paths);
     void setActivePath(const QString &path);
     void setActiveUrl(const QUrl &url);
 
 private:
     int m_activeItemIndex = -1;
     void setActiveItemIndex(int index);
+    bool addItem(const QString& path);
 };
 
 #endif // PLAYLISTMODEL_H
