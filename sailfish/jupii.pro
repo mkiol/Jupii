@@ -1,12 +1,13 @@
 TARGET = harbour-jupii
 
-CONFIG += c++11 sailfishapp object_parallel_to_source json dbus
+CONFIG += c++11 sailfishapp object_parallel_to_source json
+QT += dbus
 
 PKGCONFIG += mlite5
 
 INCLUDEPATH += /usr/include/c++/7
 
-DEFINES += DEBUG
+DEFINES += Q_OS_SAILFISH
 
 LIBS += -lpthread -lcurl -lexpat
 
@@ -16,6 +17,8 @@ include(qhttpserver/qhttpserver.pri)
 include(taglib/taglib.pri)
 
 HEADERS += \
+    app_adaptor.h \
+    app_interface.h \
     src/utils.h \
     src/listmodel.h \
     src/devicemodel.h \
@@ -29,9 +32,12 @@ HEADERS += \
     src/taskexecutor.h \
     src/deviceinfo.h \
     src/iconprovider.h \
-    src/playlistmodel.h
+    src/playlistmodel.h \
+    src/dbusapp.h
 
 SOURCES += \
+    app_adaptor.cpp \
+    app_interface.cpp \
     src/main.cpp \
     src/utils.cpp \
     src/listmodel.cpp \
@@ -46,15 +52,15 @@ SOURCES += \
     src/taskexecutor.cpp \
     src/deviceinfo.cpp \
     src/iconprovider.cpp \
-    src/playlistmodel.cpp
+    src/playlistmodel.cpp \
+    src/dbusapp.cpp
 
 OTHER_FILES += \
-    rpm/jupii.changes.in \
-    rpm/jupii.yaml \
+    rpm/$${TARGET}.yaml \
+    rpm/$${TARGET}.changes.in \
+    $${TARGET}.desktop \
     translations/*.ts \
-    harbour-jupii.desktop
-
-DISTFILES += \
+    dbus/org.jupii.xml \
     qml/main.qml \
     qml/DevicesPage.qml \
     qml/CoverPage.qml \
@@ -73,6 +79,8 @@ DISTFILES += \
     qml/AddMediaPage.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
+
+system(qdbusxml2cpp dbus/org.jupii.xml -a app_adaptor -p app_interface)
 
 # to disable building translations every time, comment out the
 # following CONFIG line

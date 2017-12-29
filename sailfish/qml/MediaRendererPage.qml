@@ -45,6 +45,11 @@ Page {
 
     Component.onDestruction: {
         app.player = null
+        dbus.canControl = false
+    }
+
+    onControlableChanged: {
+        dbus.canControl = controlable
     }
 
     function togglePlay() {
@@ -120,34 +125,46 @@ Page {
         FilePickerPage {
             nameFilters: cserver.getExtensions(settings.imageSupported ? 7 : 6)
             onSelectedContentPropertiesChanged: {
-                playlist.addItem(selectedContentProperties.filePath)
+                playlist.addItems([selectedContentProperties.filePath])
             }
         }
     }
 
     Component {
-        id: musicPickerPage
-        MusicPickerPage {
-            onSelectedContentPropertiesChanged: {
-                playlist.addItem(selectedContentProperties.filePath)
+        id: musicPickerDialog
+        MultiMusicPickerDialog {
+            onAccepted: {
+                var urls = []
+                for (var i = 0; i < selectedContent.count; ++i) {
+                    var paths = selectedContent.get(i).filePath
+                    playlist.addItems(paths)
+                }
             }
         }
     }
 
     Component {
-        id: videoPickerPage
-        VideoPickerPage {
-            onSelectedContentPropertiesChanged: {
-                playlist.addItem(selectedContentProperties.filePath)
+        id: videoPickerDialog
+        MultiVideoPickerDialog {
+            onAccepted: {
+                var urls = []
+                for (var i = 0; i < selectedContent.count; ++i) {
+                    var paths = selectedContent.get(i).filePath
+                    playlist.addItems(paths)
+                }
             }
         }
     }
 
     Component {
-        id: imagePickerPage
-        ImagePickerPage {
-            onSelectedContentPropertiesChanged: {
-                playlist.addItem(selectedContentProperties.filePath)
+        id: imagePickerDialog
+        MultiImagePickerDialog {
+            onAccepted: {
+                var urls = []
+                for (var i = 0; i < selectedContent.count; ++i) {
+                    var paths = selectedContent.get(i).filePath
+                    playlist.addItems(paths)
+                }
             }
         }
     }
@@ -218,16 +235,28 @@ Page {
         }*/
     }
 
+    Connections {
+        target: dbus
+        onRequestAppendPath: {
+            playlist.addItems([path])
+            notification.show("Item added to Jupii playlist")
+        }
+        onRequestClearPlaylist: {
+            playlist.clear()
+            root.updatePlayList()
+        }
+    }
+
     PlayListModel {
         id: playlist
 
-        onItemAdded: {
+        onItemsAdded: {
             root.updatePlayList()
         }
 
         onError: {
             if (code === PlayListModel.E_FileExists)
-                notification.show(qsTr("File is already in the playlist"))
+                notification.show(qsTr("Item is already in the playlist"))
         }
     }
 
@@ -330,9 +359,9 @@ Page {
                 text: qsTr("Add item")
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
-                                       musicPickerPage: musicPickerPage,
-                                       videoPickerPage: videoPickerPage,
-                                       imagePickerPage: imagePickerPage,
+                                       musicPickerDialog: musicPickerDialog,
+                                       videoPickerDialog: videoPickerDialog,
+                                       imagePickerDialog: imagePickerDialog,
                                        filePickerPage: filePickerPage
                                    })
                 }
@@ -367,8 +396,10 @@ Page {
 
                 MenuItem {
                     text: qsTr("Play")
+                    visible: av.transportState !== AVTransport.Playing || !model.active
                     onClicked: {
-                        if (!model.active)
+                        var playing = av.transportState === AVTransport.Playing
+                        if (!playing || !model.active)
                             root.playItem(model.path)
                     }
                 }
