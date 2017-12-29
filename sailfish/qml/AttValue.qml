@@ -15,7 +15,7 @@ Item {
     property string value: ""
     property alias attColor: _att.color
     property alias valueColor: _value.color
-    visible: value.length !== ""
+    visible: value.length > 0
 
     anchors {
         left: parent.left

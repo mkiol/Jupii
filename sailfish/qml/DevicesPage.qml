@@ -89,6 +89,14 @@ Page {
 
             menu: ContextMenu {
                 MenuItem {
+                    text: qsTr("Connect")
+                    visible: model.supported
+                    onClicked: {
+                        pageStack.push(Qt.resolvedUrl("MediaRendererPage.qml"),{deviceId: model.id})
+                    }
+                }
+
+                MenuItem {
                     text: qsTr("Show description")
                     onClicked: {
                         pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),{udn: model.id})

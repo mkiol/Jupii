@@ -34,14 +34,15 @@
 #include "deviceinfo.h"
 #include "iconprovider.h"
 #include "playlistmodel.h"
+#include "dbusapp.h"
 
 using namespace std;
 
 static const char* APP_NAME = "Jupii";
+static const char* APP_VERSION = "0.9.1";
 static const char* AUTHOR = "Michal Kosciesza <michal@mkiol.net>";
 static const char* PAGE = "https://github.com/mkiol/Jupii";
 static const char* LICENSE = "http://mozilla.org/MPL/2.0/";
-static const char* VERSION = "0.9.1";
 
 int main(int argc, char *argv[])
 {
@@ -50,29 +51,38 @@ int main(int argc, char *argv[])
     auto context = view->rootContext();
     auto engine = view->engine();
 
+    app->setApplicationDisplayName(APP_NAME);
+    app->setApplicationVersion(APP_VERSION);
+
     qmlRegisterType<DeviceModel>("harbour.jupii.DeviceModel", 1, 0, "DeviceModel");
     qmlRegisterType<RenderingControl>("harbour.jupii.RenderingControl", 1, 0, "RenderingControl");
     qmlRegisterType<AVTransport>("harbour.jupii.AVTransport", 1, 0, "AVTransport");
     qmlRegisterType<DeviceInfo>("harbour.jupii.DeviceInfo", 1, 0, "DeviceInfo");
     qmlRegisterType<PlayListModel>("harbour.jupii.PlayListModel", 1, 0, "PlayListModel");
     qRegisterMetaType<Service::ErrorType>("ErrorType");
+
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 
     context->setContextProperty("APP_NAME", APP_NAME);
-    context->setContextProperty("VERSION", VERSION);
+    context->setContextProperty("APP_VERSION", APP_VERSION);
     context->setContextProperty("AUTHOR", AUTHOR);
     context->setContextProperty("PAGE", PAGE);
     context->setContextProperty("LICENSE", LICENSE);
 
     Utils* utils = Utils::instance();
-    Settings* settings = Settings::instance();
-    Directory* dir = Directory::instance();
-    ContentServer* cserver = ContentServer::instance();
-
-    context->setContextProperty("directory", dir);
     context->setContextProperty("utils", utils);
+
+    Settings* settings = Settings::instance();
     context->setContextProperty("settings", settings);
+
+    Directory* dir = Directory::instance();
+    context->setContextProperty("directory", dir);
+
+    ContentServer* cserver = ContentServer::instance();
     context->setContextProperty("cserver", cserver);
+
+    DbusApp dbusApp;
+    view->rootContext()->setContextProperty("dbus", &dbusApp);
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
     view->show();

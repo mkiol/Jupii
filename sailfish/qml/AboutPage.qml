@@ -39,7 +39,7 @@ Page {
             PaddedLabel {
                 font.pixelSize: Theme.fontSizeMedium
                 color: Theme.highlightColor
-                text: qsTr("Version %1").arg(VERSION);
+                text: qsTr("Version %1").arg(APP_VERSION);
             }
 
             PaddedLabel {
@@ -67,7 +67,7 @@ Page {
                 textFormat: Text.RichText
                 text: qsTr("Jupii is subject to the terms of the Mozilla Public " +
                            "License, v. 2.0. If a copy of the MPL was not distributed with this " +
-                           "file, You can obtain one at http://mozilla.org/MPL/2.0/.")
+                           "app, You can obtain one at http://mozilla.org/MPL/2.0/.")
             }
 
             SectionHeader {
