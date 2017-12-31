@@ -48,8 +48,8 @@ Page {
         dbus.canControl = false
     }
 
-    onControlableChanged: {
-        dbus.canControl = controlable
+    onInitedChanged: {
+        dbus.canControl = inited
     }
 
     function togglePlay() {

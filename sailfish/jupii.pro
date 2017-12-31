@@ -17,8 +17,8 @@ include(qhttpserver/qhttpserver.pri)
 include(taglib/taglib.pri)
 
 HEADERS += \
-    app_adaptor.h \
-    app_interface.h \
+    src/app_adaptor.h \
+    src/app_interface.h \
     src/utils.h \
     src/listmodel.h \
     src/devicemodel.h \
@@ -36,8 +36,8 @@ HEADERS += \
     src/dbusapp.h
 
 SOURCES += \
-    app_adaptor.cpp \
-    app_interface.cpp \
+    src/app_adaptor.cpp \
+    src/app_interface.cpp \
     src/main.cpp \
     src/utils.cpp \
     src/listmodel.cpp \
@@ -80,7 +80,7 @@ OTHER_FILES += \
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 
-system(qdbusxml2cpp dbus/org.jupii.xml -a app_adaptor -p app_interface)
+system(qdbusxml2cpp dbus/org.jupii.xml -a src/app_adaptor -p src/app_interface)
 
 # to disable building translations every time, comment out the
 # following CONFIG line
