@@ -94,6 +94,12 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
                 }
 
                 m_currentURI = value;
+
+                if (m_blockEmitUriChanged) {
+                    qDebug() << "emit URIChanged triggered by currentURI blocked";
+                    return;
+                }
+
                 m_emitUriChanged = true;
 
                 startTask([this]() {
@@ -119,6 +125,12 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
                 }
 
                 m_nextURI = value;
+
+                if (m_blockEmitUriChanged) {
+                    qDebug() << "emit URIChanged triggered by nextURI blocked";
+                    return;
+                }
+
                 m_emitUriChanged = true;
 
                 startTask([this]() {
