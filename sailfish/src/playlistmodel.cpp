@@ -11,6 +11,7 @@
 #include "playlistmodel.h"
 #include "utils.h"
 #include "filemetadata.h"
+#include "settings.h"
 
 PlayListModel::PlayListModel(QObject *parent) :
     ListModel(new FileItem, parent)
@@ -19,6 +20,34 @@ PlayListModel::PlayListModel(QObject *parent) :
 
 PlayListModel::~PlayListModel()
 {
+    if (Settings::instance()->getRememberPlaylist())
+        save();
+}
+
+void PlayListModel::save()
+{
+    QStringList ids;
+
+    for (auto item : m_list) {
+        ids << item->id();
+    }
+
+    Settings::instance()->setLastPlaylist(ids);
+}
+
+void PlayListModel::load()
+{
+    QStringList ids = Settings::instance()->getLastPlaylist();
+    QStringList n_ids;
+
+    for (auto& id : ids) {
+        if (addId(id)) {
+            n_ids << id;
+        }
+    }
+
+    if (!n_ids.isEmpty())
+        emit itemsLoaded(n_ids);
 }
 
 int PlayListModel::getActiveItemIndex() const
@@ -28,23 +57,25 @@ int PlayListModel::getActiveItemIndex() const
 
 void PlayListModel::addItems(const QStringList& paths)
 {
-    QStringList n_paths;
+    qDebug() << "addItems:" << paths;
+
+    QStringList n_ids;
 
     for (auto& path : paths) {
-        if (addItem(path))
-            n_paths << path;
+        // id = path/cookie e.g. /home/nemo/Music/track01.mp3/y6Dgh
+        QString id = path + "/" + Utils::randString();
+        if (addId(id)) {
+            n_ids << id;
+        }
     }
 
-    emit itemsAdded(n_paths);
+    if (!n_ids.isEmpty())
+        emit itemsAdded(n_ids);
 }
 
-bool PlayListModel::addItem(const QString& path)
+bool PlayListModel::addId(const QString& id)
 {
-    if (find(path) != 0) {
-        qWarning() << "File" << path << "already added";
-        emit error(E_FileExists);
-        return false;
-    }
+    QString path = Utils::pathFromId(id);
 
     QFileInfo file(path);
 
@@ -53,8 +84,13 @@ bool PlayListModel::addItem(const QString& path)
         return false;
     }
 
+    if (find(id) != 0) {
+        qWarning() << "Id" << id << "already added";
+        emit error(E_FileExists);
+        return false;
+    }
+
     FileMetaData metaData;
-    metaData.path = path;
     metaData.filename = file.fileName();
     metaData.type = ContentServer::instance()->getContentType(metaData.filename);
     metaData.size = file.size();
@@ -76,9 +112,9 @@ bool PlayListModel::addItem(const QString& path)
         metaData.icon = "image://theme/icon-m-file-other";
     }
 
-    appendRow(new FileItem(metaData.path,
+    appendRow(new FileItem(id,
                            metaData.filename,
-                           metaData.path,
+                           path,
                            metaData.date,
                            metaData.type,
                            metaData.size,
@@ -89,15 +125,14 @@ bool PlayListModel::addItem(const QString& path)
     return true;
 }
 
-
-void PlayListModel::setActivePath(const QString &path)
+void PlayListModel::setActiveId(const QString &id)
 {
     int len = m_list.length();
 
     for (int i = 0; i < len; ++i) {
         auto fi = static_cast<FileItem*>(m_list.at(i));
 
-        bool active = fi->path() == path;
+        bool active = fi->id() == id;
 
         fi->setActive(active);
 
@@ -109,7 +144,7 @@ void PlayListModel::setActivePath(const QString &path)
 void PlayListModel::setActiveUrl(const QUrl &url)
 {
     auto cs = ContentServer::instance();
-    setActivePath(cs->pathFromUrl(url));
+    setActiveId(cs->idFromUrl(url));
 }
 
 void PlayListModel::clear()
@@ -121,20 +156,28 @@ void PlayListModel::clear()
     setActiveItemIndex(-1);
 }
 
-QString PlayListModel::activePath() const
+QString PlayListModel::activeId() const
 {
     if (m_activeItemIndex > -1) {
-        auto fi = static_cast<FileItem*>(m_list.at(m_activeItemIndex));
-        return fi->path();
+        auto fi = m_list.at(m_activeItemIndex);
+        return fi->id();
     }
 
     return QString();
 }
 
-QString PlayListModel::firstPath() const
+QString PlayListModel::firstId() const
 {
     if (m_list.length() > 0)
-        return static_cast<FileItem*>(m_list.first())->path();
+        return m_list.first()->id();
+
+    return QString();
+}
+
+QString PlayListModel::secondId() const
+{
+    if (m_list.length() > 1)
+        return m_list.at(1)->id();
 
     return QString();
 }
@@ -147,9 +190,9 @@ void PlayListModel::setActiveItemIndex(int index)
     }
 }
 
-bool PlayListModel::remove(const QString &path)
+bool PlayListModel::remove(const QString &id)
 {
-    int index = indexFromId(path);
+    int index = indexFromId(id);
     if (index < 0)
         return false;
 
@@ -166,40 +209,39 @@ bool PlayListModel::remove(const QString &path)
     return ok;
 }
 
-QString PlayListModel::nextActivePath() const
+QString PlayListModel::nextActiveId() const
 {
     int nextIndex = m_activeItemIndex + 1;
 
     if (m_activeItemIndex > -1 && m_list.length() > nextIndex) {
-        auto fi = static_cast<FileItem*>(m_list.at(nextIndex));
-        return fi->path();
+        auto fi = m_list.at(nextIndex);
+        return fi->id();
     }
 
     return QString();
 }
 
-QString PlayListModel::prevActivePath() const
+QString PlayListModel::prevActiveId() const
 {
     int prevIndex = m_activeItemIndex - 1;
 
     if (prevIndex > -1 && m_list.length() > m_activeItemIndex) {
-        auto fi = static_cast<FileItem*>(m_list.at(prevIndex));
-        return fi->path();
+        auto fi = m_list.at(prevIndex);
+        return fi->id();
     }
 
     return QString();
 }
 
 
-QString PlayListModel::nextPath(const QString &path) const
+QString PlayListModel::nextId(const QString &id) const
 {
     bool nextFound = false;
 
     for (auto li : m_list) {
-        auto fi = static_cast<FileItem*>(li);
         if (nextFound)
-            return fi->path();
-        if(fi->path() == path)
+            return li->id();
+        if(li->id() == id)
             nextFound = true;
     }
 

@@ -170,6 +170,19 @@ QString Settings::getLastDir()
     return settings.value("lastdir", "").toString();
 }
 
+void Settings::setLastPlaylist(const QStringList& value)
+{
+    if (getLastPlaylist() != value) {
+        settings.setValue("lastplaylist", value);
+        emit lastPlaylistChanged();
+    }
+}
+
+QStringList Settings::getLastPlaylist()
+{
+    return settings.value("lastplaylist").toStringList();
+}
+
 void Settings::setShowAllDevices(bool value)
 {
     if (getShowAllDevices() != value) {
@@ -194,6 +207,19 @@ void Settings::setImageSupported(bool value)
 bool Settings::getImageSupported()
 {
     return settings.value("imagesupported", false).toBool();
+}
+
+void Settings::setRememberPlaylist(bool value)
+{
+    if (getRememberPlaylist() != value) {
+        settings.setValue("rememberplaylist", value);
+        emit rememberPlaylistChanged();
+    }
+}
+
+bool Settings::getRememberPlaylist()
+{
+    return settings.value("rememberplaylist", true).toBool();
 }
 
 QByteArray Settings::resetKey()

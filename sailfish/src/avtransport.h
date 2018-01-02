@@ -66,11 +66,9 @@ public:
     Q_INVOKABLE void next();
     Q_INVOKABLE void previous();
     Q_INVOKABLE void seek(int value);
-    Q_INVOKABLE void setLocalContent(const QString &cpath, const QString &npath);
-    Q_INVOKABLE void setCurrentLocalContent(const QString &path);
-    Q_INVOKABLE void setNextLocalContent(const QString &path);
-    Q_INVOKABLE void clearNextUri();
+    Q_INVOKABLE void setLocalContent(const QString &cid, const QString &nid);
     Q_INVOKABLE void asyncUpdate(int initDelay = 0, int postDelay = 500);
+    Q_INVOKABLE void blockUriChanged(int time = 500);
 
     int getTransportState();
     int getTransportStatus();
@@ -143,6 +141,7 @@ private:
     QString m_currentURI = "";
     QString m_nextURI = "";
     bool m_emitUriChanged = false;
+    bool m_blockEmitUriChanged = false;
 
     QTimer m_seekTimer;
     int m_futureSeek = 0;

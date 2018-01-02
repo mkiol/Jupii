@@ -291,10 +291,13 @@ bool ContentServer::getCoverArtUrl(const QString &path, QUrl &url) const
     ext = ext.toLower();
 
     QString hash = Utils::instance()->hash(path);
-    QString artPath = QString("%1/%2.jpg").arg(Settings::instance()->getCacheDir(), "art-"+hash);
+
+    QString artPath = QString("%1/%2.jpg").arg(
+                Settings::instance()->getCacheDir(), "art-"+hash);
+    QString artId = artPath + "/jupii";
 
     if (QFileInfo::exists(artPath)) {
-        if (makeUrl(artPath, url))
+        if (makeUrl(artId, url))
             return true;
         else
             qWarning() << "Can't make Url form art path";
@@ -318,7 +321,7 @@ bool ContentServer::getCoverArtUrl(const QString &path, QUrl &url) const
                 img.loadFromData((const uchar *) frame->picture().data(), frame->picture().size());
 
                 if (img.save(artPath)) {
-                    if (makeUrl(artPath, url))
+                    if (makeUrl(artId, url))
                         return true;
                     else
                         qWarning() << "Can't make Url form art path";
@@ -332,15 +335,23 @@ bool ContentServer::getCoverArtUrl(const QString &path, QUrl &url) const
     return false;
 }
 
-bool ContentServer::getContentUrl(const QString &path, QUrl &url, QString &meta) const
+bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
+                                  QString cUrl) const
 {
+    QString path = Utils::pathFromId(id);
+
     QFileInfo file(path);
 
     if (file.exists()) {
 
-        if (!makeUrl(path, url)) {
+        if (!makeUrl(id, url)) {
             qWarning() << "Can't make Url form path";
             return false;
+        }
+
+        if (!cUrl.isEmpty() && cUrl == url.toString()) {
+            // Optimization: Url is the same as current -> skipping getContentMeta
+            return true;
         }
 
         //qDebug() << "Content URL:" << url.toString();
@@ -358,9 +369,9 @@ bool ContentServer::getContentUrl(const QString &path, QUrl &url, QString &meta)
     return false;
 }
 
-bool ContentServer::makeUrl(const QString& path, QUrl& url) const
+bool ContentServer::makeUrl(const QString& id, QUrl& url) const
 {
-    QString hash = QString::fromUtf8(encrypt(path.toUtf8()));
+    QString hash = QString::fromUtf8(encrypt(id.toUtf8()));
 
     QString ifname, addr;
     if (!Utils::instance()->getNetworkIf(ifname, addr)) {
@@ -442,10 +453,27 @@ QString ContentServer::pathFromUrl(const QUrl &url) const
     QString hash = url.path();
     hash = hash.right(hash.length()-1);
 
-    QString path = QString::fromUtf8(decrypt(hash.toUtf8()));
+    QString id = QString::fromUtf8(decrypt(hash.toUtf8()));
+    QString path = Utils::pathFromId(id);
 
     if (QFileInfo::exists(path)) {
         return path;
+    } else {
+        qWarning() << "Content path doesn't exist";
+        return QString();
+    }
+}
+
+QString ContentServer::idFromUrl(const QUrl &url) const
+{
+    QString hash = url.path();
+    hash = hash.right(hash.length()-1);
+
+    QString id = QString::fromUtf8(decrypt(hash.toUtf8()));
+    QString path = Utils::pathFromId(id);
+
+    if (QFileInfo::exists(path)) {
+        return id;
     } else {
         qWarning() << "Content path doesn't exist";
         return QString();
@@ -489,7 +517,7 @@ void ContentServer::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     }
 
     if (!file.open(QFile::ReadOnly)) {
-        qWarning() << "Unable to open file" << file.fileName() << "to write!";
+        qWarning() << "Unable to open file" << file.fileName() << "to read!";
         emit do_sendEmptyResponse(resp, 500);
         return;
     }

@@ -37,11 +37,12 @@ public:
     };
 
     static ContentServer* instance(QObject *parent = nullptr);
-    bool getContentUrl(const QString &path, QUrl &url, QString &meta) const;
+    bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "") const;
     Type getContentType(const QString &path) const;
     Q_INVOKABLE QStringList getExtensions(int type) const;
     QString getContentMime(const QString &path) const;
     Q_INVOKABLE QString pathFromUrl(const QUrl &url) const;
+    Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
 
 signals:
     void do_sendEmptyResponse(QHttpResponse *resp, int code);
@@ -75,7 +76,7 @@ private:
     bool getContentMeta(const QString &path, const QUrl &url, QString &meta) const;
     QByteArray encrypt(const QByteArray& data) const;
     QByteArray decrypt(const QByteArray& data) const;
-    bool makeUrl(const QString& path, QUrl& url) const;
+    bool makeUrl(const QString& id, QUrl& url) const;
     bool getCoverArtUrl(const QString &path, QUrl &url) const;
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     bool seqWriteData(QFile &file, qint64 size, QHttpResponse *resp);

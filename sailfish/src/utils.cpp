@@ -173,3 +173,30 @@ QString Utils::hash(const QString &value)
 {
     return QString::number(qHash(value));
 }
+
+QString Utils::pathFromId(const QString &id)
+{
+    QStringList list = id.split('/');
+    list.removeLast();
+    return list.join('/');
+}
+
+QString Utils::cookieFromId(const QString &id)
+{
+    return id.split('/').last();
+}
+
+QString Utils::randString(int len)
+{
+   const QString pc("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+
+   QString rs;
+
+   for(int i = 0; i < len; ++i) {
+       int in = qrand() % pc.length();
+       QChar nc = pc.at(in);
+       rs.append(nc);
+   }
+
+   return rs;
+}

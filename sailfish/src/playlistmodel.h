@@ -94,28 +94,32 @@ public:
     ~PlayListModel();
 
     Q_INVOKABLE void clear();
-    Q_INVOKABLE QString firstPath() const;
-    Q_INVOKABLE bool remove(const QString &path);
-    Q_INVOKABLE QString activePath() const;
-    Q_INVOKABLE QString nextActivePath() const;
-    Q_INVOKABLE QString prevActivePath() const;
-    Q_INVOKABLE QString nextPath(const QString &path) const;
+    Q_INVOKABLE QString firstId() const;
+    Q_INVOKABLE QString secondId() const;
+    Q_INVOKABLE bool remove(const QString &id);
+    Q_INVOKABLE QString activeId() const;
+    Q_INVOKABLE QString nextActiveId() const;
+    Q_INVOKABLE QString prevActiveId() const;
+    Q_INVOKABLE QString nextId(const QString &id) const;
+    Q_INVOKABLE void load();
     int getActiveItemIndex() const;
 
 signals:
-    void itemsAdded(const QStringList& paths);
+    void itemsAdded(const QStringList& ids);
+    void itemsLoaded(const QStringList& ids);
     void error(ErrorType code);
     int activeItemChanged();
 
 public slots:
     void addItems(const QStringList& paths);
-    void setActivePath(const QString &path);
+    void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
 
 private:
     int m_activeItemIndex = -1;
     void setActiveItemIndex(int index);
-    bool addItem(const QString& path);
+    bool addId(const QString& id);
+    void save();
 };
 
 #endif // PLAYLISTMODEL_H

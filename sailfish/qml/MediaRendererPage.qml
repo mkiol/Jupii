@@ -50,6 +50,11 @@ Page {
 
     onInitedChanged: {
         dbus.canControl = inited
+
+        if (inited && listView.count === 0) {
+            if (settings.rememberPlaylist)
+                playlist.load()
+        }
     }
 
     function togglePlay() {
@@ -85,36 +90,46 @@ Page {
         }
     }
 
-    function updatePlayList() {
+    function updatePlayList(play) {
         var count = listView.count
 
-        if (count > 0) {
-            var playing = av.transportState === AVTransport.Playing
-            var apath = playlist.activePath()
-            var npath = playlist.nextActivePath()
+        console.log("updatePlayList, count:" + count)
 
-            if (apath.length === 0) {
-                var fpath = playlist.firstPath()
-                if (playing) {
-                    av.setLocalContent("", fpath)
+        if (count > 0) {
+            var aid = playlist.activeId()
+
+            console.log("updatePlayList, play:" + play)
+            console.log("updatePlayList, aid:" + aid)
+
+            if (aid.length === 0) {
+                var fid = playlist.firstId()
+                console.log("updatePlayList, fid:" + fid)
+
+                if (!play) {
+                    if (fid.length > 0)
+                        av.setLocalContent("", fid)
                 } else {
-                    av.setLocalContent(fpath, npath)
+                    var sid = playlist.secondId()
+                    console.log("updatePlayList, sid:" + sid)
+                    av.setLocalContent(fid, sid)
                 }
+
                 playlist.setActiveUrl(av.currentURI)
             } else {
-                av.setLocalContent("",npath)
+                var nid = playlist.nextActiveId()
+                console.log("updatePlayList, nid:" + nid)
+                if (nid.length > 0)
+                    av.setLocalContent("",nid)
             }
-        } else {
-            av.clearNextUri()
         }
     }
 
-    function playItem(path) {
+    function playItem(id) {
         var count = listView.count
 
         if (count > 0) {
-            var npath = playlist.nextPath(path)
-            av.setLocalContent(path,npath)
+            var nid = playlist.nextId(id)
+            av.setLocalContent(id,nid)
         }
     }
 
@@ -134,11 +149,10 @@ Page {
         id: musicPickerDialog
         MultiMusicPickerDialog {
             onAccepted: {
-                var urls = []
-                for (var i = 0; i < selectedContent.count; ++i) {
-                    var paths = selectedContent.get(i).filePath
-                    playlist.addItems(paths)
-                }
+                var paths = [];
+                for (var i = 0; i < selectedContent.count; ++i)
+                    paths.push(selectedContent.get(i).filePath)
+                playlist.addItems(paths)
             }
         }
     }
@@ -147,11 +161,10 @@ Page {
         id: videoPickerDialog
         MultiVideoPickerDialog {
             onAccepted: {
-                var urls = []
-                for (var i = 0; i < selectedContent.count; ++i) {
-                    var paths = selectedContent.get(i).filePath
-                    playlist.addItems(paths)
-                }
+                var paths = [];
+                for (var i = 0; i < selectedContent.count; ++i)
+                    paths.push(selectedContent.get(i).filePath)
+                playlist.addItems(paths)
             }
         }
     }
@@ -160,11 +173,10 @@ Page {
         id: imagePickerDialog
         MultiImagePickerDialog {
             onAccepted: {
-                var urls = []
-                for (var i = 0; i < selectedContent.count; ++i) {
-                    var paths = selectedContent.get(i).filePath
-                    playlist.addItems(paths)
-                }
+                var paths = [];
+                for (var i = 0; i < selectedContent.count; ++i)
+                    paths.push(selectedContent.get(i).filePath)
+                playlist.addItems(paths)
             }
         }
     }
@@ -215,24 +227,10 @@ Page {
         }
 
         onUriChanged: {
-            //console.log("UriChanged")
-            //console.log("  currentURI: " + currentURI)
-            //console.log("  nextURI: " + nextURI)
+            console.log("onUriChanged")
             playlist.setActiveUrl(currentURI)
-            updatePlayList()
+            root.updatePlayList(av.transportState !== AVTransport.Playing)
         }
-
-        /*onTransportActionsChanged: {
-            console.log("transportActionsChanged")
-        }
-
-        onSeekSupportedChanged: {
-            console.log("SeekSupportedChanged: " + seekSupported)
-        }
-
-        onNextSupportedChanged: {
-            console.log("NextSupportedChanged: " + nextSupported)
-        }*/
     }
 
     Connections {
@@ -243,7 +241,7 @@ Page {
         }
         onRequestClearPlaylist: {
             playlist.clear()
-            root.updatePlayList()
+            root.updatePlayList(av.transportState !== AVTransport.Playing)
         }
     }
 
@@ -251,12 +249,27 @@ Page {
         id: playlist
 
         onItemsAdded: {
-            root.updatePlayList()
+            console.log("onItemsAdded")
+            playlist.setActiveUrl(av.currentURI)
+            av.blockUriChanged(1000)
+            root.updatePlayList(av.transportState !== AVTransport.Playing)
+        }
+
+        onItemsLoaded: {
+            console.log("onItemsLoaded")
+            playlist.setActiveUrl(av.currentURI)
+            av.blockUriChanged(1000)
+            root.updatePlayList(false)
         }
 
         onError: {
             if (code === PlayListModel.E_FileExists)
                 notification.show(qsTr("Item is already in the playlist"))
+        }
+
+        onActiveItemIndexChanged: {
+            if (activeItemIndex >= 0)
+                listView.positionViewAtIndex(activeItemIndex, ListView.Contain)
         }
     }
 
@@ -382,14 +395,16 @@ Page {
 
             onClicked: {
                 if (!model.active)
-                    root.playItem(model.path)
+                    root.playItem(model.id)
+                else if (av.transportState !== AVTransport.Playing)
+                    root.togglePlay()
             }
 
             menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Remove")
                     onClicked: {
-                        playlist.remove(model.path)
+                        playlist.remove(model.id)
                         root.updatePlayList()
                     }
                 }
@@ -398,9 +413,10 @@ Page {
                     text: qsTr("Play")
                     visible: av.transportState !== AVTransport.Playing || !model.active
                     onClicked: {
-                        var playing = av.transportState === AVTransport.Playing
-                        if (!playing || !model.active)
-                            root.playItem(model.path)
+                        if (!model.active)
+                            root.playItem(model.id)
+                        else if (av.transportState !== AVTransport.Playing)
+                            root.togglePlay()
                     }
                 }
             }
@@ -420,7 +436,7 @@ Page {
 
         prevEnabled: playlist.activeItemIndex > 0 ||
                      (av.seekSupported && av.transportState === AVTransport.Playing)
-        nextEnabled: av.nextSupported
+        nextEnabled: av.nextSupported && listView.count > 0
 
         av: av
         rc: rc
@@ -434,14 +450,14 @@ Page {
 
             if (count > 0) {
 
-                var fpath = playlist.firstPath()
-                var apath = playlist.activePath()
-                var npath = playlist.nextActivePath()
+                var fid = playlist.firstId()
+                var aid = playlist.activeId()
+                var nid = playlist.nextActiveId()
 
-                if (apath.length === 0)
-                    av.setLocalContent(fpath, npath)
+                if (aid.length === 0)
+                    av.setLocalContent(fid, nid)
                 else
-                    av.setLocalContent(npath, "")
+                    av.setLocalContent(nid, "")
 
             } else {
                 console.log("Playlist is empty so can't do next()")
@@ -453,16 +469,16 @@ Page {
             var seekable = av.seekSupported
 
             if (count > 0) {
-                var ppath = playlist.prevActivePath()
-                var apath = playlist.activePath()
+                var pid = playlist.prevActiveId()
+                var aid = playlist.activeId()
 
-                if (apath.length === 0) {
+                if (aid.length === 0) {
                     if (seekable)
                         av.seek(0)
                     return
                 }
 
-                if (ppath.length === 0) {
+                if (pid.length === 0) {
                     if (seekable)
                         av.seek(0)
                     return
@@ -472,7 +488,7 @@ Page {
                 if (seek && seekable)
                     av.seek(0)
                 else
-                    av.setLocalContent(ppath, apath)
+                    av.setLocalContent(pid, aid)
 
             } else {
                 if (seekable)

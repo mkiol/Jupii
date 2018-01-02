@@ -45,6 +45,16 @@ Page {
                 }
             }
 
+            TextSwitch {
+                automaticCheck: false
+                checked: settings.rememberPlaylist
+                text: qsTr("Remember last playlist")
+                //description: qsTr("")
+                onClicked: {
+                    settings.rememberPlaylist = !settings.rememberPlaylist
+                }
+            }
+
             SectionHeader {
                 text: qsTr("Experimental features")
             }

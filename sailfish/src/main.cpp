@@ -39,7 +39,7 @@
 using namespace std;
 
 static const char* APP_NAME = "Jupii";
-static const char* APP_VERSION = "0.9.1";
+static const char* APP_VERSION = "0.9.2";
 static const char* AUTHOR = "Michal Kosciesza <michal@mkiol.net>";
 static const char* PAGE = "https://github.com/mkiol/Jupii";
 static const char* LICENSE = "http://mozilla.org/MPL/2.0/";

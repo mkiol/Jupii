@@ -61,11 +61,6 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
         } else if (name == "CurrentTrackDuration") {
             if (m_currentTrackDuration != value) {
                 m_currentTrackDuration = value;
-                /*m_relativeTimePosition = 0;
-                m_oldTimePosition = 0;
-                m_absoluteTimePosition = 0;
-                emit relativeTimePositionChanged();
-                emit absoluteTimePositionChanged();*/
                 emit currentTrackDurationChanged();
             }
         } else if (name == "RelativeTimePosition") {
@@ -92,6 +87,12 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
             //qDebug() << "new currentURI:" << value;
 
             if (m_currentURI != value) {
+
+                if (m_blockEmitUriChanged) {
+                    qDebug() << "currentURI change blocked";
+                    return;
+                }
+
                 m_currentURI = value;
                 m_emitUriChanged = true;
 
@@ -111,6 +112,12 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
             //qDebug() << "new nextURI:" << value;
 
             if (m_nextURI != value) {
+
+                if (m_blockEmitUriChanged) {
+                    qDebug() << "nextURI change blocked";
+                    return;
+                }
+
                 m_nextURI = value;
                 m_emitUriChanged = true;
 
@@ -352,41 +359,10 @@ bool AVTransport::getStopSupported()
     return m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop;
 }
 
-void AVTransport::setCurrentLocalContent(const QString &path)
+void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 {
-    setLocalContent(path, "");
-}
+    //qDebug() << "1| cid, nid:" << cid << nid;
 
-void AVTransport::setNextLocalContent(const QString &path)
-{
-    setLocalContent("", path);
-}
-
-void AVTransport::clearNextUri()
-{
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
-        return;
-    }
-
-    startTask([this](){
-        m_updateMutex.lock();
-
-        auto srv = s();
-        if (srv == nullptr)
-            return;
-
-        qWarning() << "Clearing nextURI";
-        if (!handleError(srv->setNextAVTransportURI("", ""))) {
-            qWarning() << "Error response for setNextAVTransportURI()";
-        }
-
-        m_updateMutex.unlock();
-    });
-}
-
-void AVTransport::setLocalContent(const QString &cpath, const QString &npath)
-{
     if (!Utils::instance()->checkNetworkIf()) {
         qWarning() << "Can't find valid network interface";
         emit error(E_LostConnection);
@@ -400,30 +376,28 @@ void AVTransport::setLocalContent(const QString &cpath, const QString &npath)
         return;
     }
 
-    startTask([this, cpath, npath](){
+    startTask([this, cid, nid](){
         auto cs = ContentServer::instance();
 
-        bool do_current = !cpath.isEmpty();
+        bool do_current = !cid.isEmpty();
         bool do_play = false;
-        bool do_next = !npath.isEmpty();
+        bool do_next = !nid.isEmpty();
+        bool do_clearNext = !do_next;
         QUrl cURL, nURL;
         QString cmeta, nmeta, s_cURI, s_nURI;
 
+        //qDebug() << "2| do_current, do_play, do_next, do_clearNext:" << do_current << do_play << do_next << do_clearNext;
+        //qDebug() << "2| cid, nid:" << cid << nid;
+
         if (do_current) {
 
-            if (!cs->getContentUrl(cpath, cURL, cmeta)) {
-                qWarning() << "Path" << cpath << "can't be converted to URL";
+            if (!cs->getContentUrl(cid, cURL, cmeta, m_currentURI)) {
+                qWarning() << "Id" << cid << "can't be converted to URL";
                 emit error(E_InvalidPath);
                 return;
             }
 
             s_cURI = cURL.toString();
-
-            /*qDebug() << "cpath:" << cs->pathFromUrl(m_currentURI);
-            qDebug() << "New cpath:" << cpath;
-
-            qDebug() << "Current:" << m_currentURI;
-            qDebug() << "New current:" << s_cURI;*/
 
             do_current = s_cURI != m_currentURI;
             if (!do_current) {
@@ -435,30 +409,26 @@ void AVTransport::setLocalContent(const QString &cpath, const QString &npath)
 
         if (do_next) {
 
-            if (!cs->getContentUrl(npath, nURL, nmeta)) {
-                qWarning() << "Path" << npath << "can't be converted to URL";
+            if (!cs->getContentUrl(nid, nURL, nmeta, m_nextURI)) {
+                qWarning() << "Id" << nid << "can't be converted to URL";
                 emit error(E_InvalidPath);
                 return;
             }
 
             s_nURI = nURL.toString();
 
-            /*qDebug() << "npath:" << cs->pathFromUrl(m_nextURI);
-            qDebug() << "New npath:" << npath;
-
-            qDebug() << "Next:" << m_nextURI;
-            qDebug() << "New next:" << s_nURI;*/
-
             do_next = s_nURI != m_nextURI;
-            if (!do_next)
+            if (!do_next) {
                 qWarning() << "Content URL is the same as nextURI";
-
-            do_next = s_nURI != m_currentURI;
-            if (!do_next)
-                qWarning() << "Next content URL is the same as currentURI";
+            } else {
+                // Don't update nextURI if the same as currentURI
+                do_next = s_nURI != m_currentURI;
+                if (!do_next)
+                    qWarning() << "Next content URL is the same as currentURI";
+            }
         }
 
-        if (!do_next && !do_current && !do_play) {
+        if (!do_next && !do_current && !do_play && !do_clearNext) {
             qWarning() << "Nothing to update";
             return;
         }
@@ -481,8 +451,19 @@ void AVTransport::setLocalContent(const QString &cpath, const QString &npath)
         }
 
         if (do_next) {
-            qDebug() << "Calling setNextAVTransportURI with path:" << npath;
+            qDebug() << "Calling setNextAVTransportURI with id:" << nid;
             if (!handleError(srv->setNextAVTransportURI(s_nURI.toStdString(), nmeta.toStdString()))) {
+                qWarning() << "Error response for setNextAVTransportURI()";
+                if (srv == nullptr) {
+                    m_updateMutex.unlock();
+                    return;
+                }
+            }
+        }
+
+        if (do_clearNext) {
+            qWarning() << "Clearing nextURI";
+            if (!handleError(srv->setNextAVTransportURI("", ""))) {
                 qWarning() << "Error response for setNextAVTransportURI()";
                 if (srv == nullptr) {
                     m_updateMutex.unlock();
@@ -493,7 +474,7 @@ void AVTransport::setLocalContent(const QString &cpath, const QString &npath)
 
         if (do_current) {
             // Clearing nextURI on next action on last item in the queue
-            if (npath.isEmpty() && m_nextURI == s_cURI) {
+            if (nid.isEmpty() && m_nextURI == s_cURI) {
                 qDebug() << "Clearing nextURI";
                 if (!handleError(srv->setNextAVTransportURI("", ""))) {
                     qWarning() << "Error response for setNextAVTransportURI()";
@@ -504,7 +485,7 @@ void AVTransport::setLocalContent(const QString &cpath, const QString &npath)
                 }
             }
 
-            qDebug() << "Calling setAVTransportURI with path:" << cpath;
+            qDebug() << "Calling setAVTransportURI with id:" << cid;
             if (!handleError(srv->setAVTransportURI(s_cURI.toStdString(),cmeta.toStdString()))) {
                 qWarning() << "Error response for setAVTransportURI()";
                 if (srv == nullptr) {
@@ -1095,5 +1076,17 @@ void AVTransport::updateCurrentTransportActions()
         m_currentTransportActions = ac;
         emit transportActionsChanged();
     }
+}
 
+void AVTransport::blockUriChanged(int time)
+{
+    m_blockEmitUriChanged = true;
+
+    qDebug() << "URIChanged blocked";
+
+    startTask([this, time]() {
+        tsleep(time);
+        m_blockEmitUriChanged = false;
+        qDebug() << "URIChanged unblocked";
+    });
 }

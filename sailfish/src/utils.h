@@ -26,6 +26,9 @@ public:
     Q_INVOKABLE QString secToStr(int value);
 
     QString hash(const QString &value);
+    static QString pathFromId(const QString &id);
+    static QString cookieFromId(const QString &id);
+    static QString randString(int len = 5);
     bool createCacheDir();
     bool writeToFile(const QString &filename, const QByteArray &data);
     bool readFromFile(const QString &filename, QByteArray &data);
