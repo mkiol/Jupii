@@ -16,7 +16,7 @@
 
 Service::Service(QObject *parent) :
     QObject(parent),
-    TaskExecutor(parent, 3),
+    TaskExecutor(parent, 5),
     m_timer(parent)
 {
     QObject::connect(&m_timer, &QTimer::timeout, this, &Service::timerEvent);

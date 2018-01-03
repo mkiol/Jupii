@@ -48,6 +48,10 @@ class AVTransport : public Service
     Q_PROPERTY (bool seekSupported READ getSeekSupported NOTIFY transportActionsChanged)
     Q_PROPERTY (bool stopSupported READ getStopSupported NOTIFY transportActionsChanged)
 
+    Q_PROPERTY (bool playable READ getPlayable NOTIFY controlableChanged)
+    Q_PROPERTY (bool stopable READ getStopable NOTIFY controlableChanged)
+    Q_PROPERTY (bool controlable READ getControlable NOTIFY controlableChanged)
+
 public:
     enum TransportState {Unknown, Stopped, Playing, Transitioning,
                          PausedPlayback, PausedRecording, Recording,
@@ -95,6 +99,10 @@ public:
     bool getSeekSupported();
     bool getStopSupported();
 
+    bool getPlayable();
+    bool getStopable();
+    bool getControlable();
+
     void setSpeed(int value);
 
 signals:
@@ -111,6 +119,8 @@ signals:
     void speedChanged();
     void transportActionsChanged();
     void updated();
+    void preControlableChanged();
+    void controlableChanged();
 
 private slots:
     void timerEvent();
@@ -142,6 +152,7 @@ private:
     QString m_nextURI = "";
     bool m_emitUriChanged = false;
     bool m_blockEmitUriChanged = false;
+    bool m_pendingControlableSignal = false;
 
     QTimer m_seekTimer;
     int m_futureSeek = 0;
@@ -167,6 +178,7 @@ private:
     void asyncUpdateCurrentTransportActions();
     void updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta);
     void needTimerCheck();
+    void controlableChangedHandler();
     std::string type() const;
 };
 

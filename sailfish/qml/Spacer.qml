@@ -9,6 +9,7 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 Item {
-    height: Theme.paddingLarge
-    width: Theme.paddingLarge
+    property real space: Theme.paddingLarge
+    height: space
+    width: space
 }

@@ -18,24 +18,19 @@ Page {
 
     property string deviceId
 
-    property bool playable: av.inited && av.transportStatus === AVTransport.TPS_Ok &&
-                            av.currentURI !== "" &&
-                            av.playSupported &&
-                            (av.transportState === AVTransport.Stopped ||
-                            av.transportState === AVTransport.PausedPlayback ||
-                            av.transportState === AVTransport.PausedRecording)
-    property bool stopable: av.inited && av.transportStatus === AVTransport.TPS_Ok &&
-                            av.currentURI !== "" &&
-                            av.transportState === AVTransport.Playing &&
-                            (av.pauseSupported || av.stopSupported)
-    property bool controlable: playable || stopable
     property bool busy: av.busy || rc.busy
     property bool inited: av.inited && rc.inited
 
-    property string image: av.transportStatus === AVTransport.TPS_Ok ? av.currentAlbumArtURI : ""
+    // Needed for Cover
+    property bool playable: av.playable
+    property bool stopable: av.stopable
+    property string image: av.transportStatus === AVTransport.TPS_Ok ?
+                               av.currentAlbumArtURI : ""
     property string label: av.transportStatus === AVTransport.TPS_Ok ?
-                               av.currentAuthor.length > 0 ? av.currentAuthor + "\n" + av.currentTitle :
+                               av.currentAuthor.length > 0 ?
+                                   av.currentAuthor + "\n" + av.currentTitle :
                                av.currentTitle : ""
+    // --
 
     property bool _doPop: false;
 
@@ -214,6 +209,24 @@ Page {
             init(deviceId)
         }
 
+        onControlableChanged: {
+            console.log("onControlableChanged: " + controlable)
+            console.log(" playable: " + playable)
+            console.log(" stopable: " + stopable)
+            console.log(" av.transportStatus: " + av.transportStatus)
+            console.log(" av.currentURI: " + av.currentURI)
+            console.log(" av.playSupported: " + av.playSupported)
+            console.log(" av.pauseSupported: " + av.pauseSupported)
+            console.log(" av.playSupported: " + av.playSupported)
+            console.log(" av.stopSupported: " + av.stopSupported)
+
+            // Media info page
+            if (controlable)
+                pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"),{av: av})
+            else
+                pageStack.popAttached(null, PageStackAction.Immediate);
+        }
+
         onRelativeTimePositionChanged: {
             ppanel.trackPositionSlider.updateValue(relativeTimePosition)
         }
@@ -230,6 +243,14 @@ Page {
             console.log("onUriChanged")
             playlist.setActiveUrl(currentURI)
             root.updatePlayList(av.transportState !== AVTransport.Playing)
+        }
+
+        onTransportStateChanged: {
+            console.log("onTransportStateChanged: " + transportState)
+        }
+
+        onTransportStatusChanged: {
+            console.log("onTransportStatusChanged: " + transportStatus)
         }
     }
 
@@ -251,14 +272,14 @@ Page {
         onItemsAdded: {
             console.log("onItemsAdded")
             playlist.setActiveUrl(av.currentURI)
-            av.blockUriChanged(1000)
+            //av.blockUriChanged(1000)
             root.updatePlayList(av.transportState !== AVTransport.Playing)
         }
 
         onItemsLoaded: {
             console.log("onItemsLoaded")
             playlist.setActiveUrl(av.currentURI)
-            av.blockUriChanged(1000)
+            //av.blockUriChanged(1000)
             root.updatePlayList(false)
         }
 
@@ -277,7 +298,10 @@ Page {
         id: listView
 
         width: parent.width
-        height: ppanel.open ? parent.height - ppanel.height : parent.height
+        //height: ppanel.open ? parent.height - ppanel.height : parent.height
+        height: ppanel.open ? ppanel.y : parent.height
+
+        //Behavior on height { FadeAnimator {} }
 
         clip: true
 
@@ -432,17 +456,31 @@ Page {
     PlayerPanel {
         id: ppanel
 
-        open: root.controlable && !root.busy
+        open: av.controlable && !root.busy && root.status === PageStatus.Active
 
         prevEnabled: playlist.activeItemIndex > 0 ||
                      (av.seekSupported && av.transportState === AVTransport.Playing)
         nextEnabled: av.nextSupported && listView.count > 0
+        forwardEnabled: av.seekSupported && av.transportState === AVTransport.Playing
+        backwardEnabled: forwardEnabled
 
         av: av
         rc: rc
 
-        onLabelClicked: {
-            pageStack.push(Qt.resolvedUrl("MediaInfoPage.qml"),{av: av})
+        onHeightChanged: {
+            console.log("ppanel.height: " + height)
+        }
+
+        /*onYChanged: {
+            console.log("ppanel.y: " + y)
+        }*/
+
+        onOpenChanged: {
+            console.log("ppanel.open: " + open)
+        }
+
+        onExpandedChanged: {
+            console.log("ppanel.expanded: " + expanded)
         }
 
         onNextClicked: {

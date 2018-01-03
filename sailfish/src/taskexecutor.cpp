@@ -24,16 +24,17 @@ TaskExecutor::TaskExecutor(QObject* parent, int threadCount) :
     m_pool.setMaxThreadCount(threadCount);
 }
 
-void TaskExecutor::startTask(const std::function<void()> &job)
+bool TaskExecutor::startTask(const std::function<void()> &job)
 {
     if (m_pool.activeThreadCount() >= m_pool.maxThreadCount()) {
         qWarning() << "Too many task. Droping new task";
-        return;
+        return false;
     }
 
     auto task = new Task(job);
     task->setAutoDelete(true);
     m_pool.start(task);
+    return true;
 }
 
 void TaskExecutor::waitForDone()

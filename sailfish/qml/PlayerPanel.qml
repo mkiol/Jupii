@@ -11,17 +11,20 @@ import Sailfish.Silica 1.0
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
 
-DockedPanel {
+DockedPanel_ {
     id: root
 
     property var av
     property var rc
 
+    property bool full: false
+
     property alias nextEnabled: nextButton.enabled
     property alias prevEnabled: prevButton.enabled
+    property alias forwardEnabled: forwardButton.enabled
+    property alias backwardEnabled: backwardButton.enabled
 
     property alias trackPositionSlider: trackPositionSlider
-    property bool imgOk: image.status === Image.Ready
 
     signal labelClicked
     signal nextClicked
@@ -29,10 +32,26 @@ DockedPanel {
     signal forwardClicked
     signal backwardClicked
     signal togglePlayClicked
+    signal repeatClicked
 
     width: parent.width
-    height: column.height + Theme.paddingLarge
+    height: column.height
+    animationDuration: 200
+
     dock: Dock.Bottom
+
+    onOpenChanged: {
+        if (open)
+            full = false
+    }
+
+    onRequestCompact: {
+        full = false
+    }
+
+    onRequestFull: {
+        full = true
+    }
 
     Column {
         id: column
@@ -45,6 +64,8 @@ DockedPanel {
 
             Slider {
                 id: trackPositionSlider
+
+                visible: root.full
 
                 property bool blockValueChangedSignal: false
 
@@ -69,30 +90,34 @@ DockedPanel {
                 }
             }
 
-            ListItem {
+            Item {
                 id: lbi
-
                 width: parent.width
-                contentHeight: Theme.itemSizeLarge + 2 * Theme.paddingMedium
-
-                onClicked: root.labelClicked()
+                height: Theme.itemSizeLarge + 2 * Theme.paddingMedium
 
                 Image {
                     id: image
 
                     width: Theme.itemSizeLarge
                     height: Theme.itemSizeLarge
-                    sourceSize.width: width
-                    sourceSize.height: height
-                    fillMode: Image.PreserveAspectCrop
-                    visible: root.imgOk
+
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
                         leftMargin: Theme.horizontalPageMargin
                     }
 
-                    source: av.currentAlbumArtURI
+                    source: "image://theme/graphic-grid-playlist"
+
+                    Image {
+                        id: _image
+
+                        anchors.fill: parent
+                        sourceSize.width: width
+                        sourceSize.height: height
+                        fillMode: Image.PreserveAspectCrop
+                        source: av.currentAlbumArtURI
+                    }
                 }
 
                 Column {
@@ -101,10 +126,10 @@ DockedPanel {
                     spacing: Theme.paddingSmall
                     anchors {
                         verticalCenter: parent.verticalCenter
-                        left: root.imgOk ? image.right : parent.left
-                        leftMargin: root.imgOk ? Theme.paddingLarge : Theme.horizontalPageMargin
-                        right: parent.right
-                        rightMargin: Theme.horizontalPageMargin
+                        left: image.right
+                        leftMargin: Theme.paddingLarge
+                        right: playButton.left
+                        rightMargin: Theme.paddingLarge
                     }
 
                     Label {
@@ -115,8 +140,8 @@ DockedPanel {
 
                         color: lbi.highlighted ? Theme.highlightColor : Theme.primaryColor
                         truncationMode: TruncationMode.Fade
-                        elide: root.imgOk ? Text.ElideNone : Text.ElideRight
-                        horizontalAlignment: root.imgOk || truncated ? Text.AlignLeft : Text.AlignHCenter
+                        elide: Text.ElideNone
+                        horizontalAlignment: Text.AlignLeft
                         text: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
                     }
 
@@ -128,8 +153,8 @@ DockedPanel {
 
                         color: lbi.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
                         truncationMode: TruncationMode.Fade
-                        elide: root.imgOk ? Text.ElideNone : Text.ElideRight
-                        horizontalAlignment: root.imgOk || truncated ? Text.AlignLeft : Text.AlignHCenter
+                        elide: Text.ElideNone
+                        horizontalAlignment: Text.AlignLeft
                         opacity: text.length > 0 ? 1.0 : 0.0
                         visible: opacity > 0.0
                         Behavior on opacity { FadeAnimation {} }
@@ -137,16 +162,36 @@ DockedPanel {
                         text: av.currentAuthor
                     }
                 }
+
+                IconButton {
+                    id: playButton
+
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        right: parent.right
+                        rightMargin: Theme.horizontalPageMargin
+                    }
+
+                    icon.source: av.transportState !== AVTransport.Playing ?
+                                     "image://theme/icon-l-play" : "image://theme/icon-l-pause"
+                    enabled: av.controlable
+                    onClicked: togglePlayClicked()
+                }
             }
         }
 
         Row {
+            visible: root.full
+
+            property real size: Theme.itemSizeSmall
+
             height: Theme.iconSizeExtraLarge
-            spacing: Theme.paddingLarge
+            spacing: parent.width/4 - size - 2 * Theme.horizontalPageMargin
             anchors.horizontalCenter: parent.horizontalCenter
 
             IconButton {
                 id: prevButton
+                width: parent.size; height: parent.size
                 anchors.verticalCenter: parent.verticalCenter
                 icon.source: "image://theme/icon-m-previous"
                 onClicked: prevClicked()
@@ -154,32 +199,23 @@ DockedPanel {
 
             IconButton {
                 id: backwardButton
+                width: parent.size; height: parent.size
                 anchors.verticalCenter: parent.verticalCenter
                 icon.source: "image://icons/icon-m-backward"
-                enabled: av.seekSupported && av.transportState === AVTransport.Playing
                 onClicked: backwardClicked()
             }
 
             IconButton {
-                id: playButton
-                anchors.verticalCenter: parent.verticalCenter
-                icon.source: av.transportState !== AVTransport.Playing ? "image://theme/icon-l-play" : "image://theme/icon-l-pause"
-                enabled: (av.playSupported && av.transportState !== AVTransport.Playing) ||
-                         (av.pauseSupported && av.transportState === AVTransport.Playing) ||
-                         (av.stopSupported && av.transportState === AVTransport.Stopped)
-                onClicked: togglePlayClicked()
-            }
-
-            IconButton {
                 id: forwardButton
+                width: parent.size; height: parent.size
                 anchors.verticalCenter: parent.verticalCenter
                 icon.source: "image://icons/icon-m-forward"
-                enabled: av.seekSupported && av.transportState === AVTransport.Playing
                 onClicked: forwardClicked()
             }
 
             IconButton {
                 id: nextButton
+                width: parent.size; height: parent.size
                 anchors.verticalCenter: parent.verticalCenter
                 icon.source: "image://theme/icon-m-next"
                 onClicked: nextClicked()

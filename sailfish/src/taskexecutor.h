@@ -29,7 +29,7 @@ public:
 
     TaskExecutor(QObject* parent = nullptr, int threadCount = 1);
 
-    void startTask(const std::function<void()> &job);
+    bool startTask(const std::function<void()> &job);
     void waitForDone();
     bool taskActive();
 
