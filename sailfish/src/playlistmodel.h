@@ -81,14 +81,21 @@ class PlayListModel : public ListModel
 {
     Q_OBJECT
     Q_PROPERTY (int activeItemIndex READ getActiveItemIndex NOTIFY activeItemChanged)
+    Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
 
 public:
     enum ErrorType {
         E_Unknown,
         E_FileExists
     };
-
     Q_ENUM(ErrorType)
+
+    enum PlayMode {
+        PM_Normal,
+        PM_RepeatAll,
+        PM_RepeatOne
+    };
+    Q_ENUM(PlayMode)
 
     explicit PlayListModel(QObject *parent = 0);
     ~PlayListModel();
@@ -103,12 +110,15 @@ public:
     Q_INVOKABLE QString nextId(const QString &id) const;
     Q_INVOKABLE void load();
     int getActiveItemIndex() const;
+    int getPlayMode() const;
+    void setPlayMode(int value);
 
 signals:
     void itemsAdded(const QStringList& ids);
     void itemsLoaded(const QStringList& ids);
     void error(ErrorType code);
-    int activeItemChanged();
+    void activeItemChanged();
+    void playModeChanged();
 
 public slots:
     void addItems(const QStringList& paths);
@@ -117,6 +127,7 @@ public slots:
 
 private:
     int m_activeItemIndex = -1;
+    int m_playMode = PM_Normal;
     void setActiveItemIndex(int index);
     bool addId(const QString& id);
     void save();

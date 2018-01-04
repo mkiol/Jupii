@@ -17,6 +17,7 @@ Page {
     id: root
 
     property string deviceId
+    property string deviceName
 
     property bool busy: av.busy || rc.busy
     property bool inited: av.inited && rc.inited
@@ -26,10 +27,9 @@ Page {
     property bool stopable: av.stopable
     property string image: av.transportStatus === AVTransport.TPS_Ok ?
                                av.currentAlbumArtURI : ""
-    property string label: av.transportStatus === AVTransport.TPS_Ok ?
-                               av.currentAuthor.length > 0 ?
-                                   av.currentAuthor + "\n" + av.currentTitle :
-                               av.currentTitle : ""
+    property string title: av.currentTitle.length > 0 ? av.currentTitle : qsTr("Unknown")
+    property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""
+
     // --
 
     property bool _doPop: false;
@@ -85,7 +85,7 @@ Page {
         }
     }
 
-    function updatePlayList(play) {
+    function updatePlayList(mode) {
         var count = listView.count
 
         console.log("updatePlayList, count:" + count)
@@ -93,28 +93,28 @@ Page {
         if (count > 0) {
             var aid = playlist.activeId()
 
-            console.log("updatePlayList, play:" + play)
+            console.log("updatePlayList, mode:" + mode)
             console.log("updatePlayList, aid:" + aid)
 
             if (aid.length === 0) {
                 var fid = playlist.firstId()
                 console.log("updatePlayList, fid:" + fid)
 
-                if (!play) {
+                switch (mode) {
+                case 0:
                     if (fid.length > 0)
                         av.setLocalContent("", fid)
-                } else {
+                    break;
+                case 1:
                     var sid = playlist.secondId()
                     console.log("updatePlayList, sid:" + sid)
                     av.setLocalContent(fid, sid)
+                    break;
                 }
-
-                playlist.setActiveUrl(av.currentURI)
             } else {
                 var nid = playlist.nextActiveId()
                 console.log("updatePlayList, nid:" + nid)
-                if (nid.length > 0)
-                    av.setLocalContent("",nid)
+                av.setLocalContent("",nid)
             }
         }
     }
@@ -126,6 +126,16 @@ Page {
             var nid = playlist.nextId(id)
             av.setLocalContent(id,nid)
         }
+    }
+
+    function showActiveItem() {
+        if (playlist.activeItemIndex >= 0)
+            listView.positionViewAtIndex(playlist.activeItemIndex, ListView.Contain)
+    }
+
+    function showLastItem() {
+        if (playlist.activeItemIndex >= 0)
+            listView.positionViewAtEnd();
     }
 
     // -- Pickers --
@@ -239,10 +249,21 @@ Page {
             rc.asyncUpdate()
         }
 
-        onUriChanged: {
-            console.log("onUriChanged")
+        onCurrentURIChanged: {
+            console.log("onCurrentURIChanged")
             playlist.setActiveUrl(currentURI)
-            root.updatePlayList(av.transportState !== AVTransport.Playing)
+            root.updatePlayList(av.transportState === AVTransport.Playing ? 0 : 1)
+        }
+
+        onNextURIChanged: {
+            console.log("onNextURIChanged")
+
+            if (av.nextURI.length === 0 && av.currentURI.length > 0 &&
+                    playlist.playMode !== PlayListModel.PM_Normal) {
+                console.log("AVT switches to nextURI without currentURIChanged")
+                playlist.setActiveUrl(currentURI)
+                root.updatePlayList(av.transportState === AVTransport.Playing ? 0 : 1)
+            }
         }
 
         onTransportStateChanged: {
@@ -262,7 +283,7 @@ Page {
         }
         onRequestClearPlaylist: {
             playlist.clear()
-            root.updatePlayList(av.transportState !== AVTransport.Playing)
+            root.updatePlayList(av.transportState === AVTransport.Playing ? 0 : 1)
         }
     }
 
@@ -271,16 +292,16 @@ Page {
 
         onItemsAdded: {
             console.log("onItemsAdded")
+            root.showLastItem()
             playlist.setActiveUrl(av.currentURI)
-            //av.blockUriChanged(1000)
-            root.updatePlayList(av.transportState !== AVTransport.Playing)
+            root.updatePlayList(av.transportState === AVTransport.Playing ? 0 : 1)
         }
 
         onItemsLoaded: {
             console.log("onItemsLoaded")
             playlist.setActiveUrl(av.currentURI)
-            //av.blockUriChanged(1000)
-            root.updatePlayList(false)
+            root.updatePlayList(0)
+            root.showLastItem()
         }
 
         onError: {
@@ -289,8 +310,12 @@ Page {
         }
 
         onActiveItemIndexChanged: {
-            if (activeItemIndex >= 0)
-                listView.positionViewAtIndex(activeItemIndex, ListView.Contain)
+            root.showActiveItem()
+        }
+
+        onPlayModeChanged: {
+            console.log("onPlayModeChanged")
+            root.updatePlayList(0)
         }
     }
 
@@ -298,10 +323,7 @@ Page {
         id: listView
 
         width: parent.width
-        //height: ppanel.open ? parent.height - ppanel.height : parent.height
         height: ppanel.open ? ppanel.y : parent.height
-
-        //Behavior on height { FadeAnimator {} }
 
         clip: true
 
@@ -312,7 +334,7 @@ Page {
         model: playlist
 
         header: PageHeader {
-            title: qsTr("Playlist")
+            title: root.deviceName.length > 0 ? root.deviceName : qsTr("Playlist")
         }
 
         VerticalScrollDecorator {}
@@ -330,6 +352,8 @@ Page {
         }
 
         PullDownMenu {
+            id: menu
+
             enabled: root.inited && !root.busy
 
             Item {
@@ -388,7 +412,7 @@ Page {
                 visible: av.inited
                 onClicked: {
                     playlist.clear()
-                    root.updatePlayList()
+                    root.updatePlayList(0)
                 }
             }
 
@@ -429,7 +453,7 @@ Page {
                     text: qsTr("Remove")
                     onClicked: {
                         playlist.remove(model.id)
-                        root.updatePlayList()
+                        root.updatePlayList(0)
                     }
                 }
 
@@ -456,31 +480,27 @@ Page {
     PlayerPanel {
         id: ppanel
 
-        open: av.controlable && !root.busy && root.status === PageStatus.Active
+        open: !menu.active && av.controlable &&
+              !root.busy && root.status === PageStatus.Active
 
-        prevEnabled: playlist.activeItemIndex > 0 ||
-                     (av.seekSupported && av.transportState === AVTransport.Playing)
-        nextEnabled: av.nextSupported && listView.count > 0
+        prevEnabled: (av.seekSupported &&
+                      av.transportState === AVTransport.Playing &&
+                      av.relativeTimePosition > 5) ||
+                     (playlist.playMode !== PlayListModel.PM_RepeatOne &&
+                      playlist.activeItemIndex > -1)
+
+        nextEnabled: playlist.playMode !== PlayListModel.PM_RepeatOne &&
+                     av.nextSupported && listView.count > 0
         forwardEnabled: av.seekSupported && av.transportState === AVTransport.Playing
         backwardEnabled: forwardEnabled
+
+        playMode: playlist.playMode
 
         av: av
         rc: rc
 
-        onHeightChanged: {
-            console.log("ppanel.height: " + height)
-        }
-
-        /*onYChanged: {
-            console.log("ppanel.y: " + y)
-        }*/
-
-        onOpenChanged: {
-            console.log("ppanel.open: " + open)
-        }
-
-        onExpandedChanged: {
-            console.log("ppanel.expanded: " + expanded)
+        onRunningChanged: {
+            root.showActiveItem()
         }
 
         onNextClicked: {
@@ -547,6 +567,22 @@ Page {
         onBackwardClicked: {
             var pos = av.relativeTimePosition - settings.forwardTime
             av.seek(pos < 0 ? 0 : pos)
+        }
+
+        onRepeatClicked: {
+            switch(playlist.playMode) {
+            case PlayListModel.PM_Normal:
+                playlist.playMode = PlayListModel.PM_RepeatAll
+                break;
+            case PlayListModel.PM_RepeatAll:
+                playlist.playMode = PlayListModel.PM_RepeatOne
+                break;
+            case PlayListModel.PM_RepeatOne:
+                playlist.playMode = PlayListModel.PM_Normal
+                break;
+            default:
+                playlist.playMode = PlayListModel.PM_Normal
+            }
         }
     }
 }

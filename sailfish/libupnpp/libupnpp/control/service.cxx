@@ -207,6 +207,9 @@ int Service::runAction(const SoapOutgoing& args, SoapIncoming& data)
                ixmlwPrintDoc(response) << endl);
         return UPNP_E_BAD_RESPONSE;
     }
+
+    //cout << "response: " << ixmlwPrintDoc(response) << endl;
+
     return UPNP_E_SUCCESS;
 }
 

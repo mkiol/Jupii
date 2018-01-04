@@ -53,6 +53,8 @@ void Directory::init()
         return;
     }
 
+    m_lib->setLogLevel(UPnPP::LibUPnP::LogLevelError);
+
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(4);
 
     if (m_directory == 0) {

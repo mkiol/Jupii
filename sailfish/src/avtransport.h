@@ -21,13 +21,14 @@
 class AVTransport : public Service
 {
     Q_OBJECT
-    Q_PROPERTY (QString currentURI READ getCurrentURI NOTIFY uriChanged)
-    Q_PROPERTY (QString currentPath READ getCurrentPath NOTIFY uriChanged)
-    Q_PROPERTY (QString nextURI READ getNextURI NOTIFY uriChanged)
-    Q_PROPERTY (QString nextPath READ getNextPath NOTIFY uriChanged)
+    Q_PROPERTY (QString currentURI READ getCurrentURI NOTIFY currentURIChanged)
+    Q_PROPERTY (QString currentPath READ getCurrentPath NOTIFY currentURIChanged)
+    Q_PROPERTY (QString nextURI READ getNextURI NOTIFY nextURIChanged)
+    Q_PROPERTY (QString nextPath READ getNextPath NOTIFY nextURIChanged)
 
     Q_PROPERTY (int transportState READ getTransportState NOTIFY transportStateChanged)
     Q_PROPERTY (int transportStatus READ getTransportStatus NOTIFY transportStatusChanged)
+    Q_PROPERTY (int playMode READ getPlayMode NOTIFY playModeChanged)
     Q_PROPERTY (int numberOfTracks READ getNumberOfTracks NOTIFY numberOfTracksChanged)
     Q_PROPERTY (int currentTrack READ getCurrentTrack NOTIFY currentTrackChanged)
     Q_PROPERTY (int currentTrackDuration READ getCurrentTrackDuration NOTIFY currentTrackDurationChanged)
@@ -47,6 +48,7 @@ class AVTransport : public Service
     Q_PROPERTY (bool previousSupported READ getPreviousSupported NOTIFY transportActionsChanged)
     Q_PROPERTY (bool seekSupported READ getSeekSupported NOTIFY transportActionsChanged)
     Q_PROPERTY (bool stopSupported READ getStopSupported NOTIFY transportActionsChanged)
+    //Q_PROPERTY (bool playModeSupported READ getStopSupported NOTIFY transportActionsChanged)
 
     Q_PROPERTY (bool playable READ getPlayable NOTIFY controlableChanged)
     Q_PROPERTY (bool stopable READ getStopable NOTIFY controlableChanged)
@@ -62,6 +64,11 @@ public:
     enum TransportStatus {TPS_Unknown, TPS_Ok, TPS_Error};
     Q_ENUM(TransportStatus)
 
+    enum PlayMode {PM_Unknown, PM_Normal, PM_Shuffle, PM_RepeatOne,
+                   PM_RepeatAll, PM_Random, PM_Direct1
+                  };
+    Q_ENUM(PlayMode)
+
     explicit AVTransport(QObject *parent = nullptr);
 
     Q_INVOKABLE void play();
@@ -72,10 +79,11 @@ public:
     Q_INVOKABLE void seek(int value);
     Q_INVOKABLE void setLocalContent(const QString &cid, const QString &nid);
     Q_INVOKABLE void asyncUpdate(int initDelay = 0, int postDelay = 500);
-    Q_INVOKABLE void blockUriChanged(int time = 500);
+    Q_INVOKABLE void setPlayMode(int value);
 
     int getTransportState();
     int getTransportStatus();
+    int getPlayMode();
     int getNumberOfTracks();
     int getCurrentTrack();
     int getCurrentTrackDuration();
@@ -108,6 +116,7 @@ public:
 signals:
     void transportStateChanged();
     void transportStatusChanged();
+    void playModeChanged();
     void numberOfTracksChanged();
     void currentTrackChanged();
     void currentTrackDurationChanged();
@@ -115,7 +124,8 @@ signals:
     void absoluteTimePositionChanged();
     void currentMetaDataChanged();
     void currentAlbumArtChanged();
-    void uriChanged();
+    void currentURIChanged();
+    void nextURIChanged();
     void speedChanged();
     void transportActionsChanged();
     void updated();
@@ -132,6 +142,7 @@ private slots:
 private:
     int m_transportState = Unknown;
     int m_transportStatus = TPS_Unknown;
+    int m_playmode = PM_Unknown;
     int m_numberOfTracks = 0;
     int m_currentTrack = 0;
     int m_currentTrackDuration = 0;
@@ -150,7 +161,8 @@ private:
 
     QString m_currentURI = "";
     QString m_nextURI = "";
-    bool m_emitUriChanged = false;
+    bool m_emitCurrentUriChanged = false;
+    bool m_emitNextUriChanged = false;
     bool m_blockEmitUriChanged = false;
     bool m_pendingControlableSignal = false;
 
@@ -168,17 +180,20 @@ private:
     UPnPClient::AVTransport* s();
     void fakeUpdateRelativeTimePosition();
     void updateTransportInfo();
+    void updateTransportSettings();
     void updatePositionInfo();
     void updateMediaInfo();
     void updateCurrentTransportActions();
     void update(int initDelay = 500, int postDelay = 500);
     void asyncUpdateTransportInfo();
+    void asyncUpdateTransportSettings();
     void asyncUpdatePositionInfo();
     void asyncUpdateMediaInfo();
     void asyncUpdateCurrentTransportActions();
     void updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta);
     void needTimerCheck();
     void controlableChangedHandler();
+    void blockUriChanged(int time = 500);
     std::string type() const;
 };
 

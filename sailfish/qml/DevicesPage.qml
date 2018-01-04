@@ -92,7 +92,8 @@ Page {
                     text: qsTr("Connect")
                     visible: model.supported
                     onClicked: {
-                        pageStack.push(Qt.resolvedUrl("MediaRendererPage.qml"),{deviceId: model.id})
+                        pageStack.push(Qt.resolvedUrl("MediaRendererPage.qml"),
+                                       {deviceId: model.id, deviceName: model.title})
                     }
                 }
 
@@ -106,7 +107,8 @@ Page {
 
             onClicked: {
                 if (model.supported)
-                    pageStack.push(Qt.resolvedUrl("MediaRendererPage.qml"),{deviceId: model.id})
+                    pageStack.push(Qt.resolvedUrl("MediaRendererPage.qml"),
+                                   {deviceId: model.id, deviceName: model.title})
                 else
                     pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),{udn: model.id})
             }

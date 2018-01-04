@@ -360,7 +360,7 @@ int AVTransport::getTransportSettings(TransportSettings& info, int instanceID)
         return ret;
     }
     string s;
-    data.get("PlayMedia", &s);
+    data.get("PlayMode", &s);
     info.playmode = stringToPlayMode(s);
     data.get("RecQualityMode", &info.recqualitymode);
     return 0;

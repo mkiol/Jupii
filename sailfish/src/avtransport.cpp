@@ -25,7 +25,7 @@ AVTransport::AVTransport(QObject *parent) :
 {
     QObject::connect(this, &AVTransport::transportStateChanged,
                      this, &AVTransport::transportStateHandler);
-    QObject::connect(this, &AVTransport::uriChanged,
+    QObject::connect(this, &AVTransport::currentURIChanged,
                      this, &AVTransport::trackChangedHandler);
     QObject::connect(this, &AVTransport::preControlableChanged,
                      this, &AVTransport::controlableChangedHandler);
@@ -87,9 +87,6 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
         QString value = _value.toString();
 
         if (name == "AVTransportURI" || name == "CurrentTrackURI") {
-            //qDebug() << "old currentURI:" << m_currentURI;
-            //qDebug() << "new currentURI:" << value;
-
             if (m_currentURI != value) {
 
                 if (m_blockEmitUriChanged) {
@@ -99,19 +96,19 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
 
                 m_currentURI = value;
 
-                if (m_blockEmitUriChanged) {
-                    qDebug() << "emit URIChanged triggered by currentURI blocked";
+                if (m_emitCurrentUriChanged) {
+                    qDebug() << "pending currentURI change exists";
                     return;
                 }
 
-                m_emitUriChanged = true;
+                m_emitCurrentUriChanged = true;
 
                 startTask([this]() {
                     tsleep();
-                    if (m_emitUriChanged) {
-                        m_emitUriChanged = false;
-                        qDebug() << "emit URIChanged triggered by currentURI";
-                        emit uriChanged();
+                    if (m_emitCurrentUriChanged) {
+                        m_emitCurrentUriChanged = false;
+                        qDebug() << "emitting currentURI change";
+                        emit currentURIChanged();
                         emit preControlableChanged();
                     }
                 });
@@ -119,9 +116,6 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
         }
 
         if (name == "NextAVTransportURI") {
-            //qDebug() << "old nextURI:" << m_nextURI;
-            //qDebug() << "new nextURI:" << value;
-
             if (m_nextURI != value) {
 
                 if (m_blockEmitUriChanged) {
@@ -131,20 +125,23 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
 
                 m_nextURI = value;
 
-                if (m_blockEmitUriChanged) {
-                    qDebug() << "emit URIChanged triggered by nextURI blocked";
+                if (m_emitNextUriChanged) {
+                    qDebug() << "pending nextURI change exists";
                     return;
                 }
 
-                m_emitUriChanged = true;
+                m_emitNextUriChanged = true;
+
+                qDebug() << "nextURI change delayed";
 
                 startTask([this]() {
                     tsleep();
-                    if (m_emitUriChanged) {
-                        m_emitUriChanged = false;
-                        qDebug() << "emit URIChanged triggered by nextURI";
-                        emit uriChanged();
-                        emit preControlableChanged();
+                    if (m_emitNextUriChanged) {
+                        m_emitNextUriChanged = false;
+                        qDebug() << "emiting nextURIChanged";
+                        emit nextURIChanged();
+                        emit transportActionsChanged();
+                        //emit preControlableChanged();
                     }
                 });
             }
@@ -187,7 +184,8 @@ void AVTransport::postDeInit()
     m_currentTransportActions = 0;
     m_futureSeek = 0;
 
-    emit uriChanged();
+    emit currentURIChanged();
+    emit nextURIChanged();
     emit transportStateChanged();
     emit transportStatusChanged();
     emit currentTrackChanged();
@@ -237,6 +235,8 @@ void AVTransport::handleApplicationStateChanged(Qt::ApplicationState state)
 {
     //qDebug() << "State changed:" << state;
     //qDebug() << "--> aUPDATE handleApplicationStateChanged";
+
+    Q_UNUSED(state)
     asyncUpdate();
 }
 
@@ -277,6 +277,11 @@ int AVTransport::getTransportState()
 int AVTransport::getTransportStatus()
 {
     return m_transportStatus;
+}
+
+int AVTransport::getPlayMode()
+{
+    return m_playmode;
 }
 
 int AVTransport::getNumberOfTracks()
@@ -484,16 +489,16 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
             do_next = s_nURI != m_nextURI;
             if (!do_next) {
                 qWarning() << "Content URL is the same as nextURI";
-            } else {
+            } /*else {
                 // Don't update nextURI if the same as currentURI
                 do_next = s_nURI != m_currentURI;
                 if (!do_next)
                     qWarning() << "Next content URL is the same as currentURI";
-            }
+            }*/
         }
 
         if (do_next || do_current || do_play || do_clearNext) {
-            blockUriChanged(1000);
+            blockUriChanged(1500);
         } else {
             qWarning() << "Nothing to update";
             return;
@@ -751,6 +756,34 @@ void AVTransport::previous()
     });
 }
 
+void AVTransport::setPlayMode(int value)
+{
+    if (s() == nullptr) {
+        qWarning() << "Service is not inited";
+        return;
+    }
+
+    startTask([this, value](){
+        qDebug() << "setPlayMode:" << value;
+        auto srv = s();
+        if (srv == nullptr)
+            return;
+
+        m_updateMutex.lock();
+
+        qDebug() << "Calling: setPlayMode";
+
+        auto pm = static_cast<UPnPClient::AVTransport::PlayMode>(value);
+
+        if (handleError(srv->setPlayMode(pm))) {
+            m_updateMutex.unlock();
+        } else {
+            qWarning() << "Error response for setPlayMode(" << value << ")";
+            m_updateMutex.unlock();
+        }
+    });
+}
+
 void AVTransport::seek(int value)
 {
     m_futureSeek = value < 0 ? 0 :
@@ -824,6 +857,7 @@ void AVTransport::update(int initDelay, int postDelay)
     updateTransportInfo();
     updateMediaInfo();
     updateCurrentTransportActions();
+    //updateTransportSettings();
 
     //qDebug() << "transportState:" << m_transportState;
 
@@ -999,6 +1033,8 @@ void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta)
         emit currentAlbumArtChanged();
     }
 
+    // -- debug --
+
     qDebug() << "Current meta:";
     qDebug() << "  id:" << QString::fromStdString(trackmeta.m_id);
     qDebug() << "  pid:" << QString::fromStdString(trackmeta.m_pid);
@@ -1020,6 +1056,8 @@ void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta)
     for (auto const& x : trackmeta.m_resources) {
         qDebug() << "   " << QString::fromStdString(x.m_uri);
     }
+
+    // ---
 }
 
 void AVTransport::asyncUpdateMediaInfo()
@@ -1056,28 +1094,27 @@ void AVTransport::updateMediaInfo()
             emit numberOfTracksChanged();
         }
 
-        bool do_actionChanged = false;
-
         QString cururi = QString::fromStdString(mi.cururi);
         qDebug() << "old currentURI:" << m_currentURI;
         qDebug() << "new currentURI:" << cururi;
         if (m_currentURI != cururi) {
             m_currentURI = cururi;
-            do_actionChanged = true;
+            emit currentURIChanged();
+            emit preControlableChanged();
         }
 
         QString nexturi = QString::fromStdString(mi.nexturi);
         qDebug() << "old nextURI:" << m_nextURI;
         qDebug() << "new nextURI:" << nexturi;
         if (m_nextURI != nexturi) {
-            m_nextURI = nexturi;
-            do_actionChanged = true;
-        }
-
-        if (do_actionChanged) {
-            emit uriChanged();
-            emit transportActionsChanged();
-            emit preControlableChanged();
+            if (m_nextURI.isEmpty()) {
+                m_nextURI = nexturi;
+                emit nextURIChanged();
+                emit transportActionsChanged();
+            } else {
+                m_nextURI = nexturi;
+                emit nextURIChanged();
+            }
         }
 
         updateTrackMeta(mi.curmeta);
@@ -1093,7 +1130,10 @@ void AVTransport::updateMediaInfo()
         if (!m_currentURI.isEmpty() || !m_nextURI.isEmpty()) {
             m_currentURI.clear();
             m_nextURI.clear();
-            emit uriChanged();
+            emit currentURIChanged();
+            emit nextURIChanged();
+            emit preControlableChanged();
+            emit transportActionsChanged();
         }
 
         m_id.clear();
@@ -1148,6 +1188,40 @@ void AVTransport::updateCurrentTransportActions()
         emit transportActionsChanged();
         emit preControlableChanged();
     }
+}
+
+void AVTransport::updateTransportSettings()
+{
+    auto srv = s();
+    if (srv == nullptr)
+        return;
+
+    UPnPClient::AVTransport::TransportSettings ts;
+
+    if (handleError(srv->getTransportSettings(ts))) {
+        qDebug() << "TransportSettings:";
+        qDebug() << "  playmode:" << ts.playmode;
+        qDebug() << "  recqualitymode:" << QString::fromStdString(ts.recqualitymode);
+    } else {
+        qWarning() << "Unable to get Transport Settings";
+    }
+
+    if (m_playmode != ts.playmode) {
+        m_playmode = ts.playmode;
+        emit playModeChanged();
+    }
+}
+
+void AVTransport::asyncUpdateTransportSettings()
+{
+    if (s() == nullptr) {
+        qWarning() << "Service is not inited";
+        return;
+    }
+
+    startTask([this](){
+        updateTransportSettings();
+    });
 }
 
 void AVTransport::blockUriChanged(int time)

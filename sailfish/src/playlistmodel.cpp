@@ -50,6 +50,19 @@ void PlayListModel::load()
         emit itemsLoaded(n_ids);
 }
 
+int PlayListModel::getPlayMode() const
+{
+    return m_playMode;
+}
+
+void PlayListModel::setPlayMode(int value)
+{
+    if (value != m_playMode) {
+        m_playMode = value;
+        emit playModeChanged();
+    }
+}
+
 int PlayListModel::getActiveItemIndex() const
 {
     return m_activeItemIndex;
@@ -127,6 +140,9 @@ bool PlayListModel::addId(const QString& id)
 
 void PlayListModel::setActiveId(const QString &id)
 {
+    if (id == activeId())
+        return;
+
     int len = m_list.length();
 
     for (int i = 0; i < len; ++i) {
@@ -211,31 +227,60 @@ bool PlayListModel::remove(const QString &id)
 
 QString PlayListModel::nextActiveId() const
 {
+    if (m_activeItemIndex < 0)
+        return QString();
+
+    int l = m_list.length();
+    if (l == 0)
+        return QString();
+
+    if (m_playMode == PM_RepeatOne)
+        return m_list.at(m_activeItemIndex)->id();
+
     int nextIndex = m_activeItemIndex + 1;
 
-    if (m_activeItemIndex > -1 && m_list.length() > nextIndex) {
-        auto fi = m_list.at(nextIndex);
-        return fi->id();
-    }
+    if (nextIndex < l) {
+        return m_list.at(nextIndex)->id();
+    } else if (m_playMode == PM_RepeatAll)
+        return m_list.first()->id();
 
     return QString();
 }
 
 QString PlayListModel::prevActiveId() const
 {
+    if (m_activeItemIndex < 0)
+        return QString();
+
+    int l = m_list.length();
+    if (l == 0)
+        return QString();
+
+    if (m_playMode == PM_RepeatOne)
+        return m_list.at(m_activeItemIndex)->id();
+
     int prevIndex = m_activeItemIndex - 1;
 
-    if (prevIndex > -1 && m_list.length() > m_activeItemIndex) {
-        auto fi = m_list.at(prevIndex);
-        return fi->id();
+    if (prevIndex < 0) {
+        if (m_playMode == PM_RepeatAll)
+            prevIndex = l - 1;
+        else
+            return QString();
     }
 
-    return QString();
+    return m_list.at(prevIndex)->id();
 }
 
 
 QString PlayListModel::nextId(const QString &id) const
 {
+    int l = m_list.length();
+    if (l == 0)
+        return QString();
+
+    if (m_playMode == PM_RepeatOne)
+        return id;
+
     bool nextFound = false;
 
     for (auto li : m_list) {
@@ -244,6 +289,9 @@ QString PlayListModel::nextId(const QString &id) const
         if(li->id() == id)
             nextFound = true;
     }
+
+    if (nextFound && m_playMode == PM_RepeatAll)
+        return m_list.first()->id();
 
     return QString();
 }

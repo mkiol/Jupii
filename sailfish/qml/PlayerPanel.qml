@@ -10,6 +10,7 @@ import Sailfish.Silica 1.0
 
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
+import harbour.jupii.PlayListModel 1.0
 
 DockedPanel_ {
     id: root
@@ -18,11 +19,12 @@ DockedPanel_ {
     property var rc
 
     property bool full: false
-
+    property int playMode: PlayListModel.PM_Normal
     property alias nextEnabled: nextButton.enabled
     property alias prevEnabled: prevButton.enabled
     property alias forwardEnabled: forwardButton.enabled
     property alias backwardEnabled: backwardButton.enabled
+    property alias playmodeEnabled: playmodeButton.enabled
 
     property alias trackPositionSlider: trackPositionSlider
 
@@ -219,6 +221,16 @@ DockedPanel_ {
                 anchors.verticalCenter: parent.verticalCenter
                 icon.source: "image://theme/icon-m-next"
                 onClicked: nextClicked()
+            }
+
+            IconButton {
+                id: playmodeButton
+                width: parent.size; height: parent.size
+                anchors.verticalCenter: parent.verticalCenter
+                icon.source: root.playMode === PlayListModel.PM_RepeatAll ? "image://theme/icon-m-repeat" :
+                             root.playMode === PlayListModel.PM_RepeatOne ? "image://theme/icon-m-repeat-single" :
+                                                                            "image://icons/icon-m-norepeat"
+                onClicked: repeatClicked()
             }
         }
     }

@@ -39,6 +39,8 @@ SilicaFlickable {
     id: panel
 
     readonly property bool expanded: open || horizontalAnimation.running || verticalAnimation.running
+    readonly property bool running: horizontalAnimation.running || verticalAnimation.running
+
     property bool open
     readonly property bool moving: horizontalAnimation.running || verticalAnimation.running || mouseArea.drag.active
     property int dock: Dock.Bottom
@@ -224,7 +226,6 @@ SilicaFlickable {
         }*/
 
         onClicked: {
-            console.log("Clicked!")
             if (full)
                 panel.requestCompact()
             else
