@@ -159,7 +159,7 @@ DockedPanel_ {
                         horizontalAlignment: Text.AlignLeft
                         opacity: text.length > 0 ? 1.0 : 0.0
                         visible: opacity > 0.0
-                        Behavior on opacity { FadeAnimation {} }
+                        Behavior on opacity { FadeAnimator {} }
 
                         text: av.currentAuthor
                     }
@@ -175,9 +175,21 @@ DockedPanel_ {
                     }
 
                     icon.source: av.transportState !== AVTransport.Playing ?
-                                     "image://theme/icon-l-play" : "image://theme/icon-l-pause"
+                                     "image://theme/icon-l-play" :
+                                     "image://theme/icon-l-pause"
                     enabled: av.controlable
                     onClicked: togglePlayClicked()
+
+                    ProgressCircle {
+                        anchors.fill: parent
+                        value: av.relativeTimePosition / av.currentTrackDuration
+                        progressColor: Theme.highlightColor
+                        backgroundColor: "transparent"
+                        enabled: !root.full && av.controlable
+                        opacity: enabled ? 0.4 : 0.0
+                        visible: opacity > 0.0
+                        Behavior on opacity { FadeAnimator{} }
+                    }
                 }
             }
         }

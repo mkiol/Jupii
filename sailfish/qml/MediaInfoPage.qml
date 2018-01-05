@@ -20,16 +20,12 @@ Page {
 
     SilicaFlickable {
         anchors.fill: parent
-
         contentHeight: column.height
 
         Column {
             id: column
 
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
+            width: root.width
             spacing: Theme.paddingLarge
 
             Item {
@@ -42,14 +38,13 @@ Page {
                     width: parent.width
                     height: {
                         if (!root.imgOk)
-                            return 0
+                            return 1
 
                         var w = parent.width
                         var ratio = w / implicitWidth
                         var h = implicitHeight * ratio
                         return h > w ? w : h
                     }
-                    Behavior on height { FadeAnimation {} }
 
                     fillMode: Image.PreserveAspectCrop
 
@@ -61,59 +56,47 @@ Page {
                     direction: OpacityRamp.BottomToTop
                     offset: root.imgOk ? 0.5 : -0.5
                     slope: 1.8
-                    Behavior on offset { FadeAnimation {} }
                 }
 
                 PageHeader {
                     id: header
-
-                    title: qsTr("Media details")
+                    title: qsTr("Current item details")
                 }
             }
 
             Column {
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                }
+                width: root.width
                 spacing: Theme.paddingMedium
 
-                AttValue {
-                    att: qsTr("Title")
+                DetailItem {
+                    label: qsTr("Title")
                     value: root.av.currentTitle
+                    visible: value.length > 0
                 }
 
-                AttValue {
-                    att: qsTr("Author")
+                DetailItem {
+                    label: qsTr("Author")
                     value: root.av.currentAuthor
+                    visible: value.length > 0
                 }
 
-                AttValue {
-                    att: qsTr("Album")
+                DetailItem {
+                    label: qsTr("Album")
                     value: root.av.currentAlbum
+                    visible: value.length > 0
                 }
 
-                AttValue {
-                    att: qsTr("Duration")
+                DetailItem {
+                    label: qsTr("Duration")
                     value: utils.secToStr(root.av.currentTrackDuration)
+                    visible: root.av.currentTrackDuration > 0
                 }
 
-                AttValue {
-                    att: qsTr("Description")
+                DetailItem {
+                    label: qsTr("Description")
                     value: root.av.currentDescription
+                    visible: value.length > 0
                 }
-
-                /*AttValue {
-                    att: qsTr("Path")
-                    value: root.av.currentPath
-                    visible: root.showPath
-                }
-
-                AttValue {
-                    att: qsTr("URL")
-                    value: root.av.currentURI
-                    visible: !root.showPath
-                }*/
             }
 
             Spacer {}

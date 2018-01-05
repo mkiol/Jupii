@@ -18,11 +18,8 @@ Page {
 
         Column {
             id: content
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
 
+            width: root.width
             spacing: Theme.paddingMedium
 
             PageHeader {
@@ -30,12 +27,48 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("1.0.0")
+                text: qsTr("Version %1").arg("0.9.2")
+            }
+
+            LogItem {
+                title: "Repeat play mode"
+                description: "Items on the playlist can be playbacked in " +
+                             "Normal, Repeat-All or Repeat-One mode."
+            }
+
+            LogItem {
+                title: "Multi-item pickers"
+                description: "Music, Video, Image or File pickers support " +
+                             "selection of multiple items."
+            }
+
+            LogItem {
+                title: "Start with last playlist"
+                description: "When Jupii connects to a device, the last saved " +
+                             "playlist will be automatically loaded. " +
+                             "If you don't like this feature it can be disabled " +
+                             "in the settings."
+            }
+
+            LogItem {
+                title: "D-Bus API"
+                description: "Jupii exposes simple D-Bus service. It can be use " +
+                             "to make integration with other Sailfish OS applications."
+            }
+
+            LogItem {
+                title: "Improvements of the player UI"
+                description: "Player bottom panel has more compact look. " +
+                             "If needed, it can be also expanded to the full size."
+            }
+
+            SectionHeader {
+                text: qsTr("Version %1").arg("0.9.1")
             }
 
             LogItem {
                 title: "Initial release"
-                description: "This is initial release of Jupii.";
+                description: "This is initial public release of Jupii.";
             }
 
             Spacer {}

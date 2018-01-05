@@ -442,21 +442,13 @@ Page {
             title.color: primaryColor
 
             onClicked: {
-                if (!model.active)
-                    root.playItem(model.id)
-                else if (av.transportState !== AVTransport.Playing)
+                if (model.active)
                     root.togglePlay()
+                else
+                    root.playItem(model.id)
             }
 
             menu: ContextMenu {
-                MenuItem {
-                    text: qsTr("Remove")
-                    onClicked: {
-                        playlist.remove(model.id)
-                        root.updatePlayList(0)
-                    }
-                }
-
                 MenuItem {
                     text: qsTr("Play")
                     visible: av.transportState !== AVTransport.Playing || !model.active
@@ -465,6 +457,22 @@ Page {
                             root.playItem(model.id)
                         else if (av.transportState !== AVTransport.Playing)
                             root.togglePlay()
+                    }
+                }
+
+                MenuItem {
+                    text: qsTr("Pause")
+                    visible: av.stopable && model.active
+                    onClicked: {
+                        root.togglePlay()
+                    }
+                }
+
+                MenuItem {
+                    text: qsTr("Remove")
+                    onClicked: {
+                        playlist.remove(model.id)
+                        root.updatePlayList(0)
                     }
                 }
             }
@@ -480,7 +488,8 @@ Page {
     PlayerPanel {
         id: ppanel
 
-        open: !menu.active && av.controlable &&
+        open: Qt.application.active &&
+              !menu.active && av.controlable &&
               !root.busy && root.status === PageStatus.Active
 
         prevEnabled: (av.seekSupported &&

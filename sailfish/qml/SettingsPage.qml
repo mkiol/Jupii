@@ -18,16 +18,22 @@ Page {
 
         Column {
             id: column
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-            }
 
+            width: root.width
             spacing: Theme.paddingMedium
 
             PageHeader {
                 title: qsTr("Settings")
+            }
+
+            TextSwitch {
+                automaticCheck: false
+                checked: settings.rememberPlaylist
+                text: qsTr("Start with last playlist")
+                description: qsTr("When Jupii connects to a device, the last saved playlist will be automatically loaded.")
+                onClicked: {
+                    settings.rememberPlaylist = !settings.rememberPlaylist
+                }
             }
 
             Slider {
@@ -42,16 +48,6 @@ Page {
 
                 onValueChanged: {
                     settings.forwardTime = value
-                }
-            }
-
-            TextSwitch {
-                automaticCheck: false
-                checked: settings.rememberPlaylist
-                text: qsTr("Remember last playlist")
-                //description: qsTr("")
-                onClicked: {
-                    settings.rememberPlaylist = !settings.rememberPlaylist
                 }
             }
 

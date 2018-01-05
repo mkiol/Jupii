@@ -196,10 +196,6 @@ SilicaFlickable {
 
         anchors.fill: parent
 
-        onHeightChanged: {
-            console.log("mouse heigh:" + height)
-        }
-
         /*drag {
             target: panel
             minimumX: !panel._isVertical ? mouseArea.drag.maximumX - panel.width : 0

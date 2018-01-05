@@ -9,12 +9,10 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 Label {
-    anchors.leftMargin: Theme.paddingLarge
-    anchors.rightMargin: Theme.paddingLarge
-    anchors.left: parent.left
-    anchors.right: parent.right
+    x: Theme.horizontalPageMargin
+    width: parent.width - 2*x
     wrapMode: Text.WordWrap
-    horizontalAlignment: Text.AlignHCenter
+    color: Theme.highlightColor
     font.pixelSize: Theme.fontSizeSmall
     onLinkActivated: {
         Qt.openUrlExternally(link);
