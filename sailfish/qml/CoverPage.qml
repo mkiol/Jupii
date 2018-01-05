@@ -14,7 +14,10 @@ CoverBackground {
     property bool playable: false
     property bool stopable: false
     property string image: ""
-    property string label: ""
+    property string title: ""
+    property string author: ""
+
+    property bool controlable: playable || stopable
 
     onStatusChanged: {
         if (status === Cover.Activating) {
@@ -28,15 +31,28 @@ CoverBackground {
                 root.image = Qt.binding(function() {
                     return app.player.image
                 })
-                root.label = Qt.binding(function() {
-                    return app.player.label
+                root.title = Qt.binding(function() {
+                    return app.player.title
+                })
+                root.author = Qt.binding(function() {
+                    return app.player.author
                 })
             }
         } else if (status === Cover.Deactivating) {
             root.playable = false
             root.stopable = false
             root.image = ""
-            root.label = ""
+            root.title = ""
+            root.author = ""
+        }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        opacity: 0.3
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#8200dd" }
+            GradientStop { position: 1.0; color: "#5a00f7" }
         }
     }
 
@@ -48,16 +64,50 @@ CoverBackground {
         fillMode: Image.PreserveAspectCrop
     }
 
-    CoverPlaceholder {
+    Item {
+        anchors.fill: parent
         width: Theme.iconSizeLarge
         height: Theme.iconSizeLarge
-        icon.source: "image://icons/icon-a-jupii"
-        icon.visible: bg.status !== Image.Ready
-        text: root.label === "" ? APP_NAME : root.label
+
+        Image {
+            id: image
+            y: Theme.paddingLarge
+            anchors.horizontalCenter: parent.horizontalCenter
+            opacity: 0.4
+            source: "image://icons/icon-a-jupii"
+            visible: bg.status !== Image.Ready
+        }
+
+        Column {
+            anchors.centerIn: parent
+            spacing: Theme.paddingSmall
+            width: parent.width - (screen.sizeCategory > Screen.Medium
+                                   ? 2*Theme.paddingMedium : 2*Theme.paddingLarge)
+
+            Label {
+                width: parent.width
+                color: Theme.primaryColor
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.Wrap
+                text: root.controlable ? root.title : APP_NAME
+            }
+
+            Label {
+                width: parent.width
+                color: Theme.secondaryColor
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.Wrap
+                //fontSizeMode: Text.Fit
+                text: root.author
+                visible: root.controlable
+            }
+        }
     }
 
     CoverActionList {
-        enabled: root.playable || root.stopable
+        enabled: root.controlable
         iconBackground: bg.status === Image.Ready
 
         CoverAction {
