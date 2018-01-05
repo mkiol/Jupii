@@ -98,7 +98,6 @@ public:
     Q_ENUM(PlayMode)
 
     explicit PlayListModel(QObject *parent = 0);
-    ~PlayListModel();
 
     Q_INVOKABLE void clear();
     Q_INVOKABLE QString firstId() const;

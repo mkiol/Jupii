@@ -18,12 +18,6 @@ PlayListModel::PlayListModel(QObject *parent) :
 {
 }
 
-PlayListModel::~PlayListModel()
-{
-    if (Settings::instance()->getRememberPlaylist())
-        save();
-}
-
 void PlayListModel::save()
 {
     QStringList ids;
@@ -82,8 +76,12 @@ void PlayListModel::addItems(const QStringList& paths)
         }
     }
 
-    if (!n_ids.isEmpty())
+    if (!n_ids.isEmpty()) {
         emit itemsAdded(n_ids);
+
+        if (Settings::instance()->getRememberPlaylist())
+            save();
+    }
 }
 
 bool PlayListModel::addId(const QString& id)
