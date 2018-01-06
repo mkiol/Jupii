@@ -11,6 +11,7 @@
 #include <QMap>
 #include <QStringList>
 #include <QByteArray>
+#include <QFile>
 
 #include <string>
 
@@ -53,7 +54,11 @@ void Directory::init()
         return;
     }
 
-    m_lib->setLogLevel(UPnPP::LibUPnP::LogLevelError);
+    // Delete old libupnpp log files
+    Utils::removeFile("/home/nemo/IUpnpErrFile.txt");
+    Utils::removeFile("/home/nemo/IUpnpInfoFile.txt");
+
+    m_lib->setLogFileName("", UPnPP::LibUPnP::LogLevelError);
 
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(4);
 

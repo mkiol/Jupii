@@ -29,6 +29,7 @@ public:
     static QString pathFromId(const QString &id);
     static QString cookieFromId(const QString &id);
     static QString randString(int len = 5);
+    static void removeFile(const QString &path);
     bool createCacheDir();
     bool writeToFile(const QString &filename, const QByteArray &data);
     bool readFromFile(const QString &filename, QByteArray &data);

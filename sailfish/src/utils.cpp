@@ -200,3 +200,10 @@ QString Utils::randString(int len)
 
    return rs;
 }
+
+void Utils::removeFile(const QString &path)
+{
+    QFile file(path);
+    if (file.exists())
+        file.remove();
+}
