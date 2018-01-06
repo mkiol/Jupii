@@ -28,6 +28,19 @@ Page {
             width: root.width
             spacing: Theme.paddingLarge
 
+            PullDownMenu {
+                id: menu
+
+                MenuItem {
+                    text: qsTr("Copy path")
+                    visible: root.av.currentPath.length > 0
+                    onClicked: {
+                        Clipboard.text = root.av.currentPath
+                        notification.show(qsTr("Path copied to the clipboard"))
+                    }
+                }
+            }
+
             Item {
                 width: parent.width
                 height: Math.max(image.height, header.height)
@@ -60,7 +73,7 @@ Page {
 
                 PageHeader {
                     id: header
-                    title: qsTr("Current item details")
+                    title: qsTr("Item details")
                 }
             }
 
@@ -95,6 +108,12 @@ Page {
                 DetailItem {
                     label: qsTr("Description")
                     value: root.av.currentDescription
+                    visible: value.length > 0
+                }
+
+                DetailItem {
+                    label: qsTr("Path")
+                    value: root.av.currentPath
                     visible: value.length > 0
                 }
             }

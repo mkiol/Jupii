@@ -132,6 +132,7 @@ bool PlayListModel::addId(const QString& id)
                            metaData.filename,
                            metaData.icon,
                            false,
+                           false,
                            this));
     return true;
 }
@@ -146,12 +147,22 @@ void PlayListModel::setActiveId(const QString &id)
     for (int i = 0; i < len; ++i) {
         auto fi = static_cast<FileItem*>(m_list.at(i));
 
-        bool active = fi->id() == id;
+        bool new_active = fi->id() == id;
 
-        fi->setActive(active);
+        if (fi->active() != new_active) {
+            fi->setActive(new_active);
+            if(new_active)
+                setActiveItemIndex(i);
+            emit activeItemChanged();
+        }
+    }
+}
 
-        if(active)
-            setActiveItemIndex(i);
+void PlayListModel::setToBeActiveIndex(int i)
+{
+    if (i < m_list.length()) {
+        auto fi = static_cast<FileItem*>(m_list.at(i));
+        fi->setToBeActive(true);
     }
 }
 
@@ -163,11 +174,24 @@ void PlayListModel::setActiveUrl(const QUrl &url)
 
 void PlayListModel::clear()
 {
+    bool active_removed = false;
+    if (m_activeItemIndex > -1) {
+        auto fi = static_cast<FileItem*>(m_list.at(m_activeItemIndex));
+        if (fi->active())
+            active_removed = true;
+    }
+
     if(rowCount() > 0) {
         removeRows(0, rowCount());
     }
 
     setActiveItemIndex(-1);
+
+    if (Settings::instance()->getRememberPlaylist())
+        save();
+
+    if(active_removed)
+        emit activeItemChanged();
 }
 
 QString PlayListModel::activeId() const
@@ -200,7 +224,7 @@ void PlayListModel::setActiveItemIndex(int index)
 {
     if (m_activeItemIndex != index) {
         m_activeItemIndex = index;
-        emit activeItemChanged();
+        emit activeItemIndexChanged();
     }
 }
 
@@ -210,14 +234,29 @@ bool PlayListModel::remove(const QString &id)
     if (index < 0)
         return false;
 
+    auto fi = static_cast<FileItem*>(m_list.at(index));
+
+    bool active_removed = false;
+    if (fi->active())
+        active_removed = true;
+
     bool ok = removeRow(index);
 
-    if (ok && m_activeItemIndex > -1) {
-        if (index == m_activeItemIndex) {
-            setActiveItemIndex(-1);
-        } else if (index < m_activeItemIndex) {
-            setActiveItemIndex(m_activeItemIndex - 1);
+    if (ok) {
+        if (m_activeItemIndex > -1) {
+            if (index == m_activeItemIndex)
+                setActiveItemIndex(-1);
+            else if (index < m_activeItemIndex)
+                setActiveItemIndex(m_activeItemIndex - 1);
         }
+
+        if (Settings::instance()->getRememberPlaylist())
+            save();
+
+        emit itemRemoved();
+
+        if(active_removed)
+            emit activeItemChanged();
     }
 
     return ok;
@@ -303,6 +342,7 @@ FileItem::FileItem(const QString &id,
                    const QString &title,
                    const QString &icon,
                    bool active,
+                   bool toBeActive,
                    QObject *parent) :
     ListItem(parent),
     m_id(id),
@@ -313,7 +353,8 @@ FileItem::FileItem(const QString &id,
     m_size(size),
     m_title(title),
     m_icon(icon),
-    m_active(active)
+    m_active(active),
+    m_tobeactive(toBeActive)
 {}
 
 QHash<int, QByteArray> FileItem::roleNames() const
@@ -328,6 +369,7 @@ QHash<int, QByteArray> FileItem::roleNames() const
     names[TitleRole] = "title";
     names[IconRole] = "icon";
     names[ActiveRole] = "active";
+    names[ToBeActiveRole] = "toBeActive";
     return names;
 }
 
@@ -352,6 +394,8 @@ QVariant FileItem::data(int role) const
         return icon();
     case ActiveRole:
         return active();
+    case ToBeActiveRole:
+        return toBeActive();
     default:
         return QVariant();
     }
@@ -359,8 +403,18 @@ QVariant FileItem::data(int role) const
 
 void FileItem::setActive(bool value)
 {
+    setToBeActive(false);
+
     if (m_active != value) {
         m_active = value;
+        emit dataChanged();
+    }
+}
+
+void FileItem::setToBeActive(bool value)
+{
+    if (m_tobeactive != value) {
+        m_tobeactive = value;
         emit dataChanged();
     }
 }

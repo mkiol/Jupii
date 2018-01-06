@@ -27,10 +27,7 @@ Page {
         Column {
             id: column
 
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
+            width: root.width
             spacing: Theme.paddingLarge
 
             PageHeader {
@@ -62,39 +59,36 @@ Page {
             }
 
             Column {
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                }
+                width: parent.width
                 spacing: Theme.paddingMedium
 
-                AttValue {
-                    att: qsTr("Name")
+                DetailItem {
+                    label: qsTr("Name")
                     value: deviceInfo.friendlyName
                 }
 
-                AttValue {
-                    att: qsTr("Device type")
+                DetailItem {
+                    label: qsTr("Device type")
                     value: deviceInfo.deviceType
                 }
 
-                AttValue {
-                    att: qsTr("Model name")
+                DetailItem {
+                    label: qsTr("Model name")
                     value: deviceInfo.modelName
                 }
 
-                AttValue {
-                    att: qsTr("Manufacturer")
+                DetailItem {
+                    label: qsTr("Manufacturer")
                     value: deviceInfo.manufacturer
                 }
 
-                AttValue {
-                    att: qsTr("UDN")
+                DetailItem {
+                    label: qsTr("UDN")
                     value: deviceInfo.udn
                 }
 
-                AttValue {
-                    att: qsTr("URL")
+                DetailItem {
+                    label: qsTr("URL")
                     value: deviceInfo.urlBase
                 }
             }

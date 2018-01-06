@@ -22,15 +22,14 @@ Page {
     property bool busy: av.busy || rc.busy
     property bool inited: av.inited && rc.inited
 
-    // Needed for Cover
+    // -- Needed for Cover --
     property bool playable: av.playable
     property bool stopable: av.stopable
     property string image: av.transportStatus === AVTransport.TPS_Ok ?
                                av.currentAlbumArtURI : ""
     property string title: av.currentTitle.length > 0 ? av.currentTitle : qsTr("Unknown")
     property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""
-
-    // --
+    // ----
 
     property bool _doPop: false;
 
@@ -85,7 +84,7 @@ Page {
         }
     }
 
-    function updatePlayList(mode) {
+    function updatePlayList(play) {
         var count = listView.count
 
         console.log("updatePlayList, count:" + count)
@@ -93,24 +92,22 @@ Page {
         if (count > 0) {
             var aid = playlist.activeId()
 
-            console.log("updatePlayList, mode:" + mode)
+            console.log("updatePlayList, play:" + play)
             console.log("updatePlayList, aid:" + aid)
 
             if (aid.length === 0) {
                 var fid = playlist.firstId()
                 console.log("updatePlayList, fid:" + fid)
 
-                switch (mode) {
-                case 0:
-                    if (fid.length > 0)
-                        av.setLocalContent("", fid)
-                    break;
-                case 1:
+                if (play) {
                     var sid = playlist.secondId()
                     console.log("updatePlayList, sid:" + sid)
                     av.setLocalContent(fid, sid)
-                    break;
+                } else {
+                    if (fid.length > 0)
+                        av.setLocalContent("", fid)
                 }
+
             } else {
                 var nid = playlist.nextActiveId()
                 console.log("updatePlayList, nid:" + nid)
@@ -119,23 +116,29 @@ Page {
         }
     }
 
-    function playItem(id) {
+    function playItem(id, index) {
         var count = listView.count
 
         if (count > 0) {
+            console.log("Play: index = " + index)
+            playlist.setToBeActiveIndex(index)
+
             var nid = playlist.nextId(id)
             av.setLocalContent(id,nid)
         }
     }
 
     function showActiveItem() {
+        console.log("showActiveItem")
         if (playlist.activeItemIndex >= 0)
             listView.positionViewAtIndex(playlist.activeItemIndex, ListView.Contain)
+        else
+            listView.positionViewAtBeginning()
     }
 
     function showLastItem() {
-        if (playlist.activeItemIndex >= 0)
-            listView.positionViewAtEnd();
+        console.log("showLastItem")
+        listView.positionViewAtEnd();
     }
 
     // -- Pickers --
@@ -231,10 +234,11 @@ Page {
             console.log(" av.stopSupported: " + av.stopSupported)
 
             // Media info page
-            if (controlable)
+            if (controlable) {
                 pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"),{av: av})
-            else
-                pageStack.popAttached(null, PageStackAction.Immediate);
+            } else {
+                pageStack.popAttached(null, PageStackAction.Immediate)
+            }
         }
 
         onRelativeTimePositionChanged: {
@@ -252,7 +256,8 @@ Page {
         onCurrentURIChanged: {
             console.log("onCurrentURIChanged")
             playlist.setActiveUrl(currentURI)
-            root.updatePlayList(av.transportState === AVTransport.Playing ? 0 : 1)
+            root.updatePlayList(av.transportState !== AVTransport.Playing &&
+                                listView.count === 1)
         }
 
         onNextURIChanged: {
@@ -262,12 +267,14 @@ Page {
                     playlist.playMode !== PlayListModel.PM_Normal) {
                 console.log("AVT switches to nextURI without currentURIChanged")
                 playlist.setActiveUrl(currentURI)
-                root.updatePlayList(av.transportState === AVTransport.Playing ? 0 : 1)
+                root.updatePlayList(av.transportState !== AVTransport.Playing &&
+                                    listView.count === 1)
             }
         }
 
         onTransportStateChanged: {
             console.log("onTransportStateChanged: " + transportState)
+            root.updatePlayList(false)
         }
 
         onTransportStatusChanged: {
@@ -281,9 +288,10 @@ Page {
             playlist.addItems([path])
             notification.show("Item added to Jupii playlist")
         }
+
         onRequestClearPlaylist: {
             playlist.clear()
-            root.updatePlayList(av.transportState === AVTransport.Playing ? 0 : 1)
+            root.updatePlayList(false)
         }
     }
 
@@ -294,14 +302,20 @@ Page {
             console.log("onItemsAdded")
             root.showLastItem()
             playlist.setActiveUrl(av.currentURI)
-            root.updatePlayList(av.transportState === AVTransport.Playing ? 0 : 1)
+            root.updatePlayList(av.transportState !== AVTransport.Playing &&
+                                listView.count === 1)
         }
 
         onItemsLoaded: {
             console.log("onItemsLoaded")
             playlist.setActiveUrl(av.currentURI)
-            root.updatePlayList(0)
-            root.showLastItem()
+            root.showActiveItem()
+            root.updatePlayList(false)
+        }
+
+        onItemRemoved: {
+            console.log("onItemRemoved")
+            root.updatePlayList(false)
         }
 
         onError: {
@@ -309,13 +323,13 @@ Page {
                 notification.show(qsTr("Item is already in the playlist"))
         }
 
-        onActiveItemIndexChanged: {
+        onActiveItemChanged: {
             root.showActiveItem()
         }
 
         onPlayModeChanged: {
             console.log("onPlayModeChanged")
-            root.updatePlayList(0)
+            root.updatePlayList(false)
         }
     }
 
@@ -412,7 +426,7 @@ Page {
                 visible: av.inited
                 onClicked: {
                     playlist.clear()
-                    root.updatePlayList(0)
+                    root.updatePlayList(false)
                 }
             }
 
@@ -438,6 +452,7 @@ Page {
             visible: root.inited && !root.busy
 
             icon.source: model.icon + "?" + primaryColor
+            icon.visible: !model.toBeActive
             title.text: model.name
             title.color: primaryColor
 
@@ -445,7 +460,7 @@ Page {
                 if (model.active)
                     root.togglePlay()
                 else
-                    root.playItem(model.id)
+                    root.playItem(model.id, model.index)
             }
 
             menu: ContextMenu {
@@ -453,10 +468,11 @@ Page {
                     text: qsTr("Play")
                     visible: av.transportState !== AVTransport.Playing || !model.active
                     onClicked: {
-                        if (!model.active)
-                            root.playItem(model.id)
-                        else if (av.transportState !== AVTransport.Playing)
+                        if (!model.active) {
+                            root.playItem(model.id, model.index)
+                        } else if (av.transportState !== AVTransport.Playing) {
                             root.togglePlay()
+                        }
                     }
                 }
 
@@ -472,9 +488,16 @@ Page {
                     text: qsTr("Remove")
                     onClicked: {
                         playlist.remove(model.id)
-                        root.updatePlayList(0)
                     }
                 }
+            }
+
+            BusyIndicator {
+                anchors.centerIn: icon
+                color: primaryColor
+                running: model.toBeActive
+                visible: model.toBeActive
+                size: BusyIndicatorSize.Medium
             }
         }
     }
@@ -509,7 +532,8 @@ Page {
         rc: rc
 
         onRunningChanged: {
-            root.showActiveItem()
+            if (open && !running)
+                root.showActiveItem()
         }
 
         onNextClicked: {

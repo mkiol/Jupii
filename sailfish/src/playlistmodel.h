@@ -37,7 +37,8 @@ public:
         SizeRole,
         TitleRole,
         IconRole,
-        ActiveRole
+        ActiveRole,
+        ToBeActiveRole
     };
 
 public:
@@ -51,6 +52,7 @@ public:
                       const QString &title,
                       const QString &icon,
                       bool active = false,
+                      bool toBeActive = false,
                       QObject *parent = 0);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
@@ -63,7 +65,9 @@ public:
     inline QString title() const { return m_title; }
     inline QString icon() const { return m_icon; }
     inline bool active() const { return m_active; }
+    inline bool toBeActive() const { return m_tobeactive; }
     void setActive(bool value);
+    void setToBeActive(bool value);
 
 private:
     QString m_id;
@@ -75,12 +79,13 @@ private:
     QString m_title;
     QString m_icon;
     bool m_active;
+    bool m_tobeactive;
 };
 
 class PlayListModel : public ListModel
 {
     Q_OBJECT
-    Q_PROPERTY (int activeItemIndex READ getActiveItemIndex NOTIFY activeItemChanged)
+    Q_PROPERTY (int activeItemIndex READ getActiveItemIndex NOTIFY activeItemIndexChanged)
     Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
 
 public:
@@ -113,16 +118,19 @@ public:
     void setPlayMode(int value);
 
 signals:
+    void itemRemoved();
     void itemsAdded(const QStringList& ids);
     void itemsLoaded(const QStringList& ids);
     void error(ErrorType code);
     void activeItemChanged();
+    void activeItemIndexChanged();
     void playModeChanged();
 
 public slots:
     void addItems(const QStringList& paths);
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
+    void setToBeActiveIndex(int i);
 
 private:
     int m_activeItemIndex = -1;

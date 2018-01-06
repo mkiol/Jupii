@@ -159,8 +159,6 @@ DockedPanel_ {
                         horizontalAlignment: Text.AlignLeft
                         opacity: text.length > 0 ? 1.0 : 0.0
                         visible: opacity > 0.0
-                        Behavior on opacity { FadeAnimator {} }
-
                         text: av.currentAuthor
                     }
                 }
@@ -188,7 +186,6 @@ DockedPanel_ {
                         enabled: !root.full && av.controlable
                         opacity: enabled ? 0.4 : 0.0
                         visible: opacity > 0.0
-                        Behavior on opacity { FadeAnimator{} }
                     }
                 }
             }
