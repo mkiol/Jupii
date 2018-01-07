@@ -67,7 +67,6 @@ OTHER_FILES += \
     qml/Spacer.qml \
     qml/Notification.qml \
     qml/DeviceInfoPage.qml \
-    qml/AttValue.qml \
     qml/SettingsPage.qml \
     qml/AboutPage.qml \
     qml/PaddedLabel.qml \
