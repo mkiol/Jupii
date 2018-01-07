@@ -26,20 +26,7 @@ Page {
             id: column
 
             width: root.width
-            spacing: Theme.paddingLarge
-
-            PullDownMenu {
-                id: menu
-
-                MenuItem {
-                    text: qsTr("Copy path")
-                    visible: root.av.currentPath.length > 0
-                    onClicked: {
-                        Clipboard.text = root.av.currentPath
-                        notification.show(qsTr("Path copied to the clipboard"))
-                    }
-                }
-            }
+            //spacing: Theme.paddingLarge
 
             Item {
                 width: parent.width
@@ -77,6 +64,8 @@ Page {
                 }
             }
 
+            Spacer {}
+
             Column {
                 width: root.width
                 spacing: Theme.paddingMedium
@@ -104,18 +93,31 @@ Page {
                     value: utils.secToStr(root.av.currentTrackDuration)
                     visible: root.av.currentTrackDuration > 0
                 }
+            }
 
-                DetailItem {
-                    label: qsTr("Description")
-                    value: root.av.currentDescription
-                    visible: value.length > 0
-                }
+            SectionHeader {
+                text: qsTr("Description")
+                visible: root.av.currentDescription.length > 0
+            }
 
-                DetailItem {
-                    label: qsTr("Path")
-                    value: root.av.currentPath
-                    visible: value.length > 0
-                }
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * Theme.horizontalPageMargin
+                text: root.av.currentDescription
+                visible: root.av.currentDescription.length > 0
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                color: Theme.highlightColor
+                font.pixelSize: Theme.fontSizeSmall
+            }
+
+            SectionHeader {
+                text: qsTr("Path")
+                visible: root.av.currentPath.length > 0
+            }
+
+            CopyableLabel {
+                text: root.av.currentPath
+                visible: root.av.currentPath.length > 0
             }
 
             Spacer {}

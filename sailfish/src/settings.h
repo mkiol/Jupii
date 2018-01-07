@@ -30,6 +30,7 @@ class Settings:
     Q_PROPERTY (bool imageSupported READ getImageSupported WRITE setImageSupported NOTIFY imageSupportedChanged)
     Q_PROPERTY (bool rememberPlaylist READ getRememberPlaylist WRITE setRememberPlaylist NOTIFY rememberPlaylistChanged)
     Q_PROPERTY (QStringList lastPlaylist READ getLastPlaylist WRITE setLastPlaylist NOTIFY lastPlaylistChanged)
+    Q_PROPERTY (bool useDbusVolume READ getUseDbusVolume WRITE setUseDbusVolume NOTIFY useDbusVolumeChanged)
 
 public:
     static Settings* instance();
@@ -48,6 +49,9 @@ public:
 
     void setRememberPlaylist(bool value);
     bool getRememberPlaylist();
+
+    void setUseDbusVolume(bool value);
+    bool getUseDbusVolume();
 
     void setFavDevices(const QHash<QString,QVariant> &devs);
     void addFavDevice(const QString &id);
@@ -77,6 +81,7 @@ signals:
     void forwardTimeChanged();
     void imageSupportedChanged();
     void rememberPlaylistChanged();
+    void useDbusVolumeChanged();
 
 private:
     QSettings settings;

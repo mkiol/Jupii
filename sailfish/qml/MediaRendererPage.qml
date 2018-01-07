@@ -8,6 +8,7 @@
 import QtQuick 2.4
 import Sailfish.Silica 1.0
 import Sailfish.Pickers 1.0
+import Nemo.DBus 2.0
 
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
@@ -31,7 +32,8 @@ Page {
     property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""
     // ----
 
-    property bool _doPop: false;
+    property bool _doPop: false
+    property int dbusVolume: -1
 
     Component.onCompleted: {
         app.player = root
@@ -45,9 +47,11 @@ Page {
     onInitedChanged: {
         dbus.canControl = inited
 
-        if (inited && listView.count === 0) {
-            if (settings.rememberPlaylist)
-                playlist.load()
+        if (inited) {
+            if (listView.count === 0) {
+                if (settings.rememberPlaylist)
+                    playlist.load()
+            }
         }
     }
 
@@ -141,6 +145,61 @@ Page {
         listView.positionViewAtEnd();
     }
 
+    // -- D-Bus volume --
+
+    onDbusVolumeChanged: {
+        console.log("onDbusVolumeChanged: " + dbusVolume)
+
+        if (rc.inited && settings.useDbusVolume)
+            rc.volume = dbusVolume
+    }
+
+    DBusInterface {
+        service: "com.nokia.profiled"
+        path: "/com/nokia/profiled"
+        iface: "com.nokia.profiled"
+
+        signalsEnabled: true
+
+        Component.onCompleted: getVolume()
+
+        function updateDbusVolume(obj) {
+            if (obj.length > 1) {
+                if (obj[0] === "ringing.alert.volume") {
+                    var volume = obj[1]
+                    if (volume >= 0 && volume <= 100) {
+                        //console.log("D-Bus volume is " + volume)
+                        root.dbusVolume = volume
+                    }
+                }
+            }
+        }
+
+        function profile_changed(changed, active, name, obj) {
+            /*console.log("com.nokia.profiled profile_changed signal")
+            console.log(" changed: " + changed)
+            console.log(" active: " + active)
+            console.log(" name: " + name)
+            console.log(" obj: " + obj)*/
+
+            if (name === "general" && obj.length === 1)
+                updateDbusVolume(obj[0])
+        }
+
+        function getVolume() {
+            typedCall("get_values", {"type": "s", "value": "general"},
+              function(result) {
+                  console.log("D-Bus getVolume call completed")
+                  var l = result.length
+                  for (var i = 0; i < l; i++)
+                      updateDbusVolume(result[i])
+              },
+              function() {
+                  console.log("D-Bus getVolume call failed")
+              })
+        }
+    }
+
     // -- Pickers --
 
     Component {
@@ -212,6 +271,11 @@ Page {
 
         onError: {
             handleError(code)
+        }
+
+        onInitedChanged: {
+            if (inited && settings.useDbusVolume)
+                volume = root.dbusVolume
         }
     }
 

@@ -51,6 +51,14 @@ Page {
             }
 
             LogItem {
+                title: "Volume control with hardware keys"
+                description: "Change volume level using phone hardware volume keys. " +
+                             "The volume level of the media device will be " +
+                             "set to be the same as the volume level of the ringing alert " +
+                             "on the phone. Option can be disabled in the settings."
+            }
+
+            LogItem {
                 title: "D-Bus API"
                 description: "Jupii exposes simple D-Bus service. It can be use " +
                              "to make integration with other Sailfish OS applications."
@@ -68,7 +76,7 @@ Page {
 
             LogItem {
                 title: "Initial release"
-                description: "This is initial public release of Jupii.";
+                description: "This is initial public release.";
             }
 
             Spacer {}

@@ -209,6 +209,19 @@ bool Settings::getImageSupported()
     return settings.value("imagesupported", false).toBool();
 }
 
+void Settings::setUseDbusVolume(bool value)
+{
+    if (getUseDbusVolume() != value) {
+        settings.setValue("usedbusvolume", value);
+        emit useDbusVolumeChanged();
+    }
+}
+
+bool Settings::getUseDbusVolume()
+{
+    return settings.value("usedbusvolume", true).toBool();
+}
+
 void Settings::setRememberPlaylist(bool value)
 {
     if (getRememberPlaylist() != value) {

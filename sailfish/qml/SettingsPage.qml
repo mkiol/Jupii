@@ -30,9 +30,23 @@ Page {
                 automaticCheck: false
                 checked: settings.rememberPlaylist
                 text: qsTr("Start with last playlist")
-                description: qsTr("When Jupii connects to a device, the last saved playlist will be automatically loaded.")
+                description: qsTr("When Jupii connects to a device, the last " +
+                                  "saved playlist will be automatically loaded.")
                 onClicked: {
                     settings.rememberPlaylist = !settings.rememberPlaylist
+                }
+            }
+
+            TextSwitch {
+                automaticCheck: false
+                checked: settings.useDbusVolume
+                text: qsTr("Volume control with hardware keys")
+                description: qsTr("Change volume level using phone hardware volume keys. " +
+                                  "The volume level of the media device will be " +
+                                  "set to be the same as the volume level of the ringing alert " +
+                                  "on the phone.")
+                onClicked: {
+                    settings.useDbusVolume = !settings.useDbusVolume
                 }
             }
 
