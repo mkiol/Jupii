@@ -11,7 +11,7 @@ Following features are currently supported:
 Jupii is a client of AVTransport and RenderingControl services. It connects to devices that implement MediaRenderer role. In order to share content from the mobile, Jupii starts local HTTP streaming server.
 
 ## D-Bus API
-Jupii exposes simple D-Bus service. It can be use to make integration with other Sailfish OS applications.
+Jupii exposes simple D-Bus service. It can be used to make integration with other Sailfish OS applications.
 
 The example 'proof of concept' [integration with gPodder](https://github.com/mkiol/Jupii/raw/master/screenshots/jupii-sailfish-gpodder.png) is available to download [here](https://github.com/mkiol/Jupii/raw/master/binary/harbour-org.gpodder.sailfish-4.6.0-1.noarch-jupii.rpm).
 

@@ -20,8 +20,11 @@ DbusApp::DbusApp(QObject *parent) :
 
     QDBusConnection con = QDBusConnection::sessionBus();
 
-    Q_ASSERT(con.registerService("org.jupii"));
-    Q_ASSERT(con.registerObject("/", this));
+    bool ret = con.registerService("org.jupii");
+    Q_ASSERT(ret);
+    ret = con.registerObject("/", this);
+    Q_ASSERT(ret);
+    Q_UNUSED(ret);
 }
 
 bool DbusApp::canControl()
