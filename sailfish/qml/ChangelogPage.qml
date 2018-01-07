@@ -61,7 +61,9 @@ Page {
             LogItem {
                 title: "D-Bus API"
                 description: "Jupii exposes simple D-Bus service. It can be use " +
-                             "to make integration with other Sailfish OS applications."
+                             "to make integration with other Sailfish OS applications. " +
+                             "The example 'proof of concept' intergation with gPodder " +
+                             "is available to download from Jupii GitHub page."
             }
 
             LogItem {
