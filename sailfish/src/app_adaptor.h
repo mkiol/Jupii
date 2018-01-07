@@ -33,6 +33,9 @@ class PlayerAdaptor: public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Introspection", ""
 "  <interface name=\"org.jupii.Player\">\n"
 "    <property access=\"read\" type=\"b\" name=\"canControl\"/>\n"
+"    <signal name=\"CanControlPropertyChanged\">\n"
+"      <arg direction=\"out\" type=\"b\" name=\"canControl\"/>\n"
+"    </signal>\n"
 "    <method name=\"appendPath\">\n"
 "      <arg direction=\"in\" type=\"s\" name=\"path\"/>\n"
 "    </method>\n"
@@ -51,6 +54,7 @@ public Q_SLOTS: // METHODS
     void appendPath(const QString &path);
     void clearPlaylist();
 Q_SIGNALS: // SIGNALS
+    void CanControlPropertyChanged(bool canControl);
 };
 
 #endif

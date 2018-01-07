@@ -38,6 +38,7 @@ void DbusApp::setCanControl(bool value)
     if (m_canControl != value) {
         m_canControl = value;
         emit canControlChanged();
+        emit CanControlPropertyChanged(m_canControl);
     }
 }
 

@@ -3,6 +3,9 @@
 <node>
     <interface name="org.jupii.Player">
         <property name="canControl" type="b" access="read" />
+        <signal name="CanControlPropertyChanged">
+          <arg type="b" name="canControl" direction="out"/>
+        </signal>
         <method name="appendPath">
             <arg name="path" type="s" direction="in" />
         </method>

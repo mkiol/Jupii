@@ -54,6 +54,7 @@ public Q_SLOTS: // METHODS
     }
 
 Q_SIGNALS: // SIGNALS
+    void CanControlPropertyChanged(bool canControl);
 };
 
 namespace org {

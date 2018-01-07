@@ -24,6 +24,7 @@ signals:
     void requestAppendPath(const QString& path);
     void requestClearPlaylist();
     void canControlChanged();
+    void CanControlPropertyChanged(bool canControl);
 
 public slots:
     void appendPath(const QString& path);
