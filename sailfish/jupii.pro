@@ -17,8 +17,8 @@ include(qhttpserver/qhttpserver.pri)
 include(taglib/taglib.pri)
 
 HEADERS += \
-    src/app_adaptor.h \
-    src/app_interface.h \
+    src/dbus_jupii_adaptor.h \
+    src/dbus_tracker_inf.h \
     src/utils.h \
     src/listmodel.h \
     src/devicemodel.h \
@@ -33,11 +33,15 @@ HEADERS += \
     src/deviceinfo.h \
     src/iconprovider.h \
     src/playlistmodel.h \
-    src/dbusapp.h
+    src/dbusapp.h \
+    src/tracker.h \
+    src/trackercursor.h \
+    src/albummodel.h \
+    src/trackmodel.h
 
 SOURCES += \
-    src/app_adaptor.cpp \
-    src/app_interface.cpp \
+    src/dbus_jupii_adaptor.cpp \
+    src/dbus_tracker_inf.cpp \
     src/main.cpp \
     src/utils.cpp \
     src/listmodel.cpp \
@@ -53,7 +57,11 @@ SOURCES += \
     src/deviceinfo.cpp \
     src/iconprovider.cpp \
     src/playlistmodel.cpp \
-    src/dbusapp.cpp
+    src/dbusapp.cpp \
+    src/tracker.cpp \
+    src/trackercursor.cpp \
+    src/albummodel.cpp \
+    src/trackmodel.cpp
 
 OTHER_FILES += \
     rpm/$${TARGET}.yaml \
@@ -79,7 +87,8 @@ OTHER_FILES += \
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 
-system(qdbusxml2cpp dbus/org.jupii.xml -a src/app_adaptor -p src/app_interface)
+system(qdbusxml2cpp dbus/org.jupii.xml -a src/dbus_jupii_adaptor)
+system(qdbusxml2cpp dbus/org.freedesktop.Tracker1.Steroids.xml -p src/dbus_tracker_inf)
 
 # to disable building translations every time, comment out the
 # following CONFIG line
@@ -94,3 +103,8 @@ system(qdbusxml2cpp dbus/org.jupii.xml -a src/app_adaptor -p src/app_interface)
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images
 INSTALLS += images
+
+DISTFILES += \
+    qml/AlbumsPage.qml \
+    qml/TracksPage.qml \
+    qml/DoubleListItem.qml

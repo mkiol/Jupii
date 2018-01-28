@@ -10,24 +10,32 @@
 
 #include <QObject>
 
-class DbusApp : public QObject
+#include "taskexecutor.h"
+
+class DbusProxy :
+        public QObject,
+        public TaskExecutor
 {
     Q_OBJECT
     Q_PROPERTY(bool canControl READ canControl WRITE setCanControl NOTIFY canControlChanged)
 
 public:
-    explicit DbusApp(QObject *parent = 0);
+    explicit DbusProxy(QObject *parent = 0);
     bool canControl();
     void setCanControl(bool value);
 
 signals:
     void requestAppendPath(const QString& path);
+    void requestPlayPath(const QString& path);
     void requestClearPlaylist();
     void canControlChanged();
+
+    // internal
     void CanControlPropertyChanged(bool canControl);
 
 public slots:
     void appendPath(const QString& path);
+    void playPath(const QString& path);
     void clearPlaylist();
 
 private:

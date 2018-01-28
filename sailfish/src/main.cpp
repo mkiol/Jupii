@@ -35,11 +35,13 @@
 #include "iconprovider.h"
 #include "playlistmodel.h"
 #include "dbusapp.h"
+#include "albummodel.h"
+#include "trackmodel.h"
 
 using namespace std;
 
 static const char* APP_NAME = "Jupii";
-static const char* APP_VERSION = "0.9.2";
+static const char* APP_VERSION = "0.9.3";
 static const char* AUTHOR = "Michal Kosciesza <michal@mkiol.net>";
 static const char* PAGE = "https://github.com/mkiol/Jupii";
 static const char* LICENSE = "http://mozilla.org/MPL/2.0/";
@@ -59,6 +61,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<AVTransport>("harbour.jupii.AVTransport", 1, 0, "AVTransport");
     qmlRegisterType<DeviceInfo>("harbour.jupii.DeviceInfo", 1, 0, "DeviceInfo");
     qmlRegisterType<PlayListModel>("harbour.jupii.PlayListModel", 1, 0, "PlayListModel");
+    qmlRegisterType<AlbumModel>("harbour.jupii.AlbumModel", 1, 0, "AlbumModel");
+    qmlRegisterType<TrackModel>("harbour.jupii.TrackModel", 1, 0, "TrackModel");
     qRegisterMetaType<Service::ErrorType>("ErrorType");
 
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
@@ -81,8 +85,8 @@ int main(int argc, char *argv[])
     ContentServer* cserver = ContentServer::instance();
     context->setContextProperty("cserver", cserver);
 
-    DbusApp dbusApp;
-    view->rootContext()->setContextProperty("dbus", &dbusApp);
+    DbusProxy dbusProxy;
+    context->setContextProperty("dbus", &dbusProxy);
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
     view->show();

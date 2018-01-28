@@ -14,6 +14,7 @@ Page {
     property var musicPickerDialog
     property var videoPickerDialog
     property var imagePickerDialog
+    property var albumPickerPage
     property var filePickerPage
 
     SilicaFlickable {
@@ -39,6 +40,15 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(musicPickerDialog)
+                }
+            }
+
+            SimpleListItem {
+                title.text: qsTr("Music album")
+                icon.source: "image://theme/icon-m-file-audio?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+                onClicked: {
+                    pageStack.replace(albumPickerPage)
                 }
             }
 

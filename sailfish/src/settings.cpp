@@ -219,7 +219,7 @@ void Settings::setUseDbusVolume(bool value)
 
 bool Settings::getUseDbusVolume()
 {
-    return settings.value("usedbusvolume", true).toBool();
+    return settings.value("usedbusvolume", false).toBool();
 }
 
 void Settings::setRememberPlaylist(bool value)

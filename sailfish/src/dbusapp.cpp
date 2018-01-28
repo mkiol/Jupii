@@ -6,35 +6,40 @@
  */
 
 #include <QDBusConnection>
+#include <QDBusInterface>
 #include <QDebug>
+#include <QFile>
 
 #include "dbusapp.h"
+#include "dbus_jupii_adaptor.h"
 
-#include "app_adaptor.h"
-#include "app_interface.h"
-
-DbusApp::DbusApp(QObject *parent) :
-    QObject(parent)
+DbusProxy::DbusProxy(QObject *parent) :
+    QObject(parent),
+    TaskExecutor(parent, 2)
 {
     new PlayerAdaptor(this);
 
     QDBusConnection con = QDBusConnection::sessionBus();
 
-    bool ret = con.registerService("org.jupii");
-    Q_ASSERT(ret);
-    ret = con.registerObject("/", this);
-    Q_ASSERT(ret);
-    Q_UNUSED(ret);
+    if (!con.registerService("org.jupii")) {
+        qWarning() << "D-bus service registration failed";
+        return;
+    }
+
+    if (!con.registerObject("/", this)) {
+        qWarning() << "D-bus object registration failed";
+        return;
+    }
 }
 
-bool DbusApp::canControl()
+bool DbusProxy::canControl()
 {
     qDebug() << "canControl, value:" << m_canControl;
 
     return m_canControl;
 }
 
-void DbusApp::setCanControl(bool value)
+void DbusProxy::setCanControl(bool value)
 {
     qDebug() << "setCanControl, value:" << value;
 
@@ -45,14 +50,21 @@ void DbusApp::setCanControl(bool value)
     }
 }
 
-void DbusApp::appendPath(const QString& path)
+void DbusProxy::appendPath(const QString& path)
 {
     qDebug() << "appendPath, path:" << path;
 
     emit requestAppendPath(path);
 }
 
-void DbusApp::clearPlaylist()
+void DbusProxy::playPath(const QString& path)
+{
+    qDebug() << "playPath, path:" << path;
+
+    emit requestPlayPath(path);
+}
+
+void DbusProxy::clearPlaylist()
 {
     emit requestClearPlaylist();
 }

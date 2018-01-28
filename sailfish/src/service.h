@@ -77,7 +77,6 @@ protected:
     virtual void handleApplicationStateChanged(Qt::ApplicationState state);
 
     bool handleError(int ret);
-    void tsleep(int ms = 500);
 
 private:
     bool m_busy = false;

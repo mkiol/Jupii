@@ -12,6 +12,7 @@ ListItem {
     id: root
 
     property alias title: _title
+    property alias subtitle: _subtitle
     property alias icon: _icon
     property alias defaultIcon: _dicon
 
@@ -43,10 +44,8 @@ ListItem {
         }
     }
 
-    Label {
-        id: _title
-
-        truncationMode: TruncationMode.Fade
+    Column {
+        width: parent.width
 
         anchors {
             left: _icon.status !== Image.Ready &&
@@ -57,6 +56,29 @@ ListItem {
             verticalCenter: parent.verticalCenter
         }
 
-        color: root.highlighted ? Theme.highlightColor : Theme.primaryColor
+        Label {
+            id: _title
+
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+
+            truncationMode: TruncationMode.Fade
+            color: root.highlighted ? Theme.highlightColor : Theme.primaryColor
+        }
+
+        Label {
+            id: _subtitle
+
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+
+            font.pixelSize: Theme.fontSizeSmall
+            truncationMode: TruncationMode.Fade
+            color: root.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+        }
     }
 }

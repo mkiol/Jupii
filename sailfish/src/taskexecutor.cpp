@@ -6,6 +6,7 @@
  */
 
 #include <QDebug>
+#include <QThread>
 
 #include "taskexecutor.h"
 
@@ -34,6 +35,7 @@ bool TaskExecutor::startTask(const std::function<void()> &job)
     auto task = new Task(job);
     task->setAutoDelete(true);
     m_pool.start(task);
+
     return true;
 }
 
@@ -45,4 +47,10 @@ void TaskExecutor::waitForDone()
 bool TaskExecutor::taskActive()
 {
     return m_pool.activeThreadCount() > 0;
+}
+
+void TaskExecutor::tsleep(int ms)
+{
+    if (ms > 0)
+        QThread::currentThread()->msleep(ms);
 }

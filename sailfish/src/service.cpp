@@ -33,12 +33,6 @@ Service::~Service()
     waitForDone();
 }
 
-void Service::tsleep(int ms)
-{
-    if (ms > 0)
-        QThread::currentThread()->msleep(ms);
-}
-
 void Service::changed(const char *nm, const char *value)
 {
     qDebug() << "changed char*:" << nm << value;

@@ -134,7 +134,7 @@ public slots:
 
 private:
     int m_activeItemIndex = -1;
-    int m_playMode = PM_Normal;
+    int m_playMode = PM_RepeatAll;
     void setActiveItemIndex(int index);
     bool addId(const QString& id);
     void save();

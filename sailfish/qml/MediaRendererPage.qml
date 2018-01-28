@@ -133,7 +133,6 @@ Page {
     }
 
     function showActiveItem() {
-        console.log("showActiveItem")
         if (playlist.activeItemIndex >= 0)
             listView.positionViewAtIndex(playlist.activeItemIndex, ListView.Contain)
         else
@@ -141,7 +140,6 @@ Page {
     }
 
     function showLastItem() {
-        console.log("showLastItem")
         listView.positionViewAtEnd();
     }
 
@@ -220,6 +218,15 @@ Page {
                 for (var i = 0; i < selectedContent.count; ++i)
                     paths.push(selectedContent.get(i).filePath)
                 playlist.addItems(paths)
+            }
+        }
+    }
+
+    Component {
+        id: albumPickerPage
+        AlbumsPage {
+            onAccepted: {
+                playlist.addItems(songs);
             }
         }
     }
@@ -501,6 +508,7 @@ Page {
                                        musicPickerDialog: musicPickerDialog,
                                        videoPickerDialog: videoPickerDialog,
                                        imagePickerDialog: imagePickerDialog,
+                                       albumPickerPage: albumPickerPage,
                                        filePickerPage: filePickerPage
                                    })
                 }

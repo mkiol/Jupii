@@ -27,6 +27,16 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("0.9.3")
+            }
+
+            LogItem {
+                title: "Music album picker"
+                description: "The whole album or individual tracks can be " +
+                             "added to the playlist."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("0.9.2")
             }
 

@@ -40,6 +40,7 @@
 #include "ThreadPool.h"
 #include "upnpconfig.h"
 #include "UpnpGlobal.h"		/* for UPNP_INLINE */
+#include "upnp.h"
 
 #include <stdio.h>
 

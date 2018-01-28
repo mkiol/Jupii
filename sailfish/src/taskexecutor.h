@@ -33,6 +33,9 @@ public:
     void waitForDone();
     bool taskActive();
 
+protected:
+    void tsleep(int ms = 500);
+
 private:
     QThreadPool m_pool;
 };
