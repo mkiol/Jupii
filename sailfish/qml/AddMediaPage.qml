@@ -44,8 +44,8 @@ Page {
             }
 
             SimpleListItem {
-                title.text: qsTr("Music album")
-                icon.source: "image://theme/icon-m-file-audio?" + (highlighted ?
+                title.text: qsTr("Album")
+                icon.source: "image://theme/icon-m-media-albums?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(albumPickerPage)
