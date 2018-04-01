@@ -17,20 +17,35 @@
 TrackModel::TrackModel(QObject *parent) :
     ListModel(new TrackItem, parent)
 {
-    m_queryTemplate = "SELECT ?song " \
-                      "nie:title(?song) AS title " \
-                      "nmm:artistName(nmm:performer(?song)) AS artist " \
-                      "nie:title(nmm:musicAlbum(?song)) AS album "
-                      "nie:url(?song) AS url " \
-                      "nmm:trackNumber(?song) AS number " \
-                      "nfo:duration(?song) AS length " \
-                      "WHERE { " \
-                      "?song a nmm:MusicPiece; " \
-                      "nmm:musicAlbum \"%1\" . " \
-                      "FILTER regex(nie:title(?song), \"%2\", \"i\") " \
-                      "} " \
-                      "ORDER BY nmm:trackNumber(?song) " \
-                      "LIMIT 500";
+    m_queryByAlbumTemplate =  "SELECT ?song " \
+                              "nie:title(?song) AS title " \
+                              "nmm:artistName(nmm:performer(?song)) AS artist " \
+                              "nie:title(nmm:musicAlbum(?song)) AS album "
+                              "nie:url(?song) AS url " \
+                              "nmm:trackNumber(?song) AS number " \
+                              "nfo:duration(?song) AS length " \
+                              "WHERE { " \
+                              "?song a nmm:MusicPiece; " \
+                              "nmm:musicAlbum \"%1\" . " \
+                              "FILTER regex(nie:title(?song), \"%2\", \"i\") " \
+                              "} " \
+                              "ORDER BY nmm:trackNumber(?song) " \
+                              "LIMIT 500";
+
+    m_queryByArtistTemplate = "SELECT ?song " \
+                              "nie:title(?song) AS title " \
+                              "nmm:artistName(nmm:performer(?song)) AS artist " \
+                              "nie:title(nmm:musicAlbum(?song)) AS album "
+                              "nie:url(?song) AS url " \
+                              "nmm:trackNumber(?song) AS number " \
+                              "nfo:duration(?song) AS length " \
+                              "WHERE { " \
+                              "?song a nmm:MusicPiece; " \
+                              "nmm:performer \"%1\" . " \
+                              "FILTER regex(nie:title(?song), \"%2\", \"i\") " \
+                              "} " \
+                              "ORDER BY nie:title(nmm:musicAlbum(?song)) nmm:trackNumber(?song) " \
+                              "LIMIT 500";
 }
 
 TrackModel::~TrackModel()
@@ -44,7 +59,16 @@ int TrackModel::getCount()
 
 void TrackModel::updateModel()
 {
-    QString query = m_queryTemplate.arg(m_albumId, m_filter);
+    QString query;
+
+    if (!m_albumId.isEmpty()) {
+        query = m_queryByAlbumTemplate.arg(m_albumId, m_filter);
+    } else if (!m_artistId.isEmpty()) {
+        query = m_queryByArtistTemplate.arg(m_artistId, m_filter);
+    } else {
+        qWarning() << "AlbumId neither ArtistId defined";
+        return;
+    }
 
     auto tracker = Tracker::instance();
     QObject::connect(tracker, &Tracker::queryFinished,
@@ -167,9 +191,29 @@ QString TrackModel::getFilter()
 
 void TrackModel::setAlbumId(const QString &id)
 {
+    if (!m_artistId.isEmpty()) {
+        m_artistId.clear();
+        emit artistIdChanged();
+    }
+
     if (m_albumId != id) {
         m_albumId = id;
         emit albumIdChanged();
+
+        updateModel();
+    }
+}
+
+void TrackModel::setArtistId(const QString &id)
+{
+    if (!m_albumId.isEmpty()) {
+        m_albumId.clear();
+        emit albumIdChanged();
+    }
+
+    if (m_artistId != id) {
+        m_artistId = id;
+        emit artistIdChanged();
 
         updateModel();
     }
@@ -203,6 +247,11 @@ void TrackModel::setSelected(int index, bool value)
 QString TrackModel::getAlbumId()
 {
     return m_albumId;
+}
+
+QString TrackModel::getArtistId()
+{
+    return m_artistId;
 }
 
 TrackItem::TrackItem(const QString &id,

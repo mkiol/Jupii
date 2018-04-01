@@ -77,6 +77,7 @@ class TrackModel : public ListModel
     Q_PROPERTY (int count READ getCount NOTIFY countChanged)
     Q_PROPERTY (QString filter READ getFilter WRITE setFilter NOTIFY filterChanged)
     Q_PROPERTY (QString albumId READ getAlbumId WRITE setAlbumId NOTIFY albumIdChanged)
+    Q_PROPERTY (QString artistId READ getArtistId WRITE setArtistId NOTIFY artistIdChanged)
     Q_PROPERTY (int selectedCount READ selectedCount NOTIFY selectedCountChanged)
 public:
     explicit TrackModel(QObject *parent = 0);
@@ -92,6 +93,9 @@ public:
     void setAlbumId(const QString& id);
     QString getAlbumId();
 
+    void setArtistId(const QString& id);
+    QString getArtistId();
+
     int selectedCount();
 
     Q_INVOKABLE void setSelected(int index, bool value);
@@ -101,6 +105,7 @@ signals:
     void countChanged();
     void filterChanged();
     void albumIdChanged();
+    void artistIdChanged();
     void selectedCountChanged();
 
 private slots:
@@ -111,7 +116,9 @@ private slots:
 private:
     QString m_filter;
     QString m_albumId;
-    QString m_queryTemplate;
+    QString m_artistId;
+    QString m_queryByAlbumTemplate;
+    QString m_queryByArtistTemplate;
     int m_selectedCount = 0;
 
     void updateModel();

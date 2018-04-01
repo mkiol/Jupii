@@ -23,8 +23,8 @@ AlbumModel::AlbumModel(QObject *parent) :
                             "SUM(?length) AS totallength " \
                             "WHERE { ?album a nmm:MusicAlbum . " \
                             "FILTER regex(nie:title(?album), \"%1\", \"i\") " \
-                            "?song nmm:musicAlbum ?album ; " \
-                            "nfo:duration ?length ; " \
+                            "?song nmm:musicAlbum ?album; " \
+                            "nfo:duration ?length; " \
                             "nmm:performer ?artist . " \
                             "} GROUP BY ?album ?artist " \
                             "ORDER BY ?album " \
@@ -122,12 +122,21 @@ void AlbumModel::processTrackerReply(const QStringList& varNames,
 
             QFileInfo imgFile(imgFilePath);
 
-            appendRow(new AlbumItem(id,
+            /*appendRow(new AlbumItem(id,
                                     cursor.value(1).toString(),
                                     cursor.value(2).toString(),
                                     imgFile.exists() ?
                                         QUrl(imgFilePath) :
                                         QUrl("image://theme/graphic-grid-playlist"),
+                                    cursor.value(4).toInt(),
+                                    cursor.value(5).toInt()));*/
+
+            appendRow(new AlbumItem(id,
+                                    cursor.value(1).toString(),
+                                    cursor.value(2).toString(),
+                                    imgFile.exists() ?
+                                        QUrl(imgFilePath) :
+                                        QUrl(),
                                     cursor.value(4).toInt(),
                                     cursor.value(5).toInt()));
 

@@ -8,7 +8,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-import harbour.jupii.AlbumModel 1.0
+import harbour.jupii.ArtistModel 1.0
 
 Page {
     id: root
@@ -22,7 +22,7 @@ Page {
     signal accepted(var songs);
 
     Component.onCompleted: {
-        albumModel.filter = ""
+        artistModel.filter = ""
     }
 
     function doPop() {
@@ -40,8 +40,8 @@ Page {
         }
     }
 
-    AlbumModel {
-        id: albumModel
+    ArtistModel {
+        id: artistModel
 
         onSongsQueryResult: {
             root.accepted(songs);
@@ -57,11 +57,11 @@ Page {
         anchors.fill: parent
         currentIndex: -1
 
-        model: albumModel
+        model: artistModel
 
         header: SearchField {
             width: parent.width
-            placeholderText: qsTr("Search album")
+            placeholderText: qsTr("Search artist")
 
             onActiveFocusChanged: {
                 if (activeFocus) {
@@ -70,14 +70,14 @@ Page {
             }
 
             onTextChanged: {
-                albumModel.filter = text.toLowerCase().trim()
+                artistModel.filter = text.toLowerCase().trim()
             }
         }
 
         delegate: SimpleListItem {
-            title.text: model.title
+            title.text: model.name
             icon.source: model.image
-            defaultIcon.source: "image://theme/graphic-grid-playlist?" + (highlighted ?
+            defaultIcon.source: "image://theme/icon-m-media-artists?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)
 
             menu: ContextMenu {
@@ -91,7 +91,7 @@ Page {
                 MenuItem {
                     text: qsTr("Add all tracks")
                     onClicked: {
-                        albumModel.querySongs(model.id)
+                        artistModel.querySongs(model.id)
                     }
                 }
             }
@@ -101,7 +101,7 @@ Page {
             }
 
             function selectTracks() {
-                var dialog = pageStack.push(Qt.resolvedUrl("TracksPage.qml"),{albumId: model.id})
+                var dialog = pageStack.push(Qt.resolvedUrl("TracksPage.qml"),{artistId: model.id})
                 dialog.accepted.connect(function() {
                     root.accepted(dialog.selectedPaths)
                     root.doPop()
@@ -111,7 +111,7 @@ Page {
 
         ViewPlaceholder {
             enabled: listView.count == 0
-            text: qsTr("No albums")
+            text: qsTr("No artists")
         }
     }
 

@@ -14,6 +14,7 @@ Dialog {
     id: root
 
     property alias albumId: trackModel.albumId
+    property alias artistId: trackModel.artistId
 
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
@@ -83,7 +84,7 @@ Dialog {
 
             highlighted: down || model.selected
             title.text: model.title
-            subtitle.text: model.artist
+            subtitle.text: root.albumId.length > 0 ? model.artist : model.album
             icon.source: model.image + "?" + primaryColor
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
 

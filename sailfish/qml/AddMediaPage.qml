@@ -15,6 +15,8 @@ Page {
     property var videoPickerDialog
     property var imagePickerDialog
     property var albumPickerPage
+    property var artistPickerPage
+    property var playlistPickerPage
     property var filePickerPage
 
     SilicaFlickable {
@@ -49,6 +51,24 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(albumPickerPage)
+                }
+            }
+
+            SimpleListItem {
+                title.text: qsTr("Artist")
+                icon.source: "image://theme/icon-m-media-artists?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+                onClicked: {
+                    pageStack.replace(artistPickerPage)
+                }
+            }
+
+            SimpleListItem {
+                title.text: qsTr("Playlist")
+                icon.source: "image://theme/icon-m-media-playlists?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+                onClicked: {
+                    pageStack.replace(playlistPickerPage)
                 }
             }
 

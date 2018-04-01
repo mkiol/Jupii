@@ -36,12 +36,13 @@
 #include "playlistmodel.h"
 #include "dbusapp.h"
 #include "albummodel.h"
+#include "artistmodel.h"
 #include "trackmodel.h"
 
 using namespace std;
 
 static const char* APP_NAME = "Jupii";
-static const char* APP_VERSION = "0.9.3";
+static const char* APP_VERSION = "0.9.4";
 static const char* AUTHOR = "Michal Kosciesza <michal@mkiol.net>";
 static const char* PAGE = "https://github.com/mkiol/Jupii";
 static const char* LICENSE = "http://mozilla.org/MPL/2.0/";
@@ -62,6 +63,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<DeviceInfo>("harbour.jupii.DeviceInfo", 1, 0, "DeviceInfo");
     qmlRegisterType<PlayListModel>("harbour.jupii.PlayListModel", 1, 0, "PlayListModel");
     qmlRegisterType<AlbumModel>("harbour.jupii.AlbumModel", 1, 0, "AlbumModel");
+    qmlRegisterType<ArtistModel>("harbour.jupii.ArtistModel", 1, 0, "ArtistModel");
     qmlRegisterType<TrackModel>("harbour.jupii.TrackModel", 1, 0, "TrackModel");
     qRegisterMetaType<Service::ErrorType>("ErrorType");
 

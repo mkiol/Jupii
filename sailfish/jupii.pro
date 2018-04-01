@@ -37,6 +37,7 @@ HEADERS += \
     src/tracker.h \
     src/trackercursor.h \
     src/albummodel.h \
+    src/artistmodel.h \
     src/trackmodel.h
 
 SOURCES += \
@@ -61,6 +62,7 @@ SOURCES += \
     src/tracker.cpp \
     src/trackercursor.cpp \
     src/albummodel.cpp \
+    src/artistmodel.cpp \
     src/trackmodel.cpp
 
 OTHER_FILES += \
@@ -107,4 +109,5 @@ INSTALLS += images
 DISTFILES += \
     qml/AlbumsPage.qml \
     qml/TracksPage.qml \
-    qml/DoubleListItem.qml
+    qml/DoubleListItem.qml \
+    qml/ArtistPage.qml
