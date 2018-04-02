@@ -15,6 +15,8 @@
 #include <QQmlEngine>
 #include <QQuickView>
 #include <QQmlContext>
+#include <QLocale>
+#include <QTranslator>
 
 #include <sailfishapp.h>
 
@@ -37,6 +39,7 @@
 #include "dbusapp.h"
 #include "albummodel.h"
 #include "artistmodel.h"
+#include "playlistfilemodel.h"
 #include "trackmodel.h"
 
 using namespace std;
@@ -64,6 +67,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<PlayListModel>("harbour.jupii.PlayListModel", 1, 0, "PlayListModel");
     qmlRegisterType<AlbumModel>("harbour.jupii.AlbumModel", 1, 0, "AlbumModel");
     qmlRegisterType<ArtistModel>("harbour.jupii.ArtistModel", 1, 0, "ArtistModel");
+    qmlRegisterType<PlaylistFileModel>("harbour.jupii.PlaylistFileModel", 1, 0, "PlaylistFileModel");
     qmlRegisterType<TrackModel>("harbour.jupii.TrackModel", 1, 0, "TrackModel");
     qRegisterMetaType<Service::ErrorType>("ErrorType");
 
@@ -74,6 +78,20 @@ int main(int argc, char *argv[])
     context->setContextProperty("AUTHOR", AUTHOR);
     context->setContextProperty("PAGE", PAGE);
     context->setContextProperty("LICENSE", LICENSE);
+
+    QTranslator translator;
+    const QString locale = QLocale::system().name();
+    const QString transDir = SailfishApp::pathTo("translations").toLocalFile();
+    if(translator.load("harbour-jupii_" + locale, transDir)) {
+        app->installTranslator(&translator);
+    } else {
+        qWarning() << "Couldn't load translation for" << locale;
+        if (translator.load("harbour-jupii", transDir)) {
+            app->installTranslator(&translator);
+        } else {
+            qWarning() << "Couldn't load default translation";
+        }
+    }
 
     Utils* utils = Utils::instance();
     context->setContextProperty("utils", utils);

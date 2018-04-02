@@ -38,6 +38,7 @@ HEADERS += \
     src/trackercursor.h \
     src/albummodel.h \
     src/artistmodel.h \
+    src/playlistfilemodel.h \
     src/trackmodel.h
 
 SOURCES += \
@@ -63,6 +64,7 @@ SOURCES += \
     src/trackercursor.cpp \
     src/albummodel.cpp \
     src/artistmodel.cpp \
+    src/playlistfilemodel.cpp \
     src/trackmodel.cpp
 
 OTHER_FILES += \
@@ -94,13 +96,13 @@ system(qdbusxml2cpp dbus/org.freedesktop.Tracker1.Steroids.xml -p src/dbus_track
 
 # to disable building translations every time, comment out the
 # following CONFIG line
-#CONFIG += sailfishapp_i18n
+CONFIG += sailfishapp_i18n
 
 # German translation is enabled as an example. If you aren't
 # planning to localize your app, remember to comment out the
 # following TRANSLATIONS line. And also do not forget to
 # modify the localized app name in the the .desktop file.
-#TRANSLATIONS += translations/jupii-de.ts
+TRANSLATIONS += translations/harbour-jupii.ts
 
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images
@@ -110,4 +112,5 @@ DISTFILES += \
     qml/AlbumsPage.qml \
     qml/TracksPage.qml \
     qml/DoubleListItem.qml \
-    qml/ArtistPage.qml
+    qml/ArtistPage.qml \
+    qml/PlaylistPage.qml

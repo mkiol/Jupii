@@ -8,8 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
-* Sun Apr 01 2018 Michal Kosciesza <michal@mkiol.net> 0.9.4-1
+* Mon Apr 02 2018 Michal Kosciesza <michal@mkiol.net> 0.9.4-1
 - Music picker by artist
+- Playlist picker
 
 * Sun Jan 28 2018 Michal Kosciesza <michal@mkiol.net> 0.9.3-1
 - Music picker by album

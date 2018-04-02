@@ -241,6 +241,15 @@ Page {
     }
 
     Component {
+        id: playlistPickerPage
+        PlaylistPage {
+            onAccepted: {
+                playlist.addItems(songs);
+            }
+        }
+    }
+
+    Component {
         id: videoPickerDialog
         MultiVideoPickerDialog {
             onAccepted: {
@@ -519,6 +528,7 @@ Page {
                                        imagePickerDialog: imagePickerDialog,
                                        albumPickerPage: albumPickerPage,
                                        artistPickerPage: artistPickerPage,
+                                       playlistPickerPage: playlistPickerPage,
                                        filePickerPage: filePickerPage
                                    })
                 }
