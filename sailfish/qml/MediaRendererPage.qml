@@ -511,8 +511,18 @@ Page {
             }
 
             MenuItem {
+                text: qsTr("Save playlist")
+                visible: av.inited && listView.count > 0
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"), {
+                                       playlist: playlist
+                                   })
+                }
+            }
+
+            MenuItem {
                 text: qsTr("Clear playlist")
-                visible: av.inited
+                visible: av.inited && listView.count > 0
                 onClicked: {
                     playlist.clear()
                     root.updatePlayList(false)

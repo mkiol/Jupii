@@ -75,17 +75,32 @@ Page {
         }
 
         delegate: DoubleListItem {
+            id: listItem
             title.text: model.title
             subtitle.text: qsTr("%n track(s)", "", model.count)
             icon.source: model.image
             defaultIcon.source: "image://theme/icon-m-media-playlists?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)
+            ListView.onRemove: animateRemoval(listItem)
+
+            function remove() {
+                remorseAction("Deleting", function() {
+                    playlistFileModel.deleteFile(model.id)
+                })
+            }
 
             menu: ContextMenu {
                 MenuItem {
-                    text: qsTr("Add all tracks")
+                    text: qsTr("Add tracks")
                     onClicked: {
                         playlistFileModel.querySongs(model.id)
+                    }
+                }
+
+                MenuItem {
+                    text: qsTr("Delete playlist")
+                    onClicked: {
+                        remove()
                     }
                 }
             }

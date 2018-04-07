@@ -74,8 +74,9 @@ Page {
             }
         }
 
-        delegate: SimpleListItem {
+        delegate: DoubleListItem {
             title.text: model.title
+            subtitle.text: qsTr("%n track(s)", "", model.count)
             icon.source: model.image
             defaultIcon.source: "image://theme/graphic-grid-playlist?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)

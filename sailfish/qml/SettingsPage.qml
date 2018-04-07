@@ -31,7 +31,7 @@ Page {
                 checked: settings.rememberPlaylist
                 text: qsTr("Start with last playlist")
                 description: qsTr("When Jupii connects to a device, the last " +
-                                  "saved playlist will be automatically loaded.")
+                                  "playlist will be automatically loaded.")
                 onClicked: {
                     settings.rememberPlaylist = !settings.rememberPlaylist
                 }

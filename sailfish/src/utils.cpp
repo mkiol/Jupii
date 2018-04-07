@@ -113,11 +113,17 @@ bool Utils::getNetworkIf(QString& ifname, QString& address)
     return false;
 }
 
-bool Utils::writeToFile(const QString &filename, const QByteArray &data)
+bool Utils::writeToCacheFile(const QString &filename, const QByteArray &data)
+{
+    const QString cacheDir = Settings::instance()->getCacheDir();
+    return writeToFile(cacheDir + "/" + filename, data);
+}
+
+bool Utils::writeToFile(const QString &path, const QByteArray &data)
 {
     const QString cacheDir = Settings::instance()->getCacheDir();
 
-    QFile f(cacheDir + "/" + filename);
+    QFile f(path);
     if (!f.exists()) {
         if (f.open(QIODevice::WriteOnly)) {
             f.write(data);
@@ -136,11 +142,25 @@ bool Utils::writeToFile(const QString &filename, const QByteArray &data)
 
 bool Utils::createCacheDir()
 {
-    const QString cacheDir = Settings::instance()->getCacheDir();
+    const QString dir = Settings::instance()->getCacheDir();
 
-    if (!QFile::exists(cacheDir)) {
-        if (!QDir::root().mkpath(cacheDir)) {
+    if (!QFile::exists(dir)) {
+        if (!QDir::root().mkpath(dir)) {
             qWarning() << "Unable to create cache dir!";
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Utils::createPlaylistDir()
+{
+    const QString dir = Settings::instance()->getPlaylistDir();
+
+    if (!QFile::exists(dir)) {
+        if (!QDir::root().mkpath(dir)) {
+            qWarning() << "Unable to create playlist dir!";
             return false;
         }
     }

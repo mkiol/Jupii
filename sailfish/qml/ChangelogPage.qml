@@ -27,6 +27,25 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("0.9.4")
+            }
+
+            LogItem {
+                title: "Music picker sorted by artists"
+                description: "Music tracks to add can be sorted by artist."
+            }
+
+            LogItem {
+                title: "Playlist file picker"
+                description: "The music tracks from a playlist file can be added to the current playlist."
+            }
+
+            LogItem {
+                title: "Save current playlist to a file"
+                description: "Current playlist can be saved as a playlist file."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("0.9.3")
             }
 

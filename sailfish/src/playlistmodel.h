@@ -113,6 +113,7 @@ public:
     Q_INVOKABLE QString prevActiveId() const;
     Q_INVOKABLE QString nextId(const QString &id) const;
     Q_INVOKABLE void load();
+    Q_INVOKABLE bool saveToFile(const QString& title);
     int getActiveItemIndex() const;
     int getPlayMode() const;
     void setPlayMode(int value);
@@ -138,6 +139,7 @@ private:
     void setActiveItemIndex(int index);
     bool addId(const QString& id);
     void save();
+    QByteArray makePlsData(const QString& name);
 };
 
 #endif // PLAYLISTMODEL_H

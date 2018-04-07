@@ -71,6 +71,7 @@ public:
     QByteArray resetKey();
 
     QString getCacheDir();
+    QString getPlaylistDir();
 
 signals:
     void portChanged();

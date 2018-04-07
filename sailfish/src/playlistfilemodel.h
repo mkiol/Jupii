@@ -29,7 +29,8 @@ public:
         ListRole,
         CountRole,
         LengthRole,
-        ImageRole
+        ImageRole,
+        PathRole
     };
 
 public:
@@ -37,6 +38,7 @@ public:
     explicit PlaylistFileItem(const QString &id,
                       const QString &title,
                       const QString &list,
+                      const QString &path,
                       const QUrl &image,
                       int count,
                       int length,
@@ -46,6 +48,7 @@ public:
     inline QString id() const { return m_id; }
     inline QString title() const { return m_title; }
     inline QString list() const { return m_list; }
+    inline QString path() const { return m_path; }
     inline QUrl image() const { return m_image; }
     inline int count() const { return m_count; }
     inline int length() const { return m_length; }
@@ -54,6 +57,7 @@ private:
     QString m_id;
     QString m_title;
     QString m_list;
+    QString m_path;
     QUrl m_image;
     int m_count;
     int m_length;
@@ -76,6 +80,7 @@ public:
     QString getFilter();
 
     Q_INVOKABLE void querySongs(const QString& playlistId);
+    Q_INVOKABLE bool deleteFile(const QString& playlistId);
 
 signals:
     void songsQueryResult(const QStringList& songs);
@@ -90,9 +95,10 @@ private slots:
 private:
     QString m_filter;
     QString m_playlistsQueryTemplate;
+    QString m_playlistsQueryTemplateEx;
     QString m_tracksQueryTemplate;
 
-    void updateModel();
+    void updateModel(const QString& excludedId = "");
 };
 
 #endif // PLAYLISTFILEMODEL_H

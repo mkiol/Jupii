@@ -87,30 +87,22 @@ OTHER_FILES += \
     qml/MediaRendererPage.qml \
     qml/PlayerPanel.qml \
     qml/MediaInfoPage.qml \
-    qml/AddMediaPage.qml
+    qml/AddMediaPage.qml \
+    qml/AlbumsPage.qml \
+    qml/TracksPage.qml \
+    qml/DoubleListItem.qml \
+    qml/ArtistPage.qml \
+    qml/PlaylistPage.qml \
+    qml/SavePlaylistPage.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 
 system(qdbusxml2cpp dbus/org.jupii.xml -a src/dbus_jupii_adaptor)
 system(qdbusxml2cpp dbus/org.freedesktop.Tracker1.Steroids.xml -p src/dbus_tracker_inf)
 
-# to disable building translations every time, comment out the
-# following CONFIG line
 CONFIG += sailfishapp_i18n
-
-# German translation is enabled as an example. If you aren't
-# planning to localize your app, remember to comment out the
-# following TRANSLATIONS line. And also do not forget to
-# modify the localized app name in the the .desktop file.
 TRANSLATIONS += translations/harbour-jupii.ts
 
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images
 INSTALLS += images
-
-DISTFILES += \
-    qml/AlbumsPage.qml \
-    qml/TracksPage.qml \
-    qml/DoubleListItem.qml \
-    qml/ArtistPage.qml \
-    qml/PlaylistPage.qml

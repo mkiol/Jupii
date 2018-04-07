@@ -9,6 +9,7 @@
 #include <QHash>
 #include <QUrl>
 #include <QFileInfo>
+#include <QFile>
 
 #include "tracker.h"
 #include "playlistfilemodel.h"
@@ -18,10 +19,22 @@ PlaylistFileModel::PlaylistFileModel(QObject *parent) :
     ListModel(new PlaylistFileItem, parent)
 {
     m_playlistsQueryTemplate =  "SELECT ?list nie:title(?list) AS title " \
+                                "nie:url(?list) AS url " \
                                 "nfo:entryCounter(?list) AS counter " \
                                 "nfo:hasMediaFileListEntry(?list) AS list" \
                                 "WHERE { ?list a nmm:Playlist . " \
-                                "FILTER regex(nie:title(?list), \"%1\", \"i\") " \
+                                "FILTER (regex(nie:title(?list), \"%1\", \"i\")) . " \
+                                "} " \
+                                "ORDER BY nie:title(?list) " \
+                                "LIMIT 500";
+
+    m_playlistsQueryTemplateEx = "SELECT ?list nie:title(?list) AS title " \
+                                "nie:url(?list) AS url " \
+                                "nfo:entryCounter(?list) AS counter " \
+                                "nfo:hasMediaFileListEntry(?list) AS list" \
+                                "WHERE { ?list a nmm:Playlist . " \
+                                "FILTER (regex(nie:title(?list), \"%1\", \"i\") && " \
+                                "?list != <%2>) . " \
                                 "} " \
                                 "ORDER BY nie:title(?list) " \
                                 "LIMIT 500";
@@ -43,9 +56,27 @@ int PlaylistFileModel::getCount()
     return m_list.length();
 }
 
-void PlaylistFileModel::updateModel()
+bool PlaylistFileModel::deleteFile(const QString &playlistId)
 {
-    const QString query = m_playlistsQueryTemplate.arg(m_filter);
+    const auto item = static_cast<PlaylistFileItem*>(find(playlistId));
+    const QString path = item->path();
+
+    if (!QFile::remove(path)) {
+        qWarning() << "Can't remove playlist file" << path;
+        return false;
+    }
+
+    updateModel(playlistId);
+    return true;
+}
+
+void PlaylistFileModel::updateModel(const QString& excludedId)
+{
+    const QString query = excludedId.isEmpty() ?
+                m_playlistsQueryTemplate.arg(m_filter) :
+                m_playlistsQueryTemplateEx.arg(m_filter).arg(excludedId);
+
+    //qDebug() << query;
 
     auto tracker = Tracker::instance();
     QObject::connect(tracker, &Tracker::queryFinished,
@@ -91,7 +122,7 @@ void PlaylistFileModel::processTrackerReply(const QStringList& varNames,
 
     int n = cursor.columnCount();
 
-    if (n > 3) {
+    if (n > 4) {
         // Result of PlaylistFile query
 
         clear();
@@ -100,9 +131,10 @@ void PlaylistFileModel::processTrackerReply(const QStringList& varNames,
             appendRow(new PlaylistFileItem(
                                     cursor.value(0).toString(),
                                     cursor.value(1).toString(),
-                                    cursor.value(3).toString(),
+                                    cursor.value(4).toString(),
+                                    QUrl(cursor.value(2).toString()).toLocalFile(),
                                     QUrl(),
-                                    cursor.value(2).toInt(),
+                                    cursor.value(3).toInt(),
                                     0));
         }
 
@@ -156,6 +188,7 @@ QString PlaylistFileModel::getFilter()
 PlaylistFileItem::PlaylistFileItem(const QString &id,
                    const QString &title,
                    const QString &list,
+                   const QString &path,
                    const QUrl &image,
                    int count,
                    int length,
@@ -164,6 +197,7 @@ PlaylistFileItem::PlaylistFileItem(const QString &id,
     m_id(id),
     m_title(title),
     m_list(list),
+    m_path(path),
     m_image(image),
     m_count(count),
     m_length(length)
@@ -176,6 +210,7 @@ QHash<int, QByteArray> PlaylistFileItem::roleNames() const
     names[IdRole] = "id";
     names[TitleRole] = "title";
     names[ListRole] = "list";
+    names[PathRole] = "path";
     names[ImageRole] = "image";
     names[CountRole] = "count";
     names[LengthRole] = "length";
@@ -191,6 +226,8 @@ QVariant PlaylistFileItem::data(int role) const
         return title();
     case ListRole:
         return list();
+    case PathRole:
+        return path();
     case ImageRole:
         return image();
     case CountRole:

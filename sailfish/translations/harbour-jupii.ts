@@ -84,18 +84,26 @@
         <source>Search album</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <location filename="../qml/AlbumsPage.qml" line="79"/>
+        <source>%n track(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n track</numerusform>
+            <numerusform>%n tracks</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="85"/>
+        <location filename="../qml/AlbumsPage.qml" line="86"/>
         <source>Select tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="92"/>
+        <location filename="../qml/AlbumsPage.qml" line="93"/>
         <source>Add all tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="114"/>
+        <location filename="../qml/AlbumsPage.qml" line="115"/>
         <source>No albums</source>
         <translation type="unfinished"></translation>
     </message>
@@ -107,18 +115,26 @@
         <source>Search artist</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <location filename="../qml/ArtistPage.qml" line="79"/>
+        <source>%n track(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n track</numerusform>
+            <numerusform>%n tracks</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="85"/>
+        <location filename="../qml/ArtistPage.qml" line="86"/>
         <source>Select tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="92"/>
+        <location filename="../qml/ArtistPage.qml" line="93"/>
         <source>Add all tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="114"/>
+        <location filename="../qml/ArtistPage.qml" line="115"/>
         <source>No artists</source>
         <translation type="unfinished"></translation>
     </message>
@@ -330,27 +346,40 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="514"/>
+        <source>Save playlist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaRendererPage.qml" line="524"/>
         <source>Clear playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="523"/>
+        <location filename="../qml/MediaRendererPage.qml" line="533"/>
         <source>Add item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="560"/>
+        <location filename="../qml/MediaRendererPage.qml" line="570"/>
         <source>Play</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="572"/>
+        <location filename="../qml/MediaRendererPage.qml" line="582"/>
         <source>Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="580"/>
+        <location filename="../qml/MediaRendererPage.qml" line="590"/>
         <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PlayListModel</name>
+    <message>
+        <location filename="../src/playlistmodel.cpp" line="49"/>
+        <source>Playlist</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -370,7 +399,7 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/PlaylistPage.qml" line="79"/>
+        <location filename="../qml/PlaylistPage.qml" line="80"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n track</numerusform>
@@ -378,13 +407,37 @@ Pull down to connect to the local network.</source>
         </translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="86"/>
-        <source>Add all tracks</source>
+        <location filename="../qml/PlaylistPage.qml" line="94"/>
+        <source>Add tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="100"/>
+        <location filename="../qml/PlaylistPage.qml" line="101"/>
+        <source>Delete playlist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlaylistPage.qml" line="115"/>
         <source>No playlists</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SavePlaylistPage</name>
+    <message>
+        <location filename="../qml/SavePlaylistPage.qml" line="20"/>
+        <source>Playlist was saved</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SavePlaylistPage.qml" line="35"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SavePlaylistPage.qml" line="42"/>
+        <location filename="../qml/SavePlaylistPage.qml" line="43"/>
+        <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -402,7 +455,7 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="33"/>
-        <source>When Jupii connects to a device, the last saved playlist will be automatically loaded.</source>
+        <source>When Jupii connects to a device, the last playlist will be automatically loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

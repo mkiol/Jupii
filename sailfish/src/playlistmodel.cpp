@@ -7,6 +7,8 @@
 
 #include <QDebug>
 #include <QHash>
+#include <QFile>
+#include <QDataStream>
 
 #include "playlistmodel.h"
 #include "utils.h"
@@ -27,6 +29,58 @@ void PlayListModel::save()
     }
 
     Settings::instance()->setLastPlaylist(ids);
+}
+
+bool PlayListModel::saveToFile(const QString& title)
+{
+    if (m_list.isEmpty()) {
+        qWarning() << "Current playlist is empty";
+        return false;
+    }
+
+    const QString dir = Settings::instance()->getPlaylistDir();
+
+    if (dir.isEmpty())
+        return false;
+
+    QString name = title.trimmed();
+    if (name.isEmpty()) {
+        qWarning() << "Name is empty, so using default name";
+        name = tr("Playlist");
+    }
+
+    const QString oname = name;
+
+    QString path;
+    for (int i = 0; i < 10; ++i) {
+        name = oname + (i > 0 ? " " + QString::number(i) : "");
+        path = dir + "/" + name + ".pls";
+        if (!QFileInfo::exists(path))
+            break;
+    }
+
+    Utils::instance()->writeToFile(path, makePlsData(name));
+
+    return true;
+}
+
+QByteArray PlayListModel::makePlsData(const QString& name)
+{
+    QByteArray data;
+    QTextStream sdata(&data);
+
+    sdata << "[playlist]" << endl;
+    sdata << "X-GNOME-Title=" << name << endl;
+    sdata << "NumberOfEntries=" << m_list.size() << endl;
+
+    int l = m_list.size();
+    for (int i = 0; i < l; ++i) {
+        auto pitem = static_cast<FileItem*>(m_list.at(i));
+        sdata << "File" << i + 1 << "="
+             << QUrl::fromLocalFile(pitem->path()).toString() << endl;
+    }
+
+    return data;
 }
 
 void PlayListModel::load()

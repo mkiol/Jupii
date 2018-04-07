@@ -116,20 +116,10 @@ void AlbumModel::processTrackerReply(const QStringList& varNames,
                 continue;
             }
 
-            auto tracker = Tracker::instance();
             QString imgFilePath = tracker->genAlbumArtFile(cursor.value(1).toString(),
                                                             cursor.value(2).toString());
 
             QFileInfo imgFile(imgFilePath);
-
-            /*appendRow(new AlbumItem(id,
-                                    cursor.value(1).toString(),
-                                    cursor.value(2).toString(),
-                                    imgFile.exists() ?
-                                        QUrl(imgFilePath) :
-                                        QUrl("image://theme/graphic-grid-playlist"),
-                                    cursor.value(4).toInt(),
-                                    cursor.value(5).toInt()));*/
 
             appendRow(new AlbumItem(id,
                                     cursor.value(1).toString(),
@@ -137,8 +127,8 @@ void AlbumModel::processTrackerReply(const QStringList& varNames,
                                     imgFile.exists() ?
                                         QUrl(imgFilePath) :
                                         QUrl(),
-                                    cursor.value(4).toInt(),
-                                    cursor.value(5).toInt()));
+                                    cursor.value(3).toInt(),
+                                    cursor.value(4).toInt()));
 
             albums << id;
         }

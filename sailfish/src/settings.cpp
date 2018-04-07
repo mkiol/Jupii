@@ -77,6 +77,18 @@ QString Settings::getCacheDir()
    return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 }
 
+QString Settings::getPlaylistDir()
+{
+   const auto dir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+
+   if (dir.isEmpty()) {
+       qWarning() << "MusicLocation dir is empty";
+       return dir;
+   }
+
+   return dir + "/playlists";
+}
+
 void Settings::asyncAddFavDevice(const QString &id)
 {
     startTask([this, &id](){
@@ -123,7 +135,7 @@ bool Settings::writeDeviceXML(const QString &id, QString& url)
         QString filename = "device-" + _id.replace(':','-') + ".xml";
 
         auto u = Utils::instance();
-        if (u->writeToFile(filename, QByteArray::fromStdString(ddesc.XMLText))) {
+        if (u->writeToCacheFile(filename, QByteArray::fromStdString(ddesc.XMLText))) {
             url = QString::fromStdString(ddesc.URLBase);
             return true;
         } else {
