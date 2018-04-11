@@ -14,7 +14,6 @@ LIBS += -lpthread -lcurl -lexpat
 include(libupnp/libupnp.pri)
 include(libupnpp/libupnpp.pri)
 include(qhttpserver/qhttpserver.pri)
-include(taglib/taglib.pri)
 
 HEADERS += \
     src/dbus_jupii_adaptor.h \

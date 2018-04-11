@@ -13,6 +13,8 @@
 #include <QStringList>
 #include <QRegExp>
 
+#include <utility>
+
 #include "taskexecutor.h"
 #include "dbus_tracker_inf.h"
 
@@ -27,6 +29,8 @@ public:
 
     bool query(const QString& query);
     void queryAsync(const QString& query);
+
+    std::pair<const QStringList&, const QByteArray&> getResult();
 
     QString genAlbumArtFile(const QString& albumName,
                             const QString& artistName);

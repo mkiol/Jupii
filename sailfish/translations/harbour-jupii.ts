@@ -148,17 +148,10 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="40"/>
-        <location filename="../qml/ChangelogPage.qml" line="86"/>
+        <location filename="../qml/ChangelogPage.qml" line="49"/>
+        <location filename="../qml/ChangelogPage.qml" line="59"/>
+        <location filename="../qml/ChangelogPage.qml" line="105"/>
         <source>Version %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CopyableDetailItem</name>
-    <message>
-        <location filename="../qml/CopyableDetailItem.qml" line="96"/>
-        <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -282,37 +275,57 @@ Pull down to connect to the local network.</source>
 <context>
     <name>MediaInfoPage</name>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="63"/>
-        <source>Item details</source>
+        <location filename="../qml/MediaInfoPage.qml" line="75"/>
+        <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="74"/>
+        <location filename="../qml/MediaInfoPage.qml" line="79"/>
+        <source>Audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="81"/>
+        <source>Video</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="83"/>
+        <source>Image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="85"/>
+        <source>Unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="91"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="80"/>
+        <location filename="../qml/MediaInfoPage.qml" line="97"/>
         <source>Author</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="86"/>
+        <location filename="../qml/MediaInfoPage.qml" line="104"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="92"/>
+        <location filename="../qml/MediaInfoPage.qml" line="111"/>
         <source>Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="99"/>
+        <location filename="../qml/MediaInfoPage.qml" line="119"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="114"/>
+        <location filename="../qml/MediaInfoPage.qml" line="134"/>
         <source>Path</source>
         <translation type="unfinished"></translation>
     </message>
@@ -325,52 +338,57 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="412"/>
+        <location filename="../qml/MediaRendererPage.qml" line="421"/>
         <source>Item is already in the playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="440"/>
+        <location filename="../qml/MediaRendererPage.qml" line="449"/>
         <source>Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="447"/>
+        <location filename="../qml/MediaRendererPage.qml" line="456"/>
         <source>Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="453"/>
+        <location filename="../qml/MediaRendererPage.qml" line="462"/>
         <source>Not connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="514"/>
+        <location filename="../qml/MediaRendererPage.qml" line="523"/>
         <source>Save playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="524"/>
+        <location filename="../qml/MediaRendererPage.qml" line="533"/>
         <source>Clear playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="533"/>
+        <location filename="../qml/MediaRendererPage.qml" line="542"/>
         <source>Add item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="570"/>
+        <location filename="../qml/MediaRendererPage.qml" line="581"/>
         <source>Play</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="582"/>
+        <location filename="../qml/MediaRendererPage.qml" line="581"/>
+        <source>Show</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaRendererPage.qml" line="594"/>
         <source>Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="590"/>
+        <location filename="../qml/MediaRendererPage.qml" line="602"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
@@ -386,7 +404,7 @@ Pull down to connect to the local network.</source>
 <context>
     <name>PlayerPanel</name>
     <message>
-        <location filename="../qml/PlayerPanel.qml" line="147"/>
+        <location filename="../qml/PlayerPanel.qml" line="148"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>

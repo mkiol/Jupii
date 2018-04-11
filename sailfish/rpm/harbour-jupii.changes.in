@@ -8,10 +8,12 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
-* Sat Apr 07 2018 Michal Kosciesza <michal@mkiol.net> 0.9.4-1
+* Wed Apr 11 2018 Michal Kosciesza <michal@mkiol.net> 0.9.4-2
 - Music picker by artist
 - Playlist picker
 - Save current playlist to file
+- UI tweaks for Image content
+- Use Tracker data instead TagLib
 
 * Sun Jan 28 2018 Michal Kosciesza <michal@mkiol.net> 0.9.3-1
 - Music picker by album

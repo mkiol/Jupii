@@ -37,12 +37,14 @@ public:
     };
 
     static ContentServer* instance(QObject *parent = nullptr);
-    bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "") const;
-    Type getContentType(const QString &path) const;
+    static Type typeFromMime(const QString &mime);
+
+    bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
+    Type getContentType(const QString &path);
     Q_INVOKABLE QStringList getExtensions(int type) const;
-    QString getContentMime(const QString &path) const;
-    Q_INVOKABLE QString pathFromUrl(const QUrl &url) const;
+    QString getContentMime(const QString &path);
     Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
+    QString pathFromUrl(const QUrl &url) const;
 
 signals:
     void do_sendEmptyResponse(QHttpResponse *resp, int code);
@@ -60,11 +62,31 @@ private slots:
     void sendEnd(QHttpResponse *resp);
 
 private:
+    struct ItemMeta {
+        QString trackerId;
+        QUrl url;
+        QString path;
+        QString title;
+        QString mime;
+        QString comment;
+        QString album;
+        QString albumArt;
+        QString artist;
+        Type type;
+        int duration;
+        double bitrate;
+        double sampleRate;
+        int channels;
+    };
+
     static ContentServer* m_instance;
 
     static const QHash<QString,QString> m_imgExtMap;
     static const QHash<QString,QString> m_musicExtMap;
     static const QHash<QString,QString> m_videoExtMap;
+    static const QString queryTemplate;
+
+    QHash<QString, ItemMeta> m_metaCache; // path => itemMeta
 
     QHttpServer* m_server;
 
@@ -73,13 +95,14 @@ private:
     const static int threadWait = 1;
 
     explicit ContentServer(QObject *parent = nullptr);
-    bool getContentMeta(const QString &path, const QUrl &url, QString &meta) const;
+    bool getContentMeta(const QString &path, const QUrl &url, QString &meta);
     QByteArray encrypt(const QByteArray& data) const;
     QByteArray decrypt(const QByteArray& data) const;
     bool makeUrl(const QString& id, QUrl& url) const;
-    bool getCoverArtUrl(const QString &path, QUrl &url) const;
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     bool seqWriteData(QFile &file, qint64 size, QHttpResponse *resp);
+    const QHash<QString, ItemMeta>::const_iterator makeItemMeta(const QString &path);
+    const QHash<QString, ItemMeta>::const_iterator getMetaCacheIterator(const QString &path);
 };
 
 #endif // CONTENTSERVER_H

@@ -35,6 +35,8 @@ class AVTransport : public Service
     Q_PROPERTY (int relativeTimePosition READ getRelativeTimePosition NOTIFY relativeTimePositionChanged)
     Q_PROPERTY (int absoluteTimePosition READ getAbsoluteTimePosition NOTIFY absoluteTimePositionChanged)
     Q_PROPERTY (int speed READ getSpeed WRITE setSpeed NOTIFY speedChanged)
+
+    Q_PROPERTY (Type currentType READ getCurrentType NOTIFY currentMetaDataChanged)
     Q_PROPERTY (QString currentClass READ getCurrentClass NOTIFY currentMetaDataChanged)
     Q_PROPERTY (QString currentTitle READ getCurrentTitle NOTIFY currentMetaDataChanged)
     Q_PROPERTY (QString currentAuthor READ getCurrentAuthor NOTIFY currentMetaDataChanged)
@@ -55,19 +57,43 @@ class AVTransport : public Service
     Q_PROPERTY (bool controlable READ getControlable NOTIFY controlableChanged)
 
 public:
-    enum TransportState {Unknown, Stopped, Playing, Transitioning,
-                         PausedPlayback, PausedRecording, Recording,
-                         NoMediaPresent
-                        };
+    enum TransportState {
+        Unknown,
+        Stopped,
+        Playing,
+        Transitioning,
+        PausedPlayback,
+        PausedRecording,
+        Recording,
+        NoMediaPresent
+    };
     Q_ENUM(TransportState)
 
-    enum TransportStatus {TPS_Unknown, TPS_Ok, TPS_Error};
+    enum TransportStatus {
+        TPS_Unknown,
+        TPS_Ok,
+        TPS_Error
+    };
     Q_ENUM(TransportStatus)
 
-    enum PlayMode {PM_Unknown, PM_Normal, PM_Shuffle, PM_RepeatOne,
-                   PM_RepeatAll, PM_Random, PM_Direct1
-                  };
+    enum PlayMode {
+        PM_Unknown,
+        PM_Normal,
+        PM_Shuffle,
+        PM_RepeatOne,
+        PM_RepeatAll,
+        PM_Random,
+        PM_Direct1
+    };
     Q_ENUM(PlayMode)
+
+    enum Type {
+        T_Unknown = 0,
+        T_Image = 1,
+        T_Audio = 2,
+        T_Video = 4
+    };
+    Q_ENUM(Type)
 
     explicit AVTransport(QObject *parent = nullptr);
 
@@ -90,6 +116,8 @@ public:
     int getRelativeTimePosition();
     int getAbsoluteTimePosition();
     int getSpeed();
+
+    Type getCurrentType();
     QString getCurrentURI();
     QString getNextURI();
     QString getCurrentPath();
@@ -100,6 +128,7 @@ public:
     QString getCurrentDescription();
     QString getCurrentAlbum();
     QString getCurrentAlbumArtURI();
+
     bool getNextSupported();
     bool getPauseSupported();
     bool getPlaySupported();

@@ -189,3 +189,8 @@ bool Tracker::createTrackerInf()
 
     return true;
 }
+
+std::pair<const QStringList&, const QByteArray&> Tracker::getResult()
+{
+    return std::pair<const QStringList&, const QByteArray&>(m_dbusReplyData, m_pipeData);
+}

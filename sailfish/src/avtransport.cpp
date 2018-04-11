@@ -340,6 +340,25 @@ QString AVTransport::getNextPath()
     return cs->pathFromUrl(m_nextURI);
 }
 
+AVTransport::Type AVTransport::getCurrentType()
+{
+    // Reference: http://upnp.org/specs/av/UPnP-av-ContentDirectory-v1-Service.pdf
+
+    const QStringList list = m_currentClass.split('.');
+
+    if (list.size() > 2) {
+        const QString c = list.at(2);
+        if (c == "audioItem")
+            return T_Audio;
+        if (c == "videoItem")
+            return T_Video;
+        if (c == "imageItem")
+            return T_Image;
+    }
+
+    qWarning() << "Unknown meta data class:" << m_currentClass;
+    return T_Unknown;
+}
 
 QString AVTransport::getCurrentClass()
 {
@@ -841,13 +860,17 @@ void AVTransport::fakeUpdateRelativeTimePosition()
 
 void AVTransport::update(int initDelay, int postDelay)
 {
-    if (s() == nullptr) {
+    qDebug() << "Update start";
+
+    auto srv = s();
+
+    if (srv == nullptr) {
         qWarning() << "Service is not inited";
         return;
     }
 
     if (!m_updateMutex.tryLock()) {
-        //qDebug() << "Update is locked";
+        qDebug() << "Update is locked";
         return;
     }
 
@@ -861,9 +884,25 @@ void AVTransport::update(int initDelay, int postDelay)
 
     //qDebug() << "transportState:" << m_transportState;
 
-    emit updated();
-
     tsleep(postDelay);
+
+    //qDebug() << "getCurrentType():" << getCurrentType();
+    //qDebug() << "m_transportState:" << m_transportState;
+    if (getCurrentType() == T_Image && m_transportState == Playing) {
+        qDebug() << "Calling stop because current track type is image";
+        if (!handleError(srv->stop())) {
+            qWarning() << "Error response for stop()";
+            if (srv == nullptr) {
+                m_updateMutex.unlock();
+                return;
+            }
+        }
+        tsleep();
+    }
+
+    qDebug() << "Update end";
+
+    emit updated();
 
     needTimerCheck();
 
