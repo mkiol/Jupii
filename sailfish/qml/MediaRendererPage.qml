@@ -55,6 +55,11 @@ Page {
         }
     }
 
+    onStatusChanged: {
+        if (status === PageStatus.Active)
+            updateMediaInfoPage()
+    }
+
     function togglePlay() {
         if (av.transportState !== AVTransport.Playing) {
             av.speed = 1
@@ -141,6 +146,15 @@ Page {
 
     function showLastItem() {
         listView.positionViewAtEnd();
+    }
+
+    function updateMediaInfoPage() {
+        if (av.controlable) {
+            if (pageStack.currentPage === root)
+                pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"),{av: av})
+        } else {
+            pageStack.popAttached(root, PageStackAction.Immediate)
+        }
     }
 
     // -- D-Bus volume --
@@ -322,12 +336,7 @@ Page {
             console.log(" av.playSupported: " + av.playSupported)
             console.log(" av.stopSupported: " + av.stopSupported)
 
-            // Media info page
-            if (controlable) {
-                pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"),{av: av})
-            } else {
-                pageStack.popAttached(null, PageStackAction.Immediate)
-            }
+            updateMediaInfoPage()
         }
 
         onRelativeTimePositionChanged: {
@@ -551,6 +560,8 @@ Page {
             property color primaryColor: highlighted || model.active ?
                                          Theme.highlightColor : Theme.primaryColor
 
+            property bool isImage: model.type === AVTransport.T_Image
+
             visible: root.inited && !root.busy
 
             icon.source: model.icon + "?" + primaryColor
@@ -567,8 +578,9 @@ Page {
 
             menu: ContextMenu {
                 MenuItem {
-                    text: qsTr("Play")
-                    visible: av.transportState !== AVTransport.Playing || !model.active
+                    text: listItem.isImage ? qsTr("Show") : qsTr("Play")
+                    visible: (av.transportState !== AVTransport.Playing &&
+                              !listItem.isImage) || !model.active
                     onClicked: {
                         if (!model.active) {
                             root.playItem(model.id, model.index)
@@ -580,7 +592,7 @@ Page {
 
                 MenuItem {
                     text: qsTr("Pause")
-                    visible: av.stopable && model.active
+                    visible: av.stopable && model.active && !listItem.isImage
                     onClicked: {
                         root.togglePlay()
                     }
@@ -625,10 +637,14 @@ Page {
 
         nextEnabled: playlist.playMode !== PlayListModel.PM_RepeatOne &&
                      av.nextSupported && listView.count > 0
-        forwardEnabled: av.seekSupported && av.transportState === AVTransport.Playing
+        forwardEnabled: av.seekSupported &&
+                        av.transportState === AVTransport.Playing &&
+                        av.currentType !== AVTransport.T_Image
         backwardEnabled: forwardEnabled
 
         playMode: playlist.playMode
+
+        contolable: av.controlable && av.currentType !== AVTransport.T_Image
 
         av: av
         rc: rc

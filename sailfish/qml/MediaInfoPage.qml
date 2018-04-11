@@ -60,7 +60,8 @@ Page {
 
                 PageHeader {
                     id: header
-                    title: qsTr("Item details")
+                    //title: qsTr("Item details")
+                    title: root.av.currentTitle
                 }
             }
 
@@ -71,6 +72,22 @@ Page {
                 spacing: Theme.paddingMedium
 
                 DetailItem {
+                    label: qsTr("Type")
+                    value: {
+                        switch(root.av.currentType) {
+                        case AVTransport.T_Audio:
+                            return qsTr("Audio")
+                        case AVTransport.T_Video:
+                            return qsTr("Video")
+                        case AVTransport.T_Image:
+                            return qsTr("Image")
+                        default:
+                            return qsTr("Unknown")
+                        }
+                    }
+                }
+
+                DetailItem {
                     label: qsTr("Title")
                     value: root.av.currentTitle
                     visible: value.length > 0
@@ -79,19 +96,22 @@ Page {
                 DetailItem {
                     label: qsTr("Author")
                     value: root.av.currentAuthor
-                    visible: value.length > 0
+                    visible: root.av.currentType !== AVTransport.T_Image &&
+                             value.length > 0
                 }
 
                 DetailItem {
                     label: qsTr("Album")
                     value: root.av.currentAlbum
-                    visible: value.length > 0
+                    visible: root.av.currentType !== AVTransport.T_Image &&
+                             value.length > 0
                 }
 
                 DetailItem {
                     label: qsTr("Duration")
                     value: utils.secToStr(root.av.currentTrackDuration)
-                    visible: root.av.currentTrackDuration > 0
+                    visible: root.av.currentType !== AVTransport.T_Image &&
+                             root.av.currentTrackDuration > 0
                 }
             }
 

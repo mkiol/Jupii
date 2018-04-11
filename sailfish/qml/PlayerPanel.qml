@@ -19,6 +19,7 @@ DockedPanel_ {
     property var rc
 
     property bool full: false
+    property bool contolable: true
     property int playMode: PlayListModel.PM_Normal
     property alias nextEnabled: nextButton.enabled
     property alias prevEnabled: prevButton.enabled
@@ -77,7 +78,7 @@ DockedPanel_ {
                 stepSize: 1
                 handleVisible: av.seekSupported
                 value: av.relativeTimePosition
-                enabled: av.seekSupported
+                enabled: av.seekSupported && root.contolable
                 valueText: utils.secToStr(value > 0 ? value : 0)
 
                 onValueChanged: {
@@ -130,7 +131,7 @@ DockedPanel_ {
                         verticalCenter: parent.verticalCenter
                         left: image.right
                         leftMargin: Theme.paddingLarge
-                        right: playButton.left
+                        right: playButton.visible ? playButton.left : parent.right
                         rightMargin: Theme.paddingLarge
                     }
 
@@ -175,7 +176,7 @@ DockedPanel_ {
                     icon.source: av.transportState !== AVTransport.Playing ?
                                      "image://theme/icon-l-play" :
                                      "image://theme/icon-l-pause"
-                    enabled: av.controlable
+                    enabled: root.contolable
                     onClicked: togglePlayClicked()
 
                     ProgressCircle {
@@ -183,7 +184,7 @@ DockedPanel_ {
                         value: av.relativeTimePosition / av.currentTrackDuration
                         progressColor: Theme.highlightColor
                         backgroundColor: "transparent"
-                        enabled: !root.full && av.controlable
+                        enabled: !root.full && root.controlable
                         opacity: enabled ? 0.4 : 0.0
                         visible: opacity > 0.0
                     }
