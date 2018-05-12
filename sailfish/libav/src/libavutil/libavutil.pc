@@ -1,0 +1,14 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=%{_libdir}
+includedir=${prefix}/include
+
+Name: libavutil
+Description: Libav utility library
+Version: 55.20.0
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir} -lavutil 
+Libs.private: -lm
+Cflags: -I${includedir}

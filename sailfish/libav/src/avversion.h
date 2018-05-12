@@ -1,0 +1,1 @@
+#define LIBAV_VERSION "12.3"

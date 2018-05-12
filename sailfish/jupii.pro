@@ -1,6 +1,6 @@
 TARGET = harbour-jupii
 
-CONFIG += c++11 sailfishapp object_parallel_to_source json
+CONFIG += c++11 sailfishapp object_parallel_to_source json no_lflags_merge
 QT += dbus
 
 PKGCONFIG += mlite5
@@ -9,11 +9,20 @@ INCLUDEPATH += /usr/include/c++/7
 
 DEFINES += Q_OS_SAILFISH
 
-LIBS += -lpthread -lcurl -lexpat
-
+include(qhttpserver/qhttpserver.pri)
 include(libupnp/libupnp.pri)
 include(libupnpp/libupnpp.pri)
-include(qhttpserver/qhttpserver.pri)
+include(taglib/taglib.pri)
+
+linux-g++-32 {
+    LIBS += -L$$PWD/libav/i486/ -l:libavutil.so.55 -l:libavformat.so.57 -l:libavcodec.so.57 -l:libavresample.so.3
+}
+
+linux-g++ {
+    LIBS += -L$$PWD/libav/arm/ -l:libavutil.so.55 -l:libavformat.so.57 -l:libavcodec.so.57 -l:libavresample.so.3
+}
+
+INCLUDEPATH += $$PWD/libav/src
 
 HEADERS += \
     src/dbus_jupii_adaptor.h \
@@ -67,9 +76,6 @@ SOURCES += \
     src/trackmodel.cpp
 
 OTHER_FILES += \
-    rpm/$${TARGET}.yaml \
-    rpm/$${TARGET}.changes.in \
-    $${TARGET}.desktop \
     translations/*.ts \
     dbus/org.jupii.xml \
     qml/main.qml \
@@ -105,3 +111,19 @@ TRANSLATIONS += translations/harbour-jupii.ts
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images
 INSTALLS += images
+
+linux-g++-32 {
+    lib.files = libav/i486/*
+}
+linux-g++ {
+    lib.files = libav/arm/*
+}
+
+lib.path = /usr/share/$${TARGET}/lib
+INSTALLS += lib
+
+DEPENDPATH += $$INCLUDEPATH
+
+OTHER_FILES += \
+    rpm/$${TARGET}.yaml \
+    rpm/$${TARGET}.changes.in

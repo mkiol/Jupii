@@ -1,0 +1,14 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libavdevice
+Description: Libav device handling library
+Version: 56.1.0
+Requires: libavformat >= 57.7.2, libavcodec >= 57.25.0, libavresample >= 3.0.0, libavutil >= 55.20.0
+Requires.private: 
+Conflicts:
+Libs: -L${libdir} -lavdevice -lm -lbz2 -lz -pthread
+Libs.private: 
+Cflags: -I${includedir}
