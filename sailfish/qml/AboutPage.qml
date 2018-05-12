@@ -92,6 +92,12 @@ Page {
                 text: "Libupnp - Copyright &copy; 2000-2003 Intel Corporation"
             }
 
+            PaddedLabel {
+                horizontalAlignment: Text.AlignLeft
+                textFormat: Text.RichText
+                text: "TagLib - Copyright &copy; 2002-2008 Scott Wheeler"
+            }
+
             Spacer {}
         }
 
