@@ -17,6 +17,7 @@
 #include <QQmlContext>
 #include <QLocale>
 #include <QTranslator>
+#include <QTextCodec>
 
 #include <sailfishapp.h>
 
@@ -92,6 +93,8 @@ int main(int argc, char *argv[])
             qWarning() << "Couldn't load default translation";
         }
     }
+
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     Utils* utils = Utils::instance();
     context->setContextProperty("utils", utils);

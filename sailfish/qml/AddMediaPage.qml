@@ -13,6 +13,7 @@ Page {
 
     property var musicPickerDialog
     property var videoPickerDialog
+    property var audioFromVideoPickerDialog
     property var imagePickerDialog
     property var albumPickerPage
     property var artistPickerPage
@@ -69,6 +70,15 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(playlistPickerPage)
+                }
+            }
+
+            SimpleListItem {
+                title.text: qsTr("Audio from Video")
+                icon.source: "image://theme/icon-m-file-audio?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+                onClicked: {
+                    pageStack.replace(audioFromVideoPickerDialog)
                 }
             }
 

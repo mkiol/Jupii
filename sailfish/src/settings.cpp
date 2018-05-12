@@ -9,6 +9,8 @@
 #include <QByteArray>
 #include <QStandardPaths>
 #include <QTime>
+#include <QDir>
+#include <QFileInfo>
 
 #include "settings.h"
 #include "directory.h"
@@ -79,14 +81,24 @@ QString Settings::getCacheDir()
 
 QString Settings::getPlaylistDir()
 {
-   const auto dir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+   const auto path = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
 
-   if (dir.isEmpty()) {
+   if (path.isEmpty()) {
        qWarning() << "MusicLocation dir is empty";
-       return dir;
+       return path;
    }
 
-   return dir + "/playlists";
+   const QString plsDir = "playlists";
+
+   QDir dir(path);
+   if (!dir.exists(plsDir)) {
+       if (!dir.mkdir(plsDir)) {
+           qWarning() << "Unable to create playlist dir";
+           return QString();
+       }
+   }
+
+   return path + "/" + plsDir;
 }
 
 void Settings::asyncAddFavDevice(const QString &id)

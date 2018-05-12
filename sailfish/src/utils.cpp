@@ -197,8 +197,23 @@ QString Utils::hash(const QString &value)
 QString Utils::pathFromId(const QString &id)
 {
     QStringList list = id.split('/');
-    list.removeLast();
-    return list.join('/');
+    if (list.size() > 2) {
+        list.removeLast(); // remove cookie
+        list.removeLast(); // remove type id
+        return list.join('/');
+    } else {
+        qWarning() << "Id is incorrect!";
+        return QString();
+    }
+}
+
+QString Utils::typeFromId(const QString &id)
+{
+    QStringList list = id.split('/');
+    if (list.size() > 2)
+        return list.at(list.size() - 2);
+    else
+        return QString();
 }
 
 QString Utils::cookieFromId(const QString &id)

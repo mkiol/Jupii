@@ -276,6 +276,18 @@ Page {
     }
 
     Component {
+        id: audioFromVideoPickerDialog
+        MultiVideoPickerDialog {
+            onAccepted: {
+                var paths = [];
+                for (var i = 0; i < selectedContent.count; ++i)
+                    paths.push(selectedContent.get(i).filePath)
+                playlist.addItemsAsAudio(paths)
+            }
+        }
+    }
+
+    Component {
         id: imagePickerDialog
         MultiImagePickerDialog {
             onAccepted: {
@@ -544,6 +556,7 @@ Page {
                     pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
                                        musicPickerDialog: musicPickerDialog,
                                        videoPickerDialog: videoPickerDialog,
+                                       audioFromVideoPickerDialog: audioFromVideoPickerDialog,
                                        imagePickerDialog: imagePickerDialog,
                                        albumPickerPage: albumPickerPage,
                                        artistPickerPage: artistPickerPage,
@@ -644,7 +657,7 @@ Page {
 
         playMode: playlist.playMode
 
-        contolable: av.controlable && av.currentType !== AVTransport.T_Image
+        controlable: av.controlable && av.currentType !== AVTransport.T_Image
 
         av: av
         rc: rc

@@ -78,6 +78,9 @@ QByteArray PlayListModel::makePlsData(const QString& name)
         auto pitem = static_cast<FileItem*>(m_list.at(i));
         sdata << "File" << i + 1 << "="
              << QUrl::fromLocalFile(pitem->path()).toString() << endl;
+        /*if (Utils::typeFromId(pitem->id()) == "a") {
+            sdata << "X-Jupii-Type" << i + 1 << "=Audio" << endl;
+        }*/
     }
 
     return data;
@@ -88,8 +91,11 @@ void PlayListModel::load()
     QStringList ids = Settings::instance()->getLastPlaylist();
     QStringList n_ids;
 
-    for (auto& id : ids) {
-        if (addId(id)) {
+    for (const auto& id : ids) {
+        QString type = Utils::typeFromId(id);
+        if (addId(id, type == "a" ?
+                  ContentServer::TypeMusic :
+                  ContentServer::TypeUnknown)) {
             n_ids << id;
         }
     }
@@ -118,14 +124,27 @@ int PlayListModel::getActiveItemIndex() const
 
 void PlayListModel::addItems(const QStringList& paths)
 {
+    addItems(paths, false);
+}
+
+void PlayListModel::addItemsAsAudio(const QStringList& paths)
+{
+    addItems(paths, true);
+}
+
+void PlayListModel::addItems(const QStringList& paths, bool asAudio)
+{
     qDebug() << "addItems:" << paths;
 
     QStringList n_ids;
 
     for (auto& path : paths) {
-        // id = path/cookie e.g. /home/nemo/Music/track01.mp3/y6Dgh
-        QString id = path + "/" + Utils::randString();
-        if (addId(id)) {
+        // id = path/type/cookie e.g. /home/nemo/Music/track01.mp3/-/y6Dgh
+        // types: "-" - default, "a" - audio
+        QString id =
+                path + "/" + (asAudio ? "a" : "-") + "/" + Utils::randString();
+        if (addId(id, asAudio ? ContentServer::TypeMusic :
+                  ContentServer::TypeUnknown)) {
             n_ids << id;
         }
     }
@@ -138,13 +157,15 @@ void PlayListModel::addItems(const QStringList& paths)
     }
 }
 
-bool PlayListModel::addId(const QString& id)
+bool PlayListModel::addId(const QString& id, ContentServer::Type type)
 {
+    qDebug() << "addId:" << id;
+
     QString path = Utils::pathFromId(id);
 
     QFileInfo file(path);
 
-    if (!file.exists()) {
+    if (!file.exists() || !file.isFile()) {
         qWarning() << "File" << path << "doesn't exist";
         return false;
     }
@@ -157,7 +178,9 @@ bool PlayListModel::addId(const QString& id)
 
     FileMetaData metaData;
     metaData.filename = file.fileName();
-    metaData.type = ContentServer::instance()->getContentType(metaData.filename);
+    metaData.type = type == ContentServer::TypeUnknown ?
+                ContentServer::instance()->getContentType(path) :
+                type;
     metaData.size = file.size();
 
     switch (metaData.type) {
@@ -222,8 +245,10 @@ void PlayListModel::setToBeActiveIndex(int i)
 
 void PlayListModel::setActiveUrl(const QUrl &url)
 {
-    auto cs = ContentServer::instance();
-    setActiveId(cs->idFromUrl(url));
+    if (!url.isEmpty()) {
+        auto cs = ContentServer::instance();
+        setActiveId(cs->idFromUrl(url));
+    }
 }
 
 void PlayListModel::clear()

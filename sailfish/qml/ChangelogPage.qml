@@ -31,13 +31,20 @@ Page {
             }
 
             LogItem {
+                title: "Play audio stream extracted from video files"
+                description: "Some UPnP devices support only audio content. " +
+                             ""
+            }
+
+            LogItem {
                 title: "Music picker sorted by artists"
-                description: "Music tracks to add can be sorted by artist."
+                description: "The music tracks can be browsed by artist name."
             }
 
             LogItem {
                 title: "Playlist file picker"
-                description: "The music tracks from a playlist file can be added to the current playlist."
+                description: "The music tracks from a playlist file can be " +
+                             "added to the current playlist."
             }
 
             LogItem {
@@ -51,8 +58,9 @@ Page {
 
             LogItem {
                 title: "Music album picker"
-                description: "The whole album or individual tracks can be " +
-                             "added to the playlist."
+                description: "The music tracks can be browsed by album name. " +
+                             "The whole album or individual tracks can be " +
+                             "added to the current playlist."
             }
 
             SectionHeader {

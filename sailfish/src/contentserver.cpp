@@ -19,6 +19,21 @@
 #include "tracker.h"
 #include "trackercursor.h"
 
+// TagLib
+#include "fileref.h"
+#include "tag.h"
+#include "tpropertymap.h"
+#include "mpegfile.h"
+#include "id3v2frame.h"
+#include "id3v2tag.h"
+
+// LibAV
+extern "C" {
+#include <libavformat/avformat.h>
+#include <libavutil/dict.h>
+#include <libavutil/mathematics.h>
+}
+
 using namespace std;
 
 ContentServer* ContentServer::m_instance = nullptr;
@@ -87,6 +102,11 @@ ContentServer::ContentServer(QObject *parent) :
         qWarning() << "Unable to start HTTP server!";
         //TODO: Handle: Unable to start HTTP server
     }
+
+    // Libav stuff
+    av_log_set_level(AV_LOG_DEBUG);
+    av_register_all();
+    avcodec_register_all();
 }
 
 ContentServer* ContentServer::instance(QObject *parent)
@@ -98,25 +118,29 @@ ContentServer* ContentServer::instance(QObject *parent)
     return ContentServer::m_instance;
 }
 
+ContentServer::Type ContentServer::getContentTypeByExtension(const QString &path)
+{
+    auto ext = path.split(".").last();
+    ext = ext.toLower();
+
+    if (m_imgExtMap.contains(ext)) {
+        return ContentServer::TypeImage;
+    } else if (m_musicExtMap.contains(ext)) {
+        return ContentServer::TypeMusic;
+    } else if (m_videoExtMap.contains(ext)) {
+        return ContentServer::TypeVideo;
+    }
+
+    // Default type
+    return ContentServer::TypeUnknown;
+}
+
 ContentServer::Type ContentServer::getContentType(const QString &path)
 {
     const auto it = getMetaCacheIterator(path);
     if (it == m_metaCache.end()) {
         qWarning() << "No cache item found, so guessing based on file extension";
-
-        auto ext = path.split(".").last();
-        ext = ext.toLower();
-
-        if (m_imgExtMap.contains(ext)) {
-            return ContentServer::TypeImage;
-        } else if (m_musicExtMap.contains(ext)) {
-            return ContentServer::TypeMusic;
-        } else if (m_videoExtMap.contains(ext)) {
-            return ContentServer::TypeVideo;
-        }
-
-        // Default type
-        return ContentServer::TypeUnknown;
+        return getContentTypeByExtension(path);
     }
 
     const ItemMeta& item = it.value();
@@ -156,45 +180,95 @@ QStringList ContentServer::getExtensions(int type) const
     return exts;
 }
 
+QString ContentServer::getContentMimeByExtension(const QString &path)
+{
+    auto ext = path.split(".").last();
+    ext = ext.toLower();
+
+    if (m_imgExtMap.contains(ext)) {
+        return m_imgExtMap.value(ext);
+    } else if (m_musicExtMap.contains(ext)) {
+        return m_musicExtMap.value(ext);
+    } else if (m_videoExtMap.contains(ext)) {
+        return m_videoExtMap.value(ext);
+    }
+
+    // Default mime
+    return "application/octet-stream";
+}
+
 QString ContentServer::getContentMime(const QString &path)
 {
     const auto it = getMetaCacheIterator(path);
     if (it == m_metaCache.end()) {
         qWarning() << "No cache item found, so guessing based on file extension";
-
-        auto ext = path.split(".").last();
-        ext = ext.toLower();
-
-        if (m_imgExtMap.contains(ext)) {
-            return m_imgExtMap.value(ext);
-        } else if (m_musicExtMap.contains(ext)) {
-            return m_musicExtMap.value(ext);
-        } else if (m_videoExtMap.contains(ext)) {
-            return m_videoExtMap.value(ext);
-        }
-
-        // Default mime
-        return "application/octet-stream";
+        return getContentMimeByExtension(path);
     }
 
     const ItemMeta& item = it.value();
     return item.mime;
 }
 
-bool ContentServer::getContentMeta(const QString &path, const QUrl &url, QString &meta)
+void ContentServer::fillItemMeta(const QString& path, ItemMeta& item)
 {
+    QFileInfo file(path);
+
+    item.path = path;
+    item.mime = getContentMimeByExtension(path);
+    item.type = getContentTypeByExtension(path);
+
+    TagLib::FileRef f(path.toUtf8().constData());
+    if(f.isNull()) {
+        qWarning() << "Can't extract meta data with TagLib";
+    } else {
+        if(f.tag()) {
+            TagLib::Tag *tag = f.tag();
+            item.title = QString::fromWCharArray(tag->title().toCWString());
+            item.artist = QString::fromWCharArray(tag->artist().toCWString());
+            item.album = QString::fromWCharArray(tag->album().toCWString());
+        }
+
+        if(f.audioProperties()) {
+            TagLib::AudioProperties *properties = f.audioProperties();
+            item.duration = properties->length();
+            item.bitrate = properties->bitrate();
+            item.sampleRate = properties->sampleRate();
+            item.channels = properties->channels();
+        }
+    }
+
+    if (item.title.isEmpty())
+        item.title = file.baseName();
+}
+
+bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &meta)
+{
+    QString path = Utils::pathFromId(id);
+
+    ItemMeta item;
     const auto it = getMetaCacheIterator(path);
     if (it == m_metaCache.end()) {
-        qWarning() << "No cache item found!";
-        return false;
+        qWarning() << "No Tracker item found, trying TagLib";
+        fillItemMeta(path, item);
+    } else {
+        item = it.value();
     }
-    const ItemMeta& item = it.value();
+
+    bool audioType = Utils::typeFromId(id) == "a"; // extract audio stream from video
+
+    AvData data;
+    if (audioType) {
+        if (!extractAudio(path, data)) {
+            qWarning() << "Can't extract audio stream";
+            return false;
+        }
+        qDebug() << "Audio stream extracted to" << data.path;
+    }
 
     auto u = Utils::instance();
     QString hash = u->hash(path);
     QFileInfo file(path);
     QString hash_dir = u->hash(file.dir().path());
-    qint64 size = file.size();
 
     QTextStream m(&meta);
 
@@ -205,6 +279,8 @@ bool ContentServer::getContentMeta(const QString &path, const QUrl &url, QString
     m << "xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\">";
     m << "<item id=\"" << hash << "\" parentID=\"" << hash_dir << "\" restricted=\"true\">";
 
+    //const ItemMeta& item = it.value();
+
     switch (item.type) {
     case TypeImage:
         m << "<upnp:albumArtURI>" << url.toString() << "</upnp:albumArtURI>";
@@ -214,14 +290,17 @@ bool ContentServer::getContentMeta(const QString &path, const QUrl &url, QString
         m << "<upnp:class>object.item.audioItem.musicTrack</upnp:class>";
         if (!item.albumArt.isEmpty()) {
             QUrl artUrl;
-            if (makeUrl(item.albumArt + "/jupii", artUrl))
+            if (makeUrl(item.albumArt + "/-/jupii", artUrl))
                 m << "<upnp:albumArtURI>" << artUrl.toString() << "</upnp:albumArtURI>";
             else
                 qWarning() << "Can't make Url form art path";
             break;
         }
     case TypeVideo:
-        m << "<upnp:class>object.item.videoItem.movie</upnp:class>";
+        if (audioType)
+            m << "<upnp:class>object.item.audioItem.musicTrack</upnp:class>";
+        else
+            m << "<upnp:class>object.item.videoItem.movie</upnp:class>";
         break;
     default:
         m << "<upnp:class>object.item</upnp:class>";
@@ -237,8 +316,15 @@ bool ContentServer::getContentMeta(const QString &path, const QUrl &url, QString
     if (!item.comment.isEmpty())
         m << "<upnp:longDescription>" << item.comment.toHtmlEscaped() << "</upnp:longDescription>";
 
-    m << "<res size=\"" << QString::number(size) << "\" ";
-    m << "protocolInfo=\"http-get:*:" << item.mime << ":*\" ";
+    if (audioType) {
+        // puting audio stream info instead video file
+        m << "<res size=\"" << QString::number(data.size) << "\" ";
+        m << "protocolInfo=\"http-get:*:" << data.mime << ":*\" ";
+    } else {
+        qint64 size = file.size();
+        m << "<res size=\"" << QString::number(size) << "\" ";
+        m << "protocolInfo=\"http-get:*:" << item.mime << ":*\" ";
+    }
 
     if (item.duration > 0) {
         int seconds = item.duration % 60;
@@ -249,12 +335,22 @@ bool ContentServer::getContentMeta(const QString &path, const QUrl &url, QString
                            QString::number(seconds) + ".000";
         m << "duration=\"" << duration << "\" ";
     }
-    if (item.bitrate > 0)
-        m << "bitrate=\"" << QString::number(item.bitrate) << "\" ";
-    if (item.sampleRate > 0)
-        m << "sampleFrequency=\"" << QString::number(item.sampleRate) << "\" ";
-    if (item.channels > 0)
-        m << "nrAudioChannels=\"" << QString::number(item.channels) << "\" ";
+
+    if (audioType) {
+        if (item.bitrate > 0)
+            m << "bitrate=\"" << QString::number(data.bitrate) << "\" ";
+        if (item.sampleRate > 0)
+            m << "sampleFrequency=\"" << QString::number(item.sampleRate) << "\" ";
+        if (item.channels > 0)
+            m << "nrAudioChannels=\"" << QString::number(data.channels) << "\" ";
+    } else {
+        if (item.bitrate > 0)
+            m << "bitrate=\"" << QString::number(item.bitrate) << "\" ";
+        if (item.sampleRate > 0)
+            m << "sampleFrequency=\"" << QString::number(item.sampleRate) << "\" ";
+        if (item.channels > 0)
+            m << "nrAudioChannels=\"" << QString::number(item.channels) << "\" ";
+    }
 
     m << ">" << url.toString() << "</res>";
     m << "</item>\n";
@@ -272,7 +368,7 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
 
     QFileInfo file(path);
 
-    if (file.exists()) {
+    if (file.exists() && file.isFile()) {
 
         if (!makeUrl(id, url)) {
             qWarning() << "Can't make Url form path";
@@ -286,7 +382,7 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
 
         //qDebug() << "Content URL:" << url.toString();
 
-        if (!getContentMeta(path, url, meta)) {
+        if (!getContentMeta(id, url, meta)) {
             qWarning() << "Can't get content meta data";
             return false;
         }
@@ -294,7 +390,7 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         return true;
     }
 
-    qWarning() << "File" << file.fileName() << "doesn't exist!";
+    qWarning() << "File" << path << "doesn't exist!";
 
     return false;
 }
@@ -380,17 +476,27 @@ void ContentServer::sendEnd(QHttpResponse *resp)
 
 QString ContentServer::pathFromUrl(const QUrl &url) const
 {
+    return pathAndTypeFromUrl(url).first;
+}
+
+std::pair<QString,QString> ContentServer::pathAndTypeFromUrl(const QUrl &url) const
+{
     QString hash = url.path();
     hash = hash.right(hash.length()-1);
 
     QString id = QString::fromUtf8(decrypt(hash.toUtf8()));
+    //qDebug() << "id:" << id;
     QString path = Utils::pathFromId(id);
+    //qDebug() << "path:" << path;
 
-    if (QFileInfo::exists(path)) {
-        return path;
+    QFileInfo inf(path);
+    if (inf.exists() && inf.isFile()) {
+        QString type = Utils::typeFromId(id);
+        //qDebug() << "type:" << type;
+        return std::pair<QString,QString>(path, type);
     } else {
         qWarning() << "Content path doesn't exist";
-        return QString();
+        return std::pair<QString,QString>();
     }
 }
 
@@ -402,7 +508,8 @@ QString ContentServer::idFromUrl(const QUrl &url) const
     QString id = QString::fromUtf8(decrypt(hash.toUtf8()));
     QString path = Utils::pathFromId(id);
 
-    if (QFileInfo::exists(path)) {
+    QFileInfo inf(path);
+    if (inf.exists() && inf.isFile()) {
         return id;
     } else {
         qWarning() << "Content path doesn't exist";
@@ -417,34 +524,309 @@ void ContentServer::asyncRequestHandler(QHttpRequest *req, QHttpResponse *resp)
     });
 }
 
-void ContentServer::requestHandler(QHttpRequest *req, QHttpResponse *resp)
+bool ContentServer::fillAvDataFromCodec(const AVCodecParameters *codec,
+                                        const QString& videoPath,
+                                        AvData& data) {
+    switch (codec->codec_id) {
+    case AV_CODEC_ID_MP2:
+    case AV_CODEC_ID_MP3:
+        data.mime = "audio/mpeg";
+        data.type = "mp3";
+        data.extension = "mp3";
+        break;
+    case AV_CODEC_ID_VORBIS:
+        data.mime = "audio/ogg";
+        data.type = "oga";
+        data.extension = "oga";
+        break;
+    default:
+        data.mime = "audio/mp4";
+        data.type = "mp4";
+        data.extension = "m4a";
+    }
+
+    data.path = videoPath + ".audio-extracted." + data.extension;
+    data.bitrate = codec->bit_rate;
+    data.channels = codec->channels;
+
+    return true;
+}
+
+bool ContentServer::extractAudio(const QString& path,
+                                 AvData& data)
 {
+    auto f = path.toLatin1();
+    const char* file = f.data();
 
-    qDebug() << ">>> requestHandler thread:" << QThread::currentThreadId();
-    qDebug() << "  method:" << req->methodString();
-    qDebug() << "  URL:" << req->url().path();
-    qDebug() << "  headers:" << req->url().path();
+    qDebug() << "Extracting audio from file:" << file;
 
-    const auto& headers = req->headers();
-    for (const auto& h : headers.keys()) {
-        qDebug() << "    " << h << ":" << headers.value(h);
+    AVFormatContext *ic = NULL;
+    if (avformat_open_input(&ic, file, NULL, NULL) < 0) {
+        qWarning() << "avformat_open_input error";
+        return false;
     }
 
-    QString path = pathFromUrl(req->url());
-
-    if (path.isEmpty()) {
-        qWarning() << "Unknown content requested!";
-        emit do_sendEmptyResponse(resp, 404);
-        return;
+    if ((avformat_find_stream_info(ic, NULL)) < 0) {
+        qWarning() << "Could not find stream info";
+        avformat_close_input(&ic);
+        return false;
     }
 
+    qDebug() << "nb_streams:" << ic->nb_streams;
+
+    int aidx = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
+    qDebug() << "audio stream index is:" << aidx;
+
+    if (aidx < 0) {
+        qWarning() << "No audio stream found";
+        avformat_close_input(&ic);
+        return false;
+    }
+
+    // Debug: audio stream side data
+    qDebug() << "audio stream nb_side_data:" << ic->streams[aidx]->nb_side_data;
+    for (int i = 0; i < ic->streams[aidx]->nb_side_data; ++i) {
+        qDebug() << "-- audio stream side data --";
+        qDebug() << "type:" << ic->streams[aidx]->side_data[i].type;
+        qDebug() << "size:" << ic->streams[aidx]->side_data[i].size;
+        QByteArray data(reinterpret_cast<const char*>(ic->streams[aidx]->side_data[i].data),
+                        ic->streams[aidx]->side_data[i].size);
+        qDebug() << "data:" << data;
+    }
+    // --
+
+    qDebug() << "Audio codec:";
+    qDebug() << "codec_id:" << ic->streams[aidx]->codecpar->codec_id;
+    qDebug() << "codec_channels:" << ic->streams[aidx]->codecpar->channels;
+    qDebug() << "codec_tag:" << ic->streams[aidx]->codecpar->codec_tag;
+    // --
+
+    if (!fillAvDataFromCodec(ic->streams[aidx]->codecpar, path, data)) {
+        qWarning() << "Unable to find correct mime for the codec:"
+                   << ic->streams[aidx]->codecpar->codec_id;
+        avformat_close_input(&ic);
+        return false;
+    }
+
+    qDebug() << "Audio stream content type" << data.mime;
+    qDebug() << "Audio stream bitrate" << data.bitrate;
+    qDebug() << "Audio stream channels" << data.channels;
+
+    qDebug() << "av_guess_format";
+    AVOutputFormat *of = NULL;
+    auto t = data.type.toLatin1();
+    of = av_guess_format(t.data(), NULL, NULL);
+    if (!of) {
+        qWarning() << "av_guess_format error";
+        avformat_close_input(&ic);
+        return false;
+    }
+
+    qDebug() << "avformat_alloc_context";
+    AVFormatContext *oc = NULL;
+    oc = avformat_alloc_context();
+    if (!oc) {
+        qWarning() << "avformat_alloc_context error";
+        avformat_close_input(&ic);
+        return false;
+    }
+
+    if (ic->metadata) {
+        // Debug: metadata
+        AVDictionaryEntry *tag = NULL;
+        while ((tag = av_dict_get(ic->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
+            qDebug() << tag->key << "=" << tag->value;
+
+        if (!av_dict_copy(&oc->metadata, ic->metadata, 0) < 0) {
+            qWarning() << "oc->metadata av_dict_copy error";
+            avformat_close_input(&ic);
+            avformat_free_context(oc);
+            return false;
+        }
+    } else {
+        qDebug() << "No metadata found";
+    }
+
+    oc->oformat = of;
+
+    qDebug() << "avformat_new_stream";
+    AVStream* ast = NULL;
+    ast = avformat_new_stream(oc, ic->streams[aidx]->codec->codec);
+    if (!ast) {
+        qWarning() << "avformat_new_stream error";
+        avformat_close_input(&ic);
+        avformat_free_context(oc);
+        return false;
+    }
+
+    ast->id = 0;
+
+    if (ic->streams[aidx]->metadata) {
+        // Debug: audio stream metadata, codec
+        AVDictionaryEntry *tag = NULL;
+        while ((tag = av_dict_get(ic->streams[aidx]->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
+            qDebug() << tag->key << "=" << tag->value;
+
+        if (!av_dict_copy(&ast->metadata, ic->streams[aidx]->metadata, 0) < 0) {
+            qWarning() << "av_dict_copy error";
+            avformat_close_input(&ic);
+            avformat_free_context(oc);
+            return false;
+        }
+    } else {
+        qDebug() << "No metadata in audio stream";
+    }
+
+    // Copy codec params
+    AVCodecParameters* t_cpara = avcodec_parameters_alloc();
+    if (avcodec_parameters_from_context(t_cpara, ic->streams[aidx]->codec) < 0) {
+        qWarning() << "avcodec_parameters_from_context error";
+        avformat_close_input(&ic);
+        avformat_free_context(oc);
+        return false;
+    }
+    if (avcodec_parameters_copy(ast->codecpar, t_cpara ) < 0) {
+        qWarning() << "avcodec_parameters_copy error";
+        avformat_close_input(&ic);
+        avformat_free_context(oc);
+        return false;
+    }
+    if (avcodec_parameters_to_context(ast->codec, t_cpara) < 0) {
+        qWarning() << "avcodec_parameters_to_context error";
+        avformat_close_input(&ic);
+        avformat_free_context(oc);
+        return false;
+    }
+    avcodec_parameters_free(&t_cpara);
+
+    ast->codecpar->codec_tag =
+            av_codec_get_tag(oc->oformat->codec_tag,
+                             ic->streams[aidx]->codecpar->codec_id);
+
+    if (oc->oformat->flags & AVFMT_GLOBALHEADER)
+        ast->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
+
+    qDebug() << "ast->codec->sample_fmt:" << ast->codec->sample_fmt;
+    qDebug() << "ast->codec->bit_rate:" << ast->codec->bit_rate;
+    qDebug() << "ast->codec->sample_rate:" << ast->codec->sample_rate;
+    qDebug() << "ast->codec->channels:" << ast->codec->channels;
+    qDebug() << "ast->codecpar->codec_tag:" << ast->codecpar->codec_tag;
+    qDebug() << "ic->streams[aidx]->codecpar->codec_id:" << ic->streams[aidx]->codecpar->codec_id;
+    qDebug() << "ast->codecpar->codec_id:" << ast->codecpar->codec_id;
+
+    qDebug() << "Extracted audio file will be:" << data.path;
+
+    QFile audioFile(data.path);
+    if (audioFile.exists()) {
+        qDebug() << "Extracted audio stream exists";
+        data.size = QFileInfo(data.path).size();
+        avformat_close_input(&ic);
+        avformat_free_context(oc);
+        return true;
+    }
+
+    qDebug() << "avio_open";
+    auto bapath = data.path.toLatin1();
+    if (avio_open(&oc->pb, bapath.data(), AVIO_FLAG_WRITE) < 0) {
+        qWarning() << "avio_open error";
+        avformat_close_input(&ic);
+        avformat_free_context(oc);
+        return false;
+    }
+
+    qDebug() << "avformat_write_header";
+    if (avformat_write_header(oc, NULL) < 0) {
+        qWarning() << "avformat_write_header error";
+        avformat_close_input(&ic);
+        avio_close(oc->pb);
+        avformat_free_context(oc);
+        audioFile.remove();
+        return false;
+    }
+
+    AVPacket pkt = { 0 };
+    av_init_packet(&pkt);
+
+    while (!av_read_frame(ic, &pkt)) {
+        // Only processing audio stream packets
+        if (pkt.stream_index == aidx) {
+            // Debug: audio stream packet side data
+            for (int i = 0; i < pkt.side_data_elems; ++i) {
+                qDebug() << "Audio stream packet side data:";
+                qDebug() << "type:" << pkt.side_data[i].type;
+                qDebug() << "size:" << pkt.side_data[i].size;
+                QByteArray data(reinterpret_cast<const char*>(pkt.side_data[i].data),
+                                pkt.side_data[i].size);
+                qDebug() << "data:" << data;
+            }
+
+            /*qDebug() << "------ orig -----";
+            qDebug() << "duration:" << pkt.duration;
+            qDebug() << "dts:" << pkt.dts;
+            qDebug() << "pts:" << pkt.pts;
+            qDebug() << "pos:" << pkt.pos;
+
+            qDebug() << "------ time base -----";
+            qDebug() << "ast->codec->time_base:" << ast->codec->time_base.num << ast->codec->time_base.den;
+            qDebug() << "ast->time_base:" << ast->time_base.num << ast->time_base.den;
+            qDebug() << "ic->streams[aidx]->codec->time_base:" << ic->streams[aidx]->codec->time_base.num << ic->streams[aidx]->codec->time_base.den;
+            qDebug() << "ic->streams[aidx]->time_base:" << ic->streams[aidx]->time_base.num << ic->streams[aidx]->time_base.den;*/
+
+            av_packet_rescale_ts(&pkt, ic->streams[aidx]->time_base, ast->time_base);
+
+            /*qDebug() << "------ after rescale -----";
+            qDebug() << "duration:" << pkt.duration;
+            qDebug() << "dts:" << pkt.dts;
+            qDebug() << "pts:" << pkt.pts;
+            qDebug() << "pos:" << pkt.pos;*/
+
+            pkt.stream_index = ast->index;
+
+            if (av_write_frame(oc, &pkt) != 0) {
+                qWarning() << "Error while writing audio frame";
+                av_packet_unref(&pkt);
+                avformat_close_input(&ic);
+                avio_close(oc->pb);
+                avformat_free_context(oc);
+                audioFile.remove();
+                return false;
+            }
+        }
+
+        av_packet_unref(&pkt);
+    }
+
+    qDebug() << "av_write_trailer";
+    if (av_write_trailer(oc) < 0) {
+        qWarning() << "av_write_trailer error";
+        avformat_close_input(&ic);
+        avio_close(oc->pb);
+        avformat_free_context(oc);
+        audioFile.remove();
+        return false;
+    }
+
+    qDebug() << "avformat_close_input";
+    avformat_close_input(&ic);
+
+    qDebug() << "avio_close";
+    if (avio_close(oc->pb) < 0) {
+        qDebug() << "avio_close error";
+    }
+
+    qDebug() << "avformat_free_context";
+    avformat_free_context(oc);
+
+    data.size = QFileInfo(data.path).size();
+
+    return true;
+}
+
+
+void ContentServer::stream(const QString& path, const QString& mime,
+                           QHttpRequest *req, QHttpResponse *resp)
+{
     QFile file(path);
-
-    if (!file.exists()) {
-        qWarning() << "Reqested file" << file.fileName() << "doesn't exist!";
-        emit do_sendEmptyResponse(resp, 404);
-        return;
-    }
 
     if (!file.open(QFile::ReadOnly)) {
         qWarning() << "Unable to open file" << file.fileName() << "to read!";
@@ -452,16 +834,17 @@ void ContentServer::requestHandler(QHttpRequest *req, QHttpResponse *resp)
         return;
     }
 
+    const auto& headers = req->headers();
+
     qint64 length = file.bytesAvailable();
-    QString ctype = getContentMime(file.fileName());
-    qDebug() << "Content-Type of" << file.fileName() << "is" << ctype;
+    qDebug() << "Content-Type of" << file.fileName() << "is" << mime;
 
     bool isRange = headers.contains("range");
     bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
 
-    resp->setHeader("Content-Type", ctype);
+    resp->setHeader("Content-Type", mime);
     resp->setHeader("Accept-Ranges", "bytes");
-    resp->setHeader("Connection", "close");
+    //resp->setHeader("Connection", "close");
 
     if (isRange) {
         qDebug() << "Reqest contains Range header";
@@ -541,6 +924,62 @@ void ContentServer::requestHandler(QHttpRequest *req, QHttpResponse *resp)
 
     emit do_sendEnd(resp);
     file.close();
+}
+
+void ContentServer::requestHandler(QHttpRequest *req, QHttpResponse *resp)
+{
+
+    qDebug() << ">>> requestHandler thread:" << QThread::currentThreadId();
+    qDebug() << "  method:" << req->methodString();
+    qDebug() << "  URL:" << req->url().path();
+    qDebug() << "  headers:" << req->url().path();
+
+    const auto& headers = req->headers();
+    for (const auto& h : headers.keys()) {
+        qDebug() << "    " << h << ":" << headers.value(h);
+    }
+
+    auto pathAndType = pathAndTypeFromUrl(req->url());
+    // pathAndType.first => path
+    // pathAndType.second => type ("-" or "a" - convert to audio)
+
+    if (pathAndType.first.isEmpty()) {
+        qWarning() << "Unknown content requested!";
+        emit do_sendEmptyResponse(resp, 404);
+        return;
+    }
+
+    if (!QFileInfo::exists(pathAndType.first)) {
+        qWarning() << "Reqested file" << pathAndType.first << "doesn't exist!";
+        emit do_sendEmptyResponse(resp, 404);
+        return;
+    }
+
+    ItemMeta meta;
+    const auto it = getMetaCacheIterator(pathAndType.first);
+    if (it == m_metaCache.end()) {
+        qWarning() << "No Tracker item found, trying TagLib";
+        fillItemMeta(pathAndType.first, meta);
+    } else {
+        meta = it.value();
+    }
+
+    //const ItemMeta& meta = it.value();
+
+    if (meta.type == ContentServer::TypeVideo && pathAndType.second == "a") {
+        qDebug() << "Video content and type is audio => extracting audio stream";
+
+        AvData data;
+        if (!extractAudio(pathAndType.first, data)) {
+            qWarning() << "Unable to extract audio stream";
+            emit do_sendEmptyResponse(resp, 404);
+            return;
+        }
+
+        stream(data.path, data.mime, req, resp);
+    } else {
+        stream(pathAndType.first, meta.mime, req, resp);
+    }
 }
 
 bool ContentServer::seqWriteData(QFile& file, qint64 size, QHttpResponse *resp)

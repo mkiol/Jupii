@@ -27,6 +27,7 @@ public:
 
     QString hash(const QString &value);
     static QString pathFromId(const QString &id);
+    static QString typeFromId(const QString &id);
     static QString cookieFromId(const QString &id);
     static QString randString(int len = 5);
     static void removeFile(const QString &path);

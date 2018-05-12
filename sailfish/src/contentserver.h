@@ -22,6 +22,10 @@
 
 #include "taskexecutor.h"
 
+extern "C" {
+#include <libavcodec/avcodec.h>
+}
+
 class ContentServer :
         public QObject,
         public TaskExecutor
@@ -45,6 +49,7 @@ public:
     QString getContentMime(const QString &path);
     Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
     QString pathFromUrl(const QUrl &url) const;
+    std::pair<QString,QString> pathAndTypeFromUrl(const QUrl &url) const;
 
 signals:
     void do_sendEmptyResponse(QHttpResponse *resp, int code);
@@ -79,6 +84,16 @@ private:
         int channels;
     };
 
+    struct AvData {
+        QString path;
+        QString mime;
+        QString type;
+        QString extension;
+        int bitrate;
+        int channels;
+        int64_t size;
+    };
+
     static ContentServer* m_instance;
 
     static const QHash<QString,QString> m_imgExtMap;
@@ -95,14 +110,20 @@ private:
     const static int threadWait = 1;
 
     explicit ContentServer(QObject *parent = nullptr);
-    bool getContentMeta(const QString &path, const QUrl &url, QString &meta);
+    bool getContentMeta(const QString &id, const QUrl &url, QString &meta);
     QByteArray encrypt(const QByteArray& data) const;
     QByteArray decrypt(const QByteArray& data) const;
     bool makeUrl(const QString& id, QUrl& url) const;
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
+    static bool extractAudio(const QString& path, AvData& data);
+    static bool fillAvDataFromCodec(const AVCodecParameters* codec, const QString &videoPath, AvData &data);
+    void stream(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);
     bool seqWriteData(QFile &file, qint64 size, QHttpResponse *resp);
     const QHash<QString, ItemMeta>::const_iterator makeItemMeta(const QString &path);
     const QHash<QString, ItemMeta>::const_iterator getMetaCacheIterator(const QString &path);
+    QString getContentMimeByExtension(const QString &path);
+    Type getContentTypeByExtension(const QString &path);
+    void fillItemMeta(const QString& path, ItemMeta& item);
 };
 
 #endif // CONTENTSERVER_H

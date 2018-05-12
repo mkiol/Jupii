@@ -129,6 +129,7 @@ signals:
 
 public slots:
     void addItems(const QStringList& paths);
+    void addItemsAsAudio(const QStringList& paths);
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
     void setToBeActiveIndex(int i);
@@ -136,8 +137,9 @@ public slots:
 private:
     int m_activeItemIndex = -1;
     int m_playMode = PM_RepeatAll;
+    void addItems(const QStringList& paths, bool asAudio);
     void setActiveItemIndex(int index);
-    bool addId(const QString& id);
+    bool addId(const QString& id, ContentServer::Type type = ContentServer::TypeUnknown);
     void save();
     QByteArray makePlsData(const QString& name);
 };
