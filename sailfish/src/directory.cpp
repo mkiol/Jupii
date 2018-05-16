@@ -55,6 +55,7 @@ void Directory::init()
     }
 
     // Delete old libupnpp log files
+    // TODO: Remove before release
     Utils::removeFile("/home/nemo/IUpnpErrFile.txt");
     Utils::removeFile("/home/nemo/IUpnpInfoFile.txt");
 
@@ -87,7 +88,7 @@ void Directory::clearLists()
     this->m_servsdesc.clear();
 }
 
-void Directory::discover()
+void Directory::discover(const QString& ssdpIp)
 {
     if (!m_inited) {
         qWarning() << "Directory not inited.";
@@ -107,12 +108,18 @@ void Directory::discover()
 
     setBusy(true);
 
-    startTask([this](){
+    startTask([this, ssdpIp](){
 
         clearLists();
 
-        m_directory->traverse([this](const UPnPClient::UPnPDeviceDesc &ddesc,
-                                     const UPnPClient::UPnPServiceDesc &sdesc) {
+        if (ssdpIp.isEmpty())
+            m_directory->resetSsdpIP();
+        else
+            m_directory->setSsdpIP(ssdpIp.toStdString());
+
+        bool found = false;
+        auto traverseFun = [this, &found](const UPnPClient::UPnPDeviceDesc &ddesc,
+                const UPnPClient::UPnPServiceDesc &sdesc) {
             /*qDebug() << "==> Visitor";
             qDebug() << " Device";
             qDebug() << "  friendlyName:" << QString::fromStdString(ddesc.friendlyName);
@@ -133,13 +140,31 @@ void Directory::discover()
             this->m_devsdesc.insert(did, ddesc);
             this->m_servsdesc.insert(did + sid, sdesc);
 
+            found = true;
+
             return true;
-        });
+        };
+
+        for (int i = 0; i < 3; ++i) {
+            m_directory->traverse(traverseFun);
+            qDebug() << "traverse found:" << found;
+            if (found)
+                break;
+        }
+
+        qDebug() << "traverse end";
+
+        m_directory->resetSsdpIP();
 
         emit discoveryReady();
 
         setBusy(false);
     });
+}
+
+void Directory::discover()
+{
+    discover(QString());
 }
 
 void Directory::discoverFavs()

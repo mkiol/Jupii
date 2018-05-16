@@ -187,7 +187,7 @@ int AdvertiseAndReply(
 	struct sockaddr *DestAddr,
 	/* [in] Device type. */
 	char *DeviceType, 
-	/* [in] Device UDN. */
+    /* [in] Device UDN. */
 	char *DeviceUDN, 
 	/* [in] Service type. */
 	char *ServiceType,
@@ -290,14 +290,23 @@ void ssdp_handle_ctrlpt_msg(
  *
  * \return 1 if successful else appropriate error.
  */
-int SearchByTarget(
-	/* [in] Number of seconds to wait, to collect all the responses. */
-	int Mx,
-	/* [in] Search target. */
-	char *St,
-	/* [in] Cookie provided by control point application. This cokie will
-	 * be returned to application in the callback. */
-	void *Cookie);
+int SearchByTarget(/* [in] Number of seconds to wait, to collect all the responses. */
+    int Mx,
+    /* [in] Search target. */
+    char *St,
+    /* [in] Cookie provided by control point application. This cokie will
+     * be returned to application in the callback. */
+    void *Cookie);
+
+int SearchByTargetWithSsdpIP(/* [in] Number of seconds to wait, to collect all the responses. */
+    int Mx,
+    /* [in] Search target. */
+    char *St,
+    /* [in] Cookie provided by control point application. This cokie will
+     * be returned to application in the callback. */
+    void *Cookie,
+    /* Dest IP for SSDP search request */
+    const char *SsdpIP);
 
 /* @} SSDP Control Point Functions */
 

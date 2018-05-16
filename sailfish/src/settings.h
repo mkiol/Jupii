@@ -25,6 +25,7 @@ class Settings:
     Q_OBJECT
     Q_PROPERTY (int port READ getPort WRITE setPort NOTIFY portChanged)
     Q_PROPERTY (QString lastDir READ getLastDir WRITE setLastDir NOTIFY lastDirChanged)
+    Q_PROPERTY (bool ssdpIpEnabled READ getSsdpIpEnabled WRITE setSsdpIpEnabled NOTIFY ssdpIpEnabledChanged)
     Q_PROPERTY (bool showAllDevices READ getShowAllDevices WRITE setShowAllDevices NOTIFY showAllDevicesChanged)
     Q_PROPERTY (int forwardTime READ getForwardTime WRITE setForwardTime NOTIFY forwardTimeChanged)
     Q_PROPERTY (bool imageSupported READ getImageSupported WRITE setImageSupported NOTIFY imageSupportedChanged)
@@ -64,6 +65,9 @@ public:
     QString getLastDir();
     void setLastDir(const QString& value);
 
+    void setSsdpIpEnabled(bool value);
+    bool getSsdpIpEnabled();
+
     QStringList getLastPlaylist();
     void setLastPlaylist(const QStringList& value);
 
@@ -83,6 +87,7 @@ signals:
     void imageSupportedChanged();
     void rememberPlaylistChanged();
     void useDbusVolumeChanged();
+    void ssdpIpEnabledChanged();
 
 private:
     QSettings settings;

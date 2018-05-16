@@ -1448,7 +1448,21 @@ EXPORT_SPEC int UpnpSearchAsync(
 	 * specification. */
 	const char *TTarget_constarget_const,
 	/*! The user data to pass when the callback function is invoked. */
-	const void *Cookie_const); 
+        const void *Cookie_const);
+EXPORT_SPEC int UpnpSearchAsyncWithSsdpIP(
+        /*! The handle of the client performing the search. */
+        UpnpClient_Handle Hnd,
+        /*! The time, in seconds, to wait for responses. If the time is greater
+         * than \c MAX_SEARCH_TIME then the time is set to \c MAX_SEARCH_TIME.
+         * If the time is less than \c MIN_SEARCH_TIME then the time is set to
+         * \c MIN_SEARCH_TIME. */
+        int Mx,
+        /*! The search target as defined in the UPnP Device Architecture v1.0
+         * specification. */
+        const char *TTarget_constarget_const,
+        /*! The user data to pass when the callback function is invoked. */
+        const void *Cookie_const,
+        const char *SsdpIP);
 
 /*!
  * \brief Sends out the discovery announcements for all devices and services

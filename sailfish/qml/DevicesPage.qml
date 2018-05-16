@@ -69,6 +69,13 @@ Page {
             }
 
             MenuItem {
+                text: qsTr("Add device manually")
+                visible: !directory.busy
+                enabled: !directory.busy && directory.inited
+                onClicked: pageStack.push(Qt.resolvedUrl("AddDevicePage.qml"))
+            }
+
+            MenuItem {
                 text: directory.inited ? qsTr("Find devices") : qsTr("Connect")
                 enabled: !directory.busy
                 onClicked: {

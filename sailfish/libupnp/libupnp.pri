@@ -1,4 +1,6 @@
-libupnp_BASE = ./libupnp
+QMAKE_CFLAGS += -D_FILE_OFFSET_BITS=64 -pthread -g -O2 -Os -Wall
+
+libupnp_BASE = $$PWD/../libupnp
 
 libupnp_HEADERS = \
   $$libupnp_BASE/upnp/inc/UpnpString.h \
@@ -109,17 +111,11 @@ libthreadutil_SOURCES = \
   $$libupnp_BASE/threadutil/src/ThreadPool.c \
   $$libupnp_BASE/threadutil/src/TimerThread.c
 
-#DEFINES += \
-#  INCLUDE_DEVICE_APIS \
-#  INCLUDE_CLIENT_APIS \
-#  HAVE_STRNLEN \
-#  HAVE_STRNDUP
-
 HEADERS += \
   $$libupnp_HEADERS \
   $$libixml_HEADERS \
   $$libthreadutil_HEADERS
-  
+
 SOURCES += \
   $$libupnp_SOURCES \
   $$libixml_SOURCES \

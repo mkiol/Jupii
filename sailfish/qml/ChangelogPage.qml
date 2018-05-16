@@ -31,9 +31,18 @@ Page {
             }
 
             LogItem {
+                title: "Add device manually"
+                description: "When UPnP device can't be auto discovered " +
+                             "(e.g. when is not in the same local network " +
+                             "as Jupii), it can be added manually. Make sure " +
+                             "that device is not behind NAT or firewall."
+            }
+
+            LogItem {
                 title: "Play audio stream extracted from video files"
                 description: "Some UPnP devices support only audio content. " +
-                             ""
+                             "In order to play audio on such devices, " +
+                             "Juppi can extracts audio stream from a video file."
             }
 
             LogItem {

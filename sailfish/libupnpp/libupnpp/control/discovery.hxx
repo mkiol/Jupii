@@ -100,6 +100,14 @@ public:
      */
     bool getDevByUDN(const std::string& udn, UPnPDeviceDesc& ddesc);
 
+    void setSsdpIP(const std::string& ssdp_ip) {
+        m_ssdp_ip = ssdp_ip;
+    }
+
+    void resetSsdpIP() {
+        m_ssdp_ip.clear();
+    }
+
     /** My health */
     bool ok() {
         return m_ok;
@@ -116,6 +124,7 @@ private:
 
     // Start UPnP search and record start of timeout
     bool search();
+
     // Look at the current pool and remove expired entries
     void expireDevices();
 
@@ -135,6 +144,7 @@ private:
     std::string m_reason;
     int m_searchTimeout;
     time_t m_lastSearch;
+    std::string m_ssdp_ip;
 };
 
 } // namespace UPnPClient

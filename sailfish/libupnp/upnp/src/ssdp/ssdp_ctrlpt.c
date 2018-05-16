@@ -308,7 +308,7 @@ void ssdp_handle_ctrlpt_msg(http_message_t *hmsg, struct sockaddr_storage *dest_
  * \brief Creates a HTTP search request packet depending on the input
  * parameter.
  */
-static int CreateClientRequestPacket(
+static int CreateClientRequestPacketWithSsdpIP(
 	/*! [in,out] Output string in HTTP format. */
 	INOUT char *RqstBuf,
 	/*! [in] RqstBuf size. */
@@ -318,7 +318,8 @@ static int CreateClientRequestPacket(
 	/*! [in] Number of seconds to wait to collect all the responses. */
 	IN char *SearchTarget,
 	/*! [in] search address family. */
-	IN int AddressFamily)
+    IN int AddressFamily,
+    const char* SsdpIP)
 {
 	int rc;
 	char TempBuf[COMMAND_LEN];
@@ -332,7 +333,7 @@ static int CreateClientRequestPacket(
 
 	switch (AddressFamily) {
 	case AF_INET:
-		rc = snprintf(TempBuf, sizeof(TempBuf), "HOST: %s:%d\r\n", SSDP_IP,
+        rc = snprintf(TempBuf, sizeof(TempBuf), "HOST: %s:%d\r\n", SsdpIP,
 			SSDP_PORT);
 		break;
 	case AF_INET6:
@@ -375,6 +376,20 @@ static int CreateClientRequestPacket(
 	strcat(RqstBuf, "\r\n");
 
 	return UPNP_E_SUCCESS;
+}
+static int CreateClientRequestPacket(
+    /*! [in,out] Output string in HTTP format. */
+    INOUT char *RqstBuf,
+    /*! [in] RqstBuf size. */
+    IN size_t RqstBufSize,
+    /*! [in] Search Target. */
+    IN int Mx,
+    /*! [in] Number of seconds to wait to collect all the responses. */
+    IN char *SearchTarget,
+    /*! [in] search address family. */
+    IN int AddressFamily)
+{
+    return CreateClientRequestPacketWithSsdpIP(RqstBuf, RqstBufSize, Mx, SearchTarget, AddressFamily, SSDP_IP);
 }
 
 /*!
@@ -501,6 +516,11 @@ static void searchExpired(
 
 int SearchByTarget(int Mx, char *St, void *Cookie)
 {
+    return SearchByTargetWithSsdpIP(Mx, St, Cookie, SSDP_IP);
+}
+
+int SearchByTargetWithSsdpIP(int Mx, char *St, void *Cookie, const char *SsdpIP)
+{
 	char errorBuffer[ERROR_BUFFER_LEN];
 	int *id = NULL;
 	int ret = 0;
@@ -542,7 +562,7 @@ int SearchByTarget(int Mx, char *St, void *Cookie)
 		timeTillRead = MIN_SEARCH_TIME;
 	else if (timeTillRead > MAX_SEARCH_TIME)
 		timeTillRead = MAX_SEARCH_TIME;
-	retVal = CreateClientRequestPacket(ReqBufv4, sizeof(ReqBufv4), timeTillRead, St, AF_INET);
+    retVal = CreateClientRequestPacketWithSsdpIP(ReqBufv4, sizeof(ReqBufv4), timeTillRead, St, AF_INET, SsdpIP);
 	if (retVal != UPNP_E_SUCCESS)
 		return retVal;
 #ifdef UPNP_ENABLE_IPV6
@@ -556,7 +576,8 @@ int SearchByTarget(int Mx, char *St, void *Cookie)
 
 	memset(&__ss_v4, 0, sizeof(__ss_v4));
 	destAddr4->sin_family = (sa_family_t)AF_INET;
-	inet_pton(AF_INET, SSDP_IP, &destAddr4->sin_addr);
+    //inet_pton(AF_INET, SSDP_IP, &destAddr4->sin_addr);
+    inet_pton(AF_INET, SsdpIP, &destAddr4->sin_addr);
 	destAddr4->sin_port = htons(SSDP_PORT);
 
 #ifdef UPNP_ENABLE_IPV6

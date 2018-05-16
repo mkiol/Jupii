@@ -335,7 +335,7 @@ void UPnPDeviceDirectory::expireDevices()
 // This means that you have to wait for the specified period before
 // the results are complete. 
 UPnPDeviceDirectory::UPnPDeviceDirectory(time_t search_window)
-    : m_ok(false), m_searchTimeout(int(search_window))
+    : m_ok(false), m_searchTimeout(int(search_window)), m_ssdp_ip()
 {
     addCallback(std::bind(&UPnPDeviceDirectory::deviceFound, this, _1, _2));
 
@@ -384,7 +384,9 @@ bool UPnPDeviceDirectory::search()
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         LOGDEB1("UPnPDeviceDirectory::search: calling upnpsearchasync" << endl);
-        int code1 = UpnpSearchAsync(lib->getclh(), m_searchTimeout, cp, lib);
+        int code1 = m_ssdp_ip.empty() ?
+                    UpnpSearchAsync(lib->getclh(), m_searchTimeout, cp, lib) :
+                    UpnpSearchAsyncWithSsdpIP(lib->getclh(), m_searchTimeout, cp, lib, m_ssdp_ip.c_str());
         if (code1 != UPNP_E_SUCCESS) {
             m_reason = LibUPnP::errAsString("UpnpSearchAsync", code1);
             LOGERR("UPnPDeviceDirectory::search: UpnpSearchAsync failed: " <<

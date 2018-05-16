@@ -42,6 +42,7 @@ public:
     QUrl getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc);
     Q_INVOKABLE void init();
     Q_INVOKABLE void discover();
+    Q_INVOKABLE void discover(const QString& ssdpIp);
     Q_INVOKABLE void discoverFavs();
 
 signals:

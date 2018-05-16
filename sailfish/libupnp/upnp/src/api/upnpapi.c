@@ -1788,12 +1788,21 @@ int UpnpSendAdvertisementLowPower(UpnpDevice_Handle Hnd, int Exp,
 #if EXCLUDE_SSDP == 0
 #ifdef INCLUDE_CLIENT_APIS
 
-
 int UpnpSearchAsync(
+    UpnpClient_Handle Hnd,
+    int Mx,
+    const char *Target_const,
+    const void *Cookie_const )
+{
+    return UpnpSearchAsyncWithSsdpIP(Hnd, Mx, Target_const, Cookie_const, SSDP_IP);
+}
+
+int UpnpSearchAsyncWithSsdpIP(
 	UpnpClient_Handle Hnd,
 	int Mx,
 	const char *Target_const,
-	const void *Cookie_const )
+    const void *Cookie_const,
+    const char *SsdpIP)
 {
     struct Handle_Info *SInfo = NULL;
     char *Target = ( char * )Target_const;
@@ -1823,7 +1832,8 @@ int UpnpSearchAsync(
     }
 
     HandleUnlock();
-    retVal = SearchByTarget( Mx, Target, ( void * )Cookie_const );
+    //retVal = SearchByTarget( Mx, Target, ( void * )Cookie_const );
+    retVal = SearchByTargetWithSsdpIP(Mx, Target, ( void * )Cookie_const, SsdpIP);
     if (retVal != 1)
         return retVal;
 

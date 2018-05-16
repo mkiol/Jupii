@@ -194,6 +194,19 @@ QString Settings::getLastDir()
     return settings.value("lastdir", "").toString();
 }
 
+void Settings::setSsdpIpEnabled(bool value)
+{
+    if (getSsdpIpEnabled() != value) {
+        settings.setValue("ssdpipenabled", value);
+        emit ssdpIpEnabledChanged();
+    }
+}
+
+bool Settings::getSsdpIpEnabled()
+{
+    return settings.value("ssdpipenabled", false).toBool();
+}
+
 void Settings::setLastPlaylist(const QStringList& value)
 {
     if (getLastPlaylist() != value) {

@@ -130,7 +130,7 @@ int AdvertiseAndReply(int AdFlag, UpnpDevice_Handle Hnd,
 		if (NumCopy != 0)
 			imillisleep(SSDP_PAUSE);
 		NumCopy++;
-		for (i = 0lu;; i++) {
+        for (i = 0;; i++) {
 			UpnpPrintf(UPNP_ALL, API, __FILE__, __LINE__,
 				   "Entering new device list with i = %lu\n\n",
 				   i);
