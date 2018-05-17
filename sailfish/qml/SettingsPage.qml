@@ -37,19 +37,6 @@ Page {
                 }
             }
 
-            TextSwitch {
-                automaticCheck: false
-                checked: settings.useDbusVolume
-                text: qsTr("Volume control with hardware keys")
-                description: qsTr("Change volume level using phone hardware volume keys. " +
-                                  "The volume level of the media device will be " +
-                                  "set to be the same as the volume level of the ringing alert " +
-                                  "on the phone.")
-                onClicked: {
-                    settings.useDbusVolume = !settings.useDbusVolume
-                }
-            }
-
             Slider {
                 width: parent.width
                 minimumValue: 1
@@ -67,6 +54,19 @@ Page {
 
             SectionHeader {
                 text: qsTr("Experimental features")
+            }
+
+            TextSwitch {
+                automaticCheck: false
+                checked: settings.useDbusVolume
+                text: qsTr("Volume control with hardware keys")
+                description: qsTr("Change volume level using phone hardware volume keys. " +
+                                  "The volume level of the media device will be " +
+                                  "set to be the same as the volume level of the ringing alert " +
+                                  "on the phone.")
+                onClicked: {
+                    settings.useDbusVolume = !settings.useDbusVolume
+                }
             }
 
             TextSwitch {
