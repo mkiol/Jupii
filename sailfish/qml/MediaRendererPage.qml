@@ -89,6 +89,12 @@ Page {
         case AVTransport.E_ServerError:
         case RenderingControl.E_ServerError:
             notification.show("Device responded with an error")
+            playlist.resetToBeActive()
+            break
+
+        case AVTransport.E_InvalidPath:
+            notification.show("Can't play the file")
+            playlist.resetToBeActive()
             break
         }
     }

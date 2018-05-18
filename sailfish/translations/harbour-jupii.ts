@@ -24,55 +24,73 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="68"/>
-        <source>Jupii source code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this app, You can obtain one at http://mozilla.org/MPL/2.0/.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../qml/AboutPage.qml" line="74"/>
         <source>Third party components copyrights</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
+    <name>AddDevicePage</name>
+    <message>
+        <location filename="../qml/AddDevicePage.qml" line="37"/>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AddDevicePage.qml" line="43"/>
+        <source>Enter IP address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AddDevicePage.qml" line="44"/>
+        <source>IP address</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AddMediaPage</name>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="36"/>
+        <location filename="../qml/AddMediaPage.qml" line="37"/>
         <source>Add item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="40"/>
+        <location filename="../qml/AddMediaPage.qml" line="41"/>
         <source>Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="49"/>
+        <location filename="../qml/AddMediaPage.qml" line="50"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="58"/>
+        <location filename="../qml/AddMediaPage.qml" line="59"/>
         <source>Artist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="67"/>
+        <location filename="../qml/AddMediaPage.qml" line="68"/>
         <source>Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="76"/>
+        <location filename="../qml/AddMediaPage.qml" line="77"/>
+        <source>Audio from Video</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AddMediaPage.qml" line="86"/>
         <source>Video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="85"/>
+        <location filename="../qml/AddMediaPage.qml" line="95"/>
         <source>Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="95"/>
+        <location filename="../qml/AddMediaPage.qml" line="105"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -87,7 +105,7 @@
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="79"/>
         <source>%n track(s)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n track</numerusform>
             <numerusform>%n tracks</numerusform>
         </translation>
@@ -118,7 +136,7 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="79"/>
         <source>%n track(s)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n track</numerusform>
             <numerusform>%n tracks</numerusform>
         </translation>
@@ -148,9 +166,9 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="49"/>
-        <location filename="../qml/ChangelogPage.qml" line="59"/>
-        <location filename="../qml/ChangelogPage.qml" line="105"/>
+        <location filename="../qml/ChangelogPage.qml" line="65"/>
+        <location filename="../qml/ChangelogPage.qml" line="76"/>
+        <location filename="../qml/ChangelogPage.qml" line="122"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -245,28 +263,33 @@
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="72"/>
+        <source>Add device manually</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="79"/>
         <source>Find devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="72"/>
-        <location filename="../qml/DevicesPage.qml" line="92"/>
+        <location filename="../qml/DevicesPage.qml" line="79"/>
+        <location filename="../qml/DevicesPage.qml" line="99"/>
         <source>Connect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="101"/>
+        <location filename="../qml/DevicesPage.qml" line="108"/>
         <source>Show description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="120"/>
+        <location filename="../qml/DevicesPage.qml" line="127"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="122"/>
+        <location filename="../qml/DevicesPage.qml" line="129"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
@@ -275,57 +298,57 @@ Pull down to connect to the local network.</source>
 <context>
     <name>MediaInfoPage</name>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="75"/>
+        <location filename="../qml/MediaInfoPage.qml" line="78"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="79"/>
+        <location filename="../qml/MediaInfoPage.qml" line="82"/>
         <source>Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="81"/>
+        <location filename="../qml/MediaInfoPage.qml" line="84"/>
         <source>Video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="83"/>
+        <location filename="../qml/MediaInfoPage.qml" line="86"/>
         <source>Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="85"/>
+        <location filename="../qml/MediaInfoPage.qml" line="88"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="91"/>
+        <location filename="../qml/MediaInfoPage.qml" line="94"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="97"/>
+        <location filename="../qml/MediaInfoPage.qml" line="100"/>
         <source>Author</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="104"/>
+        <location filename="../qml/MediaInfoPage.qml" line="107"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="111"/>
+        <location filename="../qml/MediaInfoPage.qml" line="114"/>
         <source>Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="119"/>
+        <location filename="../qml/MediaInfoPage.qml" line="122"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="134"/>
+        <location filename="../qml/MediaInfoPage.qml" line="137"/>
         <source>Path</source>
         <translation type="unfinished"></translation>
     </message>
@@ -338,57 +361,57 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="421"/>
+        <location filename="../qml/MediaRendererPage.qml" line="439"/>
         <source>Item is already in the playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="449"/>
+        <location filename="../qml/MediaRendererPage.qml" line="467"/>
         <source>Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="456"/>
+        <location filename="../qml/MediaRendererPage.qml" line="474"/>
         <source>Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="462"/>
+        <location filename="../qml/MediaRendererPage.qml" line="480"/>
         <source>Not connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="523"/>
+        <location filename="../qml/MediaRendererPage.qml" line="541"/>
         <source>Save playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="533"/>
+        <location filename="../qml/MediaRendererPage.qml" line="551"/>
         <source>Clear playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="542"/>
+        <location filename="../qml/MediaRendererPage.qml" line="560"/>
         <source>Add item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="581"/>
+        <location filename="../qml/MediaRendererPage.qml" line="600"/>
         <source>Play</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="581"/>
+        <location filename="../qml/MediaRendererPage.qml" line="600"/>
         <source>Show</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="594"/>
+        <location filename="../qml/MediaRendererPage.qml" line="613"/>
         <source>Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="602"/>
+        <location filename="../qml/MediaRendererPage.qml" line="621"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
@@ -454,6 +477,10 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="42"/>
+        <source>Enter playlist name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/SavePlaylistPage.qml" line="43"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
@@ -477,22 +504,22 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="43"/>
+        <location filename="../qml/SettingsPage.qml" line="62"/>
         <source>Volume control with hardware keys</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="44"/>
+        <location filename="../qml/SettingsPage.qml" line="63"/>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="61"/>
+        <location filename="../qml/SettingsPage.qml" line="48"/>
         <source>Forward/backward time-step interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="69"/>
+        <location filename="../qml/SettingsPage.qml" line="56"/>
         <source>Experimental features</source>
         <translation type="unfinished"></translation>
     </message>

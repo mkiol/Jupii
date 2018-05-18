@@ -39,7 +39,7 @@ Dialog {
                 id: textField
                 //x: Theme.horizontalPageMargin
                 width: parent.width
-                placeholderText: qsTr("Name")
+                placeholderText: qsTr("Enter playlist name")
                 label: qsTr("Name")
             }
 

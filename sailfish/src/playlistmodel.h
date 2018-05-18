@@ -133,6 +133,7 @@ public slots:
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
     void setToBeActiveIndex(int i);
+    void resetToBeActive();
 
 private:
     int m_activeItemIndex = -1;

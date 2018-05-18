@@ -63,12 +63,12 @@ Page {
                 text: "Copyright &copy; 2017-2018 Michal Kosciesza"
             }
 
-            PaddedLabel {
+            /*PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
                 text: qsTr("Jupii source code is subject to the terms of the Mozilla Public " +
                            "License, v. 2.0. If a copy of the MPL was not distributed with this " +
                            "app, You can obtain one at http://mozilla.org/MPL/2.0/.")
-            }
+            }*/
 
             SectionHeader {
                 text: qsTr("Third party components copyrights")

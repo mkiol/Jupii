@@ -18,10 +18,6 @@ Page {
     property bool imgOk: image.status === Image.Ready
     property bool showPath: av.currentPath.length > 0
 
-    onImgOkChanged: {
-        console.log("imgOk: " + imgOk);
-    }
-
     SilicaFlickable {
         anchors.fill: parent
         contentHeight: column.height
@@ -50,13 +46,12 @@ Page {
                         return h > w ? w : h
                     }
 
+                    sourceSize.width: 500
+                    sourceSize.height: 500
+
                     fillMode: Image.PreserveAspectCrop
 
                     source: av.currentAlbumArtURI
-
-                    onSourceChanged: {
-                        console.log("source: " + source);
-                    }
                 }
 
                 OpacityRampEffect {

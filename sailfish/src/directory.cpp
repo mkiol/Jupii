@@ -118,7 +118,7 @@ void Directory::discover(const QString& ssdpIp)
             m_directory->setSsdpIP(ssdpIp.toStdString());
 
         bool found = false;
-        auto traverseFun = [this, &found](const UPnPClient::UPnPDeviceDesc &ddesc,
+        auto traverseFun = [this, &found, ssdpIp](const UPnPClient::UPnPDeviceDesc &ddesc,
                 const UPnPClient::UPnPServiceDesc &sdesc) {
             /*qDebug() << "==> Visitor";
             qDebug() << " Device";
@@ -140,19 +140,26 @@ void Directory::discover(const QString& ssdpIp)
             this->m_devsdesc.insert(did, ddesc);
             this->m_servsdesc.insert(did + sid, sdesc);
 
-            found = true;
+            if (ssdpIp.isEmpty()) {
+                found = true;
+            } else {
+                // Assuming that URLBase's host equals device IP address
+                QString ip = QUrl(QString::fromStdString(ddesc.URLBase)).host();
+                found = (ip == ssdpIp);
+                //qDebug() << "Found manually added device"
+            }
 
             return true;
         };
 
         for (int i = 0; i < 3; ++i) {
             m_directory->traverse(traverseFun);
-            qDebug() << "traverse found:" << found;
+            //qDebug() << "traverse found:" << found;
             if (found)
                 break;
         }
 
-        qDebug() << "traverse end";
+        //qDebug() << "traverse end";
 
         m_directory->resetSsdpIP();
 

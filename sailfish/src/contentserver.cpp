@@ -555,7 +555,7 @@ bool ContentServer::fillAvDataFromCodec(const AVCodecParameters *codec,
 bool ContentServer::extractAudio(const QString& path,
                                  AvData& data)
 {
-    auto f = path.toLatin1();
+    auto f = path.toUtf8();
     const char* file = f.data();
 
     qDebug() << "Extracting audio from file:" << file;
@@ -726,7 +726,7 @@ bool ContentServer::extractAudio(const QString& path,
     }
 
     qDebug() << "avio_open";
-    auto bapath = data.path.toLatin1();
+    auto bapath = data.path.toUtf8();
     if (avio_open(&oc->pb, bapath.data(), AVIO_FLAG_WRITE) < 0) {
         qWarning() << "avio_open error";
         avformat_close_input(&ic);

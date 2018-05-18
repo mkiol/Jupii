@@ -219,8 +219,7 @@ void PlayListModel::setActiveId(const QString &id)
     if (id == activeId())
         return;
 
-    int len = m_list.length();
-
+    const int len = m_list.length();
     for (int i = 0; i < len; ++i) {
         auto fi = static_cast<FileItem*>(m_list.at(i));
 
@@ -232,6 +231,15 @@ void PlayListModel::setActiveId(const QString &id)
                 setActiveItemIndex(i);
             emit activeItemChanged();
         }
+    }
+}
+
+void PlayListModel::resetToBeActive()
+{
+    const int len = m_list.length();
+    for (int i = 0; i < len; ++i) {
+        auto fi = static_cast<FileItem*>(m_list.at(i));
+        fi->setToBeActive(false);
     }
 }
 
@@ -368,7 +376,7 @@ QString PlayListModel::prevActiveId() const
     if (m_activeItemIndex < 0)
         return QString();
 
-    int l = m_list.length();
+    const int l = m_list.length();
     if (l == 0)
         return QString();
 
@@ -390,7 +398,7 @@ QString PlayListModel::prevActiveId() const
 
 QString PlayListModel::nextId(const QString &id) const
 {
-    int l = m_list.length();
+    const int l = m_list.length();
     if (l == 0)
         return QString();
 
