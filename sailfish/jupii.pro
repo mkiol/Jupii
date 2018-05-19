@@ -106,7 +106,7 @@ system(qdbusxml2cpp dbus/org.jupii.xml -a src/dbus_jupii_adaptor)
 system(qdbusxml2cpp dbus/org.freedesktop.Tracker1.Steroids.xml -p src/dbus_tracker_inf)
 
 CONFIG += sailfishapp_i18n
-TRANSLATIONS += translations/harbour-jupii.ts
+TRANSLATIONS += translations/harbour-jupii.ts translations/harbour-jupii-pl.ts
 
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images
@@ -126,4 +126,5 @@ DEPENDPATH += $$INCLUDEPATH
 
 OTHER_FILES += \
     rpm/$${TARGET}.yaml \
-    rpm/$${TARGET}.changes.in
+    rpm/$${TARGET}.changes.in \
+    rpm/$${TARGET}.spec

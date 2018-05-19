@@ -42,10 +42,6 @@ Dialog {
                 width: parent.width
                 placeholderText: qsTr("Enter IP address")
                 label: qsTr("IP address")
-                /*validator: RegExpValidator {
-                    // Source: https://stackoverflow.com/a/27434991
-                    regExp: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-                }*/
             }
 
             Spacer {}

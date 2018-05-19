@@ -24,7 +24,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="74"/>
+        <location filename="../qml/AboutPage.qml" line="68"/>
+        <source>%1 is a free application. The source code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this app, You can obtain one at %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AboutPage.qml" line="75"/>
         <source>Third party components copyrights</source>
         <translation type="unfinished"></translation>
     </message>
@@ -189,47 +194,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DeviceInfoPage.qml" line="41"/>
+        <location filename="../qml/DeviceInfoPage.qml" line="43"/>
         <source>Copy XML description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DeviceInfoPage.qml" line="44"/>
+        <location filename="../qml/DeviceInfoPage.qml" line="48"/>
         <source>Description copied to the clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DeviceInfoPage.qml" line="66"/>
+        <location filename="../qml/DeviceInfoPage.qml" line="70"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DeviceInfoPage.qml" line="71"/>
+        <location filename="../qml/DeviceInfoPage.qml" line="75"/>
         <source>Device type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DeviceInfoPage.qml" line="76"/>
+        <location filename="../qml/DeviceInfoPage.qml" line="80"/>
         <source>Model name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DeviceInfoPage.qml" line="81"/>
+        <location filename="../qml/DeviceInfoPage.qml" line="85"/>
         <source>Manufacturer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DeviceInfoPage.qml" line="86"/>
+        <location filename="../qml/DeviceInfoPage.qml" line="90"/>
         <source>UDN</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DeviceInfoPage.qml" line="91"/>
+        <location filename="../qml/DeviceInfoPage.qml" line="95"/>
         <source>URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DeviceInfoPage.qml" line="97"/>
+        <location filename="../qml/DeviceInfoPage.qml" line="101"/>
         <source>Services</source>
         <translation type="unfinished"></translation>
     </message>
@@ -514,6 +519,26 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/SettingsPage.qml" line="76"/>
+        <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="89"/>
+        <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="103"/>
+        <source>Adding devices manually</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="104"/>
+        <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/SettingsPage.qml" line="48"/>
         <source>Forward/backward time-step interval</source>
         <translation type="unfinished"></translation>
@@ -529,18 +554,8 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="76"/>
-        <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces Jupii to play images despite the fact it could cause some issues.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="88"/>
         <source>All devices visible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="89"/>
-        <source>Jupii supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices Jupii is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -31,14 +31,6 @@ Page {
             }
 
             LogItem {
-                title: "Add device manually"
-                description: "If Jupii fails to discover a device " +
-                             "(e.g. because it is in a different LAN), you can " +
-                             "add it manually with IP address. Make sure " +
-                             "that device is not behind a NAT or a firewall."
-            }
-
-            LogItem {
                 title: "Play audio stream extracted from video files"
                 description: "Some UPnP devices support only audio content. " +
                              "In order to play video files on such devices, " +
@@ -59,6 +51,14 @@ Page {
             LogItem {
                 title: "Save current playlist to a file"
                 description: "Current playlist can be saved as a playlist file."
+            }
+
+            LogItem {
+                title: "Add device manually (experimental)"
+                description: "If Jupii fails to discover a device " +
+                             "(e.g. because it is in a different LAN), you can " +
+                             "add it manually with IP address. Make sure " +
+                             "that device is not behind a NAT or a firewall."
             }
 
             SectionHeader {

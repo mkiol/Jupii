@@ -75,8 +75,8 @@ Page {
                 text: qsTr("Image content")
                 description: qsTr("Playing images on UPnP devices doesn't work well right now. " +
                                   "There are few minor issues that have not been resolved yet. " +
-                                  "This option forces Jupii to play images despite the fact " +
-                                  "it could cause some issues.")
+                                  "This option forces %1 to play images despite the fact " +
+                                  "it could cause some issues.").arg(APP_NAME)
                 onClicked: {
                     settings.imageSupported = !settings.imageSupported
                 }
@@ -86,13 +86,30 @@ Page {
                 automaticCheck: false
                 checked: settings.showAllDevices
                 text: qsTr("All devices visible")
-                description: qsTr("Jupii supports only Media Renderer devices. With this option enabled, " +
+                description: qsTr("%1 supports only Media Renderer devices. With this option enabled, " +
                                   "all UPnP devices will be shown, including unsupported devices like " +
-                                  "home routers or Media Servers. For unsupported devices Jupii is able " +
+                                  "home routers or Media Servers. For unsupported devices %1 is able " +
                                   "to show only basic description information. " +
-                                  "This option could be useful for auditing UPnP devices in your local network.")
+                                  "This option could be useful for auditing UPnP devices " +
+                                  "in your local network.").arg(APP_NAME)
                 onClicked: {
                     settings.showAllDevices = !settings.showAllDevices
+                }
+            }
+
+            TextSwitch {
+                automaticCheck: false
+                checked: settings.ssdpIpEnabled
+                text: qsTr("Adding devices manually")
+                description: qsTr("If %1 fails to discover a device " +
+                             "(e.g. because it is in a different LAN), you can " +
+                             "add it manually with IP address. " +
+                             "When enabled, pull down menu contains additional " +
+                             "option to add device manually. " +
+                             "Make sure that your device is not behind a NAT " +
+                             "or a firewall.").arg(APP_NAME)
+                onClicked: {
+                    settings.ssdpIpEnabled = !settings.ssdpIpEnabled
                 }
             }
 

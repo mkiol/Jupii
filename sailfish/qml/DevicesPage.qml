@@ -70,8 +70,8 @@ Page {
 
             MenuItem {
                 text: qsTr("Add device manually")
-                visible: !directory.busy
-                enabled: !directory.busy && directory.inited
+                visible: !directory.busy && settings.ssdpIpEnabled
+                enabled: visible && directory.inited
                 onClicked: pageStack.push(Qt.resolvedUrl("AddDevicePage.qml"))
             }
 

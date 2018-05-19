@@ -36,9 +36,13 @@ Page {
 
             PullDownMenu {
                 id: menu
+                enabled: settings.showAllDevices
+                visible: enabled
 
                 MenuItem {
                     text: qsTr("Copy XML description")
+                    enabled: settings.showAllDevices
+                    visible: enabled
                     onClicked: {
                         Clipboard.text = deviceInfo.getXML()
                         notification.show(qsTr("Description copied to the clipboard"))

@@ -32,7 +32,7 @@ Directory::Directory(QObject *parent) :
 
 void Directory::init()
 {
-    Utils* u = Utils::instance();
+    auto u = Utils::instance();
 
     QString ifname, addr;
 
@@ -112,6 +112,13 @@ void Directory::discover(const QString& ssdpIp)
 
         clearLists();
 
+        if (m_directory == 0) {
+            qWarning() << "Directory not initialized";
+            setInited(false);
+            emit error(3);
+            return;
+        }
+
         if (ssdpIp.isEmpty())
             m_directory->resetSsdpIP();
         else
@@ -153,6 +160,12 @@ void Directory::discover(const QString& ssdpIp)
         };
 
         for (int i = 0; i < 3; ++i) {
+            if (m_directory == 0) {
+                qWarning() << "Directory not initialized";
+                setInited(false);
+                emit error(3);
+                return;
+            }
             m_directory->traverse(traverseFun);
             //qDebug() << "traverse found:" << found;
             if (found)
