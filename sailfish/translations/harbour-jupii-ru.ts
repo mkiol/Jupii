@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>Authors &amp; license</source>
-        <translation type="unfinished">Авторы и лицензия</translation>
+        <translation>Авторы и лицензия</translation>
     </message>
     <message>
         <source>%1 is a free application. The source code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this app, You can obtain one at %2.</source>
