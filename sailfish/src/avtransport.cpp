@@ -42,6 +42,7 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
 
         if (name == "TransportState") {
             if (m_transportState != value) {
+                m_oldTransportState = m_transportState;
                 m_transportState = value;
                 emit transportStateChanged();
                 emit preControlableChanged();
@@ -116,7 +117,10 @@ void AVTransport::changed(const QString &name, const QVariant &_value)
         }
 
         if (name == "NextAVTransportURI") {
-            if (m_nextURI != value) {
+            if (value == "NOT_IMPLEMENTED") {
+                setNextURISupported(false);
+            } else if (m_nextURI != value) {
+                setNextURISupported(true);
 
                 if (m_blockEmitUriChanged) {
                     qDebug() << "nextURI change blocked";
@@ -183,6 +187,7 @@ void AVTransport::postDeInit()
     m_currentAlbum.clear();
     m_currentTransportActions = 0;
     m_futureSeek = 0;
+    m_nextURISupported = true;
 
     emit currentURIChanged();
     emit nextURIChanged();
@@ -197,6 +202,7 @@ void AVTransport::postDeInit()
     emit currentAlbumArtChanged();
     emit transportActionsChanged();
     emit preControlableChanged();
+    emit nextURISupportedChanged();
 }
 
 
@@ -227,6 +233,14 @@ void AVTransport::transportStateHandler()
 {
     emit transportActionsChanged();
     emit preControlableChanged();
+
+    if (!m_nextURISupported &&
+        m_transportState == Stopped &&
+        m_oldTransportState == Playing) {
+        qDebug() << "Track has ended";
+        emit trackEnded();
+    }
+
     //qDebug() << "--> aUPDATE transportStateHandler";
     asyncUpdate();
 }
@@ -447,10 +461,21 @@ bool AVTransport::getControlable()
     return getPlayable() || getStopable();
 }
 
+bool AVTransport::getNextURISupported()
+{
+    return m_nextURISupported;
+}
+
+void AVTransport::setNextURISupported(bool value)
+{
+    if (m_nextURISupported != value) {
+        m_nextURISupported = value;
+        emit nextURISupportedChanged();
+    }
+}
+
 void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 {
-    //qDebug() << "1| cid, nid:" << cid << nid;
-
     if (!Utils::instance()->checkNetworkIf()) {
         qWarning() << "Can't find valid network interface";
         emit error(E_LostConnection);
@@ -469,8 +494,8 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 
         bool do_current = !cid.isEmpty();
         bool do_play = false;
-        bool do_next = !nid.isEmpty();
-        bool do_clearNext = !do_next;
+        bool do_next = m_nextURISupported && !nid.isEmpty();
+        bool do_clearNext = m_nextURISupported && !do_next;
         QUrl cURL, nURL;
         QString cmeta, nmeta, s_cURI, s_nURI;
 
@@ -478,7 +503,6 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         //qDebug() << "2| cid, nid:" << cid << nid;
 
         if (do_current) {
-
             if (!cs->getContentUrl(cid, cURL, cmeta, m_currentURI)) {
                 qWarning() << "Id" << cid << "can't be converted to URL";
                 emit error(E_InvalidPath);
@@ -496,7 +520,6 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         }
 
         if (do_next) {
-
             if (!cs->getContentUrl(nid, nURL, nmeta, m_nextURI)) {
                 qWarning() << "Id" << nid << "can't be converted to URL";
                 emit error(E_InvalidPath);
@@ -564,7 +587,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 
         if (do_current) {
             // Clearing nextURI on next action on last item in the queue
-            if (nid.isEmpty() && m_nextURI == s_cURI) {
+            if (m_nextURISupported && nid.isEmpty() && m_nextURI == s_cURI) {
                 qDebug() << "Clearing nextURI";
                 if (!handleError(srv->setNextAVTransportURI("", ""))) {
                     qWarning() << "Error response for setNextAVTransportURI()";
@@ -596,7 +619,6 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
                 }
             }
         }
-
 
         tsleep();
 
@@ -882,12 +904,8 @@ void AVTransport::update(int initDelay, int postDelay)
     updateCurrentTransportActions();
     //updateTransportSettings();
 
-    //qDebug() << "transportState:" << m_transportState;
-
     tsleep(postDelay);
 
-    //qDebug() << "getCurrentType():" << getCurrentType();
-    //qDebug() << "m_transportState:" << m_transportState;
     if (getCurrentType() == T_Image && m_transportState == Playing) {
         qDebug() << "Calling stop because current track type is image";
         if (!handleError(srv->stop())) {
@@ -1024,6 +1042,7 @@ void AVTransport::updateTransportInfo()
         qDebug() << "  tpstatus:" << ti.tpstatus;
 
         if (m_transportState != ti.tpstate) {
+            m_oldTransportState = m_transportState;
             m_transportState = ti.tpstate;
             emit transportStateChanged();
             emit transportActionsChanged();
@@ -1040,6 +1059,7 @@ void AVTransport::updateTransportInfo()
         qWarning() << "Unable to get Transport Info";
 
         if (m_transportState != Unknown) {
+            m_oldTransportState = m_transportState;
             m_transportState = Unknown;
             emit transportStateChanged();
             emit transportActionsChanged();
@@ -1136,23 +1156,29 @@ void AVTransport::updateMediaInfo()
         QString cururi = QString::fromStdString(mi.cururi);
         qDebug() << "old currentURI:" << m_currentURI;
         qDebug() << "new currentURI:" << cururi;
+
         if (m_currentURI != cururi) {
             m_currentURI = cururi;
             emit currentURIChanged();
             emit preControlableChanged();
-        }
 
-        QString nexturi = QString::fromStdString(mi.nexturi);
-        qDebug() << "old nextURI:" << m_nextURI;
-        qDebug() << "new nextURI:" << nexturi;
-        if (m_nextURI != nexturi) {
-            if (m_nextURI.isEmpty()) {
-                m_nextURI = nexturi;
-                emit nextURIChanged();
-                emit transportActionsChanged();
-            } else {
-                m_nextURI = nexturi;
-                emit nextURIChanged();
+            QString nexturi = QString::fromStdString(mi.nexturi);
+            qDebug() << "old nextURI:" << m_nextURI;
+            qDebug() << "new nextURI:" << nexturi;
+
+            if (nexturi == "NOT_IMPLEMENTED") {
+                qWarning() << "nextURI is not supported";
+                setNextURISupported(false);
+            } else if (m_nextURI != nexturi) {
+                setNextURISupported(true);
+                if (m_nextURI.isEmpty()) {
+                    m_nextURI = nexturi;
+                    emit nextURIChanged();
+                    emit transportActionsChanged();
+                } else {
+                    m_nextURI = nexturi;
+                    emit nextURIChanged();
+                }
             }
         }
 

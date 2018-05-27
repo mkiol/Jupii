@@ -369,6 +369,22 @@ Page {
             rc.asyncUpdate()
         }
 
+        onTrackEnded: {
+            // onTrackEnded is emited only when nextURI is not supported
+            console.log("onTrackEnded")
+
+            if (listView.count > 0) {
+                var aid = playlist.activeId()
+                console.log("current id is: " + aid)
+                if (aid.length > 0) {
+                    var nid = playlist.nextActiveId()
+                    console.log("next id will be: " + nid)
+                    if (nid.length > 0)
+                        av.setLocalContent(nid,"");
+                }
+            }
+        }
+
         onCurrentURIChanged: {
             console.log("onCurrentURIChanged")
             playlist.setActiveUrl(currentURI)

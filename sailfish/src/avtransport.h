@@ -25,6 +25,7 @@ class AVTransport : public Service
     Q_PROPERTY (QString currentPath READ getCurrentPath NOTIFY currentURIChanged)
     Q_PROPERTY (QString nextURI READ getNextURI NOTIFY nextURIChanged)
     Q_PROPERTY (QString nextPath READ getNextPath NOTIFY nextURIChanged)
+    Q_PROPERTY (bool nextURISupported READ getNextURISupported NOTIFY nextURISupportedChanged)
 
     Q_PROPERTY (int transportState READ getTransportState NOTIFY transportStateChanged)
     Q_PROPERTY (int transportStatus READ getTransportStatus NOTIFY transportStatusChanged)
@@ -135,6 +136,7 @@ public:
     bool getPreviousSupported();
     bool getSeekSupported();
     bool getStopSupported();
+    bool getNextURISupported();
 
     bool getPlayable();
     bool getStopable();
@@ -160,6 +162,8 @@ signals:
     void updated();
     void preControlableChanged();
     void controlableChanged();
+    void nextURISupportedChanged();
+    void trackEnded();
 
 private slots:
     void timerEvent();
@@ -170,6 +174,7 @@ private slots:
 
 private:
     int m_transportState = Unknown;
+    int m_oldTransportState = Unknown;
     int m_transportStatus = TPS_Unknown;
     int m_playmode = PM_Unknown;
     int m_numberOfTracks = 0;
@@ -190,6 +195,7 @@ private:
 
     QString m_currentURI = "";
     QString m_nextURI = "";
+    bool m_nextURISupported = true;
     bool m_emitCurrentUriChanged = false;
     bool m_emitNextUriChanged = false;
     bool m_blockEmitUriChanged = false;
@@ -223,6 +229,7 @@ private:
     void needTimerCheck();
     void controlableChangedHandler();
     void blockUriChanged(int time = 500);
+    void setNextURISupported(bool value);
     std::string type() const;
 };
 
