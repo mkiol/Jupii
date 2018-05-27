@@ -27,6 +27,24 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("0.9.5")
+            }
+
+            LogItem {
+                title: "Better support for various UPnP devices"
+                description: "Support for devices where NextURI option is not " +
+                             "implemented was added. Jupii also sends " +
+                             "contentFeatures.dlna.org & transferMode.dlna.org " +
+                             "HTTP headers required by some UPnP devices."
+            }
+
+            LogItem {
+                title: "Russian, Dutch & Polish translations"
+                description: "Many thanks to Вячеслав Диконов and d9h20f for " +
+                             "providing Russian and Dutch translations."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("0.9.4")
             }
 

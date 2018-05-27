@@ -8,6 +8,11 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun May 27 2018 Michal Kosciesza <michal@mkiol.net> 0.9.5-1
+- Support for devices where NextURI is not implemented
+- transferMode.dlna.org and contentFeatures.dlna.org HTTP headers
+- RU and
+
 * Fri May 18 2018 Michal Kosciesza <michal@mkiol.net> 0.9.4-2
 - Add device manually
 - Play audio stream extracted from video files

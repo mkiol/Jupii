@@ -106,7 +106,11 @@ system(qdbusxml2cpp dbus/org.jupii.xml -a src/dbus_jupii_adaptor)
 system(qdbusxml2cpp dbus/org.freedesktop.Tracker1.Steroids.xml -p src/dbus_tracker_inf)
 
 CONFIG += sailfishapp_i18n
-TRANSLATIONS += translations/harbour-jupii.ts translations/harbour-jupii-pl.ts
+TRANSLATIONS += translations/harbour-jupii.ts \
+    translations/harbour-jupii-pl.ts \
+    translations/harbour-jupii-nl.ts \
+    translations/harbour-jupii-nl_BE.ts \
+    translations/harbour-jupii-ru.ts
 
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images
