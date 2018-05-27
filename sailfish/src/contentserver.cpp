@@ -73,12 +73,21 @@ const QHash<QString,QString> ContentServer::m_videoExtMap {
     {"webm", "video/webm"},
     {"flv", "video/x-flv"},
     {"ogv", "video/ogg"},
-    {"avi", "video/msvideo"},
+    {"avi", "video/x-msvideo"},
     {"mov", "video/quicktime"}, {"qt", "video/quicktime"},
     {"wmv", "video/x-ms-wmv"},
     {"mp4", "video/mp4"}, {"m4v", "video/mp4"},
     {"mpg", "video/mpeg"}, {"mpeg", "video/mpeg"}, {"m2v", "video/mpeg"}
 };
+
+/* DLNA.ORG_OP flags:
+ * 00 - no seeking allowed
+ * 01 - seek by byte
+ * 10 - seek by time
+ * 11 - seek by both*/
+const QString ContentServer::dlnaOrgOpFlags = "DLNA.ORG_OP=01";
+const QString ContentServer::dlnaOrgCiFlags = "DLNA.ORG_CI=0";
+const QString ContentServer::dlnaOrgFlags = "DLNA.ORG_FLAGS=01700000000000000000000000000000";
 
 ContentServer::ContentServer(QObject *parent) :
     QObject(parent),
@@ -116,6 +125,28 @@ ContentServer* ContentServer::instance(QObject *parent)
     }
 
     return ContentServer::m_instance;
+}
+
+QString ContentServer::dlnaOrgPnFlags(const QString &mime)
+{
+    if (mime == "video/x-msvideo")
+        return "DLNA.ORG_PN=AVI";
+    /*if (mime == "image/jpeg")
+        return "DLNA.ORG_PN=JPEG_LRG";*/
+    if (mime == "audio/mpeg")
+        return "DLNA.ORG_PN=MP3";
+    if (mime == "audio/vnd.wav")
+        return "DLNA.ORG_PN=LPCM";
+    return QString();
+}
+
+QString ContentServer::dlnaContentFeaturesHeader(const QString& mime)
+{
+    QString pnFlags = dlnaOrgPnFlags(mime);
+    if (pnFlags.isEmpty())
+        return dlnaOrgOpFlags + ";" + dlnaOrgCiFlags + ";" + dlnaOrgFlags;
+    else
+        return pnFlags + ";" + dlnaOrgOpFlags + ";" + dlnaOrgCiFlags + ";" + dlnaOrgFlags;
 }
 
 ContentServer::Type ContentServer::getContentTypeByExtension(const QString &path)
@@ -323,7 +354,8 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
     } else {
         qint64 size = file.size();
         m << "<res size=\"" << QString::number(size) << "\" ";
-        m << "protocolInfo=\"http-get:*:" << item.mime << ":*\" ";
+        //m << "protocolInfo=\"http-get:*:" << item.mime << ":*\" ";
+        m << "protocolInfo=\"http-get:*:" << item.mime << ":" << dlnaOrgOpFlags << "\" ";
     }
 
     if (item.duration > 0) {
@@ -823,6 +855,7 @@ bool ContentServer::extractAudio(const QString& path,
 }
 
 
+
 void ContentServer::stream(const QString& path, const QString& mime,
                            QHttpRequest *req, QHttpResponse *resp)
 {
@@ -844,7 +877,10 @@ void ContentServer::stream(const QString& path, const QString& mime,
 
     resp->setHeader("Content-Type", mime);
     resp->setHeader("Accept-Ranges", "bytes");
-    //resp->setHeader("Connection", "close");
+    resp->setHeader("Connection", "close");
+
+    resp->setHeader("transferMode.dlna.org", "Streaming");
+    resp->setHeader("contentFeatures.dlna.org", dlnaContentFeaturesHeader(mime));
 
     if (isRange) {
         qDebug() << "Reqest contains Range header";
@@ -1047,7 +1083,7 @@ const QHash<QString, ContentServer::ItemMeta>::const_iterator ContentServer::mak
 
     if (n == 10) {
         while(cursor.next()) {
-            for (int i = 0; i < n; ++i) {
+            /*for (int i = 0; i < n; ++i) {
                 auto name = cursor.name(i);
                 auto type = cursor.type(i);
                 auto value = cursor.value(i);
@@ -1055,7 +1091,7 @@ const QHash<QString, ContentServer::ItemMeta>::const_iterator ContentServer::mak
                 qDebug() << " name:" << name;
                 qDebug() << " type:" << type;
                 qDebug() << " value:" << value;
-            }
+            }*/
 
             auto& meta = m_metaCache[path];
             meta.trackerId = cursor.value(0).toString();

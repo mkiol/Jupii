@@ -100,6 +100,9 @@ private:
     static const QHash<QString,QString> m_musicExtMap;
     static const QHash<QString,QString> m_videoExtMap;
     static const QString queryTemplate;
+    static const QString dlnaOrgOpFlags;
+    static const QString dlnaOrgCiFlags;
+    static const QString dlnaOrgFlags;
 
     QHash<QString, ItemMeta> m_metaCache; // path => itemMeta
 
@@ -124,6 +127,8 @@ private:
     QString getContentMimeByExtension(const QString &path);
     Type getContentTypeByExtension(const QString &path);
     void fillItemMeta(const QString& path, ItemMeta& item);
+    static QString dlnaOrgPnFlags(const QString& mime);
+    static QString dlnaContentFeaturesHeader(const QString& mime);
 };
 
 #endif // CONTENTSERVER_H
