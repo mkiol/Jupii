@@ -370,10 +370,11 @@ Page {
         }
 
         onTrackEnded: {
-            // onTrackEnded is emited only when nextURI is not supported
             console.log("onTrackEnded")
 
-            if (listView.count > 0) {
+            if (listView.count > 0 && (nextURISupported ||
+                playlist.playMode === PlayListModel.PM_RepeatOne))
+            {
                 var aid = playlist.activeId()
                 console.log("current id is: " + aid)
                 if (aid.length > 0) {

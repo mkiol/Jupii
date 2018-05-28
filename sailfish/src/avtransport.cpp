@@ -234,8 +234,7 @@ void AVTransport::transportStateHandler()
     emit transportActionsChanged();
     emit preControlableChanged();
 
-    if (!m_nextURISupported &&
-        m_transportState == Stopped &&
+    if (m_transportState == Stopped &&
         m_oldTransportState == Playing) {
         qDebug() << "Track has ended";
         emit trackEnded();
@@ -1161,24 +1160,24 @@ void AVTransport::updateMediaInfo()
             m_currentURI = cururi;
             emit currentURIChanged();
             emit preControlableChanged();
+        }
 
-            QString nexturi = QString::fromStdString(mi.nexturi);
-            qDebug() << "old nextURI:" << m_nextURI;
-            qDebug() << "new nextURI:" << nexturi;
+        QString nexturi = QString::fromStdString(mi.nexturi);
+        qDebug() << "old nextURI:" << m_nextURI;
+        qDebug() << "new nextURI:" << nexturi;
 
-            if (nexturi == "NOT_IMPLEMENTED") {
-                qWarning() << "nextURI is not supported";
-                setNextURISupported(false);
-            } else if (m_nextURI != nexturi) {
-                setNextURISupported(true);
-                if (m_nextURI.isEmpty()) {
-                    m_nextURI = nexturi;
-                    emit nextURIChanged();
-                    emit transportActionsChanged();
-                } else {
-                    m_nextURI = nexturi;
-                    emit nextURIChanged();
-                }
+        if (nexturi == "NOT_IMPLEMENTED") {
+            qWarning() << "nextURI is not supported";
+            setNextURISupported(false);
+        } else if (m_nextURI != nexturi) {
+            setNextURISupported(true);
+            if (m_nextURI.isEmpty()) {
+                m_nextURI = nexturi;
+                emit nextURIChanged();
+                emit transportActionsChanged();
+            } else {
+                m_nextURI = nexturi;
+                emit nextURIChanged();
             }
         }
 
