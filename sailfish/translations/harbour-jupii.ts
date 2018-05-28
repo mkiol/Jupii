@@ -171,10 +171,10 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="48"/>
-        <location filename="../qml/ChangelogPage.qml" line="83"/>
-        <location filename="../qml/ChangelogPage.qml" line="94"/>
-        <location filename="../qml/ChangelogPage.qml" line="140"/>
+        <location filename="../qml/ChangelogPage.qml" line="45"/>
+        <location filename="../qml/ChangelogPage.qml" line="80"/>
+        <location filename="../qml/ChangelogPage.qml" line="91"/>
+        <location filename="../qml/ChangelogPage.qml" line="137"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>

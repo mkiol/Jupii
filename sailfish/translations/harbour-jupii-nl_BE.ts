@@ -88,7 +88,7 @@
         <source>Search album</source>
         <translation>Album zoeken</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n nummer</numerusform>
@@ -114,7 +114,7 @@
         <source>Search artist</source>
         <translation>Artiest zoeken</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n nummer</numerusform>
@@ -364,7 +364,7 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <source>Search playlist</source>
         <translation>Afspeellijst zoeken</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n nummer</numerusform>
@@ -460,12 +460,12 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
 </context>
 <context>
     <name>TracksPage</name>
-    <message>
+    <message numerus="yes">
         <source>%n selected</source>
         <translation>
             <numerusform>%n geselecteerd</numerusform>
             <numerusform>%n geselecteerd</numerusform>
-	</translation>
+        </translation>
     </message>
     <message>
         <source>Search tracks</source>

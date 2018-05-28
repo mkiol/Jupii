@@ -88,9 +88,12 @@
         <source>Search album</source>
         <translation>Поиск альбомов</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <source>%n track(s)</source>
-        <translation>%n дорожек
+        <translation>
+            <numerusform>%n дорoжки</numerusform>
+            <numerusform>%n дорожек</numerusform>
+            <numerusform>%n дорожек</numerusform>
         </translation>
     </message>
     <message>
@@ -112,10 +115,13 @@
         <source>Search artist</source>
         <translation>Поиск исполнителей</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <source>%n track(s)</source>
-        <translation>%n дорожек
-                </translation>
+        <translation>
+            <numerusform>%n дорoжки</numerusform>
+            <numerusform>%n дорожек</numerusform>
+            <numerusform>%n дорожек</numerusform>
+        </translation>
     </message>
     <message>
         <source>Select tracks</source>
@@ -360,9 +366,12 @@ Pull down to connect to the local network.</source>
         <source>Search playlist</source>
         <translation>Поиск в списке</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <source>%n track(s)</source>
-        <translation>%n дорожек
+        <translation>
+            <numerusform>%n дорoжки</numerusform>
+            <numerusform>%n дорожек</numerusform>
+            <numerusform>%n дорожек</numerusform>
         </translation>
     </message>
     <message>
@@ -454,12 +463,13 @@ Pull down to connect to the local network.</source>
 </context>
 <context>
     <name>TracksPage</name>
-    <message>
+    <message numerus="yes">
         <source>%n selected</source>
         <translation>
             <numerusform>%n выбрана</numerusform>
+            <numerusform>%n выбраны</numerusform>
             <numerusform>%n выбрано</numerusform>
-	</translation>
+        </translation>
     </message>
     <message>
         <source>Search tracks</source>

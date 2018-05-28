@@ -32,10 +32,7 @@ Page {
 
             LogItem {
                 title: "Better support for various UPnP devices"
-                description: "Support for devices where NextURI option is not " +
-                             "implemented was added. Jupii also sends " +
-                             "contentFeatures.dlna.org & transferMode.dlna.org " +
-                             "HTTP headers required by some UPnP devices."
+                description: "Support for diffrent UPnP devices has been improved."
             }
 
             LogItem {

@@ -82,9 +82,9 @@ int main(int argc, char *argv[])
 
     QTranslator translator;
     const QString locale = QLocale::system().name();
-    //const QString locale = "pl_PL";
+    //const QString locale = "";
     const QString transDir = SailfishApp::pathTo("translations").toLocalFile();
-    if(translator.load("harbour-jupii_" + locale, transDir)) {
+    if(translator.load("harbour-jupii-" + locale, transDir)) {
         app->installTranslator(&translator);
     } else {
         qWarning() << "Couldn't load translation for" << locale;
