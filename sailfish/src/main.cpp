@@ -43,10 +43,8 @@
 #include "playlistfilemodel.h"
 #include "trackmodel.h"
 
-using namespace std;
-
 static const char* APP_NAME = "Jupii";
-static const char* APP_VERSION = "0.9.4";
+static const char* APP_VERSION = "0.9.6";
 static const char* AUTHOR = "Michal Kosciesza <michal@mkiol.net>";
 static const char* PAGE = "https://github.com/mkiol/Jupii";
 static const char* LICENSE = "http://mozilla.org/MPL/2.0/";
@@ -82,7 +80,7 @@ int main(int argc, char *argv[])
 
     QTranslator translator;
     const QString locale = QLocale::system().name();
-    //const QString locale = "";
+    //const QString locale = "de";
     const QString transDir = SailfishApp::pathTo("translations").toLocalFile();
     if(translator.load("harbour-jupii-" + locale, transDir)) {
         app->installTranslator(&translator);

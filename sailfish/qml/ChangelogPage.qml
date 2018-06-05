@@ -27,6 +27,16 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("0.9.6")
+            }
+
+            LogItem {
+                title: "Swedish & German translations"
+                description: "Many thanks to Åke Engelbrektson and drosjesjaafoer for " +
+                             "providing Swedish and German translations."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("0.9.5")
             }
 
@@ -49,7 +59,7 @@ Page {
                 title: "Play audio stream extracted from video files"
                 description: "Some UPnP devices support only audio content. " +
                              "In order to play video files on such devices, " +
-                             "Juppi can extract an audio stream from a video file."
+                             "Jupii can extract an audio stream from a video file."
             }
 
             LogItem {

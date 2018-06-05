@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Tue Jun 05 2018 Michal Kosciesza <michal@mkiol.net> 0.9.6-1
+- SV and DE translations
+- Mino bug fixes
+
 * Sun May 27 2018 Michal Kosciesza <michal@mkiol.net> 0.9.5-1
 - Support for devices where NextURI is not implemented
 - transferMode.dlna.org and contentFeatures.dlna.org HTTP headers
