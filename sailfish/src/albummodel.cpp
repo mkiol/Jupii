@@ -96,7 +96,7 @@ void AlbumModel::processTrackerReply(const QStringList& varNames,
 
         clear();
 
-        QStringList albums;
+        QHash<QString, AlbumData> albums;
 
         while(cursor.next()) {
             /*for (int i = 0; i < n; ++i) {
@@ -112,25 +112,38 @@ void AlbumModel::processTrackerReply(const QStringList& varNames,
             QString id = cursor.value(0).toString();
 
             if (albums.contains(id)) {
-                qDebug() << "Duplicate album, skiping";
+                qDebug() << "Duplicate album, updating count, length and skiping";
+
+                AlbumData& album = albums[id];
+                album.count += cursor.value(3).toInt();
+                album.length += cursor.value(4).toInt();
+
                 continue;
             }
 
             QString imgFilePath = tracker->genAlbumArtFile(cursor.value(1).toString(),
-                                                            cursor.value(2).toString());
-
+                                                           cursor.value(2).toString());
             QFileInfo imgFile(imgFilePath);
 
-            appendRow(new AlbumItem(id,
-                                    cursor.value(1).toString(),
-                                    cursor.value(2).toString(),
-                                    imgFile.exists() ?
-                                        QUrl(imgFilePath) :
-                                        QUrl(),
-                                    cursor.value(3).toInt(),
-                                    cursor.value(4).toInt()));
+            AlbumData& album = albums[id];
+            album.id = id;
+            album.title = cursor.value(1).toString();
+            album.artist = cursor.value(2).toString();
+            album.image = imgFile.exists() ? QUrl(imgFilePath) : QUrl();
+            album.count = cursor.value(3).toInt();
+            album.length = cursor.value(4).toInt();
+        }
 
-            albums << id;
+        auto end = albums.cend();
+        for (auto it = albums.cbegin(); it != end; ++it) {
+            const AlbumData& album = it.value();
+            appendRow(new AlbumItem(album.id,
+                                    album.title,
+                                    album.artist,
+                                    album.image,
+                                    album.count,
+                                    album.length,
+                                    this));
         }
 
         if (m_list.length() > 0)

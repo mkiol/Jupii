@@ -88,6 +88,15 @@ private slots:
     void processTrackerError();
 
 private:
+    struct AlbumData {
+        QString id;
+        QString title;
+        QString artist;
+        QUrl image;
+        int count;
+        int length;
+    };
+
     QString m_filter;
     QString m_albumsQueryTemplate;
     QString m_tracksQueryTemplate;
