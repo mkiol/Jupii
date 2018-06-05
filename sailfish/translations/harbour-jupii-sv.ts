@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="pl">
+<TS version="2.1" language="sv">
 <context>
     <name>AboutPage</name>
     <message>
         <location filename="../qml/AboutPage.qml" line="26"/>
         <source>About</source>
-        <translation>O Jupiim</translation>
+        <translation>Om</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="42"/>
         <source>Version %1</source>
-        <translation>Wersja %1</translation>
+        <translation>Version %1</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="51"/>
         <source>Changelog</source>
-        <translation>Lista zmian</translation>
+        <translation>Ändringslogg</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="57"/>
         <source>Authors &amp; license</source>
-        <translation>Autorzy i licencja</translation>
+        <translation>Utvecklare &amp; Licens</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="68"/>
         <source>%1 is a free application. The source code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this app, You can obtain one at %2.</source>
-        <translation>%1 jest wolnym oprogramowaniem. Wykorzytanie kodu źródłowego podlega licencji Mozilla Public License wersja 2.0. Jeśli kopia licencji MPL nie została dostarczona, to można ją pobrać ze strony %2.</translation>
+        <translation>%1 är en fri applikation. Källkoden licensieras under Mozilla Public License, v. 2.0. Om en kopia av MPL inte distribueras med denna app, kan du hitta den på %2.</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="75"/>
         <source>Third party components copyrights</source>
-        <translation>Prawa autorskie użytych komponentów</translation>
+        <translation>Upphovsrätter för tredjepartskomponenter</translation>
     </message>
 </context>
 <context>
@@ -39,17 +39,17 @@
     <message>
         <location filename="../qml/AddDevicePage.qml" line="37"/>
         <source>Add</source>
-        <translation>Dodaj</translation>
+        <translation>Lägg till</translation>
     </message>
     <message>
         <location filename="../qml/AddDevicePage.qml" line="43"/>
         <source>Enter IP address</source>
-        <translation>Wprowadź adres IP</translation>
+        <translation>Ange IP-adress</translation>
     </message>
     <message>
         <location filename="../qml/AddDevicePage.qml" line="44"/>
         <source>IP address</source>
-        <translation>adres IP</translation>
+        <translation>IP-adress</translation>
     </message>
 </context>
 <context>
@@ -57,12 +57,12 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="37"/>
         <source>Add item</source>
-        <translation>Dodaj</translation>
+        <translation>Lägg till objekt</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="41"/>
         <source>Music</source>
-        <translation>Muzyka</translation>
+        <translation>Musik</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="50"/>
@@ -72,32 +72,32 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="59"/>
         <source>Artist</source>
-        <translation>Artysta</translation>
+        <translation>Artist</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="68"/>
         <source>Playlist</source>
-        <translation>Playlista</translation>
+        <translation>Spellista</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="77"/>
         <source>Audio from Video</source>
-        <translation>Audio z pliku Wideo</translation>
+        <translation>Ljud från video</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="86"/>
         <source>Video</source>
-        <translation>Wideo</translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="95"/>
         <source>Image</source>
-        <translation>Obraz</translation>
+        <translation>Bild</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="105"/>
         <source>File</source>
-        <translation>Plik</translation>
+        <translation>Fil</translation>
     </message>
 </context>
 <context>
@@ -105,31 +105,30 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="64"/>
         <source>Search album</source>
-        <translation>Szukaj albumów</translation>
+        <translation>Sök album</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="79"/>
         <source>%n track(s)</source>
         <translation>
-            <numerusform>%n utwór</numerusform>
-            <numerusform>%n utwory</numerusform>
-            <numerusform>%n utworów</numerusform>
+            <numerusform>%n spår</numerusform>
+            <numerusform>%n spår</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="86"/>
         <source>Select tracks</source>
-        <translation>Wybierz utwór</translation>
+        <translation>Välj spår</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="93"/>
         <source>Add all tracks</source>
-        <translation>Dodaj wszystkie utwory</translation>
+        <translation>Lägg till alla spår</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="115"/>
         <source>No albums</source>
-        <translation>Brak albumów</translation>
+        <translation>Inga album</translation>
     </message>
 </context>
 <context>
@@ -137,31 +136,30 @@
     <message>
         <location filename="../qml/ArtistPage.qml" line="64"/>
         <source>Search artist</source>
-        <translation>Szukaj artysty</translation>
+        <translation>Sök artist</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="79"/>
         <source>%n track(s)</source>
         <translation>
-            <numerusform>%n utwór</numerusform>
-            <numerusform>%n utwory</numerusform>
-            <numerusform>%n utworów</numerusform>
+            <numerusform>%n spår</numerusform>
+            <numerusform>%n spår</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="86"/>
         <source>Select tracks</source>
-        <translation>Wybierz utwór</translation>
+        <translation>Välj spår</translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="93"/>
         <source>Add all tracks</source>
-        <translation>Dodaj wszystkie utwory</translation>
+        <translation>Lägg till alla spår</translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="115"/>
         <source>No artists</source>
-        <translation>Brak artystów</translation>
+        <translation>Inga artister</translation>
     </message>
 </context>
 <context>
@@ -169,7 +167,7 @@
     <message>
         <location filename="../qml/ChangelogPage.qml" line="26"/>
         <source>Changelog</source>
-        <translation>Lista zmian</translation>
+        <translation>Ändringslogg</translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
@@ -179,7 +177,7 @@
         <location filename="../qml/ChangelogPage.qml" line="105"/>
         <location filename="../qml/ChangelogPage.qml" line="151"/>
         <source>Version %1</source>
-        <translation>Wersja %1</translation>
+        <translation>Version %1</translation>
     </message>
 </context>
 <context>
@@ -187,7 +185,7 @@
     <message>
         <location filename="../qml/CopyableLabel.qml" line="34"/>
         <source>Copy</source>
-        <translation>Kopiuj</translation>
+        <translation>Kopiera</translation>
     </message>
 </context>
 <context>
@@ -195,37 +193,37 @@
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="34"/>
         <source>Device description</source>
-        <translation>Opis urządzenia</translation>
+        <translation>Enhetsbeskrivning</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="43"/>
         <source>Copy XML description</source>
-        <translation>Skopiuj opis XML</translation>
+        <translation>Kopiera beskrivning i XML-format</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="48"/>
         <source>Description copied to the clipboard</source>
-        <translation>Opis skopiowany do schowka</translation>
+        <translation>Beskrivning kopierad till urklipp</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="70"/>
         <source>Name</source>
-        <translation>Nazwa</translation>
+        <translation>Namn</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="75"/>
         <source>Device type</source>
-        <translation>Typ</translation>
+        <translation>Enhetstyp</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="80"/>
         <source>Model name</source>
-        <translation>Model</translation>
+        <translation>Modellnamn</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="85"/>
         <source>Manufacturer</source>
-        <translation>Producent</translation>
+        <translation>Tillverkare</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="90"/>
@@ -240,7 +238,7 @@
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="101"/>
         <source>Services</source>
-        <translation>Usługi</translation>
+        <translation>Tjänster</translation>
     </message>
 </context>
 <context>
@@ -248,60 +246,62 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="29"/>
         <source>Can&apos;t connect to the local network</source>
-        <translation>Nie można połączyć się z siecią lokalną</translation>
+        <translation>Kan inte ansluta till det lokala nätverket</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="32"/>
         <source>An internal error occurred</source>
-        <translation>Wystąpił wewnętrzny błąd</translation>
+        <translation>Ett internt fel inträffade</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="55"/>
         <source>Devices</source>
-        <translation>Urządzenia</translation>
+        <translation>Enheter</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="62"/>
         <source>About</source>
-        <translation>O Jupiim</translation>
+        <translation>Om</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="67"/>
         <source>Settings</source>
-        <translation>Ustawienia</translation>
+        <translation>Inställningar</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="72"/>
         <source>Add device manually</source>
-        <translation>Ręcznie dodaj urządzenie</translation>
+        <translation>Lägg till enhet manuellt</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="79"/>
         <source>Find devices</source>
-        <translation>Szukaj urządzeń</translation>
+        <translation>Sök enheter</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="79"/>
         <location filename="../qml/DevicesPage.qml" line="99"/>
         <source>Connect</source>
-        <translation>Połącz</translation>
+        <translation>Anslut</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="108"/>
         <source>Show description</source>
-        <translation>Pokaż opis</translation>
+        <translation>Visa beskrivning</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="127"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation>Nie znaleziono urządzeń. Otwórz górne menu aby znaleźć więcej urządzeń.</translation>
+        <translation>Inga enheter hittades. 
+Dra neråt för att söka efter fler enheter i ditt nätverk.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="129"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation>Nie połączono. Otwórz górne menu aby połączyć.</translation>
+        <translation>Inte ansluten. 
+Dra neråt för att ansluta till det lokala nätverket.</translation>
     </message>
 </context>
 <context>
@@ -314,32 +314,32 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="82"/>
         <source>Audio</source>
-        <translation>Audio</translation>
+        <translation>Ljud</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="84"/>
         <source>Video</source>
-        <translation>Wideo</translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="86"/>
         <source>Image</source>
-        <translation>Obraz</translation>
+        <translation>Bild</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="88"/>
         <source>Unknown</source>
-        <translation>Nieznany</translation>
+        <translation>Okänd</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="94"/>
         <source>Title</source>
-        <translation>Tytuł</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="100"/>
         <source>Author</source>
-        <translation>Autor</translation>
+        <translation>Upphovsman</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="107"/>
@@ -349,17 +349,17 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="114"/>
         <source>Duration</source>
-        <translation>Czas trwania</translation>
+        <translation>Varaktighet</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="122"/>
         <source>Description</source>
-        <translation>Opis</translation>
+        <translation>Beskrivning</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="137"/>
         <source>Path</source>
-        <translation>Ścieżka do pliku</translation>
+        <translation>Sökväg</translation>
     </message>
 </context>
 <context>
@@ -367,62 +367,62 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="31"/>
         <source>Unknown</source>
-        <translation>Nieznany</translation>
+        <translation>Okänd</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="456"/>
         <source>Item is already in the playlist</source>
-        <translation>Już znajduje się na liście</translation>
+        <translation>Objektet finns redan i spellistan</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="484"/>
         <source>Playlist</source>
-        <translation>Playlista</translation>
+        <translation>Spellista</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="491"/>
         <source>Empty</source>
-        <translation>Pusty</translation>
+        <translation>Tom</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="497"/>
         <source>Not connected</source>
-        <translation>Nie połączony</translation>
+        <translation>Inte ansluten</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="558"/>
         <source>Save playlist</source>
-        <translation>Zapisz playlistę</translation>
+        <translation>Spara spellista</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="568"/>
         <source>Clear playlist</source>
-        <translation>Wyczyść playlistę</translation>
+        <translation>Rensa spellista</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="577"/>
         <source>Add item</source>
-        <translation>Dodaj</translation>
+        <translation>Lägg till objekt</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="617"/>
         <source>Play</source>
-        <translation>Odtwarzaj</translation>
+        <translation>Spela</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="617"/>
         <source>Show</source>
-        <translation>Pokaż</translation>
+        <translation>Visa</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="630"/>
         <source>Pause</source>
-        <translation>Zatrzymaj</translation>
+        <translation>Paus</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="638"/>
         <source>Remove</source>
-        <translation>Usuń</translation>
+        <translation>Ta bort</translation>
     </message>
 </context>
 <context>
@@ -430,7 +430,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../src/playlistmodel.cpp" line="49"/>
         <source>Playlist</source>
-        <translation>Playlista</translation>
+        <translation>Spellista</translation>
     </message>
 </context>
 <context>
@@ -438,7 +438,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/PlayerPanel.qml" line="148"/>
         <source>Unknown</source>
-        <translation>Nieznany</translation>
+        <translation>Okänd</translation>
     </message>
 </context>
 <context>
@@ -446,31 +446,30 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="64"/>
         <source>Search playlist</source>
-        <translation>Szukaj playlistę</translation>
+        <translation>Sök spellista</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="80"/>
         <source>%n track(s)</source>
         <translation>
-            <numerusform>%n utwór</numerusform>
-            <numerusform>%n utwory</numerusform>
-            <numerusform>%n utworów</numerusform>
+            <numerusform>%n spår</numerusform>
+            <numerusform>%n spår</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="94"/>
         <source>Add tracks</source>
-        <translation>Dodaj utwory</translation>
+        <translation>Lägg till spår</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="101"/>
         <source>Delete playlist</source>
-        <translation>Usuń playlistę</translation>
+        <translation>Ta bort spellista</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="115"/>
         <source>No playlists</source>
-        <translation>Brak playlist</translation>
+        <translation>Inga spellistor</translation>
     </message>
 </context>
 <context>
@@ -478,22 +477,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="20"/>
         <source>Playlist was saved</source>
-        <translation>Playlista została zapisana</translation>
+        <translation>Spellista sparades</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="35"/>
         <source>Save</source>
-        <translation>Zapisz</translation>
+        <translation>Spasra</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="42"/>
         <source>Enter playlist name</source>
-        <translation>Wprowadź nazwę playlisty</translation>
+        <translation>Ange spellistans namn</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="43"/>
         <source>Name</source>
-        <translation>Nazwa</translation>
+        <translation>Namn</translation>
     </message>
 </context>
 <context>
@@ -501,67 +500,67 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="26"/>
         <source>Settings</source>
-        <translation>Ustawienia</translation>
+        <translation>Inställningar</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="32"/>
         <source>Start with last playlist</source>
-        <translation>Startuj z ostatnią listą odtwarzania</translation>
+        <translation>Starta med senaste spellistan</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="33"/>
         <source>When Jupii connects to a device, the last playlist will be automatically loaded.</source>
-        <translation>Przy podłączeniu do urządzenia, ostatnia lista odtwarzania zostanie automatycznie wczytana.</translation>
+        <translation>Den senaste spellistan läses in automatiskt, när Jupii ansluter till en enhet.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="62"/>
         <source>Volume control with hardware keys</source>
-        <translation>Sterowanie głośnością za pomocą sprzętowych przycisków</translation>
+        <translation>Volymkontroll med hårdvaruknappar</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="63"/>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation>Zmieniaj poziom głośności przy pomocy sprzętowch przycisków. Głośność będzie ustawiana na taki sam poziom jak głośność w telefonie.</translation>
+        <translation>Ändra volymnivå med telefonens volymknappar. Volymnivån i mediaenheten kommer att sättas på samma nivå som telefonens ringsignalvolym.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="76"/>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation>Wyświetlanie obrazów na urządzeniach UPnP nie jest w pełni zaimplementowane. Ta opcja odblokowuje możliwość wyświetlania obrazów pomimo tego, że może powodować to błędy w %1m.</translation>
+        <translation>Att visa bilder på UPnP-enheter fungerar inte bra för tillfället. Det finns några mindre problem som ännu inte är lösta. Detta alternativ tvingar %1 att visa bilder, trots att det kan orsaka problem.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="89"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 obsługuje tylko urządzenia typu Media Renderer. Jeśli ta opcja jest włączona, wszystkie urządzenia UPnP będą widoczne, czyli także te które nie są obsługiwane np. domowy ruter lub Media Server. Dla nieobsługiwanych urządzeń, %1 jest wstanie pokazać tylko podstawowe informacje konfiguracyjne.</translation>
+        <translation>%1 stödjer endast mediarenderingsenheter. Med detta alternativ aktiverat visas alla UPnP-enheter, inklusive enheter som inte stöds, såsom routrar eller mediaservrar. %1 kan bara visa basal information om enheter som inte stöds. Detta alternativ kan vara användbart för att granska UPnP-enheter i ditt lokala nät.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Adding devices manually</source>
-        <translation>Ręczne dodawanie urządzeń</translation>
+        <translation>Lägga till enheter manuellt</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation>Jeśli %1 nie będzie wstanie automatycznie wykryć urządzenia (np. z powodu tego, że jest w innej sieci LAN), możesz dodać takie urządzenie podając jego adres IP. Jeśli ta opcja jest włączona, górne menu zawiera dodatkowy element - Ręcznie dodaj urządzenie. Upewnij się, że twoje urządzenie nie jest blokowane przez firewall lub NAT.</translation>
+        <translation>Om %1 misslyckas med att upptäcka en enhet (t.ex. för att den finns i ett annat LAN), kan du lägga till den manuellt via IP-adressen. Vid aktivering läggs ett alternativ, för manuell anslutning, till i toppmenyn. Tillse att din enhet inte är bakom en NAT eller brandvägg.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="48"/>
         <source>Forward/backward time-step interval</source>
-        <translation>Skok przewijania</translation>
+        <translation>Framåt/Tillbaka tidstegsintervall</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="56"/>
         <source>Experimental features</source>
-        <translation>Opcje eksperymentalne</translation>
+        <translation>Experimentell funktion</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="75"/>
         <source>Image content</source>
-        <translation>Możliwość wyświetlania obrazów</translation>
+        <translation>Bildinnehåll</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="88"/>
         <source>All devices visible</source>
-        <translation>Wszystkie urządzenia widoczne</translation>
+        <translation>Alla enheter synliga</translation>
     </message>
 </context>
 <context>
@@ -570,20 +569,19 @@ Pull down to connect to the local network.</source>
         <location filename="../qml/TracksPage.qml" line="60"/>
         <source>%n selected</source>
         <translation>
-            <numerusform>%n wybrany</numerusform>
-            <numerusform>%n wybrane</numerusform>
-            <numerusform>%n wybranych</numerusform>
+            <numerusform>%n markerad</numerusform>
+            <numerusform>%n markerade</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="66"/>
         <source>Search tracks</source>
-        <translation>Szukaj utworów</translation>
+        <translation>Sök spår</translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="99"/>
         <source>No tracks</source>
-        <translation>Brak utworów</translation>
+        <translation>Inga spår</translation>
     </message>
 </context>
 </TS>

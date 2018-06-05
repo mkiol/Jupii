@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="pl">
+<TS version="2.1" language="de">
 <context>
     <name>AboutPage</name>
     <message>
         <location filename="../qml/AboutPage.qml" line="26"/>
         <source>About</source>
-        <translation>O Jupiim</translation>
+        <translation>Über</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="42"/>
         <source>Version %1</source>
-        <translation>Wersja %1</translation>
+        <translation>Version %1</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="51"/>
         <source>Changelog</source>
-        <translation>Lista zmian</translation>
+        <translation>Änderungsprotokoll</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="57"/>
         <source>Authors &amp; license</source>
-        <translation>Autorzy i licencja</translation>
+        <translation>Autoren &amp; Lizenz</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="68"/>
         <source>%1 is a free application. The source code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this app, You can obtain one at %2.</source>
-        <translation>%1 jest wolnym oprogramowaniem. Wykorzytanie kodu źródłowego podlega licencji Mozilla Public License wersja 2.0. Jeśli kopia licencji MPL nie została dostarczona, to można ją pobrać ze strony %2.</translation>
+        <translation>%1 ist eine freie Anwendung. Der Quellcode unterliegt der Mozilla Public License, v 2.0. Falls eine Kopie von dieser App nicht mit einer Kopie der MPL verteilt wurde können sie eine bei %2 erhalten.</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="75"/>
         <source>Third party components copyrights</source>
-        <translation>Prawa autorskie użytych komponentów</translation>
+        <translation>Urheberrecht Dritter</translation>
     </message>
 </context>
 <context>
@@ -39,17 +39,17 @@
     <message>
         <location filename="../qml/AddDevicePage.qml" line="37"/>
         <source>Add</source>
-        <translation>Dodaj</translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <location filename="../qml/AddDevicePage.qml" line="43"/>
         <source>Enter IP address</source>
-        <translation>Wprowadź adres IP</translation>
+        <translation>IP-Adresse eingeben</translation>
     </message>
     <message>
         <location filename="../qml/AddDevicePage.qml" line="44"/>
         <source>IP address</source>
-        <translation>adres IP</translation>
+        <translation>IP-Adresse</translation>
     </message>
 </context>
 <context>
@@ -57,12 +57,12 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="37"/>
         <source>Add item</source>
-        <translation>Dodaj</translation>
+        <translation>Element hinzufügen</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="41"/>
         <source>Music</source>
-        <translation>Muzyka</translation>
+        <translation>Musik</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="50"/>
@@ -72,32 +72,32 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="59"/>
         <source>Artist</source>
-        <translation>Artysta</translation>
+        <translation>Künstler</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="68"/>
         <source>Playlist</source>
-        <translation>Playlista</translation>
+        <translation>Wiedergabeliste</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="77"/>
         <source>Audio from Video</source>
-        <translation>Audio z pliku Wideo</translation>
+        <translation>Tonspur aus Videos</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="86"/>
         <source>Video</source>
-        <translation>Wideo</translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="95"/>
         <source>Image</source>
-        <translation>Obraz</translation>
+        <translation>Bild</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="105"/>
         <source>File</source>
-        <translation>Plik</translation>
+        <translation>Datei</translation>
     </message>
 </context>
 <context>
@@ -105,31 +105,30 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="64"/>
         <source>Search album</source>
-        <translation>Szukaj albumów</translation>
+        <translation>Suche Album</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="79"/>
         <source>%n track(s)</source>
         <translation>
-            <numerusform>%n utwór</numerusform>
-            <numerusform>%n utwory</numerusform>
-            <numerusform>%n utworów</numerusform>
+            <numerusform>%n Titel</numerusform>
+            <numerusform>%n Titel</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="86"/>
         <source>Select tracks</source>
-        <translation>Wybierz utwór</translation>
+        <translation>Titel auswählen</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="93"/>
         <source>Add all tracks</source>
-        <translation>Dodaj wszystkie utwory</translation>
+        <translation>Alle Titel hinzufügen</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="115"/>
         <source>No albums</source>
-        <translation>Brak albumów</translation>
+        <translation>Keine Alben</translation>
     </message>
 </context>
 <context>
@@ -137,31 +136,30 @@
     <message>
         <location filename="../qml/ArtistPage.qml" line="64"/>
         <source>Search artist</source>
-        <translation>Szukaj artysty</translation>
+        <translation>Suche Künstler</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="79"/>
         <source>%n track(s)</source>
         <translation>
-            <numerusform>%n utwór</numerusform>
-            <numerusform>%n utwory</numerusform>
-            <numerusform>%n utworów</numerusform>
+            <numerusform>%n Titel</numerusform>
+            <numerusform>%n Titel</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="86"/>
         <source>Select tracks</source>
-        <translation>Wybierz utwór</translation>
+        <translation>Titel auswählen</translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="93"/>
         <source>Add all tracks</source>
-        <translation>Dodaj wszystkie utwory</translation>
+        <translation>Alle Titel hinzufügen</translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="115"/>
         <source>No artists</source>
-        <translation>Brak artystów</translation>
+        <translation>Keine Künstler</translation>
     </message>
 </context>
 <context>
@@ -169,7 +167,7 @@
     <message>
         <location filename="../qml/ChangelogPage.qml" line="26"/>
         <source>Changelog</source>
-        <translation>Lista zmian</translation>
+        <translation>Änderungsprotokoll</translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
@@ -179,7 +177,7 @@
         <location filename="../qml/ChangelogPage.qml" line="105"/>
         <location filename="../qml/ChangelogPage.qml" line="151"/>
         <source>Version %1</source>
-        <translation>Wersja %1</translation>
+        <translation>Version %1</translation>
     </message>
 </context>
 <context>
@@ -187,7 +185,7 @@
     <message>
         <location filename="../qml/CopyableLabel.qml" line="34"/>
         <source>Copy</source>
-        <translation>Kopiuj</translation>
+        <translation>Kopie</translation>
     </message>
 </context>
 <context>
@@ -195,37 +193,37 @@
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="34"/>
         <source>Device description</source>
-        <translation>Opis urządzenia</translation>
+        <translation>Gerätebeschreibung</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="43"/>
         <source>Copy XML description</source>
-        <translation>Skopiuj opis XML</translation>
+        <translation>Kopiere XML-Beschreibung</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="48"/>
         <source>Description copied to the clipboard</source>
-        <translation>Opis skopiowany do schowka</translation>
+        <translation>Beschreibung in die Zwischenablage kopiert</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="70"/>
         <source>Name</source>
-        <translation>Nazwa</translation>
+        <translation>Name</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="75"/>
         <source>Device type</source>
-        <translation>Typ</translation>
+        <translation>Gerätetyp</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="80"/>
         <source>Model name</source>
-        <translation>Model</translation>
+        <translation>Modellname</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="85"/>
         <source>Manufacturer</source>
-        <translation>Producent</translation>
+        <translation>Hersteller</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="90"/>
@@ -240,7 +238,7 @@
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="101"/>
         <source>Services</source>
-        <translation>Usługi</translation>
+        <translation>Dienstleistungen</translation>
     </message>
 </context>
 <context>
@@ -248,60 +246,62 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="29"/>
         <source>Can&apos;t connect to the local network</source>
-        <translation>Nie można połączyć się z siecią lokalną</translation>
+        <translation>Verbindung zum lokalen Netzwerk nicht möglich</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="32"/>
         <source>An internal error occurred</source>
-        <translation>Wystąpił wewnętrzny błąd</translation>
+        <translation>Ein interner Fehler ist aufgetreten</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="55"/>
         <source>Devices</source>
-        <translation>Urządzenia</translation>
+        <translation>Geräte</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="62"/>
         <source>About</source>
-        <translation>O Jupiim</translation>
+        <translation>Über</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="67"/>
         <source>Settings</source>
-        <translation>Ustawienia</translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="72"/>
         <source>Add device manually</source>
-        <translation>Ręcznie dodaj urządzenie</translation>
+        <translation>Gerät manuell hinzufügen</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="79"/>
         <source>Find devices</source>
-        <translation>Szukaj urządzeń</translation>
+        <translation>Geräte finden</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="79"/>
         <location filename="../qml/DevicesPage.qml" line="99"/>
         <source>Connect</source>
-        <translation>Połącz</translation>
+        <translation>Verbinden</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="108"/>
         <source>Show description</source>
-        <translation>Pokaż opis</translation>
+        <translation>Zeige Beschreibung</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="127"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation>Nie znaleziono urządzeń. Otwórz górne menu aby znaleźć więcej urządzeń.</translation>
+        <translation>Keine Geräte gefunden.
+Mehr Geräte in deinem Netzwerk im Pull down-Menü finden.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="129"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation>Nie połączono. Otwórz górne menu aby połączyć.</translation>
+        <translation>Nicht verbunden.
+Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
     </message>
 </context>
 <context>
@@ -319,22 +319,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="84"/>
         <source>Video</source>
-        <translation>Wideo</translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="86"/>
         <source>Image</source>
-        <translation>Obraz</translation>
+        <translation>Bild</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="88"/>
         <source>Unknown</source>
-        <translation>Nieznany</translation>
+        <translation>Unbekannt</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="94"/>
         <source>Title</source>
-        <translation>Tytuł</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="100"/>
@@ -349,17 +349,17 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="114"/>
         <source>Duration</source>
-        <translation>Czas trwania</translation>
+        <translation>Dauer</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="122"/>
         <source>Description</source>
-        <translation>Opis</translation>
+        <translation>Beschreibung</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="137"/>
         <source>Path</source>
-        <translation>Ścieżka do pliku</translation>
+        <translation>Pfad</translation>
     </message>
 </context>
 <context>
@@ -367,62 +367,62 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="31"/>
         <source>Unknown</source>
-        <translation>Nieznany</translation>
+        <translation>Unbekannt</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="456"/>
         <source>Item is already in the playlist</source>
-        <translation>Już znajduje się na liście</translation>
+        <translation>Titel befindet sich schon in der Wiedergabeliste</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="484"/>
         <source>Playlist</source>
-        <translation>Playlista</translation>
+        <translation>Wiedergabeliste</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="491"/>
         <source>Empty</source>
-        <translation>Pusty</translation>
+        <translation>Leer</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="497"/>
         <source>Not connected</source>
-        <translation>Nie połączony</translation>
+        <translation>Nicht verbunden</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="558"/>
         <source>Save playlist</source>
-        <translation>Zapisz playlistę</translation>
+        <translation>Speichere Wiedergabeliste</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="568"/>
         <source>Clear playlist</source>
-        <translation>Wyczyść playlistę</translation>
+        <translation>Leere Wiedergabeliste</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="577"/>
         <source>Add item</source>
-        <translation>Dodaj</translation>
+        <translation>Element hinzufügen</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="617"/>
         <source>Play</source>
-        <translation>Odtwarzaj</translation>
+        <translation>Abspielen</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="617"/>
         <source>Show</source>
-        <translation>Pokaż</translation>
+        <translation>Zeige</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="630"/>
         <source>Pause</source>
-        <translation>Zatrzymaj</translation>
+        <translation>Pause</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="638"/>
         <source>Remove</source>
-        <translation>Usuń</translation>
+        <translation>Entfernen</translation>
     </message>
 </context>
 <context>
@@ -430,7 +430,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../src/playlistmodel.cpp" line="49"/>
         <source>Playlist</source>
-        <translation>Playlista</translation>
+        <translation>Wiedergabeliste</translation>
     </message>
 </context>
 <context>
@@ -438,7 +438,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/PlayerPanel.qml" line="148"/>
         <source>Unknown</source>
-        <translation>Nieznany</translation>
+        <translation>Unbekannt</translation>
     </message>
 </context>
 <context>
@@ -446,31 +446,30 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="64"/>
         <source>Search playlist</source>
-        <translation>Szukaj playlistę</translation>
+        <translation>Suche Wiedergabeliste</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="80"/>
         <source>%n track(s)</source>
         <translation>
-            <numerusform>%n utwór</numerusform>
-            <numerusform>%n utwory</numerusform>
-            <numerusform>%n utworów</numerusform>
+            <numerusform>%n Titel</numerusform>
+            <numerusform>%n Titel</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="94"/>
         <source>Add tracks</source>
-        <translation>Dodaj utwory</translation>
+        <translation>Titel hinuzufügen</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="101"/>
         <source>Delete playlist</source>
-        <translation>Usuń playlistę</translation>
+        <translation>Lösche Wiedergabeliste</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="115"/>
         <source>No playlists</source>
-        <translation>Brak playlist</translation>
+        <translation>Keine Widergabelisten</translation>
     </message>
 </context>
 <context>
@@ -478,22 +477,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="20"/>
         <source>Playlist was saved</source>
-        <translation>Playlista została zapisana</translation>
+        <translation>Wiedergabeliste wurde gespeichert</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="35"/>
         <source>Save</source>
-        <translation>Zapisz</translation>
+        <translation>Speichern</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="42"/>
         <source>Enter playlist name</source>
-        <translation>Wprowadź nazwę playlisty</translation>
+        <translation>Gib den Namen der Wiedergabeliste ein</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="43"/>
         <source>Name</source>
-        <translation>Nazwa</translation>
+        <translation>Name</translation>
     </message>
 </context>
 <context>
@@ -501,67 +500,67 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="26"/>
         <source>Settings</source>
-        <translation>Ustawienia</translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="32"/>
         <source>Start with last playlist</source>
-        <translation>Startuj z ostatnią listą odtwarzania</translation>
+        <translation>Beginne mit der letzten Wiedergabeliste</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="33"/>
         <source>When Jupii connects to a device, the last playlist will be automatically loaded.</source>
-        <translation>Przy podłączeniu do urządzenia, ostatnia lista odtwarzania zostanie automatycznie wczytana.</translation>
+        <translation>Wenn Jupii eine Verbindung zu einem Gerät herstellt, wird automatisch die letzte Wiedergabeliste geladen.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="62"/>
         <source>Volume control with hardware keys</source>
-        <translation>Sterowanie głośnością za pomocą sprzętowych przycisków</translation>
+        <translation>Lautstärke mit Lautstärketasten kontrollieren</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="63"/>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation>Zmieniaj poziom głośności przy pomocy sprzętowch przycisków. Głośność będzie ustawiana na taki sam poziom jak głośność w telefonie.</translation>
+        <translation>Lautstärkepegel mit den Lautstärketasten deines Geräts einstellen. Der Lautstärkepegel des Mediengerätes wird auf die Lautstärke des Klingeltons vom Telefon gesetzt.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="76"/>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation>Wyświetlanie obrazów na urządzeniach UPnP nie jest w pełni zaimplementowane. Ta opcja odblokowuje możliwość wyświetlania obrazów pomimo tego, że może powodować to błędy w %1m.</translation>
+        <translation>Das Wiedergeben von Bildern auf UPnP- Geräten funktioniert noch nicht einwandfrei. Es gibt ein paar kleine Fehler, die noch nicht behoben wurden. Diese Option erzwingt %1 Bilder wiederzugeben, obwohl es einige Fehler hervorrufen kann.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="89"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 obsługuje tylko urządzenia typu Media Renderer. Jeśli ta opcja jest włączona, wszystkie urządzenia UPnP będą widoczne, czyli także te które nie są obsługiwane np. domowy ruter lub Media Server. Dla nieobsługiwanych urządzeń, %1 jest wstanie pokazać tylko podstawowe informacje konfiguracyjne.</translation>
+        <translation>%1 unterstützt nur Media-Renderer-Geräte. Falls diese Option aktiviert ist werden alle UPnP gelistet, auch nicht unterstützte Geräte wie Router oder Medien-Server. Für nicht unterstützte Geräte kann %1 nur simple Beschreibungsinformationen anzeigen. Diese Option ist nützlich um UPnP-Geräte im lokalen Netzwerk zu prüfen.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Adding devices manually</source>
-        <translation>Ręczne dodawanie urządzeń</translation>
+        <translation>Geräte manuell hinzufügen</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation>Jeśli %1 nie będzie wstanie automatycznie wykryć urządzenia (np. z powodu tego, że jest w innej sieci LAN), możesz dodać takie urządzenie podając jego adres IP. Jeśli ta opcja jest włączona, górne menu zawiera dodatkowy element - Ręcznie dodaj urządzenie. Upewnij się, że twoje urządzenie nie jest blokowane przez firewall lub NAT.</translation>
+        <translation>Falls %1 ein Gerät nicht auffindet (z. B. weil es sich in einem anderen Netzwerk befindet), kann-st du es manuell per IP-Adresse hinzufügen. Bei aktivierter Option enthält das Pull down-Menü eine  Option  Geräte manuell hinzuzufügen. Stelle sicher, dass  dein Gerät sich nicht hinter einer NAT oder einer Firewall befindet.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="48"/>
         <source>Forward/backward time-step interval</source>
-        <translation>Skok przewijania</translation>
+        <translation>Vorwärts/Rückwärts Zeitsprungintervall</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="56"/>
         <source>Experimental features</source>
-        <translation>Opcje eksperymentalne</translation>
+        <translation>Experimentelle Funktionen</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="75"/>
         <source>Image content</source>
-        <translation>Możliwość wyświetlania obrazów</translation>
+        <translation>Bildinhalt</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="88"/>
         <source>All devices visible</source>
-        <translation>Wszystkie urządzenia widoczne</translation>
+        <translation>Alle Geräte sichtbar</translation>
     </message>
 </context>
 <context>
@@ -570,20 +569,19 @@ Pull down to connect to the local network.</source>
         <location filename="../qml/TracksPage.qml" line="60"/>
         <source>%n selected</source>
         <translation>
-            <numerusform>%n wybrany</numerusform>
-            <numerusform>%n wybrane</numerusform>
-            <numerusform>%n wybranych</numerusform>
+            <numerusform>%n ausgewählt</numerusform>
+            <numerusform>%n ausgewählt</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="66"/>
         <source>Search tracks</source>
-        <translation>Szukaj utworów</translation>
+        <translation>Suche Titel</translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="99"/>
         <source>No tracks</source>
-        <translation>Brak utworów</translation>
+        <translation>Keine Titel</translation>
     </message>
 </context>
 </TS>

@@ -171,10 +171,11 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="45"/>
-        <location filename="../qml/ChangelogPage.qml" line="80"/>
-        <location filename="../qml/ChangelogPage.qml" line="91"/>
-        <location filename="../qml/ChangelogPage.qml" line="137"/>
+        <location filename="../qml/ChangelogPage.qml" line="44"/>
+        <location filename="../qml/ChangelogPage.qml" line="59"/>
+        <location filename="../qml/ChangelogPage.qml" line="94"/>
+        <location filename="../qml/ChangelogPage.qml" line="105"/>
+        <location filename="../qml/ChangelogPage.qml" line="151"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -367,57 +368,57 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="455"/>
+        <location filename="../qml/MediaRendererPage.qml" line="456"/>
         <source>Item is already in the playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="483"/>
+        <location filename="../qml/MediaRendererPage.qml" line="484"/>
         <source>Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="490"/>
+        <location filename="../qml/MediaRendererPage.qml" line="491"/>
         <source>Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="496"/>
+        <location filename="../qml/MediaRendererPage.qml" line="497"/>
         <source>Not connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="557"/>
+        <location filename="../qml/MediaRendererPage.qml" line="558"/>
         <source>Save playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="567"/>
+        <location filename="../qml/MediaRendererPage.qml" line="568"/>
         <source>Clear playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="576"/>
+        <location filename="../qml/MediaRendererPage.qml" line="577"/>
         <source>Add item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="616"/>
+        <location filename="../qml/MediaRendererPage.qml" line="617"/>
         <source>Play</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="616"/>
+        <location filename="../qml/MediaRendererPage.qml" line="617"/>
         <source>Show</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="629"/>
+        <location filename="../qml/MediaRendererPage.qml" line="630"/>
         <source>Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="637"/>
+        <location filename="../qml/MediaRendererPage.qml" line="638"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
