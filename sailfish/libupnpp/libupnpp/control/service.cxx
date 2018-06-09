@@ -115,6 +115,49 @@ Service::~Service()
     m = 0;
 }
 
+bool Service::reInit(const UPnPDeviceDesc& devdesc,
+                     const UPnPServiceDesc& servdesc)
+{
+    unregisterCallback();
+
+    Internal *old_m = m;
+
+    if ((m = new Internal()) == 0) {
+        LOGERR("Device::Device: out of memory" << endl);
+        delete old_m;
+        return false;
+    }
+
+    m->reporter = 0;
+    m->actionURL = caturl(devdesc.URLBase, servdesc.controlURL);
+    m->eventURL = caturl(devdesc.URLBase, servdesc.eventSubURL);
+    m->serviceType = servdesc.serviceType;
+    m->deviceId = devdesc.UDN;
+    m->friendlyName = devdesc.friendlyName;
+    m->manufacturer = devdesc.manufacturer;
+    m->modelName = devdesc.modelName;
+    m->SID[0] = 0;
+
+    // Only does anything the first time
+    initEvents();
+
+    delete old_m;
+
+    return true;
+}
+
+bool Service::isSameService(const UPnPDeviceDesc &devdesc,
+                            const UPnPServiceDesc &servdesc)
+{
+    if (m &&
+        m->actionURL == caturl(devdesc.URLBase, servdesc.controlURL) &&
+        m->eventURL == caturl(devdesc.URLBase, servdesc.eventSubURL)) {
+        return true;
+    }
+
+    return false;
+}
+
 const string& Service::getFriendlyName() const
 {
     return m->friendlyName;

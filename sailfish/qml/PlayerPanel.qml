@@ -15,9 +15,6 @@ import harbour.jupii.PlayListModel 1.0
 DockedPanel_ {
     id: root
 
-    property var av
-    property var rc
-
     property bool full: false
     property bool controlable: true
     property int playMode: PlayListModel.PM_Normal
@@ -27,7 +24,7 @@ DockedPanel_ {
     property alias backwardEnabled: backwardButton.enabled
     property alias playmodeEnabled: playmodeButton.enabled
 
-    property alias trackPositionSlider: trackPositionSlider
+    //property alias trackPositionSlider: trackPositionSlider
 
     signal labelClicked
     signal nextClicked
@@ -77,13 +74,24 @@ DockedPanel_ {
                 maximumValue: av.currentTrackDuration
                 stepSize: 1
                 handleVisible: av.seekSupported
-                value: av.relativeTimePosition
+                //value: av.relativeTimePosition
                 enabled: av.seekSupported && root.controlable
                 valueText: utils.secToStr(value > 0 ? value : 0)
 
                 onValueChanged: {
                     if (!blockValueChangedSignal)
                         av.seek(value)
+                }
+
+                Component.onCompleted: {
+                    trackPositionSlider.updateValue(av.relativeTimePosition)
+                }
+
+                Connections {
+                    target: av
+                    onRelativeTimePositionChanged: {
+                        trackPositionSlider.updateValue(av.relativeTimePosition)
+                    }
                 }
 
                 function updateValue(_value) {

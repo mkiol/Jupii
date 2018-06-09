@@ -9,11 +9,10 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 import harbour.jupii.AVTransport 1.0
+import harbour.jupii.RenderingControl 1.0
 
 Page {
     id: root
-
-    property var av
 
     property bool imgOk: image.status === Image.Ready
     property bool showPath: av.currentPath.length > 0
@@ -64,7 +63,7 @@ Page {
                 PageHeader {
                     id: header
                     //title: qsTr("Item details")
-                    title: root.av.currentTitle
+                    title: av.currentTitle
                 }
             }
 
@@ -77,7 +76,7 @@ Page {
                 DetailItem {
                     label: qsTr("Type")
                     value: {
-                        switch(root.av.currentType) {
+                        switch(av.currentType) {
                         case AVTransport.T_Audio:
                             return qsTr("Audio")
                         case AVTransport.T_Video:
@@ -92,42 +91,42 @@ Page {
 
                 DetailItem {
                     label: qsTr("Title")
-                    value: root.av.currentTitle
+                    value: av.currentTitle
                     visible: value.length > 0
                 }
 
                 DetailItem {
                     label: qsTr("Author")
-                    value: root.av.currentAuthor
-                    visible: root.av.currentType !== AVTransport.T_Image &&
+                    value: av.currentAuthor
+                    visible: av.currentType !== AVTransport.T_Image &&
                              value.length > 0
                 }
 
                 DetailItem {
                     label: qsTr("Album")
-                    value: root.av.currentAlbum
-                    visible: root.av.currentType !== AVTransport.T_Image &&
+                    value: av.currentAlbum
+                    visible: av.currentType !== AVTransport.T_Image &&
                              value.length > 0
                 }
 
                 DetailItem {
                     label: qsTr("Duration")
-                    value: utils.secToStr(root.av.currentTrackDuration)
-                    visible: root.av.currentType !== AVTransport.T_Image &&
-                             root.av.currentTrackDuration > 0
+                    value: utils.secToStr(av.currentTrackDuration)
+                    visible: av.currentType !== AVTransport.T_Image &&
+                             av.currentTrackDuration > 0
                 }
             }
 
             SectionHeader {
                 text: qsTr("Description")
-                visible: root.av.currentDescription.length > 0
+                visible: av.currentDescription.length > 0
             }
 
             Label {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2 * Theme.horizontalPageMargin
-                text: root.av.currentDescription
-                visible: root.av.currentDescription.length > 0
+                text: av.currentDescription
+                visible: av.currentDescription.length > 0
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 color: Theme.highlightColor
                 font.pixelSize: Theme.fontSizeSmall
@@ -135,12 +134,12 @@ Page {
 
             SectionHeader {
                 text: qsTr("Path")
-                visible: root.av.currentPath.length > 0
+                visible: av.currentPath.length > 0
             }
 
             CopyableLabel {
-                text: root.av.currentPath
-                visible: root.av.currentPath.length > 0
+                text: av.currentPath
+                visible: av.currentPath.length > 0
             }
 
             Spacer {}

@@ -82,6 +82,13 @@ public:
     // ready (e.g. before the connections are set in a qt app
     // we'll do this next abi change virtual void reSubscribe();
 
+    /* Re-init with new dev and serv desc */
+    virtual bool reInit(const UPnPDeviceDesc& devdesc,
+                        const UPnPServiceDesc& servdesc);
+
+    bool isSameService(const UPnPDeviceDesc& devdesc,
+                       const UPnPServiceDesc& servdesc);
+
     const std::string& getFriendlyName() const;
     const std::string& getDeviceId() const;
     const std::string& getServiceType() const;

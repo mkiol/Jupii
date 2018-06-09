@@ -12,8 +12,6 @@ ApplicationWindow
 {
     id: app
 
-    property var player
-
     cover: Qt.resolvedUrl("CoverPage.qml")
     allowedOrientations: Orientation.PortraitMask
 

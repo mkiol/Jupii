@@ -24,24 +24,28 @@ Page {
     property bool inited: av.inited && rc.inited
 
     // -- Needed for Cover --
-    property bool playable: av.playable
+    /*property bool playable: av.playable
     property bool stopable: av.stopable
     property string image: av.transportStatus === AVTransport.TPS_Ok ?
                                av.currentAlbumArtURI : ""
     property string title: av.currentTitle.length > 0 ? av.currentTitle : qsTr("Unknown")
-    property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""
+    property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""*/
     // ----
 
     property bool _doPop: false
     property int dbusVolume: -1
 
     Component.onCompleted: {
-        app.player = root
+        rc.init(deviceId)
+        av.init(deviceId)
+
+        volumeSlider.updateValue(rc.volume)
     }
 
     Component.onDestruction: {
-        app.player = null
         dbus.canControl = false
+        //av.deInit();
+        //rc.deInit();
     }
 
     onInitedChanged: {
@@ -157,7 +161,7 @@ Page {
     function updateMediaInfoPage() {
         if (av.controlable) {
             if (pageStack.currentPage === root)
-                pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"),{av: av})
+                pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"))
         } else {
             pageStack.popAttached(root, PageStackAction.Immediate)
         }
@@ -315,15 +319,11 @@ Page {
         }
     }
 
-    RenderingControl {
-        id: rc
-
-        Component.onCompleted: {
-            init(deviceId)
-        }
+    Connections {
+        target: rc
 
         onVolumeChanged: {
-            volumeSlider.updateValue(volume)
+            volumeSlider.updateValue(rc.volume)
         }
 
         onError: {
@@ -331,22 +331,18 @@ Page {
         }
 
         onInitedChanged: {
-            if (inited && settings.useDbusVolume)
-                volume = root.dbusVolume
+            if (rc.inited && settings.useDbusVolume)
+                rc.volume = root.dbusVolume
         }
     }
 
-    AVTransport {
-        id: av
-
-        Component.onCompleted: {
-            init(deviceId)
-        }
+    Connections {
+        target: av
 
         onControlableChanged: {
-            console.log("onControlableChanged: " + controlable)
-            console.log(" playable: " + playable)
-            console.log(" stopable: " + stopable)
+            console.log("onControlableChanged: " + av.controlable)
+            console.log(" playable: " + av.playable)
+            console.log(" stopable: " + av.stopable)
             console.log(" av.transportStatus: " + av.transportStatus)
             console.log(" av.currentURI: " + av.currentURI)
             console.log(" av.playSupported: " + av.playSupported)
@@ -357,9 +353,9 @@ Page {
             updateMediaInfoPage()
         }
 
-        onRelativeTimePositionChanged: {
-            ppanel.trackPositionSlider.updateValue(relativeTimePosition)
-        }
+        /*onRelativeTimePositionChanged: {
+            ppanel.trackPositionSlider.updateValue(av.relativeTimePosition)
+        }*/
 
         onError: {
             handleError(code)
@@ -372,7 +368,7 @@ Page {
         onTrackEnded: {
             console.log("onTrackEnded")
 
-            if (listView.count > 0 && (nextURISupported ||
+            if (listView.count > 0 && (av.nextURISupported ||
                 playlist.playMode === PlayListModel.PM_RepeatOne))
             {
                 var aid = playlist.activeId()
@@ -388,7 +384,7 @@ Page {
 
         onCurrentURIChanged: {
             console.log("onCurrentURIChanged")
-            playlist.setActiveUrl(currentURI)
+            playlist.setActiveUrl(av.currentURI)
             root.updatePlayList(av.transportState !== AVTransport.Playing &&
                                 listView.count === 1)
         }
@@ -399,19 +395,19 @@ Page {
             if (av.nextURI.length === 0 && av.currentURI.length > 0 &&
                     playlist.playMode !== PlayListModel.PM_Normal) {
                 console.log("AVT switches to nextURI without currentURIChanged")
-                playlist.setActiveUrl(currentURI)
+                playlist.setActiveUrl(av.currentURI)
                 root.updatePlayList(av.transportState !== AVTransport.Playing &&
                                     listView.count === 1)
             }
         }
 
         onTransportStateChanged: {
-            console.log("onTransportStateChanged: " + transportState)
+            console.log("onTransportStateChanged: " + av.transportState)
             root.updatePlayList(false)
         }
 
         onTransportStatusChanged: {
-            console.log("onTransportStatusChanged: " + transportStatus)
+            console.log("onTransportStatusChanged: " + av.transportStatus)
         }
     }
 
@@ -681,9 +677,6 @@ Page {
         playMode: playlist.playMode
 
         controlable: av.controlable && av.currentType !== AVTransport.T_Image
-
-        av: av
-        rc: rc
 
         onRunningChanged: {
             if (open && !running)

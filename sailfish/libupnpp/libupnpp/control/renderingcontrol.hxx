@@ -54,6 +54,9 @@ public:
 
     RenderingControl() {}
 
+    bool reInit(const UPnPDeviceDesc& devdesc,
+                const UPnPServiceDesc& servdesc);
+
     /** Test service type from discovery message */
     static bool isRDCService(const std::string& st);
 

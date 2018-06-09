@@ -58,6 +58,9 @@ public:
     AVTransport() {}
     virtual ~AVTransport() { }
 
+    bool reInit(const UPnPDeviceDesc& devdesc,
+                const UPnPServiceDesc& servdesc);
+
     int setAVTransportURI(const std::string& uri, const std::string& metadata,
                           int instanceID=0)
     {
@@ -69,6 +72,7 @@ public:
     {
         return setURI(uri, md, instanceID, true);
     }
+
 
 
     enum PlayMode {PM_Unknown, PM_Normal, PM_Shuffle, PM_RepeatOne,

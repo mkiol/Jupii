@@ -71,6 +71,31 @@ RenderingControl::~RenderingControl()
     unregisterCallback();
 }
 
+// Re-init with new dev and serv desc
+bool RenderingControl::reInit(const UPnPDeviceDesc& devdesc,
+                              const UPnPServiceDesc& servdesc) {
+    if (Service::reInit(devdesc, servdesc)) {
+        m_volmin = 0;
+        m_volmax = 100;
+        m_volstep = 1;
+
+        UPnPServiceDesc::Parsed sdesc;
+        if (servdesc.fetchAndParseDesc(devdesc.URLBase, sdesc)) {
+            std::unordered_map<std::string, UPnPServiceDesc::StateVariable>::const_iterator it =
+                sdesc.stateTable.find("Volume");
+            if (it != sdesc.stateTable.end() && it->second.hasValueRange) {
+                setVolParams(it->second.minimum, it->second.maximum,
+                             it->second.step);
+            }
+        }
+
+        registerCallback();
+        return true;
+    }
+
+    return false;
+}
+
 // Translate device volume to 0-100
 int RenderingControl::devVolTo0100(int dev_vol)
 {

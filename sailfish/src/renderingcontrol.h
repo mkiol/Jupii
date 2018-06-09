@@ -51,7 +51,7 @@ private:
     UPnPClient::Service* createUpnpService(const UPnPClient::UPnPDeviceDesc &ddesc,
                                            const UPnPClient::UPnPServiceDesc &sdesc);
     void postInit();
-    void postDeInit();
+    void reset();
     std::string type() const;
 
     UPnPClient::RenderingControl* s();

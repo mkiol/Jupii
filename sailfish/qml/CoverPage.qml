@@ -8,42 +8,25 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
+import harbour.jupii.AVTransport 1.0
+
 CoverBackground {
     id: root
 
-    property bool playable: false
-    property bool stopable: false
-    property string image: ""
-    property string title: ""
-    property string author: ""
+    property string image: av.transportStatus === AVTransport.TPS_Ok ?
+                               av.currentAlbumArtURI : ""
+    property string title: av.currentTitle.length > 0 ? av.currentTitle : qsTr("Unknown")
+    property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""
 
-    property bool controlable: playable || stopable
-
-    onStatusChanged: {
-        if (status === Cover.Activating) {
-            if (app.player) {
-                root.playable = Qt.binding(function() {
-                    return app.player.playable
-                })
-                root.stopable = Qt.binding(function() {
-                    return app.player.stopable
-                })
-                root.image = Qt.binding(function() {
-                    return app.player.image
-                })
-                root.title = Qt.binding(function() {
-                    return app.player.title
-                })
-                root.author = Qt.binding(function() {
-                    return app.player.author
-                })
-            }
-        } else if (status === Cover.Deactivating) {
-            root.playable = false
-            root.stopable = false
-            root.image = ""
-            root.title = ""
-            root.author = ""
+    function togglePlay() {
+        if (av.transportState !== AVTransport.Playing) {
+            av.speed = 1
+            av.play()
+        } else {
+            if (av.pauseSupported)
+                av.pause()
+            else
+                av.stop()
         }
     }
 
@@ -90,7 +73,7 @@ CoverBackground {
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.Wrap
-                text: root.controlable ? root.title : APP_NAME
+                text: av.controlable ? root.title : APP_NAME
             }
 
             Label {
@@ -101,22 +84,19 @@ CoverBackground {
                 wrapMode: Text.Wrap
                 //fontSizeMode: Text.Fit
                 text: root.author
-                visible: root.controlable
+                visible: av.controlable
             }
         }
     }
 
     CoverActionList {
-        enabled: root.controlable
+        enabled: av.controlable
         iconBackground: bg.status === Image.Ready
 
         CoverAction {
-            iconSource: root.playable ? "image://theme/icon-cover-play" :
+            iconSource: av.playable ? "image://theme/icon-cover-play" :
                                        "image://theme/icon-cover-pause"
-            onTriggered: {
-                if (app.player)
-                    app.player.togglePlay()
-            }
+            onTriggered: root.togglePlay();
         }
     }
 }

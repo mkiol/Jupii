@@ -10,7 +10,7 @@
 
 * Tue Jun 05 2018 Michal Kosciesza <michal@mkiol.net> 0.9.6-1
 - SV and DE translations
-- Mino bug fixes
+- Improved stability and bug fixes
 
 * Sun May 27 2018 Michal Kosciesza <michal@mkiol.net> 0.9.5-1
 - Support for devices where NextURI is not implemented

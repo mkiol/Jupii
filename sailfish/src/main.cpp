@@ -42,6 +42,7 @@
 #include "artistmodel.h"
 #include "playlistfilemodel.h"
 #include "trackmodel.h"
+#include "services.h"
 
 static const char* APP_NAME = "Jupii";
 static const char* APP_VERSION = "0.9.6";
@@ -109,6 +110,10 @@ int main(int argc, char *argv[])
 
     DbusProxy dbusProxy;
     context->setContextProperty("dbus", &dbusProxy);
+
+    Services services;
+    context->setContextProperty("rc", services.renderingControl.get());
+    context->setContextProperty("av", services.avTransport.get());
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
     view->show();

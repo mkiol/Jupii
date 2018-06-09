@@ -23,6 +23,11 @@ RenderingControl::RenderingControl(QObject *parent) : Service(parent),
 
 void RenderingControl::changed(const QString &name, const QVariant &_value)
 {
+    if (!isInitedOrIniting()) {
+        qWarning() << "RenderingControl service is not inited";
+        return;
+    }
+
     if (_value.canConvert(QVariant::Int)) {
         int value = _value.toInt();
 
@@ -51,7 +56,7 @@ void RenderingControl::postInit()
     update();
 }
 
-void RenderingControl::postDeInit()
+void RenderingControl::reset()
 {
     m_volume = 0;
     m_mute = false;
@@ -71,6 +76,11 @@ void RenderingControl::update()
 
 void RenderingControl::asyncUpdate()
 {
+    if (!isInitedOrIniting()) {
+        qWarning() << "RenderingControl service is not inited";
+        return;
+    }
+
     startTask([this](){
         update();
     });
@@ -106,11 +116,19 @@ void RenderingControl::setVolume(int value)
 
 void RenderingControl::volumeTimeout()
 {
+    if (!getInited()) {
+        qWarning() << "RenderingControl service is not inited";
+        return;
+    }
+
     if (m_volume != m_futureVolume) {
         startTask([this](){
             auto srv = s();
-            if (srv == nullptr)
+
+            if (!getInited() || !srv) {
+                qWarning() << "RenderingControl service is not inited";
                 return;
+            }
 
             if (handleError(srv->setVolume(m_futureVolume))) {
                 m_volume = m_futureVolume;
@@ -134,8 +152,11 @@ void RenderingControl::setMute(bool value)
     if (m_mute != value) {
         startTask([this, value](){
             auto srv = s();
-            if (srv == nullptr)
+
+            if (!getInited() || !srv) {
+                qWarning() << "RenderingControl service is not inited";
                 return;
+            }
 
             if (handleError(srv->setMute(value))) {
                 m_mute = value;
@@ -153,6 +174,11 @@ void RenderingControl::handleApplicationStateChanged(Qt::ApplicationState state)
 
 void RenderingControl::asyncUpdateVolume()
 {
+    if (!isInitedOrIniting()) {
+        qWarning() << "RenderingControl service is not inited";
+        return;
+    }
+
     startTask([this](){
         updateVolume();
     });
@@ -161,8 +187,11 @@ void RenderingControl::asyncUpdateVolume()
 void RenderingControl::updateVolume()
 {
     auto srv = s();
-    if (srv == nullptr)
+
+    if (!isInitedOrIniting() || !srv) {
+        qWarning() << "RenderingControl service is not inited";
         return;
+    }
 
     int v = srv->getVolume();
 
@@ -179,6 +208,11 @@ void RenderingControl::updateVolume()
 
 void RenderingControl::asyncUpdateMute()
 {
+    if (!getInited()) {
+        qWarning() << "RenderingControl service is not inited";
+        return;
+    }
+
     startTask([this](){
         updateMute();
     });
@@ -187,8 +221,11 @@ void RenderingControl::asyncUpdateMute()
 void RenderingControl::updateMute()
 {
     auto srv = s();
-    if (srv == nullptr)
+
+    if (!isInitedOrIniting() || !srv) {
+        qWarning() << "RenderingControl service is not inited";
         return;
+    }
 
     bool m = srv->getMute();
 

@@ -44,8 +44,9 @@ public:
     ~Service();
 
     Q_INVOKABLE bool init(const QString &deviceId);
-    Q_INVOKABLE bool deInit();
+    Q_INVOKABLE void deInit();
     bool getInited();
+    bool isInitedOrIniting();
 
     bool getBusy();
 
@@ -72,6 +73,7 @@ protected:
                                                    const UPnPClient::UPnPServiceDesc &sdesc) = 0;
     virtual void postInit();
     virtual void postDeInit();
+    virtual void reset();
     virtual std::string type() const = 0;
 
     virtual void handleApplicationStateChanged(Qt::ApplicationState state);

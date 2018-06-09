@@ -41,6 +41,17 @@ namespace UPnPClient {
 
 const string AVTransport::SType("urn:schemas-upnp-org:service:AVTransport:1");
 
+// Re-init with new dev and serv desc
+bool AVTransport::reInit(const UPnPDeviceDesc& devdesc,
+                         const UPnPServiceDesc& servdesc) {
+    if (Service::reInit(devdesc, servdesc)) {
+        registerCallback();
+        return true;
+    }
+
+    return false;
+}
+
 // Check serviceType string (while walking the descriptions. We don't
 // include a version in comparisons, as we are satisfied with version1
 bool AVTransport::isAVTService(const string& st)

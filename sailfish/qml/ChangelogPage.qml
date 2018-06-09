@@ -36,6 +36,12 @@ Page {
                              "providing Swedish and German translations."
             }
 
+            LogItem {
+                title: "Improved stability and bug fixes"
+                description: "Resilience to crash failures and other errors " +
+                             "has been significantly improved."
+            }
+
             SectionHeader {
                 text: qsTr("Version %1").arg("0.9.5")
             }

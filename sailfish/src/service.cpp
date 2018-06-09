@@ -29,7 +29,15 @@ Service::Service(QObject *parent) :
 
 Service::~Service()
 {
-    deInit();
+    if (m_ser) {
+        m_ser->installReporter(nullptr);
+        delete m_ser;
+        m_ser = nullptr;
+        qDebug() << "Service deleted";
+    }
+
+    setInited(false);
+
     waitForDone();
 }
 
@@ -48,6 +56,11 @@ void Service::changed(const char *nm, int value)
 bool Service::getInited()
 {
     return m_inited;
+}
+
+bool Service::isInitedOrIniting()
+{
+    return m_inited || m_initing;
 }
 
 bool Service::getBusy()
@@ -83,31 +96,21 @@ void Service::handleApplicationStateChanged(Qt::ApplicationState state)
     qDebug() << "State changed:" << state;
 }
 
-bool Service::deInit()
+void Service::deInit()
 {
-    m_initing = false;
-
-    timer(false);
-
-    postDeInit();
-
-    if (m_ser != nullptr) {
-        m_ser->installReporter(nullptr);
-        delete m_ser;
-        m_ser = nullptr;
-        setInited(false);
-
-        return true;
-    }
+    qDebug() << "Deiniting";
 
     setInited(false);
+    m_initing = false;
+    timer(false);
+    reset();
     setBusy(false);
-
-    return false;
 }
 
 bool Service::init(const QString &deviceId)
 {
+    qDebug() << "Initing";
+
     if (deviceId.isEmpty()) {
         qWarning() << "To init deviceId must not be empty!";
         return false;
@@ -135,24 +138,32 @@ bool Service::init(const QString &deviceId)
         return false;
     }
 
+    if (m_inited && m_ser) {
+        if (m_ser->isSameService(ddesc, sdesc)) {
+            qDebug() << "Same service, init not needed";
+            return true;
+        }
+    }
+
+    timer(false);
+    setInited(false);
+
+    reset();
+
     setBusy(true);
     startTask([this, ddesc, sdesc](){
-        if (m_ser != nullptr)
-            delete m_ser;
-
+        qDebug() << "Initing task";
         m_initing = true;
 
-        m_ser = createUpnpService(ddesc, sdesc);
+        if (m_ser)
+            m_ser->reInit(ddesc, sdesc);
+        else
+            m_ser = createUpnpService(ddesc, sdesc);
 
-        if (m_ser == nullptr) {
+        if (!m_ser) {
             qWarning() << "Unable to create UPnP service";
         } else {
             postInit();
-
-            if (m_ser == nullptr) {
-                qWarning() << "Unable to connect to UPnP service";
-                return;
-            }
 
             m_ser->installReporter(this);
 
@@ -162,9 +173,16 @@ bool Service::init(const QString &deviceId)
         }
 
         setBusy(false);
+        qDebug() << "Initing task done";
     });
 
+    qDebug() << "Init done";
+
     return true;
+}
+
+void Service::reset()
+{
 }
 
 void Service::postInit()

@@ -11,6 +11,7 @@
 #include <QString>
 #include <QTimer>
 #include <QMutex>
+#include <QMetaMethod>
 
 #include <libupnpp/control/avtransport.hxx>
 #include <libupnpp/control/service.hxx>
@@ -210,7 +211,7 @@ private:
     UPnPClient::Service* createUpnpService(const UPnPClient::UPnPDeviceDesc &ddesc,
                                            const UPnPClient::UPnPServiceDesc &sdesc);
     void postInit();
-    void postDeInit();
+    void reset();
 
     UPnPClient::AVTransport* s();
     void fakeUpdateRelativeTimePosition();

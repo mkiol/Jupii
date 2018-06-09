@@ -56,8 +56,8 @@ void Directory::init()
 
     // Delete old libupnpp log files
     // TODO: Remove before release
-    Utils::removeFile("/home/nemo/IUpnpErrFile.txt");
-    Utils::removeFile("/home/nemo/IUpnpInfoFile.txt");
+    //Utils::removeFile("/home/nemo/IUpnpErrFile.txt");
+    //Utils::removeFile("/home/nemo/IUpnpInfoFile.txt");
 
     m_lib->setLogFileName("", UPnPP::LibUPnP::LogLevelError);
 

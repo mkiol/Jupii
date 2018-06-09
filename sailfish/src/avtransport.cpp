@@ -35,8 +35,13 @@ AVTransport::AVTransport(QObject *parent) :
     QObject::connect(&m_seekTimer, &QTimer::timeout, this, &AVTransport::seekTimeout);
 }
 
-void AVTransport::changed(const QString &name, const QVariant &_value)
+void AVTransport::changed(const QString& name, const QVariant& _value)
 {
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
+        return;
+    }
+
     if (_value.canConvert(QVariant::Int)) {
         int value = _value.toInt();
 
@@ -165,9 +170,9 @@ void AVTransport::postInit()
     update();
 }
 
-void AVTransport::postDeInit()
+void AVTransport::reset()
 {
-    qDebug() << "postDeInit";
+    qDebug() << "reset";
 
     m_currentURI.clear();
     m_nextURI.clear();
@@ -220,7 +225,7 @@ void AVTransport::timerEvent()
 
 UPnPClient::AVTransport* AVTransport::s()
 {
-    if (m_ser == nullptr) {
+    if (!m_ser) {
         qWarning() << "AVTransport service is not inited";
         //emit error(E_NotInited);
         return nullptr;
@@ -233,6 +238,11 @@ void AVTransport::transportStateHandler()
 {
     emit transportActionsChanged();
     emit preControlableChanged();
+
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
+        return;
+    }
 
     if (m_transportState == Stopped &&
         m_oldTransportState == Playing) {
@@ -249,6 +259,11 @@ void AVTransport::handleApplicationStateChanged(Qt::ApplicationState state)
     //qDebug() << "State changed:" << state;
     //qDebug() << "--> aUPDATE handleApplicationStateChanged";
 
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
+        return;
+    }
+
     Q_UNUSED(state)
     asyncUpdate();
 }
@@ -257,6 +272,12 @@ void AVTransport::trackChangedHandler()
 {
     emit transportActionsChanged();
     //qDebug() << "--> aUPDATE trackChangedHandler";
+
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
+        return;
+    }
+
     asyncUpdate();
 }
 
@@ -475,6 +496,11 @@ void AVTransport::setNextURISupported(bool value)
 
 void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 {
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
+        return;
+    }
+
     if (!Utils::instance()->checkNetworkIf()) {
         qWarning() << "Can't find valid network interface";
         emit error(E_LostConnection);
@@ -482,11 +508,6 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
     }
 
     //qDebug() << ">>> setLocalContent thread:" << QThread::currentThreadId();
-
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
-        return;
-    }
 
     startTask([this, cid, nid](){
         auto cs = ContentServer::instance();
@@ -548,14 +569,19 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         m_updateMutex.lock();
 
         auto srv = s();
-        if (srv == nullptr)
+
+        if (!getInited() || !srv) {
+            m_updateMutex.unlock();
+            qWarning() << "AVTransport service is not inited";
             return;
+        }
 
         if (m_transportState != Playing) {
             if (!handleError(srv->stop())) {
                 qWarning() << "Error response for stop()";
-                if (srv == nullptr) {
+                if (!getInited()) {
                     m_updateMutex.unlock();
+                    qWarning() << "AVTransport service is not inited";
                     return;
                 }
             }
@@ -566,8 +592,9 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
             qDebug() << "Calling setNextAVTransportURI with id:" << nid;
             if (!handleError(srv->setNextAVTransportURI(s_nURI.toStdString(), nmeta.toStdString()))) {
                 qWarning() << "Error response for setNextAVTransportURI()";
-                if (srv == nullptr) {
+                if (!getInited()) {
                     m_updateMutex.unlock();
+                    qWarning() << "AVTransport service is not inited";
                     return;
                 }
             }
@@ -577,8 +604,9 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
             qWarning() << "Clearing nextURI";
             if (!handleError(srv->setNextAVTransportURI("", ""))) {
                 qWarning() << "Error response for setNextAVTransportURI()";
-                if (srv == nullptr) {
+                if (!getInited()) {
                     m_updateMutex.unlock();
+                    qWarning() << "AVTransport service is not inited";
                     return;
                 }
             }
@@ -590,8 +618,9 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
                 qDebug() << "Clearing nextURI";
                 if (!handleError(srv->setNextAVTransportURI("", ""))) {
                     qWarning() << "Error response for setNextAVTransportURI()";
-                    if (srv == nullptr) {
+                    if (!getInited()) {
                         m_updateMutex.unlock();
+                        qWarning() << "AVTransport service is not inited";
                         return;
                     }
                 }
@@ -600,8 +629,9 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
             qDebug() << "Calling setAVTransportURI with id:" << cid;
             if (!handleError(srv->setAVTransportURI(s_cURI.toStdString(),cmeta.toStdString()))) {
                 qWarning() << "Error response for setAVTransportURI()";
-                if (srv == nullptr) {
+                if (!getInited()) {
                     m_updateMutex.unlock();
+                    qWarning() << "AVTransport service is not inited";
                     return;
                 }
             }
@@ -612,8 +642,9 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         if (do_play) {
             if (!handleError(srv->play())) {
                 qWarning() << "Error response for play()";
-                if (srv == nullptr) {
+                if (!getInited()) {
                     m_updateMutex.unlock();
+                    qWarning() << "AVTransport service is not inited";
                     return;
                 }
             }
@@ -624,6 +655,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         m_updateMutex.unlock();
 
         //qDebug() << "--> UPDATE setLocalContent";
+
         update();
     });
 }
@@ -638,24 +670,29 @@ void AVTransport::setSpeed(int value)
 
 void AVTransport::play()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
     startTask([this](){
-        auto srv = s();
-        if (srv == nullptr)
-            return;
-
-        m_updateMutex.lock();
+        m_updateMutex.lock();    
 
         qDebug() << "Calling: play";
 
+        auto srv = s();
+
+        if (!getInited() || !srv) {
+            m_updateMutex.unlock();
+            qWarning() << "AVTransport service is not inited";
+            return;
+        }
+
         if (!handleError(srv->play(m_speed))) {
             qWarning() << "Error response for play()";
-            if (srv == nullptr) {
+            if (!getInited()) {
                 m_updateMutex.unlock();
+                qWarning() << "AVTransport service is not inited";
                 return;
             }
         }
@@ -670,24 +707,29 @@ void AVTransport::play()
 
 void AVTransport::pause()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
     startTask([this](){
-        auto srv = s();
-        if (srv == nullptr)
-            return;
-
         m_updateMutex.lock();
+
+        auto srv = s();
+
+        if (!getInited() || !srv) {
+            m_updateMutex.unlock();
+            qWarning() << "AVTransport service is not inited";
+            return;
+        }
 
         qDebug() << "Calling: pause";
 
         if (!handleError(srv->pause())) {
             qWarning() << "Error response for pause()";
-            if (srv == nullptr) {
+            if (!getInited()) {
                 m_updateMutex.unlock();
+                qWarning() << "AVTransport service is not inited";
                 return;
             }
         }
@@ -696,30 +738,36 @@ void AVTransport::pause()
         m_updateMutex.unlock();
 
         //qDebug() << "--> UPDATE pause";
+
         update();
     });
 }
 
 void AVTransport::stop()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
     startTask([this](){
-        auto srv = s();
-        if (srv == nullptr)
-            return;
-
         m_updateMutex.lock();
+
+        auto srv = s();
+
+        if (!getInited() || !srv) {
+            m_updateMutex.unlock();
+            qWarning() << "AVTransport service is not inited";
+            return;
+        }
 
         qDebug() << "Calling: stop";
 
         if (!handleError(srv->stop())) {
             qWarning() << "Error response for stop()";
-            if (srv == nullptr) {
+            if (!getInited()) {
                 m_updateMutex.unlock();
+                qWarning() << "AVTransport service is not inited";
                 return;
             }
         }
@@ -734,24 +782,29 @@ void AVTransport::stop()
 
 void AVTransport::next()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
     startTask([this](){
-        auto srv = s();
-        if (srv == nullptr)
-            return;
-
         m_updateMutex.lock();
+
+        auto srv = s();
+
+        if (!getInited() || !srv) {
+            m_updateMutex.unlock();
+            qWarning() << "AVTransport service is not inited";
+            return;
+        }
 
         qDebug() << "Calling: next";
 
         if (!handleError(srv->next())) {
             qWarning() << "Error response for next()";
-            if (srv == nullptr) {
+            if (!getInited()) {
                 m_updateMutex.unlock();
+                qWarning() << "AVTransport service is not inited";
                 return;
             }
         }
@@ -766,24 +819,29 @@ void AVTransport::next()
 
 void AVTransport::previous()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
     startTask([this](){
-        auto srv = s();
-        if (srv == nullptr)
-            return;
-
         m_updateMutex.lock();
+
+        auto srv = s();
+
+        if (!getInited() || !srv) {
+            m_updateMutex.unlock();
+            qWarning() << "AVTransport service is not inited";
+            return;
+        }
 
         qDebug() << "Calling: previous";
 
         if (!handleError(srv->previous())) {
             qWarning() << "Error response for previous()";
-            if (srv == nullptr) {
+            if (!getInited()) {
                 m_updateMutex.unlock();
+                qWarning() << "AVTransport service is not inited";
                 return;
             }
         }
@@ -798,18 +856,23 @@ void AVTransport::previous()
 
 void AVTransport::setPlayMode(int value)
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
     startTask([this, value](){
         qDebug() << "setPlayMode:" << value;
-        auto srv = s();
-        if (srv == nullptr)
-            return;
 
         m_updateMutex.lock();
+
+        auto srv = s();
+
+        if (!getInited() || !srv) {
+            m_updateMutex.unlock();
+            qWarning() << "AVTransport service is not inited";
+            return;
+        }
 
         qDebug() << "Calling: setPlayMode";
 
@@ -826,6 +889,13 @@ void AVTransport::setPlayMode(int value)
 
 void AVTransport::seek(int value)
 {
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
+        return;
+    }
+
+    qDebug() << "Seek:" << value;
+
     m_futureSeek = value < 0 ? 0 :
                    value > m_currentTrackDuration ? m_currentTrackDuration : value;
     m_seekTimer.start();
@@ -833,18 +903,23 @@ void AVTransport::seek(int value)
 
 void AVTransport::seekTimeout()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!getInited()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
     startTask([this](){
-        qDebug() << "Seek:" << m_futureSeek;
-        auto srv = s();
-        if (srv == nullptr)
-            return;
+        qDebug() << "Seek timeout:" << m_futureSeek;
 
         m_updateMutex.lock();
+
+        auto srv = s();
+
+        if (!getInited() || !srv) {
+            m_updateMutex.unlock();
+            qWarning() << "AVTransport service is not inited";
+            return;
+        }
 
         qDebug() << "Calling: seek";
 
@@ -881,14 +956,12 @@ void AVTransport::fakeUpdateRelativeTimePosition()
 
 void AVTransport::update(int initDelay, int postDelay)
 {
-    qDebug() << "Update start";
-
-    auto srv = s();
-
-    if (srv == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!isInitedOrIniting()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
+
+    qDebug() << "Update start";
 
     if (!m_updateMutex.tryLock()) {
         qDebug() << "Update is locked";
@@ -905,12 +978,21 @@ void AVTransport::update(int initDelay, int postDelay)
 
     tsleep(postDelay);
 
+    auto srv = s();
+
+    if (!isInitedOrIniting() || !srv) {
+        m_updateMutex.unlock();
+        qWarning() << "AVTransport service is not inited";
+        return;
+    }
+
     if (getCurrentType() == T_Image && m_transportState == Playing) {
         qDebug() << "Calling stop because current track type is image";
         if (!handleError(srv->stop())) {
             qWarning() << "Error response for stop()";
-            if (srv == nullptr) {
+            if (!isInitedOrIniting()) {
                 m_updateMutex.unlock();
+                qWarning() << "AVTransport service is not inited";
                 return;
             }
         }
@@ -941,8 +1023,8 @@ void AVTransport::needTimerCheck()
 
 void AVTransport::asyncUpdate(int initDelay, int postDelay)
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!isInitedOrIniting()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
@@ -953,8 +1035,8 @@ void AVTransport::asyncUpdate(int initDelay, int postDelay)
 
 void AVTransport::asyncUpdatePositionInfo()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!isInitedOrIniting()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
@@ -967,8 +1049,11 @@ void AVTransport::asyncUpdatePositionInfo()
 void AVTransport::updatePositionInfo()
 {
     auto srv = s();
-    if (srv == nullptr)
+
+    if (!isInitedOrIniting() || !srv) {
+        qWarning() << "AVTransport service is not inited";
         return;
+    }
 
     UPnPClient::AVTransport::PositionInfo pi;
 
@@ -1017,8 +1102,8 @@ void AVTransport::updatePositionInfo()
 
 void AVTransport::asyncUpdateTransportInfo()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!isInitedOrIniting()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
@@ -1030,12 +1115,14 @@ void AVTransport::asyncUpdateTransportInfo()
 void AVTransport::updateTransportInfo()
 {
     auto srv = s();
-    if (srv == nullptr)
+
+    if (!isInitedOrIniting() || !srv) {
+        qWarning() << "AVTransport service is not inited";
         return;
+    }
 
     UPnPClient::AVTransport::TransportInfo ti;
     if (handleError(srv->getTransportInfo(ti))) {
-
         qDebug() << "TransportInfo:";
         qDebug() << "  tpstate:" << ti.tpstate;
         qDebug() << "  tpstatus:" << ti.tpstatus;
@@ -1053,7 +1140,6 @@ void AVTransport::updateTransportInfo()
             emit transportStatusChanged();
             emit preControlableChanged();
         }
-
     } else {
         qWarning() << "Unable to get Transport Info";
 
@@ -1120,7 +1206,7 @@ void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta)
 
 void AVTransport::asyncUpdateMediaInfo()
 {
-    if (s() == nullptr) {
+    if (!isInitedOrIniting()) {
         qWarning() << "Service is not inited";
         return;
     }
@@ -1133,8 +1219,11 @@ void AVTransport::asyncUpdateMediaInfo()
 void AVTransport::updateMediaInfo()
 {
     auto srv = s();
-    if (srv == nullptr)
+
+    if (!isInitedOrIniting() || !srv) {
+        qWarning() << "AVTransport service is not inited";
         return;
+    }
 
     UPnPClient::AVTransport::MediaInfo mi;
     if (handleError(srv->getMediaInfo(mi))) {
@@ -1217,8 +1306,8 @@ void AVTransport::updateMediaInfo()
 
 void AVTransport::asyncUpdateCurrentTransportActions()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!isInitedOrIniting()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 
@@ -1230,8 +1319,11 @@ void AVTransport::asyncUpdateCurrentTransportActions()
 void AVTransport::updateCurrentTransportActions()
 {
     auto srv = s();
-    if (srv == nullptr)
+
+    if (!isInitedOrIniting() || !srv) {
+        qWarning() << "AVTransport service is not inited";
         return;
+    }
 
     int ac = 0;
     if (handleError(srv->getCurrentTransportActions(ac))) {
@@ -1257,8 +1349,11 @@ void AVTransport::updateCurrentTransportActions()
 void AVTransport::updateTransportSettings()
 {
     auto srv = s();
-    if (srv == nullptr)
+
+    if (!isInitedOrIniting() || !srv) {
+        qWarning() << "AVTransport service is not inited";
         return;
+    }
 
     UPnPClient::AVTransport::TransportSettings ts;
 
@@ -1278,8 +1373,8 @@ void AVTransport::updateTransportSettings()
 
 void AVTransport::asyncUpdateTransportSettings()
 {
-    if (s() == nullptr) {
-        qWarning() << "Service is not inited";
+    if (!isInitedOrIniting()) {
+        qWarning() << "AVTransport service is not inited";
         return;
     }
 

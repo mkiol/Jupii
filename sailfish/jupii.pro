@@ -47,7 +47,8 @@ HEADERS += \
     src/albummodel.h \
     src/artistmodel.h \
     src/playlistfilemodel.h \
-    src/trackmodel.h
+    src/trackmodel.h \
+    src/services.h
 
 SOURCES += \
     src/dbus_jupii_adaptor.cpp \
@@ -73,7 +74,8 @@ SOURCES += \
     src/albummodel.cpp \
     src/artistmodel.cpp \
     src/playlistfilemodel.cpp \
-    src/trackmodel.cpp
+    src/trackmodel.cpp \
+    src/services.cpp
 
 OTHER_FILES += \
     translations/*.ts \
