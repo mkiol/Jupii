@@ -115,7 +115,8 @@ TRANSLATIONS += \
     translations/harbour-jupii-nl_BE.ts \
     translations/harbour-jupii-ru.ts \
     translations/harbour-jupii-de.ts \
-    translations/harbour-jupii-sv.ts
+    translations/harbour-jupii-sv.ts \
+    translations/harbour-jupii-es.ts
 
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images
