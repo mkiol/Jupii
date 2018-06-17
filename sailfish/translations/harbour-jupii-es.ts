@@ -26,12 +26,12 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="68"/>
         <source>%1 is a free application. The source code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this app, You can obtain one at %2.</source>
-        <translation>%1 es una aplicación libre. El código fuente está sujeto a términos de la Licencia Pública de Mozilla, -v2.0. Si una copia del MPL no se distribuyó con esta aplicación, puede obtener una en %2.</translation>
+        <translation>%1 es una aplicación libre. El código fuente está sujeto a términos de la Licencia Pública de Mozilla -v2.0. Si una copia del MPL no se distribuyó con esta aplicación, puede obtener una en %2.</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="75"/>
         <source>Third party components copyrights</source>
-        <translation>Derechos de autor de componentes de terceros</translation>
+        <translation>Derechos de autor de componentes terceros</translation>
     </message>
 </context>
 <context>
@@ -57,7 +57,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="37"/>
         <source>Add item</source>
-        <translation>Agregar un elemento</translation>
+        <translation>Añadir un elemento</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="41"/>
@@ -246,7 +246,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="29"/>
         <source>Can&apos;t connect to the local network</source>
-        <translation>No se puede conectar a la red local</translation>
+        <translation>No se pudo conectar a la red local</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="32"/>
@@ -301,7 +301,7 @@ Halar hacia abajo para encontrar más aparatos en su red.</translation>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
         <translation>No conectado.
-Halar hacia abajo para conectarse a la red local.</translation>
+Halar hacia abajo para el menú y conectarse a la red local.</translation>
     </message>
 </context>
 <context>
@@ -402,7 +402,7 @@ Halar hacia abajo para conectarse a la red local.</translation>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="577"/>
         <source>Add item</source>
-        <translation>Agregar elemento</translation>
+        <translation>Añadir elemento</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="617"/>
@@ -459,7 +459,7 @@ Halar hacia abajo para conectarse a la red local.</translation>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="94"/>
         <source>Add tracks</source>
-        <translation>Agregar pistas</translation>
+        <translation>Añadir pistas</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="101"/>
@@ -515,7 +515,7 @@ Halar hacia abajo para conectarse a la red local.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="62"/>
         <source>Volume control with hardware keys</source>
-        <translation>Control de volumen con teclas física</translation>
+        <translation>Volumen con teclas física</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="63"/>
@@ -525,17 +525,17 @@ Halar hacia abajo para conectarse a la red local.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="76"/>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation>Reproducir imágenes en aparatos UPnP no funciona bien en este momento. Hay algunos problemas menores que aún no se han resuelto. Esta opción fuerza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
+        <translation>Reproduce imágenes en aparatos UPnP que no funcionan bien en este momento, hay algunos problemas menores que aún no se han resuelto. Esta opción fuerza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="89"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 solo admite aparatos Media Renderer. Con esta opción habilitada, se mostrarán todos los aparatos UPnP, incluidos los aparatos no compatibles, como los enrutadores domésticos o los Servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica. Esta opción podría ser útil para auditar dispositivos UPnP en su red local.</translation>
+        <translation>%1 solo admite aparatos Media Renderer. Con esta opción habilitada, se mostrarán todos los aparatos UPnP incluidos los aparatos no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en su red local.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Adding devices manually</source>
-        <translation>Añadiendo aparatos manualmente</translation>
+        <translation>Añadir aparatos manualmente</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
