@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Icon=jupii
+Exec=jupii
+Name=Jupii
+Categories=AudioVideo;Player;Qt;Audio;
+Comment=Stream audio, video and image files to UPnP/DLNA devices

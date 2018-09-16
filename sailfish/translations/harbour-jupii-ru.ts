@@ -20,12 +20,16 @@
         <translation>Авторы и лицензия</translation>
     </message>
     <message>
-        <source>%1 is a free application. The source code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this app, You can obtain one at %2.</source>
-        <translation>%1 - свободная программа. Исходный код распространяется на условиях Mozilla Public License, v. 2.0. Если копия MPL не прилагалась к данному приложению, ее можно прочесть по адресу %2.</translation>
+        <source>Copyright &amp;copy; %1 %2</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Third party components copyrights</source>
-        <translation>Права на компоненты третьих сторон</translation>
+        <source>Third party components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is developed as an open source project under &lt;a href=&quot;%3&quot;&gt;%2&lt;/a&gt;.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -152,6 +156,13 @@
     <message>
         <source>Copy</source>
         <translation>Копировать</translation>
+    </message>
+</context>
+<context>
+    <name>CoverPage</name>
+    <message>
+        <source>Unknown</source>
+        <translation type="unfinished">Неизвестно</translation>
     </message>
 </context>
 <context>
@@ -298,10 +309,6 @@ Pull down to connect to the local network.</source>
 <context>
     <name>MediaRendererPage</name>
     <message>
-        <source>Unknown</source>
-        <translation>Неизвестно</translation>
-    </message>
-    <message>
         <source>Item is already in the playlist</source>
         <translation>Эта запись уже в списке воспроизведения</translation>
     </message>
@@ -344,13 +351,6 @@ Pull down to connect to the local network.</source>
     <message>
         <source>Remove</source>
         <translation>Удалить</translation>
-    </message>
-</context>
-<context>
-    <name>PlayListModel</name>
-    <message>
-        <source>Playlist</source>
-        <translation>Список воспроизведения</translation>
     </message>
 </context>
 <context>

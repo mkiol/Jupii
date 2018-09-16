@@ -20,12 +20,16 @@
         <translation>Auteurs &amp; licentie</translation>
     </message>
     <message>
-        <source>%1 is a free application. The source code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this app, You can obtain one at %2.</source>
-        <translation>%1 is een vrije toepassing. De broncode is beschikbaar onder de voorwaarden van de Mozilla Public License, v. 2.0. Als er geen kopie van de MPL met deze app wordt meegeleverd, kan je er een verkrijgen op %2.</translation>
+        <source>Copyright &amp;copy; %1 %2</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Third party components copyrights</source>
-        <translation>Auteursrecht voor onderdelen van derde partijen</translation>
+        <source>Third party components</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is developed as an open source project under &lt;a href=&quot;%3&quot;&gt;%2&lt;/a&gt;.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -150,6 +154,13 @@
     <message>
         <source>Copy</source>
         <translation>Kopiëren</translation>
+    </message>
+</context>
+<context>
+    <name>CoverPage</name>
+    <message>
+        <source>Unknown</source>
+        <translation type="unfinished">Onbekend</translation>
     </message>
 </context>
 <context>
@@ -296,10 +307,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
 <context>
     <name>MediaRendererPage</name>
     <message>
-        <source>Unknown</source>
-        <translation>Onbekend</translation>
-    </message>
-    <message>
         <source>Item is already in the playlist</source>
         <translation>Item staat al in de afspeellijst</translation>
     </message>
@@ -342,13 +349,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     <message>
         <source>Remove</source>
         <translation>Verwijderen</translation>
-    </message>
-</context>
-<context>
-    <name>PlayListModel</name>
-    <message>
-        <source>Playlist</source>
-        <translation>Afspeellijst</translation>
     </message>
 </context>
 <context>

@@ -27,6 +27,16 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("1.0.0")
+            }
+
+            LogItem {
+                title: "Spanish translation"
+                description: "Many thanks to Carlos Gonzalez for " +
+                             "providing Spanish translation."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("0.9.6")
             }
 

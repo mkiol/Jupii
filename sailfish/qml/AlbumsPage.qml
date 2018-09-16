@@ -27,7 +27,7 @@ Page {
 
     function doPop() {
         if (pageStack.busy)
-            _doPop = true;
+            _doPop = true
         else
             pageStack.pop(pageStack.previousPage(root))
     }
@@ -35,8 +35,10 @@ Page {
     Connections {
         target: pageStack
         onBusyChanged: {
-            if (!pageStack.busy && root._doPop)
-                pageStack.pop();
+            if (!pageStack.busy && root._doPop) {
+                root._doPop = false
+                pageStack.pop()
+            }
         }
     }
 

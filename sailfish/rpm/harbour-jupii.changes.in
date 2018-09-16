@@ -8,6 +8,13 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun Sep 16 2018 Michal Kosciesza <michal@mkiol.net> 1.9.0-1
+- Desktop port
+- Streaming proxy for remote content (e.g. internet radio)
+
+* Tue Jun 05 2018 Michal Kosciesza <michal@mkiol.net> 1.0.0-1
+- ES translation
+
 * Tue Jun 05 2018 Michal Kosciesza <michal@mkiol.net> 0.9.6-1
 - SV and DE translations
 - Improved stability and bug fixes

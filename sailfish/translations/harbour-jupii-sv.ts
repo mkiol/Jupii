@@ -24,14 +24,19 @@
         <translation>Utvecklare &amp; Licens</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="68"/>
-        <source>%1 is a free application. The source code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this app, You can obtain one at %2.</source>
-        <translation>%1 är en fri applikation. Källkoden licensieras under Mozilla Public License, v. 2.0. Om en kopia av MPL inte distribueras med denna app, kan du hitta den på %2.</translation>
+        <location filename="../qml/AboutPage.qml" line="63"/>
+        <source>Copyright &amp;copy; %1 %2</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="75"/>
-        <source>Third party components copyrights</source>
-        <translation>Upphovsrätter för tredjepartskomponenter</translation>
+        <location filename="../qml/AboutPage.qml" line="71"/>
+        <source>%1 is developed as an open source project under &lt;a href=&quot;%3&quot;&gt;%2&lt;/a&gt;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AboutPage.qml" line="78"/>
+        <source>Third party components</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -103,12 +108,12 @@
 <context>
     <name>AlbumsPage</name>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="64"/>
+        <location filename="../qml/AlbumsPage.qml" line="66"/>
         <source>Search album</source>
         <translation>Sök album</translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/AlbumsPage.qml" line="79"/>
+        <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n spår</numerusform>
@@ -116,17 +121,17 @@
         </translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="86"/>
+        <location filename="../qml/AlbumsPage.qml" line="88"/>
         <source>Select tracks</source>
         <translation>Välj spår</translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="93"/>
+        <location filename="../qml/AlbumsPage.qml" line="95"/>
         <source>Add all tracks</source>
         <translation>Lägg till alla spår</translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="115"/>
+        <location filename="../qml/AlbumsPage.qml" line="117"/>
         <source>No albums</source>
         <translation>Inga album</translation>
     </message>
@@ -134,12 +139,12 @@
 <context>
     <name>ArtistPage</name>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="64"/>
+        <location filename="../qml/ArtistPage.qml" line="66"/>
         <source>Search artist</source>
         <translation>Sök artist</translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/ArtistPage.qml" line="79"/>
+        <location filename="../qml/ArtistPage.qml" line="81"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n spår</numerusform>
@@ -147,17 +152,17 @@
         </translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="86"/>
+        <location filename="../qml/ArtistPage.qml" line="88"/>
         <source>Select tracks</source>
         <translation>Välj spår</translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="93"/>
+        <location filename="../qml/ArtistPage.qml" line="95"/>
         <source>Add all tracks</source>
         <translation>Lägg till alla spår</translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="115"/>
+        <location filename="../qml/ArtistPage.qml" line="117"/>
         <source>No artists</source>
         <translation>Inga artister</translation>
     </message>
@@ -171,11 +176,12 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="44"/>
-        <location filename="../qml/ChangelogPage.qml" line="59"/>
-        <location filename="../qml/ChangelogPage.qml" line="94"/>
-        <location filename="../qml/ChangelogPage.qml" line="105"/>
-        <location filename="../qml/ChangelogPage.qml" line="151"/>
+        <location filename="../qml/ChangelogPage.qml" line="40"/>
+        <location filename="../qml/ChangelogPage.qml" line="56"/>
+        <location filename="../qml/ChangelogPage.qml" line="71"/>
+        <location filename="../qml/ChangelogPage.qml" line="106"/>
+        <location filename="../qml/ChangelogPage.qml" line="117"/>
+        <location filename="../qml/ChangelogPage.qml" line="163"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
@@ -186,6 +192,14 @@
         <location filename="../qml/CopyableLabel.qml" line="34"/>
         <source>Copy</source>
         <translation>Kopiera</translation>
+    </message>
+</context>
+<context>
+    <name>CoverPage</name>
+    <message>
+        <location filename="../qml/CoverPage.qml" line="18"/>
+        <source>Unknown</source>
+        <translation type="unfinished">Okänd</translation>
     </message>
 </context>
 <context>
@@ -307,57 +321,57 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
 <context>
     <name>MediaInfoPage</name>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="78"/>
+        <location filename="../qml/MediaInfoPage.qml" line="77"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="82"/>
+        <location filename="../qml/MediaInfoPage.qml" line="81"/>
         <source>Audio</source>
         <translation>Ljud</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="84"/>
+        <location filename="../qml/MediaInfoPage.qml" line="83"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="86"/>
+        <location filename="../qml/MediaInfoPage.qml" line="85"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="88"/>
+        <location filename="../qml/MediaInfoPage.qml" line="87"/>
         <source>Unknown</source>
         <translation>Okänd</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="94"/>
+        <location filename="../qml/MediaInfoPage.qml" line="93"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="100"/>
+        <location filename="../qml/MediaInfoPage.qml" line="99"/>
         <source>Author</source>
         <translation>Upphovsman</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="107"/>
+        <location filename="../qml/MediaInfoPage.qml" line="106"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="114"/>
+        <location filename="../qml/MediaInfoPage.qml" line="113"/>
         <source>Duration</source>
         <translation>Varaktighet</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="122"/>
+        <location filename="../qml/MediaInfoPage.qml" line="121"/>
         <source>Description</source>
         <translation>Beskrivning</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="137"/>
+        <location filename="../qml/MediaInfoPage.qml" line="136"/>
         <source>Path</source>
         <translation>Sökväg</translation>
     </message>
@@ -365,78 +379,65 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
 <context>
     <name>MediaRendererPage</name>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="31"/>
-        <source>Unknown</source>
-        <translation>Okänd</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaRendererPage.qml" line="456"/>
+        <location filename="../qml/MediaRendererPage.qml" line="399"/>
         <source>Item is already in the playlist</source>
         <translation>Objektet finns redan i spellistan</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="484"/>
+        <location filename="../qml/MediaRendererPage.qml" line="427"/>
         <source>Playlist</source>
         <translation>Spellista</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="491"/>
+        <location filename="../qml/MediaRendererPage.qml" line="434"/>
         <source>Empty</source>
         <translation>Tom</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="497"/>
+        <location filename="../qml/MediaRendererPage.qml" line="440"/>
         <source>Not connected</source>
         <translation>Inte ansluten</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="558"/>
+        <location filename="../qml/MediaRendererPage.qml" line="501"/>
         <source>Save playlist</source>
         <translation>Spara spellista</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="568"/>
+        <location filename="../qml/MediaRendererPage.qml" line="511"/>
         <source>Clear playlist</source>
         <translation>Rensa spellista</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="577"/>
+        <location filename="../qml/MediaRendererPage.qml" line="520"/>
         <source>Add item</source>
         <translation>Lägg till objekt</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="617"/>
+        <location filename="../qml/MediaRendererPage.qml" line="580"/>
         <source>Play</source>
         <translation>Spela</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="617"/>
+        <location filename="../qml/MediaRendererPage.qml" line="580"/>
         <source>Show</source>
         <translation>Visa</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="630"/>
+        <location filename="../qml/MediaRendererPage.qml" line="593"/>
         <source>Pause</source>
         <translation>Paus</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="638"/>
+        <location filename="../qml/MediaRendererPage.qml" line="601"/>
         <source>Remove</source>
         <translation>Ta bort</translation>
     </message>
 </context>
 <context>
-    <name>PlayListModel</name>
-    <message>
-        <location filename="../src/playlistmodel.cpp" line="49"/>
-        <source>Playlist</source>
-        <translation>Spellista</translation>
-    </message>
-</context>
-<context>
     <name>PlayerPanel</name>
     <message>
-        <location filename="../qml/PlayerPanel.qml" line="148"/>
+        <location filename="../qml/PlayerPanel.qml" line="154"/>
         <source>Unknown</source>
         <translation>Okänd</translation>
     </message>
@@ -444,12 +445,12 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
 <context>
     <name>PlaylistPage</name>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="64"/>
+        <location filename="../qml/PlaylistPage.qml" line="66"/>
         <source>Search playlist</source>
         <translation>Sök spellista</translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/PlaylistPage.qml" line="80"/>
+        <location filename="../qml/PlaylistPage.qml" line="82"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n spår</numerusform>
@@ -457,17 +458,17 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
         </translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="94"/>
+        <location filename="../qml/PlaylistPage.qml" line="96"/>
         <source>Add tracks</source>
         <translation>Lägg till spår</translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="101"/>
+        <location filename="../qml/PlaylistPage.qml" line="103"/>
         <source>Delete playlist</source>
         <translation>Ta bort spellista</translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="115"/>
+        <location filename="../qml/PlaylistPage.qml" line="117"/>
         <source>No playlists</source>
         <translation>Inga spellistor</translation>
     </message>

@@ -20,20 +20,9 @@ Page {
     property string deviceId
     property string deviceName
 
-    property bool busy: av.busy || rc.busy
+    property bool busy: av.busy || rc.busy || playlist.busy
     property bool inited: av.inited && rc.inited
-
-    // -- Needed for Cover --
-    /*property bool playable: av.playable
-    property bool stopable: av.stopable
-    property string image: av.transportStatus === AVTransport.TPS_Ok ?
-                               av.currentAlbumArtURI : ""
-    property string title: av.currentTitle.length > 0 ? av.currentTitle : qsTr("Unknown")
-    property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""*/
-    // ----
-
     property bool _doPop: false
-    property int dbusVolume: -1
 
     Component.onCompleted: {
         rc.init(deviceId)
@@ -167,58 +156,14 @@ Page {
         }
     }
 
-    // -- D-Bus volume --
+    DBusVolumeAgent {
+        id: volumeAgent
 
-    onDbusVolumeChanged: {
-        console.log("onDbusVolumeChanged: " + dbusVolume)
+        onVolumeChanged: {
+            console.log("DBus volume is: " + volume)
 
-        if (rc.inited && settings.useDbusVolume)
-            rc.volume = dbusVolume
-    }
-
-    DBusInterface {
-        service: "com.nokia.profiled"
-        path: "/com/nokia/profiled"
-        iface: "com.nokia.profiled"
-
-        signalsEnabled: true
-
-        Component.onCompleted: getVolume()
-
-        function updateDbusVolume(obj) {
-            if (obj.length > 1) {
-                if (obj[0] === "ringing.alert.volume") {
-                    var volume = obj[1]
-                    if (volume >= 0 && volume <= 100) {
-                        //console.log("D-Bus volume is " + volume)
-                        root.dbusVolume = volume
-                    }
-                }
-            }
-        }
-
-        function profile_changed(changed, active, name, obj) {
-            /*console.log("com.nokia.profiled profile_changed signal")
-            console.log(" changed: " + changed)
-            console.log(" active: " + active)
-            console.log(" name: " + name)
-            console.log(" obj: " + obj)*/
-
-            if (name === "general" && obj.length === 1)
-                updateDbusVolume(obj[0])
-        }
-
-        function getVolume() {
-            typedCall("get_values", {"type": "s", "value": "general"},
-              function(result) {
-                  console.log("D-Bus getVolume call completed")
-                  var l = result.length
-                  for (var i = 0; i < l; i++)
-                      updateDbusVolume(result[i])
-              },
-              function() {
-                  console.log("D-Bus getVolume call failed")
-              })
+            if (rc.inited && settings.useDbusVolume)
+                rc.volume = volume
         }
     }
 
@@ -229,7 +174,7 @@ Page {
         FilePickerPage {
             nameFilters: cserver.getExtensions(settings.imageSupported ? 7 : 6)
             onSelectedContentPropertiesChanged: {
-                playlist.addItems([selectedContentProperties.filePath])
+                playlist.addItemPaths([selectedContentProperties.filePath])
             }
         }
     }
@@ -241,7 +186,7 @@ Page {
                 var paths = [];
                 for (var i = 0; i < selectedContent.count; ++i)
                     paths.push(selectedContent.get(i).filePath)
-                playlist.addItems(paths)
+                playlist.addItemPaths(paths)
             }
         }
     }
@@ -250,7 +195,7 @@ Page {
         id: albumPickerPage
         AlbumsPage {
             onAccepted: {
-                playlist.addItems(songs);
+                playlist.addItemPaths(songs);
             }
         }
     }
@@ -259,7 +204,7 @@ Page {
         id: artistPickerPage
         ArtistPage {
             onAccepted: {
-                playlist.addItems(songs);
+                playlist.addItemPaths(songs);
             }
         }
     }
@@ -268,7 +213,7 @@ Page {
         id: playlistPickerPage
         PlaylistPage {
             onAccepted: {
-                playlist.addItems(songs);
+                playlist.addItemUrls(songs);
             }
         }
     }
@@ -280,7 +225,7 @@ Page {
                 var paths = [];
                 for (var i = 0; i < selectedContent.count; ++i)
                     paths.push(selectedContent.get(i).filePath)
-                playlist.addItems(paths)
+                playlist.addItemPaths(paths)
             }
         }
     }
@@ -292,7 +237,7 @@ Page {
                 var paths = [];
                 for (var i = 0; i < selectedContent.count; ++i)
                     paths.push(selectedContent.get(i).filePath)
-                playlist.addItemsAsAudio(paths)
+                playlist.addItemPathsAsAudio(paths)
             }
         }
     }
@@ -304,7 +249,7 @@ Page {
                 var paths = [];
                 for (var i = 0; i < selectedContent.count; ++i)
                     paths.push(selectedContent.get(i).filePath)
-                playlist.addItems(paths)
+                playlist.addItemPaths(paths)
             }
         }
     }
@@ -314,8 +259,10 @@ Page {
     Connections {
         target: pageStack
         onBusyChanged: {
-            if (!pageStack.busy && root._doPop)
-                pageStack.pop(pageStack.pop());
+            if (!pageStack.busy && root._doPop) {
+                root._doPop = false
+                pageStack.pop(pageStack.pop())
+            }
         }
     }
 
@@ -332,7 +279,7 @@ Page {
 
         onInitedChanged: {
             if (rc.inited && settings.useDbusVolume)
-                rc.volume = root.dbusVolume
+                rc.volume = volumeAgent.volume
         }
     }
 
@@ -552,7 +499,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Save playlist")
-                visible: av.inited && listView.count > 0
+                visible: av.inited && !playlist.busy && listView.count > 0
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"), {
                                        playlist: playlist
@@ -562,7 +509,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Clear playlist")
-                visible: av.inited && listView.count > 0
+                visible: av.inited && !playlist.busy && listView.count > 0
                 onClicked: {
                     playlist.clear()
                     root.updatePlayList(false)
@@ -571,6 +518,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Add item")
+                visible: !playlist.busy
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
                                        musicPickerDialog: musicPickerDialog,
@@ -586,20 +534,39 @@ Page {
             }
         }
 
-        delegate: SimpleListItem {
+        delegate: DoubleListItem {
             id: listItem
 
             property color primaryColor: highlighted || model.active ?
                                          Theme.highlightColor : Theme.primaryColor
-
             property bool isImage: model.type === AVTransport.T_Image
 
             visible: root.inited && !root.busy
-
-            icon.source: model.icon + "?" + primaryColor
+            defaultIcon.source: {
+                switch (model.type) {
+                case AVTransport.T_Image:
+                    return "image://theme/icon-m-file-image?" + primaryColor
+                case AVTransport.T_Audio:
+                    return "image://theme/icon-m-file-audio?" + primaryColor
+                case AVTransport.T_Video:
+                    return "image://theme/icon-m-file-video?" + primaryColor
+                default:
+                    return "image://theme/icon-m-file-other?" + primaryColor
+                }
+            }
+            icon.source: model.icon
             icon.visible: !model.toBeActive
             title.text: model.name
             title.color: primaryColor
+            /*subtitle.text: {
+                var t = model.artist;
+                var d = model.duration;
+                if (d > 0)
+                    t += (" • " + utils.secToStr(d))
+                return t;
+            }*/
+            subtitle.text: model.artist
+            subtitle.color: primaryColor
 
             onClicked: {
                 if (model.active)
@@ -750,19 +717,7 @@ Page {
         }
 
         onRepeatClicked: {
-            switch(playlist.playMode) {
-            case PlayListModel.PM_Normal:
-                playlist.playMode = PlayListModel.PM_RepeatAll
-                break;
-            case PlayListModel.PM_RepeatAll:
-                playlist.playMode = PlayListModel.PM_RepeatOne
-                break;
-            case PlayListModel.PM_RepeatOne:
-                playlist.playMode = PlayListModel.PM_Normal
-                break;
-            default:
-                playlist.playMode = PlayListModel.PM_Normal
-            }
+            playlist.togglePlayMode()
         }
     }
 }

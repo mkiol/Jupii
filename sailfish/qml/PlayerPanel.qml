@@ -24,8 +24,6 @@ DockedPanel_ {
     property alias backwardEnabled: backwardButton.enabled
     property alias playmodeEnabled: playmodeButton.enabled
 
-    //property alias trackPositionSlider: trackPositionSlider
-
     signal labelClicked
     signal nextClicked
     signal prevClicked
@@ -189,10 +187,12 @@ DockedPanel_ {
 
                     ProgressCircle {
                         anchors.fill: parent
-                        value: av.relativeTimePosition / av.currentTrackDuration
+                        value: av.currentTrackDuration > 0 ?
+                                   av.relativeTimePosition / av.currentTrackDuration :
+                                   0
                         progressColor: Theme.highlightColor
                         backgroundColor: "transparent"
-                        enabled: root.controlable && !root.full
+                        enabled: root.controlable && !root.full && av.currentTrackDuration > 0
                         opacity: enabled ? 0.4 : 0.0
                         visible: opacity > 0.0
                     }

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/jupii-64.png</file>
+    </qresource>
+</RCC>

@@ -44,7 +44,7 @@ Page {
 
             /*PaddedLabel {
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("Stream content from your mobile to UPnP/DLNA devices");
+                text: qsTr("This program let you stream audio, video and image files to UPnP/DLNA devices.");
             }*/
 
             Button {
@@ -60,19 +60,22 @@ Page {
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
                 textFormat: Text.RichText
-                text: "Copyright &copy; 2017-2018 Michal Kosciesza"
+                text: qsTr("Copyright &copy; %1 %2")
+                .arg(COPYRIGHT_YEAR)
+                .arg(AUTHOR)
             }
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: qsTr("%1 is a free application. The source code is " +
-                           "subject to the terms of the Mozilla Public License, v. 2.0. " +
-                           "If a copy of the MPL was not distributed with this " +
-                           "app, You can obtain one at %2.").arg(APP_NAME).arg("http://mozilla.org/MPL/2.0/")
+                textFormat: Text.StyledText
+                text: qsTr("%1 is developed as an open source project under <a href=\"%3\">%2</a>.")
+                .arg(APP_NAME)
+                .arg(LICENSE)
+                .arg(LICENSE_URL)
             }
 
             SectionHeader {
-                text: qsTr("Third party components copyrights")
+                text: qsTr("Third party components")
             }
 
             PaddedLabel {

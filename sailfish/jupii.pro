@@ -1,85 +1,56 @@
 TARGET = harbour-jupii
 
-CONFIG += c++11 sailfishapp object_parallel_to_source json no_lflags_merge
+CONFIG += c++11 sailfishapp json no_lflags_merge object_parallel_to_source
+
 QT += dbus
 
 PKGCONFIG += mlite5
 
+linux-g++-32: CONFIG += x86
+linux-g++: CONFIG += arm
+
+PROJECTDIR = $$PWD/..
+
 INCLUDEPATH += /usr/include/c++/7
 
-DEFINES += Q_OS_SAILFISH
+CONFIG += sailfish ffmpeg
+DEFINES += SAILFISH
 
-include(qhttpserver/qhttpserver.pri)
-include(libupnp/libupnp.pri)
-include(libupnpp/libupnpp.pri)
-include(taglib/taglib.pri)
+ffmpeg {
+    DEFINES += FFMPEG
+    INCLUDEPATH += $$PWD/libav/src
 
-linux-g++-32 {
-    LIBS += -L$$PWD/libav/i486/ -l:libavutil.so.55 -l:libavformat.so.57 -l:libavcodec.so.57 -l:libavresample.so.3
+    x86: lib.files = libav/i486/*
+    arm: lib.files = libav/arm/*
+    lib.path = /usr/share/$${TARGET}/lib
+    INSTALLS += lib
+
+    x86 {
+        LIBS += -L$$PWD/libav/i486/ -l:libavutil.so.55
+        LIBS += -L$$PWD/libav/i486/ -l:libavformat.so.57
+        LIBS += -L$$PWD/libav/i486/ -l:libavcodec.so.57
+        LIBS += -L$$PWD/libav/i486/ -l:libavresample.so.3
+    }
+
+    arm {
+        LIBS += -L$$PWD/libav/arm/ -l:libavutil.so.55
+        LIBS += -L$$PWD/libav/arm/ -l:libavformat.so.57
+        LIBS += -L$$PWD/libav/arm/ -l:libavcodec.so.57
+        LIBS += -L$$PWD/libav/arm/ -l:libavresample.so.3
+    }
 }
 
-linux-g++ {
-    LIBS += -L$$PWD/libav/arm/ -l:libavutil.so.55 -l:libavformat.so.57 -l:libavcodec.so.57 -l:libavresample.so.3
-}
+include($$PROJECTDIR/qhttpserver/qhttpserver.pri)
+include($$PROJECTDIR/libupnp/libupnp.pri)
+include($$PROJECTDIR/libupnpp/libupnpp.pri)
+include($$PROJECTDIR/taglib/taglib.pri)
+include($$PROJECTDIR/core_src/jupii_core.pri)
 
-INCLUDEPATH += $$PWD/libav/src
-
-HEADERS += \
-    src/dbus_jupii_adaptor.h \
-    src/dbus_tracker_inf.h \
-    src/utils.h \
-    src/listmodel.h \
-    src/devicemodel.h \
-    src/renderingcontrol.h \
-    src/avtransport.h \
-    src/service.h \
-    src/contentserver.h \
-    src/filemetadata.h \
-    src/settings.h \
-    src/directory.h \
-    src/taskexecutor.h \
-    src/deviceinfo.h \
-    src/iconprovider.h \
-    src/playlistmodel.h \
-    src/dbusapp.h \
-    src/tracker.h \
-    src/trackercursor.h \
-    src/albummodel.h \
-    src/artistmodel.h \
-    src/playlistfilemodel.h \
-    src/trackmodel.h \
-    src/services.h
-
-SOURCES += \
-    src/dbus_jupii_adaptor.cpp \
-    src/dbus_tracker_inf.cpp \
-    src/main.cpp \
-    src/utils.cpp \
-    src/listmodel.cpp \
-    src/devicemodel.cpp \
-    src/renderingcontrol.cpp \
-    src/avtransport.cpp \
-    src/service.cpp \
-    src/contentserver.cpp \
-    src/filemetadata.cpp \
-    src/settings.cpp \
-    src/directory.cpp \
-    src/taskexecutor.cpp \
-    src/deviceinfo.cpp \
-    src/iconprovider.cpp \
-    src/playlistmodel.cpp \
-    src/dbusapp.cpp \
-    src/tracker.cpp \
-    src/trackercursor.cpp \
-    src/albummodel.cpp \
-    src/artistmodel.cpp \
-    src/playlistfilemodel.cpp \
-    src/trackmodel.cpp \
-    src/services.cpp
+INCLUDEPATH += src
 
 OTHER_FILES += \
     translations/*.ts \
-    dbus/org.jupii.xml \
+    $$PROJECTDIR/dbus/org.jupii.xml \
     qml/main.qml \
     qml/DevicesPage.qml \
     qml/CoverPage.qml \
@@ -100,12 +71,10 @@ OTHER_FILES += \
     qml/DoubleListItem.qml \
     qml/ArtistPage.qml \
     qml/PlaylistPage.qml \
-    qml/SavePlaylistPage.qml
+    qml/SavePlaylistPage.qml \
+    qml/DBusVolumeAgent.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
-
-system(qdbusxml2cpp dbus/org.jupii.xml -a src/dbus_jupii_adaptor)
-system(qdbusxml2cpp dbus/org.freedesktop.Tracker1.Steroids.xml -p src/dbus_tracker_inf)
 
 CONFIG += sailfishapp_i18n
 TRANSLATIONS += \
@@ -121,16 +90,6 @@ TRANSLATIONS += \
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images
 INSTALLS += images
-
-linux-g++-32 {
-    lib.files = libav/i486/*
-}
-linux-g++ {
-    lib.files = libav/arm/*
-}
-
-lib.path = /usr/share/$${TARGET}/lib
-INSTALLS += lib
 
 DEPENDPATH += $$INCLUDEPATH
 
