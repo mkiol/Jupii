@@ -1,4 +1,4 @@
-QHTTPSERVER_BASE = ../qhttpserver
+QHTTPSERVER_BASE = ../libs/qhttpserver
 
 INCLUDEPATH += $$QHTTPSERVER_BASE/http-parser $$QHTTPSERVER_BASE/src
 

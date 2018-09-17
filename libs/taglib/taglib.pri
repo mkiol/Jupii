@@ -1,4 +1,4 @@
-taglib_BASE = ../taglib/taglib
+taglib_BASE = ../libs/taglib/taglib
 
 taglib_HEADERS = \
   $$taglib_BASE/tag.h \

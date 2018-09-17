@@ -1,6 +1,6 @@
 QMAKE_CFLAGS += -D_FILE_OFFSET_BITS=64 -pthread -g -O2 -Os -Wall
 
-libupnp_BASE = ../libupnp
+libupnp_BASE = ../libs/libupnp
 
 libupnp_HEADERS = \
   $$libupnp_BASE/upnp/inc/UpnpString.h \

@@ -1,4 +1,4 @@
-CORE_DIR = ../core_src
+CORE_DIR = ../core
 
 INCLUDEPATH += $$CORE_DIR
 

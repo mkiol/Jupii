@@ -40,11 +40,11 @@ ffmpeg {
     }
 }
 
-include($$PROJECTDIR/qhttpserver/qhttpserver.pri)
-include($$PROJECTDIR/libupnp/libupnp.pri)
-include($$PROJECTDIR/libupnpp/libupnpp.pri)
-include($$PROJECTDIR/taglib/taglib.pri)
-include($$PROJECTDIR/core_src/jupii_core.pri)
+include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
+include($$PROJECTDIR/libs/libupnp/libupnp.pri)
+include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
+include($$PROJECTDIR/libs/taglib/taglib.pri)
+include($$PROJECTDIR/core/jupii_core.pri)
 
 INCLUDEPATH += src
 

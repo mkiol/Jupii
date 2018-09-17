@@ -4,8 +4,8 @@ QMAKE_CXXFLAGS += -std=c++11 -D_FILE_OFFSET_BITS=64 -pthread
 
 QMAKE_LFLAGS += -Wl,-zdefs
 
-libupnpp_BASE = ../libupnpp
-libupnp_BASE = ../libupnp
+libupnpp_BASE = ../libs/libupnpp
+libupnp_BASE = ../libs/libupnp
 
 libupnpp_HEADERS += \
   $$libupnpp_BASE/libupnpp/control/avlastchg.hxx \
