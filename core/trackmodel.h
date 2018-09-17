@@ -99,6 +99,7 @@ public:
     int selectedCount();
 
     Q_INVOKABLE void setSelected(int index, bool value);
+    Q_INVOKABLE void setAllSelected(bool value);
     Q_INVOKABLE QStringList selectedPaths();
 
 signals:

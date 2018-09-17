@@ -78,6 +78,24 @@ Dialog {
             }
         }
 
+        PullDownMenu {
+            id: menu
+
+            enabled: trackModel.count > 0
+
+            MenuItem {
+                text: trackModel.count === trackModel.selectedCount ?
+                          qsTr("Unselect all") :
+                          qsTr("Select all")
+                onClicked: {
+                    if (trackModel.count === trackModel.selectedCount)
+                        trackModel.setAllSelected(false)
+                    else
+                        trackModel.setAllSelected(true)
+                }
+            }
+        }
+
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor

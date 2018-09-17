@@ -228,7 +228,7 @@ void TrackModel::setSelected(int index, bool value)
         return;
     }
 
-    auto track = static_cast<TrackItem*>(m_list.at(index));
+    auto track = dynamic_cast<TrackItem*>(m_list.at(index));
 
     bool cvalue = track->selected();
 
@@ -243,6 +243,33 @@ void TrackModel::setSelected(int index, bool value)
         emit selectedCountChanged();
     }
 }
+
+void TrackModel::setAllSelected(bool value)
+{
+    if (m_list.isEmpty())
+        return;
+
+    int c = m_selectedCount;
+
+    for (auto item : m_list) {
+        auto track = dynamic_cast<TrackItem*>(item);
+
+        bool cvalue = track->selected();
+
+        if (cvalue != value) {
+            track->setSelected(value);
+
+            if (value)
+                m_selectedCount++;
+            else
+                m_selectedCount--;
+        }
+    }
+
+    if (c != m_selectedCount)
+         emit selectedCountChanged();
+}
+
 
 QString TrackModel::getAlbumId()
 {
