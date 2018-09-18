@@ -28,7 +28,6 @@
 
 #include "contentserver.h"
 #include "listmodel.h"
-#include "taskexecutor.h"
 
 class PlaylistItem :
         public ListItem
@@ -120,8 +119,7 @@ private:
 };
 
 class PlayListModel :
-        public ListModel,
-        public TaskExecutor
+        public ListModel
 {
     Q_OBJECT
     Q_PROPERTY (int activeItemIndex READ getActiveItemIndex NOTIFY activeItemIndexChanged)
@@ -143,7 +141,6 @@ public:
     Q_ENUM(PlayMode)
 
     explicit PlayListModel(QObject *parent = nullptr);
-    ~PlayListModel();
     Q_INVOKABLE void clear();
     Q_INVOKABLE QString firstId() const;
     Q_INVOKABLE QString secondId() const;
@@ -161,13 +158,16 @@ public:
 
 signals:
     void itemRemoved();
-    void itemsAdded(const QStringList& ids);
-    void itemsLoaded(const QStringList& ids);
+    //void itemsAdded(const QStringList& ids);
+    //void itemsLoaded(const QStringList& ids);
+    void itemsAdded();
+    void itemsLoaded();
     void error(ErrorType code);
     void activeItemChanged();
     void activeItemIndexChanged();
     void playModeChanged();
     void busyChanged();
+    //void itemsReady(QList<ListItem*> items);
 
 public slots:
     void addItemPaths(const QStringList& paths);
@@ -191,6 +191,7 @@ private:
     void setActiveItemIndex(int index);
     //bool addId(const QString& id, ContentServer::Type type = ContentServer::TypeUnknown);
     bool addId(const QUrl& id);
+    PlaylistItem* makeItem(const QUrl &id);
     void save();
     QByteArray makePlsData(const QString& name);
     void setBusy(bool busy);

@@ -26,14 +26,8 @@ const int icon_size = 64;
 #endif
 
 PlayListModel::PlayListModel(QObject *parent) :
-    ListModel(new PlaylistItem, parent),
-    TaskExecutor(parent)
+    ListModel(new PlaylistItem, parent)
 {
-}
-
-PlayListModel::~PlayListModel()
-{
-    waitForDone();
 }
 
 void PlayListModel::save()
@@ -54,6 +48,8 @@ bool PlayListModel::isBusy()
 
 void PlayListModel::setBusy(bool busy)
 {
+    //qDebug() << "setBusy" << m_busy << busy;
+
     if (busy != m_busy) {
         m_busy = busy;
         emit busyChanged();
@@ -115,19 +111,25 @@ QByteArray PlayListModel::makePlsData(const QString& name)
 void PlayListModel::load()
 {
     setBusy(true);
-    startTask([this]{
-        QStringList ids = Settings::instance()->getLastPlaylist();
-        QStringList n_ids;
 
-        for (const auto& id : ids) {
-            if (addId(QUrl(id)))
-                n_ids << id;
-        }
+    QStringList ids = Settings::instance()->getLastPlaylist();
+    QList<ListItem*> items;
 
-        if (!n_ids.isEmpty())
-            emit itemsLoaded(n_ids);
-        setBusy(false);
-    });
+    for (auto &id : ids) {
+        auto item = makeItem(QUrl(id));
+        if (item)
+            items << item;
+    }
+
+    if (!items.isEmpty()) {
+        appendRows(items);
+        emit itemsLoaded();
+
+        if (Settings::instance()->getRememberPlaylist())
+            save();
+    }
+
+    setBusy(false);
 }
 
 int PlayListModel::getPlayMode() const
@@ -199,55 +201,63 @@ void PlayListModel::addItems(const QList<QUrl>& urls, bool asAudio)
     qDebug() << "addItems:" << urls;
 
     setBusy(true);
-    startTask([this, urls, asAudio]{
-        QStringList n_ids;
 
-        for (const auto& url : urls) {
-            QUrl id(url);
-            QUrlQuery q(url);
+    QList<QUrl> n_ids;
 
-            if (q.hasQueryItem(Utils::cookieKey))
-                q.removeQueryItem(Utils::cookieKey);
-            q.addQueryItem(Utils::cookieKey, Utils::randString());
+    for (const auto& url : urls) {
+        QUrl id(url);
+        QUrlQuery q(url);
 
-            if (asAudio) {
-                if (q.hasQueryItem(Utils::typeKey))
-                    q.removeQueryItem(Utils::typeKey);
-                q.addQueryItem(Utils::typeKey, QString::number(ContentServer::TypeMusic));
-            }
+        if (q.hasQueryItem(Utils::cookieKey))
+            q.removeQueryItem(Utils::cookieKey);
+        q.addQueryItem(Utils::cookieKey, Utils::randString());
 
-            id.setQuery(q);
-
-            if (addId(id))
-                n_ids << id.toString();
+        if (asAudio) {
+            if (q.hasQueryItem(Utils::typeKey))
+                q.removeQueryItem(Utils::typeKey);
+            q.addQueryItem(Utils::typeKey, QString::number(ContentServer::TypeMusic));
         }
 
-        if (!n_ids.isEmpty()) {
-            emit itemsAdded(n_ids);
+        id.setQuery(q);
+        n_ids << id;
+    }
+
+    if (!n_ids.isEmpty()) {
+        QList<ListItem*> items;
+
+        for (auto &id : n_ids) {
+            auto item = makeItem(id);
+            if (item)
+                items << item;
+        }
+
+        if (!items.isEmpty()) {
+            appendRows(items);
+            emit itemsAdded();
 
             if (Settings::instance()->getRememberPlaylist())
                 save();
         }
+    }
 
-        setBusy(false);
-    });
+    setBusy(false);
 }
 
-bool PlayListModel::addId(const QUrl &id)
+PlaylistItem* PlayListModel::makeItem(const QUrl &id)
 {
-    qDebug() << "addId:" << id;
+    qDebug() << "makeItem:" << id;
 
     if (find(id.toString())) {
         qWarning() << "Id" << id << "already added";
         emit error(E_FileExists);
-        return false;
+        return nullptr;
     }
 
     int t = 0; QString cookie;
     if (!Utils::pathTypeCookieFromId(id, nullptr, &t, &cookie) ||
             cookie.isEmpty()) {
         qWarning() << "Invalid Id";
-        return false;
+        return nullptr;
     }
 
     QUrl url = Utils::urlFromId(id);
@@ -256,7 +266,7 @@ bool PlayListModel::addId(const QUrl &id)
     const auto it = cs->getMetaCacheIterator(url);
     if (it == cs->metaCacheIteratorEnd()) {
         qWarning() << "No meta item found";
-        return false;
+        return nullptr;
     } else {
         meta = it.value();
     }
@@ -267,24 +277,6 @@ bool PlayListModel::addId(const QUrl &id)
 
 #ifdef SAILFISH
     QString icon = meta.albumArt;
-    /*if (icon.isEmpty()) {
-        switch (type) {
-        case ContentServer::TypeDir:
-            icon = "image://theme/icon-m-file-folder";
-            break;
-        case ContentServer::TypeImage:
-            icon = "image://theme/icon-m-file-image";
-            break;
-        case ContentServer::TypeMusic:
-            icon = "image://theme/icon-m-file-audio";
-            break;
-        case ContentServer::TypeVideo:
-            icon = "image://theme/icon-m-file-video";
-            break;
-        default:
-            icon = "image://theme/icon-m-file-other";
-        }
-    }*/
 #endif
     QString name;
     if (!meta.title.isEmpty())
@@ -296,14 +288,17 @@ bool PlayListModel::addId(const QUrl &id)
     else
         name = tr("Unknown");
 
-    appendRow(new PlaylistItem(meta.url == url ?
+    auto item = new PlaylistItem(meta.url == url ?
                                    id : Utils::swapUrlInId(meta.url, id), // id
                                name, // name
                                meta.url, // url
                                type, // type
-                               meta.title.isEmpty() ? tr("Unknown") : meta.title, // title
+                               /*meta.title.isEmpty() ? tr("Unknown") : meta.title, // title
                                meta.artist.isEmpty() ? tr("Unknown") : meta.artist, // artist
-                               meta.album.isEmpty() ? tr("Unknown") : meta.album, // album
+                               meta.album.isEmpty() ? tr("Unknown") : meta.album, // album*/
+                               meta.title, // title
+                               meta.artist, // artist
+                               meta.album, // album
                                "", // date
                                meta.duration, // duration
                                meta.size, // size
@@ -316,7 +311,18 @@ bool PlayListModel::addId(const QUrl &id)
 #endif
                                false, // active
                                false // to be active
-                               ));
+                               );
+
+    return item;
+}
+
+bool PlayListModel::addId(const QUrl &id)
+{
+    auto item = makeItem(id);
+    if (item)
+        appendRow(item);
+    else
+        return false;
 
     return true;
 }

@@ -33,8 +33,6 @@ Page {
 
     Component.onDestruction: {
         dbus.canControl = false
-        //av.deInit();
-        //rc.deInit();
     }
 
     onInitedChanged: {
@@ -300,10 +298,6 @@ Page {
             updateMediaInfoPage()
         }
 
-        /*onRelativeTimePositionChanged: {
-            ppanel.trackPositionSlider.updateValue(av.relativeTimePosition)
-        }*/
-
         onError: {
             handleError(code)
         }
@@ -417,9 +411,11 @@ Page {
 
         clip: true
 
-        opacity: root.busy ? 0.0 : 1.0
+        /*opacity: root.busy ? 0.0 : 1.0
         visible: opacity > 0.0
-        Behavior on opacity { FadeAnimator {} }
+        Behavior on opacity { FadeAnimator {} }*/
+
+        visible: !root.busy
 
         model: playlist
 
@@ -467,8 +463,6 @@ Page {
                     stepSize: 1
                     valueText: value
                     opacity: rc.mute ? 0.7 : 1.0
-
-                    //label: qsTr("Volume")
 
                     onValueChanged: {
                         if (!blockValueChangedSignal) {
@@ -539,6 +533,8 @@ Page {
 
             property color primaryColor: highlighted || model.active ?
                                          Theme.highlightColor : Theme.primaryColor
+            property color secondaryColor: highlighted || model.active ?
+                                         Theme.secondaryHighlightColor : Theme.secondaryColor
             property bool isImage: model.type === AVTransport.T_Image
 
             visible: root.inited && !root.busy
@@ -565,8 +561,8 @@ Page {
                     t += (" • " + utils.secToStr(d))
                 return t;
             }*/
-            subtitle.text: model.artist
-            subtitle.color: primaryColor
+            subtitle.text: model.artist.length > 0 ? model.artist : ""
+            subtitle.color: secondaryColor
 
             onClicked: {
                 if (model.active)
