@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QDataStream>
 #include <QUrlQuery>
+#include <utility>
 
 #include "playlistmodel.h"
 #include "utils.h"
@@ -25,12 +26,58 @@
 const int icon_size = 64;
 #endif
 
-PlayListModel::PlayListModel(QObject *parent) :
+PlaylistWorker::PlaylistWorker(const QList<QUrl> &&urls, PlaylistModel *model, bool asAudio, bool urlIsId) :
+    QThread(model),
+    urls(urls),
+    asAudio(asAudio),
+    urlIsId(urlIsId)
+{
+}
+
+void PlaylistWorker::run()
+{
+    QList<QUrl> ids;
+
+    if (urlIsId) {
+        ids = urls;
+    } else {
+        for (const auto& url : urls) {
+            if (url.isValid()) {
+                QUrl id(url);
+                QUrlQuery q(url);
+
+                if (q.hasQueryItem(Utils::cookieKey))
+                    q.removeQueryItem(Utils::cookieKey);
+                q.addQueryItem(Utils::cookieKey, Utils::randString());
+
+                if (asAudio) {
+                    if (q.hasQueryItem(Utils::typeKey))
+                        q.removeQueryItem(Utils::typeKey);
+                    q.addQueryItem(Utils::typeKey, QString::number(ContentServer::TypeMusic));
+                }
+
+                id.setQuery(q);
+
+                ids << id;
+            }
+        }
+    }
+
+    if (!ids.isEmpty()) {
+        for (auto &id : ids) {
+            auto item = model->makeItem(id);
+            if (item)
+                items << item;
+        }
+    }
+}
+
+PlaylistModel::PlaylistModel(QObject *parent) :
     ListModel(new PlaylistItem, parent)
 {
 }
 
-void PlayListModel::save()
+void PlaylistModel::save()
 {
     QStringList ids;
 
@@ -41,22 +88,20 @@ void PlayListModel::save()
     Settings::instance()->setLastPlaylist(ids);
 }
 
-bool PlayListModel::isBusy()
+bool PlaylistModel::isBusy()
 {
     return m_busy;
 }
 
-void PlayListModel::setBusy(bool busy)
+void PlaylistModel::setBusy(bool busy)
 {
-    //qDebug() << "setBusy" << m_busy << busy;
-
     if (busy != m_busy) {
         m_busy = busy;
         emit busyChanged();
     }
 }
 
-bool PlayListModel::saveToFile(const QString& title)
+bool PlaylistModel::saveToFile(const QString& title)
 {
     if (m_list.isEmpty()) {
         qWarning() << "Current playlist is empty";
@@ -89,7 +134,7 @@ bool PlayListModel::saveToFile(const QString& title)
     return true;
 }
 
-QByteArray PlayListModel::makePlsData(const QString& name)
+QByteArray PlaylistModel::makePlsData(const QString& name)
 {
     QByteArray data;
     QTextStream sdata(&data);
@@ -108,36 +153,23 @@ QByteArray PlayListModel::makePlsData(const QString& name)
     return data;
 }
 
-void PlayListModel::load()
+void PlaylistModel::load()
 {
     setBusy(true);
 
-    QStringList ids = Settings::instance()->getLastPlaylist();
-    QList<ListItem*> items;
+    auto urls = QUrl::fromStringList(Settings::instance()->getLastPlaylist());
 
-    for (auto &id : ids) {
-        auto item = makeItem(QUrl(id));
-        if (item)
-            items << item;
-    }
-
-    if (!items.isEmpty()) {
-        appendRows(items);
-        emit itemsLoaded();
-
-        if (Settings::instance()->getRememberPlaylist())
-            save();
-    }
-
-    setBusy(false);
+    m_worker = std::unique_ptr<PlaylistWorker>(new PlaylistWorker(std::move(urls), this));
+    connect(m_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::workerDone);
+    m_worker->start();
 }
 
-int PlayListModel::getPlayMode() const
+int PlaylistModel::getPlayMode() const
 {
     return m_playMode;
 }
 
-void PlayListModel::setPlayMode(int value)
+void PlaylistModel::setPlayMode(int value)
 {
     if (value != m_playMode) {
         m_playMode = value;
@@ -145,29 +177,29 @@ void PlayListModel::setPlayMode(int value)
     }
 }
 
-void PlayListModel::togglePlayMode()
+void PlaylistModel::togglePlayMode()
 {
     switch(m_playMode) {
-    case PlayListModel::PM_Normal:
-        setPlayMode(PlayListModel::PM_RepeatAll);
+    case PlaylistModel::PM_Normal:
+        setPlayMode(PlaylistModel::PM_RepeatAll);
         break;
-    case PlayListModel::PM_RepeatAll:
-        setPlayMode(PlayListModel::PM_RepeatOne);
+    case PlaylistModel::PM_RepeatAll:
+        setPlayMode(PlaylistModel::PM_RepeatOne);
         break;
-    case PlayListModel::PM_RepeatOne:
-        setPlayMode(PlayListModel::PM_Normal);
+    case PlaylistModel::PM_RepeatOne:
+        setPlayMode(PlaylistModel::PM_Normal);
         break;
     default:
-        setPlayMode(PlayListModel::PM_Normal);
+        setPlayMode(PlaylistModel::PM_Normal);
     }
 }
 
-int PlayListModel::getActiveItemIndex() const
+int PlaylistModel::getActiveItemIndex() const
 {
     return m_activeItemIndex;
 }
 
-void PlayListModel::addItemPaths(const QStringList& paths)
+void PlaylistModel::addItemPaths(const QStringList& paths)
 {
     QList<QUrl> urls;
     for (auto& path : paths)
@@ -175,12 +207,12 @@ void PlayListModel::addItemPaths(const QStringList& paths)
     addItems(urls, false);
 }
 
-void PlayListModel::addItemUrls(const QList<QUrl>& urls)
+void PlaylistModel::addItemUrls(const QList<QUrl>& urls)
 {
     addItems(urls, false);
 }
 
-void PlayListModel::addItemUrl(const QUrl& url)
+void PlaylistModel::addItemUrl(const QUrl& url)
 {
     QList<QUrl> urls;
     urls << url;
@@ -188,7 +220,7 @@ void PlayListModel::addItemUrl(const QUrl& url)
 }
 
 
-void PlayListModel::addItemPathsAsAudio(const QStringList& paths)
+void PlaylistModel::addItemPathsAsAudio(const QStringList& paths)
 {
     QList<QUrl> urls;
     for (auto& path : paths)
@@ -196,62 +228,52 @@ void PlayListModel::addItemPathsAsAudio(const QStringList& paths)
     addItems(urls, true);
 }
 
-void PlayListModel::addItems(const QList<QUrl>& urls, bool asAudio)
+void PlaylistModel::addItems(const QList<QUrl>& urls, bool asAudio)
 {
     qDebug() << "addItems:" << urls;
 
+    if (urls.isEmpty())
+        return;
+
     setBusy(true);
 
-    QList<QUrl> n_ids;
+    m_worker = std::unique_ptr<PlaylistWorker>(new PlaylistWorker(std::move(urls), this, asAudio));
+    connect(m_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::workerDone);
+    m_worker->start();
+}
 
-    for (const auto& url : urls) {
-        QUrl id(url);
-        QUrlQuery q(url);
+void PlaylistModel::workerDone()
+{
+    qDebug() << "workerDone";
 
-        if (q.hasQueryItem(Utils::cookieKey))
-            q.removeQueryItem(Utils::cookieKey);
-        q.addQueryItem(Utils::cookieKey, Utils::randString());
-
-        if (asAudio) {
-            if (q.hasQueryItem(Utils::typeKey))
-                q.removeQueryItem(Utils::typeKey);
-            q.addQueryItem(Utils::typeKey, QString::number(ContentServer::TypeMusic));
-        }
-
-        id.setQuery(q);
-        n_ids << id;
-    }
-
-    if (!n_ids.isEmpty()) {
-        QList<ListItem*> items;
-
-        for (auto &id : n_ids) {
-            auto item = makeItem(id);
-            if (item)
-                items << item;
-        }
-
-        if (!items.isEmpty()) {
-            appendRows(items);
-            emit itemsAdded();
-
+    if (m_worker) {
+        if (!m_worker->items.isEmpty()) {
+            appendRows(m_worker->items);
+            if (m_worker->urlIsId)
+                emit itemsAdded();
+            else
+                emit itemsLoaded();
             if (Settings::instance()->getRememberPlaylist())
                 save();
+        } else {
+            qWarning() << "No items to add to playlist";
         }
+    } else {
+        qWarning() << "Worker done signal but worker is null";
     }
 
     setBusy(false);
 }
 
-PlaylistItem* PlayListModel::makeItem(const QUrl &id)
+PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 {
     qDebug() << "makeItem:" << id;
 
-    if (find(id.toString())) {
+    /*if (find(id.toString())) {
         qWarning() << "Id" << id << "already added";
         emit error(E_FileExists);
         return nullptr;
-    }
+    }*/
 
     int t = 0; QString cookie;
     if (!Utils::pathTypeCookieFromId(id, nullptr, &t, &cookie) ||
@@ -293,9 +315,6 @@ PlaylistItem* PlayListModel::makeItem(const QUrl &id)
                                name, // name
                                meta.url, // url
                                type, // type
-                               /*meta.title.isEmpty() ? tr("Unknown") : meta.title, // title
-                               meta.artist.isEmpty() ? tr("Unknown") : meta.artist, // artist
-                               meta.album.isEmpty() ? tr("Unknown") : meta.album, // album*/
                                meta.title, // title
                                meta.artist, // artist
                                meta.album, // album
@@ -316,7 +335,7 @@ PlaylistItem* PlayListModel::makeItem(const QUrl &id)
     return item;
 }
 
-bool PlayListModel::addId(const QUrl &id)
+bool PlaylistModel::addId(const QUrl &id)
 {
     auto item = makeItem(id);
     if (item)
@@ -327,7 +346,7 @@ bool PlayListModel::addId(const QUrl &id)
     return true;
 }
 
-void PlayListModel::setActiveId(const QString &id)
+void PlaylistModel::setActiveId(const QString &id)
 {
     if (id == activeId())
         return;
@@ -352,7 +371,7 @@ void PlayListModel::setActiveId(const QString &id)
     }
 }
 
-void PlayListModel::resetToBeActive()
+void PlaylistModel::resetToBeActive()
 {
     const int len = m_list.length();
     for (int i = 0; i < len; ++i) {
@@ -365,7 +384,7 @@ void PlayListModel::resetToBeActive()
     }
 }
 
-void PlayListModel::setToBeActiveIndex(int index)
+void PlaylistModel::setToBeActiveIndex(int index)
 {
     const int len = m_list.length();
     for (int i = 0; i < len; ++i) {
@@ -378,7 +397,7 @@ void PlayListModel::setToBeActiveIndex(int index)
     }
 }
 
-void PlayListModel::setToBeActiveId(const QString &id)
+void PlaylistModel::setToBeActiveId(const QString &id)
 {
     for (auto li : m_list) {
         auto fi = dynamic_cast<PlaylistItem*>(li);
@@ -390,7 +409,7 @@ void PlayListModel::setToBeActiveId(const QString &id)
     }
 }
 
-void PlayListModel::setActiveUrl(const QUrl &url)
+void PlaylistModel::setActiveUrl(const QUrl &url)
 {
     if (!url.isEmpty()) {
         auto cs = ContentServer::instance();
@@ -398,7 +417,7 @@ void PlayListModel::setActiveUrl(const QUrl &url)
     }
 }
 
-void PlayListModel::clear()
+void PlaylistModel::clear()
 {
     bool active_removed = false;
     if (m_activeItemIndex > -1) {
@@ -424,7 +443,7 @@ void PlayListModel::clear()
         emit activeItemChanged();
 }
 
-QString PlayListModel::activeId() const
+QString PlaylistModel::activeId() const
 {
     if (m_activeItemIndex > -1) {
         auto fi = m_list.at(m_activeItemIndex);
@@ -434,7 +453,7 @@ QString PlayListModel::activeId() const
     return QString();
 }
 
-QString PlayListModel::firstId() const
+QString PlaylistModel::firstId() const
 {
     if (m_list.length() > 0)
         return m_list.first()->id();
@@ -442,7 +461,7 @@ QString PlayListModel::firstId() const
     return QString();
 }
 
-QString PlayListModel::secondId() const
+QString PlaylistModel::secondId() const
 {
     if (m_list.length() > 1)
         return m_list.at(1)->id();
@@ -450,7 +469,7 @@ QString PlayListModel::secondId() const
     return QString();
 }
 
-void PlayListModel::setActiveItemIndex(int index)
+void PlaylistModel::setActiveItemIndex(int index)
 {
     if (m_activeItemIndex != index) {
         m_activeItemIndex = index;
@@ -458,7 +477,7 @@ void PlayListModel::setActiveItemIndex(int index)
     }
 }
 
-bool PlayListModel::removeIndex(int index)
+bool PlaylistModel::removeIndex(int index)
 {
     if (index < 0)
         return false;
@@ -495,12 +514,12 @@ bool PlayListModel::removeIndex(int index)
     return ok;
 }
 
-bool PlayListModel::remove(const QString &id)
+bool PlaylistModel::remove(const QString &id)
 {
     return removeIndex(indexFromId(id));
 }
 
-QString PlayListModel::nextActiveId() const
+QString PlaylistModel::nextActiveId() const
 {
     if (m_activeItemIndex < 0)
         return QString();
@@ -522,7 +541,7 @@ QString PlayListModel::nextActiveId() const
     return QString();
 }
 
-QString PlayListModel::prevActiveId() const
+QString PlaylistModel::prevActiveId() const
 {
     if (m_activeItemIndex < 0)
         return QString();
@@ -547,7 +566,7 @@ QString PlayListModel::prevActiveId() const
 }
 
 
-QString PlayListModel::nextId(const QString &id) const
+QString PlaylistModel::nextId(const QString &id) const
 {
     const int l = m_list.length();
     if (l == 0)

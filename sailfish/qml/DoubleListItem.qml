@@ -70,6 +70,7 @@ ListItem {
 
         Label {
             id: _subtitle
+            visible: text.length > 0
 
             anchors {
                 left: parent.left

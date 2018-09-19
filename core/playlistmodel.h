@@ -20,6 +20,8 @@
 #include <QUrl>
 #include <QFileInfo>
 #include <QVariant>
+#include <QThread>
+#include <memory>
 
 #ifdef DESKTOP
 #include <QIcon>
@@ -28,6 +30,8 @@
 
 #include "contentserver.h"
 #include "listmodel.h"
+
+class PlaylistModel;
 
 class PlaylistItem :
         public ListItem
@@ -118,13 +122,34 @@ private:
     bool m_tobeactive;
 };
 
-class PlayListModel :
+class PlaylistWorker :
+        public QThread
+{
+    Q_OBJECT
+
+friend class PlaylistModel;
+
+public:
+    QList<ListItem*> items;
+    PlaylistWorker(const QList<QUrl> &&urls, PlaylistModel *model, bool asAudio = false, bool urlIsId = false);
+
+private:
+    PlaylistModel* model;
+    QList<QUrl> urls;
+    bool asAudio;
+    bool urlIsId;
+    void run();
+};
+
+class PlaylistModel :
         public ListModel
 {
     Q_OBJECT
     Q_PROPERTY (int activeItemIndex READ getActiveItemIndex NOTIFY activeItemIndexChanged)
     Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
     Q_PROPERTY (bool busy READ isBusy NOTIFY busyChanged)
+
+friend class PlaylistWorker;
 
 public:
     enum ErrorType {
@@ -140,7 +165,7 @@ public:
     };
     Q_ENUM(PlayMode)
 
-    explicit PlayListModel(QObject *parent = nullptr);
+    explicit PlaylistModel(QObject *parent = nullptr);
     Q_INVOKABLE void clear();
     Q_INVOKABLE QString firstId() const;
     Q_INVOKABLE QString secondId() const;
@@ -167,7 +192,6 @@ signals:
     void activeItemIndexChanged();
     void playModeChanged();
     void busyChanged();
-    //void itemsReady(QList<ListItem*> items);
 
 public slots:
     void addItemPaths(const QStringList& paths);
@@ -183,7 +207,11 @@ public slots:
     void togglePlayMode();
     bool isBusy();
 
+private slots:
+    void workerDone();
+
 private:
+    std::unique_ptr<PlaylistWorker> m_worker;
     bool m_busy = false;
     int m_activeItemIndex = -1;
     int m_playMode = PM_RepeatAll;

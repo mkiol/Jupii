@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<RenderingControl>("harbour.jupii.RenderingControl", 1, 0, "RenderingControl");
     qmlRegisterType<AVTransport>("harbour.jupii.AVTransport", 1, 0, "AVTransport");
     qmlRegisterType<DeviceInfo>("harbour.jupii.DeviceInfo", 1, 0, "DeviceInfo");
-    qmlRegisterType<PlayListModel>("harbour.jupii.PlayListModel", 1, 0, "PlayListModel");
+    qmlRegisterType<PlaylistModel>("harbour.jupii.PlayListModel", 1, 0, "PlayListModel");
     qmlRegisterType<AlbumModel>("harbour.jupii.AlbumModel", 1, 0, "AlbumModel");
     qmlRegisterType<ArtistModel>("harbour.jupii.ArtistModel", 1, 0, "ArtistModel");
     qmlRegisterType<PlaylistFileModel>("harbour.jupii.PlaylistFileModel", 1, 0, "PlaylistFileModel");
@@ -86,6 +86,7 @@ int main(int argc, char *argv[])
     app->setApplicationVersion(Jupii::APP_VERSION);
 
     qRegisterMetaType<Service::ErrorType>("ErrorType");
+    qRegisterMetaType<QList<ListItem*>>("QListOfListItem");
 
     /*QTranslator translator;
     const QString locale = QLocale::system().name();

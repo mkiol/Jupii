@@ -20,7 +20,7 @@ Page {
     property string deviceId
     property string deviceName
 
-    property bool busy: av.busy || rc.busy || playlist.busy
+    property bool busy: av.busy || rc.busy
     property bool inited: av.inited && rc.inited
     property bool _doPop: false
 
@@ -252,6 +252,15 @@ Page {
         }
     }
 
+    Component {
+        id: urlPickerPage
+        AddUrlPage {
+            onAccepted: {
+                playlist.addItemUrl(url);
+            }
+        }
+    }
+
     // ----
 
     Connections {
@@ -411,11 +420,9 @@ Page {
 
         clip: true
 
-        /*opacity: root.busy ? 0.0 : 1.0
+        opacity: root.busy ? 0.0 : 1.0
         visible: opacity > 0.0
-        Behavior on opacity { FadeAnimator {} }*/
-
-        visible: !root.busy
+        Behavior on opacity { FadeAnimation {} }
 
         model: playlist
 
@@ -426,7 +433,7 @@ Page {
         VerticalScrollDecorator {}
 
         ViewPlaceholder {
-            enabled: root.inited && !root.busy && listView.count == 0
+            enabled: root.inited && !root.busy && listView.count == 0 && !playlist.busy
             text: qsTr("Empty")
             verticalOffset: ppanel.open ? 0-ppanel.height/2 : 0
         }
@@ -512,7 +519,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Add item")
-                visible: !playlist.busy
+                enabled: !playlist.busy
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
                                        musicPickerDialog: musicPickerDialog,
@@ -522,7 +529,8 @@ Page {
                                        albumPickerPage: albumPickerPage,
                                        artistPickerPage: artistPickerPage,
                                        playlistPickerPage: playlistPickerPage,
-                                       filePickerPage: filePickerPage
+                                       filePickerPage: filePickerPage,
+                                       urlPickerPage: urlPickerPage
                                    })
                 }
             }
@@ -537,7 +545,10 @@ Page {
                                          Theme.secondaryHighlightColor : Theme.secondaryColor
             property bool isImage: model.type === AVTransport.T_Image
 
-            visible: root.inited && !root.busy
+            opacity: playlist.busy ? 0.0 : 1.0
+            visible: opacity > 0.0
+            Behavior on opacity { FadeAnimation {} }
+
             defaultIcon.source: {
                 switch (model.type) {
                 case AVTransport.T_Image:
@@ -613,7 +624,7 @@ Page {
 
     BusyIndicator {
         anchors.centerIn: parent
-        running: root.busy
+        running: root.busy || playlist.busy
         size: BusyIndicatorSize.Large
     }
 

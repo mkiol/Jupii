@@ -19,6 +19,7 @@ Page {
     property var artistPickerPage
     property var playlistPickerPage
     property var filePickerPage
+    property var urlPickerPage
 
     SilicaFlickable {
         id: flick
@@ -107,6 +108,15 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(filePickerPage)
+                }
+            }
+
+            SimpleListItem {
+                title.text: qsTr("URL")
+                icon.source: "image://icons/icon-m-browser?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+                onClicked: {
+                    pageStack.replace(urlPickerPage)
                 }
             }
         }
