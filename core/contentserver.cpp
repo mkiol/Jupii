@@ -95,6 +95,18 @@ const QHash<QString,QString> ContentServer::m_playlistExtMap {
     {"xspf", "application/xspf+xml"}
 };
 
+const QStringList ContentServer::m_m3u_mimes {
+    "application/vnd.apple.mpegurl",
+    "application/mpegurl",
+    "application/x-mpegurl",
+    "audio/mpegurl",
+    "audio/x-mpegurl"
+};
+
+const QStringList ContentServer::m_pls_mimes {
+    "audio/x-scpls"
+};
+
 const QString ContentServer::audioItemClass = "object.item.audioItem.musicTrack";
 const QString ContentServer::videoItemClass = "object.item.videoItem.movie";
 const QString ContentServer::imageItemClass = "object.item.imageItem.photo";
@@ -161,7 +173,7 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
 
     auto cs = ContentServer::instance();
 
-    ContentServer::ItemMeta meta;
+    /*ContentServer::ItemMeta meta;
 
     if (isArt) {
         // Album Cover Art
@@ -174,6 +186,23 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
             return;
         }
         meta = it.value();
+    }*/
+
+    const ContentServer::ItemMeta *meta;
+
+    if (isArt) {
+        // Album Cover Art
+        meta = cs->makeMetaUsingExtension(id);
+        requestForFileHandler(id, meta, req, resp);
+        delete meta;
+        return;
+    } else {
+        meta = cs->getMetaForId(id);
+        if (!meta) {
+            qWarning() << "No meta item found";
+            sendEmptyResponse(resp, 404);
+            return;
+        }
     }
 
     if (isFile) {
@@ -184,18 +213,18 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
 }
 
 void ContentServerWorker::requestForFileHandler(const QUrl &id,
-                                                const ContentServer::ItemMeta& meta,
+                                                const ContentServer::ItemMeta* meta,
                                                 QHttpRequest *req, QHttpResponse *resp)
 {
     auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
 
-    if (meta.type == ContentServer::TypeVideo &&
+    if (meta->type == ContentServer::TypeVideo &&
         type == ContentServer::TypeMusic) {
 #ifdef FFMPEG
         qDebug() << "Video content and type is audio => extracting audio stream";
 
         ContentServer::AvData data;
-        if (!ContentServer::extractAudio(meta.path, data)) {
+        if (!ContentServer::extractAudio(meta->path, data)) {
             qWarning() << "Unable to extract audio stream";
             sendEmptyResponse(resp, 404);
             return;
@@ -206,12 +235,14 @@ void ContentServerWorker::requestForFileHandler(const QUrl &id,
         qWarning() << "Video content and type is audio => can't extract because ffmpeg is disabled";
 #endif
     } else {
-        streamFile(meta.path, meta.mime, req, resp);
+        streamFile(meta->path, meta->mime, req, resp);
     }
+
+    qDebug() << "requestForFileHandler done";
 }
 
 void ContentServerWorker::requestForUrlHandler(const QUrl &id,
-                                                const ContentServer::ItemMeta& meta,
+                                                const ContentServer::ItemMeta *meta,
                                                 QHttpRequest *req, QHttpResponse *resp)
 {
     auto url = Utils::urlFromId(id);
@@ -242,7 +273,7 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
     item.resp = resp;
     item.reply = reply;
     item.id = id;
-    item.seek = meta.seekSupported;
+    item.seek = meta->seekSupported;
 
     connect(reply, &QNetworkReply::metaDataChanged,
             this, &ContentServerWorker::proxyMetaDataChanged);
@@ -252,6 +283,8 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
             this, &ContentServerWorker::proxyFinished);
     connect(reply, &QNetworkReply::readyRead,
             this, &ContentServerWorker::proxyReadyRead);
+
+    qDebug() << "requestForUrlHandler done";
 }
 
 bool ContentServerWorker::seqWriteData(QFile& file, qint64 size, QHttpResponse *resp)
@@ -322,6 +355,7 @@ void ContentServerWorker::proxyMetaDataChanged()
     auto mime = reply->header(QNetworkRequest::ContentTypeHeader).toString();
     auto error = reply->error();
 
+    // -- debug --
     qDebug() << "Request:" << (item.req->method() == QHttpRequest::HTTP_GET ? "GET" : "HEAD")
              << item.id;
     qDebug() << "Reply status:" << code << reason;
@@ -330,6 +364,7 @@ void ContentServerWorker::proxyMetaDataChanged()
     for (const auto &p : reply->rawHeaderPairs()) {
         qDebug() << p.first << p.second;
     }
+    // -- debug --
 
     if (error != QNetworkReply::NoError || code > 299) {
         qWarning() << "Error response from network server";
@@ -419,6 +454,10 @@ void ContentServerWorker::proxyReadyRead()
     if (!proxyItems.contains(reply)) {
         qWarning() << "Proxy ready read: Can't find proxy item";
         return;
+    }
+
+    if (reply->isFinished()) {
+        qWarning() << "Proxy ready read: Reply is finished";
     }
 
     const auto &item = proxyItems.value(reply);
@@ -651,26 +690,34 @@ ContentServer::Type ContentServer::getContentTypeByExtension(const QUrl &url)
 
 ContentServer::Type ContentServer::getContentType(const QString &path)
 {
-    const auto it = getMetaCacheIterator(path);
-    if (it == metaCache.end()) {
-        qWarning() << "No cache item found, so guessing based on file extension";
-        return getContentTypeByExtension(path);
-    }
-
-    const ItemMeta& item = it.value();
-    return typeFromMime(item.mime);
+    return getContentType(QUrl::fromLocalFile(path));
 }
 
 ContentServer::Type ContentServer::getContentType(const QUrl &url)
 {
-    return getContentTypeByExtension(url);
+    const auto meta = getMeta(url);
+    if (!meta) {
+        qWarning() << "No cache item found, so guessing based on file extension";
+        return getContentTypeByExtension(url);
+    }
+
+    return typeFromMime(meta->mime);
 }
 
 ContentServer::Type ContentServer::typeFromMime(const QString &mime)
 {
     // check for playlist first
-    if (m_playlistExtMap.values().contains(mime))
+    if (m_m3u_mimes.contains(mime) ||
+        m_pls_mimes.contains(mime))
         return ContentServer::TypePlaylist;
+    /*if (m_playlistExtMap.values().contains(mime))
+        return ContentServer::TypePlaylist;*/
+
+    // hack for application/ogg
+    if (mime.contains("/ogg"))
+        return ContentServer::TypeMusic;
+    if (mime.contains("/ogv"))
+        return ContentServer::TypeVideo;
 
     auto name = mime.split("/").first().toLower();
     if (name == "audio")
@@ -730,14 +777,18 @@ QString ContentServer::getContentMimeByExtension(const QUrl &url)
 
 QString ContentServer::getContentMime(const QString &path)
 {
-    const auto it = getMetaCacheIterator(path);
-    if (it == metaCache.end()) {
+    return getContentMime(QUrl::fromLocalFile(path));
+}
+
+QString ContentServer::getContentMime(const QUrl &url)
+{
+    const auto meta = getMeta(url);
+    if (!meta) {
         qWarning() << "No cache item found, so guessing based on file extension";
-        return getContentMimeByExtension(path);
+        return getContentMimeByExtension(url);
     }
 
-    const ItemMeta& item = it.value();
-    return item.mime;
+    return meta->mime;
 }
 
 void ContentServer::fillCoverArt(ItemMeta& item)
@@ -789,17 +840,14 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
     bool audioType = static_cast<Type>(t) == TypeMusic; // extract audio stream from video
     QUrl urlFromId = Utils::urlFromId(id);
 
-    ItemMeta item;
-    const auto it = getMetaCacheIterator(urlFromId);
-    if (it == metaCache.end()) {
+    const auto item = getMeta(urlFromId);
+    if (!item) {
         qWarning() << "No meta item found";
         return false;
-    } else {
-        item = it.value();
     }
 
     AvData data;
-    if (audioType && item.local) {
+    if (audioType && item->local) {
 #ifdef FFMPEG
         if (!extractAudio(path, data)) {
             qWarning() << "Can't extract audio stream";
@@ -824,15 +872,15 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
     m << "xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\">";
     m << "<item id=\"" << hash << "\" parentID=\"" << hash_dir << "\" restricted=\"true\">";
 
-    switch (item.type) {
+    switch (item->type) {
     case TypeImage:
         m << "<upnp:albumArtURI>" << url.toString() << "</upnp:albumArtURI>";
         m << "<upnp:class>" << imageItemClass << "</upnp:class>";
         break;
     case TypeMusic:
         m << "<upnp:class>" << audioItemClass << "</upnp:class>";
-        if (!item.albumArt.isEmpty()) {
-            auto id = Utils::idFromUrl(QUrl::fromLocalFile(item.albumArt), artCookie);
+        if (!item->albumArt.isEmpty()) {
+            auto id = Utils::idFromUrl(QUrl::fromLocalFile(item->albumArt), artCookie);
             QUrl artUrl;
             if (makeUrl(id, artUrl))
                 m << "<upnp:albumArtURI>" << artUrl.toString() << "</upnp:albumArtURI>";
@@ -853,14 +901,14 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
         m << "<upnp:class>" << defaultItemClass << "</upnp:class>";
     }
 
-    if (!item.title.isEmpty())
-        m << "<dc:title>" << item.title.toHtmlEscaped() << "</dc:title>";
-    if (!item.artist.isEmpty())
-        m << "<upnp:artist>" << item.artist.toHtmlEscaped() << "</upnp:artist>";
-    if (!item.album.isEmpty())
-        m << "<upnp:album>" << item.album.toHtmlEscaped() << "</upnp:album>";
-    if (!item.comment.isEmpty())
-        m << "<upnp:longDescription>" << item.comment.toHtmlEscaped() << "</upnp:longDescription>";
+    if (!item->title.isEmpty())
+        m << "<dc:title>" << item->title.toHtmlEscaped() << "</dc:title>";
+    if (!item->artist.isEmpty())
+        m << "<upnp:artist>" << item->artist.toHtmlEscaped() << "</upnp:artist>";
+    if (!item->album.isEmpty())
+        m << "<upnp:album>" << item->album.toHtmlEscaped() << "</upnp:album>";
+    if (!item->comment.isEmpty())
+        m << "<upnp:longDescription>" << item->comment.toHtmlEscaped() << "</upnp:longDescription>";
 
     m << "<res ";
 
@@ -870,18 +918,18 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
             m << "size=\"" << QString::number(data.size) << "\" ";
         m << "protocolInfo=\"http-get:*:" << data.mime << ":*\" ";
     } else {
-        if (item.size > 0)
-            m << "size=\"" << QString::number(item.size) << "\" ";
-        //m << "protocolInfo=\"http-get:*:" << item.mime << ":*\" ";
-        m << "protocolInfo=\"http-get:*:" << item.mime << ":"
-          << (item.seekSupported ? dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek)
+        if (item->size > 0)
+            m << "size=\"" << QString::number(item->size) << "\" ";
+        //m << "protocolInfo=\"http-get:*:" << item->mime << ":*\" ";
+        m << "protocolInfo=\"http-get:*:" << item->mime << ":"
+          << (item->seekSupported ? dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek)
           << "\" ";
     }
 
-    if (item.duration > 0) {
-        int seconds = item.duration % 60;
-        int minutes = (item.duration - seconds) / 60;
-        int hours = (item.duration - (minutes * 60) - seconds) / 3600;
+    if (item->duration > 0) {
+        int seconds = item->duration % 60;
+        int minutes = (item->duration - seconds) / 60;
+        int hours = (item->duration - (minutes * 60) - seconds) / 3600;
         QString duration = QString::number(hours) + ":" + (minutes < 10 ? "0" : "") +
                            QString::number(minutes) + ":" + (seconds < 10 ? "0" : "") +
                            QString::number(seconds) + ".000";
@@ -889,19 +937,19 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
     }
 
     if (audioType) {
-        if (item.bitrate > 0)
+        if (item->bitrate > 0)
             m << "bitrate=\"" << QString::number(data.bitrate) << "\" ";
-        if (item.sampleRate > 0)
-            m << "sampleFrequency=\"" << QString::number(item.sampleRate) << "\" ";
-        if (item.channels > 0)
-            m << "nrAudioChannels=\"" << QString::number(data.channels) << "\" ";
+        if (item->sampleRate > 0)
+            m << "sampleFrequency=\"" << QString::number(item->sampleRate) << "\" ";
+        if (item->channels > 0)
+            m << "nrAudioChannels=\"" << QString::number(item->channels) << "\" ";
     } else {
-        if (item.bitrate > 0)
-            m << "bitrate=\"" << QString::number(item.bitrate) << "\" ";
-        if (item.sampleRate > 0)
-            m << "sampleFrequency=\"" << QString::number(item.sampleRate) << "\" ";
-        if (item.channels > 0)
-            m << "nrAudioChannels=\"" << QString::number(item.channels) << "\" ";
+        if (item->bitrate > 0)
+            m << "bitrate=\"" << QString::number(item->bitrate) << "\" ";
+        if (item->sampleRate > 0)
+            m << "sampleFrequency=\"" << QString::number(item->sampleRate) << "\" ";
+        if (item->channels > 0)
+            m << "nrAudioChannels=\"" << QString::number(item->channels) << "\" ";
     }
 
     m << ">" << url.toString() << "</res>";
@@ -1367,6 +1415,22 @@ bool ContentServer::extractAudio(const QString& path,
 }
 #endif
 
+const ContentServer::ItemMeta* ContentServer::getMeta(const QUrl &url, bool createNew)
+{
+    metaCacheMutex.lock();
+    auto it = getMetaCacheIterator(url, createNew);
+    auto meta = it == metaCache.end() ? nullptr : &it.value();
+    metaCacheMutex.unlock();
+
+    return meta;
+}
+
+const ContentServer::ItemMeta* ContentServer::getMetaForId(const QUrl &id, bool createNew)
+{
+    auto url = Utils::urlFromId(id);
+    return getMeta(url, createNew);
+}
+
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew)
 {
@@ -1429,6 +1493,7 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
             QFileInfo file(path);
 
             auto& meta = metaCache[url];
+            meta.valid = true;
             meta.trackerId = cursor.value(0).toString();
             meta.url = url;
             meta.mime = cursor.value(1).toString();
@@ -1466,10 +1531,11 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
 {
-    ContentServer::ItemMeta meta;
     QString path = url.toLocalFile();
     QFileInfo file(path);
 
+    ContentServer::ItemMeta meta;
+    meta.valid = true;
     meta.url = url;
     meta.path = path;
     meta.mime = getContentMimeByExtension(path);
@@ -1568,9 +1634,9 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         auto mime = mimeFromDisposition(disposition);
         if (mime.isEmpty())
             mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
-        auto type = typeFromMime(mime);
 
-        if (type == ContentServer::TypePlaylist) {
+        if (m_pls_mimes.contains(mime)) {
+            //TODO: Support M3U
             qWarning() << "Content is a playlist";
             // Content is needed, so not aborting
             return;
@@ -1624,12 +1690,11 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
     auto type = typeFromMime(mime);
 
-    if (type == ContentServer::TypePlaylist) {
+    if (m_pls_mimes.contains(mime)) {
+        //TODO: M3U playlist support
         qWarning() << "Content is a playlist";
-
         auto size = reply->bytesAvailable();
         if (size > 0) {
-            //TODO: M3U playlist support
             auto items = parsePls(reply->readAll());
             if (!items.isEmpty()) {
                 QUrl url = items.first().url;
@@ -1644,6 +1709,12 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         return metaCache.end();
     }
 
+    if (type != TypeMusic && type != TypeVideo && type != TypeImage) {
+        qWarning() << "Unsupported type";
+        reply->deleteLater();
+        return metaCache.end();
+    }
+
     auto ranges = QString(reply->rawHeader("Accept-Ranges")).toLower().contains("bytes");
     int size = reply->header(QNetworkRequest::ContentLengthHeader).toInt();
 
@@ -1652,12 +1723,11 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     const QByteArray icy_sr_h = "icy-sr";
 
     ContentServer::ItemMeta meta;
+    meta.valid = true;
     meta.url = url;
     meta.mime = mime;
     meta.type = type;
     meta.size = ranges ? size : 0;
-    //meta.artist = tr("Unknown");
-    //meta.album = tr("Unknown");
     meta.filename = url.fileName();
     meta.local = false;
     meta.seekSupported = size > 0 ? ranges : false;
@@ -1681,19 +1751,20 @@ ContentServer::makeItemMetaUsingExtension(const QUrl &url)
     return metaCache.insert(url, makeItemMetaUsingExtension2(url));
 }*/
 
-ContentServer::ItemMeta
-ContentServer::makeItemMetaUsingExtension(const QUrl &url)
+ContentServer::ItemMeta*
+ContentServer::makeMetaUsingExtension(const QUrl &url)
 {
     bool isFile = url.isLocalFile();
-    ContentServer::ItemMeta item;
-    item.path = isFile ? url.toLocalFile() : "";
-    item.url = url;
-    item.mime = getContentMimeByExtension(url);
-    item.type = getContentTypeByExtension(url);
-    item.size = 0;
-    item.filename = url.fileName();
-    item.local = isFile;
-    item.seekSupported = isFile;
+    auto item = new ContentServer::ItemMeta;
+    item->valid = true;
+    item->path = isFile ? url.toLocalFile() : "";
+    item->url = url;
+    item->mime = getContentMimeByExtension(url);
+    item->type = getContentTypeByExtension(url);
+    item->size = 0;
+    item->filename = url.fileName();
+    item->local = isFile;
+    item->seekSupported = isFile;
     return item;
 }
 

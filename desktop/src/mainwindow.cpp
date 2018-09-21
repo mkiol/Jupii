@@ -305,23 +305,27 @@ void MainWindow::on_av_albumArtChanged()
 
     auto album = av->getCurrentAlbumArtURI();
 
-    if (album.isEmpty()) {
-        qWarning() << "Album art is empty";
-        return;
+    if (!album.isValid()) {
+        qWarning() << "Album art is invalid";
+        ui->albumImage->clear();
+    } else if (album.isLocalFile()) {
+        auto img = QImage(album.toLocalFile()).scaled(ui->albumImage->minimumSize());
+        auto pix = QPixmap::fromImage(img);
+        ui->albumImage->setPixmap(pix);
+    } else {
+        downloader = std::unique_ptr<FileDownloader>(new FileDownloader(QUrl(album), this));
+        connect(downloader.get(), &FileDownloader::downloaded, [this](int error){
+            if (error == 0) {
+                auto img = QImage::fromData(downloader->downloadedData())
+                        .scaled(ui->albumImage->minimumSize());
+                auto pix = QPixmap::fromImage(img);
+                ui->albumImage->setPixmap(pix);
+            } else {
+                qWarning() << "Error occured during image download";
+                ui->albumImage->clear();
+            }
+        });
     }
-
-    downloader = std::unique_ptr<FileDownloader>(new FileDownloader(QUrl(album), this));
-    connect(downloader.get(), &FileDownloader::downloaded, [this](int error){
-        if (error == 0) {
-            QImage img = QImage::fromData(downloader->downloadedData());
-            img = img.scaled(ui->albumImage->minimumSize());
-            QPixmap pix = QPixmap::fromImage(img);
-            ui->albumImage->setPixmap(pix);
-        } else {
-            qWarning() << "Error occured during image download";
-            ui->albumImage->setPixmap(QPixmap());
-        }
-    });
 }
 
 void MainWindow::on_addFilesButton_clicked()

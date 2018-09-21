@@ -15,7 +15,6 @@
 #include "directory.h"
 #include "devicemodel.h"
 #include "utils.h"
-#include "contentserver.h"
 #include "taskexecutor.h"
 
 
@@ -114,6 +113,7 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
                     if (m_emitCurrentUriChanged) {
                         m_emitCurrentUriChanged = false;
                         qDebug() << "emitting currentURI change";
+                        updateMeta();
                         emit currentURIChanged();
                         emit preControlableChanged();
                     }
@@ -193,6 +193,7 @@ void AVTransport::reset()
     m_currentTransportActions = 0;
     m_futureSeek = 0;
     m_nextURISupported = true;
+    updateMeta();
 
     emit currentURIChanged();
     emit nextURIChanged();
@@ -414,21 +415,12 @@ QString AVTransport::getCurrentDescription()
     return m_currentDescription;
 }
 
-QString AVTransport::getCurrentAlbumArtURI()
+QUrl AVTransport::getCurrentAlbumArtURI()
 {
     // Optimization => external url only for not local content
-    bool valid, isFile;
-    auto id = ContentServer::idUrlFromUrl(QUrl(m_currentURI), &valid, &isFile);
-    if (valid && isFile) {
-        // trying local file album art
-        auto cs = ContentServer::instance();
-        const auto it = cs->getMetaCacheIteratorForId(id, false);
-        if (it != cs->metaCacheIteratorEnd()) {
-            const ContentServer::ItemMeta &meta = it.value();
-            /*if (!meta.albumArt.isEmpty())
-                return meta.albumArt;*/
-            return meta.albumArt;
-        }
+    if (m_currentMeta) {
+        qDebug() << "Optimization => using local album art";
+        return QUrl::fromLocalFile(m_currentMeta->albumArt);
     }
 
     return m_currentAlbumArtURI;
@@ -1184,9 +1176,7 @@ void AVTransport::updateTransportInfo()
 
 void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta)
 {
-    QString id = QString::fromStdString(trackmeta.m_id);
-
-    m_id = id;
+    m_id = QString::fromStdString(trackmeta.m_id);
     m_currentTitle = QString::fromStdString(trackmeta.m_title);
     m_currentClass = QString::fromStdString(trackmeta.getprop("upnp:class"));
     m_currentAuthor = QString::fromStdString(trackmeta.getprop("upnp:artist")).split(",").first();
@@ -1194,7 +1184,7 @@ void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta)
     m_currentAlbum = QString::fromStdString(trackmeta.getprop("upnp:album"));
     emit currentMetaDataChanged();
 
-    QString new_albumArtURI = QString::fromStdString(trackmeta.getprop("upnp:albumArtURI"));
+    auto new_albumArtURI = QUrl(QString::fromStdString(trackmeta.getprop("upnp:albumArtURI")));
     if (m_currentAlbumArtURI != new_albumArtURI) {
         m_currentAlbumArtURI = new_albumArtURI;
         emit currentAlbumArtChanged();
@@ -1203,7 +1193,7 @@ void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta)
     // -- debug --
 
     qDebug() << "Current meta:";
-    qDebug() << "  id:" << QString::fromStdString(trackmeta.m_id);
+    qDebug() << "  id:" << m_id;
     qDebug() << "  pid:" << QString::fromStdString(trackmeta.m_pid);
     qDebug() << "  title:" << QString::fromStdString(trackmeta.m_title);
     qDebug() << "  m_type:" << (trackmeta.m_type == UPnPClient::UPnPDirObject::item ? "Item" :
@@ -1270,6 +1260,7 @@ void AVTransport::updateMediaInfo()
 
         if (m_currentURI != cururi) {
             m_currentURI = cururi;
+            updateMeta();
             emit currentURIChanged();
             emit preControlableChanged();
         }
@@ -1306,6 +1297,7 @@ void AVTransport::updateMediaInfo()
         if (!m_currentURI.isEmpty() || !m_nextURI.isEmpty()) {
             m_currentURI.clear();
             m_nextURI.clear();
+            updateMeta();
             emit currentURIChanged();
             emit nextURIChanged();
             emit preControlableChanged();
@@ -1417,4 +1409,38 @@ void AVTransport::blockUriChanged(int time)
         m_blockEmitUriChanged = false;
         qDebug() << "URIChanged unblocked";
     });
+}
+
+void AVTransport::announceMetaChanged()
+{
+    emit currentAlbumArtChanged();
+}
+
+void AVTransport::updateMeta()
+{
+    qDebug() << "Updating meta";
+    if (!m_currentURI.isEmpty()) {
+        bool valid, isFile;
+        auto id = ContentServer::idUrlFromUrl(QUrl(m_currentURI), &valid, &isFile);
+        if (valid) {
+            auto newMeta = ContentServer::instance()->getMetaForId(id, false);
+            if (newMeta) {
+                qDebug() << "Meta found";
+                if (m_currentMeta != newMeta) {
+                    m_currentMeta = newMeta;
+                    announceMetaChanged();
+                    return;
+                }
+            } else {
+                qDebug() << "Meta not found";
+            }
+        } else {
+            qDebug() << "Current meta invalid";
+        }
+    }
+
+    if (m_currentMeta) {
+        m_currentMeta = nullptr;
+        announceMetaChanged();
+    }
 }

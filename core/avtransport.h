@@ -18,6 +18,7 @@
 #include "libupnpp/control/cdircontent.hxx"
 
 #include "service.h"
+#include "contentserver.h"
 
 class AVTransport : public Service
 {
@@ -43,7 +44,7 @@ class AVTransport : public Service
     Q_PROPERTY (QString currentTitle READ getCurrentTitle NOTIFY currentMetaDataChanged)
     Q_PROPERTY (QString currentAuthor READ getCurrentAuthor NOTIFY currentMetaDataChanged)
     Q_PROPERTY (QString currentDescription READ getCurrentDescription NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QString currentAlbumArtURI READ getCurrentAlbumArtURI NOTIFY currentAlbumArtChanged)
+    Q_PROPERTY (QUrl currentAlbumArtURI READ getCurrentAlbumArtURI NOTIFY currentAlbumArtChanged)
     Q_PROPERTY (QString currentAlbum READ getCurrentAlbum NOTIFY currentMetaDataChanged)
 
     Q_PROPERTY (bool nextSupported READ getNextSupported NOTIFY transportActionsChanged)
@@ -129,7 +130,7 @@ public:
     QString getCurrentTitle();
     QString getCurrentDescription();
     QString getCurrentAlbum();
-    QString getCurrentAlbumArtURI();
+    QUrl getCurrentAlbumArtURI();
 
     bool getNextSupported();
     bool getPauseSupported();
@@ -186,21 +187,22 @@ private:
     int m_speed = 1;
     int m_currentTransportActions = 0;
     int m_oldTimePosition = 0;
-    QString m_id = "";
-    QString m_currentClass = "";
-    QString m_currentTitle = "";
-    QString m_currentAuthor = "";
-    QString m_currentDescription = "";
-    QString m_currentAlbumArtURI = "";
-    QString m_currentAlbum = "";
+    QString m_id;
+    QString m_currentClass;
+    QString m_currentTitle;
+    QString m_currentAuthor;
+    QString m_currentDescription;
+    QUrl m_currentAlbumArtURI;
+    QString m_currentAlbum;
 
-    QString m_currentURI = "";
-    QString m_nextURI = "";
+    QString m_currentURI;
+    QString m_nextURI;
     bool m_nextURISupported = true;
     bool m_emitCurrentUriChanged = false;
     bool m_emitNextUriChanged = false;
     bool m_blockEmitUriChanged = false;
     bool m_pendingControlableSignal = false;
+    const ContentServer::ItemMeta* m_currentMeta = nullptr;
 
     QTimer m_seekTimer;
     int m_futureSeek = 0;
@@ -231,6 +233,8 @@ private:
     void controlableChangedHandler();
     void blockUriChanged(int time = 500);
     void setNextURISupported(bool value);
+    void updateMeta();
+    void announceMetaChanged();
     std::string type() const;
 };
 

@@ -189,7 +189,7 @@ public:
     bool isPrevSupported();
 
 signals:
-    void itemRemoved();
+    void itemsRemoved();
     void itemsAdded();
     void itemsLoaded();
     void error(ErrorType code);
@@ -218,7 +218,7 @@ private slots:
     void workerDone();
     void onItemsAdded();
     void onItemsLoaded();
-    void onItemRemoved();
+    void onItemsRemoved();
     void onAvCurrentURIChanged();
     void onAvNextURIChanged();
     void onAvTrackEnded();

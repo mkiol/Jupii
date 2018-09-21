@@ -544,50 +544,55 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     }
 
     QUrl url = Utils::urlFromId(id);
-    auto cs = ContentServer::instance();
-    ContentServer::ItemMeta meta;
+    /*ContentServer::ItemMeta meta;
     const auto it = cs->getMetaCacheIterator(url);
     if (it == cs->metaCacheIteratorEnd()) {
         qWarning() << "No meta item found";
         return nullptr;
     } else {
         meta = it.value();
+    }*/
+    const ContentServer::ItemMeta *meta;
+    meta = ContentServer::instance()->getMeta(url);
+    if (!meta) {
+        qWarning() << "No meta item found";
+        return nullptr;
     }
 
     auto forcedType = static_cast<ContentServer::Type>(t);
     auto type = forcedType == ContentServer::TypeUnknown ?
-                meta.type : forcedType;
+                meta->type : forcedType;
 
 #ifdef SAILFISH
-    QString icon = meta.albumArt;
+    QString icon = meta->albumArt;
 #endif
     QString name;
-    if (!meta.title.isEmpty())
-        name = meta.title;
-    else if (!meta.filename.isEmpty() && meta.filename.length() > 1)
-        name = meta.filename;
-    else if (!meta.url.isEmpty())
-        name = meta.url.toString();
+    if (!meta->title.isEmpty())
+        name = meta->title;
+    else if (!meta->filename.isEmpty() && meta->filename.length() > 1)
+        name = meta->filename;
+    else if (!meta->url.isEmpty())
+        name = meta->url.toString();
     else
         name = tr("Unknown");
 
-    auto item = new PlaylistItem(meta.url == url ?
-                                   id : Utils::swapUrlInId(meta.url, id), // id
+    auto item = new PlaylistItem(meta->url == url ?
+                                   id : Utils::swapUrlInId(meta->url, id), // id
                                name, // name
-                               meta.url, // url
+                               meta->url, // url
                                type, // type
-                               meta.title, // title
-                               meta.artist, // artist
-                               meta.album, // album
+                               meta->title, // title
+                               meta->artist, // artist
+                               meta->album, // album
                                "", // date
-                               meta.duration, // duration
-                               meta.size, // size
+                               meta->duration, // duration
+                               meta->size, // size
 #ifdef SAILFISH
                                icon, // icon
 #else
-                               meta.albumArt.isEmpty() ?
+                               meta->albumArt.isEmpty() ?
                                    QIcon() :
-                                   QIcon(meta.albumArt), // icon
+                                   QIcon(meta->albumArt), // icon
 #endif
                                false, // active
                                false // to be active

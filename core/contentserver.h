@@ -18,6 +18,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QThread>
+#include <QMutex>
 #include <memory>
 
 #include <qhttpserver.h>
@@ -50,6 +51,7 @@ public:
     };
 
     struct ItemMeta {
+        bool valid = false;
         QString trackerId;
         QUrl url;
         QString path;
@@ -78,12 +80,15 @@ public:
     Type getContentType(const QString &path);
     Type getContentType(const QUrl &url);
     QString getContentMime(const QString &path);
+    QString getContentMime(const QUrl &url);
     Q_INVOKABLE QStringList getExtensions(int type) const;
     Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString pathFromUrl(const QUrl &url) const;
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(const QUrl &url, bool createNew = true);
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(const QUrl &id, bool createNew = true);
     const QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
+    const ItemMeta* getMeta(const QUrl &url, bool createNew = true);
+    const ItemMeta* getMetaForId(const QUrl &id, bool createNew = true);
 
 private:
     enum DLNA_ORG_FLAGS {
@@ -124,6 +129,8 @@ private:
     static const QHash<QString,QString> m_musicExtMap;
     static const QHash<QString,QString> m_videoExtMap;
     static const QHash<QString,QString> m_playlistExtMap;
+    static const QStringList m_m3u_mimes;
+    static const QStringList m_pls_mimes;
     static const QString queryTemplate;
     static const QString dlnaOrgOpFlagsSeekBytes;
     static const QString dlnaOrgOpFlagsNoSeek;
@@ -136,13 +143,14 @@ private:
     static const QString defaultItemClass;
     static const QByteArray userAgent;
     static const QString artCookie;
-
-    QHash<QUrl, ItemMeta> metaCache; // url => itemMeta
-    ContentServerWorker* worker;
     static const qint64 qlen = 100000;
     static const int threadWait = 1;
     static const int maxRedirections = 5;
     static const int httpTimeout = 10000;
+
+    QHash<QUrl, ItemMeta> metaCache; // url => itemMeta
+    ContentServerWorker* worker;
+    QMutex metaCacheMutex;
 
     static QByteArray encrypt(const QByteArray& data);
     static QByteArray decrypt(const QByteArray& data);
@@ -153,7 +161,11 @@ private:
     static QString dlnaContentFeaturesHeader(const QString& mime, bool seek = true);
     static QList<PlaylistItemMeta> parsePls(const QByteArray &data);
     static QList<PlaylistItemMeta> parseM3u(const QByteArray &data, bool* ok = nullptr);
-    explicit ContentServer(QObject *parent = nullptr);
+    static QString getContentMimeByExtension(const QString &path);
+    static QString getContentMimeByExtension(const QUrl &url);
+    static QString mimeFromDisposition(const QString &disposition);
+
+    ContentServer(QObject *parent = nullptr);
     bool getContentMeta(const QString &id, const QUrl &url, QString &meta);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url);
@@ -163,14 +175,11 @@ private:
             std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
             int counter = 0);
     //const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingExtension(const QUrl &url);
-    ItemMeta makeItemMetaUsingExtension(const QUrl &url);
-    static QString getContentMimeByExtension(const QString &path);
-    static QString getContentMimeByExtension(const QUrl &url);
+    ItemMeta *makeMetaUsingExtension(const QUrl &url);
     Type getContentTypeByExtension(const QString &path);
     Type getContentTypeByExtension(const QUrl &url);
     void fillCoverArt(ItemMeta& item);
     //QString makePlaylistForUrl(const QUrl &url);
-    static QString mimeFromDisposition(const QString &disposition);
     void run();
 #ifdef FFMPEG
     static bool extractAudio(const QString& path, ContentServer::AvData& data);
@@ -207,8 +216,8 @@ private:
     void streamFile(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);
     bool seqWriteData(QFile &file, qint64 size, QHttpResponse *resp);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
-    void requestForFileHandler(const QUrl &id, const ContentServer::ItemMeta& meta, QHttpRequest *req, QHttpResponse *resp);
-    void requestForUrlHandler(const QUrl &id, const ContentServer::ItemMeta& meta, QHttpRequest *req, QHttpResponse *resp);
+    void requestForFileHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
+    void requestForUrlHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void sendEmptyResponse(QHttpResponse *resp, int code);
     void sendResponse(QHttpResponse *resp, int code, const QByteArray &data = "");
     void sendRedirection(QHttpResponse *resp, const QString &location);
