@@ -131,10 +131,9 @@ friend class PlaylistModel;
 
 public:
     QList<ListItem*> items;
-    PlaylistWorker(const QList<QUrl> &&urls, PlaylistModel *model, bool asAudio = false, bool urlIsId = false);
+    PlaylistWorker(const QList<QUrl> &&urls, bool asAudio = false, bool urlIsId = false, QObject *parent = nullptr);
 
 private:
-    PlaylistModel* model;
     QList<QUrl> urls;
     bool asAudio;
     bool urlIsId;
@@ -148,6 +147,8 @@ class PlaylistModel :
     Q_PROPERTY (int activeItemIndex READ getActiveItemIndex NOTIFY activeItemIndexChanged)
     Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
     Q_PROPERTY (bool busy READ isBusy NOTIFY busyChanged)
+    Q_PROPERTY (bool nextSupported READ isNextSupported NOTIFY nextSupportedChanged)
+    Q_PROPERTY (bool prevSupported READ isPrevSupported NOTIFY prevSupportedChanged)
 
 friend class PlaylistWorker;
 
@@ -165,7 +166,8 @@ public:
     };
     Q_ENUM(PlayMode)
 
-    explicit PlaylistModel(QObject *parent = nullptr);
+    static PlaylistModel* instance(QObject *parent = nullptr);
+
     Q_INVOKABLE void clear();
     Q_INVOKABLE QString firstId() const;
     Q_INVOKABLE QString secondId() const;
@@ -177,14 +179,17 @@ public:
     Q_INVOKABLE QString nextId(const QString &id) const;
     Q_INVOKABLE void load();
     Q_INVOKABLE bool saveToFile(const QString& title);
+    Q_INVOKABLE void update(bool play = false);
+    Q_INVOKABLE void next();
+    Q_INVOKABLE void prev();
     int getActiveItemIndex() const;
     int getPlayMode() const;
     void setPlayMode(int value);
+    bool isNextSupported();
+    bool isPrevSupported();
 
 signals:
     void itemRemoved();
-    //void itemsAdded(const QStringList& ids);
-    //void itemsLoaded(const QStringList& ids);
     void itemsAdded();
     void itemsLoaded();
     void error(ErrorType code);
@@ -192,6 +197,8 @@ signals:
     void activeItemIndexChanged();
     void playModeChanged();
     void busyChanged();
+    void nextSupportedChanged();
+    void prevSupportedChanged();
 
 public slots:
     void addItemPaths(const QStringList& paths);
@@ -209,12 +216,27 @@ public slots:
 
 private slots:
     void workerDone();
+    void onItemsAdded();
+    void onItemsLoaded();
+    void onItemRemoved();
+    void onAvCurrentURIChanged();
+    void onAvNextURIChanged();
+    void onAvTrackEnded();
+    void onAvStateChanged();
+    void onAvInitedChanged();
+    void onSupportedChanged();
 
 private:
+    static PlaylistModel* m_instance;
+
     std::unique_ptr<PlaylistWorker> m_worker;
     bool m_busy = false;
     int m_activeItemIndex = -1;
     int m_playMode = PM_RepeatAll;
+    bool m_prevSupported = false;
+    bool m_nextSupported = false;
+
+    PlaylistModel(QObject *parent = nullptr);
     void addItems(const QList<QUrl>& urls, bool asAudio);
     void setActiveItemIndex(int index);
     //bool addId(const QString& id, ContentServer::Type type = ContentServer::TypeUnknown);
@@ -223,6 +245,8 @@ private:
     void save();
     QByteArray makePlsData(const QString& name);
     void setBusy(bool busy);
+    void updateNextSupported();
+    void updatePrevSupported();
 };
 
 #endif // PLAYLISTMODEL_H

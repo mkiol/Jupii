@@ -38,9 +38,6 @@ private slots:
     void on_av_positionChanged();
     void on_av_albumArtChanged();
     void on_av_stateChanged();
-    void on_av_currentURIChanged();
-    void on_av_nextURIChanged();
-    void on_av_trackEnded();
     void on_av_updated();
     void on_av_transportActionsChanged();
 
@@ -57,6 +54,8 @@ private slots:
     void on_playButton_clicked();
     void on_playmodeButton_clicked();
     void on_playlistModel_playModeChanged();
+    void on_playlistModel_prevSupportedChanged();
+    void on_playlistModel_nextSupportedChanged();
     void on_volumeSlider_sliderMoved(int position);
     void on_actionExit_triggered();
     void on_actionAbout_triggered();
@@ -68,28 +67,21 @@ private slots:
     void on_volumeSlider_actionTriggered(int action);
     void on_progressSlider_sliderMoved(int position);
     void on_progressSlider_actionTriggered(int action);
-
     void on_playlistView_customContextMenuRequested(const QPoint &pos);
-
     void on_actionPlayItem_triggered();
-
     void on_actionPauseItem_triggered();
-
     void on_deviceList_customContextMenuRequested(const QPoint &pos);
-
     void on_actionConnect_triggered();
 
 private:
     Ui::MainWindow *ui;
     std::unique_ptr<DeviceModel> deviceModel;
     std::unique_ptr<FileDownloader> downloader;
-    std::unique_ptr<PlayListModel> playlistModel;
     std::unique_ptr<SettingsDialog> settingsDialog;
 
     void enablePlaylist(bool enabled);
     void notify(const QString& message = "");
     void togglePlay();
-    void updatePlaylist(bool play);
     void play(int idx);
 };
 

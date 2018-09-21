@@ -43,6 +43,7 @@
 #include "albummodel.h"
 #include "artistmodel.h"
 #include "playlistfilemodel.h"
+#include "playlistmodel.h"
 #include "trackmodel.h"
 #include "services.h"
 #include "info.h"
@@ -56,14 +57,17 @@ int main(int argc, char *argv[])
     auto engine = view->engine();
 
     qmlRegisterType<DeviceModel>("harbour.jupii.DeviceModel", 1, 0, "DeviceModel");
-    qmlRegisterType<RenderingControl>("harbour.jupii.RenderingControl", 1, 0, "RenderingControl");
+    qmlRegisterType<RenderingControl>("harbour.jupii.RenderingControl", 1, 0,
+                                      "RenderingControl");
     qmlRegisterType<AVTransport>("harbour.jupii.AVTransport", 1, 0, "AVTransport");
     qmlRegisterType<DeviceInfo>("harbour.jupii.DeviceInfo", 1, 0, "DeviceInfo");
-    qmlRegisterType<PlaylistModel>("harbour.jupii.PlayListModel", 1, 0, "PlayListModel");
     qmlRegisterType<AlbumModel>("harbour.jupii.AlbumModel", 1, 0, "AlbumModel");
     qmlRegisterType<ArtistModel>("harbour.jupii.ArtistModel", 1, 0, "ArtistModel");
-    qmlRegisterType<PlaylistFileModel>("harbour.jupii.PlaylistFileModel", 1, 0, "PlaylistFileModel");
+    qmlRegisterType<PlaylistFileModel>("harbour.jupii.PlaylistFileModel", 1, 0,
+                                       "PlaylistFileModel");
     qmlRegisterType<TrackModel>("harbour.jupii.TrackModel", 1, 0, "TrackModel");
+    qmlRegisterUncreatableType<PlaylistModel>("harbour.jupii.PlayListModel", 1, 0,
+                                              "PlayListModel", "Playlist is a singleton");
 
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 
@@ -110,6 +114,7 @@ int main(int argc, char *argv[])
     auto dir = Directory::instance();
     auto cserver = ContentServer::instance();
     auto services = Services::instance();
+    auto playlist = PlaylistModel::instance();
     DbusProxy dbusProxy;
 
 #ifdef SAILFISH
@@ -120,6 +125,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("dbus", &dbusProxy);
     context->setContextProperty("rc", services->renderingControl.get());
     context->setContextProperty("av", services->avTransport.get());
+    context->setContextProperty("playlist", playlist);
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
     view->show();

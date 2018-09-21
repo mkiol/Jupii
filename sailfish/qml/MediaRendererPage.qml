@@ -37,13 +37,6 @@ Page {
 
     onInitedChanged: {
         dbus.canControl = inited
-
-        if (inited) {
-            if (listView.count === 0) {
-                if (settings.rememberPlaylist)
-                    playlist.load()
-            }
-        }
     }
 
     onStatusChanged: {
@@ -87,38 +80,6 @@ Page {
             notification.show("Can't play the file")
             playlist.resetToBeActive()
             break
-        }
-    }
-
-    function updatePlayList(play) {
-        var count = listView.count
-
-        console.log("updatePlayList, count:" + count)
-
-        if (count > 0) {
-            var aid = playlist.activeId()
-
-            console.log("updatePlayList, play:" + play)
-            console.log("updatePlayList, aid:" + aid)
-
-            if (aid.length === 0) {
-                var fid = playlist.firstId()
-                console.log("updatePlayList, fid:" + fid)
-
-                if (play) {
-                    var sid = playlist.secondId()
-                    console.log("updatePlayList, sid:" + sid)
-                    av.setLocalContent(fid, sid)
-                } else {
-                    if (fid.length > 0)
-                        av.setLocalContent("", fid)
-                }
-
-            } else {
-                var nid = playlist.nextActiveId()
-                console.log("updatePlayList, nid:" + nid)
-                av.setLocalContent("",nid)
-            }
         }
     }
 
@@ -314,51 +275,6 @@ Page {
         onUpdated: {
             rc.asyncUpdate()
         }
-
-        onTrackEnded: {
-            console.log("onTrackEnded")
-
-            if (listView.count > 0 && (av.nextURISupported ||
-                playlist.playMode === PlayListModel.PM_RepeatOne))
-            {
-                var aid = playlist.activeId()
-                console.log("current id is: " + aid)
-                if (aid.length > 0) {
-                    var nid = playlist.nextActiveId()
-                    console.log("next id will be: " + nid)
-                    if (nid.length > 0)
-                        av.setLocalContent(nid,"");
-                }
-            }
-        }
-
-        onCurrentURIChanged: {
-            console.log("onCurrentURIChanged")
-            playlist.setActiveUrl(av.currentURI)
-            root.updatePlayList(av.transportState !== AVTransport.Playing &&
-                                listView.count === 1)
-        }
-
-        onNextURIChanged: {
-            console.log("onNextURIChanged")
-
-            if (av.nextURI.length === 0 && av.currentURI.length > 0 &&
-                    playlist.playMode !== PlayListModel.PM_Normal) {
-                console.log("AVT switches to nextURI without currentURIChanged")
-                playlist.setActiveUrl(av.currentURI)
-                root.updatePlayList(av.transportState !== AVTransport.Playing &&
-                                    listView.count === 1)
-            }
-        }
-
-        onTransportStateChanged: {
-            console.log("onTransportStateChanged: " + av.transportState)
-            root.updatePlayList(false)
-        }
-
-        onTransportStatusChanged: {
-            console.log("onTransportStatusChanged: " + av.transportStatus)
-        }
     }
 
     Connections {
@@ -370,31 +286,18 @@ Page {
 
         onRequestClearPlaylist: {
             playlist.clear()
-            root.updatePlayList(false)
         }
     }
 
-    PlayListModel {
-        id: playlist
+    Connections {
+        target: playlist
 
         onItemsAdded: {
-            console.log("onItemsAdded")
             root.showLastItem()
-            playlist.setActiveUrl(av.currentURI)
-            root.updatePlayList(av.transportState !== AVTransport.Playing &&
-                                listView.count === 1)
         }
 
         onItemsLoaded: {
-            console.log("onItemsLoaded")
-            playlist.setActiveUrl(av.currentURI)
             root.showActiveItem()
-            root.updatePlayList(false)
-        }
-
-        onItemRemoved: {
-            console.log("onItemRemoved")
-            root.updatePlayList(false)
         }
 
         onError: {
@@ -404,11 +307,6 @@ Page {
 
         onActiveItemChanged: {
             root.showActiveItem()
-        }
-
-        onPlayModeChanged: {
-            console.log("onPlayModeChanged")
-            root.updatePlayList(false)
         }
     }
 
@@ -513,7 +411,6 @@ Page {
                 visible: av.inited && !playlist.busy && listView.count > 0
                 onClicked: {
                     playlist.clear()
-                    root.updatePlayList(false)
                 }
             }
 
@@ -565,13 +462,6 @@ Page {
             icon.visible: !model.toBeActive
             title.text: model.name
             title.color: primaryColor
-            /*subtitle.text: {
-                var t = model.artist;
-                var d = model.duration;
-                if (d > 0)
-                    t += (" • " + utils.secToStr(d))
-                return t;
-            }*/
             subtitle.text: model.artist.length > 0 ? model.artist : ""
             subtitle.color: secondaryColor
 
@@ -635,14 +525,9 @@ Page {
               !menu.active && av.controlable &&
               !root.busy && root.status === PageStatus.Active
 
-        prevEnabled: (av.seekSupported &&
-                      av.transportState === AVTransport.Playing &&
-                      av.relativeTimePosition > 5) ||
-                     (playlist.playMode !== PlayListModel.PM_RepeatOne &&
-                      playlist.activeItemIndex > -1)
+        prevEnabled: playlist.prevSupported
+        nextEnabled: playlist.nextSupported
 
-        nextEnabled: playlist.playMode !== PlayListModel.PM_RepeatOne &&
-                     av.nextSupported && listView.count > 0
         forwardEnabled: av.seekSupported &&
                         av.transportState === AVTransport.Playing &&
                         av.currentType !== AVTransport.T_Image
@@ -657,60 +542,9 @@ Page {
                 root.showActiveItem()
         }
 
-        onNextClicked: {
-            var count = listView.count
-
-            if (count > 0) {
-
-                var fid = playlist.firstId()
-                var aid = playlist.activeId()
-                var nid = playlist.nextActiveId()
-
-                if (aid.length === 0)
-                    av.setLocalContent(fid, nid)
-                else
-                    av.setLocalContent(nid, "")
-
-            } else {
-                console.log("Playlist is empty so can't do next()")
-            }
-        }
-
-        onPrevClicked: {
-            var count = listView.count
-            var seekable = av.seekSupported
-
-            if (count > 0) {
-                var pid = playlist.prevActiveId()
-                var aid = playlist.activeId()
-
-                if (aid.length === 0) {
-                    if (seekable)
-                        av.seek(0)
-                    return
-                }
-
-                if (pid.length === 0) {
-                    if (seekable)
-                        av.seek(0)
-                    return
-                }
-
-                var seek = av.relativeTimePosition > 5
-                if (seek && seekable)
-                    av.seek(0)
-                else
-                    av.setLocalContent(pid, aid)
-
-            } else {
-                if (seekable)
-                    av.seek(0)
-            }
-        }
-
-        onTogglePlayClicked: {
-            root.togglePlay()
-        }
+        onNextClicked: playlist.next()
+        onPrevClicked: playlist.prev()
+        onTogglePlayClicked: root.togglePlay()
 
         onForwardClicked: {
             var pos = av.relativeTimePosition + settings.forwardTime

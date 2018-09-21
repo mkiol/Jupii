@@ -142,7 +142,7 @@ private:
     static const qint64 qlen = 100000;
     static const int threadWait = 1;
     static const int maxRedirections = 5;
-    static const int httpTimeout = 5000;
+    static const int httpTimeout = 10000;
 
     static QByteArray encrypt(const QByteArray& data);
     static QByteArray decrypt(const QByteArray& data);

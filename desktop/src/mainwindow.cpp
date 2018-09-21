@@ -21,7 +21,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "directory.h"
-#include "busyindicator.h"
 #include "services.h"
 #include "avtransport.h"
 #include "renderingcontrol.h"
@@ -46,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto services = Services::instance();
     auto rc = services->renderingControl;
     auto av = services->avTransport;
+    auto playlist = PlaylistModel::instance();
 
     deviceModel = std::unique_ptr<DeviceModel>(new DeviceModel(this));
     ui->deviceList->setModel(deviceModel.get());
@@ -82,12 +82,6 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::on_av_stateChanged);
     connect(av.get(), &AVTransport::controlableChanged,
             this, &MainWindow::on_av_stateChanged);
-    connect(av.get(), &AVTransport::currentURIChanged,
-            this, &MainWindow::on_av_currentURIChanged);
-    connect(av.get(), &AVTransport::nextURIChanged,
-            this, &MainWindow::on_av_nextURIChanged);
-    connect(av.get(), &AVTransport::trackEnded,
-            this, &MainWindow::on_av_trackEnded);
     connect(av.get(), &AVTransport::updated,
             this, &MainWindow::on_av_updated);
     connect(av.get(), &AVTransport::transportActionsChanged,
@@ -96,6 +90,15 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::on_rc_volumeChanged);
     connect(rc.get(), &RenderingControl::muteChanged,
             this, &MainWindow::on_rc_muteChanged);
+    connect(playlist, &PlaylistModel::playModeChanged,
+            this, &MainWindow::on_playlistModel_playModeChanged);
+    connect(playlist, &PlaylistModel::prevSupportedChanged,
+            this, &MainWindow::on_playlistModel_prevSupportedChanged);
+    connect(playlist, &PlaylistModel::nextSupportedChanged,
+            this, &MainWindow::on_playlistModel_nextSupportedChanged);
+
+    on_playlistModel_playModeChanged();
+    ui->playlistView->setModel(playlist);
 
     directory->discover();
 }
@@ -138,8 +141,8 @@ void MainWindow::togglePlay()
 
 void MainWindow::on_playmodeButton_clicked()
 {
-    if (playlistModel)
-        playlistModel->togglePlayMode();
+    auto playlist = PlaylistModel::instance();
+    playlist->togglePlayMode();
 }
 
 void MainWindow::on_av_transportActionsChanged()
@@ -149,17 +152,9 @@ void MainWindow::on_av_transportActionsChanged()
     //bool play = av->getPauseSupported();
     bool pause = av->getPauseSupported();
     bool stop = av->getStopSupported();
-    bool next = av->getNextSupported();
     bool seek = av->getSeekSupported();
-    bool pos = av->getRelativeTimePosition() > 5;
-    bool playing = av->getTransportState() == AVTransport::Playing;
-    bool pmro = playlistModel && playlistModel->getPlayMode() == PlayListModel::PM_RepeatOne;
-    int count = playlistModel ? playlistModel->rowCount() : 0;
-    int index = playlistModel ? playlistModel->getActiveItemIndex() : -1;
 
     ui->playButton->setEnabled(pause || stop);
-    ui->nextButton->setEnabled(next && count > 0 && !pmro);
-    ui->prevButton->setEnabled((seek && playing && pos) || (index > -1 && !pmro));
     ui->progressSlider->setEnabled(seek);
 }
 
@@ -220,20 +215,9 @@ void MainWindow::on_deviceList_activated(const QModelIndex &index)
         auto services = Services::instance();
         auto rc = services->renderingControl;
         auto av = services->avTransport;
-        auto s = Settings::instance();
         QString id = item->id();
-
         rc->init(id);
         av->init(id);
-
-        playlistModel = std::unique_ptr<PlayListModel>(new PlayListModel(this));
-        connect(playlistModel.get(), &PlayListModel::playModeChanged,
-                this, &MainWindow::on_playlistModel_playModeChanged);
-        on_playlistModel_playModeChanged();
-        ui->playlistView->setModel(playlistModel.get());
-        if (s->getRememberPlaylist())
-            playlistModel->load();
-
         deviceModel->setActiveIndex(index.row());
         enablePlaylist(true);
     } else {
@@ -255,12 +239,9 @@ void MainWindow::on_av_stateChanged()
     ui->playButton->setText(playing ? tr("Pause") : tr("Play"));
     ui->playButton->setEnabled(controlable && !image);
 
-    //ui->addUrlButton->setEnabled(playlistModel && inited);
-    ui->addFilesButton->setEnabled(playlistModel && inited);
-    ui->clearButton->setEnabled(playlistModel && inited);
-
-    if (playlistModel)
-        updatePlaylist(false);
+    //ui->addUrlButton->setEnabled(inited);
+    ui->addFilesButton->setEnabled(inited);
+    ui->clearButton->setEnabled(inited);
 }
 
 void MainWindow::on_service_initedChanged()
@@ -363,7 +344,8 @@ void MainWindow::on_addFilesButton_clicked()
     if (paths.isEmpty())
         return;
 
-    playlistModel->addItemPaths(paths);
+    auto playlist = PlaylistModel::instance();
+    playlist->addItemPaths(paths);
 }
 
 void MainWindow::on_addUrlButton_clicked()
@@ -377,13 +359,13 @@ void MainWindow::on_addUrlButton_clicked()
     if (ok && !text.isEmpty()) {
         qDebug() << "Url entered:" << text;
         QUrl url(text);
-        if (url.isValid())
-            playlistModel->addItemUrl(url);
-        else
+        if (url.isValid()) {
+            auto playlist = PlaylistModel::instance();
+            playlist->addItemUrl(url);
+        } else {
             qWarning() << "Url is invalid";
+        }
     }
-
-    // "http://ice1.somafm.com/groovesalad-128-mp3"
 }
 
 void MainWindow::on_playButton_clicked()
@@ -393,105 +375,20 @@ void MainWindow::on_playButton_clicked()
 
 void MainWindow::on_nextButton_clicked()
 {
-    if (playlistModel) {
-        auto av = Services::instance()->avTransport;
-        int count = playlistModel->rowCount();
-
-        if (count > 0) {
-            QString fid = playlistModel->firstId();
-            QString aid = playlistModel->activeId();
-            QString nid = playlistModel->nextActiveId();
-            if (aid.isEmpty()) {
-                playlistModel->setToBeActiveId(fid);
-                av->setLocalContent(fid, nid);
-            } else {
-                playlistModel->setToBeActiveId(nid);
-                av->setLocalContent(nid, "");
-            }
-        } else {
-            qWarning() << "Playlist is empty so can't do next()";
-        }
-    }
+    auto playlist = PlaylistModel::instance();
+    playlist->next();
 }
 
 void MainWindow::on_prevButton_clicked()
 {
-    if (playlistModel) {
-        auto av = Services::instance()->avTransport;
-        int count = playlistModel ? playlistModel->rowCount() : 0;
-        bool seekable = av->getSeekSupported();
-
-        if (count > 0) {
-            QString pid = playlistModel->prevActiveId();
-            QString aid = playlistModel->activeId();
-
-            if (aid.isEmpty()) {
-                if (seekable)
-                    av->seek(0);
-                return;
-            }
-
-            if (pid.isEmpty()) {
-                if (seekable)
-                    av->seek(0);
-                return;
-            }
-
-            if (seekable && av->getRelativeTimePosition() > 5) {
-                av->seek(0);
-            } else {
-                playlistModel->setToBeActiveId(pid);
-                av->setLocalContent(pid, aid);
-            }
-        } else {
-            if (seekable)
-                av->seek(0);
-        }
-    }
+    auto playlist = PlaylistModel::instance();
+    playlist->prev();
 }
 
 void MainWindow::on_muteButton_toggled(bool checked)
 {
     auto rc = Services::instance()->renderingControl;
     rc->setMute(checked);
-}
-
-void MainWindow::on_av_currentURIChanged()
-{
-    auto av = Services::instance()->avTransport;
-    qDebug() << "on_av_currentURIChanged:" << av->getCurrentURI();
-
-    if (playlistModel) {
-        playlistModel->setActiveUrl(av->getCurrentURI());
-        bool play = av->getTransportState() != AVTransport::Playing &&
-                playlistModel->rowCount() == 1;
-        updatePlaylist(play);
-    }
-}
-
-void MainWindow::on_av_nextURIChanged()
-{
-    auto av = Services::instance()->avTransport;
-    qDebug() << "on_av_nextURIChanged:" << av->getNextURI();
-
-    if (playlistModel) {
-        auto nextURI = av->getNextURI();
-        auto currentURI = av->getCurrentURI();
-        bool normalPlayMode = playlistModel->getPlayMode() == PlayListModel::PM_Normal;
-
-        if (nextURI.isEmpty() && !currentURI.isEmpty() && normalPlayMode) {
-            qDebug() << "AVT switches to nextURI without currentURIChanged";
-            playlistModel->setActiveUrl(currentURI);
-
-            bool play = av->getTransportState() != AVTransport::Playing &&
-                    playlistModel->rowCount() == 1;
-            updatePlaylist(play);
-        }
-    }
-}
-
-void MainWindow::on_av_trackEnded()
-{
 }
 
 void MainWindow::on_av_updated()
@@ -501,49 +398,34 @@ void MainWindow::on_av_updated()
         rc->asyncUpdate();
 }
 
-void MainWindow::updatePlaylist(bool play)
+void MainWindow::on_playlistModel_playModeChanged()
 {
-    int count = playlistModel->rowCount();
-
-    if (count > 0) {
-        auto av = Services::instance()->avTransport;
-        auto aid = playlistModel->activeId();
-        if (aid.isEmpty()) {
-            auto fid = playlistModel->firstId();
-            if (play) {
-                auto sid = playlistModel->secondId();
-                playlistModel->setToBeActiveId(fid);
-                av->setLocalContent(fid, sid);
-            } else {
-                if (!fid.isEmpty())
-                    av->setLocalContent("", fid);
-            }
-        } else {
-            auto nid = playlistModel->nextActiveId();
-            av->setLocalContent("", nid);
-        }
+    auto playlist = PlaylistModel::instance();
+    switch(playlist->getPlayMode()) {
+    case PlaylistModel::PM_Normal:
+        ui->playmodeButton->setText(tr("Normal"));
+        break;
+    case PlaylistModel::PM_RepeatAll:
+        ui->playmodeButton->setText(tr("Repeat all"));
+        break;
+    case PlaylistModel::PM_RepeatOne:
+        ui->playmodeButton->setText(tr("Repeat one"));
+        break;
+    default:
+        ui->playmodeButton->setText(tr("Normal"));
     }
 }
 
-void MainWindow::on_playlistModel_playModeChanged()
+void MainWindow::on_playlistModel_prevSupportedChanged()
 {
-    if (playlistModel) {
-        switch(playlistModel->getPlayMode()) {
-        case PlayListModel::PM_Normal:
-            ui->playmodeButton->setText(tr("Normal"));
-            break;
-        case PlayListModel::PM_RepeatAll:
-            ui->playmodeButton->setText(tr("Repeat all"));
-            break;
-        case PlayListModel::PM_RepeatOne:
-            ui->playmodeButton->setText(tr("Repeat one"));
-            break;
-        default:
-            ui->playmodeButton->setText(tr("Normal"));
-        }
+    auto playlist = PlaylistModel::instance();
+    ui->prevButton->setEnabled(playlist->isPrevSupported());
+}
 
-        updatePlaylist(false);
-    }
+void MainWindow::on_playlistModel_nextSupportedChanged()
+{
+    auto playlist = PlaylistModel::instance();
+    ui->nextButton->setEnabled(playlist->isNextSupported());
 }
 
 void MainWindow::on_volumeSlider_sliderMoved(int position)
@@ -608,8 +490,9 @@ void MainWindow::on_playlistView_activated(const QModelIndex &index)
 
 void MainWindow::play(int idx)
 {
-    if (idx >= 0 && playlistModel) {
-        auto item = dynamic_cast<PlaylistItem*>(playlistModel->readRow(idx));
+    auto playlist = PlaylistModel::instance();
+    if (idx >= 0) {
+        auto item = dynamic_cast<PlaylistItem*>(playlist->readRow(idx));
         if (item) {
             auto av = Services::instance()->avTransport;
             bool playing = av->getTransportState() == AVTransport::Playing;
@@ -617,7 +500,7 @@ void MainWindow::play(int idx)
                 if (!playing)
                     togglePlay();
             } else {
-                playlistModel->setToBeActiveIndex(idx);
+                playlist->setToBeActiveIndex(idx);
                 av->setLocalContent(item->id(),"");
             }
         }
@@ -626,19 +509,16 @@ void MainWindow::play(int idx)
 
 void MainWindow::on_clearButton_clicked()
 {
-    if (playlistModel) {
-        playlistModel->clear();
-        updatePlaylist(false);
-    }
+    auto playlist = PlaylistModel::instance();
+    playlist->clear();
 }
 
 void MainWindow::on_actionRemoveItem_triggered()
 {
-    if (playlistModel) {
-        auto indexes = ui->playlistView->selectionModel()->selectedIndexes();
-        for (const auto &idx : indexes)
-            playlistModel->removeIndex(idx.row());
-    }
+    auto playlist = PlaylistModel::instance();
+    auto indexes = ui->playlistView->selectionModel()->selectedIndexes();
+    for (const auto &idx : indexes)
+        playlist->removeIndex(idx.row());
 }
 
 void MainWindow::on_actionSettings_triggered()
@@ -667,36 +547,33 @@ void MainWindow::on_progressSlider_actionTriggered(int action)
 
 void MainWindow::on_playlistView_customContextMenuRequested(const QPoint &pos)
 {
-    if (playlistModel) {
-        int idx = ui->playlistView->indexAt(pos).row();
-        if (idx >= 0) {
-            auto item = dynamic_cast<PlaylistItem*>(playlistModel->readRow(idx));
-            if (item) {
-                auto av = Services::instance()->avTransport;
-                bool playing = av->getTransportState() == AVTransport::Playing;
-                ui->actionPauseItem->setEnabled(av->getControlable());
-                QList<QAction*> actions;
-                if (item->active() && playing)
-                    actions << ui->actionPauseItem;
-                else
-                    actions << ui->actionPlayItem;
-                actions << ui->actionRemoveItem;
-                QMenu::exec(actions, ui->playlistView->mapToGlobal(pos),
-                            nullptr, ui->playlistView);
-            }
+    auto playlist = PlaylistModel::instance();
+    int idx = ui->playlistView->indexAt(pos).row();
+    if (idx >= 0) {
+        auto item = dynamic_cast<PlaylistItem*>(playlist->readRow(idx));
+        if (item) {
+            auto av = Services::instance()->avTransport;
+            bool playing = av->getTransportState() == AVTransport::Playing;
+            ui->actionPauseItem->setEnabled(av->getControlable());
+            QList<QAction*> actions;
+            if (item->active() && playing)
+                actions << ui->actionPauseItem;
+            else
+                actions << ui->actionPlayItem;
+            actions << ui->actionRemoveItem;
+            QMenu::exec(actions, ui->playlistView->mapToGlobal(pos),
+                        nullptr, ui->playlistView);
         }
     }
 }
 
 void MainWindow::on_actionPlayItem_triggered()
 {
-    if (playlistModel) {
-        auto indexes = ui->playlistView->selectionModel()->selectedIndexes();
-        if (indexes.length() > 0) {
-            play(indexes.first().row());
-        } else {
-            qWarning() << "No items selected";
-        }
+    auto indexes = ui->playlistView->selectionModel()->selectedIndexes();
+    if (indexes.length() > 0) {
+        play(indexes.first().row());
+    } else {
+        qWarning() << "No items selected";
     }
 }
 
