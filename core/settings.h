@@ -32,6 +32,7 @@ class Settings:
     Q_PROPERTY (bool rememberPlaylist READ getRememberPlaylist WRITE setRememberPlaylist NOTIFY rememberPlaylistChanged)
     Q_PROPERTY (QStringList lastPlaylist READ getLastPlaylist WRITE setLastPlaylist NOTIFY lastPlaylistChanged)
     Q_PROPERTY (bool useDbusVolume READ getUseDbusVolume WRITE setUseDbusVolume NOTIFY useDbusVolumeChanged)
+    Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
 
 public:
     static Settings* instance();
@@ -77,6 +78,9 @@ public:
     QString getCacheDir();
     QString getPlaylistDir();
 
+    QString getPrefNetInf();
+    void setPrefNetInf(const QString& value);
+
 signals:
     void portChanged();
     void favDevicesChanged();
@@ -88,6 +92,7 @@ signals:
     void rememberPlaylistChanged();
     void useDbusVolumeChanged();
     void ssdpIpEnabledChanged();
+    void prefNetInfChanged();
 
 private:
     QSettings settings;

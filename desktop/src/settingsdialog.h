@@ -27,6 +27,7 @@ private slots:
     void on_lastPlaylistCheckBox_toggled(bool checked);
     void on_imageCheckBox_toggled(bool checked);
     void on_allDevicesCheckBox_toggled(bool checked);
+    void on_netiInfsComboBox_activated(int index);
 
 private:
     Ui::SettingsDialog *ui;

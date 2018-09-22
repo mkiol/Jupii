@@ -5,9 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <QDebug>
+
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 #include "settings.h"
+#include "utils.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -27,6 +30,17 @@ int SettingsDialog::exec()
     ui->lastPlaylistCheckBox->setCheckState(s->getRememberPlaylist() ? Qt::Checked : Qt::Unchecked);
     ui->allDevicesCheckBox->setCheckState(s->getShowAllDevices() ? Qt::Checked : Qt::Unchecked);
     ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
+
+    auto infs = Utils::instance()->getNetworkIfs();
+    ui->netiInfsComboBox->clear();
+    ui->netiInfsComboBox->addItem(tr("auto"));
+    ui->netiInfsComboBox->addItems(infs);
+    auto prefInf = s->getPrefNetInf();
+    if (prefInf.isEmpty())
+        ui->netiInfsComboBox->setCurrentIndex(0); // auto
+    else
+        ui->netiInfsComboBox->setCurrentText(prefInf);
+
     return QDialog::exec();
 }
 
@@ -46,4 +60,16 @@ void SettingsDialog::on_allDevicesCheckBox_toggled(bool checked)
 {
     auto s = Settings::instance();
     s->setShowAllDevices(checked);
+}
+
+void SettingsDialog::on_netiInfsComboBox_activated(int index)
+{
+    auto s = Settings::instance();
+    if (index == 0) {
+        s->setPrefNetInf("");
+    } else {
+        auto inf = ui->netiInfsComboBox->currentText();
+        qDebug() << "New prefered network interface:" << inf;
+        s->setPrefNetInf(inf);
+    }
 }

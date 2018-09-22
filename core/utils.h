@@ -12,6 +12,7 @@
 #include <QPair>
 #include <QObject>
 #include <QByteArray>
+#include <QStringList>
 
 class Utils : public QObject
 {
@@ -24,6 +25,7 @@ public:
 
     bool getNetworkIf(QString &ifname, QString &address);
     bool checkNetworkIf();
+    QStringList getNetworkIfs(bool onlyUp = true);
     Q_INVOKABLE QString friendlyDeviceType(const QString &deviceType);
     Q_INVOKABLE QString friendlyServiceType(const QString &serviceType);
     Q_INVOKABLE QString secToStr(int value);

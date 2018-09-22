@@ -85,12 +85,72 @@ bool Utils::checkNetworkIf()
     return getNetworkIf(ifname, address);
 }
 
+QStringList Utils::getNetworkIfs(bool onlyUp)
+{
+    auto ifList = QNetworkInterface::allInterfaces();
+
+    QStringList infs;
+    for (auto interface : ifList) {
+        if (interface.isValid()) {
+            if (!onlyUp ||
+                    (interface.flags().testFlag(QNetworkInterface::IsUp) &&
+                    interface.flags().testFlag(QNetworkInterface::IsRunning)))
+                infs << interface.name();
+        }
+    }
+
+    return infs;
+}
+
 bool Utils::getNetworkIf(QString& ifname, QString& address)
 {
-    auto if_list = QNetworkInterface::allInterfaces();
+    auto ifList = QNetworkInterface::allInterfaces();
 
-    for (auto interface : if_list) {
+    // -- debug --
+    /*qDebug() << "Net interfaces:";
+    for (const auto &interface : ifList) {
+        qDebug() << "interface:" << interface.index();
+        qDebug() << "  name:" << interface.name();
+        qDebug() << "  human name:" << interface.humanReadableName();
+        qDebug() << "  MAC:" << interface.hardwareAddress();
+        qDebug() << "  point-to-pont:" << interface.flags().testFlag(QNetworkInterface::IsPointToPoint);
+        qDebug() << "  loopback:" << interface.flags().testFlag(QNetworkInterface::IsLoopBack);
+        qDebug() << "  up:" << interface.flags().testFlag(QNetworkInterface::IsUp);
+        qDebug() << "  running:" << interface.flags().testFlag(QNetworkInterface::IsRunning);
+    }*/
+    // -- debug --
 
+    auto prefNetInf = Settings::instance()->getPrefNetInf();
+
+    if (!prefNetInf.isEmpty()) {
+        // Searching prefered network interface
+
+        for (const auto &interface : ifList) {
+            if (interface.isValid() &&
+                !interface.flags().testFlag(QNetworkInterface::IsLoopBack) &&
+                interface.flags().testFlag(QNetworkInterface::IsUp) &&
+                interface.flags().testFlag(QNetworkInterface::IsRunning) &&
+                interface.name() == prefNetInf) {
+
+                ifname = interface.name();
+
+                auto addra = interface.addressEntries();
+                for (auto a : addra) {
+                    auto ha = a.ip();
+                    if (ha.protocol() == QAbstractSocket::IPv4Protocol ||
+                        ha.protocol() == QAbstractSocket::IPv6Protocol) {
+                        address = ha.toString();
+                        qDebug() << "Net interface:" << ifname << address;
+                        return true;
+                    }
+                }
+            }
+        }
+
+        qWarning() << "Prefered net interface not found";
+    }
+
+    for (const auto &interface : ifList) {
         if (interface.isValid() &&
             !interface.flags().testFlag(QNetworkInterface::IsLoopBack) &&
             interface.flags().testFlag(QNetworkInterface::IsUp) &&
@@ -100,18 +160,17 @@ bool Utils::getNetworkIf(QString& ifname, QString& address)
                 interface.name() == "wlan0" ||
                 interface.name() == "tether")
 #endif
-            ){
-            qDebug() << "interface:" << interface.name();
+            ) {
 
             ifname = interface.name();
 
             auto addra = interface.addressEntries();
-            for (auto a : addra) {
+            for (const auto &a : addra) {
                 auto ha = a.ip();
                 if (ha.protocol() == QAbstractSocket::IPv4Protocol ||
                     ha.protocol() == QAbstractSocket::IPv6Protocol) {
-                    qDebug() << " address:" << ha.toString();
                     address = ha.toString();
+                    qDebug() << "Net interface:" << ifname << address;
                     return true;
                 }
             }

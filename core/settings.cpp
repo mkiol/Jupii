@@ -192,6 +192,19 @@ QString Settings::getLastDir()
     return settings.value("lastdir", "").toString();
 }
 
+void Settings::setPrefNetInf(const QString& value)
+{
+    if (getPrefNetInf() != value) {
+        settings.setValue("prefnetinf", value);
+        emit prefNetInfChanged();
+    }
+}
+
+QString Settings::getPrefNetInf()
+{
+    return settings.value("prefnetinf", "").toString();
+}
+
 void Settings::setSsdpIpEnabled(bool value)
 {
     if (getSsdpIpEnabled() != value) {

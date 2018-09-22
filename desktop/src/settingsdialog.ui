@@ -34,6 +34,20 @@
        </widget>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Network interface</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="netiInfsComboBox"/>
+        </item>
+       </layout>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
