@@ -275,6 +275,13 @@ void MainWindow::on_av_currentMetaDataChanged()
     auto title = av->getCurrentTitle();
     auto author = av->getCurrentAuthor();
 
+    // Max size is 40 characters
+    const int maxSize = 40;
+    if (title.size() > maxSize)
+        title = title.left(maxSize-3) + "...";
+    if (author.size() > maxSize)
+        author = author.left(maxSize-3) + "...";
+
     ui->trackTitle->setText(title.isEmpty() ? tr("Unknown") : title);
     ui->artistName->setText(author.isEmpty() ? tr("Unknown") : author);
     ui->playButton->setEnabled(controlable && !image);
