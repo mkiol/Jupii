@@ -74,7 +74,7 @@ Page {
                 spacing: Theme.paddingMedium
 
                 DetailItem {
-                    label: qsTr("Type")
+                    label: qsTr("Category")
                     value: {
                         switch(av.currentType) {
                         case AVTransport.T_Audio:
@@ -114,6 +114,12 @@ Page {
                     value: utils.secToStr(av.currentTrackDuration)
                     visible: av.currentType !== AVTransport.T_Image &&
                              av.currentTrackDuration > 0
+                }
+
+                DetailItem {
+                    label: qsTr("Content type")
+                    value: av.currentContentType
+                    visible: av.currentContentType.length > 0
                 }
             }
 

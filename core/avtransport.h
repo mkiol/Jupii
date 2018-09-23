@@ -26,6 +26,7 @@ class AVTransport : public Service
     Q_PROPERTY (QString currentURI READ getCurrentURI NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentPath READ getCurrentPath NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentURL READ getCurrentURL NOTIFY currentURIChanged)
+    Q_PROPERTY (QString currentContentType READ getContentType NOTIFY currentURIChanged)
     Q_PROPERTY (QString nextURI READ getNextURI NOTIFY nextURIChanged)
     Q_PROPERTY (QString nextPath READ getNextPath NOTIFY nextURIChanged)
     Q_PROPERTY (bool nextURISupported READ getNextURISupported NOTIFY nextURISupportedChanged)
@@ -126,6 +127,7 @@ public:
     QString getNextURI();
     QString getCurrentPath();
     QString getCurrentURL();
+    QString getContentType();
     QString getNextPath();
     QString getCurrentClass();
     QString getCurrentAuthor();

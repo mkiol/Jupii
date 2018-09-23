@@ -375,6 +375,11 @@ QString AVTransport::getCurrentURL()
     return cs->urlFromUrl(m_currentURI);
 }
 
+QString AVTransport::getContentType()
+{
+    return m_currentMeta ? m_currentMeta->mime : QString();
+}
+
 QString AVTransport::getNextPath()
 {
     auto cs = ContentServer::instance();

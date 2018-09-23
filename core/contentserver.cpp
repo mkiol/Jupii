@@ -1692,6 +1692,18 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         return metaCache.end();
     }
 
+    if (code > 299 && code < 399) {
+        qWarning() << "Redirection received:" << reply->error() << code << reason;
+        QUrl newUrl = reply->header(QNetworkRequest::LocationHeader).toUrl();
+        if (newUrl.isRelative())
+            newUrl = url.resolved(newUrl);
+        reply->deleteLater();
+        if (newUrl.isValid())
+            return makeItemMetaUsingHTTPRequest(newUrl, nam, counter + 1);
+        else
+            return metaCache.end();
+    }
+
     if (code > 299) {
         qWarning() << "Unsupported response code:" << reply->error() << code << reason;
         reply->deleteLater();
