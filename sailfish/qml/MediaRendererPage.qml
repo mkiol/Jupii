@@ -217,7 +217,7 @@ Page {
         id: urlPickerPage
         AddUrlPage {
             onAccepted: {
-                playlist.addItemUrl(url);
+                playlist.addItemUrl(url, name);
             }
         }
     }

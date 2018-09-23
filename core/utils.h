@@ -20,6 +20,7 @@ class Utils : public QObject
 public:
     static const QString typeKey;
     static const QString cookieKey;
+    static const QString nameKey;
 
     static Utils* instance(QObject *parent = nullptr);
 
@@ -29,9 +30,11 @@ public:
     Q_INVOKABLE QString friendlyDeviceType(const QString &deviceType);
     Q_INVOKABLE QString friendlyServiceType(const QString &serviceType);
     Q_INVOKABLE QString secToStr(int value);
+    Q_INVOKABLE bool isUrlOk(const QUrl &url);
 
     QString hash(const QString &value);
     static bool isIdValid(const QString &id);
+    static bool isUrlValid(const QUrl &url);
     static bool isIdValid(const QUrl &id);
     static QString pathFromId(const QString &id);
     static QString pathFromId(const QUrl &id);
@@ -39,6 +42,8 @@ public:
     static int typeFromId(const QUrl &id);
     static QString cookieFromId(const QString &id);
     static QString cookieFromId(const QUrl &id);
+    static QString nameFromId(const QString &id);
+    static QString nameFromId(const QUrl &id);
     static QString idFromUrl(const QUrl &url, const QString &cookie);
     static QUrl swapUrlInId(const QUrl &url, const QUrl &id);
     static QString swapUrlInId(const QUrl &url, const QString &id);
@@ -46,9 +51,10 @@ public:
     static QUrl urlFromId(const QString &id);
     static QUrl urlWithTypeFromId(const QUrl &id);
     static QUrl urlWithTypeFromId(const QString &id);
-    static bool pathTypeCookieFromId(const QUrl &id,
+    static bool pathTypeNameCookieFromId(const QUrl &id,
                                         QString* path = nullptr,
                                         int* type = nullptr,
+                                        QString *name = nullptr,
                                         QString* cookie = nullptr);
 
     static QString randString(int len = 5);

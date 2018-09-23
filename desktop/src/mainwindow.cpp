@@ -16,7 +16,7 @@
 #include <QPixmap>
 #include <QLatin1String>
 #include <QMessageBox>
-#include <QInputDialog>
+#include <QDialog>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -28,6 +28,7 @@
 #include "contentserver.h"
 #include "settings.h"
 #include "info.h"
+#include "addurldialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -361,18 +362,13 @@ void MainWindow::on_addFilesButton_clicked()
 
 void MainWindow::on_addUrlButton_clicked()
 {
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("Add URL"),
-                                         tr("URL:"), QLineEdit::Normal,
-                                         QString(), &ok,
-                                         Qt::WindowFlags(),
-                                         Qt::ImhUrlCharactersOnly);
-    if (ok && !text.isEmpty()) {
-        qDebug() << "Url entered:" << text;
-        QUrl url(text);
-        if (url.isValid()) {
-            auto playlist = PlaylistModel::instance();
-            playlist->addItemUrl(url);
+    AddUrlDialog dialog(this);
+    if (dialog.exec()) {
+        auto url = QUrl(dialog.getUrl());
+        auto name = dialog.getName();
+        if (Utils::isUrlValid(url)) {
+            qDebug() << "Url entered:" << url;
+            PlaylistModel::instance()->addItemUrl(url, name);
         } else {
             qWarning() << "Url is invalid";
         }

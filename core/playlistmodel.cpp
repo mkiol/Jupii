@@ -29,7 +29,10 @@ const int icon_size = 64;
 
 PlaylistModel* PlaylistModel::m_instance = nullptr;
 
-PlaylistWorker::PlaylistWorker(const QList<QUrl> &&urls, bool asAudio, bool urlIsId, QObject *parent) :
+PlaylistWorker::PlaylistWorker(const QList<QPair<QUrl,QString>> &&urls,
+                               bool asAudio,
+                               bool urlIsId,
+                               QObject *parent) :
     QThread(parent),
     urls(urls),
     asAudio(asAudio),
@@ -42,22 +45,33 @@ void PlaylistWorker::run()
     QList<QUrl> ids;
 
     if (urlIsId) {
-        ids = urls;
+        for (const auto &purl : urls)
+            ids << purl.first;
     } else {
-        for (const auto& url : urls) {
-            if (url.isValid()) {
+        for (const auto &purl : urls) {
+            const auto &url = purl.first;
+            const auto &name = purl.second;
+
+            if (Utils::isUrlValid(url)) {
                 QUrl id(url);
                 QUrlQuery q(url);
 
+                // cookie
                 if (q.hasQueryItem(Utils::cookieKey))
                     q.removeQueryItem(Utils::cookieKey);
                 q.addQueryItem(Utils::cookieKey, Utils::randString());
 
-                if (asAudio) {
-                    if (q.hasQueryItem(Utils::typeKey))
-                        q.removeQueryItem(Utils::typeKey);
+                // name
+                if (q.hasQueryItem(Utils::nameKey))
+                    q.removeQueryItem(Utils::nameKey);
+                if (!name.isEmpty())
+                    q.addQueryItem(Utils::nameKey, name);
+
+                // type
+                if (q.hasQueryItem(Utils::typeKey))
+                    q.removeQueryItem(Utils::typeKey);
+                if (asAudio)
                     q.addQueryItem(Utils::typeKey, QString::number(ContentServer::TypeMusic));
-                }
 
                 id.setQuery(q);
 
@@ -406,8 +420,11 @@ QByteArray PlaylistModel::makePlsData(const QString& name)
     int l = m_list.size();
     for (int i = 0; i < l; ++i) {
         auto pitem = dynamic_cast<PlaylistItem*>(m_list.at(i));
-        QString url = Utils::urlWithTypeFromId(pitem->id()).toString();
+        auto url = Utils::urlWithTypeFromId(pitem->id()).toString();
+        auto name = Utils::nameFromId(pitem->id());
         sdata << "File" << i + 1 << "=" << url << endl;
+        if (!name.isEmpty())
+            sdata << "Title" << i + 1 << "=" << name << endl;
     }
 
     return data;
@@ -417,7 +434,11 @@ void PlaylistModel::load()
 {
     setBusy(true);
 
-    auto urls = QUrl::fromStringList(Settings::instance()->getLastPlaylist());
+    auto ids = Settings::instance()->getLastPlaylist();
+
+    QList<QPair<QUrl,QString>> urls;
+    for (const auto &id : ids)
+        urls << QPair<QUrl,QString>(id,QString());
 
     m_worker = std::unique_ptr<PlaylistWorker>(new PlaylistWorker(std::move(urls), false, true, this));
     connect(m_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::workerDone);
@@ -462,9 +483,9 @@ int PlaylistModel::getActiveItemIndex() const
 
 void PlaylistModel::addItemPaths(const QStringList& paths)
 {
-    QList<QUrl> urls;
+    QList<QPair<QUrl,QString>> urls;
     for (auto& path : paths)
-        urls.push_back(QUrl::fromLocalFile(path));
+        urls << QPair<QUrl,QString>(QUrl::fromLocalFile(path),QString());
     addItems(urls, false);
 }
 
@@ -473,26 +494,29 @@ void PlaylistModel::addItemUrls(const QList<QUrl>& urls)
     addItems(urls, false);
 }
 
-void PlaylistModel::addItemUrl(const QUrl& url)
+void PlaylistModel::addItemUrls(const QList<QPair<QUrl,QString>>& urls)
 {
-    QList<QUrl> urls;
-    urls << url;
+    addItems(urls, false);
+}
+
+void PlaylistModel::addItemUrl(const QUrl& url, const QString& name)
+{
+    QList<QPair<QUrl,QString>> urls;
+    urls << QPair<QUrl,QString>(url,name);
     addItems(urls, false);
 }
 
 
 void PlaylistModel::addItemPathsAsAudio(const QStringList& paths)
 {
-    QList<QUrl> urls;
+    QList<QPair<QUrl,QString>> urls;
     for (auto& path : paths)
-        urls.push_back(QUrl::fromLocalFile(path));
+        urls << QPair<QUrl,QString>(QUrl::fromLocalFile(path),QString());
     addItems(urls, true);
 }
 
-void PlaylistModel::addItems(const QList<QUrl>& urls, bool asAudio)
+void PlaylistModel::addItems(const QList<QPair<QUrl,QString>>& urls, bool asAudio)
 {
-    qDebug() << "addItems:" << urls;
-
     if (urls.isEmpty())
         return;
 
@@ -501,6 +525,18 @@ void PlaylistModel::addItems(const QList<QUrl>& urls, bool asAudio)
     m_worker = std::unique_ptr<PlaylistWorker>(new PlaylistWorker(std::move(urls), asAudio, false, this));
     connect(m_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::workerDone);
     m_worker->start();
+}
+
+void PlaylistModel::addItems(const QList<QUrl>& urls, bool asAudio)
+{
+    if (urls.isEmpty())
+        return;
+
+    QList<QPair<QUrl,QString>> purls;
+    for (const auto &url : urls)
+        purls << QPair<QUrl,QString>(url,QString());
+
+    addItems(purls, asAudio);
 }
 
 void PlaylistModel::workerDone()
@@ -536,22 +572,16 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         return nullptr;
     }*/
 
-    int t = 0; QString cookie;
-    if (!Utils::pathTypeCookieFromId(id, nullptr, &t, &cookie) ||
+    int t = 0;
+    QString name, cookie;
+    if (!Utils::pathTypeNameCookieFromId(id, nullptr, &t, &name, &cookie) ||
             cookie.isEmpty()) {
         qWarning() << "Invalid Id";
         return nullptr;
     }
 
     QUrl url = Utils::urlFromId(id);
-    /*ContentServer::ItemMeta meta;
-    const auto it = cs->getMetaCacheIterator(url);
-    if (it == cs->metaCacheIteratorEnd()) {
-        qWarning() << "No meta item found";
-        return nullptr;
-    } else {
-        meta = it.value();
-    }*/
+
     const ContentServer::ItemMeta *meta;
     meta = ContentServer::instance()->getMeta(url);
     if (!meta) {
@@ -566,15 +596,16 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 #ifdef SAILFISH
     QString icon = meta->albumArt;
 #endif
-    QString name;
-    if (!meta->title.isEmpty())
-        name = meta->title;
-    else if (!meta->filename.isEmpty() && meta->filename.length() > 1)
-        name = meta->filename;
-    else if (!meta->url.isEmpty())
-        name = meta->url.toString();
-    else
-        name = tr("Unknown");
+    if (name.isEmpty()) {
+        if (!meta->title.isEmpty())
+            name = meta->title;
+        else if (!meta->filename.isEmpty() && meta->filename.length() > 1)
+            name = meta->filename;
+        else if (!meta->url.isEmpty())
+            name = meta->url.toString();
+        else
+            name = tr("Unknown");
+    }
 
     auto item = new PlaylistItem(meta->url == url ?
                                    id : Utils::swapUrlInId(meta->url, id), // id

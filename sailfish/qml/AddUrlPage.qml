@@ -11,9 +11,11 @@ import Sailfish.Silica 1.0
 Dialog {
     id: root
 
-    property alias url: textField.text
+    property alias url: urlField.text
+    property alias name: nameField.text
+    property bool ok: utils.isUrlOk(urlField.text.trim())
 
-    canAccept: textField.text.trim().length > 0
+    canAccept: ok
 
     SilicaFlickable {
         anchors.fill: parent
@@ -31,11 +33,43 @@ Dialog {
             }
 
             TextField {
-                id: textField
+                id: urlField
                 width: parent.width
                 placeholderText: qsTr("Enter URL")
                 label: qsTr("URL")
-                inputMethodHints: Qt.ImhUrlCharactersOnly
+                inputMethodHints: Qt.ImhUrlCharactersOnly | Qt.ImhNoPredictiveText
+                color: root.ok ? Theme.primaryColor : "red"
+
+                EnterKey.iconSource: nameField.text.length > 0 && root.ok ?
+                                         "image://theme/icon-m-enter-accept" :
+                                         "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: {
+                    if (nameField.text.length > 0 && root.ok)
+                        root.accept();
+                    else
+                        nameField.forceActiveFocus();
+                }
+
+            }
+
+            TextField {
+                id: nameField
+                width: parent.width
+                placeholderText: qsTr("Optionally enter Name")
+                label: qsTr("Name")
+
+                EnterKey.iconSource: root.ok ? "image://theme/icon-m-enter-accept" :
+                                               "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: {
+                    if (ok)
+                        root.accept();
+                    else
+                        urlField.forceActiveFocus()
+                }
+            }
+
+            Tip {
+                text: qsTr("Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be used. Only PLS playlists are supported right now. For internet radio URLs, MP3 streams should be preferred because they are the most widely supported by UPnP devices. If Name is not provided, it will be discover automatically from the stream meta data.");
             }
 
             Spacer {}

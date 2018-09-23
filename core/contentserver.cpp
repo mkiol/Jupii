@@ -440,6 +440,7 @@ void ContentServerWorker::proxyFinished()
         sendEmptyResponse(item.resp, code);
     } else {
         qDebug() << "Ending request";
+        // TODO: Do not end if resp doesn't exists!
         item.resp->end();
     }
 
@@ -832,11 +833,11 @@ void ContentServer::fillCoverArt(ItemMeta& item)
 
 bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &meta)
 {
-    QString path; int t;
-    bool valid = Utils::pathTypeCookieFromId(id, &path, &t);
+    QString path, name; int t;
+    bool valid = Utils::pathTypeNameCookieFromId(id, &path, &t, &name);
     if (!valid)
         return false;
-    //bool isFile = !path.isEmpty();
+
     bool audioType = static_cast<Type>(t) == TypeMusic; // extract audio stream from video
     QUrl urlFromId = Utils::urlFromId(id);
 
@@ -901,14 +902,18 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
         m << "<upnp:class>" << defaultItemClass << "</upnp:class>";
     }
 
-    if (!item->title.isEmpty())
-        m << "<dc:title>" << item->title.toHtmlEscaped() << "</dc:title>";
-    if (!item->artist.isEmpty())
-        m << "<upnp:artist>" << item->artist.toHtmlEscaped() << "</upnp:artist>";
-    if (!item->album.isEmpty())
-        m << "<upnp:album>" << item->album.toHtmlEscaped() << "</upnp:album>";
-    if (!item->comment.isEmpty())
-        m << "<upnp:longDescription>" << item->comment.toHtmlEscaped() << "</upnp:longDescription>";
+    if (name.isEmpty()) {
+        if (!item->title.isEmpty())
+            m << "<dc:title>" << item->title.toHtmlEscaped() << "</dc:title>";
+        if (!item->artist.isEmpty())
+            m << "<upnp:artist>" << item->artist.toHtmlEscaped() << "</upnp:artist>";
+        if (!item->album.isEmpty())
+            m << "<upnp:album>" << item->album.toHtmlEscaped() << "</upnp:album>";
+        if (!item->comment.isEmpty())
+            m << "<upnp:longDescription>" << item->comment.toHtmlEscaped() << "</upnp:longDescription>";
+    } else {
+        m << "<dc:title>" << name.toHtmlEscaped() << "</dc:title>";
+    }
 
     m << "<res ";
 
@@ -1827,7 +1832,7 @@ ContentServer::parsePls(const QByteArray &data)
         int n = cap1.toInt(&ok);
         if (ok) {
             QUrl url(cap2);
-            if (url.isValid()) {
+            if (Utils::isUrlValid(url)) {
                 auto &item = map[n];
                 item.url = url;
             } else {

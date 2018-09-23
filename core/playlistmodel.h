@@ -21,6 +21,7 @@
 #include <QFileInfo>
 #include <QVariant>
 #include <QThread>
+#include <QPair>
 #include <memory>
 
 #ifdef DESKTOP
@@ -131,10 +132,12 @@ friend class PlaylistModel;
 
 public:
     QList<ListItem*> items;
-    PlaylistWorker(const QList<QUrl> &&urls, bool asAudio = false, bool urlIsId = false, QObject *parent = nullptr);
-
+    PlaylistWorker(const QList<QPair<QUrl,QString>> &&urls,
+                   bool asAudio = false,
+                   bool urlIsId = false,
+                   QObject *parent = nullptr);
 private:
-    QList<QUrl> urls;
+    QList<QPair<QUrl,QString>> urls;
     bool asAudio;
     bool urlIsId;
     void run();
@@ -203,7 +206,8 @@ signals:
 public slots:
     void addItemPaths(const QStringList& paths);
     void addItemUrls(const QList<QUrl>& urls);
-    void addItemUrl(const QUrl& url);
+    void addItemUrls(const QList<QPair<QUrl,QString>>& urls);
+    void addItemUrl(const QUrl& url, const QString& name = QString());
     void addItemPathsAsAudio(const QStringList& paths);
 
     void setActiveId(const QString &id);
@@ -238,6 +242,7 @@ private:
 
     PlaylistModel(QObject *parent = nullptr);
     void addItems(const QList<QUrl>& urls, bool asAudio);
+    void addItems(const QList<QPair<QUrl,QString>>& urls, bool asAudio);
     void setActiveItemIndex(int index);
     //bool addId(const QString& id, ContentServer::Type type = ContentServer::TypeUnknown);
     bool addId(const QUrl& id);
