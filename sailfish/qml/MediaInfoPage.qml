@@ -133,13 +133,13 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Path")
-                visible: av.currentPath.length > 0
+                text: av.currentPath.length > 0 ? qsTr("Path") : qsTr("URL")
+                visible: av.currentURL.length > 0
             }
 
             CopyableLabel {
-                text: av.currentPath
-                visible: av.currentPath.length > 0
+                text: av.currentPath.length > 0 ? av.currentPath : av.currentURL
+                visible: av.currentURL.length > 0
             }
 
             Spacer {}

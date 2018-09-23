@@ -1120,6 +1120,17 @@ QString ContentServer::idFromUrl(const QUrl &url) const
     return QString();
 }
 
+QString ContentServer::urlFromUrl(const QUrl &url) const
+{
+    bool valid;
+    auto id = idUrlFromUrl(url, &valid);
+
+    if (valid)
+        return Utils::urlFromId(id).toString();
+
+    return QString();
+}
+
 #ifdef FFMPEG
 bool ContentServer::fillAvDataFromCodec(const AVCodecParameters *codec,
                                         const QString& videoPath,

@@ -369,6 +369,12 @@ QString AVTransport::getCurrentPath()
     return cs->pathFromUrl(m_currentURI);
 }
 
+QString AVTransport::getCurrentURL()
+{
+    auto cs = ContentServer::instance();
+    return cs->urlFromUrl(m_currentURI);
+}
+
 QString AVTransport::getNextPath()
 {
     auto cs = ContentServer::instance();
