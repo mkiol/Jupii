@@ -62,16 +62,18 @@ void PlaylistWorker::run()
                 q.addQueryItem(Utils::cookieKey, Utils::randString());
 
                 // name
-                if (q.hasQueryItem(Utils::nameKey))
-                    q.removeQueryItem(Utils::nameKey);
-                if (!name.isEmpty())
-                    q.addQueryItem(Utils::nameKey, name);
+                if (!name.isEmpty()) {
+                    if (q.hasQueryItem(Utils::nameKey))
+                        q.removeQueryItem(Utils::nameKey);
+                        q.addQueryItem(Utils::nameKey, name);
+                }
 
                 // type
-                if (q.hasQueryItem(Utils::typeKey))
-                    q.removeQueryItem(Utils::typeKey);
-                if (asAudio)
+                if (asAudio) {
+                    if (q.hasQueryItem(Utils::typeKey))
+                        q.removeQueryItem(Utils::typeKey);
                     q.addQueryItem(Utils::typeKey, QString::number(ContentServer::TypeMusic));
+                }
 
                 id.setQuery(q);
 
