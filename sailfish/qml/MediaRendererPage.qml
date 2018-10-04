@@ -418,9 +418,7 @@ Page {
             MenuItem {
                 text: qsTr("Clear playlist")
                 visible: av.inited && !playlist.busy && listView.count > 0
-                onClicked: {
-                    playlist.clear()
-                }
+                onClicked: remorse.execute("Clearing playlist", function() { playlist.clear() } )
             }
 
             MenuItem {
@@ -519,6 +517,10 @@ Page {
                 visible: model.toBeActive
                 size: BusyIndicatorSize.Medium
             }
+        }
+
+        RemorsePopup {
+            id: remorse
         }
     }
 
