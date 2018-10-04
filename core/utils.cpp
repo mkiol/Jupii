@@ -27,6 +27,7 @@
 const QString Utils::typeKey = "jupii_type";
 const QString Utils::cookieKey = "jupii_cookie";
 const QString Utils::nameKey = "jupii_name";
+const QString Utils::iconKey = "jupii_icon";
 
 Utils* Utils::m_instance = nullptr;
 
@@ -262,11 +263,12 @@ QString Utils::hash(const QString &value)
     return QString::number(qHash(value));
 }
 
-bool Utils::pathTypeNameCookieFromId(const QUrl& id,
+bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
                                      QString* path,
                                      int* type,
                                      QString* name,
-                                     QString* cookie)
+                                     QString* cookie,
+                                     QUrl* icon)
 {
     if (!id.isValid()) {
         qWarning() << "Id is invalid";
@@ -288,6 +290,8 @@ bool Utils::pathTypeNameCookieFromId(const QUrl& id,
             *cookie = q.queryItemValue(Utils::cookieKey);
         if (name && q.hasQueryItem(Utils::nameKey))
             *name = q.queryItemValue(Utils::nameKey);
+        if (icon && q.hasQueryItem(Utils::iconKey))
+            *icon = QUrl(q.queryItemValue(Utils::iconKey));
     }
 
     return true;
@@ -305,10 +309,17 @@ bool Utils::isUrlOk(const QUrl &url)
 
 bool Utils::isUrlValid(const QUrl &url)
 {
-    bool shemeOk = url.scheme() == "http" ||
-                   url.scheme() == "https" ||
-                   url.scheme() == "file";
-    return url.isValid() && shemeOk;
+    if (!url.isValid())
+        return false;
+
+    if (url.isLocalFile())
+        return true;
+
+    if ((url.scheme() == "http" || url.scheme() == "https") &&
+         !url.host().isEmpty())
+        return true;
+
+    return false;
 }
 
 bool Utils::isIdValid(const QUrl &id)
@@ -334,7 +345,7 @@ QString Utils::pathFromId(const QString &id)
 QString Utils::pathFromId(const QUrl &id)
 {
     QString path;
-    bool valid = Utils::pathTypeNameCookieFromId(id, &path);
+    bool valid = Utils::pathTypeNameCookieIconFromId(id, &path);
 
     if (!valid) {
         qWarning() << "Id is invalid";
@@ -352,7 +363,7 @@ int Utils::typeFromId(const QString& id)
 int Utils::typeFromId(const QUrl& id)
 {
     int type;
-    bool valid = Utils::pathTypeNameCookieFromId(id, nullptr, &type);
+    bool valid = Utils::pathTypeNameCookieIconFromId(id, nullptr, &type);
 
     if (!valid) {
         qWarning() << "Id is invalid";
@@ -370,7 +381,7 @@ QString Utils::cookieFromId(const QString &id)
 QString Utils::cookieFromId(const QUrl &id)
 {
     QString cookie;
-    bool valid = Utils::pathTypeNameCookieFromId(id, nullptr, nullptr,
+    bool valid = Utils::pathTypeNameCookieIconFromId(id, nullptr, nullptr,
                                                  nullptr, &cookie);
 
     if (!valid) {
@@ -389,7 +400,7 @@ QString Utils::nameFromId(const QString &id)
 QString Utils::nameFromId(const QUrl &id)
 {
     QString name;
-    bool valid = Utils::pathTypeNameCookieFromId(id, nullptr, nullptr, &name);
+    bool valid = Utils::pathTypeNameCookieIconFromId(id, nullptr, nullptr, &name);
 
     if (!valid) {
         qWarning() << "Id is invalid";
@@ -407,7 +418,7 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id)
     if (uq.hasQueryItem(Utils::typeKey))
         uq.removeAllQueryItems(Utils::typeKey);
 
-    QString cookie, type, name;
+    QString cookie, type, name, icon;
     QUrlQuery iq(id);
     if (iq.hasQueryItem(Utils::cookieKey))
         cookie = iq.queryItemValue(Utils::cookieKey);
@@ -415,12 +426,16 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id)
         type = iq.queryItemValue(Utils::typeKey);
     if (iq.hasQueryItem(Utils::nameKey))
         name = iq.queryItemValue(Utils::nameKey);
+    if (iq.hasQueryItem(Utils::iconKey))
+        icon = iq.queryItemValue(Utils::iconKey);
 
     uq.addQueryItem(Utils::cookieKey, cookie);
     if (!type.isEmpty())
         uq.addQueryItem(Utils::typeKey, type);
     if (!name.isEmpty())
         uq.addQueryItem(Utils::nameKey, name);
+    if (!icon.isEmpty())
+        uq.addQueryItem(Utils::iconKey, icon);
 
     QUrl newUrl(url);
     newUrl.setQuery(uq);
@@ -448,6 +463,8 @@ QUrl Utils::urlFromId(const QUrl &id)
         q.removeAllQueryItems(Utils::typeKey);
     if (q.hasQueryItem(Utils::nameKey))
         q.removeAllQueryItems(Utils::nameKey);
+    if (q.hasQueryItem(Utils::iconKey))
+        q.removeAllQueryItems(Utils::iconKey);
     QUrl url(id);
     url.setQuery(q);
     return url;

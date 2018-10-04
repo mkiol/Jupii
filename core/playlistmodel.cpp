@@ -19,17 +19,16 @@
 #include "services.h"
 
 #ifdef DESKTOP
-#include <QPixmap>
-#include <QImage>
+//#include <QPixmap>
+//#include <QImage>
 #include <QPalette>
 #include <QApplication>
-#include "filedownloader.h"
-const int icon_size = 64;
+//#include "filedownloader.h"
 #endif
 
 PlaylistModel* PlaylistModel::m_instance = nullptr;
 
-PlaylistWorker::PlaylistWorker(const QList<QPair<QUrl,QString>> &&urls,
+PlaylistWorker::PlaylistWorker(const QList<UrlItem> &&urls,
                                bool asAudio,
                                bool urlIsId,
                                QObject *parent) :
@@ -46,11 +45,12 @@ void PlaylistWorker::run()
 
     if (urlIsId) {
         for (const auto &purl : urls)
-            ids << purl.first;
+            ids << purl.url;
     } else {
         for (const auto &purl : urls) {
-            const auto &url = purl.first;
-            const auto &name = purl.second;
+            const auto &url = purl.url;
+            const auto &name = purl.name;
+            const auto &icon = purl.icon;
 
             if (Utils::isUrlValid(url)) {
                 QUrl id(url);
@@ -73,6 +73,13 @@ void PlaylistWorker::run()
                     if (q.hasQueryItem(Utils::typeKey))
                         q.removeQueryItem(Utils::typeKey);
                     q.addQueryItem(Utils::typeKey, QString::number(ContentServer::TypeMusic));
+                }
+
+                // icon
+                if (!icon.isEmpty()) {
+                    if (q.hasQueryItem(Utils::iconKey))
+                        q.removeQueryItem(Utils::iconKey);
+                    q.addQueryItem(Utils::iconKey, icon.toString());
                 }
 
                 id.setQuery(q);
@@ -438,9 +445,9 @@ void PlaylistModel::load()
 
     auto ids = Settings::instance()->getLastPlaylist();
 
-    QList<QPair<QUrl,QString>> urls;
+    QList<UrlItem> urls;
     for (const auto &id : ids)
-        urls << QPair<QUrl,QString>(id,QString());
+        urls << UrlItem{id};
 
     m_worker = std::unique_ptr<PlaylistWorker>(new PlaylistWorker(std::move(urls), false, true, this));
     connect(m_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::workerDone);
@@ -485,9 +492,9 @@ int PlaylistModel::getActiveItemIndex() const
 
 void PlaylistModel::addItemPaths(const QStringList& paths)
 {
-    QList<QPair<QUrl,QString>> urls;
+    QList<UrlItem> urls;
     for (auto& path : paths)
-        urls << QPair<QUrl,QString>(QUrl::fromLocalFile(path),QString());
+        urls << UrlItem{QUrl::fromLocalFile(path)};
     addItems(urls, false);
 }
 
@@ -496,28 +503,29 @@ void PlaylistModel::addItemUrls(const QList<QUrl>& urls)
     addItems(urls, false);
 }
 
-void PlaylistModel::addItemUrls(const QList<QPair<QUrl,QString>>& urls)
+void PlaylistModel::addItemUrls(const QList<UrlItem> &urls)
 {
     addItems(urls, false);
 }
 
-void PlaylistModel::addItemUrl(const QUrl& url, const QString& name)
+void PlaylistModel::addItemUrl(const QUrl& url,
+                               const QString& name,
+                               const QUrl &icon)
 {
-    QList<QPair<QUrl,QString>> urls;
-    urls << QPair<QUrl,QString>(url,name);
+    QList<UrlItem> urls;
+    urls << UrlItem{url, name, icon};
     addItems(urls, false);
 }
-
 
 void PlaylistModel::addItemPathsAsAudio(const QStringList& paths)
 {
-    QList<QPair<QUrl,QString>> urls;
+    QList<UrlItem> urls;
     for (auto& path : paths)
-        urls << QPair<QUrl,QString>(QUrl::fromLocalFile(path),QString());
+        urls << UrlItem{QUrl::fromLocalFile(path)};
     addItems(urls, true);
 }
 
-void PlaylistModel::addItems(const QList<QPair<QUrl,QString>>& urls, bool asAudio)
+void PlaylistModel::addItems(const QList<UrlItem>& urls, bool asAudio)
 {
     if (urls.isEmpty())
         return;
@@ -534,9 +542,9 @@ void PlaylistModel::addItems(const QList<QUrl>& urls, bool asAudio)
     if (urls.isEmpty())
         return;
 
-    QList<QPair<QUrl,QString>> purls;
+    QList<UrlItem> purls;
     for (const auto &url : urls)
-        purls << QPair<QUrl,QString>(url,QString());
+        purls << UrlItem{url};
 
     addItems(purls, asAudio);
 }
@@ -576,7 +584,9 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 
     int t = 0;
     QString name, cookie;
-    if (!Utils::pathTypeNameCookieFromId(id, nullptr, &t, &name, &cookie) ||
+    QUrl ficon;
+    if (!Utils::pathTypeNameCookieIconFromId(id, nullptr, &t,
+                                             &name, &cookie, &ficon) ||
             cookie.isEmpty()) {
         qWarning() << "Invalid Id";
         return nullptr;
@@ -595,9 +605,6 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     auto type = forcedType == ContentServer::TypeUnknown ?
                 meta->type : forcedType;
 
-#ifdef SAILFISH
-    QString icon = meta->albumArt;
-#endif
     if (name.isEmpty()) {
         if (!meta->title.isEmpty())
             name = meta->title;
@@ -608,6 +615,29 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         else
             name = tr("Unknown");
     }
+
+    QString iconUrl = ficon.isEmpty() ? meta->albumArt : ficon.toString();
+#ifndef SAILFISH
+    QIcon icon;
+    if (iconUrl.isEmpty()) {
+        switch (type) {
+        case ContentServer::TypeMusic:
+            icon = QIcon::fromTheme("audio-mp3");
+            break;
+        case ContentServer::TypeVideo:
+            icon = QIcon::fromTheme("video-mp4");
+            break;
+        case ContentServer::TypeImage:
+            icon = QIcon::fromTheme("image-jpeg");
+            break;
+        default:
+            icon = QIcon::fromTheme("unknown");
+            break;
+        }
+    } else {
+        icon = QIcon(iconUrl);
+    }
+#endif
 
     auto item = new PlaylistItem(meta->url == url ?
                                    id : Utils::swapUrlInId(meta->url, id), // id
@@ -621,11 +651,9 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
                                meta->duration, // duration
                                meta->size, // size
 #ifdef SAILFISH
-                               icon, // icon
+                               iconUrl, // icon
 #else
-                               meta->albumArt.isEmpty() ?
-                                   QIcon() :
-                                   QIcon(meta->albumArt), // icon
+                               icon, // icon
 #endif
                                false, // active
                                false // to be active
@@ -921,10 +949,10 @@ PlaylistItem::PlaylistItem(const QUrl &id,
                            const QString &date,
                            const int duration,
                            const qint64 size,
-#ifdef DESKTOP
-                           const QIcon &icon,
-#else
+#ifdef SAILFISH
                            const QUrl &icon,
+#else
+                           const QIcon &icon,
 #endif
                            bool active,
                            bool toBeActive,

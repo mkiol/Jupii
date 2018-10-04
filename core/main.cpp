@@ -47,6 +47,7 @@
 #include "trackmodel.h"
 #include "services.h"
 #include "info.h"
+#include "somafmmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -68,6 +69,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<TrackModel>("harbour.jupii.TrackModel", 1, 0, "TrackModel");
     qmlRegisterUncreatableType<PlaylistModel>("harbour.jupii.PlayListModel", 1, 0,
                                               "PlayListModel", "Playlist is a singleton");
+    qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0, "SomafmModel");
 
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 

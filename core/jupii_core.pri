@@ -29,7 +29,8 @@ HEADERS += \
     $$CORE_DIR/playlistfilemodel.h \
     $$CORE_DIR/trackmodel.h \
     $$CORE_DIR/services.h \
-    $$CORE_DIR/info.h
+    $$CORE_DIR/info.h \
+    $$CORE_DIR/somafmmodel.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -55,7 +56,8 @@ SOURCES += \
     $$CORE_DIR/artistmodel.cpp \
     $$CORE_DIR/playlistfilemodel.cpp \
     $$CORE_DIR/trackmodel.cpp \
-    $$CORE_DIR/services.cpp
+    $$CORE_DIR/services.cpp \
+    $$CORE_DIR/somafmmodel.cpp
 
 sailfish {
     HEADERS += \

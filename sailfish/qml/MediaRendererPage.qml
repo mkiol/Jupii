@@ -222,6 +222,15 @@ Page {
         }
     }
 
+    Component {
+        id: somafmPickerPage
+        SomafmPage {
+            onAccepted: {
+                playlist.addItemUrl(url, "SomaFM: " + name, icon);
+            }
+        }
+    }
+
     // ----
 
     Connections {
@@ -427,7 +436,8 @@ Page {
                                        artistPickerPage: artistPickerPage,
                                        playlistPickerPage: playlistPickerPage,
                                        filePickerPage: filePickerPage,
-                                       urlPickerPage: urlPickerPage
+                                       urlPickerPage: urlPickerPage,
+                                       somafmPickerPage: somafmPickerPage
                                    })
                 }
             }

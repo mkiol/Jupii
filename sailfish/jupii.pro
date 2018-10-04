@@ -91,6 +91,10 @@ images.files = images/*
 images.path = /usr/share/$${TARGET}/images
 INSTALLS += images
 
+somafm.files = somafm/*
+somafm.path = /usr/share/$${TARGET}/somafm
+INSTALLS += somafm
+
 DEPENDPATH += $$INCLUDEPATH
 
 OTHER_FILES += \
@@ -99,4 +103,6 @@ OTHER_FILES += \
     rpm/$${TARGET}.spec
 
 DISTFILES += \
-    qml/AddUrlPage.qml
+    qml/AddUrlPage.qml \
+    qml/Tip.qml \
+    qml/SomafmPage.qml

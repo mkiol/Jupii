@@ -834,7 +834,9 @@ void ContentServer::fillCoverArt(ItemMeta& item)
 bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &meta)
 {
     QString path, name; int t;
-    bool valid = Utils::pathTypeNameCookieFromId(id, &path, &t, &name);
+    QUrl icon;
+    bool valid = Utils::pathTypeNameCookieIconFromId(id, &path, &t,
+                                                     &name, nullptr, &icon);
     if (!valid)
         return false;
 
@@ -880,8 +882,11 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
         break;
     case TypeMusic:
         m << "<upnp:class>" << audioItemClass << "</upnp:class>";
-        if (!item->albumArt.isEmpty()) {
-            auto id = Utils::idFromUrl(QUrl::fromLocalFile(item->albumArt), artCookie);
+        if (!icon.isEmpty() || !item->albumArt.isEmpty()) {
+            auto id = Utils::idFromUrl(icon.isEmpty() ?
+                                           QUrl::fromLocalFile(item->albumArt) :
+                                           icon,
+                                       artCookie);
             QUrl artUrl;
             if (makeUrl(id, artUrl))
                 m << "<upnp:albumArtURI>" << artUrl.toString() << "</upnp:albumArtURI>";

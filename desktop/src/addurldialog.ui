@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>200</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
    <item>
     <widget class="QLineEdit" name="urlEdit">
      <property name="toolTip">
-      <string>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be used. Only PLS playlists are supported right now. For internet radio URLs, MP3 streams should be preferred because they are the most widely supported by UPnP devices.</string>
+      <string/>
      </property>
      <property name="inputMethodHints">
       <set>Qt::ImhUrlCharactersOnly</set>
@@ -41,12 +41,38 @@
    <item>
     <widget class="QLineEdit" name="nameEdit">
      <property name="toolTip">
-      <string>If Name is not provided, it will be discover automatically from the stream meta data.</string>
+      <string/>
      </property>
     </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Only HTTP URLs are supported. If URL points to a playlist file (pls format), first playlist item will be added. For internet radio URLs, it is recommended to use MP3 streams instead other formats. If Name is not provided, it will be discovered automatically from the stream meta data.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>

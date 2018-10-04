@@ -20,6 +20,7 @@ Page {
     property var playlistPickerPage
     property var filePickerPage
     property var urlPickerPage
+    property var somafmPickerPage
 
     SilicaFlickable {
         id: flick
@@ -111,12 +112,24 @@ Page {
                 }
             }
 
+            SectionHeader {
+                text: qsTr("Remote content")
+            }
+
             SimpleListItem {
                 title.text: qsTr("URL")
                 icon.source: "image://icons/icon-m-browser?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(urlPickerPage)
+                }
+            }
+
+            SimpleListItem {
+                title.text: qsTr("SomaFM")
+                icon.source: "somafm.jpg"
+                onClicked: {
+                    pageStack.replace(somafmPickerPage)
                 }
             }
         }

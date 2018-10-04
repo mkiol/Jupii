@@ -240,7 +240,7 @@ void MainWindow::on_av_stateChanged()
     ui->playButton->setText(playing ? tr("Pause") : tr("Play"));
     ui->playButton->setEnabled(controlable && !image);
 
-    //ui->addUrlButton->setEnabled(inited);
+    ui->addUrlButton->setEnabled(inited);
     ui->addFilesButton->setEnabled(inited);
     ui->clearButton->setEnabled(inited);
 }

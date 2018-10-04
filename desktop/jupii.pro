@@ -27,16 +27,19 @@ INCLUDEPATH += src
 HEADERS += \
     src/filedownloader.h \
     src/mainwindow.h \
-    src/settingsdialog.h
+    src/settingsdialog.h \
+    src/addurldialog.h
 
 SOURCES += \
     src/mainwindow.cpp \
     src/filedownloader.cpp \
-    src/settingsdialog.cpp
+    src/settingsdialog.cpp \
+    src/addurldialog.cpp
 
 FORMS += \
     src/mainwindow.ui \
-    src/settingsdialog.ui
+    src/settingsdialog.ui \
+    src/addurldialog.ui
 
 OTHER_FILES += \
     $$PROJECTDIR/dbus/org.jupii.xml \

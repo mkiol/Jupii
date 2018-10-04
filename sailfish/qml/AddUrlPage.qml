@@ -38,7 +38,6 @@ Dialog {
                 placeholderText: qsTr("Enter URL")
                 label: qsTr("URL")
                 inputMethodHints: Qt.ImhUrlCharactersOnly | Qt.ImhNoPredictiveText
-                color: root.ok ? Theme.primaryColor : "red"
 
                 EnterKey.iconSource: nameField.text.length > 0 && root.ok ?
                                          "image://theme/icon-m-enter-accept" :
@@ -55,7 +54,7 @@ Dialog {
             TextField {
                 id: nameField
                 width: parent.width
-                placeholderText: qsTr("Optionally enter Name")
+                placeholderText: qsTr("Enter Name (optional)")
                 label: qsTr("Name")
 
                 EnterKey.iconSource: root.ok ? "image://theme/icon-m-enter-accept" :
@@ -69,7 +68,7 @@ Dialog {
             }
 
             Tip {
-                text: qsTr("Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be used. Only PLS playlists are supported right now. For internet radio URLs, MP3 streams should be preferred because they are the most widely supported by UPnP devices. If Name is not provided, it will be discover automatically from the stream meta data.");
+                text: qsTr("Only HTTP URLs are supported. If URL points to a playlist file (pls format), first playlist item will be added. For internet radio URLs, it is recommended to use MP3 streams instead other formats. If Name is not provided, it will be discovered automatically from the stream meta data.");
             }
 
             Spacer {}

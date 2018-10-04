@@ -429,7 +429,7 @@ QString AVTransport::getCurrentDescription()
 QUrl AVTransport::getCurrentAlbumArtURI()
 {
     // Optimization => external url only for not local content
-    if (m_currentMeta) {
+    if (m_currentMeta && !m_currentMeta->albumArt.isEmpty()) {
         qDebug() << "Optimization => using local album art";
         return QUrl::fromLocalFile(m_currentMeta->albumArt);
     }

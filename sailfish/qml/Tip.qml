@@ -14,4 +14,9 @@ Label {
     wrapMode: Text.WordWrap
     color: Theme.secondaryHighlightColor
     font.pixelSize: Theme.fontSizeSmall
+    linkColor: Theme.primaryColor
+    textFormat: Text.StyledText
+    onLinkActivated: {
+        Qt.openUrlExternally(link);
+    }
 }

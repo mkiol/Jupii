@@ -34,6 +34,12 @@
 
 class PlaylistModel;
 
+struct UrlItem {
+    QUrl url;
+    QString name;
+    QUrl icon;
+};
+
 class PlaylistItem :
         public ListItem
 {
@@ -68,10 +74,10 @@ public:
                       const QString &date,
                       const int duration,
                       const qint64 size,
-#ifdef DESKTOP
-                      const QIcon &icon,
-#else
+#ifdef SAILFISH
                       const QUrl &icon,
+#else
+                      const QIcon &icon,
 #endif
                       bool active = false,
                       bool toBeActive = false,
@@ -90,10 +96,10 @@ public:
     inline QString date() const { return m_date; }
     inline int duration() const { return m_duration; }
     inline qint64 size() const { return m_size; }
-#ifdef DESKTOP
-    inline QIcon icon() const { return m_icon; }
-#else
+#ifdef SAILFISH
     inline QUrl icon() const { return m_icon; }
+#else
+    inline QIcon icon() const { return m_icon; }
 #endif
     inline bool active() const { return m_active; }
     inline bool toBeActive() const { return m_tobeactive; }
@@ -114,10 +120,10 @@ private:
     QString m_date;
     int m_duration;
     qint64 m_size;
-#ifdef DESKTOP
-    QIcon m_icon;
-#else
+#ifdef SAILFISH
     QUrl m_icon;
+#else
+    QIcon m_icon;
 #endif
     bool m_active;
     bool m_tobeactive;
@@ -132,12 +138,12 @@ friend class PlaylistModel;
 
 public:
     QList<ListItem*> items;
-    PlaylistWorker(const QList<QPair<QUrl,QString>> &&urls,
+    PlaylistWorker(const QList<UrlItem> &&urls,
                    bool asAudio = false,
                    bool urlIsId = false,
                    QObject *parent = nullptr);
 private:
-    QList<QPair<QUrl,QString>> urls;
+    QList<UrlItem> urls;
     bool asAudio;
     bool urlIsId;
     void run();
@@ -206,10 +212,11 @@ signals:
 public slots:
     void addItemPaths(const QStringList& paths);
     void addItemUrls(const QList<QUrl>& urls);
-    void addItemUrls(const QList<QPair<QUrl,QString>>& urls);
-    void addItemUrl(const QUrl& url, const QString& name = QString());
+    void addItemUrls(const QList<UrlItem>& urls);
+    void addItemUrl(const QUrl& url,
+                    const QString& name = QString(),
+                    const QUrl& icon = QUrl());
     void addItemPathsAsAudio(const QStringList& paths);
-
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
     void setToBeActiveIndex(int index);
@@ -242,7 +249,7 @@ private:
 
     PlaylistModel(QObject *parent = nullptr);
     void addItems(const QList<QUrl>& urls, bool asAudio);
-    void addItems(const QList<QPair<QUrl,QString>>& urls, bool asAudio);
+    void addItems(const QList<UrlItem> &urls, bool asAudio);
     void setActiveItemIndex(int index);
     //bool addId(const QString& id, ContentServer::Type type = ContentServer::TypeUnknown);
     bool addId(const QUrl& id);
