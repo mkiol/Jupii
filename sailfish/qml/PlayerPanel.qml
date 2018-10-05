@@ -60,10 +60,24 @@ DockedPanel_ {
         Column {
             width: parent.width
 
+            Label {
+                // Time position when track duration is unknown
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    bottomMargin: Theme.paddingMedium + Theme.paddingSmall
+                    topMargin: Theme.paddingMedium + Theme.paddingSmall
+                }
+                font.pixelSize: Theme.fontSizeHuge
+                horizontalAlignment: Text.AlignHCenter
+                visible: root.full && av.currentTrackDuration === 0
+                text: utils.secToStr(av.relativeTimePosition)
+            }
+
             Slider {
                 id: trackPositionSlider
 
-                visible: root.full
+                visible: root.full && av.currentTrackDuration > 0
 
                 property bool blockValueChangedSignal: false
 
@@ -72,7 +86,6 @@ DockedPanel_ {
                 maximumValue: av.currentTrackDuration
                 stepSize: 1
                 handleVisible: av.seekSupported
-                //value: av.relativeTimePosition
                 enabled: av.seekSupported && root.controlable
                 valueText: utils.secToStr(value > 0 ? value : 0)
 

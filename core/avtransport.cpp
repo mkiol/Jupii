@@ -331,12 +331,12 @@ int AVTransport::getCurrentTrack()
 
 int AVTransport::getCurrentTrackDuration()
 {
-    return m_currentTrackDuration;
+    return m_currentTrackDuration > 0 ? m_currentTrackDuration : 0;
 }
 
 int AVTransport::getRelativeTimePosition()
 {
-    return m_relativeTimePosition;
+    return m_relativeTimePosition > 0 ? m_relativeTimePosition : 0;
 }
 
 int AVTransport::getSpeed()

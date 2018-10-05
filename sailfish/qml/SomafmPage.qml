@@ -43,7 +43,7 @@ Page {
 
         //anchors.fill: parent
         width: parent.width
-        height: parent.height - (tip.height + 2*Theme.paddingMedium)
+        height: parent.height - (tip.height + 2*Theme.paddingLarge)
         clip: true
 
         currentIndex: -1
@@ -91,8 +91,8 @@ Page {
     Tip {
         id: tip
         anchors.bottom: parent.bottom
-        anchors.topMargin: Theme.paddingMedium
-        anchors.bottomMargin: Theme.paddingMedium
+        anchors.topMargin: Theme.paddingLarge
+        anchors.bottomMargin: Theme.paddingLarge
         text: qsTr("SomaFM is supported entirely by the listeners. If you enjoy, please consider making a <a href=\"%1\">donation</a>.").arg("http://somafm.com/support/");
     }
 }
