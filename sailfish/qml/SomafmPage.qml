@@ -19,7 +19,7 @@ Page {
 
     property bool _doPop: false
 
-    signal accepted(url url, string name, url icon);
+    signal accepted(url url, string name, url icon, string desc);
 
     function doPop() {
         if (pageStack.busy)
@@ -73,7 +73,7 @@ Page {
             }
 
             onClicked: {
-                root.accepted(model.url, model.name, model.icon);
+                root.accepted(model.url, model.name, model.icon, model.description);
                 root.doPop()
             }
         }

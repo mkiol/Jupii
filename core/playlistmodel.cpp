@@ -51,6 +51,7 @@ void PlaylistWorker::run()
             const auto &url = purl.url;
             const auto &name = purl.name;
             const auto &icon = purl.icon;
+            const auto &desc = purl.desc;
 
             if (Utils::isUrlValid(url)) {
                 QUrl id(url);
@@ -80,6 +81,13 @@ void PlaylistWorker::run()
                     if (q.hasQueryItem(Utils::iconKey))
                         q.removeQueryItem(Utils::iconKey);
                     q.addQueryItem(Utils::iconKey, icon.toString());
+                }
+
+                // desc
+                if (!desc.isEmpty()) {
+                    if (q.hasQueryItem(Utils::descKey))
+                        q.removeQueryItem(Utils::descKey);
+                    q.addQueryItem(Utils::descKey, desc);
                 }
 
                 id.setQuery(q);
@@ -510,10 +518,11 @@ void PlaylistModel::addItemUrls(const QList<UrlItem> &urls)
 
 void PlaylistModel::addItemUrl(const QUrl& url,
                                const QString& name,
-                               const QUrl &icon)
+                               const QUrl &icon,
+                               const QString& desc)
 {
     QList<UrlItem> urls;
-    urls << UrlItem{url, name, icon};
+    urls << UrlItem{url, name, icon, desc};
     addItems(urls, false);
 }
 

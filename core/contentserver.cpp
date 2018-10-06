@@ -825,11 +825,8 @@ void ContentServer::fillCoverArt(ItemMeta& item)
 
 bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &meta)
 {
-    QString path, name; int t;
-    QUrl icon;
-    bool valid = Utils::pathTypeNameCookieIconFromId(id, &path, &t,
-                                                     &name, nullptr, &icon);
-    if (!valid)
+    QString path, name, desc; int t; QUrl icon;
+    if (!Utils::pathTypeNameCookieIconFromId(id, &path, &t, &name, nullptr, &icon, &desc))
         return false;
 
     bool audioType = static_cast<Type>(t) == TypeMusic; // extract audio stream from video
@@ -908,10 +905,15 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
             m << "<upnp:artist>" << item->artist.toHtmlEscaped() << "</upnp:artist>";
         if (!item->album.isEmpty())
             m << "<upnp:album>" << item->album.toHtmlEscaped() << "</upnp:album>";
+    } else {
+        m << "<dc:title>" << name.toHtmlEscaped() << "</dc:title>";
+    }
+
+    if (desc.isEmpty()) {
         if (!item->comment.isEmpty())
             m << "<upnp:longDescription>" << item->comment.toHtmlEscaped() << "</upnp:longDescription>";
     } else {
-        m << "<dc:title>" << name.toHtmlEscaped() << "</dc:title>";
+        m << "<upnp:longDescription>" << desc << "</upnp:longDescription>";
     }
 
     m << "<res ";

@@ -38,6 +38,7 @@ struct UrlItem {
     QUrl url;
     QString name;
     QUrl icon;
+    QString desc;
 };
 
 class PlaylistItem :
@@ -215,7 +216,8 @@ public slots:
     void addItemUrls(const QList<UrlItem>& urls);
     void addItemUrl(const QUrl& url,
                     const QString& name = QString(),
-                    const QUrl& icon = QUrl());
+                    const QUrl& icon = QUrl(),
+                    const QString& desc = QString());
     void addItemPathsAsAudio(const QStringList& paths);
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
