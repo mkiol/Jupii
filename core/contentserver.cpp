@@ -173,21 +173,6 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
 
     auto cs = ContentServer::instance();
 
-    /*ContentServer::ItemMeta meta;
-
-    if (isArt) {
-        // Album Cover Art
-        meta = cs->makeItemMetaUsingExtension(id) ;
-    } else {
-        const auto it = cs->getMetaCacheIteratorForId(id);
-        if (it == cs->metaCache.end()) {
-            qWarning() << "No meta item found";
-            sendEmptyResponse(resp, 404);
-            return;
-        }
-        meta = it.value();
-    }*/
-
     const ContentServer::ItemMeta *meta;
 
     if (isArt) {
@@ -232,7 +217,8 @@ void ContentServerWorker::requestForFileHandler(const QUrl &id,
 
         streamFile(data.path, data.mime, req, resp);
 #else
-        qWarning() << "Video content and type is audio => can't extract because ffmpeg is disabled";
+        qWarning() << "Video content and type is audio => can't extract audio "
+                      "because ffmpeg is disabled";
 #endif
     } else {
         streamFile(meta->path, meta->mime, req, resp);
@@ -247,44 +233,48 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
 {
     auto url = Utils::urlFromId(id);
 
-    QNetworkRequest request;
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-    request.setUrl(url);
-
-    // Add headers
-    const auto& headers = req->headers();
-    if (headers.contains("range"))
-        request.setRawHeader("Range", headers.value("range").toLatin1());
-    request.setRawHeader("Connection", "close");
-    request.setRawHeader("User-Agent", ContentServer::userAgent);
-
-    QNetworkReply *reply;
-    bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
-    if (isHead) {
-        qDebug() << "HEAD request for url:" << url;
-        reply = nam->head(request);
+    if (Settings::instance()->getRemoteContentMode() == 1) {
+        // Redirection mode
+        sendRedirection(resp, url.toString());
     } else {
-        qDebug() << "GET request for url:" << url;
-        reply = nam->get(request);
+        // Proxy mode
+        QNetworkRequest request;
+        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+        request.setUrl(url);
+
+        // Add headers
+        const auto& headers = req->headers();
+        if (headers.contains("range"))
+            request.setRawHeader("Range", headers.value("range").toLatin1());
+        request.setRawHeader("Connection", "close");
+        request.setRawHeader("User-Agent", ContentServer::userAgent);
+
+        QNetworkReply *reply;
+        bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
+        if (isHead) {
+            qDebug() << "HEAD request for url:" << url;
+            reply = nam->head(request);
+        } else {
+            qDebug() << "GET request for url:" << url;
+            reply = nam->get(request);
+        }
+
+        ProxyItem &item = proxyItems[reply];
+        item.req = req;
+        item.resp = resp;
+        item.reply = reply;
+        item.id = id;
+        item.seek = meta->seekSupported;
+
+        connect(reply, &QNetworkReply::metaDataChanged,
+                this, &ContentServerWorker::proxyMetaDataChanged);
+        connect(reply, &QNetworkReply::redirected,
+                this, &ContentServerWorker::proxyRedirected);
+        connect(reply, &QNetworkReply::finished,
+                this, &ContentServerWorker::proxyFinished);
+        connect(reply, &QNetworkReply::readyRead,
+                this, &ContentServerWorker::proxyReadyRead);
     }
-
-    ProxyItem &item = proxyItems[reply];
-    item.req = req;
-    item.resp = resp;
-    item.reply = reply;
-    item.id = id;
-    item.seek = meta->seekSupported;
-
-    connect(reply, &QNetworkReply::metaDataChanged,
-            this, &ContentServerWorker::proxyMetaDataChanged);
-    connect(reply, &QNetworkReply::redirected,
-            this, &ContentServerWorker::proxyRedirected);
-    connect(reply, &QNetworkReply::finished,
-            this, &ContentServerWorker::proxyFinished);
-    connect(reply, &QNetworkReply::readyRead,
-            this, &ContentServerWorker::proxyReadyRead);
-
-    qDebug() << "requestForUrlHandler done";
 }
 
 bool ContentServerWorker::seqWriteData(QFile& file, qint64 size, QHttpResponse *resp)
@@ -334,6 +324,8 @@ void ContentServerWorker::sendResponse(QHttpResponse *resp, int code, const QByt
 void ContentServerWorker::sendRedirection(QHttpResponse *resp, const QString &location)
 {
     resp->setHeader("Location", location);
+    resp->setHeader("Content-Length", "0");
+    resp->setHeader("Connection", "close");
     resp->writeHead(302);
     resp->end();
 }

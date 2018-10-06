@@ -13,16 +13,15 @@
 #include <QStandardPaths>
 #include <QMessageBox>
 #include <QItemSelectionModel>
-#include <QPixmap>
 #include <QLatin1String>
 #include <QMessageBox>
 #include <QDialog>
+#include <QIcon>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "directory.h"
 #include "services.h"
-#include "avtransport.h"
 #include "renderingcontrol.h"
 #include "utils.h"
 #include "contentserver.h"
@@ -307,6 +306,27 @@ void MainWindow::on_av_positionChanged()
     }
 }
 
+QPixmap MainWindow::getImageForType(AVTransport::Type type)
+{
+    QIcon icon;
+    switch (type) {
+    case AVTransport::T_Audio:
+        icon = QIcon::fromTheme("audio-mp3");
+        break;
+    case AVTransport::T_Video:
+        icon = QIcon::fromTheme("video-mp4");
+        break;
+    case AVTransport::T_Image:
+        icon = QIcon::fromTheme("image-jpeg");
+        break;
+    default:
+        icon = QIcon::fromTheme("unknown");
+        break;
+    }
+
+    return icon.pixmap(ui->albumImage->size());
+}
+
 void MainWindow::on_av_albumArtChanged()
 {
     auto av = Services::instance()->avTransport;
@@ -315,11 +335,12 @@ void MainWindow::on_av_albumArtChanged()
 
     if (!album.isValid()) {
         qWarning() << "Album art is invalid";
-        ui->albumImage->clear();
+        //ui->albumImage->clear();
+        ui->albumImage->setPixmap(getImageForType(av->getCurrentType()));
     } else if (album.isLocalFile()) {
         auto img = QImage(album.toLocalFile()).scaled(ui->albumImage->minimumSize());
         auto pix = QPixmap::fromImage(img);
-        ui->albumImage->setPixmap(pix);
+        ui->albumImage->setPixmap(pix); 
     } else {
         downloader = std::unique_ptr<FileDownloader>(new FileDownloader(QUrl(album), this));
         connect(downloader.get(), &FileDownloader::downloaded, [this](int error){
@@ -330,7 +351,9 @@ void MainWindow::on_av_albumArtChanged()
                 ui->albumImage->setPixmap(pix);
             } else {
                 qWarning() << "Error occured during image download";
-                ui->albumImage->clear();
+                //ui->albumImage->clear();
+                auto av = Services::instance()->avTransport;
+                ui->albumImage->setPixmap(getImageForType(av->getCurrentType()));
             }
         });
     }

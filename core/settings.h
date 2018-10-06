@@ -33,6 +33,7 @@ class Settings:
     Q_PROPERTY (QStringList lastPlaylist READ getLastPlaylist WRITE setLastPlaylist NOTIFY lastPlaylistChanged)
     Q_PROPERTY (bool useDbusVolume READ getUseDbusVolume WRITE setUseDbusVolume NOTIFY useDbusVolumeChanged)
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
+    Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
 
 public:
     static Settings* instance();
@@ -81,6 +82,9 @@ public:
     QString getPrefNetInf();
     void setPrefNetInf(const QString& value);
 
+    void setRemoteContentMode(int value);
+    int getRemoteContentMode();
+
 signals:
     void portChanged();
     void favDevicesChanged();
@@ -93,6 +97,7 @@ signals:
     void useDbusVolumeChanged();
     void ssdpIpEnabledChanged();
     void prefNetInfChanged();
+    void remoteContentModeChanged();
 
 private:
     QSettings settings;

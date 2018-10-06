@@ -11,12 +11,14 @@
 #include <QMainWindow>
 #include <QModelIndex>
 #include <QWidget>
+#include <QPixmap>
 #include <memory>
 
 #include "devicemodel.h"
 #include "filedownloader.h"
 #include "playlistmodel.h"
 #include "settingsdialog.h"
+#include "avtransport.h"
 
 namespace Ui {
 class MainWindow;
@@ -83,6 +85,7 @@ private:
     void notify(const QString& message = "");
     void togglePlay();
     void play(int idx);
+    QPixmap getImageForType(AVTransport::Type type);
 };
 
 #endif // MAINWINDOW_H

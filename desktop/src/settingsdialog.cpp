@@ -11,6 +11,7 @@
 #include "ui_settingsdialog.h"
 #include "settings.h"
 #include "utils.h"
+#include "info.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -30,7 +31,9 @@ int SettingsDialog::exec()
     ui->lastPlaylistCheckBox->setCheckState(s->getRememberPlaylist() ? Qt::Checked : Qt::Unchecked);
     ui->allDevicesCheckBox->setCheckState(s->getShowAllDevices() ? Qt::Checked : Qt::Unchecked);
     ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
+    ui->remoteContentModeComboBox->setCurrentIndex(s->getRemoteContentMode());
 
+    // Interfaces
     auto infs = Utils::instance()->getNetworkIfs();
     ui->netiInfsComboBox->clear();
     ui->netiInfsComboBox->addItem(tr("auto"));
@@ -72,4 +75,10 @@ void SettingsDialog::on_netiInfsComboBox_activated(int index)
         qDebug() << "New prefered network interface:" << inf;
         s->setPrefNetInf(inf);
     }
+}
+
+void SettingsDialog::on_remoteContentModeComboBox_activated(int index)
+{
+    auto s = Settings::instance();
+    s->setRemoteContentMode(index);
 }
