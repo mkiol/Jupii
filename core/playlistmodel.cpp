@@ -605,16 +605,8 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     auto type = forcedType == ContentServer::TypeUnknown ?
                 meta->type : forcedType;
 
-    if (name.isEmpty()) {
-        if (!meta->title.isEmpty())
-            name = meta->title;
-        else if (!meta->filename.isEmpty() && meta->filename.length() > 1)
-            name = meta->filename;
-        else if (!meta->url.isEmpty())
-            name = meta->url.toString();
-        else
-            name = tr("Unknown");
-    }
+    if (name.isEmpty())
+        name = ContentServer::bestName(*meta);
 
     QString iconUrl = ficon.isEmpty() ? meta->albumArt : ficon.toString();
 #ifndef SAILFISH

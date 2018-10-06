@@ -75,6 +75,7 @@ public:
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);
     static QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr, bool* isFile = nullptr, bool *isArt = nullptr);
+    static QString bestName(const ItemMeta &meta);
 
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
     Type getContentType(const QString &path);

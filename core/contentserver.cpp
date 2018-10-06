@@ -900,7 +900,9 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
     }
 
     if (name.isEmpty()) {
-        if (!item->title.isEmpty())
+        if (item->title.isEmpty())
+            m << "<dc:title>" << ContentServer::bestName(*item).toHtmlEscaped() << "</dc:title>";
+        else
             m << "<dc:title>" << item->title.toHtmlEscaped() << "</dc:title>";
         if (!item->artist.isEmpty())
             m << "<upnp:artist>" << item->artist.toHtmlEscaped() << "</upnp:artist>";
@@ -987,6 +989,22 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
     }
 
     return true;
+}
+
+QString ContentServer::bestName(const ContentServer::ItemMeta &meta)
+{
+    QString name;
+
+    if (!meta.title.isEmpty())
+        name = meta.title;
+    else if (!meta.filename.isEmpty() && meta.filename.length() > 1)
+        name = meta.filename;
+    else if (!meta.url.isEmpty())
+        name = meta.url.toString();
+    else
+        name = tr("Unknown");
+
+    return name;
 }
 
 bool ContentServer::makeUrl(const QString& id, QUrl& url)
