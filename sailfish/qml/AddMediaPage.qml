@@ -112,10 +112,6 @@ Page {
                 }
             }
 
-            SectionHeader {
-                text: qsTr("Remote content")
-            }
-
             SimpleListItem {
                 title.text: qsTr("URL")
                 icon.source: "image://icons/icon-m-browser?" + (highlighted ?

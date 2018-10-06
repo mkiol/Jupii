@@ -97,13 +97,11 @@ void PlaylistWorker::run()
         }
     }
 
-    if (!ids.isEmpty()) {
-        auto pl = PlaylistModel::instance();
-        for (auto &id : ids) {
-            auto item = pl->makeItem(id);
-            if (item)
-                items << item;
-        }
+    auto pl = PlaylistModel::instance();
+    for (auto &id : ids) {
+        auto item = pl->makeItem(id);
+        if (item)
+            items << item;
     }
 }
 
@@ -289,7 +287,7 @@ void PlaylistModel::onAvTrackEnded()
 
     auto av = Services::instance()->avTransport;
 
-    if (rowCount() > 0 && (av->getNextURISupported() ||
+    if (rowCount() > 0 && (!av->getNextURISupported() ||
         m_playMode == PlaylistModel::PM_RepeatOne))
     {
         auto aid = activeId();
@@ -563,6 +561,17 @@ void PlaylistModel::workerDone()
     qDebug() << "workerDone";
 
     if (m_worker) {
+
+        if (m_worker->items.length() != m_worker->urls.length()) {
+            qWarning() << "Some urls are invalid and can't be added to the playlist";
+            if (m_worker->urls.length() == 1)
+                emit error(E_ItemNotAdded);
+            else if (m_worker->items.length() == 0)
+                emit error(E_AllItemsNotAdded);
+            else
+                emit error(E_SomeItemsNotAdded);
+        }
+
         if (!m_worker->items.isEmpty()) {
             appendRows(m_worker->items);
             if (m_worker->urlIsId)

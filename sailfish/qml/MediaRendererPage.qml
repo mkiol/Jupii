@@ -67,7 +67,7 @@ Page {
         switch(code) {
         case AVTransport.E_LostConnection:
         case RenderingControl.E_LostConnection:
-            notification.show("Can't connect to the device")
+            notification.show("Cannot connect to the device")
             doPop()
             break
         case AVTransport.E_ServerError:
@@ -77,7 +77,7 @@ Page {
             break
 
         case AVTransport.E_InvalidPath:
-            notification.show("Can't play the file")
+            notification.show("Cannot play the file")
             playlist.resetToBeActive()
             break
         }
@@ -311,7 +311,15 @@ Page {
 
         onError: {
             if (code === PlayListModel.E_FileExists)
-                notification.show(qsTr("Item is already in the playlist"))
+                notification.show(qsTr("Item is already added"))
+            else if (code === PlayListModel.E_ItemNotAdded)
+                notification.show(qsTr("Item cannot be added"))
+            else if (code === PlayListModel.E_SomeItemsNotAdded)
+                notification.show(qsTr("Some items cannot be added"))
+            else if (code === PlayListModel.E_AllItemsNotAdded)
+                notification.show(qsTr("Items cannot be added"))
+            else
+                notification.show(qsTr("Unknown error"))
         }
 
         onActiveItemChanged: {

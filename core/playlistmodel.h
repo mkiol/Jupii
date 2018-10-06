@@ -165,7 +165,10 @@ friend class PlaylistWorker;
 public:
     enum ErrorType {
         E_Unknown,
-        E_FileExists
+        E_FileExists,
+        E_SomeItemsNotAdded,
+        E_ItemNotAdded,
+        E_AllItemsNotAdded
     };
     Q_ENUM(ErrorType)
 
