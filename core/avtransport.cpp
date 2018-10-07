@@ -254,7 +254,8 @@ void AVTransport::transportStateHandler()
     }
 
     if (m_transportState == Stopped &&
-        m_oldTransportState == Playing) {
+        m_oldTransportState == Playing &&
+        getCurrentType() != T_Image) {
         qDebug() << "Track has ended";
         emit trackEnded();
     }

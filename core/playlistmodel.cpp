@@ -180,9 +180,11 @@ void PlaylistModel::updatePrevSupported()
 
 void PlaylistModel::updateNextSupported()
 {
-    auto av = Services::instance()->avTransport;
+    /*auto av = Services::instance()->avTransport;
     bool value =  m_playMode != PlaylistModel::PM_RepeatOne &&
-                        av->getNextSupported() && rowCount() > 0;
+                        av->getNextSupported() && rowCount() > 0;*/
+    bool value =  m_playMode != PlaylistModel::PM_RepeatOne &&
+                        rowCount() > 0;
 
     if (m_nextSupported != value) {
         m_nextSupported = value;
