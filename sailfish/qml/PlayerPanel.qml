@@ -24,6 +24,9 @@ DockedPanel_ {
     property alias backwardEnabled: backwardButton.enabled
     property alias playmodeEnabled: playmodeButton.enabled
 
+    property string title: ""
+    property string subtitle: ""
+
     signal labelClicked
     signal nextClicked
     signal prevClicked
@@ -164,7 +167,7 @@ DockedPanel_ {
                         truncationMode: TruncationMode.Fade
                         elide: Text.ElideNone
                         horizontalAlignment: Text.AlignLeft
-                        text: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
+                        text: root.title
                     }
 
                     Label {
@@ -179,7 +182,7 @@ DockedPanel_ {
                         horizontalAlignment: Text.AlignLeft
                         opacity: text.length > 0 ? 1.0 : 0.0
                         visible: opacity > 0.0
-                        text: av.currentAuthor
+                        text: root.subtitle
                     }
                 }
 

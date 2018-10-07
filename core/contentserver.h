@@ -91,6 +91,15 @@ public:
     const QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
     const ItemMeta* getMeta(const QUrl &url, bool createNew = true);
     const ItemMeta* getMetaForId(const QUrl &id, bool createNew = true);
+    Q_INVOKABLE QString streamTitle(const QUrl &id) const;
+
+signals:
+    void streamTitleChanged(const QUrl &id, const QString &title);
+
+private slots:
+    void shoutcastMetadataHandler(const QUrl &id, const QByteArray &metadata);
+    void proxyItemAddedHandler(const QUrl &id);
+    void proxyItemRemovedHandler(const QUrl &id);
 
 private:
     enum DLNA_ORG_FLAGS {
@@ -125,6 +134,11 @@ private:
         int64_t size;
     };
 
+    struct StreamData {
+        QUrl id;
+        QString title;
+    };
+
     static ContentServer* m_instance;
 
     static const QHash<QString,QString> m_imgExtMap;
@@ -150,8 +164,10 @@ private:
     static const int maxRedirections = 5;
     static const int httpTimeout = 10000;
 
-    QHash<QUrl, ItemMeta> metaCache; // url => itemMeta
+    QHash<QUrl, ItemMeta> metaCache; // url => ItemMeta
+    QHash<QUrl, StreamData> streams; // id => StreamData
     ContentServerWorker* worker;
+
     QMutex metaCacheMutex;
 
     static QByteArray encrypt(const QByteArray& data);
@@ -198,6 +214,11 @@ public:
     QNetworkAccessManager* nam;
     ContentServerWorker(QObject *parent = nullptr);
 
+signals:
+    void shoutcastMetadataReceived(const QUrl &id, const QByteArray &metadata);
+    void proxyItemAdded(const QUrl &id);
+    void proxyItemRemoved(const QUrl &id);
+
 private slots:
     void proxyMetaDataChanged();
     void proxyRedirected(const QUrl &url);
@@ -212,6 +233,9 @@ private:
         QUrl id;
         bool seek = false;
         int state = 0;
+        bool meta = false; // Shoutcast metadata requested by client
+        int metaint = 0; // Shoutcast metadata interval received from server
+        int metacounter = 0;
     };
 
     QHash<QNetworkReply*, ProxyItem> proxyItems;

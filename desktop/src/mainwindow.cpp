@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto directory = Directory::instance();
     auto services = Services::instance();
+    auto cs = ContentServer::instance();
     auto rc = services->renderingControl;
     auto av = services->avTransport;
     auto playlist = PlaylistModel::instance();
@@ -73,6 +74,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(av.get(), &AVTransport::busyChanged,
             this, &MainWindow::on_service_initedChanged);
     connect(av.get(), &AVTransport::currentMetaDataChanged,
+            this, &MainWindow::on_av_currentMetaDataChanged);
+    connect(cs, &ContentServer::streamTitleChanged,
             this, &MainWindow::on_av_currentMetaDataChanged);
     connect(av.get(), &AVTransport::relativeTimePositionChanged,
             this, &MainWindow::on_av_positionChanged);
@@ -269,11 +272,14 @@ void MainWindow::on_service_initedChanged()
 void MainWindow::on_av_currentMetaDataChanged()
 {
     auto av = Services::instance()->avTransport;
+    auto cs = ContentServer::instance();
 
     bool controlable = av->getControlable();
     bool image = av->getCurrentType() == AVTransport::T_Image;
+    QUrl id = av->getCurrentId();
     auto title = av->getCurrentTitle();
-    auto author = av->getCurrentAuthor();
+    auto streamTitle = cs->streamTitle(id);
+    auto author = streamTitle.isEmpty() ? av->getCurrentAuthor() : streamTitle;
 
     // Max size is 40 characters
     const int maxSize = 40;

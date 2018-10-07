@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <QMutex>
 #include <QMetaMethod>
+#include <QUrl>
 
 #include <libupnpp/control/avtransport.hxx>
 #include <libupnpp/control/service.hxx>
@@ -24,6 +25,7 @@ class AVTransport : public Service
 {
     Q_OBJECT
     Q_PROPERTY (QString currentURI READ getCurrentURI NOTIFY currentURIChanged)
+    Q_PROPERTY (QUrl currentId READ getCurrentId NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentPath READ getCurrentPath NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentURL READ getCurrentURL NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentContentType READ getContentType NOTIFY currentURIChanged)
@@ -135,6 +137,7 @@ public:
     QString getCurrentDescription();
     QString getCurrentAlbum();
     QUrl getCurrentAlbumArtURI();
+    QUrl getCurrentId();
 
     bool getNextSupported();
     bool getPauseSupported();
@@ -198,9 +201,12 @@ private:
     QString m_currentDescription;
     QUrl m_currentAlbumArtURI;
     QString m_currentAlbum;
+    QString m_streamTitle;
+    QUrl m_streamId;
 
     QString m_currentURI;
     QString m_nextURI;
+    QUrl m_currentId;
     bool m_nextURISupported = true;
     bool m_emitCurrentUriChanged = false;
     bool m_emitNextUriChanged = false;

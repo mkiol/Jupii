@@ -16,6 +16,7 @@
 #include "devicemodel.h"
 #include "utils.h"
 #include "taskexecutor.h"
+#include "contentserver.h"
 
 
 AVTransport::AVTransport(QObject *parent) :
@@ -32,6 +33,13 @@ AVTransport::AVTransport(QObject *parent) :
     m_seekTimer.setInterval(500);
     m_seekTimer.setSingleShot(true);
     QObject::connect(&m_seekTimer, &QTimer::timeout, this, &AVTransport::seekTimeout);
+}
+
+QUrl AVTransport::getCurrentId()
+{
+    auto cs = ContentServer::instance();
+    return QUrl(cs->idFromUrl(m_currentURI));
+
 }
 
 void AVTransport::changed(const QString& name, const QVariant& _value)

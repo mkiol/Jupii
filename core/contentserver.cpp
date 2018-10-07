@@ -246,6 +246,7 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         const auto& headers = req->headers();
         if (headers.contains("range"))
             request.setRawHeader("Range", headers.value("range").toLatin1());
+        request.setRawHeader("Icy-MetaData", "1");
         request.setRawHeader("Connection", "close");
         request.setRawHeader("User-Agent", ContentServer::userAgent);
 
@@ -264,6 +265,7 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         item.resp = resp;
         item.reply = reply;
         item.id = id;
+        item.meta = headers.contains("icy-metadata");
         item.seek = meta->seekSupported;
 
         connect(reply, &QNetworkReply::metaDataChanged,
@@ -274,6 +276,8 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
                 this, &ContentServerWorker::proxyFinished);
         connect(reply, &QNetworkReply::readyRead,
                 this, &ContentServerWorker::proxyReadyRead);
+
+        emit proxyItemAdded(item.id);
     }
 }
 
@@ -382,6 +386,12 @@ void ContentServerWorker::proxyMetaDataChanged()
         if (reply->hasRawHeader("Content-Range"))
             item.resp->setHeader("Content-Range", reply->rawHeader("Content-Range"));
 
+        if (reply->hasRawHeader("icy-metaint")) {
+            item.metaint = reply->rawHeader("icy-metaint").toInt();
+            qDebug() << "Shoutcast stream has metadata. Interval is"
+                     << item.metaint;
+        }
+
         // copying icy-* headers
         const auto &headers = reply->rawHeaderPairs();
         for (const auto& h : headers) {
@@ -396,6 +406,7 @@ void ContentServerWorker::proxyMetaDataChanged()
         return;
     }
 
+    emit proxyItemRemoved(item.id);
     proxyItems.remove(reply);
     reply->abort();
 }
@@ -436,6 +447,7 @@ void ContentServerWorker::proxyFinished()
         item.resp->end();
     }
 
+    emit proxyItemRemoved(item.id);
     proxyItems.remove(reply);
     reply->deleteLater();
 }
@@ -453,13 +465,15 @@ void ContentServerWorker::proxyReadyRead()
         qWarning() << "Proxy ready read: Reply is finished";
     }
 
-    const auto &item = proxyItems.value(reply);
+    //const auto &item = proxyItems.value(reply);
+    auto &item = proxyItems[reply];
 
     if (item.resp->isFinished()) {
         qWarning() << "Server request already finished, so ending client side";
+        emit proxyItemRemoved(item.id);
+        proxyItems.remove(reply);
         reply->abort();
         reply->deleteLater();
-        proxyItems.remove(reply);
         return;
     }
 
@@ -469,8 +483,42 @@ void ContentServerWorker::proxyReadyRead()
         auto cdata = data.data();
         const int count = static_cast<int>(item.reply->read(cdata, len));
 
-        if (count > 0)
+        if (count > 0) {
+            // Shoutcast metadata
+            if (item.metaint > 0) {
+                int bytes = item.metacounter + count;
+                /*qDebug() << "metacounter:" << item.metacounter;
+                qDebug() << "metaint:" << item.metaint;
+                qDebug() << "count:" << count;
+                qDebug() << "bytes:" << bytes;*/
+                if (bytes > item.metaint) {
+                    int size = static_cast<uchar>(data.at(item.metaint-item.metacounter)) * 16;
+                    int maxsize = count - (item.metaint-item.metacounter+1);
+                    bool partial = size > maxsize;
+                    if (partial) {
+                        qWarning() << "Partial shoutcast metadata";
+                    } else if (size > 0) {
+                        auto metadata = data.mid(item.metaint-item.metacounter+1, size);
+                        qDebug() << "Shoutcast metadata received:" << metadata;
+                        emit shoutcastMetadataReceived(item.id, metadata);
+                    }
+
+                    item.metacounter = bytes - item.metaint - size - 1;
+
+                    if (!item.meta) {
+                        // Shoutcast meta data wasn't requested by the client, so removing it
+                        auto &ndata = data.remove(item.metaint-item.metacounter,
+                                                 1 + (partial ? maxsize : size));
+                        item.resp->write(ndata);
+                        return;
+                    }
+                } else {
+                    item.metacounter = bytes;
+                }
+            }
+
             item.resp->write(data);
+        }
     }
 }
 
@@ -1115,8 +1163,6 @@ QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile, bool* 
             *isFile = true;
         return id.toString();
     }
-
-    qDebug() << "Id is an valid URL";
 
     if (ok)
         *ok = true;
@@ -1848,10 +1894,61 @@ void ContentServer::run()
              << QThread::currentThreadId();
     worker = new ContentServerWorker();
 
+    connect(worker, &ContentServerWorker::shoutcastMetadataReceived, this, &ContentServer::shoutcastMetadataHandler);
+    connect(worker, &ContentServerWorker::proxyItemAdded, this, &ContentServer::proxyItemAddedHandler);
+    connect(worker, &ContentServerWorker::proxyItemRemoved, this, &ContentServer::proxyItemRemovedHandler);
+
     // TODO: Loop exit
     QThread::exec();
     qDebug() << "Content server worker event loop exit in thread:"
              << QThread::currentThreadId();
+}
+
+QString ContentServer::streamTitle(const QUrl &id) const
+{
+    if (streams.contains(id))
+        return streams.value(id).title;
+    return QString();
+}
+
+void ContentServer::proxyItemAddedHandler(const QUrl &id)
+{
+    qDebug() << "New proxy item for id:" << id;
+    auto &stream = streams[id];
+    stream.id = id;
+}
+
+void ContentServer::proxyItemRemovedHandler(const QUrl &id)
+{
+    qDebug() << "Proxy item removed for id:" << id;
+    streams.remove(id);
+    streamTitleChanged(id, QString());
+}
+
+void ContentServer::shoutcastMetadataHandler(const QUrl &id,
+                                             const QByteArray &metadata)
+{
+    qDebug() << "Shoutcast Metadata";
+    qDebug() << " Id:" << id.toString();
+    qDebug() << " Metadata:" << metadata;
+
+    QString data(metadata);
+    QRegExp rx("StreamTitle=\'?([^\';]*)\'?", Qt::CaseInsensitive);
+    int pos = 0;
+    QString title;
+    while ((pos = rx.indexIn(data, pos)) != -1) {
+        title = rx.cap(1);
+        if (!title.isEmpty()) {
+            qDebug() << "Stream title:" << title;
+            break;
+        }
+        pos += rx.matchedLength();
+    }
+
+    auto &stream = streams[id];
+    stream.id = id;
+    stream.title = title;
+    emit streamTitleChanged(id, title);
 }
 
 QList<ContentServer::PlaylistItemMeta>

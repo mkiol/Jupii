@@ -15,8 +15,10 @@ CoverBackground {
 
     property string image: av.transportStatus === AVTransport.TPS_Ok ?
                                av.currentAlbumArtURI : ""
-    property string title: av.currentTitle.length > 0 ? av.currentTitle : qsTr("Unknown")
-    property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""
+    //property string title: av.currentTitle.length > 0 ? av.currentTitle : qsTr("Unknown")
+    //property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""
+    property string title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
+    property string author: app.streamTitle.length === 0 ? av.currentAuthor : app.streamTitle
 
     function togglePlay() {
         if (av.transportState !== AVTransport.Playing) {

@@ -545,6 +545,9 @@ Page {
               !menu.active && av.controlable &&
               !root.busy && root.status === PageStatus.Active
 
+        title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
+        subtitle: app.streamTitle.length === 0 ? av.currentAuthor : app.streamTitle
+
         prevEnabled: playlist.prevSupported
         nextEnabled: playlist.nextSupported
 

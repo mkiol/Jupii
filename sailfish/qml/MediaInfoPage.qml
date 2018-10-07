@@ -90,62 +90,70 @@ Page {
                 }
 
                 DetailItem {
-                    label: qsTr("Title")
+                    label: app.streamTitle.length !== 0 ? qsTr("Name") : qsTr("Title")
                     value: av.currentTitle
-                    visible: value.length > 0
+                    visible: value.length !== 0
+                }
+
+                DetailItem {
+                    label: qsTr("Title")
+                    value: app.streamTitle
+                    visible: av.currentType !== AVTransport.T_Image &&
+                             app.streamTitle.length !== 0
                 }
 
                 DetailItem {
                     label: qsTr("Author")
                     value: av.currentAuthor
-                    visible: av.currentType !== AVTransport.T_Image &&
-                             value.length > 0
+                    visible: app.streamTitle.length === 0 &&
+                             av.currentType !== AVTransport.T_Image &&
+                             value.length !== 0
                 }
 
                 DetailItem {
                     label: qsTr("Album")
                     value: av.currentAlbum
                     visible: av.currentType !== AVTransport.T_Image &&
-                             value.length > 0
+                             value.length !== 0
                 }
 
                 DetailItem {
                     label: qsTr("Duration")
                     value: utils.secToStr(av.currentTrackDuration)
                     visible: av.currentType !== AVTransport.T_Image &&
-                             av.currentTrackDuration > 0
+                             av.currentTrackDuration !== 0
                 }
 
                 DetailItem {
                     label: qsTr("Content type")
                     value: av.currentContentType
-                    visible: av.currentContentType.length > 0
+                    visible: av.currentContentType.length !== 0
                 }
             }
 
             SectionHeader {
                 text: qsTr("Description")
-                visible: av.currentDescription.length > 0
+                visible: av.currentDescription.length !== 0
             }
 
             Label {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2 * Theme.horizontalPageMargin
                 text: av.currentDescription
-                visible: av.currentDescription.length > 0
+                visible: av.currentDescription.length !== 0
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 color: Theme.highlightColor
                 font.pixelSize: Theme.fontSizeSmall
             }
 
             SectionHeader {
-                text: av.currentPath.length > 0 ? qsTr("Path") : qsTr("URL")
-                visible: av.currentURL.length > 0
+                text: av.currentPath.length !== 0 ? qsTr("Path") : qsTr("URL")
+                visible: av.currentURL.length !== 0
             }
 
             CopyableLabel {
-                text: av.currentPath.length > 0 ? av.currentPath : av.currentURL
-                visible: av.currentURL.length > 0
+                text: av.currentPath.length !== 0 ? av.currentPath : av.currentURL
+                visible: av.currentURL.length !== 0
             }
 
             Spacer {}

@@ -22,4 +22,21 @@ ApplicationWindow
     Notification {
         id: notification
     }
+
+    // -- stream title --
+    property string streamTitle: ""
+
+    function updateStreamTitle() {
+        streamTitle = cserver.streamTitle(av.currentId)
+    }
+
+    Connections {
+        target: av
+        onCurrentIdChanged: updateStreamTitle()
+    }
+
+    Connections {
+        target: cserver
+        onStreamTitleChanged: updateStreamTitle()
+    }
 }
