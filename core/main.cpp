@@ -94,7 +94,8 @@ int main(int argc, char *argv[])
     qRegisterMetaType<Service::ErrorType>("ErrorType");
     qRegisterMetaType<QList<ListItem*>>("QListOfListItem");
 
-    /*QTranslator translator;
+#ifdef SAILFISH
+    QTranslator translator;
     const QString locale = QLocale::system().name();
     //const QString locale = "es";
     const QString transDir = SailfishApp::pathTo("translations").toLocalFile();
@@ -107,7 +108,8 @@ int main(int argc, char *argv[])
         } else {
             qWarning() << "Couldn't load default translation";
         }
-    }*/
+    }
+#endif
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
