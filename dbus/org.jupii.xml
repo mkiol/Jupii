@@ -9,6 +9,14 @@
         <method name="appendPath">
             <arg name="path" type="s" direction="in" />
         </method>
+        <method name="addPath">
+            <arg name="path" type="s" direction="in" />
+            <arg name="name" type="s" direction="in" />
+        </method>
+        <method name="addUrl">
+            <arg name="url" type="s" direction="in" />
+            <arg name="name" type="s" direction="in" />
+        </method>
         <method name="clearPlaylist" />
     </interface>
 </node>

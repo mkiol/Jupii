@@ -39,6 +39,14 @@ class PlayerAdaptor: public QDBusAbstractAdaptor
 "    <method name=\"appendPath\">\n"
 "      <arg direction=\"in\" type=\"s\" name=\"path\"/>\n"
 "    </method>\n"
+"    <method name=\"addPath\">\n"
+"      <arg direction=\"in\" type=\"s\" name=\"path\"/>\n"
+"      <arg direction=\"in\" type=\"s\" name=\"name\"/>\n"
+"    </method>\n"
+"    <method name=\"addUrl\">\n"
+"      <arg direction=\"in\" type=\"s\" name=\"url\"/>\n"
+"      <arg direction=\"in\" type=\"s\" name=\"name\"/>\n"
+"    </method>\n"
 "    <method name=\"clearPlaylist\"/>\n"
 "  </interface>\n"
         "")
@@ -51,6 +59,8 @@ public: // PROPERTIES
     bool canControl() const;
 
 public Q_SLOTS: // METHODS
+    void addPath(const QString &path, const QString &name);
+    void addUrl(const QString &url, const QString &name);
     void appendPath(const QString &path);
     void clearPlaylist();
 Q_SIGNALS: // SIGNALS

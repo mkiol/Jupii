@@ -215,6 +215,8 @@ signals:
 
 public slots:
     void addItemPaths(const QStringList& paths);
+    void addItemPath(const QString& path,
+                     const QString &name = QString());
     void addItemUrls(const QList<QUrl>& urls);
     void addItemUrls(const QList<UrlItem>& urls);
     void addItemUrl(const QUrl& url,

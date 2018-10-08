@@ -12,10 +12,12 @@
 
 #include "dbusapp.h"
 #include "dbus_jupii_adaptor.h"
+#include "playlistmodel.h"
+#include "avtransport.h"
+#include "services.h"
 
 DbusProxy::DbusProxy(QObject *parent) :
-    QObject(parent),
-    TaskExecutor(parent, 2)
+    QObject(parent)
 {
     new PlayerAdaptor(this);
 
@@ -30,19 +32,28 @@ DbusProxy::DbusProxy(QObject *parent) :
         qWarning() << "D-bus object registration failed";
         return;
     }
+
+    auto av = Services::instance()->avTransport;
+    if (av) {
+        connect(av.get(), &Service::initedChanged, [this]{
+            auto av = Services::instance()->avTransport;
+            if (av)
+                setCanControl(av->getInited());
+        });
+    } else {
+        qWarning() << "AVTransport doesn't exist so cannot connect to dbus proxy";
+    }
 }
 
 bool DbusProxy::canControl()
 {
-    qDebug() << "canControl, value:" << m_canControl;
+    qDebug() << "Dbus canControl, value:" << m_canControl;
 
     return m_canControl;
 }
 
 void DbusProxy::setCanControl(bool value)
 {
-    qDebug() << "setCanControl, value:" << value;
-
     if (m_canControl != value) {
         m_canControl = value;
         emit canControlChanged();
@@ -52,19 +63,32 @@ void DbusProxy::setCanControl(bool value)
 
 void DbusProxy::appendPath(const QString& path)
 {
-    qDebug() << "appendPath, path:" << path;
+    qDebug() << "Dbus appendPath, path:" << path;
 
-    emit requestAppendPath(path);
+    auto pl = PlaylistModel::instance();
+    pl->addItemPath(path);
 }
 
-void DbusProxy::playPath(const QString& path)
+void DbusProxy::addPath(const QString& path, const QString& name)
 {
-    qDebug() << "playPath, path:" << path;
+    qDebug() << "Dbus addPath, path:" << path << name;
 
-    emit requestPlayPath(path);
+    auto pl = PlaylistModel::instance();
+    pl->addItemPath(path, name);
+}
+
+void DbusProxy::addUrl(const QString& url, const QString& name)
+{
+    qDebug() << "Dbus addUrl, url:" << url << name;
+
+    auto pl = PlaylistModel::instance();
+    pl->addItemUrl(QUrl(url), name);
 }
 
 void DbusProxy::clearPlaylist()
 {
-    emit requestClearPlaylist();
+    qDebug() << "Dbus clearPlaylist";
+
+    auto pl = PlaylistModel::instance();
+    pl->clear();
 }

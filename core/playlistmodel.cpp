@@ -526,6 +526,14 @@ void PlaylistModel::addItemUrl(const QUrl& url,
     addItems(urls, false);
 }
 
+void PlaylistModel::addItemPath(const QString& path,
+                                const QString& name)
+{
+    QList<UrlItem> urls;
+    urls << UrlItem{QUrl::fromLocalFile(path), name};
+    addItems(urls, false);
+}
+
 void PlaylistModel::addItemPathsAsAudio(const QStringList& paths)
 {
     QList<UrlItem> urls;

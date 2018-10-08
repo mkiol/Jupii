@@ -126,7 +126,6 @@ int main(int argc, char *argv[])
     context->setContextProperty("settings", settings);
     context->setContextProperty("directory", dir);
     context->setContextProperty("cserver", cserver);
-    context->setContextProperty("dbus", &dbusProxy);
     context->setContextProperty("rc", services->renderingControl.get());
     context->setContextProperty("av", services->avTransport.get());
     context->setContextProperty("playlist", playlist);

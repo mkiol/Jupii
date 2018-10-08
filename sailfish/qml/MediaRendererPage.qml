@@ -31,14 +31,6 @@ Page {
         volumeSlider.updateValue(rc.volume)
     }
 
-    Component.onDestruction: {
-        dbus.canControl = false
-    }
-
-    onInitedChanged: {
-        dbus.canControl = inited
-    }
-
     onStatusChanged: {
         if (status === PageStatus.Active)
             updateMediaInfoPage()
@@ -133,7 +125,7 @@ Page {
         FilePickerPage {
             nameFilters: cserver.getExtensions(settings.imageSupported ? 7 : 6)
             onSelectedContentPropertiesChanged: {
-                playlist.addItemPaths([selectedContentProperties.filePath])
+                playlist.addItemPath(selectedContentProperties.filePath)
             }
         }
     }
@@ -283,18 +275,6 @@ Page {
 
         onUpdated: {
             rc.asyncUpdate()
-        }
-    }
-
-    Connections {
-        target: dbus
-        onRequestAppendPath: {
-            playlist.addItems([path])
-            notification.show("Item added to Jupii playlist")
-        }
-
-        onRequestClearPlaylist: {
-            playlist.clear()
         }
     }
 

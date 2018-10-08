@@ -9,12 +9,11 @@
 #define DBUSAPP_H
 
 #include <QObject>
-
-#include "taskexecutor.h"
+#include <QString>
+#include <QUrl>
 
 class DbusProxy :
-        public QObject,
-        public TaskExecutor
+        public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool canControl READ canControl WRITE setCanControl NOTIFY canControlChanged)
@@ -25,9 +24,6 @@ public:
     void setCanControl(bool value);
 
 signals:
-    void requestAppendPath(const QString& path);
-    void requestPlayPath(const QString& path);
-    void requestClearPlaylist();
     void canControlChanged();
 
     // internal
@@ -35,7 +31,8 @@ signals:
 
 public slots:
     void appendPath(const QString& path);
-    void playPath(const QString& path);
+    void addPath(const QString& path, const QString& name);
+    void addUrl(const QString& url, const QString& name);
     void clearPlaylist();
 
 private:

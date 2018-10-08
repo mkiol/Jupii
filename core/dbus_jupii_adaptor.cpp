@@ -39,6 +39,18 @@ bool PlayerAdaptor::canControl() const
     return qvariant_cast< bool >(parent()->property("canControl"));
 }
 
+void PlayerAdaptor::addPath(const QString &path, const QString &name)
+{
+    // handle method call org.jupii.Player.addPath
+    QMetaObject::invokeMethod(parent(), "addPath", Q_ARG(QString, path), Q_ARG(QString, name));
+}
+
+void PlayerAdaptor::addUrl(const QString &url, const QString &name)
+{
+    // handle method call org.jupii.Player.addUrl
+    QMetaObject::invokeMethod(parent(), "addUrl", Q_ARG(QString, url), Q_ARG(QString, name));
+}
+
 void PlayerAdaptor::appendPath(const QString &path)
 {
     // handle method call org.jupii.Player.appendPath
