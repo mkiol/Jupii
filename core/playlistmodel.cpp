@@ -571,7 +571,6 @@ void PlaylistModel::workerDone()
     qDebug() << "workerDone";
 
     if (m_worker) {
-
         if (m_worker->items.length() != m_worker->urls.length()) {
             qWarning() << "Some urls are invalid and can't be added to the playlist";
             if (m_worker->urls.length() == 1)

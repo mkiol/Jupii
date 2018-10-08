@@ -235,9 +235,11 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
 
     if (Settings::instance()->getRemoteContentMode() == 1) {
         // Redirection mode
+        qDebug() << "Redirection mode enabled => sending HTTP redirection";
         sendRedirection(resp, url.toString());
     } else {
         // Proxy mode
+        qDebug() << "Proxy mode enabled => creating proxy";
         QNetworkRequest request;
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         request.setUrl(url);
@@ -1864,10 +1866,16 @@ ContentServer::makeItemMeta(const QUrl &url)
 {
     QHash<QUrl, ContentServer::ItemMeta>::const_iterator it;
     if (url.isLocalFile()) {
-        it = makeItemMetaUsingTracker(url);
-        if (it == metaCache.end()) {
-            qWarning() << "Can't get meta using Tacker, so fallbacking to Taglib";
-            it = makeItemMetaUsingTaglib(url);
+        if (QFile::exists(url.toLocalFile())) {
+            it = makeItemMetaUsingTracker(url);
+            if (it == metaCache.end()) {
+                qWarning() << "Can't get meta using Tacker, so fallbacking to Taglib";
+                it = makeItemMetaUsingTaglib(url);
+            }
+        } else {
+            // File doesn't exist so no need to try Taglib
+            qWarning() << "File doesn't exist, cannot create meta item";
+            it = metaCache.end();
         }
     } else {
         qDebug() << "Geting meta using HTTP request";
