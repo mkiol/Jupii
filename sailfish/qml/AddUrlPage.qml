@@ -68,7 +68,7 @@ Dialog {
             }
 
             Tip {
-                text: qsTr("Only HTTP URLs are supported. If URL points to a playlist file (pls format), first playlist item will be added. For internet radio URLs, it is recommended to use MP3 streams instead other formats. If Name is not provided, it will be discovered automatically from the stream meta data.");
+                text: qsTr("Only HTTP URLs are supported. If URL points to a playlist file (pls format), first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.");
             }
 
             Spacer {}

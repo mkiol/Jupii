@@ -34,6 +34,7 @@ Page {
                 title: "Support for URL content"
                 description: "In addition to local files, URL content " +
                              "(e.g. internet radio streams, remote media files) can be added to a playlist. " +
+                             "An URL should point to direct stream or to a playlist file (pls format). " +
                              "Only HTTP URLs are supported right now."
             }
 
@@ -48,7 +49,8 @@ Page {
 
             LogItem {
                 title: "Playlist UI polish"
-                description: "Playlist item now contains title, author and album art."
+                description: "Playlist UI has been polished. When track provides meta data, " +
+                             "playlist item contains title, author and album art image."
             }
 
             LogItem {
