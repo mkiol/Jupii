@@ -172,18 +172,7 @@
     <message>
         <location filename="../qml/ChangelogPage.qml" line="26"/>
         <source>Changelog</source>
-        <translation>Registro</tr<context>
-    <name>ChangelogPage</name>
-    <message>
-        <location filename="../qml/ChangelogPage.qml" line="26"/>
-        <source>Changelog</source>
-        <translation>Registro</translation>
-    </message>
-    <message>
-        <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="40"/>
-        <location filename="../qml/ChangelogPage.qml" line="56"/>
-        <location filename="../qml/ChangelogPage.qml" line="71"/>anslation>
+     <translation>Registro</translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
