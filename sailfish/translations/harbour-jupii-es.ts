@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="es">
+<TS version="2.1" language="es_GT">
 <context>
     <name>AboutPage</name>
     <message>
@@ -16,7 +16,7 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="51"/>
         <source>Changelog</source>
-        <translation>Registro de cambios</translation>
+        <translation>Registro</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="57"/>
@@ -26,17 +26,17 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="63"/>
         <source>Copyright &amp;copy; %1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Derechos de autor: &amp;copy; %1 %2</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="71"/>
         <source>%1 is developed as an open source project under &lt;a href=&quot;%3&quot;&gt;%2&lt;/a&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 es desarrollado como un proyecto de código abierto bajo &lt;a href=&quot;%3&quot;&gt;%2&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="78"/>
         <source>Third party components</source>
-        <translation type="unfinished"></translation>
+        <translation>Componentes terceros</translation>
     </message>
 </context>
 <context>
@@ -164,7 +164,7 @@
     <message>
         <location filename="../qml/ArtistPage.qml" line="117"/>
         <source>No artists</source>
-        <translation>Sin artistas</translation>
+        <translation>No hay artistas</translation>
     </message>
 </context>
 <context>
@@ -172,7 +172,18 @@
     <message>
         <location filename="../qml/ChangelogPage.qml" line="26"/>
         <source>Changelog</source>
-        <translation>Registro de cambios</translation>
+        <translation>Registro</tr<context>
+    <name>ChangelogPage</name>
+    <message>
+        <location filename="../qml/ChangelogPage.qml" line="26"/>
+        <source>Changelog</source>
+        <translation>Registro</translation>
+    </message>
+    <message>
+        <location filename="../qml/ChangelogPage.qml" line="30"/>
+        <location filename="../qml/ChangelogPage.qml" line="40"/>
+        <location filename="../qml/ChangelogPage.qml" line="56"/>
+        <location filename="../qml/ChangelogPage.qml" line="71"/>anslation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
@@ -207,7 +218,7 @@
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="34"/>
         <source>Device description</source>
-        <translation>Descripción de aparato</translation>
+        <translation>Descripción del dispositivo</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="43"/>
@@ -227,7 +238,7 @@
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="75"/>
         <source>Device type</source>
-        <translation>Tipo de aparato</translation>
+        <translation>Tipo de dispositivo</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="80"/>
@@ -265,12 +276,12 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="32"/>
         <source>An internal error occurred</source>
-        <translation>Ha ocurrido un error interno</translation>
+        <translation>Ah ocurrido un error interno</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="55"/>
         <source>Devices</source>
-        <translation>Aparatos</translation>
+        <translation>Dispositivos</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="62"/>
@@ -285,7 +296,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="72"/>
         <source>Add device manually</source>
-        <translation>Añadir aparato manual</translation>
+        <translation>Añadir dispositivo manual</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="79"/>
@@ -307,15 +318,15 @@
         <location filename="../qml/DevicesPage.qml" line="127"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation>No se encontraron aparatos.
-Halar hacia abajo para encontrar más aparatos en su red.</translation>
+        <translation>No se encontraron dispositivos.
+Halar hacia abajo para la lista de opciones y encontrar más dispositivos en la red.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="129"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
         <translation>No conectado.
-Halar hacia abajo para el menú y conectarse a la red local.</translation>
+Halar hacia abajo para la lista de opciones y conectarse a la red local.</translation>
     </message>
 </context>
 <context>
@@ -323,7 +334,7 @@ Halar hacia abajo para el menú y conectarse a la red local.</translation>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="77"/>
         <source>Type</source>
-        <translation>Tipos</translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="81"/>
@@ -381,7 +392,7 @@ Halar hacia abajo para el menú y conectarse a la red local.</translation>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="399"/>
         <source>Item is already in the playlist</source>
-        <translation>Elemento ya está en la lista de reproducción</translation>
+        <translation>Elemento ya en la lista de reproducción</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="427"/>
@@ -426,7 +437,7 @@ Halar hacia abajo para el menú y conectarse a la red local.</translation>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="593"/>
         <source>Pause</source>
-        <translation>Pausa</translation>
+        <translation>Pausar</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="601"/>
@@ -478,7 +489,7 @@ Halar hacia abajo para el menú y conectarse a la red local.</translation>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="20"/>
         <source>Playlist was saved</source>
-        <translation>Reproducción fue guardada</translation>
+        <translation>La reproducción fue guardada</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="35"/>
@@ -488,7 +499,7 @@ Halar hacia abajo para el menú y conectarse a la red local.</translation>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="42"/>
         <source>Enter playlist name</source>
-        <translation>Entrar nombre de la reproducción</translation>
+        <translation>Marcar el nombre de la reproducción</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="43"/>
@@ -511,7 +522,7 @@ Halar hacia abajo para el menú y conectarse a la red local.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="33"/>
         <source>When Jupii connects to a device, the last playlist will be automatically loaded.</source>
-        <translation>Cuando Jupii se conecta a un aparato, la última lista de reproducción se cargará automáticamente.</translation>
+        <translation>Cuando Jupii se conecta a un dispositivo, la última lista de reproducción se cargará automáticamente.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="62"/>
@@ -521,27 +532,27 @@ Halar hacia abajo para el menú y conectarse a la red local.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="63"/>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation>Cambiar el nivel de volumen usando las teclas de volumen del teléfono físico. El nivel de volumen del aparato de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
+        <translation>Cambiar el nivel de volumen usando las teclas de volumen del teléfono físico. El nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="76"/>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation>Reproduce imágenes en aparatos UPnP que no funcionan bien en este momento, hay algunos problemas menores que aún no se han resuelto. Esta opción fuerza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
+        <translation>Reproduce imágenes en dispositivos UPnP que no funcionan bien en este momento, hay algunos problemas menores que aún no se han resuelto. Esta opción forza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="89"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 solo admite aparatos Media Renderer. Con esta opción habilitada, se mostrarán todos los aparatos UPnP incluidos los aparatos no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en su red local.</translation>
+        <translation>%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluidos los aparatos no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en su red local.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Adding devices manually</source>
-        <translation>Añadir aparatos manualmente</translation>
+        <translation>Añadir dispositivo manualmente</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation>Si %1 no descubre un aparato (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, el menú desplegable contiene una opción adicional para agregar el dispositivo manualmente. Asegúrarse de que su aparato no esté detrás de un NAT o un corta fuego.</translation>
+        <translation>Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="48"/>
@@ -561,7 +572,7 @@ Halar hacia abajo para el menú y conectarse a la red local.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="88"/>
         <source>All devices visible</source>
-        <translation>Todos los aparatos visibles</translation>
+        <translation>Todos los dispositivos visibles</translation>
     </message>
 </context>
 <context>
