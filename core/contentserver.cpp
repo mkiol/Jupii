@@ -480,10 +480,11 @@ void ContentServerWorker::proxyReadyRead()
     }
 
     if (item.state == 1) {
-        auto len = reply->bytesAvailable();
+        const auto len = reply->bytesAvailable();
         QByteArray data; data.resize(static_cast<int>(len));
         auto cdata = data.data();
         const int count = static_cast<int>(item.reply->read(cdata, len));
+        data.resize(count);
 
         if (count > 0) {
             // Shoutcast metadata
@@ -496,21 +497,23 @@ void ContentServerWorker::proxyReadyRead()
                 if (bytes > item.metaint) {
                     int size = static_cast<uchar>(data.at(item.metaint-item.metacounter)) * 16;
                     int maxsize = count - (item.metaint-item.metacounter+1);
-                    bool partial = size > maxsize;
-                    if (partial) {
+
+                    if (size > maxsize) {
                         qWarning() << "Partial shoutcast metadata";
-                    } else if (size > 0) {
+                        size = maxsize;
+                    }
+
+                    if (size > 0) {
                         auto metadata = data.mid(item.metaint-item.metacounter+1, size);
                         qDebug() << "Shoutcast metadata received:" << metadata;
                         emit shoutcastMetadataReceived(item.id, metadata);
                     }
 
-                    item.metacounter = bytes - item.metaint - size - 1;
+                    item.metacounter = bytes-item.metaint-size-1;
 
                     if (!item.meta) {
                         // Shoutcast meta data wasn't requested by the client, so removing it
-                        auto &ndata = data.remove(item.metaint-item.metacounter,
-                                                 1 + (partial ? maxsize : size));
+                        auto &ndata = data.remove(item.metaint-item.metacounter, size+1);
                         item.resp->write(ndata);
                         return;
                     }
