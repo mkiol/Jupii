@@ -531,7 +531,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="89"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluidos los aparatos no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en su red local.</translation>
+        <translation>%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluyendo los no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en su red local.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
