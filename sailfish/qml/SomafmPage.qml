@@ -41,10 +41,10 @@ Page {
     SilicaListView {
         id: listView
 
-        //anchors.fill: parent
-        width: parent.width
+        anchors.fill: parent
+        /*width: parent.width
         height: parent.height - (tip.height + 2*Theme.paddingLarge)
-        clip: true
+        clip: true*/
 
         currentIndex: -1
 
@@ -88,11 +88,11 @@ Page {
         flickable: listView
     }
 
-    Tip {
+    /*Tip {
         id: tip
         anchors.bottom: parent.bottom
         anchors.topMargin: Theme.paddingLarge
         anchors.bottomMargin: Theme.paddingLarge
         text: qsTr("SomaFM is supported entirely by the listeners. If you enjoy, please consider making a <a href=\"%1\">donation</a>.").arg("http://somafm.com/support/");
-    }
+    }*/
 }

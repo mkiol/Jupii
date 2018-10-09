@@ -36,6 +36,11 @@ Row {
             wrapMode: Text.WordWrap
             font.pixelSize: Theme.fontSizeSmall
             color: Theme.highlightColor
+            linkColor: Theme.primaryColor
+            textFormat: Text.StyledText
+            onLinkActivated: {
+                Qt.openUrlExternally(link);
+            }
         }
 
         Spacer {}

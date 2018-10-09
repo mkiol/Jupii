@@ -27,6 +27,36 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("1.9.0")
+            }
+
+            LogItem {
+                title: "Support for URL content"
+                description: "In addition to local files, URL content " +
+                             "(e.g. internet radio streams, remote media files) can be added to a playlist. " +
+                             "Only HTTP URLs are supported right now."
+            }
+
+            LogItem {
+                title: "SomaFM channels"
+                description: "As a playlist item, you can add SomaFM radio channel. " +
+                             "SomaFM is an independent Internet-only streaming service, " +
+                             "supported entirely with donations from listeners. " +
+                             "If you enjoy SomaFM radio, please consider making a " +
+                             "<a href=\"http://somafm.com/support/\">donation</a>."
+            }
+
+            LogItem {
+                title: "Playlist UI polish"
+                description: "Playlist item now contains title, author and album art."
+            }
+
+            LogItem {
+                title: "General performace and stability improvements"
+                description: "Overall stability and performance have been improved."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("1.0.0")
             }
 

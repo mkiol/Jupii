@@ -45,6 +45,7 @@ CMakeLists.txt.user*
 sailfish/rpm/
 !sailfish/rpm/*.changes.in
 !sailfish/rpm/*.yaml
+!sailfish/rpm/*.spec
 
 # Other
 res/

@@ -53,6 +53,12 @@ Page {
                 onClicked: pageStack.push(Qt.resolvedUrl("ChangelogPage.qml"))
             }
 
+            Button {
+                text: qsTr("Project website")
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: Qt.openUrlExternally(PAGE)
+            }
+
             SectionHeader {
                 text: qsTr("Authors & license")
             }
@@ -68,10 +74,9 @@ Page {
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
                 textFormat: Text.StyledText
-                text: qsTr("%1 is developed as an open source project under <a href=\"%3\">%2</a>.")
+                text: qsTr("%1 is developed as an open source project under %2.")
                 .arg(APP_NAME)
-                .arg(LICENSE)
-                .arg(LICENSE_URL)
+                .arg("<a href=\"" + LICENSE + "\">" + LICENSE_URL + "</a>")
             }
 
             SectionHeader {
@@ -81,7 +86,7 @@ Page {
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
                 textFormat: Text.RichText
-                text: "QHTTPServer - Copyright &copy; 2011-2013 Nikhil Marathe"
+                text: "QHTTPServer - Copyright &copy; 2011-2014 Nikhil Marathe"
             }
 
             PaddedLabel {

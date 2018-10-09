@@ -73,7 +73,7 @@ Page {
                 width: root.width
                 spacing: Theme.paddingMedium
 
-                DetailItem {
+                /*DetailItem {
                     label: qsTr("Category")
                     value: {
                         switch(av.currentType) {
@@ -87,7 +87,7 @@ Page {
                             return qsTr("Unknown")
                         }
                     }
-                }
+                }*/
 
                 DetailItem {
                     label: app.streamTitle.length !== 0 ? qsTr("Name") : qsTr("Title")
