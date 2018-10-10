@@ -54,7 +54,7 @@ Page {
             }
 
             LogItem {
-                title: "General performace and stability improvements"
+                title: "General performance and stability improvements"
                 description: "Overall stability and performance have been improved."
             }
 
