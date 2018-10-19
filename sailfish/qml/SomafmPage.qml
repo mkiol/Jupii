@@ -28,6 +28,16 @@ Page {
             pageStack.pop(pageStack.previousPage(root))
     }
 
+    // Hack to update model after all transitions
+    property bool _completed: false
+    Component.onCompleted: _completed = true
+    onStatusChanged: {
+        if (status === PageStatus.Active && _completed) {
+            _completed = false
+            itemModel.updateModel()
+        }
+    }
+
     Connections {
         target: pageStack
         onBusyChanged: {
@@ -38,6 +48,10 @@ Page {
         }
     }
 
+    SomafmModel {
+        id: itemModel
+    }
+
     SilicaListView {
         id: listView
 
@@ -46,12 +60,22 @@ Page {
         height: parent.height - (tip.height + 2*Theme.paddingLarge)
         clip: true*/
 
+        opacity: itemModel.busy ? 0.0 : 1.0
+        visible: opacity > 0.0
+        Behavior on opacity { FadeAnimation {} }
+
         currentIndex: -1
 
-        model: SomafmModel {}
+        model: itemModel
 
-        header: PageHeader {
+        header: SearchPageHeader {
+            implicitWidth: root.width
             title: "SomaFM"
+            searchPlaceholderText: qsTr("Search channels")
+            model: itemModel
+            onActiveFocusChanged: {
+                listView.currentIndex = -1
+            }
         }
 
         delegate: DoubleListItem {
@@ -79,9 +103,15 @@ Page {
         }
 
         ViewPlaceholder {
-            enabled: listView.count === 0
+            enabled: listView.count === 0 && !itemModel.busy
             text: qsTr("No channels")
         }
+    }
+
+    BusyIndicator {
+        anchors.centerIn: parent
+        running: itemModel.busy
+        size: BusyIndicatorSize.Large
     }
 
     VerticalScrollDecorator {

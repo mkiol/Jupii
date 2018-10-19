@@ -14,14 +14,17 @@
 #include <QByteArray>
 #include <QVariant>
 #include <QUrl>
+#include <QJsonArray>
+#include <QDir>
 
 #ifdef DESKTOP
 #include <QIcon>
 #endif
 
 #include "listmodel.h"
+#include "itemmodel.h"
 
-class SomafmItem : public ListItem
+class SomafmItem : public SelectableItem
 {
     Q_OBJECT
 public:
@@ -34,7 +37,7 @@ public:
     };
 
 public:
-    SomafmItem(QObject *parent = nullptr): ListItem(parent) {}
+    SomafmItem(QObject *parent = nullptr): SelectableItem(parent) {}
     explicit SomafmItem(const QString &id,
                       const QString &name,
                       const QString &description,
@@ -68,11 +71,16 @@ private:
 #endif
 };
 
-class SomafmModel : public ListModel
+class SomafmModel : public SelectableItemModel
 {
     Q_OBJECT
 public:
     explicit SomafmModel(QObject *parent = nullptr);
+
+private:
+    QList<ListItem*> makeItems();
+    QJsonArray m_channels;
+    QDir m_dir;
 };
 
 #endif // SOMAFMMODEL_H
