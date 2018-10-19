@@ -97,6 +97,14 @@
         <source>SomaFM</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>gPodder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apps &amp; services</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AddUrlPage</name>
@@ -299,6 +307,40 @@ Pull down to connect to the local network.</source>
     </message>
 </context>
 <context>
+    <name>GpodderEpisodesPage</name>
+    <message>
+        <source>Search episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GpodderPage</name>
+    <message>
+        <source>Podcasts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search podcasts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No podcasts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MediaInfoPage</name>
     <message>
         <source>Title</source>
@@ -451,6 +493,21 @@ Pull down to connect to the local network.</source>
     </message>
 </context>
 <context>
+    <name>SearchDialogHeader</name>
+    <message numerus="yes">
+        <source>%n selected</source>
+        <translation type="unfinished">
+            <numerusform>%n выбрана</numerusform>
+            <numerusform>%n выбраны</numerusform>
+            <numerusform>%n выбрано</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Search episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SettingsPage</name>
     <message>
         <source>Settings</source>
@@ -525,6 +582,10 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <source>No channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search channels</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

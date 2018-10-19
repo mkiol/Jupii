@@ -65,57 +65,67 @@
 <context>
     <name>AddMediaPage</name>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="39"/>
+        <location filename="../qml/AddMediaPage.qml" line="40"/>
         <source>Add item</source>
         <translation>Element hinzufügen</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="43"/>
+        <location filename="../qml/AddMediaPage.qml" line="44"/>
         <source>Music</source>
         <translation>Musik</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="52"/>
+        <location filename="../qml/AddMediaPage.qml" line="53"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="61"/>
+        <location filename="../qml/AddMediaPage.qml" line="62"/>
         <source>Artist</source>
         <translation>Künstler</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="70"/>
+        <location filename="../qml/AddMediaPage.qml" line="71"/>
         <source>Playlist</source>
         <translation>Wiedergabeliste</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="79"/>
+        <location filename="../qml/AddMediaPage.qml" line="80"/>
         <source>Audio from Video</source>
         <translation>Tonspur aus Videos</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="88"/>
+        <location filename="../qml/AddMediaPage.qml" line="89"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="97"/>
+        <location filename="../qml/AddMediaPage.qml" line="98"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="107"/>
+        <location filename="../qml/AddMediaPage.qml" line="108"/>
         <source>File</source>
         <translation>Datei</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="116"/>
+        <location filename="../qml/AddMediaPage.qml" line="126"/>
+        <source>Apps &amp; services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AddMediaPage.qml" line="131"/>
+        <source>gPodder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AddMediaPage.qml" line="117"/>
         <source>URL</source>
         <translation type="unfinished">URL</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="125"/>
+        <location filename="../qml/AddMediaPage.qml" line="139"/>
         <source>SomaFM</source>
         <translation type="unfinished"></translation>
     </message>
@@ -224,13 +234,14 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="62"/>
+        <location filename="../qml/ChangelogPage.qml" line="40"/>
         <location filename="../qml/ChangelogPage.qml" line="72"/>
-        <location filename="../qml/ChangelogPage.qml" line="88"/>
-        <location filename="../qml/ChangelogPage.qml" line="103"/>
-        <location filename="../qml/ChangelogPage.qml" line="138"/>
-        <location filename="../qml/ChangelogPage.qml" line="149"/>
-        <location filename="../qml/ChangelogPage.qml" line="195"/>
+        <location filename="../qml/ChangelogPage.qml" line="82"/>
+        <location filename="../qml/ChangelogPage.qml" line="98"/>
+        <location filename="../qml/ChangelogPage.qml" line="113"/>
+        <location filename="../qml/ChangelogPage.qml" line="148"/>
+        <location filename="../qml/ChangelogPage.qml" line="159"/>
+        <location filename="../qml/ChangelogPage.qml" line="205"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
@@ -368,6 +379,47 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
     </message>
 </context>
 <context>
+    <name>GpodderEpisodesPage</name>
+    <message>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="52"/>
+        <source>Search episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="68"/>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="69"/>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="108"/>
+        <source>No episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GpodderPage</name>
+    <message>
+        <location filename="../qml/GpodderPage.qml" line="71"/>
+        <source>Podcasts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/GpodderPage.qml" line="72"/>
+        <source>Search podcasts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/GpodderPage.qml" line="107"/>
+        <source>No podcasts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MediaInfoPage</name>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="93"/>
@@ -419,82 +471,82 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>MediaRendererPage</name>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="294"/>
+        <location filename="../qml/MediaRendererPage.qml" line="303"/>
         <source>Item is already added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="296"/>
+        <location filename="../qml/MediaRendererPage.qml" line="305"/>
         <source>Item cannot be added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="298"/>
+        <location filename="../qml/MediaRendererPage.qml" line="307"/>
         <source>Some items cannot be added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="300"/>
+        <location filename="../qml/MediaRendererPage.qml" line="309"/>
         <source>Items cannot be added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="302"/>
+        <location filename="../qml/MediaRendererPage.qml" line="311"/>
         <source>Unknown error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="325"/>
+        <location filename="../qml/MediaRendererPage.qml" line="334"/>
         <source>Playlist</source>
         <translation>Wiedergabeliste</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="332"/>
+        <location filename="../qml/MediaRendererPage.qml" line="341"/>
         <source>Empty</source>
         <translation>Leer</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="338"/>
+        <location filename="../qml/MediaRendererPage.qml" line="347"/>
         <source>Not connected</source>
         <translation>Nicht verbunden</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="397"/>
+        <location filename="../qml/MediaRendererPage.qml" line="406"/>
         <source>Save playlist</source>
         <translation>Speichere Wiedergabeliste</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="407"/>
+        <location filename="../qml/MediaRendererPage.qml" line="416"/>
         <source>Clear playlist</source>
         <translation>Leere Wiedergabeliste</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="413"/>
+        <location filename="../qml/MediaRendererPage.qml" line="422"/>
         <source>Add item</source>
         <translation>Element hinzufügen</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="473"/>
+        <location filename="../qml/MediaRendererPage.qml" line="483"/>
         <source>Play</source>
         <translation>Abspielen</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="473"/>
+        <location filename="../qml/MediaRendererPage.qml" line="483"/>
         <source>Show</source>
         <translation>Zeige</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="486"/>
+        <location filename="../qml/MediaRendererPage.qml" line="496"/>
         <source>Pause</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="494"/>
+        <location filename="../qml/MediaRendererPage.qml" line="504"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="528"/>
+        <location filename="../qml/MediaRendererPage.qml" line="538"/>
         <source>Unknown</source>
         <translation type="unfinished">Unbekannt</translation>
     </message>
@@ -551,6 +603,22 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         <location filename="../qml/SavePlaylistPage.qml" line="43"/>
         <source>Name</source>
         <translation>Name</translation>
+    </message>
+</context>
+<context>
+    <name>SearchDialogHeader</name>
+    <message numerus="yes">
+        <location filename="../qml/SearchDialogHeader.qml" line="34"/>
+        <source>%n selected</source>
+        <translation type="unfinished">
+            <numerusform>%n ausgewählt</numerusform>
+            <numerusform>%n ausgewählt</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../qml/SearchDialogHeader.qml" line="44"/>
+        <source>Search episodes</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -639,12 +707,17 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>SomafmPage</name>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="67"/>
+        <location filename="../qml/SomafmPage.qml" line="74"/>
+        <source>Search channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SomafmPage.qml" line="91"/>
         <source>Add channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="83"/>
+        <location filename="../qml/SomafmPage.qml" line="107"/>
         <source>No channels</source>
         <translation type="unfinished"></translation>
     </message>

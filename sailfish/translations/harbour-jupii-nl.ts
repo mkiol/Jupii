@@ -97,6 +97,14 @@
         <source>SomaFM</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>gPodder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apps &amp; services</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AddUrlPage</name>
@@ -297,6 +305,40 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
 </context>
 <context>
+    <name>GpodderEpisodesPage</name>
+    <message>
+        <source>Search episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GpodderPage</name>
+    <message>
+        <source>Podcasts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search podcasts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No podcasts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MediaInfoPage</name>
     <message>
         <source>Title</source>
@@ -448,6 +490,20 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
 </context>
 <context>
+    <name>SearchDialogHeader</name>
+    <message numerus="yes">
+        <source>%n selected</source>
+        <translation type="unfinished">
+            <numerusform>%n geselecteerd</numerusform>
+            <numerusform>%n geselecteerd</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Search episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SettingsPage</name>
     <message>
         <source>Settings</source>
@@ -522,6 +578,10 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>No channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search channels</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
