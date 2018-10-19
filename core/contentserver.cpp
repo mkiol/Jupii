@@ -987,7 +987,7 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
 
     if (item->duration > 0) {
         int seconds = item->duration % 60;
-        int minutes = (item->duration - seconds) / 60;
+        int minutes = ((item->duration - seconds) / 60) % 60;
         int hours = (item->duration - (minutes * 60) - seconds) / 3600;
         QString duration = QString::number(hours) + ":" + (minutes < 10 ? "0" : "") +
                            QString::number(minutes) + ":" + (seconds < 10 ? "0" : "") +

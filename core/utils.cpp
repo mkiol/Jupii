@@ -63,7 +63,7 @@ QString Utils::friendlyServiceType(const QString &serviceType)
 QString Utils::secToStr(int value)
 {
     int s = value % 60;
-    int m = (value - s)/60 % 3600;
+    int m = (value - s)/60 % 60;
     int h = (value - s - m * 60)/3600;
 
     QString str;
