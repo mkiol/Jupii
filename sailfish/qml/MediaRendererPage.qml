@@ -164,7 +164,7 @@ Page {
         id: playlistPickerPage
         PlaylistPage {
             onAccepted: {
-                playlist.addItemUrls(songs);
+                playlist.addItemUrls(urls);
             }
         }
     }
@@ -218,7 +218,16 @@ Page {
         id: somafmPickerPage
         SomafmPage {
             onAccepted: {
-                playlist.addItemUrl(url, "SomaFM: " + name, icon, desc);
+                playlist.addItemUrl(url, "SomaFM: " + name, icon);
+            }
+        }
+    }
+
+    Component {
+        id: gpodderPickerPage
+        GpodderPage {
+            onAccepted: {
+                playlist.addItemUrls(urls)
             }
         }
     }
@@ -423,7 +432,8 @@ Page {
                                        playlistPickerPage: playlistPickerPage,
                                        filePickerPage: filePickerPage,
                                        urlPickerPage: urlPickerPage,
-                                       somafmPickerPage: somafmPickerPage
+                                       somafmPickerPage: somafmPickerPage,
+                                       gpodderPickerPage: gpodderPickerPage
                                    })
                 }
             }

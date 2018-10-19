@@ -33,6 +33,7 @@ public:
     Q_INVOKABLE QString friendlyServiceType(const QString &serviceType);
     Q_INVOKABLE QString secToStr(int value);
     Q_INVOKABLE bool isUrlOk(const QUrl &url);
+    Q_INVOKABLE bool isGpodderAvailable();
 
     QString hash(const QString &value);
     static bool isIdValid(const QString &id);

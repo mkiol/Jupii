@@ -84,7 +84,7 @@ public:
     Q_INVOKABLE bool deleteFile(const QString& playlistId);
 
 signals:
-    void songsQueryResult(const QList<QUrl>& songs);
+    void songsQueryResult(const QVariantList& songs);
     void countChanged();
     void filterChanged();
 

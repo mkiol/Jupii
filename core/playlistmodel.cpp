@@ -506,14 +506,30 @@ void PlaylistModel::addItemPaths(const QStringList& paths)
     addItems(urls, false);
 }
 
-void PlaylistModel::addItemUrls(const QList<QUrl>& urls)
+void PlaylistModel::addItemUrls(const QList<UrlItem> &urls)
 {
     addItems(urls, false);
 }
 
-void PlaylistModel::addItemUrls(const QList<UrlItem> &urls)
+void PlaylistModel::addItemUrls(const QVariantList &urls)
 {
-    addItems(urls, false);
+    qDebug() << urls;
+    QList<UrlItem> items;
+    for (const QVariant &item : urls) {
+        if (item.canConvert(QMetaType::QVariantMap)) {
+            auto m = item.toMap();
+            items << UrlItem {
+                    m.value("url").toUrl(),
+                    m.value("name").toString(),
+                    m.value("icon").toUrl(),
+                    m.value("desc").toString()
+            };
+        } else if (item.canConvert(QMetaType::QUrl)) {
+            items << UrlItem { item.toUrl() };
+        }
+    }
+
+    addItems(items, false);
 }
 
 void PlaylistModel::addItemUrl(const QUrl& url,

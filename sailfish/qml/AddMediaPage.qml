@@ -21,6 +21,7 @@ Page {
     property var filePickerPage
     property var urlPickerPage
     property var somafmPickerPage
+    property var gpodderPickerPage
 
     SilicaFlickable {
         id: flick
@@ -118,6 +119,19 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(urlPickerPage)
+                }
+            }
+
+            SectionHeader {
+                text: qsTr("Apps & services")
+            }
+
+            SimpleListItem {
+                visible: utils.isGpodderAvailable();
+                title.text: qsTr("gPodder")
+                icon.source: "image://icons/icon-m-gpodder"
+                onClicked: {
+                    pageStack.replace(gpodderPickerPage)
                 }
             }
 

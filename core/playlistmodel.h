@@ -22,6 +22,7 @@
 #include <QVariant>
 #include <QThread>
 #include <QPair>
+#include <QVariantList>
 #include <memory>
 
 #ifdef DESKTOP
@@ -217,8 +218,8 @@ public slots:
     void addItemPaths(const QStringList& paths);
     void addItemPath(const QString& path,
                      const QString &name = QString());
-    void addItemUrls(const QList<QUrl>& urls);
     void addItemUrls(const QList<UrlItem>& urls);
+    void addItemUrls(const QVariantList& urls);
     void addItemUrl(const QUrl& url,
                     const QString& name = QString(),
                     const QUrl& icon = QUrl(),

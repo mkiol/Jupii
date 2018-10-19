@@ -22,7 +22,7 @@
 #include <QTime>
 
 #include "settings.h"
-
+#include "gpoddermodel.h"
 
 const QString Utils::typeKey = "jupii_type";
 const QString Utils::cookieKey = "jupii_cookie";
@@ -309,6 +309,11 @@ bool Utils::isIdValid(const QString &id)
 bool Utils::isUrlOk(const QUrl &url)
 {
     return Utils::isUrlValid(url);
+}
+
+bool Utils::isGpodderAvailable()
+{
+    return Gpodder::enabled();
 }
 
 bool Utils::isUrlValid(const QUrl &url)

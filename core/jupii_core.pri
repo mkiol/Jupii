@@ -30,7 +30,10 @@ HEADERS += \
     $$CORE_DIR/trackmodel.h \
     $$CORE_DIR/services.h \
     $$CORE_DIR/info.h \
-    $$CORE_DIR/somafmmodel.h
+    $$CORE_DIR/somafmmodel.h \
+    $$CORE_DIR/gpoddermodel.h \
+    $$CORE_DIR/itemmodel.h
+
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -57,7 +60,9 @@ SOURCES += \
     $$CORE_DIR/playlistfilemodel.cpp \
     $$CORE_DIR/trackmodel.cpp \
     $$CORE_DIR/services.cpp \
-    $$CORE_DIR/somafmmodel.cpp
+    $$CORE_DIR/somafmmodel.cpp \
+    $$CORE_DIR/gpoddermodel.cpp \
+    $$CORE_DIR/itemmodel.cpp
 
 sailfish {
     HEADERS += \
