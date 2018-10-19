@@ -657,13 +657,13 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     if (iconUrl.isEmpty()) {
         switch (type) {
         case ContentServer::TypeMusic:
-            icon = QIcon::fromTheme("audio-mp3");
+            icon = QIcon::fromTheme("audio-x-generic");
             break;
         case ContentServer::TypeVideo:
-            icon = QIcon::fromTheme("video-mp4");
+            icon = QIcon::fromTheme("video-x-generic");
             break;
         case ContentServer::TypeImage:
-            icon = QIcon::fromTheme("image-jpeg");
+            icon = QIcon::fromTheme("image-x-generic");
             break;
         default:
             icon = QIcon::fromTheme("unknown");

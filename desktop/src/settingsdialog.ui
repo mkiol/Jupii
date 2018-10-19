@@ -69,10 +69,10 @@
          <item>
           <widget class="QCheckBox" name="imageCheckBox">
            <property name="toolTip">
-            <string>Playing images on UPnP devices doesn't work well right now. There are few minor issues that have not been resolved yet. This option forces Jupii to play images despite the fact it could cause some issues.</string>
+            <string/>
            </property>
            <property name="whatsThis">
-            <string>Playing images on UPnP devices doesn't work well right now. There are few minor issues that have not been resolved yet. This option forces Jupii to play images despite the fact it could cause some issues.</string>
+            <string/>
            </property>
            <property name="text">
             <string>Image content</string>

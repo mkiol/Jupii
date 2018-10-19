@@ -317,13 +317,13 @@ QPixmap MainWindow::getImageForType(AVTransport::Type type)
     QIcon icon;
     switch (type) {
     case AVTransport::T_Audio:
-        icon = QIcon::fromTheme("audio-mp3");
+        icon = QIcon::fromTheme("audio-x-generic");
         break;
     case AVTransport::T_Video:
-        icon = QIcon::fromTheme("video-mp4");
+        icon = QIcon::fromTheme("video-x-generic");
         break;
     case AVTransport::T_Image:
-        icon = QIcon::fromTheme("image-jpeg");
+        icon = QIcon::fromTheme("image-x-generic");
         break;
     default:
         icon = QIcon::fromTheme("unknown");

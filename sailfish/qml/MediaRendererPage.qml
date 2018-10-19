@@ -548,7 +548,8 @@ Page {
 
         playMode: playlist.playMode
 
-        controlable: av.controlable && av.currentType !== AVTransport.T_Image
+        //controlable: av.controlable && av.currentType !== AVTransport.T_Image
+        controlable: av.controlable
 
         onRunningChanged: {
             if (open && !running)
