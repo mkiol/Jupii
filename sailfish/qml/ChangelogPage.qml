@@ -27,6 +27,16 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("1.9.1")
+            }
+
+            LogItem {
+                title: "Podcasts browser for gPodder"
+                description: "A convenient built-in browser that allows you to add episodes " +
+                             "previously downloaded with gPodder podcast player."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("1.9.0")
             }
 
