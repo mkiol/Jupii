@@ -218,7 +218,8 @@ Page {
         id: somafmPickerPage
         SomafmPage {
             onAccepted: {
-                playlist.addItemUrl(url, "SomaFM: " + name, icon);
+                //playlist.addItemUrl(url, "SomaFM: " + name, "SomaFM", icon);
+                playlist.addItemUrl(url, name, "SomaFM", icon);
             }
         }
     }

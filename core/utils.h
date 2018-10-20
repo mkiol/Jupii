@@ -21,6 +21,7 @@ public:
     static const QString typeKey;
     static const QString cookieKey;
     static const QString nameKey;
+    static const QString authorKey;
     static const QString iconKey;
     static const QString descKey;
 
@@ -54,13 +55,15 @@ public:
     static QUrl urlFromId(const QString &id);
     static QUrl urlWithTypeFromId(const QUrl &id);
     static QUrl urlWithTypeFromId(const QString &id);
+    static QUrl iconFromId(const QUrl &id);
     static bool pathTypeNameCookieIconFromId(const QUrl &id,
                                         QString* path = nullptr,
                                         int* type = nullptr,
                                         QString *name = nullptr,
                                         QString* cookie = nullptr,
                                         QUrl *icon = nullptr,
-                                        QString *desc = nullptr);
+                                        QString *desc = nullptr,
+                                        QString *author = nullptr);
 
     static QString randString(int len = 5);
     static void removeFile(const QString &path);

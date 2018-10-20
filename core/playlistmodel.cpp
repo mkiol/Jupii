@@ -50,6 +50,7 @@ void PlaylistWorker::run()
         for (const auto &purl : urls) {
             const auto &url = purl.url;
             const auto &name = purl.name;
+            const auto &author = purl.author;
             const auto &icon = purl.icon;
             const auto &desc = purl.desc;
 
@@ -88,6 +89,13 @@ void PlaylistWorker::run()
                     if (q.hasQueryItem(Utils::descKey))
                         q.removeQueryItem(Utils::descKey);
                     q.addQueryItem(Utils::descKey, desc);
+                }
+
+                // author
+                if (!author.isEmpty()) {
+                    if (q.hasQueryItem(Utils::authorKey))
+                        q.removeQueryItem(Utils::authorKey);
+                    q.addQueryItem(Utils::authorKey, author);
                 }
 
                 id.setQuery(q);
@@ -521,6 +529,7 @@ void PlaylistModel::addItemUrls(const QVariantList &urls)
             items << UrlItem {
                     m.value("url").toUrl(),
                     m.value("name").toString(),
+                    m.value("author").toString(),
                     m.value("icon").toUrl(),
                     m.value("desc").toString()
             };
@@ -534,11 +543,12 @@ void PlaylistModel::addItemUrls(const QVariantList &urls)
 
 void PlaylistModel::addItemUrl(const QUrl& url,
                                const QString& name,
+                               const QString& author,
                                const QUrl &icon,
                                const QString& desc)
 {
     QList<UrlItem> urls;
-    urls << UrlItem{url, name, icon, desc};
+    urls << UrlItem{url, name, author, icon, desc};
     addItems(urls, false);
 }
 
@@ -625,11 +635,9 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         return nullptr;
     }*/
 
-    int t = 0;
-    QString name, cookie;
-    QUrl ficon;
+    int t = 0; QString name, cookie, author; QUrl ficon;
     if (!Utils::pathTypeNameCookieIconFromId(id, nullptr, &t,
-                                             &name, &cookie, &ficon) ||
+                            &name, &cookie, &ficon, nullptr, &author) ||
             cookie.isEmpty()) {
         qWarning() << "Invalid Id";
         return nullptr;
@@ -680,7 +688,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
                                meta->url, // url
                                type, // type
                                meta->title, // title
-                               meta->artist, // artist
+                               author.isEmpty() ? meta->artist : author, // artist
                                meta->album, // album
                                "", // date
                                meta->duration, // duration

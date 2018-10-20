@@ -271,7 +271,7 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
     }
 
     QSqlQuery query(db);
-    query.prepare("SELECT id, title, subtitle, published, "
+    /*query.prepare("SELECT id, title, subtitle, published, "
                   "download_filename, total_time, current_position, mime_type "
                   "FROM PodcastEpisode "
                   "WHERE download_filename NOTNULL AND "
@@ -280,6 +280,20 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
                   "state = 1 AND "
                   "title LIKE ? "
                   "ORDER BY published DESC "
+                  "LIMIT 50");*/
+    query.prepare("SELECT PodcastEpisode.id, PodcastEpisode.title, "
+                  "PodcastEpisode.subtitle, PodcastEpisode.published, "
+                  "PodcastEpisode.download_filename, PodcastEpisode.total_time, "
+                  "PodcastEpisode.current_position, PodcastEpisode.mime_type, "
+                  "PodcastChannel.title "
+                  "FROM PodcastEpisode JOIN PodcastChannel "
+                  "ON PodcastEpisode.podcast_id = PodcastChannel.id "
+                  "WHERE PodcastEpisode.download_filename NOTNULL AND "
+                  "PodcastEpisode.download_filename != '' AND "
+                  "PodcastEpisode.podcast_id = ? AND "
+                  "PodcastEpisode.state = 1 AND "
+                  "PodcastEpisode.title LIKE ? "
+                  "ORDER BY PodcastEpisode.published DESC "
                   "LIMIT 50");
     query.addBindValue(m_podcastId);
     query.addBindValue("%" + getFilter() + "%");
@@ -293,11 +307,12 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
                                 query.value(0).toString(), // id
                                 query.value(1).toString(), // title
                                 query.value(2).toString(), // desc
+                                query.value(8).toString(), // podcast title
                                 QUrl::fromLocalFile(m_dir.absoluteFilePath(filename)), // url
                                 query.value(5).toInt(), // duration
                                 query.value(6).toInt(), // position
                                 type, // type
-                                query.value(8).toUInt(), // published
+                                query.value(3).toUInt(), // published
                                 m_icon // icon
                              );
             } else {
@@ -345,6 +360,7 @@ QVariantList GpodderEpisodeModel::selectedItems()
             QVariantMap map;
             map.insert("url", QVariant(episode->url()));
             map.insert("name", QVariant(episode->title()));
+            map.insert("author", QVariant(episode->podcastTitle()));
             //map.insert("desc", QVariant(episode->description()));
             map.insert("icon", QVariant(episode->icon()));
             list << map;
@@ -357,6 +373,7 @@ QVariantList GpodderEpisodeModel::selectedItems()
 GpodderEpisodeItem::GpodderEpisodeItem(const QString &id,
                    const QString &title,
                    const QString &description,
+                   const QString &podcastTitle,
                    const QUrl &content,
                    int duration,
                    int position,
@@ -372,6 +389,7 @@ GpodderEpisodeItem::GpodderEpisodeItem(const QString &id,
     m_id(id),
     m_title(title),
     m_description(description),
+    m_ptitle(podcastTitle),
     m_url(content),
     m_duration(duration),
     m_position(position),
@@ -394,6 +412,7 @@ QHash<int, QByteArray> GpodderEpisodeItem::roleNames() const
     names[SelectedRole] = "selected";
     names[TypeRole] = "type";
     names[PublishedRole] = "published";
+    names[PodcastTitleRole] = "podcastTitle";
     return names;
 }
 
@@ -420,6 +439,8 @@ QVariant GpodderEpisodeItem::data(int role) const
         return type();
     case PublishedRole:
         return published();
+    case PodcastTitleRole:
+        return podcastTitle();
     default:
         return QVariant();
     }

@@ -31,7 +31,6 @@ Dialog {
 
     GpodderEpisodeModel {
         id: itemModel
-        onFilterChanged: console.log("Filter: " + filter)
     }
 
     SilicaListView {

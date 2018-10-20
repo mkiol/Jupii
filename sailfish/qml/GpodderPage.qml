@@ -50,7 +50,6 @@ Page {
 
     GpodderPodcastModel {
         id: itemModel
-        onFilterChanged: console.log("Filter: " + filter)
     }
 
     SilicaListView {
@@ -84,16 +83,16 @@ Page {
             defaultIcon.source: "image://theme/icon-m-media-albums?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)
 
-            /*menu: ContextMenu {
+            menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Select episodes")
-                    onClicked: selectItems()
+                    onClicked: click()
                 }
-            }*/
+            }
 
-            onClicked: selectItems()
+            onClicked: click()
 
-            function selectItems() {
+            function click() {
                 var dialog = pageStack.push(Qt.resolvedUrl("GpodderEpisodesPage.qml"),{podcastId: model.id})
                 dialog.accepted.connect(function() {
                     root.accepted(dialog.selectedItems)

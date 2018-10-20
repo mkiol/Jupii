@@ -107,7 +107,8 @@ public:
         PositionRole,
         SelectedRole,
         TypeRole,
-        PublishedRole
+        PublishedRole,
+        PodcastTitleRole
     };
 
 public:
@@ -115,6 +116,7 @@ public:
     explicit GpodderEpisodeItem(const QString &id,
                       const QString &title,
                       const QString &description,
+                      const QString &podcastTitle,
                       const QUrl &url,
                       int duration,
                       int position,
@@ -131,6 +133,7 @@ public:
     inline QString id() const { return m_id; }
     inline QString title() const { return m_title; }
     inline QString description() const { return m_description; }
+    inline QString podcastTitle() const { return m_ptitle; }
     inline QUrl url() const { return m_url; }
     inline int duration() const { return m_duration; }
     inline int position() const { return m_position; }
@@ -145,6 +148,7 @@ private:
     QString m_id;
     QString m_title;
     QString m_description;
+    QString m_ptitle;
     QUrl m_url;
     int m_duration;
     int m_position;

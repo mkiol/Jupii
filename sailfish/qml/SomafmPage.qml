@@ -89,15 +89,15 @@ Page {
             menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Add channel")
-                    onClicked: {
-                        root.accepted(model.url, model.name, model.icon);
-                        root.doPop()
-                    }
+                    onClicked: click()
                 }
             }
 
-            onClicked: {
-                root.accepted(model.url, model.name, model.icon, model.description);
+            onClicked: click()
+
+            function click() {
+                root.accepted(model.url, model.name,
+                              model.icon, model.description)
                 root.doPop()
             }
         }

@@ -73,7 +73,9 @@ DockedPanel_ {
                 }
                 font.pixelSize: Theme.fontSizeHuge
                 horizontalAlignment: Text.AlignHCenter
-                visible: root.full && av.currentTrackDuration === 0
+                visible: av.currentType !== AVTransport.T_Image &&
+                         root.full &&
+                         av.currentTrackDuration === 0
                 text: utils.secToStr(av.relativeTimePosition)
             }
 
@@ -142,6 +144,10 @@ DockedPanel_ {
                         sourceSize.height: height
                         fillMode: Image.PreserveAspectCrop
                         source: av.currentAlbumArtURI
+
+                        onSourceChanged: {
+                            console.log("image source:" + source)
+                        }
                     }
                 }
 
