@@ -206,7 +206,6 @@ private:
 
     QString m_currentURI;
     QString m_nextURI;
-    QUrl m_currentId;
     bool m_nextURISupported = true;
     bool m_emitCurrentUriChanged = false;
     bool m_emitNextUriChanged = false;

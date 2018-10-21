@@ -177,6 +177,7 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
 
     if (isArt) {
         // Album Cover Art
+        qWarning() << "Requested content is album cover!";
         meta = cs->makeMetaUsingExtension(id);
         requestForFileHandler(id, meta, req, resp);
         delete meta;
@@ -342,7 +343,7 @@ void ContentServerWorker::proxyMetaDataChanged()
     auto reply = dynamic_cast<QNetworkReply*>(sender());
 
     if (!proxyItems.contains(reply)) {
-        qWarning() << "Proxy meta data: Can't find proxy item";
+        qWarning() << "Proxy meta data: Cannot find proxy item";
         return;
     }
 
@@ -424,7 +425,7 @@ void ContentServerWorker::proxyFinished()
     auto reply = dynamic_cast<QNetworkReply*>(sender());
 
     if (!proxyItems.contains(reply)) {
-        //qWarning() << "Can't find proxy item";
+        //qWarning() << "Cannot find proxy item";
         reply->deleteLater();
         return;
     }
@@ -459,7 +460,7 @@ void ContentServerWorker::proxyReadyRead()
     auto reply = dynamic_cast<QNetworkReply*>(sender());
 
     if (!proxyItems.contains(reply)) {
-        qWarning() << "Proxy ready read: Can't find proxy item";
+        qWarning() << "Proxy ready read: Cannot find proxy item";
         return;
     }
 
@@ -500,7 +501,10 @@ void ContentServerWorker::proxyReadyRead()
 
                     if (size > maxsize) {
                         qWarning() << "Partial shoutcast metadata";
-                        size = maxsize;
+                        //size = maxsize;
+                        item.metaint = 0;
+                        item.resp->write(data);
+                        return;
                     }
 
                     if (size > 0) {
@@ -870,7 +874,7 @@ void ContentServer::fillCoverArt(ItemMeta& item)
             qDebug() << "No cover art in" << item.path;
         }
     } else {
-        qWarning() << "Can't open file" << item.path << "with TagLib";
+        qWarning() << "Cannot open file" << item.path << "with TagLib";
     }
 
     item.albumArt.clear();
@@ -878,8 +882,9 @@ void ContentServer::fillCoverArt(ItemMeta& item)
 
 bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &meta)
 {
-    QString path, name, desc; int t; QUrl icon;
-    if (!Utils::pathTypeNameCookieIconFromId(id, &path, &t, &name, nullptr, &icon, &desc))
+    QString path, name, desc, author; int t; QUrl icon;
+    if (!Utils::pathTypeNameCookieIconFromId(id, &path, &t, &name, nullptr,
+                                             &icon, &desc, &author))
         return false;
 
     bool audioType = static_cast<Type>(t) == TypeMusic; // extract audio stream from video
@@ -895,12 +900,12 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
     if (audioType && item->local) {
 #ifdef FFMPEG
         if (!extractAudio(path, data)) {
-            qWarning() << "Can't extract audio stream";
+            qWarning() << "Cannot extract audio stream";
             return false;
         }
         qDebug() << "Audio stream extracted to" << data.path;
 #else
-        qWarning() << "Audio stream can't be extracted because ffmpeg is disabled";
+        qWarning() << "Audio stream cannot be extracted because ffmpeg is disabled";
         return false;
 #endif
     }
@@ -933,7 +938,7 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
             if (makeUrl(id, artUrl))
                 m << "<upnp:albumArtURI>" << artUrl.toString() << "</upnp:albumArtURI>";
             else
-                qWarning() << "Can't make Url form art path";
+                qWarning() << "Cannot make Url form art path";
         }
         break;
     case TypeVideo:
@@ -960,6 +965,8 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
             m << "<upnp:album>" << item->album.toHtmlEscaped() << "</upnp:album>";
     } else {
         m << "<dc:title>" << name.toHtmlEscaped() << "</dc:title>";
+        if (!author.isEmpty())
+            m << "<upnp:artist>" << author.toHtmlEscaped() << "</upnp:artist>";
     }
 
     if (desc.isEmpty()) {
@@ -987,7 +994,7 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
 
     if (item->duration > 0) {
         int seconds = item->duration % 60;
-        int minutes = (item->duration - seconds) / 60;
+        int minutes = ((item->duration - seconds) / 60) % 60;
         int hours = (item->duration - (minutes * 60) - seconds) / 3600;
         QString duration = QString::number(hours) + ":" + (minutes < 10 ? "0" : "") +
                            QString::number(minutes) + ":" + (seconds < 10 ? "0" : "") +
@@ -1024,12 +1031,11 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
                                   QString cUrl)
 {
     if (!Utils::isIdValid(id)) {
-        qWarning() << "Id is invalid!";
         return false;
     }
 
     if (!makeUrl(id, url)) {
-        qWarning() << "Can't make Url form id";
+        qWarning() << "Cannot make Url form id";
         return false;
     }
 
@@ -1039,7 +1045,7 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
     }
 
     if (!getContentMeta(id, url, meta)) {
-        qWarning() << "Can't get content meta data";
+        qWarning() << "Cannot get content meta data";
         return false;
     }
 
@@ -1068,7 +1074,7 @@ bool ContentServer::makeUrl(const QString& id, QUrl& url)
 
     QString ifname, addr;
     if (!Utils::instance()->getNetworkIf(ifname, addr)) {
-        qWarning() << "Can't find valid network interface";
+        qWarning() << "Cannot find valid network interface";
         return false;
     }
 
@@ -1120,7 +1126,7 @@ QString ContentServer::pathFromUrl(const QUrl &url) const
     if (valid && isFile)
         return id.toLocalFile();
 
-    qWarning() << "Can't get path from URL";
+    //qWarning() << "Cannot get path from URL:" << url.toString() << id.toString();
     return QString();
 }
 
@@ -1132,7 +1138,7 @@ QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile, bool* 
     auto id = QUrl(QString::fromUtf8(decrypt(hash.toUtf8())));
 
     if (!id.isValid()) {
-        qWarning() << "Id is invalid";
+        qWarning() << "Id is invalid" << id.toString();
         if (ok)
             *ok = false;
         return QUrl();
@@ -1184,7 +1190,7 @@ QString ContentServer::idFromUrl(const QUrl &url) const
     if (valid)
         return id.toString();
 
-    qWarning() << "Can't get id from URL";
+    //qWarning() << "Cannot get id from URL:" << url.toString();
     return QString();
 }
 
@@ -1553,7 +1559,7 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
 
     auto tracker = Tracker::instance();
     if (!tracker->query(query, false)) {
-        qWarning() << "Can't get tracker data for url:" << fileUrl;
+        qWarning() << "Cannot get tracker data for url:" << fileUrl;
         return metaCache.end();
     }
 
@@ -1631,7 +1637,7 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
 
     TagLib::FileRef f(path.toUtf8().constData());
     if(f.isNull()) {
-        qWarning() << "Can't extract meta data with TagLib";
+        qWarning() << "Cannot extract meta data with TagLib";
     } else {
         if(f.tag()) {
             TagLib::Tag *tag = f.tag();
@@ -1712,7 +1718,7 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         qDebug() << ">> metaDataChanged in thread:" << QThread::currentThreadId();
         qDebug() << "Received meta data of HTTP reply for url:" << reply->url();
 
-        // Bug in Qt? "Content-Disposition" can't be retrived with QNetworkRequest::ContentDispositionHeader
+        // Bug in Qt? "Content-Disposition" cannot be retrived with QNetworkRequest::ContentDispositionHeader
         //auto disposition = reply->header(QNetworkRequest::ContentDispositionHeader).toString().toLower();
         auto disposition = QString(reply->rawHeader("Content-Disposition")).toLower();
         auto mime = mimeFromDisposition(disposition);
@@ -1778,7 +1784,7 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         return metaCache.end();
     }
 
-    // Bug in Qt? "Content-Disposition" can't be retrived with QNetworkRequest::ContentDispositionHeader
+    // Bug in Qt? "Content-Disposition" cannot be retrived with QNetworkRequest::ContentDispositionHeader
     //auto disposition = reply->header(QNetworkRequest::ContentDispositionHeader).toString().toLower();
     auto disposition = QString(reply->rawHeader("Content-Disposition")).toLower();
     auto mime = mimeFromDisposition(disposition);
@@ -1872,7 +1878,7 @@ ContentServer::makeItemMeta(const QUrl &url)
         if (QFile::exists(url.toLocalFile())) {
             it = makeItemMetaUsingTracker(url);
             if (it == metaCache.end()) {
-                qWarning() << "Can't get meta using Tacker, so fallbacking to Taglib";
+                qWarning() << "Cannot get meta using Tacker, so fallbacking to Taglib";
                 it = makeItemMetaUsingTaglib(url);
             }
         } else {

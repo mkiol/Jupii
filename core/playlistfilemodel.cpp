@@ -10,6 +10,9 @@
 #include <QUrl>
 #include <QFileInfo>
 #include <QFile>
+#include <QVariant>
+#include <QVariantList>
+#include <QVariantMap>
 
 #include "tracker.h"
 #include "playlistfilemodel.h"
@@ -153,11 +156,12 @@ void PlaylistFileModel::processTrackerReply(const QStringList& varNames,
     if (n > 0) {
         // Result of Song query
 
-        QList<QUrl> songs;
+        QVariantList songs;
 
         while(cursor.next()) {
-            QUrl file(cursor.value(0).toString());
-            songs << file;
+            QVariantMap map;
+            map.insert("url", QVariant(QUrl(cursor.value(0).toString())));
+            songs << map;
         }
 
         emit songsQueryResult(songs);

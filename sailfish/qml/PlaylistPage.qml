@@ -19,7 +19,7 @@ Page {
 
     property bool _doPop: false
 
-    signal accepted(var songs);
+    signal accepted(var urls);
 
     Component.onCompleted: {
         playlistFileModel.filter = ""

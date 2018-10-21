@@ -48,6 +48,7 @@
 #include "services.h"
 #include "info.h"
 #include "somafmmodel.h"
+#include "gpoddermodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -70,6 +71,8 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<PlaylistModel>("harbour.jupii.PlayListModel", 1, 0,
                                               "PlayListModel", "Playlist is a singleton");
     qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0, "SomafmModel");
+    qmlRegisterType<GpodderPodcastModel>("harbour.jupii.GpodderPodcastModel", 1, 0, "GpodderPodcastModel");
+    qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1, 0, "GpodderEpisodeModel");
 
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 

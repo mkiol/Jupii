@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Fri Oct 19 2018 Michal Kosciesza <michal@mkiol.net> 1.9.1-1
+- Podcasts browser for gPodder
+- Bug fixes
+
 * Tue Oct 09 2018 Michal Kosciesza <michal@mkiol.net> 1.9.0-1
 - Desktop port
 - Streaming proxy for remote content (e.g. internet radio)

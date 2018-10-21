@@ -2,7 +2,7 @@ TARGET = harbour-jupii
 
 CONFIG += c++11 sailfishapp json no_lflags_merge object_parallel_to_source
 
-QT += dbus
+QT += dbus sql
 
 PKGCONFIG += mlite5
 
@@ -105,4 +105,8 @@ OTHER_FILES += \
 DISTFILES += \
     qml/AddUrlPage.qml \
     qml/Tip.qml \
-    qml/SomafmPage.qml
+    qml/SomafmPage.qml \
+    qml/GpodderPage.qml \
+    qml/GpodderEpisodesPage.qml \
+    qml/SearchPageHeader.qml \
+    qml/SearchDialogHeader.qml

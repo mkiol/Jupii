@@ -109,7 +109,7 @@ QStringList TrackModel::selectedPaths()
     QStringList list;
 
     for (auto item : m_list) {
-        auto track = static_cast<TrackItem*>(item);
+        auto track = dynamic_cast<TrackItem*>(item);
         if (track->selected())
             list << track->path();
     }

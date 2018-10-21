@@ -438,10 +438,16 @@ QString AVTransport::getCurrentDescription()
 QUrl AVTransport::getCurrentAlbumArtURI()
 {
     // Optimization => external url only for not local content
+    auto icon = Utils::iconFromId(getCurrentId());
+    if (!icon.isEmpty()) {
+        qDebug() << "Optimization => using local album art from Id:" << icon.toString();
+        return icon;
+    }
     if (m_currentMeta && !m_currentMeta->albumArt.isEmpty()) {
-        qDebug() << "Optimization => using local album art";
+        qDebug() << "Optimization => using local album art from Meta:" << m_currentMeta->albumArt;
         return QUrl::fromLocalFile(m_currentMeta->albumArt);
     }
+    // ---
 
     return m_currentAlbumArtURI;
 }

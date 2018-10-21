@@ -20,14 +20,12 @@
 #include "somafmmodel.h"
 
 SomafmModel::SomafmModel(QObject *parent) :
-    ListModel(new SomafmItem, parent)
+    SelectableItemModel(new SomafmItem, parent)
 {
-    QDir dir;
     QString jfile;
-    //QPixmap pm(QLatin1String(":/images/jupii-64.png"));
 
 #ifdef SAILFISH
-    dir = QDir(SailfishApp::pathTo("somafm").toLocalFile());
+    m_dir = QDir(SailfishApp::pathTo("somafm").toLocalFile());
     jfile = SailfishApp::pathTo("somafm/somafm.json").toLocalFile();
 #endif
 
@@ -50,28 +48,36 @@ SomafmModel::SomafmModel(QObject *parent) :
         return;
     }
 
+    m_channels = obj["channels"].toArray();
+}
+
+QList<ListItem*> SomafmModel::makeItems()
+{
     QList<ListItem*> items;
-    auto channels = obj["channels"].toArray();
-    for (const auto c : channels) {
+
+    for (const auto c : m_channels) {
         if (c.isObject()) {
             auto obj = c.toObject();
-            auto icon = QUrl::fromLocalFile(dir.filePath(obj["icon"].toString()));
-            items << new SomafmItem(
-                            obj["id"].toString(),
-                            obj["title"].toString(),
-                            obj["description"].toString(),
-                            QUrl(obj["url"].toString()),
+            QString title = obj["title"].toString();
+            auto filter = getFilter();
+            if (filter.isEmpty() || title.contains(filter, Qt::CaseInsensitive)) {
+                auto icon = QUrl::fromLocalFile(m_dir.filePath(obj["icon"].toString()));
+                items << new SomafmItem(
+                                obj["id"].toString(),
+                                title,
+                                obj["description"].toString(),
+                                QUrl(obj["url"].toString()),
 #ifdef SAILFISH
-                            icon,
+                                icon
 #else
-                            QIcon(icon.toLocalFile()),
+                                QIcon(icon.toLocalFile())
 #endif
-                            this
-                        );
+                            );
+            }
         }
     }
 
-    appendRows(items);
+    return items;
 }
 
 SomafmItem::SomafmItem(const QString &id,
@@ -84,7 +90,7 @@ SomafmItem::SomafmItem(const QString &id,
                    const QIcon &icon,
 #endif
                    QObject *parent) :
-    ListItem(parent),
+    SelectableItem(parent),
     m_id(id),
     m_name(name),
     m_description(description),

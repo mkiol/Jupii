@@ -68,7 +68,7 @@ private:
     QUrl m_image;
     int m_number;
     int m_length;
-    bool m_selected;
+    bool m_selected = false;
 };
 
 class TrackModel : public ListModel

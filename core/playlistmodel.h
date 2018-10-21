@@ -22,6 +22,7 @@
 #include <QVariant>
 #include <QThread>
 #include <QPair>
+#include <QVariantList>
 #include <memory>
 
 #ifdef DESKTOP
@@ -37,6 +38,7 @@ class PlaylistModel;
 struct UrlItem {
     QUrl url;
     QString name;
+    QString author;
     QUrl icon;
     QString desc;
 };
@@ -217,10 +219,11 @@ public slots:
     void addItemPaths(const QStringList& paths);
     void addItemPath(const QString& path,
                      const QString &name = QString());
-    void addItemUrls(const QList<QUrl>& urls);
     void addItemUrls(const QList<UrlItem>& urls);
+    void addItemUrls(const QVariantList& urls);
     void addItemUrl(const QUrl& url,
                     const QString& name = QString(),
+                    const QString &author = QString(),
                     const QUrl& icon = QUrl(),
                     const QString& desc = QString());
     void addItemPathsAsAudio(const QStringList& paths);

@@ -76,7 +76,7 @@ Page {
                 textFormat: Text.StyledText
                 text: qsTr("%1 is developed as an open source project under %2.")
                 .arg(APP_NAME)
-                .arg("<a href=\"" + LICENSE + "\">" + LICENSE_URL + "</a>")
+                .arg("<a href=\"" + LICENSE_URL + "\">" + LICENSE + "</a>")
             }
 
             SectionHeader {

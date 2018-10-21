@@ -8,7 +8,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-import harbour.jupii.SomafmModel 1.0
+import harbour.jupii.GpodderPodcastModel 1.0
 
 Page {
     id: root
@@ -19,7 +19,7 @@ Page {
 
     property bool _doPop: false
 
-    signal accepted(url url, string name, url icon, string desc);
+    signal accepted(var urls);
 
     function doPop() {
         if (pageStack.busy)
@@ -48,7 +48,7 @@ Page {
         }
     }
 
-    SomafmModel {
+    GpodderPodcastModel {
         id: itemModel
     }
 
@@ -56,9 +56,6 @@ Page {
         id: listView
 
         anchors.fill: parent
-        /*width: parent.width
-        height: parent.height - (tip.height + 2*Theme.paddingLarge)
-        clip: true*/
 
         opacity: itemModel.busy ? 0.0 : 1.0
         visible: opacity > 0.0
@@ -70,8 +67,8 @@ Page {
 
         header: SearchPageHeader {
             implicitWidth: root.width
-            title: "SomaFM"
-            searchPlaceholderText: qsTr("Search channels")
+            title: qsTr("Podcasts")
+            searchPlaceholderText: qsTr("Search podcasts")
             model: itemModel
             onActiveFocusChanged: {
                 listView.currentIndex = -1
@@ -80,15 +77,15 @@ Page {
 
         delegate: DoubleListItem {
             id: listItem
-            title.text: model.name
-            subtitle.text: model.description
+            title.text: model.title
+            //subtitle.text: model.description
             icon.source: model.icon
-            defaultIcon.source: "image://icons/icon-m-browser?" + (highlighted ?
+            defaultIcon.source: "image://theme/icon-m-media-albums?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)
 
             menu: ContextMenu {
                 MenuItem {
-                    text: qsTr("Add channel")
+                    text: qsTr("Select episodes")
                     onClicked: click()
                 }
             }
@@ -96,15 +93,17 @@ Page {
             onClicked: click()
 
             function click() {
-                root.accepted(model.url, model.name,
-                              model.icon, model.description)
-                root.doPop()
+                var dialog = pageStack.push(Qt.resolvedUrl("GpodderEpisodesPage.qml"),{podcastId: model.id})
+                dialog.accepted.connect(function() {
+                    root.accepted(dialog.selectedItems)
+                    root.doPop()
+                })
             }
         }
 
         ViewPlaceholder {
             enabled: listView.count === 0 && !itemModel.busy
-            text: qsTr("No channels")
+            text: qsTr("No podcasts")
         }
     }
 
@@ -117,12 +116,4 @@ Page {
     VerticalScrollDecorator {
         flickable: listView
     }
-
-    /*Tip {
-        id: tip
-        anchors.bottom: parent.bottom
-        anchors.topMargin: Theme.paddingLarge
-        anchors.bottomMargin: Theme.paddingLarge
-        text: qsTr("SomaFM is supported entirely by the listeners. If you enjoy, please consider making a <a href=\"%1\">donation</a>.").arg("http://somafm.com/support/");
-    }*/
 }
