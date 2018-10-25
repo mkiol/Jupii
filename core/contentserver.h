@@ -76,6 +76,8 @@ public:
     static Type typeFromMime(const QString &mime);
     static QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr, bool* isFile = nullptr, bool *isArt = nullptr);
     static QString bestName(const ItemMeta &meta);
+    static Type getContentTypeByExtension(const QString &path);
+    static Type getContentTypeByExtension(const QUrl &url);
 
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
     Type getContentType(const QString &path);
@@ -194,8 +196,6 @@ private:
             int counter = 0);
     //const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingExtension(const QUrl &url);
     ItemMeta *makeMetaUsingExtension(const QUrl &url);
-    Type getContentTypeByExtension(const QString &path);
-    Type getContentTypeByExtension(const QUrl &url);
     void fillCoverArt(ItemMeta& item);
     //QString makePlaylistForUrl(const QUrl &url);
     void run();

@@ -15,10 +15,11 @@ FocusScope {
     property alias searchPlaceholderText: search.placeholderText
     property int noSearchCount: 10
     property var model
+    property var view
 
     implicitHeight: column.height
 
-    signal activeFocusChanged
+    onHeightChanged: view.scrollToTop()
 
     Column {
         id: column
@@ -36,7 +37,7 @@ FocusScope {
 
             onActiveFocusChanged: {
                 if (activeFocus)
-                    root.activeFocusChanged()
+                    root.view.currentIndex = -1
             }
 
             onTextChanged: {

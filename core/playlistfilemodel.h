@@ -19,28 +19,29 @@
 #include <QList>
 
 #include "listmodel.h"
+#include "itemmodel.h"
 
-class PlaylistFileItem : public ListItem
+class PlaylistFileItem : public SelectableItem
 {
     Q_OBJECT
 public:
     enum Roles {
-        IdRole = Qt::UserRole,
         TitleRole = Qt::DisplayRole,
+        IdRole = Qt::UserRole,
         ListRole,
         CountRole,
         LengthRole,
-        ImageRole,
+        IconRole,
         PathRole
     };
 
 public:
-    PlaylistFileItem(QObject *parent = 0): ListItem(parent) {}
+    PlaylistFileItem(QObject *parent = nullptr): SelectableItem(parent) {}
     explicit PlaylistFileItem(const QString &id,
                       const QString &title,
                       const QString &list,
                       const QString &path,
-                      const QUrl &image,
+                      const QUrl &url,
                       int count,
                       int length,
                       QObject *parent = 0);
@@ -50,7 +51,7 @@ public:
     inline QString title() const { return m_title; }
     inline QString list() const { return m_list; }
     inline QString path() const { return m_path; }
-    inline QUrl image() const { return m_image; }
+    inline QUrl icon() const { return m_icon; }
     inline int count() const { return m_count; }
     inline int length() const { return m_length; }
 
@@ -59,47 +60,31 @@ private:
     QString m_title;
     QString m_list;
     QString m_path;
-    QUrl m_image;
+    QUrl m_icon;
     int m_count;
     int m_length;
 };
 
-class PlaylistFileModel : public ListModel
+class PlaylistFileModel : public SelectableItemModel
 {
     Q_OBJECT
-    Q_PROPERTY (int count READ getCount NOTIFY countChanged)
-    Q_PROPERTY (QString filter READ getFilter WRITE setFilter NOTIFY filterChanged)
+
 public:
-    explicit PlaylistFileModel(QObject *parent = 0);
-    ~PlaylistFileModel();
-
-    void clear();
-
-    int getCount();
-
-    void setFilter(const QString& filter);
-    QString getFilter();
-
-    Q_INVOKABLE void querySongs(const QString& playlistId);
+    explicit PlaylistFileModel(QObject *parent = nullptr);
     Q_INVOKABLE bool deleteFile(const QString& playlistId);
 
-signals:
-    void songsQueryResult(const QVariantList& songs);
-    void countChanged();
-    void filterChanged();
-
-private slots:
-    void processTrackerReply(const QStringList& varNames,
-                             const QByteArray& data);
-    void processTrackerError();
-
 private:
-    QString m_filter;
-    QString m_playlistsQueryTemplate;
-    QString m_playlistsQueryTemplateEx;
-    QString m_tracksQueryTemplate;
+    static const QString playlistsQueryTemplate;
+    static const QString playlistsQueryTemplateEx;
 
-    void updateModel(const QString& excludedId = "");
+    QString m_exId;
+
+    void updateModelEx(const QString &exId);
+    QList<ListItem*> makeItems();
+    QList<ListItem*> processTrackerReply(
+            const QStringList& varNames,
+            const QByteArray& data);
+
     void disconnectAll();
 };
 

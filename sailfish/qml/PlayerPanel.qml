@@ -144,10 +144,6 @@ DockedPanel_ {
                         sourceSize.height: height
                         fillMode: Image.PreserveAspectCrop
                         source: av.currentAlbumArtURI
-
-                        onSourceChanged: {
-                            console.log("image source:" + source)
-                        }
                     }
                 }
 

@@ -25,7 +25,6 @@ Tracker* Tracker::m_instance = nullptr;
 
 Tracker::Tracker(QObject *parent) :
     QObject(parent),
-    TaskExecutor(parent, 1),
     m_re1("\\[[^\\]]*\\]|\\([^\\)]*\\)|\\{[^\\}]*\\}|<[^>}]*>|" \
           "[_!@#\\$\\^&\\*\\+=\\|\\\/\"'\\?~`]+", Qt::CaseInsensitive),
     m_re2("\\s\\s", Qt::CaseInsensitive),
@@ -58,13 +57,6 @@ bool Tracker::createUnixPipe(int &readFd, int &writeFd)
     writeFd = fds[1];
 
     return true;
-}
-
-void Tracker::queryAsync(const QString &query)
-{
-    startTask([this, query](){
-        this->query(query, true);
-    });
 }
 
 bool Tracker::query(const QString &query, bool emitSignal)

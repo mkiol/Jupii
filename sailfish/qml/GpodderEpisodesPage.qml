@@ -51,10 +51,7 @@ Dialog {
             searchPlaceholderText: qsTr("Search episodes")
             model: itemModel
             dialog: root
-
-            onActiveFocusChanged: {
-                listView.currentIndex = -1
-            }
+            view: listView
         }
 
         PullDownMenu {

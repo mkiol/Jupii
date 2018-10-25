@@ -152,7 +152,7 @@ private:
     QUrl m_url;
     int m_duration;
     int m_position;
-    ContentServer::Type m_type;
+    ContentServer::Type m_type = ContentServer::TypeUnknown;
     uint m_published;
 #ifdef SAILFISH
     QUrl m_icon;

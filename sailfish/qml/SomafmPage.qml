@@ -28,16 +28,6 @@ Page {
             pageStack.pop(pageStack.previousPage(root))
     }
 
-    // Hack to update model after all transitions
-    property bool _completed: false
-    Component.onCompleted: _completed = true
-    onStatusChanged: {
-        if (status === PageStatus.Active && _completed) {
-            _completed = false
-            itemModel.updateModel()
-        }
-    }
-
     Connections {
         target: pageStack
         onBusyChanged: {
@@ -45,6 +35,16 @@ Page {
                 root._doPop = false
                 pageStack.pop()
             }
+        }
+    }
+
+    // Hack to update model after all transitions
+    property bool _completed: false
+    Component.onCompleted: _completed = true
+    onStatusChanged: {
+        if (status === PageStatus.Active && _completed) {
+            _completed = false
+            itemModel.updateModel()
         }
     }
 
@@ -73,9 +73,7 @@ Page {
             title: "SomaFM"
             searchPlaceholderText: qsTr("Search channels")
             model: itemModel
-            onActiveFocusChanged: {
-                listView.currentIndex = -1
-            }
+            view: listView
         }
 
         delegate: DoubleListItem {

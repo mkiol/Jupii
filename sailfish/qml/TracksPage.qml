@@ -9,89 +9,71 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 import harbour.jupii.TrackModel 1.0
+import harbour.jupii.AVTransport 1.0
 
 Dialog {
     id: root
 
-    property alias albumId: trackModel.albumId
-    property alias artistId: trackModel.artistId
+    property alias albumId: itemModel.albumId
+    property alias artistId: itemModel.artistId
+    property alias playlistId: itemModel.playlistId
 
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge
 
-    property var selectedPaths
+    property var selectedItems
 
-    canAccept: trackModel.selectedCount > 0
+    canAccept: itemModel.selectedCount > 0
 
     onDone: {
         if (result === DialogResult.Accepted)
-            selectedPaths = trackModel.selectedPaths()
+            selectedItems = itemModel.selectedItems()
     }
 
     TrackModel {
-        id: trackModel
-        onFilterChanged: console.log("Filter: " + filter)
+        id: itemModel
     }
 
     SilicaListView {
         id: listView
 
         anchors.fill: parent
+
+        opacity: itemModel.busy ? 0.0 : 1.0
+        visible: opacity > 0.0
+        Behavior on opacity { FadeAnimation {} }
+
         currentIndex: -1
 
-        model: trackModel
+        model: itemModel
 
-        header: FocusScope {
-            implicitHeight: column.height
+        header: SearchDialogHeader {
             implicitWidth: root.width
+            searchPlaceholderText: qsTr("Search tracks")
+            model: itemModel
+            dialog: root
+            view: listView
 
-            Column {
-                id: column
-                width: root.width
-
-                DialogHeader {
-                    id: header
-                    dialog: root
-                    spacing: 0
-
-                    acceptText: {
-                        var count = trackModel.selectedCount
-                        return count > 0 ? qsTr("%n selected", "", count) : header.defaultAcceptText
-                    }
-                }
-
-                SearchField {
-                    width: root.width
-                    placeholderText: qsTr("Search tracks")
-
-                    onActiveFocusChanged: {
-                        if (activeFocus) {
-                            listView.currentIndex = -1
-                        }
-                    }
-
-                    onTextChanged: {
-                        trackModel.filter = text.toLowerCase().trim()
-                    }
-                }
+            onActiveFocusChanged: {
+                listView.currentIndex = -1
             }
         }
 
         PullDownMenu {
             id: menu
 
-            enabled: trackModel.count > 0
+            enabled: itemModel.count !== 0
 
             MenuItem {
-                text: trackModel.count === trackModel.selectedCount ?
+                text: itemModel.count === itemModel.selectedCount ?
                           qsTr("Unselect all") :
                           qsTr("Select all")
                 onClicked: {
-                    if (trackModel.count === trackModel.selectedCount)
-                        trackModel.setAllSelected(false)
+                    if (itemModel.count === itemModel.selectedCount)
+                        itemModel.setAllSelected(false)
                     else
-                        trackModel.setAllSelected(true)
+                        itemModel.setAllSelected(true)
                 }
             }
         }
@@ -102,20 +84,38 @@ Dialog {
 
             highlighted: down || model.selected
             title.text: model.title
-            subtitle.text: root.albumId.length > 0 ? model.artist : model.album
-            icon.source: model.image + "?" + primaryColor
-            defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
+            subtitle.text: root.albumId.length !== 0 || root.playlistId.length !== 0 ?
+                               model.artist : model.album
+            //icon.source: model.icon.toString().length !== 0 ? (model.icon + "?" + primaryColor) : ""
+            defaultIcon.source: {
+                switch (model.type) {
+                case AVTransport.T_Image:
+                    return "image://theme/icon-m-file-image?" + primaryColor
+                case AVTransport.T_Audio:
+                    return "image://theme/icon-m-file-audio?" + primaryColor
+                case AVTransport.T_Video:
+                    return "image://theme/icon-m-file-video?" + primaryColor
+                default:
+                    return "image://theme/icon-m-file-other?" + primaryColor
+                }
+            }
 
             onClicked: {
                 var selected = model.selected
-                trackModel.setSelected(model.index, !selected);
+                itemModel.setSelected(model.index, !selected);
             }
         }
 
         ViewPlaceholder {
-            enabled: listView.count == 0
+            enabled: itemModel.count === 0 && !itemModel.busy
             text: qsTr("No tracks")
         }
+    }
+
+    BusyIndicator {
+        anchors.centerIn: parent
+        running: itemModel.busy
+        size: BusyIndicatorSize.Large
     }
 
     VerticalScrollDecorator {

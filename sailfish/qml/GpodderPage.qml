@@ -19,7 +19,7 @@ Page {
 
     property bool _doPop: false
 
-    signal accepted(var urls);
+    signal accepted(var items);
 
     function doPop() {
         if (pageStack.busy)
@@ -70,9 +70,7 @@ Page {
             title: qsTr("Podcasts")
             searchPlaceholderText: qsTr("Search podcasts")
             model: itemModel
-            onActiveFocusChanged: {
-                listView.currentIndex = -1
-            }
+            view: listView
         }
 
         delegate: DoubleListItem {

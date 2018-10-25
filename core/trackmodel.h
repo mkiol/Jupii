@@ -17,9 +17,11 @@
 #include <QVariant>
 #include <QUrl>
 
+#include "contentserver.h"
 #include "listmodel.h"
+#include "itemmodel.h"
 
-class TrackItem : public ListItem
+class TrackItem : public SelectableItem
 {
     Q_OBJECT
 public:
@@ -28,21 +30,23 @@ public:
         TitleRole = Qt::DisplayRole,
         ArtistRole,
         AlbumRole,
-        PathRole,
-        ImageRole,
+        UrlRole,
+        IconRole,
         LengthRole,
         NumberRole,
+        TypeRole,
         SelectedRole
     };
 
 public:
-    TrackItem(QObject *parent = 0): ListItem(parent) {}
+    TrackItem(QObject *parent = nullptr): SelectableItem(parent) {}
     explicit TrackItem(const QString &id,
                       const QString &title,
                       const QString &artist,
                       const QString &album,
-                      const QString &path,
-                      const QUrl &image,
+                      const QUrl &url,
+                      const QUrl &icon,
+                      ContentServer::Type type,
                       int number,
                       int length,
                       QObject *parent = 0);
@@ -52,77 +56,69 @@ public:
     inline QString title() const { return m_title; }
     inline QString artist() const { return m_artist; }
     inline QString album() const { return m_album; }
-    inline QString path() const { return m_path; }
-    inline QUrl image() const { return m_image; }
+    inline QUrl url() const { return m_url; }
+    inline QUrl icon() const { return m_icon; }
+    inline ContentServer::Type type() const { return m_type; }
     inline int number() const { return m_number; }
     inline int length() const { return m_length; }
-    inline bool selected() const { return m_selected; }
-    void setSelected(bool value);
 
 private:
     QString m_id;
     QString m_title;
     QString m_artist;
     QString m_album;
-    QString m_path;
-    QUrl m_image;
+    QUrl m_url;
+    QUrl m_icon;
+    ContentServer::Type m_type = ContentServer::TypeUnknown;
     int m_number;
     int m_length;
-    bool m_selected = false;
 };
 
-class TrackModel : public ListModel
+class TrackModel : public SelectableItemModel
 {
     Q_OBJECT
-    Q_PROPERTY (int count READ getCount NOTIFY countChanged)
-    Q_PROPERTY (QString filter READ getFilter WRITE setFilter NOTIFY filterChanged)
+
     Q_PROPERTY (QString albumId READ getAlbumId WRITE setAlbumId NOTIFY albumIdChanged)
     Q_PROPERTY (QString artistId READ getArtistId WRITE setArtistId NOTIFY artistIdChanged)
-    Q_PROPERTY (int selectedCount READ selectedCount NOTIFY selectedCountChanged)
+    Q_PROPERTY (QString playlistId READ getPlaylistId WRITE setPlaylistId NOTIFY playlistIdChanged)
+
 public:
-    explicit TrackModel(QObject *parent = 0);
-    ~TrackModel();
-
-    void clear();
-
-    int getCount();
-
-    void setFilter(const QString& filter);
-    QString getFilter();
-
+    explicit TrackModel(QObject *parent = nullptr);
     void setAlbumId(const QString& id);
     QString getAlbumId();
-
     void setArtistId(const QString& id);
     QString getArtistId();
-
-    int selectedCount();
-
-    Q_INVOKABLE void setSelected(int index, bool value);
-    Q_INVOKABLE void setAllSelected(bool value);
-    Q_INVOKABLE QStringList selectedPaths();
+    void setPlaylistId(const QString& id);
+    QString getPlaylistId();
+    Q_INVOKABLE QVariantList selectedItems();
 
 signals:
-    void countChanged();
-    void filterChanged();
     void albumIdChanged();
     void artistIdChanged();
-    void selectedCountChanged();
-
-private slots:
-    void processTrackerReply(const QStringList& varNames,
-                             const QByteArray& data);
-    void processTrackerError();
+    void playlistIdChanged();
 
 private:
-    QString m_filter;
+    enum TrackerTasks {
+        TaskAlbum,
+        TaskArtist,
+        TaskPlaylist,
+        TaskEntries
+    };
+
+    static const QString queryByAlbumTemplate;
+    static const QString queryByArtistTemplate;
+    static const QString queryByPlaylistTemplate;
+    static const QString queryByEntriesTemplate;
+
     QString m_albumId;
     QString m_artistId;
-    QString m_queryByAlbumTemplate;
-    QString m_queryByArtistTemplate;
-    int m_selectedCount = 0;
+    QString m_playlistId;
 
-    void updateModel();
+    QList<ListItem*> makeItems();
+    QList<ListItem*> processTrackerReply(
+            TrackerTasks task,
+            const QStringList& varNames,
+            const QByteArray& data);
 };
 
 #endif // TRACKMODEL_H

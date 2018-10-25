@@ -18,10 +18,12 @@
 #include <QUrl>
 
 #include "listmodel.h"
+#include "itemmodel.h"
 
-class AlbumItem : public ListItem
+class AlbumItem : public SelectableItem
 {
     Q_OBJECT
+
 public:
     enum Roles {
         IdRole = Qt::UserRole,
@@ -29,24 +31,24 @@ public:
         ArtistRole,
         CountRole,
         LengthRole,
-        ImageRole
+        IconRole
     };
 
 public:
-    AlbumItem(QObject *parent = 0): ListItem(parent) {}
+    AlbumItem(QObject *parent = nullptr): SelectableItem(parent) {}
     explicit AlbumItem(const QString &id,
                       const QString &title,
                       const QString &artist,
-                      const QUrl &image,
+                      const QUrl &icon,
                       int count,
                       int length,
-                      QObject *parent = 0);
+                      QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
     inline QString id() const { return m_id; }
     inline QString title() const { return m_title; }
     inline QString artist() const { return m_artist; }
-    inline QUrl image() const { return m_image; }
+    inline QUrl icon() const { return m_icon; }
     inline int count() const { return m_count; }
     inline int length() const { return m_length; }
 
@@ -54,54 +56,34 @@ private:
     QString m_id;
     QString m_title;
     QString m_artist;
-    QUrl m_image;
+    QUrl m_icon;
     int m_count;
     int m_length;
 };
 
-class AlbumModel : public ListModel
+class AlbumModel : public SelectableItemModel
 {
     Q_OBJECT
-    Q_PROPERTY (int count READ getCount NOTIFY countChanged)
-    Q_PROPERTY (QString filter READ getFilter WRITE setFilter NOTIFY filterChanged)
+
 public:
-    explicit AlbumModel(QObject *parent = 0);
-    ~AlbumModel();
-
-    void clear();
-
-    int getCount();
-
-    void setFilter(const QString& filter);
-    QString getFilter();
-
-    Q_INVOKABLE void querySongs(const QString& albumId);
-
-signals:
-    void songsQueryResult(const QStringList& songs);
-    void countChanged();
-    void filterChanged();
-
-private slots:
-    void processTrackerReply(const QStringList& varNames,
-                             const QByteArray& data);
-    void processTrackerError();
+    explicit AlbumModel(QObject *parent = nullptr);
 
 private:
     struct AlbumData {
         QString id;
         QString title;
         QString artist;
-        QUrl image;
+        QUrl icon;
         int count;
         int length;
     };
 
-    QString m_filter;
-    QString m_albumsQueryTemplate;
-    QString m_tracksQueryTemplate;
+    static const QString albumsQueryTemplate;
 
-    void updateModel();
+    QList<ListItem*> makeItems();
+    QList<ListItem*> processTrackerReply(
+            const QStringList& varNames,
+            const QByteArray& data);
 };
 
 #endif // ALBUMMODEL_H

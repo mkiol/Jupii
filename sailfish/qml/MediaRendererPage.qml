@@ -146,7 +146,7 @@ Page {
         id: albumPickerPage
         AlbumsPage {
             onAccepted: {
-                playlist.addItemPaths(songs);
+               playlist.addItemUrls(items)
             }
         }
     }
@@ -155,7 +155,7 @@ Page {
         id: artistPickerPage
         ArtistPage {
             onAccepted: {
-                playlist.addItemPaths(songs);
+                playlist.addItemUrls(items);
             }
         }
     }
@@ -164,7 +164,7 @@ Page {
         id: playlistPickerPage
         PlaylistPage {
             onAccepted: {
-                playlist.addItemUrls(urls);
+                playlist.addItemUrls(items);
             }
         }
     }
@@ -218,7 +218,6 @@ Page {
         id: somafmPickerPage
         SomafmPage {
             onAccepted: {
-                //playlist.addItemUrl(url, "SomaFM: " + name, "SomaFM", icon);
                 playlist.addItemUrl(url, name, "SomaFM", icon);
             }
         }
@@ -228,7 +227,7 @@ Page {
         id: gpodderPickerPage
         GpodderPage {
             onAccepted: {
-                playlist.addItemUrls(urls)
+                playlist.addItemUrls(items)
             }
         }
     }

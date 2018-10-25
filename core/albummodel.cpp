@@ -7,96 +7,62 @@
 
 #include <QDebug>
 #include <QHash>
-#include <QUrl>
 #include <QFileInfo>
+#include <utility>
+#include <algorithm>
 
 #include "tracker.h"
 #include "albummodel.h"
 #include "trackercursor.h"
 
+const QString AlbumModel::albumsQueryTemplate =
+        "SELECT ?album nie:title(?album) AS title " \
+        "nmm:artistName(?artist) AS artist " \
+        "COUNT(?song) AS songs " \
+        "SUM(?length) AS totallength " \
+        "WHERE { ?album a nmm:MusicAlbum . " \
+        "FILTER regex(nie:title(?album), \"%1\", \"i\") " \
+        "?song nmm:musicAlbum ?album; " \
+        "nfo:duration ?length; " \
+        "nmm:performer ?artist . " \
+        "} GROUP BY ?album ?artist " \
+        "ORDER BY nie:title(?album) " \
+        "LIMIT 100";
+
 AlbumModel::AlbumModel(QObject *parent) :
-    ListModel(new AlbumItem, parent)
-{
-    m_albumsQueryTemplate = "SELECT ?album nie:title(?album) AS title " \
-                            "nmm:artistName(?artist) AS artist " \
-                            "COUNT(?song) AS songs " \
-                            "SUM(?length) AS totallength " \
-                            "WHERE { ?album a nmm:MusicAlbum . " \
-                            "FILTER regex(nie:title(?album), \"%1\", \"i\") " \
-                            "?song nmm:musicAlbum ?album; " \
-                            "nfo:duration ?length; " \
-                            "nmm:performer ?artist . " \
-                            "} GROUP BY ?album ?artist " \
-                            "ORDER BY ?album " \
-                            "LIMIT 500";
-
-    m_tracksQueryTemplate = "SELECT nie:url(?song) " \
-                            "WHERE { ?song nmm:musicAlbum \"%1\" } " \
-                            "ORDER BY nmm:trackNumber(?song) " \
-                            "LIMIT 500";
-
-    updateModel();
-}
-
-AlbumModel::~AlbumModel()
+    SelectableItemModel(new AlbumItem, parent)
 {
 }
 
-int AlbumModel::getCount()
+QList<ListItem*> AlbumModel::makeItems()
 {
-    return m_list.length();
-}
-
-void AlbumModel::updateModel()
-{
-    const QString query = m_albumsQueryTemplate.arg(m_filter);
-
+    const QString query = albumsQueryTemplate.arg(getFilter());
     auto tracker = Tracker::instance();
-    QObject::connect(tracker, &Tracker::queryFinished,
-                     this, &AlbumModel::processTrackerReply);
-    QObject::connect(tracker, &Tracker::queryError,
-                     this, &AlbumModel::processTrackerError);
 
-    tracker->queryAsync(query);
+    if (tracker->query(query, false)) {
+        auto result = tracker->getResult();
+        return processTrackerReply(result.first, result.second);
+    } else {
+        qWarning() << "Tracker query error";
+    }
+
+    return QList<ListItem*>();
 }
 
-void AlbumModel::querySongs(const QString &albumId)
-{
-    const QString query = m_tracksQueryTemplate.arg(albumId);
-
-    auto tracker = Tracker::instance();
-    QObject::connect(tracker, &Tracker::queryFinished,
-                     this, &AlbumModel::processTrackerReply);
-    QObject::connect(tracker, &Tracker::queryError,
-                     this, &AlbumModel::processTrackerError);
-
-    tracker->queryAsync(query);
-}
-
-void AlbumModel::processTrackerError()
+QList<ListItem*> AlbumModel::processTrackerReply(
+        const QStringList& varNames,
+        const QByteArray& data)
 {
     auto tracker = Tracker::instance();
-    QObject::disconnect(tracker, 0, 0, 0);
 
-    clear();
-}
-
-void AlbumModel::processTrackerReply(const QStringList& varNames,
-                                     const QByteArray& data)
-{
-    auto tracker = Tracker::instance();
-    QObject::disconnect(tracker, 0, 0, 0);
+    QList<ListItem*> items;
 
     TrackerCursor cursor(varNames, data);
-
     int n = cursor.columnCount();
 
     if (n > 4) {
-        // Result of Album query
-
-        clear();
-
-        QHash<QString, AlbumData> albums;
+        QHash<QString, AlbumData> albums; // album id => album data
+        //QHash<QString, QString> titles; // album title => album id
 
         while(cursor.next()) {
             /*for (int i = 0; i < n; ++i) {
@@ -109,10 +75,10 @@ void AlbumModel::processTrackerReply(const QStringList& varNames,
                 qDebug() << " value:" << value;
             }*/
 
-            QString id = cursor.value(0).toString();
+            auto id = cursor.value(0).toString();
 
             if (albums.contains(id)) {
-                qDebug() << "Duplicate album, updating count, length and skiping";
+                qDebug() << "Duplicate album id, updating count, length and skiping";
 
                 AlbumData& album = albums[id];
                 album.count += cursor.value(3).toInt();
@@ -121,100 +87,75 @@ void AlbumModel::processTrackerReply(const QStringList& varNames,
                 continue;
             }
 
-            QString imgFilePath = tracker->genAlbumArtFile(cursor.value(1).toString(),
+            auto title = cursor.value(1).toString();
+
+            /*if (titles.contains(title)) {
+                qDebug() << "Duplicate album title, updating count, length and skiping";
+
+                AlbumData& album = albums[titles.value(title)];
+                album.count += cursor.value(3).toInt();
+                album.length += cursor.value(4).toInt();
+
+                continue;
+            }*/
+
+            if (title == "Another Late Night") {
+                qDebug() << id << title << cursor.value(2).toString();
+            }
+
+            auto imgFilePath = tracker->genAlbumArtFile(cursor.value(1).toString(),
                                                            cursor.value(2).toString());
             QFileInfo imgFile(imgFilePath);
 
             AlbumData& album = albums[id];
             album.id = id;
-            album.title = cursor.value(1).toString();
+            album.title = title;
             album.artist = cursor.value(2).toString();
-            album.image = imgFile.exists() ? QUrl(imgFilePath) : QUrl();
+            album.icon = imgFile.exists() ? QUrl(imgFilePath) : QUrl();
             album.count = cursor.value(3).toInt();
             album.length = cursor.value(4).toInt();
+
+            //titles.insert(title, id);
         }
 
         auto end = albums.cend();
         for (auto it = albums.cbegin(); it != end; ++it) {
             const AlbumData& album = it.value();
-            appendRow(new AlbumItem(album.id,
-                                    album.title,
-                                    album.artist,
-                                    album.image,
-                                    album.count,
-                                    album.length,
-                                    this));
+            items << new AlbumItem(
+                        album.id,
+                        album.title,
+                        album.artist,
+                        album.icon,
+                        album.count,
+                        album.length);
         }
 
-        if (m_list.length() > 0)
-            emit countChanged();
+        // Sorting
+        std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
+            auto aa = dynamic_cast<AlbumItem*>(a);
+            auto bb = dynamic_cast<AlbumItem*>(b);
+            return aa->title() < bb->title();
+        });
 
-        return;
+    } else {
+        qWarning() << "Tracker reply for albums is incorrect";
     }
 
-    if (n > 0) {
-        // Result of Song query
-
-        QStringList songs;
-
-        while(cursor.next()) {
-            /*for (int i = 0; i < n; ++i) {
-                auto name = cursor.name(i);
-                auto type = cursor.type(i);
-                auto value = cursor.value(i);
-                qDebug() << "column:" << i;
-                qDebug() << " name:" << name;
-                qDebug() << " type:" << type;
-                qDebug() << " value:" << value;
-            }*/
-
-            QUrl file(cursor.value(0).toString());
-            songs << file.toLocalFile();
-        }
-
-        emit songsQueryResult(songs);
-
-        return;
-    }
-}
-
-void AlbumModel::clear()
-{
-    if (rowCount() == 0)
-        return;
-
-    removeRows(0,rowCount());
-
-    emit countChanged();
-}
-
-void AlbumModel::setFilter(const QString &filter)
-{
-    if (m_filter != filter) {
-        m_filter = filter;
-        emit filterChanged();
-
-        updateModel();
-    }
-}
-
-QString AlbumModel::getFilter()
-{
-    return m_filter;
+    return items;
 }
 
 AlbumItem::AlbumItem(const QString &id,
                    const QString &title,
                    const QString &artist,
-                   const QUrl &image,
+                   const QUrl &icon,
                    int count,
                    int length,
                    QObject *parent) :
-    ListItem(parent),
+    SelectableItem(parent),
     m_id(id),
     m_title(title),
     m_artist(artist),
-    m_image(image),
+    m_icon(icon),
     m_count(count),
     m_length(length)
 {
@@ -226,7 +167,7 @@ QHash<int, QByteArray> AlbumItem::roleNames() const
     names[IdRole] = "id";
     names[TitleRole] = "title";
     names[ArtistRole] = "artist";
-    names[ImageRole] = "image";
+    names[IconRole] = "icon";
     names[CountRole] = "count";
     names[LengthRole] = "length";
     return names;
@@ -241,8 +182,8 @@ QVariant AlbumItem::data(int role) const
         return title();
     case ArtistRole:
         return artist();
-    case ImageRole:
-        return image();
+    case IconRole:
+        return icon();
     case CountRole:
         return count();
     case LengthRole:

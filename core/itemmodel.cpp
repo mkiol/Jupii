@@ -187,7 +187,6 @@ QVariantList SelectableItemModel::selectedItems()
 
 void SelectableItemModel::workerDone()
 {
-
     if (m_worker && m_worker->data != m_filter) {
         //qDebug() << "Filter has changed, so updating model";
         updateModel(m_filter);

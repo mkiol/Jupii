@@ -12,29 +12,21 @@
 #include <QByteArray>
 #include <QStringList>
 #include <QRegExp>
-
 #include <utility>
 
-#include "taskexecutor.h"
 #include "dbus_tracker_inf.h"
 
 class Tracker :
-        public QObject,
-        public TaskExecutor
+        public QObject
 {
     Q_OBJECT
 
 public:
     static Tracker* instance(QObject *parent = nullptr);
-
     bool query(const QString& query, bool emitSignal = true);
-    void queryAsync(const QString& query);
-
     std::pair<const QStringList&, const QByteArray&> getResult();
-
     QString genAlbumArtFile(const QString& albumName,
                             const QString& artistName);
-
 
 signals:
     void queryFinished(const QStringList& varNames, const QByteArray& data);

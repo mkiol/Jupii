@@ -105,8 +105,7 @@ Page {
                 DetailItem {
                     label: qsTr("Author")
                     value: av.currentAuthor
-                    visible: app.streamTitle.length === 0 &&
-                             av.currentType !== AVTransport.T_Image &&
+                    visible: av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
                 }
 

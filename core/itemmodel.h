@@ -97,14 +97,14 @@ public:
     Q_INVOKABLE virtual QVariantList selectedItems();
 
 public slots:
-    void updateModel(const QString &data = QString());
+    virtual void updateModel(const QString &data = QString());
 
 signals:
     void filterChanged();
     void selectedCountChanged();
 
-private slots:
-    void workerDone();
+protected slots:
+    virtual void workerDone();
 
 private:
     QString m_filter;

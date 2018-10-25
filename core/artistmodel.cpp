@@ -14,87 +14,49 @@
 #include "artistmodel.h"
 #include "trackercursor.h"
 
+const QString ArtistModel::artistsQueryTemplate =
+        "SELECT ?artist nmm:artistName(?artist) AS artist " \
+        "COUNT(?song) AS songs " \
+        "SUM(?length) AS totallength " \
+        "WHERE { " \
+        "FILTER regex(nmm:artistName(?artist), \"%1\", \"i\") " \
+        "?song a nmm:MusicPiece; " \
+        "nfo:duration ?length; " \
+        "nmm:performer ?artist . } " \
+        "GROUP BY ?artist " \
+        "ORDER BY nmm:artistName(?artist) " \
+        "LIMIT 100";
+
 ArtistModel::ArtistModel(QObject *parent) :
-    ListModel(new ArtistItem, parent)
-{
-    m_artistsQueryTemplate = "SELECT ?artist nmm:artistName(?artist) AS artist " \
-                            "COUNT(?song) AS songs " \
-                            "SUM(?length) AS totallength " \
-                            "WHERE { " \
-                            "FILTER regex(nmm:artistName(?artist), \"%1\", \"i\") " \
-                            "?song a nmm:MusicPiece; " \
-                            "nfo:duration ?length; " \
-                            "nmm:performer ?artist . } " \
-                            "GROUP BY ?artist " \
-                            "ORDER BY nmm:artistName(?artist) " \
-                            "LIMIT 500";
-
-    m_tracksQueryTemplate = "SELECT nie:url(?song) " \
-                            "WHERE { ?song nmm:performer \"%1\" } " \
-                            "ORDER BY nmm:musicAlbum(?song) nmm:trackNumber(?song) " \
-                            "LIMIT 500";
-
-    updateModel();
-}
-
-ArtistModel::~ArtistModel()
+    SelectableItemModel(new ArtistItem, parent)
 {
 }
 
-int ArtistModel::getCount()
+QList<ListItem*> ArtistModel::makeItems()
 {
-    return m_list.length();
-}
-
-void ArtistModel::updateModel()
-{
-    const QString query = m_artistsQueryTemplate.arg(m_filter);
-
+    const QString query = artistsQueryTemplate.arg(getFilter());
     auto tracker = Tracker::instance();
-    QObject::connect(tracker, &Tracker::queryFinished,
-                     this, &ArtistModel::processTrackerReply);
-    QObject::connect(tracker, &Tracker::queryError,
-                     this, &ArtistModel::processTrackerError);
 
-    tracker->queryAsync(query);
+    if (tracker->query(query, false)) {
+        auto result = tracker->getResult();
+        return processTrackerReply(result.first, result.second);
+    } else {
+        qWarning() << "Tracker query error";
+    }
+
+    return QList<ListItem*>();
 }
 
-void ArtistModel::querySongs(const QString &artistId)
+QList<ListItem*> ArtistModel::processTrackerReply(
+        const QStringList& varNames,
+        const QByteArray& data)
 {
-    const QString query = m_tracksQueryTemplate.arg(artistId);
-
-    auto tracker = Tracker::instance();
-    QObject::connect(tracker, &Tracker::queryFinished,
-                     this, &ArtistModel::processTrackerReply);
-    QObject::connect(tracker, &Tracker::queryError,
-                     this, &ArtistModel::processTrackerError);
-
-    tracker->queryAsync(query);
-}
-
-void ArtistModel::processTrackerError()
-{
-    auto tracker = Tracker::instance();
-    QObject::disconnect(tracker, 0, 0, 0);
-
-    clear();
-}
-
-void ArtistModel::processTrackerReply(const QStringList& varNames,
-                                     const QByteArray& data)
-{
-    auto tracker = Tracker::instance();
-    QObject::disconnect(tracker, 0, 0, 0);
+    QList<ListItem*> items;
 
     TrackerCursor cursor(varNames, data);
-
     int n = cursor.columnCount();
 
     if (n > 3) {
-        // Result of Artist query
-
-        clear();
-
         QStringList artists;
 
         while(cursor.next()) {
@@ -105,72 +67,33 @@ void ArtistModel::processTrackerReply(const QStringList& varNames,
                 continue;
             }
 
-            appendRow(new ArtistItem(id,
-                                    cursor.value(1).toString(),
-                                    QUrl(), // image
-                                    cursor.value(2).toInt(),
-                                    cursor.value(3).toInt()));
+            items << new ArtistItem(
+                         id,
+                         cursor.value(1).toString(),
+                         QUrl(), // icon
+                         cursor.value(2).toInt(),
+                         cursor.value(3).toInt()
+                         );
 
             artists << id;
         }
-
-        if (m_list.length() > 0)
-            emit countChanged();
-
-        return;
+    } else {
+        qWarning() << "Tracker reply for artists is incorrect";
     }
 
-    if (n > 0) {
-        // Result of Song query
-
-        QStringList songs;
-
-        while(cursor.next()) {
-            QUrl file(cursor.value(0).toString());
-            songs << file.toLocalFile();
-        }
-
-        emit songsQueryResult(songs);
-
-        return;
-    }
-}
-
-void ArtistModel::clear()
-{
-    if (rowCount() == 0)
-        return;
-
-    removeRows(0,rowCount());
-
-    emit countChanged();
-}
-
-void ArtistModel::setFilter(const QString &filter)
-{
-    if (m_filter != filter) {
-        m_filter = filter;
-        emit filterChanged();
-
-        updateModel();
-    }
-}
-
-QString ArtistModel::getFilter()
-{
-    return m_filter;
+    return items;
 }
 
 ArtistItem::ArtistItem(const QString &id,
                    const QString &name,
-                   const QUrl &image,
+                   const QUrl &icon,
                    int count,
                    int length,
                    QObject *parent) :
-    ListItem(parent),
+    SelectableItem(parent),
     m_id(id),
     m_name(name),
-    m_image(image),
+    m_icon(icon),
     m_count(count),
     m_length(length)
 {
@@ -181,7 +104,7 @@ QHash<int, QByteArray> ArtistItem::roleNames() const
     QHash<int, QByteArray> names;
     names[IdRole] = "id";
     names[NameRole] = "name";
-    names[ImageRole] = "image";
+    names[IconRole] = "icon";
     names[CountRole] = "count";
     names[LengthRole] = "length";
     return names;
@@ -194,8 +117,8 @@ QVariant ArtistItem::data(int role) const
         return id();
     case NameRole:
         return name();
-    case ImageRole:
-        return image();
+    case IconRole:
+        return icon();
     case CountRole:
         return count();
     case LengthRole:

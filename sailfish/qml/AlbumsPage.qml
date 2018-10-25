@@ -19,11 +19,7 @@ Page {
 
     property bool _doPop: false
 
-    signal accepted(var songs);
-
-    Component.onCompleted: {
-        albumModel.filter = ""
-    }
+    signal accepted(var items);
 
     function doPop() {
         if (pageStack.busy)
@@ -42,80 +38,80 @@ Page {
         }
     }
 
-    AlbumModel {
-        id: albumModel
+    // Hack to update model after all transitions
+    property bool _completed: false
+    Component.onCompleted: {
+        _completed = true
+        itemModel.filter = ""
 
-        onSongsQueryResult: {
-            root.accepted(songs);
-            root.doPop()
+    }
+    onStatusChanged: {
+        if (status === PageStatus.Active && _completed) {
+            _completed = false
+            itemModel.updateModel()
         }
+    }
 
-        onFilterChanged: console.log("Filter: " + filter)
+    AlbumModel {
+        id: itemModel
     }
 
     SilicaListView {
         id: listView
 
         anchors.fill: parent
+
+        opacity: itemModel.busy ? 0.0 : 1.0
+        visible: opacity > 0.0
+        Behavior on opacity { FadeAnimation {} }
+
         currentIndex: -1
 
-        model: albumModel
+        model: itemModel
 
-        header: SearchField {
-            width: parent.width
-            placeholderText: qsTr("Search album")
-
-            onActiveFocusChanged: {
-                if (activeFocus) {
-                    listView.currentIndex = -1
-                }
-            }
-
-            onTextChanged: {
-                albumModel.filter = text.toLowerCase().trim()
-            }
+        header: SearchPageHeader {
+            implicitWidth: root.width
+            title: qsTr("Albums")
+            searchPlaceholderText: qsTr("Search album")
+            model: itemModel
+            view: listView
         }
 
         delegate: DoubleListItem {
             title.text: model.title
             subtitle.text: qsTr("%n track(s)", "", model.count)
-            icon.source: model.image
+            icon.source: model.icon
             defaultIcon.source: "image://theme/graphic-grid-playlist?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)
 
             menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Select tracks")
-                    onClicked: {
-                        selectTracks()
-                    }
-                }
-
-                MenuItem {
-                    text: qsTr("Add all tracks")
-                    onClicked: {
-                        albumModel.querySongs(model.id)
-                    }
+                    onClicked: click()
                 }
             }
 
-            onClicked: {
-                selectTracks()
-            }
+            onClicked: click()
 
-            function selectTracks() {
+            function click() {
                 var dialog = pageStack.push(Qt.resolvedUrl("TracksPage.qml"),{albumId: model.id})
                 dialog.accepted.connect(function() {
-                    root.accepted(dialog.selectedPaths)
+                    root.accepted(dialog.selectedItems)
                     root.doPop()
                 })
             }
         }
 
         ViewPlaceholder {
-            enabled: listView.count == 0
+            enabled: listView.count === 0 && !itemModel.busy
             text: qsTr("No albums")
         }
+    }
+
+    BusyIndicator {
+        anchors.centerIn: parent
+        running: itemModel.busy
+        size: BusyIndicatorSize.Large
     }
 
     VerticalScrollDecorator {

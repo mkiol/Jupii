@@ -882,7 +882,7 @@ void ContentServer::fillCoverArt(ItemMeta& item)
 
 bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &meta)
 {
-    QString path, name, desc, author; int t; QUrl icon;
+    QString path, name, desc, author; int t = 0; QUrl icon;
     if (!Utils::pathTypeNameCookieIconFromId(id, &path, &t, &name, nullptr,
                                              &icon, &desc, &author))
         return false;
@@ -1138,7 +1138,7 @@ QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile, bool* 
     auto id = QUrl(QString::fromUtf8(decrypt(hash.toUtf8())));
 
     if (!id.isValid()) {
-        qWarning() << "Id is invalid" << id.toString();
+        //qWarning() << "Id is invalid" << id.toString();
         if (ok)
             *ok = false;
         return QUrl();

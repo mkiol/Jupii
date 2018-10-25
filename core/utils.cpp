@@ -345,7 +345,7 @@ bool Utils::isUrlValid(const QUrl &url)
 bool Utils::isIdValid(const QUrl &id)
 {
     if (!id.isValid()) {
-        qWarning() << "Utils: Id is invalid:" << id.toString();
+        //qWarning() << "Utils: Id is invalid:" << id.toString();
         return false;
     }
 

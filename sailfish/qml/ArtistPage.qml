@@ -19,11 +19,7 @@ Page {
 
     property bool _doPop: false
 
-    signal accepted(var songs);
-
-    Component.onCompleted: {
-        artistModel.filter = ""
-    }
+    signal accepted(var items);
 
     function doPop() {
         if (pageStack.busy)
@@ -42,80 +38,80 @@ Page {
         }
     }
 
-    ArtistModel {
-        id: artistModel
+    // Hack to update model after all transitions
+    property bool _completed: false
+    Component.onCompleted: {
+        _completed = true
+        itemModel.filter = ""
 
-        onSongsQueryResult: {
-            root.accepted(songs);
-            root.doPop()
+    }
+    onStatusChanged: {
+        if (status === PageStatus.Active && _completed) {
+            _completed = false
+            itemModel.updateModel()
         }
+    }
 
-        onFilterChanged: console.log("Filter: " + filter)
+    ArtistModel {
+        id: itemModel
     }
 
     SilicaListView {
         id: listView
 
         anchors.fill: parent
+
+        opacity: itemModel.busy ? 0.0 : 1.0
+        visible: opacity > 0.0
+        Behavior on opacity { FadeAnimation {} }
+
         currentIndex: -1
 
-        model: artistModel
+        model: itemModel
 
-        header: SearchField {
-            width: parent.width
-            placeholderText: qsTr("Search artist")
-
-            onActiveFocusChanged: {
-                if (activeFocus) {
-                    listView.currentIndex = -1
-                }
-            }
-
-            onTextChanged: {
-                artistModel.filter = text.toLowerCase().trim()
-            }
+        header: SearchPageHeader {
+            implicitWidth: root.width
+            title: qsTr("Albums")
+            searchPlaceholderText: qsTr("Search artist")
+            model: itemModel
+            view: listView
         }
 
         delegate: DoubleListItem {
             title.text: model.name
             subtitle.text: qsTr("%n track(s)", "", model.count)
-            icon.source: model.image
+            icon.source: model.icon
             defaultIcon.source: "image://theme/icon-m-media-artists?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)
 
             menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Select tracks")
-                    onClicked: {
-                        selectTracks()
-                    }
-                }
-
-                MenuItem {
-                    text: qsTr("Add all tracks")
-                    onClicked: {
-                        artistModel.querySongs(model.id)
-                    }
+                    onClicked: click()
                 }
             }
 
-            onClicked: {
-                selectTracks()
-            }
+            onClicked: click()
 
-            function selectTracks() {
+            function click() {
                 var dialog = pageStack.push(Qt.resolvedUrl("TracksPage.qml"),{artistId: model.id})
                 dialog.accepted.connect(function() {
-                    root.accepted(dialog.selectedPaths)
+                    root.accepted(dialog.selectedItems)
                     root.doPop()
                 })
             }
         }
 
         ViewPlaceholder {
-            enabled: listView.count == 0
+            enabled: listView.count === 0 && !itemModel.busy
             text: qsTr("No artists")
         }
+    }
+
+    BusyIndicator {
+        anchors.centerIn: parent
+        running: itemModel.busy
+        size: BusyIndicatorSize.Large
     }
 
     VerticalScrollDecorator {
