@@ -70,10 +70,6 @@
         <translation>Artiest</translation>
     </message>
     <message>
-        <source>Playlist</source>
-        <translation>Afspeellijst</translation>
-    </message>
-    <message>
         <source>Audio from Video</source>
         <translation>Audio van video</translation>
     </message>
@@ -103,6 +99,14 @@
     </message>
     <message>
         <source>Apps &amp; services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playlist file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -151,12 +155,12 @@
         <translation>Nummers selecteren</translation>
     </message>
     <message>
-        <source>Add all tracks</source>
-        <translation>Alle nummers toevoegen</translation>
-    </message>
-    <message>
         <source>No albums</source>
         <translation>Geen albums</translation>
+    </message>
+    <message>
+        <source>Albums</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -177,12 +181,12 @@
         <translation>Nummers selecteren</translation>
     </message>
     <message>
-        <source>Add all tracks</source>
-        <translation>Alle nummers toevoegen</translation>
-    </message>
-    <message>
         <source>No artists</source>
         <translation>Geen artiesten</translation>
+    </message>
+    <message>
+        <source>Albums</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -337,6 +341,10 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <source>No podcasts</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MediaInfoPage</name>
@@ -446,10 +454,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
 </context>
 <context>
     <name>PlaylistPage</name>
-    <message>
-        <source>Search playlist</source>
-        <translation>Afspeellijst zoeken</translation>
-    </message>
     <message numerus="yes">
         <source>%n track(s)</source>
         <translation>
@@ -458,16 +462,24 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         </translation>
     </message>
     <message>
-        <source>Add tracks</source>
-        <translation>Nummers toevoegen</translation>
+        <source>Search playlist files</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete playlist</source>
-        <translation>Afspeellijst verwijderen</translation>
+        <source>Delete playlist file</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No playlists</source>
-        <translation>Geen afspeellijsten</translation>
+        <source>No playlist files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playlist files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select tracks</source>
+        <translation type="unfinished">Nummers selecteren</translation>
     </message>
 </context>
 <context>
@@ -546,10 +558,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation>Stapinterval voor door-/terugspoelen</translation>
     </message>
     <message>
-        <source>Experimental features</source>
-        <translation>Experimentele functies</translation>
-    </message>
-    <message>
         <source>Image content</source>
         <translation>Afbeeldingsinhoud</translation>
     </message>
@@ -567,6 +575,22 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Experiments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use microphone as a source for audio stream to UPnP devices. When enabled, Add Item list contains additional Microphone item.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone volume</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -587,13 +611,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
 </context>
 <context>
     <name>TracksPage</name>
-    <message numerus="yes">
-        <source>%n selected</source>
-        <translation>
-            <numerusform>%n geselecteerd</numerusform>
-            <numerusform>%n geselecteerd</numerusform>
-        </translation>
-    </message>
     <message>
         <source>Search tracks</source>
         <translation>Nummers zoeken</translation>

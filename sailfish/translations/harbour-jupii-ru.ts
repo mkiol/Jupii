@@ -70,10 +70,6 @@
         <translation>Исполнитель</translation>
     </message>
     <message>
-        <source>Playlist</source>
-        <translation>Список воспроизведения</translation>
-    </message>
-    <message>
         <source>Audio from Video</source>
         <translation>Аудиодорожка видео</translation>
     </message>
@@ -103,6 +99,14 @@
     </message>
     <message>
         <source>Apps &amp; services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playlist file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -152,12 +156,12 @@
         <translation>Выберите дорожки</translation>
     </message>
     <message>
-        <source>Add all tracks</source>
-        <translation>Добавить все</translation>
-    </message>
-    <message>
         <source>No albums</source>
         <translation>Нет альбомов</translation>
+    </message>
+    <message>
+        <source>Albums</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -179,12 +183,12 @@
         <translation>Выберите дорожки</translation>
     </message>
     <message>
-        <source>Add all tracks</source>
-        <translation>Добавить все</translation>
-    </message>
-    <message>
         <source>No artists</source>
         <translation>Нет исполнителей</translation>
+    </message>
+    <message>
+        <source>Albums</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -339,6 +343,10 @@ Pull down to connect to the local network.</source>
         <source>No podcasts</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MediaInfoPage</name>
@@ -448,10 +456,6 @@ Pull down to connect to the local network.</source>
 </context>
 <context>
     <name>PlaylistPage</name>
-    <message>
-        <source>Search playlist</source>
-        <translation>Поиск в списке</translation>
-    </message>
     <message numerus="yes">
         <source>%n track(s)</source>
         <translation>
@@ -461,16 +465,24 @@ Pull down to connect to the local network.</source>
         </translation>
     </message>
     <message>
-        <source>Add tracks</source>
-        <translation>Добавить дорожки</translation>
+        <source>Search playlist files</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete playlist</source>
-        <translation>Удалить список</translation>
+        <source>Delete playlist file</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No playlists</source>
-        <translation>Нет списков</translation>
+        <source>No playlist files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playlist files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select tracks</source>
+        <translation type="unfinished">Выберите дорожки</translation>
     </message>
 </context>
 <context>
@@ -550,10 +562,6 @@ Pull down to connect to the local network.</source>
         <translation>Шаг перехода вперед/назад</translation>
     </message>
     <message>
-        <source>Experimental features</source>
-        <translation>Экспериментальные функции</translation>
-    </message>
-    <message>
         <source>Image content</source>
         <translation>Вывод изображений</translation>
     </message>
@@ -571,6 +579,22 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Experiments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use microphone as a source for audio stream to UPnP devices. When enabled, Add Item list contains additional Microphone item.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone volume</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -591,14 +615,6 @@ Pull down to connect to the local network.</source>
 </context>
 <context>
     <name>TracksPage</name>
-    <message numerus="yes">
-        <source>%n selected</source>
-        <translation>
-            <numerusform>%n выбрана</numerusform>
-            <numerusform>%n выбраны</numerusform>
-            <numerusform>%n выбрано</numerusform>
-        </translation>
-    </message>
     <message>
         <source>Search tracks</source>
         <translation>Поиск дорожек</translation>

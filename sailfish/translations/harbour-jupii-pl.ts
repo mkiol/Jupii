@@ -85,11 +85,6 @@
         <translation>Artysta</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="71"/>
-        <source>Playlist</source>
-        <translation>Playlista</translation>
-    </message>
-    <message>
         <location filename="../qml/AddMediaPage.qml" line="80"/>
         <source>Audio from Video</source>
         <translation>Audio z pliku Wideo</translation>
@@ -110,12 +105,17 @@
         <translation>Plik</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="126"/>
+        <location filename="../qml/AddMediaPage.qml" line="127"/>
+        <source>Microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AddMediaPage.qml" line="137"/>
         <source>Apps &amp; services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="131"/>
+        <location filename="../qml/AddMediaPage.qml" line="142"/>
         <source>gPodder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -125,7 +125,12 @@
         <translation type="unfinished">URL</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="139"/>
+        <location filename="../qml/AddMediaPage.qml" line="71"/>
+        <source>Playlist file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AddMediaPage.qml" line="150"/>
         <source>SomaFM</source>
         <translation type="unfinished"></translation>
     </message>
@@ -166,12 +171,17 @@
 <context>
     <name>AlbumsPage</name>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="66"/>
+        <location filename="../qml/AlbumsPage.qml" line="74"/>
+        <source>Albums</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AlbumsPage.qml" line="75"/>
         <source>Search album</source>
         <translation>Szukaj albumów</translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/AlbumsPage.qml" line="81"/>
+        <location filename="../qml/AlbumsPage.qml" line="82"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n utwór</numerusform>
@@ -180,17 +190,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="88"/>
+        <location filename="../qml/AlbumsPage.qml" line="89"/>
         <source>Select tracks</source>
         <translation>Wybierz utwór</translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="95"/>
-        <source>Add all tracks</source>
-        <translation>Dodaj wszystkie utwory</translation>
-    </message>
-    <message>
-        <location filename="../qml/AlbumsPage.qml" line="117"/>
+        <location filename="../qml/AlbumsPage.qml" line="107"/>
         <source>No albums</source>
         <translation>Brak albumów</translation>
     </message>
@@ -198,12 +203,17 @@
 <context>
     <name>ArtistPage</name>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="66"/>
+        <location filename="../qml/ArtistPage.qml" line="74"/>
+        <source>Albums</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ArtistPage.qml" line="75"/>
         <source>Search artist</source>
         <translation>Szukaj artysty</translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/ArtistPage.qml" line="81"/>
+        <location filename="../qml/ArtistPage.qml" line="82"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n utwór</numerusform>
@@ -212,17 +222,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="88"/>
+        <location filename="../qml/ArtistPage.qml" line="89"/>
         <source>Select tracks</source>
         <translation>Wybierz utwór</translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="95"/>
-        <source>Add all tracks</source>
-        <translation>Dodaj wszystkie utwory</translation>
-    </message>
-    <message>
-        <location filename="../qml/ArtistPage.qml" line="117"/>
+        <location filename="../qml/ArtistPage.qml" line="107"/>
         <source>No artists</source>
         <translation>Brak artystów</translation>
     </message>
@@ -381,22 +386,22 @@ Pull down to connect to the local network.</source>
 <context>
     <name>GpodderEpisodesPage</name>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="52"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="51"/>
         <source>Search episodes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="68"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="64"/>
         <source>Unselect all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="69"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="65"/>
         <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="108"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="104"/>
         <source>No episodes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -404,17 +409,22 @@ Pull down to connect to the local network.</source>
 <context>
     <name>GpodderPage</name>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="71"/>
+        <location filename="../qml/GpodderPage.qml" line="70"/>
         <source>Podcasts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="72"/>
+        <location filename="../qml/GpodderPage.qml" line="71"/>
         <source>Search podcasts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="107"/>
+        <location filename="../qml/GpodderPage.qml" line="86"/>
+        <source>Select episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/GpodderPage.qml" line="104"/>
         <source>No podcasts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -422,18 +432,18 @@ Pull down to connect to the local network.</source>
 <context>
     <name>MediaInfoPage</name>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="93"/>
-        <location filename="../qml/MediaInfoPage.qml" line="99"/>
+        <location filename="../qml/MediaInfoPage.qml" line="94"/>
+        <location filename="../qml/MediaInfoPage.qml" line="100"/>
         <source>Title</source>
         <translation>Tytuł</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="93"/>
+        <location filename="../qml/MediaInfoPage.qml" line="94"/>
         <source>Name</source>
         <translation type="unfinished">Nazwa</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="106"/>
+        <location filename="../qml/MediaInfoPage.qml" line="107"/>
         <source>Author</source>
         <translation>Autor</translation>
     </message>
@@ -526,27 +536,27 @@ Pull down to connect to the local network.</source>
         <translation>Dodaj</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="483"/>
+        <location filename="../qml/MediaRendererPage.qml" line="486"/>
         <source>Play</source>
         <translation>Odtwarzaj</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="483"/>
+        <location filename="../qml/MediaRendererPage.qml" line="486"/>
         <source>Show</source>
         <translation>Pokaż</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="496"/>
+        <location filename="../qml/MediaRendererPage.qml" line="499"/>
         <source>Pause</source>
         <translation>Zatrzymaj</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="504"/>
+        <location filename="../qml/MediaRendererPage.qml" line="507"/>
         <source>Remove</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="../qml/MediaRendererPage.qml" line="538"/>
+        <location filename="../qml/MediaRendererPage.qml" line="541"/>
         <source>Unknown</source>
         <translation type="unfinished">Nieznany</translation>
     </message>
@@ -554,12 +564,17 @@ Pull down to connect to the local network.</source>
 <context>
     <name>PlaylistPage</name>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="66"/>
-        <source>Search playlist</source>
-        <translation>Szukaj playlistę</translation>
+        <location filename="../qml/PlaylistPage.qml" line="74"/>
+        <source>Playlist files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlaylistPage.qml" line="75"/>
+        <source>Search playlist files</source>
+        <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/PlaylistPage.qml" line="82"/>
+        <location filename="../qml/PlaylistPage.qml" line="85"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n utwór</numerusform>
@@ -568,19 +583,19 @@ Pull down to connect to the local network.</source>
         </translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="96"/>
-        <source>Add tracks</source>
-        <translation>Dodaj utwory</translation>
+        <location filename="../qml/PlaylistPage.qml" line="93"/>
+        <source>Select tracks</source>
+        <translation type="unfinished">Wybierz utwór</translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="103"/>
-        <source>Delete playlist</source>
-        <translation>Usuń playlistę</translation>
+        <location filename="../qml/PlaylistPage.qml" line="98"/>
+        <source>Delete playlist file</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="117"/>
-        <source>No playlists</source>
-        <translation>Brak playlist</translation>
+        <location filename="../qml/PlaylistPage.qml" line="122"/>
+        <source>No playlist files</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -609,7 +624,7 @@ Pull down to connect to the local network.</source>
 <context>
     <name>SearchDialogHeader</name>
     <message numerus="yes">
-        <location filename="../qml/SearchDialogHeader.qml" line="34"/>
+        <location filename="../qml/SearchDialogHeader.qml" line="35"/>
         <source>%n selected</source>
         <translation type="unfinished">
             <numerusform>%n wybrany</numerusform>
@@ -618,7 +633,7 @@ Pull down to connect to the local network.</source>
         </translation>
     </message>
     <message>
-        <location filename="../qml/SearchDialogHeader.qml" line="44"/>
+        <location filename="../qml/SearchDialogHeader.qml" line="45"/>
         <source>Search episodes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -641,42 +656,57 @@ Pull down to connect to the local network.</source>
         <translation>Przy podłączeniu do urządzenia, ostatnia lista odtwarzania zostanie automatycznie wczytana.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="62"/>
+        <location filename="../qml/SettingsPage.qml" line="64"/>
+        <source>Microphone volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="72"/>
+        <source>Experiments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="78"/>
         <source>Volume control with hardware keys</source>
         <translation>Sterowanie głośnością za pomocą sprzętowych przycisków</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="63"/>
+        <location filename="../qml/SettingsPage.qml" line="79"/>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
         <translation>Zmieniaj poziom głośności przy pomocy sprzętowch przycisków. Głośność będzie ustawiana na taki sam poziom jak głośność w telefonie.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="76"/>
+        <location filename="../qml/SettingsPage.qml" line="92"/>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
         <translation>Wyświetlanie obrazów na urządzeniach UPnP nie jest w pełni zaimplementowane. Ta opcja odblokowuje możliwość wyświetlania obrazów pomimo tego, że może powodować to błędy w %1m.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="89"/>
+        <location filename="../qml/SettingsPage.qml" line="104"/>
+        <source>Microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="116"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
         <translation>%1 obsługuje tylko urządzenia typu Media Renderer. Jeśli ta opcja jest włączona, wszystkie urządzenia UPnP będą widoczne, czyli także te które nie są obsługiwane np. domowy ruter lub Media Server. Dla nieobsługiwanych urządzeń, %1 jest wstanie pokazać tylko podstawowe informacje konfiguracyjne.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="103"/>
+        <location filename="../qml/SettingsPage.qml" line="130"/>
         <source>Adding devices manually</source>
         <translation>Ręczne dodawanie urządzeń</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="104"/>
+        <location filename="../qml/SettingsPage.qml" line="131"/>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
         <translation>Jeśli %1 nie będzie wstanie automatycznie wykryć urządzenia (np. z powodu tego, że jest w innej sieci LAN), możesz dodać takie urządzenie podając jego adres IP. Jeśli ta opcja jest włączona, górne menu zawiera dodatkowy element - Ręcznie dodaj urządzenie. Upewnij się, że twoje urządzenie nie jest blokowane przez firewall lub NAT.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="117"/>
+        <location filename="../qml/SettingsPage.qml" line="144"/>
         <source>Internet streaming mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="118"/>
+        <location filename="../qml/SettingsPage.qml" line="145"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -691,17 +721,17 @@ Pull down to connect to the local network.</source>
         <translation>Skok przewijania</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="56"/>
-        <source>Experimental features</source>
-        <translation>Eksperymentalne</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="75"/>
+        <location filename="../qml/SettingsPage.qml" line="91"/>
         <source>Image content</source>
         <translation>Możliwość wyświetlania obrazów</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="88"/>
+        <location filename="../qml/SettingsPage.qml" line="105"/>
+        <source>Use microphone as a source for audio stream to UPnP devices. When enabled, Add Item list contains additional Microphone item.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="115"/>
         <source>All devices visible</source>
         <translation>Wszystkie urządzenia widoczne</translation>
     </message>
@@ -714,44 +744,35 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="91"/>
+        <location filename="../qml/SomafmPage.qml" line="89"/>
         <source>Add channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="107"/>
+        <location filename="../qml/SomafmPage.qml" line="105"/>
         <source>No channels</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TracksPage</name>
-    <message numerus="yes">
-        <location filename="../qml/TracksPage.qml" line="60"/>
-        <source>%n selected</source>
-        <translation>
-            <numerusform>%n wybrany</numerusform>
-            <numerusform>%n wybrane</numerusform>
-            <numerusform>%n wybranych</numerusform>
-        </translation>
-    </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="66"/>
+        <location filename="../qml/TracksPage.qml" line="53"/>
         <source>Search tracks</source>
         <translation>Szukaj utworów</translation>
     </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="88"/>
+        <location filename="../qml/TracksPage.qml" line="70"/>
         <source>Unselect all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="89"/>
+        <location filename="../qml/TracksPage.qml" line="71"/>
         <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="117"/>
+        <location filename="../qml/TracksPage.qml" line="113"/>
         <source>No tracks</source>
         <translation>Brak utworów</translation>
     </message>
