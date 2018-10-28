@@ -21,12 +21,12 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="57"/>
         <source>Project website</source>
-        <translation type="unfinished"></translation>
+        <translation>Fuente</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="77"/>
         <source>%1 is developed as an open source project under %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 es desarrollado  como un proyecto de código abierto bajo %2.</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="63"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="69"/>
         <source>Copyright &amp;copy; %1 %2</source>
-        <translation type="unfinished">Derechos de autor: &amp;copy; %1 %2</translation>
+        <translation>Derechos de autor: &amp;copy; %1 %2</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="83"/>
@@ -107,32 +107,32 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="127"/>
         <source>Microphone</source>
-        <translation type="unfinished"></translation>
+        <translation>Micrófono</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="137"/>
         <source>Apps &amp; services</source>
-        <translation type="unfinished"></translation>
+        <translation>Apls &amp; servicios</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="142"/>
         <source>gPodder</source>
-        <translation type="unfinished"></translation>
+        <translation>gPodder</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="117"/>
         <source>URL</source>
-        <translation type="unfinished">LUR</translation>
+        <translation>LUR</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="71"/>
         <source>Playlist file</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivo de reproducción</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="150"/>
         <source>SomaFM</source>
-        <translation type="unfinished"></translation>
+        <translation>SomaFM</translation>
     </message>
 </context>
 <context>
@@ -140,32 +140,32 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="32"/>
         <source>Add URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar LUR</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="38"/>
         <source>Enter URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Marcar LUR</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="39"/>
         <source>URL</source>
-        <translation type="unfinished">LUR</translation>
+        <translation>LUR</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="57"/>
         <source>Enter Name (optional)</source>
-        <translation type="unfinished"></translation>
+        <translation>Introducir el nombre</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="71"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file (pls format), first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sólo se admiten LURs HTTP. Si LUR apunta a un archivo de lista de reproducción (formato pls), se agregará el primer elemento de reproducción. Si no se proporciona el nombre, se autodescubrirá basándose en los metadatos del flujo.</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="58"/>
         <source>Name</source>
-        <translation type="unfinished">Nombre</translation>
+        <translation>Nombre</translation>
     </message>
 </context>
 <context>
@@ -173,7 +173,7 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="74"/>
         <source>Albums</source>
-        <translation type="unfinished"></translation>
+        <translation>Álbumes</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="75"/>
@@ -204,7 +204,7 @@
     <message>
         <location filename="../qml/ArtistPage.qml" line="74"/>
         <source>Albums</source>
-        <translation type="unfinished"></translation>
+        <translation>Álbumes</translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="75"/>
@@ -350,7 +350,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="72"/>
         <source>Add device manually</source>
-        <translation>Añadir dispositivo manual</translation>
+        <translation>Añadir dispositivo manualmente</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="79"/>
@@ -388,22 +388,22 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="51"/>
         <source>Search episodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar episodios</translation>
     </message>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="64"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseleccionar todo</translation>
     </message>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="65"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar todo</translation>
     </message>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="104"/>
         <source>No episodes</source>
-        <translation type="unfinished"></translation>
+        <translation>No hay episodios</translation>
     </message>
 </context>
 <context>
@@ -411,22 +411,22 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/GpodderPage.qml" line="70"/>
         <source>Podcasts</source>
-        <translation type="unfinished"></translation>
+        <translation>Pódcast</translation>
     </message>
     <message>
         <location filename="../qml/GpodderPage.qml" line="71"/>
         <source>Search podcasts</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar pódcast</translation>
     </message>
     <message>
         <location filename="../qml/GpodderPage.qml" line="86"/>
         <source>Select episodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar episodios</translation>
     </message>
     <message>
         <location filename="../qml/GpodderPage.qml" line="104"/>
         <source>No podcasts</source>
-        <translation type="unfinished"></translation>
+        <translation>No hay pódcast</translation>
     </message>
 </context>
 <context>
@@ -440,7 +440,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="94"/>
         <source>Name</source>
-        <translation type="unfinished">Nombre</translation>
+        <translation>Nombre</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="107"/>
@@ -460,7 +460,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="128"/>
         <source>Content type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de contenido</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="135"/>
@@ -475,7 +475,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="150"/>
         <source>URL</source>
-        <translation type="unfinished">LUR</translation>
+        <translation>LUR</translation>
     </message>
 </context>
 <context>
@@ -483,27 +483,27 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="303"/>
         <source>Item is already added</source>
-        <translation type="unfinished"></translation>
+        <translation>El elemento ya está añadido</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="305"/>
         <source>Item cannot be added</source>
-        <translation type="unfinished"></translation>
+        <translation>El elemento no puede ser añadido</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="307"/>
         <source>Some items cannot be added</source>
-        <translation type="unfinished"></translation>
+        <translation>Algunos elementos no pueden ser añadidos</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="309"/>
         <source>Items cannot be added</source>
-        <translation type="unfinished"></translation>
+        <translation>El elemento no pude ser añadido</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="311"/>
         <source>Unknown error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error desconocido</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="334"/>
@@ -523,12 +523,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="406"/>
         <source>Save playlist</source>
-        <translation>Guardar reproducciones</translation>
+        <translation>Guardar reproducción</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="416"/>
         <source>Clear playlist</source>
-        <translation>Limpiar reproducciones</translation>
+        <translation>Limpiar reproducción</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="422"/>
@@ -558,7 +558,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="541"/>
         <source>Unknown</source>
-        <translation type="unfinished">Desconocido</translation>
+        <translation>Desconocido</translation>
     </message>
 </context>
 <context>
@@ -566,12 +566,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/PlaylistPage.qml" line="74"/>
         <source>Playlist files</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivos de reproducción</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="75"/>
         <source>Search playlist files</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar archivos de Reproducción</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="85"/>
@@ -584,17 +584,17 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/PlaylistPage.qml" line="93"/>
         <source>Select tracks</source>
-        <translation type="unfinished">Elegir pistas</translation>
+        <translation>Elegir pistas</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="98"/>
         <source>Delete playlist file</source>
-        <translation type="unfinished"></translation>
+        <translation>Borrar archivo de reproducción</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="122"/>
         <source>No playlist files</source>
-        <translation type="unfinished"></translation>
+        <translation>No hay archivos de reproducción</translation>
     </message>
 </context>
 <context>
@@ -612,7 +612,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="42"/>
         <source>Enter playlist name</source>
-        <translation>Marcar el nombre de la reproducción</translation>
+        <translation>Marcar el nombre de reproducción</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="43"/>
@@ -633,7 +633,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="45"/>
         <source>Search episodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar episodios</translation>
     </message>
 </context>
 <context>
@@ -656,12 +656,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="64"/>
         <source>Microphone volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Volumen de micrófono</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="72"/>
         <source>Experiments</source>
-        <translation type="unfinished"></translation>
+        <translation>Experimental</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="78"/>
@@ -681,7 +681,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
         <source>Microphone</source>
-        <translation type="unfinished"></translation>
+        <translation>Micrófono</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="116"/>
@@ -701,12 +701,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="144"/>
         <source>Internet streaming mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo flujo por internet</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="145"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation type="unfinished"></translation>
+        <translation>La transmisión desde internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predeterminado) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido de un host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para hacer un funcionamiento de transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 en no es necesario que se habilite todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
@@ -726,7 +726,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="105"/>
         <source>Use microphone as a source for audio stream to UPnP devices. When enabled, Add Item list contains additional Microphone item.</source>
-        <translation type="unfinished"></translation>
+        <translation>Usa el micrófono como fuente de flujo de audio a los dispositivos UPnP. Cuando está activada, Agregar lista de elementos contiene un elemento de micrófono adicional.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="115"/>
@@ -739,17 +739,17 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SomafmPage.qml" line="74"/>
         <source>Search channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar canales</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="89"/>
         <source>Add channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar canal</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="105"/>
         <source>No channels</source>
-        <translation type="unfinished"></translation>
+        <translation>No hay canales</translation>
     </message>
 </context>
 <context>
@@ -762,12 +762,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/TracksPage.qml" line="70"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseleccionar todo</translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="71"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar todo</translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="113"/>
