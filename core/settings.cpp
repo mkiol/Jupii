@@ -287,6 +287,38 @@ bool Settings::getUseDbusVolume()
     return settings.value("usedbusvolume", false).toBool();
 }
 
+void Settings::setMicEnabled(bool value)
+{
+    if (getMicEnabled() != value) {
+        settings.setValue("micenabled", value);
+        emit micEnabledChanged();
+    }
+}
+
+bool Settings::getMicEnabled()
+{
+    return settings.value("micenabled", false).toBool();
+}
+
+void Settings::setMicVolume(float value)
+{
+    value = value < 0 ? 0 : value > 50 ? 50 : value;
+
+    if (getMicVolume() != value) {
+        settings.setValue("micvolume", value);
+        emit micVolumeChanged();
+    }
+}
+
+float Settings::getMicVolume()
+{
+#ifdef SAILFISH
+    return settings.value("micvolume", 25.0).toFloat();
+#else
+    return settings.value("micvolume", 1.0).toFloat();
+#endif
+}
+
 void Settings::setRememberPlaylist(bool value)
 {
     if (getRememberPlaylist() != value) {

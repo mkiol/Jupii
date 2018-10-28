@@ -15,6 +15,8 @@
 #include <QTextStream>
 #include <QRegExp>
 #include <QTimer>
+#include <QAudioFormat>
+#include <QAudioDeviceInfo>
 
 #include <iomanip>
 #include <memory>
@@ -191,11 +193,68 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
         }
     }
 
+    bool isMic = Utils::isUrlMic(id);
+
     if (isFile) {
         requestForFileHandler(id, meta, req, resp);
+    } else if (isMic) {
+        requestForMicHandler(id, meta, req, resp);
     } else {
         requestForUrlHandler(id, meta, req, resp);
     }
+}
+
+void ContentServerWorker::stopMic()
+{
+    if (micDev) {
+        qDebug() << "Stopping mic";
+        micDev->setActive(false);
+
+        if (micItems.isEmpty()) {
+            micDev->close();
+
+            auto t = new QTimer(this);
+            t->setSingleShot(true);
+            connect(t, &QTimer::timeout, [this, t]{
+                if (micItems.isEmpty() && micInput)
+                    micInput.reset(nullptr);
+                t->deleteLater();
+            });
+
+            t->start(100);
+        }
+    }
+}
+
+void ContentServerWorker::startMic()
+{
+    qDebug() << "Starting mic";
+
+    QAudioFormat format;
+    format.setSampleRate(ContentServer::micSampleRate);
+    format.setChannelCount(ContentServer::micChannelCount);
+    format.setSampleSize(ContentServer::micSampleSize);
+    format.setCodec("audio/pcm");
+    //format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setByteOrder(QAudioFormat::BigEndian);
+    format.setSampleType(QAudioFormat::SignedInt);
+
+    auto dev = QAudioDeviceInfo::defaultInputDevice();
+    if (!dev.isFormatSupported(format)) {
+        qWarning() << "Default audio format not supported, trying to use the nearest.";
+        format = dev.nearestFormat(format);
+        qDebug() << "Nerest format:";
+        qDebug() << " codec:" << format.codec();
+        qDebug() << " sampleSize:" << format.sampleSize();
+        qDebug() << " sampleRate:" << format.sampleRate();
+        qDebug() << " channelCount:" << format.channelCount();
+    }
+
+    if (!micDev)
+        micDev = std::unique_ptr<MicDevice>(new MicDevice(this));
+    micInput = std::unique_ptr<QAudioInput>(new QAudioInput(format, this));
+    micDev->setActive(true);
+    micInput->start(micDev.get());
 }
 
 void ContentServerWorker::requestForFileHandler(const QUrl &id,
@@ -281,6 +340,36 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
                 this, &ContentServerWorker::proxyReadyRead);
 
         emit proxyItemAdded(item.id);
+    }
+}
+
+void ContentServerWorker::requestForMicHandler(const QUrl &id,
+                                                const ContentServer::ItemMeta *meta,
+                                                QHttpRequest *req, QHttpResponse *resp)
+{
+    bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
+
+    resp->setHeader("Content-Type", meta->mime);
+    resp->setHeader("Connection", "close");
+    resp->setHeader("transferMode.dlna.org", "Streaming");
+    resp->setHeader("contentFeatures.dlna.org",
+                    ContentServer::dlnaContentFeaturesHeader(meta->mime));
+
+    if (isHead) {
+        qDebug() << "Sending 200 response without content";
+        sendResponse(resp, 200, "");
+    } else {
+        qDebug() << "Sending 200 response and starting streaming";
+        resp->writeHead(200);
+
+        if (!micDev || !micDev->isOpen()) {
+            startMic();
+        }
+
+        MicItem item;
+        item.req = req;
+        item.resp = resp;
+        micItems.append(item);
     }
 }
 
@@ -684,34 +773,47 @@ QString ContentServer::dlnaOrgFlagsForStreaming()
 
 QString ContentServer::dlnaOrgPnFlags(const QString &mime)
 {
-    if (mime == "video/x-msvideo")
+    if (mime.contains("video/x-msvideo"))
         return "DLNA.ORG_PN=AVI";
-    /*if (mime == "image/jpeg")
+    /*if (mime.contains(image/jpeg"))
         return "DLNA.ORG_PN=JPEG_LRG";*/
-    if (mime == "audio/aac" || mime == "audio/aacp")
+    if (mime.contains("audio/aac") || mime.contains("audio/aacp"))
         return "DLNA.ORG_PN=AAC";
-    if (mime == "audio/mpeg")
+    if (mime.contains("audio/mpeg"))
         return "DLNA.ORG_PN=MP3";
-    if (mime == "audio/vnd.wav")
+    if (mime.contains("audio/vnd.wav"))
         return "DLNA.ORG_PN=LPCM";
-    if (mime == "video/x-matroska")
+    if (mime.contains("audio/L16"))
+        return "DLNA.ORG_PN=LPCM";
+    if (mime.contains("video/x-matroska"))
         return "DLNA.ORG_PN=MKV";
     return QString();
 }
 
-QString ContentServer::dlnaContentFeaturesHeader(const QString& mime, bool seek)
+QString ContentServer::dlnaContentFeaturesHeader(const QString& mime, bool seek, bool flags)
 {
     QString pnFlags = dlnaOrgPnFlags(mime);
-    if (pnFlags.isEmpty())
-        return QString("%1;%2;%3").arg(
-                    seek ? dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek,
-                    dlnaOrgCiFlags,
-                    seek ? dlnaOrgFlagsForFile() : dlnaOrgFlagsForStreaming());
-    else
-        return QString("%1;%2;%3;%4").arg(
-                    pnFlags, seek ? dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek,
-                    dlnaOrgCiFlags,
-                    seek ? dlnaOrgFlagsForFile() : dlnaOrgFlagsForStreaming());
+    if (pnFlags.isEmpty()) {
+        if (flags)
+            return QString("%1;%2;%3").arg(
+                        seek ? dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek,
+                        dlnaOrgCiFlags,
+                        seek ? dlnaOrgFlagsForFile() : dlnaOrgFlagsForStreaming());
+        else
+            return QString("%1;%2").arg(seek ?
+                                            dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek,
+                                            dlnaOrgCiFlags);
+    } else {
+        if (flags)
+            return QString("%1;%2;%3;%4").arg(
+                        pnFlags, seek ? dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek,
+                        dlnaOrgCiFlags,
+                        seek ? dlnaOrgFlagsForFile() : dlnaOrgFlagsForStreaming());
+        else
+            return QString("%1;%2;%3").arg(
+                        pnFlags, seek ? dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek,
+                        dlnaOrgCiFlags);
+    }
 }
 
 ContentServer::Type ContentServer::getContentTypeByExtension(const QString &path)
@@ -988,7 +1090,7 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
             m << "size=\"" << QString::number(item->size) << "\" ";
         //m << "protocolInfo=\"http-get:*:" << item->mime << ":*\" ";
         m << "protocolInfo=\"http-get:*:" << item->mime << ":"
-          << (item->seekSupported ? dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek)
+          << dlnaContentFeaturesHeader(item->mime, item->seekSupported, false)
           << "\" ";
     }
 
@@ -1011,9 +1113,9 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
             m << "nrAudioChannels=\"" << QString::number(item->channels) << "\" ";
     } else {
         if (item->bitrate > 0)
-            m << "bitrate=\"" << QString::number(item->bitrate) << "\" ";
+            m << "bitrate=\"" << QString::number(item->bitrate, 'f', 0) << "\" ";
         if (item->sampleRate > 0)
-            m << "sampleFrequency=\"" << QString::number(item->sampleRate) << "\" ";
+            m << "sampleFrequency=\"" << QString::number(item->sampleRate, 'f', 0) << "\" ";
         if (item->channels > 0)
             m << "nrAudioChannels=\"" << QString::number(item->channels) << "\" ";
     }
@@ -1523,7 +1625,7 @@ const ContentServer::ItemMeta* ContentServer::getMetaForId(const QUrl &id, bool 
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew)
-{
+{    
     const auto i = metaCache.find(url);
     if (i == metaCache.end()) {
         qDebug() << "Meta data for" << url << "not cached";
@@ -1665,6 +1767,30 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
         meta.artist = tr("Unknown");
     if (meta.album.isEmpty())
         meta.album = tr("Unknown");*/
+
+    return metaCache.insert(url, meta);
+}
+
+const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+ContentServer::makeMicItemMeta(const QUrl &url)
+{
+    ContentServer::ItemMeta meta;
+    meta.valid = true;
+    meta.url = url;
+    meta.channels = ContentServer::micChannelCount;
+    meta.sampleRate = ContentServer::micSampleRate;
+    meta.mime = QString("audio/L%1;rate=%2;channels=%3")
+            .arg(ContentServer::micSampleSize)
+            .arg(meta.sampleRate)
+            .arg(meta.channels);
+    meta.type = ContentServer::TypeMusic;
+    meta.size = 0;
+    meta.local = true;
+    meta.seekSupported = false;
+    meta.title = tr("Microphone");
+    meta.artist = "Jupii";
+
+    meta.bitrate = meta.sampleRate * ContentServer::micSampleSize * meta.channels;
 
     return metaCache.insert(url, meta);
 }
@@ -1886,6 +2012,9 @@ ContentServer::makeItemMeta(const QUrl &url)
             qWarning() << "File doesn't exist, cannot create meta item";
             it = metaCache.end();
         }
+    } else if (Utils::isUrlMic(url)) {
+        qDebug() << "Mic url detected";
+        it = makeMicItemMeta(url);
     } else {
         qDebug() << "Geting meta using HTTP request";
         it = makeItemMetaUsingHTTPRequest(url);
@@ -2056,4 +2185,79 @@ ContentServer::parseM3u(const QByteArray &data, bool* ok)
         *ok = false;
 
     return list;
+}
+
+MicDevice::MicDevice(ContentServerWorker *worker, QObject *parent) :
+    QIODevice(parent),
+    worker(worker)
+{
+}
+
+void MicDevice::setActive(bool value)
+{
+    if (value != active) {
+        active = value;
+        if (active && !isOpen()) {
+            open(QIODevice::WriteOnly);
+        }
+    }
+}
+
+bool MicDevice::isActive()
+{
+    return active;
+}
+
+qint64 MicDevice::readData(char* data, qint64 maxSize)
+{
+    Q_UNUSED(data)
+    Q_UNUSED(maxSize)
+    return 0;
+}
+
+qint64 MicDevice::writeData(const char* data, qint64 maxSize)
+{
+    if (!worker->micItems.isEmpty()) {
+
+        QByteArray d = QByteArray::fromRawData(data, static_cast<int>(maxSize));
+        QByteArray d2;
+
+        float volume = Settings::instance()->getMicVolume();
+        if (volume != 1.0f) {
+            // changing mic volume
+            QDataStream sr(&d, QIODevice::ReadOnly);
+            sr.setByteOrder(QDataStream::BigEndian);
+            QDataStream sw(&d2, QIODevice::WriteOnly);
+            sw.setByteOrder(QDataStream::BigEndian);
+
+            qint16 sample;
+            while (!sr.atEnd()) {
+                sr >> sample;
+                sample = static_cast<qint16>(sample * volume);
+                sw << sample;
+            }
+        }
+
+        auto i = worker->micItems.begin();
+        while (i != worker->micItems.end()) {
+            //qDebug() << "Mic item, remote addr:" << i->req->remoteAddress();
+            if (i->resp->isFinished()) {
+                qWarning() << "Server request already finished, so removing mic item";
+                i = worker->micItems.erase(i);
+            } else {
+                if (active) {
+                    i->resp->write(d2.isEmpty() ? d : d2);
+                } else {
+                    qDebug() << "Mic dev is not active, so disconnecting server request";
+                    i->resp->end();
+                }
+                ++i;
+            }
+        }
+    }
+
+    if (worker->micItems.isEmpty())
+        worker->stopMic();
+
+    return maxSize;
 }

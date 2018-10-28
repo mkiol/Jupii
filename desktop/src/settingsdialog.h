@@ -31,6 +31,8 @@ private slots:
 
     void on_remoteContentModeComboBox_activated(int index);
 
+    void on_micCheckBox_toggled(bool checked);
+
 private:
     Ui::SettingsDialog *ui;
 };

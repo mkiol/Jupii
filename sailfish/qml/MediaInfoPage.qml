@@ -16,6 +16,7 @@ Page {
 
     property bool imgOk: image.status === Image.Ready
     property bool showPath: av.currentPath.length > 0
+    property bool isMic: utils.isIdMic(av.currentURL)
 
     SilicaFlickable {
         anchors.fill: parent
@@ -147,12 +148,12 @@ Page {
 
             SectionHeader {
                 text: av.currentPath.length !== 0 ? qsTr("Path") : qsTr("URL")
-                visible: av.currentURL.length !== 0
+                visible: !isMic && av.currentURL.length !== 0
             }
 
             CopyableLabel {
                 text: av.currentPath.length !== 0 ? av.currentPath : av.currentURL
-                visible: av.currentURL.length !== 0
+                visible: !isMic && av.currentURL.length !== 0
             }
 
             Spacer {}

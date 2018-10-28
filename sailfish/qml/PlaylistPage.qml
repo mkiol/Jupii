@@ -79,11 +79,13 @@ Page {
 
         delegate: DoubleListItem {
             id: listItem
+            property color primaryColor: highlighted ?
+                                         Theme.highlightColor : Theme.primaryColor
             title.text: model.title
             subtitle.text: qsTr("%n track(s)", "", model.count)
             icon.source: model.icon
-            defaultIcon.source: "image://theme/icon-m-media-playlists?" + (highlighted ?
-                                    Theme.highlightColor : Theme.primaryColor)
+            defaultIcon.source: "image://theme/icon-m-media-playlists?" +  + primaryColor
+
             ListView.onRemove: animateRemoval(listItem)
 
             menu: ContextMenu {

@@ -31,6 +31,7 @@ int SettingsDialog::exec()
     ui->lastPlaylistCheckBox->setCheckState(s->getRememberPlaylist() ? Qt::Checked : Qt::Unchecked);
     ui->allDevicesCheckBox->setCheckState(s->getShowAllDevices() ? Qt::Checked : Qt::Unchecked);
     ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
+    ui->micCheckBox->setCheckState(s->getMicEnabled() ? Qt::Checked : Qt::Unchecked);
     ui->remoteContentModeComboBox->setCurrentIndex(s->getRemoteContentMode());
 
     // Interfaces
@@ -81,4 +82,10 @@ void SettingsDialog::on_remoteContentModeComboBox_activated(int index)
 {
     auto s = Settings::instance();
     s->setRemoteContentMode(index);
+}
+
+void SettingsDialog::on_micCheckBox_toggled(bool checked)
+{
+    auto s = Settings::instance();
+    s->setMicEnabled(checked);
 }

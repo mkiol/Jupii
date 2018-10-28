@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QDataStream>
 #include <QUrlQuery>
+#include <QTimer>
 #include <utility>
 
 #include "playlistmodel.h"
@@ -785,7 +786,7 @@ void PlaylistModel::setToBeActiveId(const QString &id)
 {
     for (auto li : m_list) {
         auto fi = dynamic_cast<PlaylistItem*>(li);
-        if (!fi) {
+        if (fi) {
             qWarning() << "Dynamic cast is null";
             return;
         }

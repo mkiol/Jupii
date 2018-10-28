@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto rc = services->renderingControl;
     auto av = services->avTransport;
     auto playlist = PlaylistModel::instance();
+    auto s = Settings::instance();
 
     deviceModel = std::unique_ptr<DeviceModel>(new DeviceModel(this));
     ui->deviceList->setModel(deviceModel.get());
@@ -60,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     on_av_transportActionsChanged();
     on_rc_muteChanged();
     on_rc_volumeChanged();
+    on_settings_micEnabledChanged();
 
     connect(directory, &Directory::busyChanged,
             this, &MainWindow::on_directory_busyChanged);
@@ -99,6 +101,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::on_playlistModel_prevSupportedChanged);
     connect(playlist, &PlaylistModel::nextSupportedChanged,
             this, &MainWindow::on_playlistModel_nextSupportedChanged);
+    connect(s, &Settings::micEnabledChanged,
+            this, &MainWindow::on_settings_micEnabledChanged);
 
     on_playlistModel_playModeChanged();
     ui->playlistView->setModel(playlist);
@@ -140,6 +144,12 @@ void MainWindow::togglePlay()
         else
             av->stop();
     }
+}
+
+void MainWindow::on_settings_micEnabledChanged()
+{
+    auto s = Settings::instance();
+    ui->actionMic->setEnabled(s->getMicEnabled());
 }
 
 void MainWindow::on_playmodeButton_clicked()
@@ -242,9 +252,7 @@ void MainWindow::on_av_stateChanged()
     ui->playButton->setText(playing ? tr("Pause") : tr("Play"));
     ui->playButton->setEnabled(controlable && !image);
 
-    ui->addUrlButton->setEnabled(inited);
-    ui->addFilesButton->setEnabled(inited);
-    ui->clearButton->setEnabled(inited);
+    ui->menuPlaylist->setEnabled(inited);
 }
 
 void MainWindow::on_service_initedChanged()
@@ -362,45 +370,6 @@ void MainWindow::on_av_albumArtChanged()
                 ui->albumImage->setPixmap(getImageForType(av->getCurrentType()));
             }
         });
-    }
-}
-
-void MainWindow::on_addFilesButton_clicked()
-{
-    auto cserver = ContentServer::instance();
-
-    auto filters = QString("Audio files (%1);;Video files (%2)")
-            .arg(cserver->getExtensions(ContentServer::TypeMusic).join(" "),
-                 cserver->getExtensions(ContentServer::TypeVideo).join(" "));
-
-    if (Settings::instance()->getImageSupported())
-        filters += QString(";;Images (%3)")
-                .arg(cserver->getExtensions(ContentServer::TypeImage).join(" "));
-
-    auto paths = QFileDialog::getOpenFileNames(this,
-        tr("Select one or more files"),
-        QStandardPaths::standardLocations(QStandardPaths::HomeLocation).last(),
-        filters);
-
-    if (paths.isEmpty())
-        return;
-
-    auto playlist = PlaylistModel::instance();
-    playlist->addItemPaths(paths);
-}
-
-void MainWindow::on_addUrlButton_clicked()
-{
-    AddUrlDialog dialog(this);
-    if (dialog.exec()) {
-        auto url = QUrl(dialog.getUrl());
-        auto name = dialog.getName();
-        if (Utils::isUrlValid(url)) {
-            qDebug() << "Url entered:" << url;
-            PlaylistModel::instance()->addItemUrl(url, name);
-        } else {
-            qWarning() << "Url is invalid";
-        }
     }
 }
 
@@ -543,12 +512,6 @@ void MainWindow::play(int idx)
     }
 }
 
-void MainWindow::on_clearButton_clicked()
-{
-    auto playlist = PlaylistModel::instance();
-    playlist->clear();
-}
-
 void MainWindow::on_actionRemoveItem_triggered()
 {
     auto playlist = PlaylistModel::instance();
@@ -649,4 +612,59 @@ void MainWindow::on_actionConnect_triggered()
             qWarning() << "No items selected";
         }
     }
+}
+
+void MainWindow::on_actionFiles_triggered()
+{
+    auto cserver = ContentServer::instance();
+
+    auto filters = QString("Audio files (%1);;Video files (%2)")
+            .arg(cserver->getExtensions(ContentServer::TypeMusic).join(" "),
+                 cserver->getExtensions(ContentServer::TypeVideo).join(" "));
+
+    if (Settings::instance()->getImageSupported())
+        filters += QString(";;Images (%3)")
+                .arg(cserver->getExtensions(ContentServer::TypeImage).join(" "));
+
+    auto paths = QFileDialog::getOpenFileNames(this,
+        tr("Select one or more files"),
+        QStandardPaths::standardLocations(QStandardPaths::HomeLocation).last(),
+        filters);
+
+    if (paths.isEmpty())
+        return;
+
+    auto playlist = PlaylistModel::instance();
+    playlist->addItemPaths(paths);
+}
+
+void MainWindow::on_actionURL_triggered()
+{
+    AddUrlDialog dialog(this);
+    if (dialog.exec()) {
+        auto url = QUrl(dialog.getUrl());
+        auto name = dialog.getName();
+        if (Utils::isUrlValid(url)) {
+            qDebug() << "Url entered:" << url;
+            PlaylistModel::instance()->addItemUrl(url, name);
+        } else {
+            qWarning() << "Url is invalid";
+        }
+    }
+}
+
+void MainWindow::on_actionClear_triggered()
+{
+    auto ret = QMessageBox::question(this,
+                                     tr("Clear playlist"),
+                                     tr("Remove all items from the playlist?"),
+                                     QMessageBox::Ok|QMessageBox::Cancel,
+                                     QMessageBox::Ok);
+    if (ret == QMessageBox::Ok)
+        PlaylistModel::instance()->clear();
+}
+
+void MainWindow::on_actionMic_triggered()
+{
+    PlaylistModel::instance()->addItemUrl(QUrl("jupii://mic"));
 }

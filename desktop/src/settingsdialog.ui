@@ -80,6 +80,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="micCheckBox">
+           <property name="text">
+            <string>Microphone</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QCheckBox" name="allDevicesCheckBox">
            <property name="enabled">
             <bool>true</bool>

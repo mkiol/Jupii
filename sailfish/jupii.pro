@@ -2,7 +2,7 @@ TARGET = harbour-jupii
 
 CONFIG += c++11 sailfishapp json no_lflags_merge object_parallel_to_source
 
-QT += dbus sql
+QT += dbus sql multimedia
 
 PKGCONFIG += mlite5
 
@@ -72,7 +72,14 @@ OTHER_FILES += \
     qml/ArtistPage.qml \
     qml/PlaylistPage.qml \
     qml/SavePlaylistPage.qml \
-    qml/DBusVolumeAgent.qml
+    qml/DBusVolumeAgent.qml \
+    qml/AddUrlPage.qml \
+    qml/Tip.qml \
+    qml/SomafmPage.qml \
+    qml/GpodderPage.qml \
+    qml/GpodderEpisodesPage.qml \
+    qml/SearchPageHeader.qml \
+    qml/SearchDialogHeader.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 
@@ -101,12 +108,3 @@ OTHER_FILES += \
     rpm/$${TARGET}.yaml \
     rpm/$${TARGET}.changes.in \
     rpm/$${TARGET}.spec
-
-DISTFILES += \
-    qml/AddUrlPage.qml \
-    qml/Tip.qml \
-    qml/SomafmPage.qml \
-    qml/GpodderPage.qml \
-    qml/GpodderEpisodesPage.qml \
-    qml/SearchPageHeader.qml \
-    qml/SearchDialogHeader.qml

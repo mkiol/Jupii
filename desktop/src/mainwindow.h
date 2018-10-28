@@ -33,6 +33,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void on_settings_micEnabledChanged();
     void on_directory_busyChanged();
     void on_directory_initedChanged();
     void on_service_initedChanged();
@@ -48,8 +49,6 @@ private slots:
 
     void on_deviceList_activated(const QModelIndex &index);
     void on_connectButton_clicked();
-    void on_addFilesButton_clicked();
-    void on_addUrlButton_clicked();
     void on_prevButton_clicked();
     void on_nextButton_clicked();
     void on_muteButton_toggled(bool checked);
@@ -63,7 +62,6 @@ private slots:
     void on_actionAbout_triggered();
     void on_actionQt_triggered();
     void on_playlistView_activated(const QModelIndex &index);
-    void on_clearButton_clicked();
     void on_actionRemoveItem_triggered();
     void on_actionSettings_triggered();
     void on_volumeSlider_actionTriggered(int action);
@@ -74,6 +72,10 @@ private slots:
     void on_actionPauseItem_triggered();
     void on_deviceList_customContextMenuRequested(const QPoint &pos);
     void on_actionConnect_triggered();
+    void on_actionFiles_triggered();
+    void on_actionURL_triggered();
+    void on_actionClear_triggered();
+    void on_actionMic_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -19,6 +19,8 @@
 #include <QNetworkReply>
 #include <QThread>
 #include <QMutex>
+#include <QIODevice>
+#include <QAudioInput>
 #include <memory>
 
 #include <qhttpserver.h>
@@ -34,6 +36,7 @@ extern "C" {
 #endif
 
 class ContentServerWorker;
+class MicDevice;
 
 class ContentServer :
         public QThread
@@ -71,6 +74,10 @@ public:
         int channels = 0;
         int64_t size = 0;
     };
+
+    const static int micSampleRate = 44100;
+    const static int micChannelCount = 1;
+    const static int micSampleSize = 16;
 
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);
@@ -178,7 +185,7 @@ private:
     static QString dlnaOrgFlagsForFile();
     static QString dlnaOrgFlagsForStreaming();
     static QString dlnaOrgPnFlags(const QString& mime);
-    static QString dlnaContentFeaturesHeader(const QString& mime, bool seek = true);
+    static QString dlnaContentFeaturesHeader(const QString& mime, bool seek = true, bool flags = true);
     static QList<PlaylistItemMeta> parsePls(const QByteArray &data);
     static QList<PlaylistItemMeta> parseM3u(const QByteArray &data, bool* ok = nullptr);
     static QString getContentMimeByExtension(const QString &path);
@@ -189,6 +196,7 @@ private:
     bool getContentMeta(const QString &id, const QUrl &url, QString &meta);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url);
+    const QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
@@ -209,6 +217,7 @@ class ContentServerWorker :
         public QObject
 {
     Q_OBJECT
+    friend MicDevice;
 public:
     QHttpServer* server;
     QNetworkAccessManager* nam;
@@ -224,6 +233,8 @@ private slots:
     void proxyRedirected(const QUrl &url);
     void proxyFinished();
     void proxyReadyRead();
+    void startMic();
+    void stopMic();
 
 private:
     struct ProxyItem {
@@ -238,15 +249,44 @@ private:
         int metacounter = 0;
     };
 
+    struct MicItem {
+        QHttpRequest* req = nullptr;
+        QHttpResponse* resp = nullptr;
+    };
+
+    std::unique_ptr<QAudioInput> micInput;
+    std::unique_ptr<MicDevice> micDev;
+
     QHash<QNetworkReply*, ProxyItem> proxyItems;
+    QList<MicItem> micItems;
+
     void streamFile(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);
     bool seqWriteData(QFile &file, qint64 size, QHttpResponse *resp);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     void requestForFileHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void requestForUrlHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
+    void requestForMicHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void sendEmptyResponse(QHttpResponse *resp, int code);
     void sendResponse(QHttpResponse *resp, int code, const QByteArray &data = "");
     void sendRedirection(QHttpResponse *resp, const QString &location);
+};
+
+class MicDevice : public QIODevice
+{
+    Q_OBJECT
+
+public:
+    MicDevice(ContentServerWorker* worker, QObject *parent = nullptr);
+    void setActive(bool value);
+    bool isActive();
+
+protected:
+    qint64 readData(char *data, qint64 maxSize);
+    qint64 writeData(const char *data, qint64 maxSize);
+
+private:
+    bool active = false;
+    ContentServerWorker *worker;
 };
 
 #endif // CONTENTSERVER_H

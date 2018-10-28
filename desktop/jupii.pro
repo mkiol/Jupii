@@ -3,7 +3,7 @@ TARGET = jupii
 TEMPLATE = app
 
 CONFIG += c++11 json no_lflags_merge object_parallel_to_source
-QT += core gui widgets network dbus sql
+QT += core gui widgets network dbus sql multimedia
 
 PROJECTDIR = $$PWD/..
 

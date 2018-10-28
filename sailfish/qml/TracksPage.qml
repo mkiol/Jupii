@@ -88,18 +88,20 @@ Dialog {
                                model.artist : model.album
             //icon.source: model.icon.toString().length !== 0 ? (model.icon + "?" + primaryColor) : ""
             defaultIcon.source: {
-                switch (model.type) {
-                case AVTransport.T_Image:
-                    return "image://theme/icon-m-file-image?" + primaryColor
-                case AVTransport.T_Audio:
-                    return "image://theme/icon-m-file-audio?" + primaryColor
-                case AVTransport.T_Video:
-                    return "image://theme/icon-m-file-video?" + primaryColor
-                default:
-                    return "image://theme/icon-m-file-other?" + primaryColor
-                }
+                if (utils.isIdMic(model.id))
+                    return "image://theme/icon-m-mic?" + primaryColor
+                else
+                    switch (model.type) {
+                    case AVTransport.T_Image:
+                        return "image://theme/icon-m-file-image?" + primaryColor
+                    case AVTransport.T_Audio:
+                        return "image://theme/icon-m-file-audio?" + primaryColor
+                    case AVTransport.T_Video:
+                        return "image://theme/icon-m-file-video?" + primaryColor
+                    default:
+                        return "image://theme/icon-m-file-other?" + primaryColor
+                    }
             }
-
             onClicked: {
                 var selected = model.selected
                 itemModel.setSelected(model.index, !selected);

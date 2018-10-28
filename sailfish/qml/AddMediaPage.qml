@@ -122,6 +122,17 @@ Page {
                 }
             }
 
+            SimpleListItem {
+                visible: settings.micEnabled
+                title.text: qsTr("Microphone")
+                icon.source: "image://theme/icon-m-mic?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+                onClicked: {
+                    playlist.addItemUrl("jupii://mic");
+                    pageStack.pop()
+                }
+            }
+
             SectionHeader {
                 text: qsTr("Apps & services")
             }

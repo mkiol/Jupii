@@ -327,6 +327,11 @@ bool Utils::isGpodderAvailable()
     return Gpodder::enabled();
 }
 
+bool Utils::isIdMic(const QUrl &id)
+{
+    return Utils::isUrlMic(id);
+}
+
 bool Utils::isUrlValid(const QUrl &url)
 {
     if (!url.isValid())
@@ -335,7 +340,9 @@ bool Utils::isUrlValid(const QUrl &url)
     if (url.isLocalFile())
         return true;
 
-    if ((url.scheme() == "http" || url.scheme() == "https") &&
+    if ((url.scheme() == "http" ||
+         url.scheme() == "https" ||
+         url.scheme() == "jupii") &&
          !url.host().isEmpty())
         return true;
 
@@ -355,6 +362,11 @@ bool Utils::isIdValid(const QUrl &id)
         cookie = q.queryItemValue(Utils::cookieKey);
 
     return !cookie.isEmpty();
+}
+
+bool Utils::isUrlMic(const QUrl &url)
+{
+    return url.scheme() == "jupii" && url.host() == "mic";
 }
 
 QString Utils::pathFromId(const QString &id)

@@ -746,6 +746,14 @@ void AVTransport::pause()
         return;
     }
 
+    if (m_currentTrackDuration <= 0) {
+        // Utils::isUrlMic(getCurrentId())
+        //qDebug() << "Current url is Mic, so stopping instead pausing";
+        qDebug() << "Possibly live streaming content, so stopping instead pausing";
+        stop();
+        return;
+    }
+
     startTask([this](){
         m_updateMutex.lock();
 
@@ -783,6 +791,11 @@ void AVTransport::stop()
         qWarning() << "AVTransport service is not inited";
         return;
     }
+
+    m_relativeTimePosition = 0;
+    m_absoluteTimePosition = 0;
+    emit relativeTimePositionChanged();
+    emit absoluteTimePositionChanged();
 
     startTask([this](){
         m_updateMutex.lock();

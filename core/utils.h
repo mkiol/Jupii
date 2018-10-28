@@ -35,11 +35,13 @@ public:
     Q_INVOKABLE QString secToStr(int value);
     Q_INVOKABLE bool isUrlOk(const QUrl &url);
     Q_INVOKABLE bool isGpodderAvailable();
+    Q_INVOKABLE bool isIdMic(const QUrl &id);
 
     QString hash(const QString &value);
     static bool isIdValid(const QString &id);
     static bool isUrlValid(const QUrl &url);
     static bool isIdValid(const QUrl &id);
+    static bool isUrlMic(const QUrl &url);
     static QString pathFromId(const QString &id);
     static QString pathFromId(const QUrl &id);
     static int typeFromId(const QString &id);

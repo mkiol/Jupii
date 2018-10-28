@@ -91,34 +91,6 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QPushButton" name="addFilesButton">
-           <property name="text">
-            <string>Add files</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="addUrlButton">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Add URL</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="clearButton">
-           <property name="text">
-            <string>Clear playlist</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
         <widget class="QListView" name="playlistView">
          <property name="contextMenuPolicy">
           <enum>Qt::CustomContextMenu</enum>
@@ -326,8 +298,24 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuPlaylist">
+    <property name="title">
+     <string>Playlist</string>
+    </property>
+    <widget class="QMenu" name="menuAdd">
+     <property name="title">
+      <string>Add Item</string>
+     </property>
+     <addaction name="actionFiles"/>
+     <addaction name="actionURL"/>
+     <addaction name="actionMic"/>
+    </widget>
+    <addaction name="menuAdd"/>
+    <addaction name="actionClear"/>
+   </widget>
    <addaction name="menuFile_2"/>
    <addaction name="menuFile"/>
+   <addaction name="menuPlaylist"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSettings">
@@ -396,6 +384,26 @@
    </property>
    <property name="text">
     <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionFiles">
+   <property name="text">
+    <string>Files</string>
+   </property>
+  </action>
+  <action name="actionURL">
+   <property name="text">
+    <string>URL</string>
+   </property>
+  </action>
+  <action name="actionMic">
+   <property name="text">
+    <string>Mic</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
    </property>
   </action>
  </widget>
