@@ -701,7 +701,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="144"/>
         <source>Internet streaming mode</source>
-        <translation>Modo flujo por internet</translation>
+        <translation>Modo transmisión por internet</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="145"/>
