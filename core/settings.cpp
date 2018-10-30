@@ -287,22 +287,9 @@ bool Settings::getUseDbusVolume()
     return settings.value("usedbusvolume", false).toBool();
 }
 
-void Settings::setMicEnabled(bool value)
-{
-    if (getMicEnabled() != value) {
-        settings.setValue("micenabled", value);
-        emit micEnabledChanged();
-    }
-}
-
-bool Settings::getMicEnabled()
-{
-    return settings.value("micenabled", false).toBool();
-}
-
 void Settings::setMicVolume(float value)
 {
-    value = value < 0 ? 0 : value > 50 ? 50 : value;
+    value = value < 0 ? 0 : value > 70 ? 70 : value;
 
     if (getMicVolume() != value) {
         settings.setValue("micvolume", value);
@@ -313,7 +300,7 @@ void Settings::setMicVolume(float value)
 float Settings::getMicVolume()
 {
 #ifdef SAILFISH
-    return settings.value("micvolume", 25.0).toFloat();
+    return settings.value("micvolume", 35.0).toFloat();
 #else
     return settings.value("micvolume", 1.0).toFloat();
 #endif
@@ -337,7 +324,7 @@ QByteArray Settings::resetKey()
     QByteArray key;
 
     // Seed init, needed for key generation
-    qsrand(QTime::currentTime().msec());
+    qsrand(static_cast<uint>(QTime::currentTime().msec()));
 
     // key is 10 random chars
     for (uint i = 0; i < 10; ++i)

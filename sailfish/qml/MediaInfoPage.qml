@@ -17,6 +17,7 @@ Page {
     property bool imgOk: image.status === Image.Ready
     property bool showPath: av.currentPath.length > 0
     property bool isMic: utils.isIdMic(av.currentURL)
+    property bool isOwn: av.currentURL.length !== 0
 
     SilicaFlickable {
         anchors.fill: parent
@@ -26,7 +27,22 @@ Page {
             id: column
 
             width: root.width
-            //spacing: Theme.paddingLarge
+
+            PullDownMenu {
+                visible: !isMic && isOwn
+
+                MenuItem {
+                    text: av.currentPath.length !== 0 ? qsTr("Copy path") : qsTr("Copy URL")
+                    onClicked: Clipboard.text = av.currentPath.length !== 0 ? av.currentPath : av.currentURL
+                }
+
+                MenuItem {
+                    text: qsTr("Copy stream title")
+                    visible: app.streamTitle.length !== 0 &&
+                             av.currentType !== AVTransport.T_Image
+                    onClicked: Clipboard.text = app.streamTitle
+                }
+            }
 
             Item {
                 width: parent.width
@@ -91,16 +107,16 @@ Page {
                 }*/
 
                 DetailItem {
-                    label: app.streamTitle.length !== 0 ? qsTr("Name") : qsTr("Title")
+                    label: qsTr("Title")
                     value: av.currentTitle
                     visible: value.length !== 0
                 }
 
                 DetailItem {
-                    label: qsTr("Title")
+                    label: qsTr("Stream title")
                     value: app.streamTitle
-                    visible: av.currentType !== AVTransport.T_Image &&
-                             app.streamTitle.length !== 0
+                    visible: value.length !== 0 &&
+                             av.currentType !== AVTransport.T_Image
                 }
 
                 DetailItem {
@@ -127,7 +143,7 @@ Page {
                 DetailItem {
                     label: qsTr("Content type")
                     value: av.currentContentType
-                    visible: av.currentContentType.length !== 0
+                    visible: !isMic && av.currentContentType.length !== 0
                 }
             }
 
@@ -148,12 +164,28 @@ Page {
 
             SectionHeader {
                 text: av.currentPath.length !== 0 ? qsTr("Path") : qsTr("URL")
-                visible: !isMic && av.currentURL.length !== 0
+                visible: !isMic && isOwn
             }
 
-            CopyableLabel {
+            PaddedLabel {
                 text: av.currentPath.length !== 0 ? av.currentPath : av.currentURL
-                visible: !isMic && av.currentURL.length !== 0
+                visible: !isMic && isOwn
+            }
+
+            Slider {
+                visible: isMic
+                width: parent.width
+                minimumValue: 0
+                maximumValue: 70
+                stepSize: 1
+                handleVisible: true
+                value: settings.micVolume
+                valueText: value
+                label: qsTr("Microphone volume")
+
+                onValueChanged: {
+                    settings.micVolume = value
+                }
             }
 
             Spacer {}

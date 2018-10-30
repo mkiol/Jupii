@@ -147,10 +147,10 @@ QList<ListItem*> TrackModel::processTrackerReply(
                         static_cast<ContentServer::Type>(t);
 
             auto title = name.isEmpty() ?
-                        path.isEmpty() ?
-                            id.toString() :
-                            QFileInfo(path).fileName() :
-                        name;
+                            Utils::isUrlMic(id) ? tr("Microphone") :
+                                path.isEmpty() ? id.toString() :
+                                    QFileInfo(path).fileName() :
+                         name;
 
             auto filter = getFilter();
             if (filter.isEmpty() ||

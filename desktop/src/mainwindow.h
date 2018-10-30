@@ -33,7 +33,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_settings_micEnabledChanged();
     void on_directory_busyChanged();
     void on_directory_initedChanged();
     void on_service_initedChanged();
@@ -43,10 +42,8 @@ private slots:
     void on_av_stateChanged();
     void on_av_updated();
     void on_av_transportActionsChanged();
-
     void on_rc_volumeChanged();
     void on_rc_muteChanged();
-
     void on_deviceList_activated(const QModelIndex &index);
     void on_connectButton_clicked();
     void on_prevButton_clicked();
@@ -87,7 +84,8 @@ private:
     void notify(const QString& message = "");
     void togglePlay();
     void play(int idx);
-    QPixmap getImageForType(AVTransport::Type type);
+    QIcon getIconForType(AVTransport::Type type);
+    QPixmap getImageForCurrent();
 };
 
 #endif // MAINWINDOW_H

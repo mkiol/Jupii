@@ -134,9 +134,7 @@ DockedPanel_ {
                         leftMargin: Theme.horizontalPageMargin
                     }
 
-                    source: utils.isIdMic(av.currentId) ?
-                                "image://theme/icon-m-mic" :
-                                "image://theme/graphic-grid-playlist"
+                    source: "image://theme/graphic-grid-playlist"
 
                     Image {
                         id: _image

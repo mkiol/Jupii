@@ -27,6 +27,19 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("1.9.2")
+            }
+
+            description: qsTr("Use microphone as a source for audio stream played on your UPnP device. " +
+                              "When enabled, Add Item list contains additional item - Microphone.")
+
+            LogItem {
+                title: "Microphone"
+                description: "Use microphone as a source for audio stream that is played on your UPnP device. " +
+                             "Add Item list contains additional item - Microphone."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("1.9.1")
             }
 

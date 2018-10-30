@@ -52,22 +52,6 @@ Page {
                 }
             }
 
-            Slider {
-                visible: settings.micEnabled
-                width: parent.width
-                minimumValue: 0
-                maximumValue: 50
-                stepSize: 1
-                handleVisible: true
-                value: settings.micVolume
-                valueText: value
-                label: qsTr("Microphone volume")
-
-                onValueChanged: {
-                    settings.micVolume = value
-                }
-            }
-
             SectionHeader {
                 text: qsTr("Experiments")
             }
@@ -95,17 +79,6 @@ Page {
                                   "it could cause some issues.").arg(APP_NAME)
                 onClicked: {
                     settings.imageSupported = !settings.imageSupported
-                }
-            }
-
-            TextSwitch {
-                automaticCheck: false
-                checked: settings.micEnabled
-                text: qsTr("Microphone")
-                description: qsTr("Use microphone as a source for audio stream to UPnP devices. " +
-                                  "When enabled, Add Item list contains additional Microphone item.")
-                onClicked: {
-                    settings.micEnabled = !settings.micEnabled
                 }
             }
 

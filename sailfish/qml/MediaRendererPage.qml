@@ -447,13 +447,14 @@ Page {
             property color secondaryColor: highlighted || model.active ?
                                          Theme.secondaryHighlightColor : Theme.secondaryColor
             property bool isImage: model.type === AVTransport.T_Image
+            property bool isMic: utils.isIdMic(model.id)
 
             opacity: playlist.busy ? 0.0 : 1.0
             visible: opacity > 0.0
             Behavior on opacity { FadeAnimation {} }
 
             defaultIcon.source: {
-                if (utils.isIdMic(model.id))
+                if (isMic)
                     return "image://theme/icon-m-mic?" + primaryColor
                 else
                     switch (model.type) {
@@ -467,7 +468,7 @@ Page {
                         return "image://theme/icon-m-file-other?" + primaryColor
                     }
             }
-            icon.source: model.icon
+            icon.source: isMic ? "" : model.icon
             icon.visible: !model.toBeActive
             title.text: model.name
             title.color: primaryColor

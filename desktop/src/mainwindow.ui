@@ -387,21 +387,33 @@
    </property>
   </action>
   <action name="actionFiles">
+   <property name="icon">
+    <iconset theme="document-new"/>
+   </property>
    <property name="text">
     <string>Files</string>
    </property>
   </action>
   <action name="actionURL">
+   <property name="icon">
+    <iconset theme="applications-internet"/>
+   </property>
    <property name="text">
     <string>URL</string>
    </property>
   </action>
   <action name="actionMic">
+   <property name="icon">
+    <iconset theme="audio-input-microphone"/>
+   </property>
    <property name="text">
     <string>Mic</string>
    </property>
   </action>
   <action name="actionClear">
+   <property name="icon">
+    <iconset theme="delete"/>
+   </property>
    <property name="text">
     <string>Clear</string>
    </property>

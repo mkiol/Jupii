@@ -81,6 +81,7 @@ Dialog {
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
+            property bool isMic: utils.isIdMic(model.url)
 
             highlighted: down || model.selected
             title.text: model.title
@@ -88,7 +89,7 @@ Dialog {
                                model.artist : model.album
             //icon.source: model.icon.toString().length !== 0 ? (model.icon + "?" + primaryColor) : ""
             defaultIcon.source: {
-                if (utils.isIdMic(model.id))
+                if (isMic)
                     return "image://theme/icon-m-mic?" + primaryColor
                 else
                     switch (model.type) {

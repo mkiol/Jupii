@@ -46,6 +46,10 @@ extern "C" {
 }
 #endif
 
+#ifdef SAILFISH
+#include <sailfishapp.h>
+#endif
+
 ContentServer* ContentServer::m_instance = nullptr;
 
 const QString ContentServer::queryTemplate =
@@ -576,6 +580,10 @@ void ContentServerWorker::proxyReadyRead()
         const int count = static_cast<int>(item.reply->read(cdata, len));
         data.resize(count);
 
+        if (len != count) {
+            qDebug() << "len != count" << len << count;
+        }
+
         if (count > 0) {
             // Shoutcast metadata
             if (item.metaint > 0) {
@@ -590,6 +598,8 @@ void ContentServerWorker::proxyReadyRead()
 
                     if (size > maxsize) {
                         qWarning() << "Partial shoutcast metadata";
+                        auto metadata = data.mid(item.metaint-item.metacounter+1, maxsize);
+                        qDebug() << "Partial shoutcast metadata received:" << metadata;
                         //size = maxsize;
                         item.metaint = 0;
                         item.resp->write(data);
@@ -600,6 +610,8 @@ void ContentServerWorker::proxyReadyRead()
                         auto metadata = data.mid(item.metaint-item.metacounter+1, size);
                         qDebug() << "Shoutcast metadata received:" << metadata;
                         emit shoutcastMetadataReceived(item.id, metadata);
+                    } else {
+                        qDebug() << "Shoutcast metadata size is 0";
                     }
 
                     item.metacounter = bytes-item.metaint-size-1;
@@ -617,6 +629,8 @@ void ContentServerWorker::proxyReadyRead()
 
             item.resp->write(data);
         }
+    } else {
+        qWarning() << "Proxy ready read: invalid state = " << item.state;
     }
 }
 
@@ -1783,14 +1797,19 @@ ContentServer::makeMicItemMeta(const QUrl &url)
             .arg(ContentServer::micSampleSize)
             .arg(meta.sampleRate)
             .arg(meta.channels);
+    meta.bitrate = meta.sampleRate * ContentServer::micSampleSize * meta.channels;
     meta.type = ContentServer::TypeMusic;
     meta.size = 0;
     meta.local = true;
     meta.seekSupported = false;
-    meta.title = tr("Microphone");
-    meta.artist = "Jupii";
 
-    meta.bitrate = meta.sampleRate * ContentServer::micSampleSize * meta.channels;
+    meta.title = tr("Microphone");
+    //meta.artist = "Jupii";
+
+#ifdef SAILFISH
+    auto dir = QDir(SailfishApp::pathTo("images").toLocalFile());
+    meta.albumArt = dir.filePath("mic-cover.png");
+#endif
 
     return metaCache.insert(url, meta);
 }

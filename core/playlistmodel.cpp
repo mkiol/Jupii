@@ -664,19 +664,23 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 #ifndef SAILFISH
     QIcon icon;
     if (iconUrl.isEmpty()) {
-        switch (type) {
-        case ContentServer::TypeMusic:
-            icon = QIcon::fromTheme("audio-x-generic");
-            break;
-        case ContentServer::TypeVideo:
-            icon = QIcon::fromTheme("video-x-generic");
-            break;
-        case ContentServer::TypeImage:
-            icon = QIcon::fromTheme("image-x-generic");
-            break;
-        default:
-            icon = QIcon::fromTheme("unknown");
-            break;
+        if (Utils::isUrlMic(url)) {
+            icon = QIcon::fromTheme("audio-input-microphone");
+        } else {
+            switch (type) {
+            case ContentServer::TypeMusic:
+                icon = QIcon::fromTheme("audio-x-generic");
+                break;
+            case ContentServer::TypeVideo:
+                icon = QIcon::fromTheme("video-x-generic");
+                break;
+            case ContentServer::TypeImage:
+                icon = QIcon::fromTheme("image-x-generic");
+                break;
+            default:
+                icon = QIcon::fromTheme("unknown");
+                break;
+            }
         }
     } else {
         icon = QIcon(iconUrl);

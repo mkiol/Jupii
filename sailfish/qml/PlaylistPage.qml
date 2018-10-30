@@ -84,7 +84,7 @@ Page {
             title.text: model.title
             subtitle.text: qsTr("%n track(s)", "", model.count)
             icon.source: model.icon
-            defaultIcon.source: "image://theme/icon-m-media-playlists?" +  + primaryColor
+            defaultIcon.source: "image://theme/icon-m-media-playlists?" + primaryColor
 
             ListView.onRemove: animateRemoval(listItem)
 

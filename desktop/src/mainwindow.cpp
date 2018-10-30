@@ -47,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent) :
     auto rc = services->renderingControl;
     auto av = services->avTransport;
     auto playlist = PlaylistModel::instance();
-    auto s = Settings::instance();
 
     deviceModel = std::unique_ptr<DeviceModel>(new DeviceModel(this));
     ui->deviceList->setModel(deviceModel.get());
@@ -61,7 +60,6 @@ MainWindow::MainWindow(QWidget *parent) :
     on_av_transportActionsChanged();
     on_rc_muteChanged();
     on_rc_volumeChanged();
-    on_settings_micEnabledChanged();
 
     connect(directory, &Directory::busyChanged,
             this, &MainWindow::on_directory_busyChanged);
@@ -101,8 +99,6 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::on_playlistModel_prevSupportedChanged);
     connect(playlist, &PlaylistModel::nextSupportedChanged,
             this, &MainWindow::on_playlistModel_nextSupportedChanged);
-    connect(s, &Settings::micEnabledChanged,
-            this, &MainWindow::on_settings_micEnabledChanged);
 
     on_playlistModel_playModeChanged();
     ui->playlistView->setModel(playlist);
@@ -144,12 +140,6 @@ void MainWindow::togglePlay()
         else
             av->stop();
     }
-}
-
-void MainWindow::on_settings_micEnabledChanged()
-{
-    auto s = Settings::instance();
-    ui->actionMic->setEnabled(s->getMicEnabled());
 }
 
 void MainWindow::on_playmodeButton_clicked()
@@ -320,7 +310,7 @@ void MainWindow::on_av_positionChanged()
     }
 }
 
-QPixmap MainWindow::getImageForType(AVTransport::Type type)
+QIcon MainWindow::getIconForType(AVTransport::Type type)
 {
     QIcon icon;
     switch (type) {
@@ -333,11 +323,27 @@ QPixmap MainWindow::getImageForType(AVTransport::Type type)
     case AVTransport::T_Image:
         icon = QIcon::fromTheme("image-x-generic");
         break;
-    default:
-        icon = QIcon::fromTheme("unknown");
+    case AVTransport::T_Unknown:
+        icon = QIcon::fromTheme("image-x-generic");
         break;
     }
 
+    return icon;
+}
+
+QPixmap MainWindow::getImageForCurrent()
+{
+    auto av = Services::instance()->avTransport;
+
+    QIcon icon;
+
+    if (Utils::isUrlMic(av->getCurrentId())) {
+        icon = QIcon::fromTheme("audio-input-microphone");
+    } else {
+        icon = getIconForType(av->getCurrentType());
+    }
+
+    icon = icon.isNull() ? QIcon::fromTheme("unknown") : icon;
     return icon.pixmap(ui->albumImage->size());
 }
 
@@ -350,7 +356,7 @@ void MainWindow::on_av_albumArtChanged()
     if (!album.isValid()) {
         qWarning() << "Album art is invalid";
         //ui->albumImage->clear();
-        ui->albumImage->setPixmap(getImageForType(av->getCurrentType()));
+        ui->albumImage->setPixmap(getImageForCurrent());
     } else if (album.isLocalFile()) {
         auto img = QImage(album.toLocalFile()).scaled(ui->albumImage->minimumSize());
         auto pix = QPixmap::fromImage(img);
@@ -367,7 +373,7 @@ void MainWindow::on_av_albumArtChanged()
                 qWarning() << "Error occured during image download";
                 //ui->albumImage->clear();
                 auto av = Services::instance()->avTransport;
-                ui->albumImage->setPixmap(getImageForType(av->getCurrentType()));
+                ui->albumImage->setPixmap(getImageForCurrent());
             }
         });
     }
