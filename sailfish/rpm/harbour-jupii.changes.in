@@ -8,6 +8,11 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Thu Nov 01 2018 Michal Kosciesza <michal@mkiol.net> 1.9.2-1
+- Microphone feature
+- Better support for Shoutcast protocol
+- Improved playlist files UI
+
 * Fri Oct 19 2018 Michal Kosciesza <michal@mkiol.net> 1.9.1-1
 - Podcasts browser for gPodder
 - Bug fixes

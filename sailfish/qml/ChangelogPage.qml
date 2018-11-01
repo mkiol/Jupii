@@ -30,13 +30,22 @@ Page {
                 text: qsTr("Version %1").arg("1.9.2")
             }
 
-            description: qsTr("Use microphone as a source for audio stream played on your UPnP device. " +
-                              "When enabled, Add Item list contains additional item - Microphone.")
-
             LogItem {
                 title: "Microphone"
                 description: "Use microphone as a source for audio stream that is played on your UPnP device. " +
                              "Add Item list contains additional item - Microphone."
+            }
+
+            LogItem {
+                title: "Improved UI for playlist files"
+                description: "Possibility to search and select individual items from playlist files was added."
+            }
+
+            LogItem {
+                title: "Shoutcast meta data support"
+                description: "Many internet radio services use Shoutcast streaming. " +
+                             "Jupii is able to display stream title retrieved from Shoutcast meta data. " +
+                             "It also removes in-stream meta data if UPnP device doesn't support Shoutcast protocol."
             }
 
             SectionHeader {
