@@ -244,9 +244,12 @@ private:
         QUrl id;
         bool seek = false;
         int state = 0;
-        bool meta = false; // Shoutcast metadata requested by client
-        int metaint = 0; // Shoutcast metadata interval received from server
-        int metacounter = 0;
+        bool meta = false; // shoutcast metadata requested by client
+        int metaint = 0; // shoutcast metadata interval received from server
+        int metacounter = 0; // bytes couter reseted every metaint
+        //int metasize = 0; // shoutcast metadata size detected
+        //QByteArray metadata; // shoutcast metadata readed so far
+        QByteArray data;
     };
 
     struct MicItem {
@@ -269,6 +272,7 @@ private:
     void sendEmptyResponse(QHttpResponse *resp, int code);
     void sendResponse(QHttpResponse *resp, int code, const QByteArray &data = "");
     void sendRedirection(QHttpResponse *resp, const QString &location);
+    void processMetadata(QByteArray &data, ProxyItem &item);
 };
 
 class MicDevice : public QIODevice
