@@ -139,10 +139,6 @@
 </context>
 <context>
     <name>AlbumsPage</name>
-    <message>
-        <source>Search album</source>
-        <translation>Поиск альбомов</translation>
-    </message>
     <message numerus="yes">
         <source>%n track(s)</source>
         <translation>
@@ -163,13 +159,13 @@
         <source>Albums</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Search albums</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ArtistPage</name>
-    <message>
-        <source>Search artist</source>
-        <translation>Поиск исполнителей</translation>
-    </message>
     <message numerus="yes">
         <source>%n track(s)</source>
         <translation>
@@ -188,6 +184,10 @@
     </message>
     <message>
         <source>Albums</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search artists</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -383,8 +383,24 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation type="unfinished">Имя</translation>
+        <source>Microphone volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stream title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy stream title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy path</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -582,19 +598,7 @@ Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Microphone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Experiments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use microphone as a source for audio stream to UPnP devices. When enabled, Add Item list contains additional Microphone item.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Microphone volume</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
