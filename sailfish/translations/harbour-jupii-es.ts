@@ -178,7 +178,7 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="75"/>
         <source>Search albums</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar álbumes</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="82"/>
@@ -209,7 +209,7 @@
     <message>
         <location filename="../qml/ArtistPage.qml" line="75"/>
         <source>Search artists</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar artistas</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="82"/>
@@ -440,22 +440,22 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="35"/>
         <source>Copy URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar LUR</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="35"/>
         <source>Copy path</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar ruta</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="40"/>
         <source>Copy stream title</source>
-        <translation type="unfinished"></translation>
+        <translation>copiar título del flujo</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="116"/>
         <source>Stream title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título de flujo</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="123"/>
@@ -495,7 +495,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="184"/>
         <source>Microphone volume</source>
-        <translation type="unfinished">Volumen de micrófono</translation>
+        <translation>Volumen de micrófono</translation>
     </message>
 </context>
 <context>
