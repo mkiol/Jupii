@@ -17,6 +17,11 @@
 #include <QTimer>
 #include <QAudioFormat>
 #include <QAudioDeviceInfo>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
+#include <QDomText>
 
 #include <iomanip>
 #include <memory>
@@ -111,6 +116,10 @@ const QStringList ContentServer::m_m3u_mimes {
 
 const QStringList ContentServer::m_pls_mimes {
     "audio/x-scpls"
+};
+
+const QStringList ContentServer::m_xspf_mimes {
+    "application/xspf+xml"
 };
 
 const QString ContentServer::audioItemClass = "object.item.audioItem.musicTrack";
@@ -571,7 +580,8 @@ void ContentServerWorker::proxyFinished()
     reply->deleteLater();
 }
 
-void ContentServerWorker::processMetadata(QByteArray &data, ProxyItem &item)
+void ContentServerWorker::processShoutcastMetadata(QByteArray &data,
+                                                   ProxyItem &item)
 {
     auto count = data.length();
     int bytes = item.metacounter + count;
@@ -650,7 +660,7 @@ void ContentServerWorker::proxyReadyRead()
 
         if (data.length() > 0) {
             if (item.metaint > 0)
-                processMetadata(data, item);
+                processShoutcastMetadata(data, item);
 
             item.resp->write(data);
         }
@@ -896,11 +906,15 @@ ContentServer::Type ContentServer::getContentType(const QUrl &url)
 ContentServer::Type ContentServer::typeFromMime(const QString &mime)
 {
     // check for playlist first
-    if (m_m3u_mimes.contains(mime) ||
-        m_pls_mimes.contains(mime))
-        return ContentServer::TypePlaylist;
+    /*if (m_m3u_mimes.contains(mime) ||
+        m_pls_mimes.contains(mime) ||
+        m_xspf_mimes.contains(mime))
+        return ContentServer::TypePlaylist;*/
     /*if (m_playlistExtMap.values().contains(mime))
         return ContentServer::TypePlaylist;*/
+    if (m_pls_mimes.contains(mime) ||
+        m_xspf_mimes.contains(mime))
+        return ContentServer::TypePlaylist;
 
     // hack for application/ogg
     if (mime.contains("/ogg"))
@@ -1892,17 +1906,16 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         auto mime = mimeFromDisposition(disposition);
         if (mime.isEmpty())
             mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
+        auto type = typeFromMime(mime);
 
-        if (m_pls_mimes.contains(mime)) {
-            //TODO: Support M3U
+        if (type == ContentServer::TypePlaylist) {
             qWarning() << "Content is a playlist";
             // Content is needed, so not aborting
-            return;
+        } else {
+            // Content is no needed, so aborting
+            if (!reply->isFinished())
+                reply->abort();
         }
-
-        // Content is no needed, so aborting
-        if (!reply->isFinished())
-            reply->abort();
     });
     connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
     QTimer::singleShot(httpTimeout, &loop, &QEventLoop::quit); // timeout
@@ -1960,12 +1973,15 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
     auto type = typeFromMime(mime);
 
-    if (m_pls_mimes.contains(mime)) {
+    if (type == ContentServer::TypePlaylist) {
         //TODO: M3U playlist support
         qWarning() << "Content is a playlist";
         auto size = reply->bytesAvailable();
         if (size > 0) {
-            auto items = parsePls(reply->readAll());
+            auto items = m_pls_mimes.contains(mime) ?
+                        parsePls(reply->readAll()) :
+                        parseXspf(reply->readAll());
+
             if (!items.isEmpty()) {
                 QUrl url = items.first().url;
                 qDebug() << "Trying get meta data for first item in the playlist:" << url;
@@ -2142,6 +2158,7 @@ void ContentServer::shoutcastMetadataHandler(const QUrl &id,
 QList<ContentServer::PlaylistItemMeta>
 ContentServer::parsePls(const QByteArray &data)
 {
+    qDebug() << "Parsing PLS playlist";
     QMap<int,ContentServer::PlaylistItemMeta> map;
     int pos;
 
@@ -2218,13 +2235,67 @@ ContentServer::parsePls(const QByteArray &data)
 }
 
 QList<ContentServer::PlaylistItemMeta>
-ContentServer::parseM3u(const QByteArray &data, bool* ok)
+ContentServer::parseM3u(const QByteArray &data)
 {
+    qDebug() << "Parsing M3U playlist";
+    //TODO: Implement M3U playlist support
     Q_UNUSED(data)
     QList<ContentServer::PlaylistItemMeta> list;
+    return list;
+}
 
-    if (ok)
-        *ok = false;
+QList<ContentServer::PlaylistItemMeta>
+ContentServer::parseXspf(const QByteArray &data)
+{
+    qDebug() << "Parsing XSPF playlist";
+    QList<ContentServer::PlaylistItemMeta> list;
+
+    QDomDocument doc; QString error;
+    if (doc.setContent(data, false, &error)) {
+        auto tracks = doc.elementsByTagName("track");
+        int l = tracks.length();
+        for (int i = 0; i < l; ++i) {
+            auto track = tracks.at(i).toElement();
+            if (!track.isNull()) {
+                auto ls = track.elementsByTagName("location");
+                if (!ls.isEmpty()) {
+                    auto l = ls.at(0).toElement();
+                    if (!l.isNull()) {
+                        qDebug() << "location:" << l.text();
+
+                        QUrl url(l.text());
+                        if (Utils::isUrlValid(url)) {
+
+                            PlaylistItemMeta item;
+                            item.url = url;
+
+                            auto ts = track.elementsByTagName("title");
+                            if (!ts.isEmpty()) {
+                                auto t = ts.at(0).toElement();
+                                if (!t.isNull()) {
+                                    qDebug() << "title:" << t.text();
+                                    item.title = t.text();
+                                }
+                            }
+
+                            auto ds = track.elementsByTagName("duration");
+                            if (!ds.isEmpty()) {
+                                auto d = ds.at(0).toElement();
+                                if (!d.isNull()) {
+                                    qDebug() << "duration:" << d.text();
+                                    item.length = d.text().toInt();
+                                }
+                            }
+
+                            list.append(item);
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        qWarning() << "Playlist parse error:" << error;
+    }
 
     return list;
 }

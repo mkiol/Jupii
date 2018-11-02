@@ -156,6 +156,7 @@ private:
     static const QHash<QString,QString> m_playlistExtMap;
     static const QStringList m_m3u_mimes;
     static const QStringList m_pls_mimes;
+    static const QStringList m_xspf_mimes;
     static const QString queryTemplate;
     static const QString dlnaOrgOpFlagsSeekBytes;
     static const QString dlnaOrgOpFlagsNoSeek;
@@ -187,7 +188,8 @@ private:
     static QString dlnaOrgPnFlags(const QString& mime);
     static QString dlnaContentFeaturesHeader(const QString& mime, bool seek = true, bool flags = true);
     static QList<PlaylistItemMeta> parsePls(const QByteArray &data);
-    static QList<PlaylistItemMeta> parseM3u(const QByteArray &data, bool* ok = nullptr);
+    static QList<PlaylistItemMeta> parseM3u(const QByteArray &data);
+    static QList<PlaylistItemMeta> parseXspf(const QByteArray &data);
     static QString getContentMimeByExtension(const QString &path);
     static QString getContentMimeByExtension(const QUrl &url);
     static QString mimeFromDisposition(const QString &disposition);
@@ -274,7 +276,7 @@ private:
     void sendEmptyResponse(QHttpResponse *resp, int code);
     void sendResponse(QHttpResponse *resp, int code, const QByteArray &data = "");
     void sendRedirection(QHttpResponse *resp, const QString &location);
-    void processMetadata(QByteArray &data, ProxyItem &item);
+    void processShoutcastMetadata(QByteArray &data, ProxyItem &item);
 };
 
 class MicDevice : public QIODevice
