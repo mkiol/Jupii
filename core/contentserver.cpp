@@ -334,6 +334,8 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         item.meta = headers.contains("icy-metadata");
         item.seek = meta->seekSupported;
 
+        responseToReplyMap.insert(resp, reply);
+
         connect(reply, &QNetworkReply::metaDataChanged,
                 this, &ContentServerWorker::proxyMetaDataChanged);
         connect(reply, &QNetworkReply::redirected,
@@ -342,6 +344,8 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
                 this, &ContentServerWorker::proxyFinished);
         connect(reply, &QNetworkReply::readyRead,
                 this, &ContentServerWorker::proxyReadyRead);
+        connect(resp, &QHttpResponse::done,
+                this, &ContentServerWorker::responseDone);
 
         emit proxyItemAdded(item.id);
     }
@@ -430,6 +434,23 @@ void ContentServerWorker::sendRedirection(QHttpResponse *resp, const QString &lo
     resp->end();
 }
 
+void ContentServerWorker::responseDone()
+{
+    qDebug() << "Response done";
+    auto resp = dynamic_cast<QHttpResponse*>(sender());
+    if (responseToReplyMap.contains(resp)) {
+        auto reply = responseToReplyMap.value(resp);
+        if (reply->isFinished()) {
+            qDebug() << "Reply already finished";
+        } else {
+            qDebug() << "Aborting reply";
+            reply->abort();
+        }
+    } else {
+        qWarning() << "Unknown response done";
+    }
+}
+
 void ContentServerWorker::proxyMetaDataChanged()
 {
     qDebug() << "Request meta data received";
@@ -504,6 +525,7 @@ void ContentServerWorker::proxyMetaDataChanged()
 
     emit proxyItemRemoved(item.id);
     proxyItems.remove(reply);
+    responseToReplyMap.remove(item.resp);
     reply->abort();
 }
 
@@ -545,6 +567,7 @@ void ContentServerWorker::proxyFinished()
 
     emit proxyItemRemoved(item.id);
     proxyItems.remove(reply);
+    responseToReplyMap.remove(item.resp);
     reply->deleteLater();
 }
 
@@ -559,6 +582,8 @@ void ContentServerWorker::processMetadata(QByteArray &data, ProxyItem &item)
     qDebug() << "bytes:" << bytes;*/
 
     if (bytes > item.metaint) {
+        Q_ASSERT(item.metaint >= item.metacounter);
+
         int size = 16 * static_cast<uchar>(data.at(item.metaint - item.metacounter));
         int maxsize = count - (item.metaint - item.metacounter);
 
@@ -609,6 +634,7 @@ void ContentServerWorker::proxyReadyRead()
         qWarning() << "Server request already finished, so ending client side";
         emit proxyItemRemoved(item.id);
         proxyItems.remove(reply);
+        responseToReplyMap.remove(item.resp);
         reply->abort();
         reply->deleteLater();
         return;

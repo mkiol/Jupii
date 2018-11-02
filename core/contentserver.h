@@ -235,6 +235,7 @@ private slots:
     void proxyReadyRead();
     void startMic();
     void stopMic();
+    void responseDone();
 
 private:
     struct ProxyItem {
@@ -261,6 +262,7 @@ private:
     std::unique_ptr<MicDevice> micDev;
 
     QHash<QNetworkReply*, ProxyItem> proxyItems;
+    QHash<QHttpResponse*, QNetworkReply*> responseToReplyMap;
     QList<MicItem> micItems;
 
     void streamFile(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);
