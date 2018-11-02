@@ -324,7 +324,7 @@ QIcon MainWindow::getIconForType(AVTransport::Type type)
         icon = QIcon::fromTheme("image-x-generic");
         break;
     case AVTransport::T_Unknown:
-        icon = QIcon::fromTheme("image-x-generic");
+        icon = QIcon::fromTheme("unknown");
         break;
     }
 
