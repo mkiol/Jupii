@@ -128,6 +128,11 @@ bool QHttpResponse::isFinished()
     return m_finished;
 }
 
+bool QHttpResponse::isHeaderWritten()
+{
+    return m_headerWritten;
+}
+
 void QHttpResponse::writeHead(int status)
 {
     if (m_finished) {

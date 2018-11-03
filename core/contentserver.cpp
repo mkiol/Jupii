@@ -653,6 +653,17 @@ void ContentServerWorker::proxyReadyRead()
     }
 
     if (item.state == 1) {
+        if (!item.resp->isHeaderWritten()) {
+            qWarning() << "Head not written but state=1 => this should not happen";
+            emit proxyItemRemoved(item.id);
+            proxyItems.remove(reply);
+            responseToReplyMap.remove(item.resp);
+            reply->abort();
+            reply->deleteLater();
+            item.resp->end();
+            return;
+        }
+
         auto data = reply->readAll();
         if (!item.data.isEmpty()) {
             // adding cached data from previous packet
@@ -904,6 +915,24 @@ ContentServer::Type ContentServer::getContentType(const QUrl &url)
     }
 
     return typeFromMime(meta->mime);
+}
+
+ContentServer::PlaylistType ContentServer::playlistTypeFromMime(const QString &mime)
+{
+    if (m_pls_mimes.contains(mime))
+        return PlaylistPLS;
+    if (m_m3u_mimes.contains(mime))
+        return PlaylistM3U;
+    if (m_xspf_mimes.contains(mime))
+        return PlaylistXSPF;
+    return PlaylistUnknown;
+}
+
+ContentServer::PlaylistType ContentServer::playlistTypeFromExtension(const QString &path)
+{
+    auto ext = path.split(".").last();
+    ext = ext.toLower();
+    return playlistTypeFromMime(m_playlistExtMap.value(ext));
 }
 
 ContentServer::Type ContentServer::typeFromMime(const QString &mime)
@@ -1980,14 +2009,15 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     auto type = typeFromMime(mime);
 
     if (type == ContentServer::TypePlaylist) {
-        qWarning() << "Content is a playlist";
+        qDebug() << "Content is a playlist";
         auto size = reply->bytesAvailable();
         if (size > 0) {
-            auto items = m_pls_mimes.contains(mime) ?
+            auto ptype = playlistTypeFromMime(mime);
+            auto items = ptype == PlaylistPLS ?
                          parsePls(reply->readAll()) :
-                            m_m3u_mimes.contains(mime) ?
-                            parseM3u(reply->readAll()) :
-                                parseXspf(reply->readAll());
+                            ptype == PlaylistXSPF ?
+                            parseXspf(reply->readAll()) :
+                                parseM3u(reply->readAll());
 
             if (!items.isEmpty()) {
                 QUrl url = items.first().url;
@@ -2148,7 +2178,7 @@ void ContentServer::shoutcastMetadataHandler(const QUrl &id,
     int pos = 0;
     QString title;
     while ((pos = rx.indexIn(data, pos)) != -1) {
-        title = rx.cap(1);
+        title = rx.cap(1).trimmed();
         if (!title.isEmpty()) {
             qDebug() << "Stream title:" << title;
             break;
@@ -2163,7 +2193,7 @@ void ContentServer::shoutcastMetadataHandler(const QUrl &id,
 }
 
 QList<ContentServer::PlaylistItemMeta>
-ContentServer::parsePls(const QByteArray &data)
+ContentServer::parsePls(const QByteArray &data, const QString context)
 {
     qDebug() << "Parsing PLS playlist";
     QMap<int,ContentServer::PlaylistItemMeta> map;
@@ -2180,7 +2210,7 @@ ContentServer::parsePls(const QByteArray &data)
         bool ok;
         int n = cap1.toInt(&ok);
         if (ok) {
-            auto url = Utils::urlFromText(cap2);
+            auto url = Utils::urlFromText(cap2, context);
             if (!url.isEmpty()) {
                 auto &item = map[n];
                 item.url = url;
@@ -2242,7 +2272,7 @@ ContentServer::parsePls(const QByteArray &data)
 }
 
 QList<ContentServer::PlaylistItemMeta>
-ContentServer::parseM3u(const QByteArray &data)
+ContentServer::parseM3u(const QByteArray &data, const QString context)
 {
     qDebug() << "Parsing M3U playlist";
 
@@ -2257,7 +2287,7 @@ ContentServer::parseM3u(const QByteArray &data)
         if (line.startsWith("#")) {
             // TODO: read title from M3U playlist
         } else {
-            auto url = Utils::urlFromText(line);
+            auto url = Utils::urlFromText(line, context);
             if (!url.isEmpty()) {
                 PlaylistItemMeta item;
                 item.url = url;
@@ -2270,7 +2300,7 @@ ContentServer::parseM3u(const QByteArray &data)
 }
 
 QList<ContentServer::PlaylistItemMeta>
-ContentServer::parseXspf(const QByteArray &data)
+ContentServer::parseXspf(const QByteArray &data, const QString context)
 {
     qDebug() << "Parsing XSPF playlist";
     QList<ContentServer::PlaylistItemMeta> list;
@@ -2288,9 +2318,8 @@ ContentServer::parseXspf(const QByteArray &data)
                     if (!l.isNull()) {
                         qDebug() << "location:" << l.text();
 
-                        QUrl url(l.text());
-                        if (Utils::isUrlValid(url)) {
-
+                        auto url = Utils::urlFromText(l.text(), context);
+                        if (!url.isEmpty()) {
                             PlaylistItemMeta item;
                             item.url = url;
 
@@ -2379,6 +2408,11 @@ qint64 MicDevice::writeData(const char* data, qint64 maxSize)
         auto i = worker->micItems.begin();
         while (i != worker->micItems.end()) {
             //qDebug() << "Mic item, remote addr:" << i->req->remoteAddress();
+            if (!i->resp->isHeaderWritten()) {
+                qWarning() << "Head not written";
+                i->resp->end();
+            }
+
             if (i->resp->isFinished()) {
                 qWarning() << "Server request already finished, so removing mic item";
                 i = worker->micItems.erase(i);

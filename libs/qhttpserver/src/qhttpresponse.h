@@ -86,6 +86,7 @@ public:
     };
 
     bool isFinished();
+    bool isHeaderWritten();
 
     virtual ~QHttpResponse();
 

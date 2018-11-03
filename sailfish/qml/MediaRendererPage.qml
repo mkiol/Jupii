@@ -123,7 +123,7 @@ Page {
     Component {
         id: filePickerPage
         FilePickerPage {
-            nameFilters: cserver.getExtensions(settings.imageSupported ? 7 : 6)
+            nameFilters: cserver.getExtensions(settings.imageSupported ? 263 : 262)
             onSelectedContentPropertiesChanged: {
                 playlist.addItemPath(selectedContentProperties.filePath)
             }

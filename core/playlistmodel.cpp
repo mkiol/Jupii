@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <QHash>
 #include <QFile>
+#include <QDir>
+#include <QFileInfo>
 #include <QDataStream>
 #include <QUrlQuery>
 #include <QTimer>
@@ -48,6 +50,60 @@ void PlaylistWorker::run()
         for (const auto &purl : urls)
             ids << purl.url;
     } else {
+        QList<UrlItem> nurls;
+
+        // check for playlists
+        for (const auto& url : urls) {
+            bool isPlaylist = false;
+
+            if (url.url.isLocalFile()) {
+                auto type = ContentServer::getContentTypeByExtension(url.url.path());
+                if (type == ContentServer::TypePlaylist) {
+                    isPlaylist = true;
+                    auto path = url.url.toLocalFile();
+                    qDebug() << "File" << path << "is a playlist";
+
+                    QFile f(path);
+                    if (f.exists()) {
+                        if (f.open(QIODevice::ReadOnly)) {
+                            auto data = f.readAll();
+                            f.close();
+                            if (!data.isEmpty()) {
+                                QFileInfo fi(f); auto dir = fi.absoluteDir().path();
+                                auto ptype = ContentServer::playlistTypeFromExtension(path);
+                                auto items = ptype == ContentServer::PlaylistPLS ?
+                                             ContentServer::parsePls(data, dir) :
+                                                ptype == ContentServer::PlaylistXSPF ?
+                                                ContentServer::parseXspf(data, dir) :
+                                                    ContentServer::parseM3u(data, dir);
+
+                                if (items.isEmpty()) {
+                                    qWarning() << "Playlist doesn't contain any valid items";
+                                } else {
+                                    for (const auto& item : items) {
+                                        // TODO: Consider playlist item title as well
+                                        nurls << UrlItem{item.url};
+                                    }
+                                }
+                            } else {
+                                qWarning() << "Playlist content is empty";
+                            }
+                        } else {
+                            qWarning() << "Can't open file" << f.fileName() <<
+                                          "for reading (" + f.errorString() + ")";
+                        }
+                    } else {
+                        qWarning() << "File" << f.fileName() << "doesn't exist";
+                    }
+                }
+            }
+
+            if (!isPlaylist)
+                nurls << url;
+        }
+
+        urls = nurls;
+
         for (const auto &purl : urls) {
             const auto &url = purl.url;
             const auto &name = purl.name;

@@ -629,8 +629,11 @@ void MainWindow::on_actionFiles_triggered()
                  cserver->getExtensions(ContentServer::TypeVideo).join(" "));
 
     if (Settings::instance()->getImageSupported())
-        filters += QString(";;Images (%3)")
+        filters += QString(";;Images (%1)")
                 .arg(cserver->getExtensions(ContentServer::TypeImage).join(" "));
+
+    filters += QString(";;Playlist files (%1)")
+            .arg(cserver->getExtensions(ContentServer::TypePlaylist).join(" "));
 
     auto paths = QFileDialog::getOpenFileNames(this,
         tr("Select one or more files"),

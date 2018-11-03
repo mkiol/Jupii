@@ -53,6 +53,13 @@ public:
         TypePlaylist = 256
     };
 
+    enum PlaylistType {
+        PlaylistUnknown,
+        PlaylistPLS,
+        PlaylistM3U,
+        PlaylistXSPF
+    };
+
     struct ItemMeta {
         bool valid = false;
         QString trackerId;
@@ -75,6 +82,12 @@ public:
         int64_t size = 0;
     };
 
+    struct PlaylistItemMeta {
+        QUrl url;
+        QString title;
+        int length = 0;
+    };
+
     const static int micSampleRate = 44100;
     const static int micChannelCount = 1;
     const static int micSampleSize = 16;
@@ -85,6 +98,11 @@ public:
     static QString bestName(const ItemMeta &meta);
     static Type getContentTypeByExtension(const QString &path);
     static Type getContentTypeByExtension(const QUrl &url);
+    static PlaylistType playlistTypeFromMime(const QString &mime);
+    static PlaylistType playlistTypeFromExtension(const QString &path);
+    static QList<PlaylistItemMeta> parsePls(const QByteArray &data, const QString context = QString());
+    static QList<PlaylistItemMeta> parseM3u(const QByteArray &data, const QString context = QString());
+    static QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString context = QString());
 
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
     Type getContentType(const QString &path);
@@ -125,12 +143,6 @@ private:
       DLNA_ORG_FLAG_BACKGROUND_TRANSFER_MODE   = (1 << 22),
       DLNA_ORG_FLAG_CONNECTION_STALL           = (1 << 21),
       DLNA_ORG_FLAG_DLNA_V15                   = (1 << 20)
-    };
-
-    struct PlaylistItemMeta {
-        QUrl url;
-        QString title;
-        int length = 0;
     };
 
     struct AvData {
@@ -187,9 +199,6 @@ private:
     static QString dlnaOrgFlagsForStreaming();
     static QString dlnaOrgPnFlags(const QString& mime);
     static QString dlnaContentFeaturesHeader(const QString& mime, bool seek = true, bool flags = true);
-    static QList<PlaylistItemMeta> parsePls(const QByteArray &data);
-    static QList<PlaylistItemMeta> parseM3u(const QByteArray &data);
-    static QList<PlaylistItemMeta> parseXspf(const QByteArray &data);
     static QString getContentMimeByExtension(const QString &path);
     static QString getContentMimeByExtension(const QUrl &url);
     static QString mimeFromDisposition(const QString &disposition);

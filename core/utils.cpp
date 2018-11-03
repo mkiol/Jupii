@@ -369,9 +369,16 @@ bool Utils::isUrlMic(const QUrl &url)
     return url.scheme() == "jupii" && url.host() == "mic";
 }
 
-QUrl Utils::urlFromText(const QString &text)
+QUrl Utils::urlFromText(const QString &text, const QString &context)
 {
-    // check if text is a file path
+    // check if text is a relative file path
+    if (!context.isEmpty()) {
+        QDir dir(context);
+        if (dir.exists(text))
+            return QUrl::fromLocalFile(dir.absoluteFilePath(text));
+    }
+
+    // check if text is a absolute file path
     auto file = QUrl::fromLocalFile(text);
     if (QFileInfo::exists(file.toLocalFile()))
         return file;

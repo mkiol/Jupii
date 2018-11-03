@@ -18,7 +18,6 @@
 #include <QByteArray>
 #include <QModelIndex>
 #include <QUrl>
-#include <QFileInfo>
 #include <QVariant>
 #include <QThread>
 #include <QPair>
