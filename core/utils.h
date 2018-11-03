@@ -41,7 +41,8 @@ public:
     static bool isIdValid(const QString &id);
     static bool isUrlValid(const QUrl &url);
     static bool isIdValid(const QUrl &id);
-    static bool isUrlMic(const QUrl &url);
+    static bool isUrlMic(const QUrl &url);\
+    static QUrl urlFromText(const QString &text);
     static QString pathFromId(const QString &id);
     static QString pathFromId(const QUrl &id);
     static int typeFromId(const QString &id);

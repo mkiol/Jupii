@@ -22,6 +22,8 @@
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
+#include <QSslConfiguration>
+#include <QTextStream>
 
 #include <iomanip>
 #include <memory>
@@ -702,9 +704,9 @@ void ContentServerWorker::streamFile(const QString& path, const QString& mime,
             qint64 endByte = (rx.cap(3) == "" ? length-1 : rx.cap(3).toInt());
             qint64 rangeLength = endByte-startByte+1;
 
-            qDebug() << "Range start:" << startByte;
+            /*qDebug() << "Range start:" << startByte;
             qDebug() << "Range end:" << endByte;
-            qDebug() << "Range length:" << rangeLength;
+            qDebug() << "Range length:" << rangeLength;*/
 
             if (endByte > length-1) {
                 qWarning() << "Range end byte is higher than content lenght";
@@ -820,19 +822,20 @@ QString ContentServer::dlnaOrgFlagsForStreaming()
 
 QString ContentServer::dlnaOrgPnFlags(const QString &mime)
 {
-    if (mime.contains("video/x-msvideo"))
+    if (mime.contains("video/x-msvideo", Qt::CaseInsensitive))
         return "DLNA.ORG_PN=AVI";
     /*if (mime.contains(image/jpeg"))
         return "DLNA.ORG_PN=JPEG_LRG";*/
-    if (mime.contains("audio/aac") || mime.contains("audio/aacp"))
+    if (mime.contains("audio/aac", Qt::CaseInsensitive) ||
+            mime.contains("audio/aacp", Qt::CaseInsensitive))
         return "DLNA.ORG_PN=AAC";
-    if (mime.contains("audio/mpeg"))
+    if (mime.contains("audio/mpeg", Qt::CaseInsensitive))
         return "DLNA.ORG_PN=MP3";
-    if (mime.contains("audio/vnd.wav"))
+    if (mime.contains("audio/vnd.wav", Qt::CaseInsensitive))
         return "DLNA.ORG_PN=LPCM";
-    if (mime.contains("audio/L16"))
+    if (mime.contains("audio/L16", Qt::CaseInsensitive))
         return "DLNA.ORG_PN=LPCM";
-    if (mime.contains("video/x-matroska"))
+    if (mime.contains("video/x-matroska", Qt::CaseInsensitive))
         return "DLNA.ORG_PN=MKV";
     return QString();
 }
@@ -906,14 +909,9 @@ ContentServer::Type ContentServer::getContentType(const QUrl &url)
 ContentServer::Type ContentServer::typeFromMime(const QString &mime)
 {
     // check for playlist first
-    /*if (m_m3u_mimes.contains(mime) ||
-        m_pls_mimes.contains(mime) ||
-        m_xspf_mimes.contains(mime))
-        return ContentServer::TypePlaylist;*/
-    /*if (m_playlistExtMap.values().contains(mime))
-        return ContentServer::TypePlaylist;*/
     if (m_pls_mimes.contains(mime) ||
-        m_xspf_mimes.contains(mime))
+        m_xspf_mimes.contains(mime) ||
+        m_m3u_mimes.contains(mime))
         return ContentServer::TypePlaylist;
 
     // hack for application/ogg
@@ -1890,8 +1888,16 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     request.setRawHeader("User-Agent", userAgent);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 
-    if (!nam)
+    if (!nam) {
         nam = std::shared_ptr<QNetworkAccessManager>(new QNetworkAccessManager());
+        /*connect(nam.get(), &QNetworkAccessManager::sslErrors,
+                [](QNetworkReply *reply, const QList<QSslError> &errors){
+            Q_UNUSED(reply)
+            for (auto& err : errors) {
+                qWarning() << "SSL error:" << err.error() << err.errorString();
+            }
+        });*/
+    }
 
     auto reply = nam->get(request);
 
@@ -1974,13 +1980,14 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     auto type = typeFromMime(mime);
 
     if (type == ContentServer::TypePlaylist) {
-        //TODO: M3U playlist support
         qWarning() << "Content is a playlist";
         auto size = reply->bytesAvailable();
         if (size > 0) {
             auto items = m_pls_mimes.contains(mime) ?
-                        parsePls(reply->readAll()) :
-                        parseXspf(reply->readAll());
+                         parsePls(reply->readAll()) :
+                            m_m3u_mimes.contains(mime) ?
+                            parseM3u(reply->readAll()) :
+                                parseXspf(reply->readAll());
 
             if (!items.isEmpty()) {
                 QUrl url = items.first().url;
@@ -2173,8 +2180,8 @@ ContentServer::parsePls(const QByteArray &data)
         bool ok;
         int n = cap1.toInt(&ok);
         if (ok) {
-            QUrl url(cap2);
-            if (Utils::isUrlValid(url)) {
+            auto url = Utils::urlFromText(cap2);
+            if (!url.isEmpty()) {
                 auto &item = map[n];
                 item.url = url;
             } else {
@@ -2238,9 +2245,27 @@ QList<ContentServer::PlaylistItemMeta>
 ContentServer::parseM3u(const QByteArray &data)
 {
     qDebug() << "Parsing M3U playlist";
-    //TODO: Implement M3U playlist support
-    Q_UNUSED(data)
+
     QList<ContentServer::PlaylistItemMeta> list;
+
+    QTextStream s(data, QIODevice::ReadOnly);
+    s.setAutoDetectUnicode(true);
+
+    while (!s.atEnd()) {
+        auto line = s.readLine();
+        qDebug() << "line:" << line;
+        if (line.startsWith("#")) {
+            // TODO: read title from M3U playlist
+        } else {
+            auto url = Utils::urlFromText(line);
+            if (!url.isEmpty()) {
+                PlaylistItemMeta item;
+                item.url = url;
+                list.append(item);
+            }
+        }
+    }
+
     return list;
 }
 

@@ -2,7 +2,7 @@ TARGET = harbour-jupii
 
 CONFIG += c++11 sailfishapp json no_lflags_merge object_parallel_to_source
 
-QT += dbus sql multimedia
+QT += dbus sql multimedia xml
 
 PKGCONFIG += mlite5
 
