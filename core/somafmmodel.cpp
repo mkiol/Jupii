@@ -77,6 +77,13 @@ QList<ListItem*> SomafmModel::makeItems()
         }
     }
 
+    // Sorting
+    std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
+        auto aa = dynamic_cast<SomafmItem*>(a);
+        auto bb = dynamic_cast<SomafmItem*>(b);
+        return aa->name().compare(bb->name(), Qt::CaseInsensitive) < 0;
+    });
+
     return items;
 }
 

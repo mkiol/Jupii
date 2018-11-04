@@ -134,7 +134,7 @@ QList<ListItem*> AlbumModel::processTrackerReply(
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
             auto aa = dynamic_cast<AlbumItem*>(a);
             auto bb = dynamic_cast<AlbumItem*>(b);
-            return aa->title() < bb->title();
+            return aa->title().compare(bb->title(), Qt::CaseInsensitive) < 0;
         });
 
     } else {
