@@ -588,40 +588,71 @@ void ContentServerWorker::processShoutcastMetadata(QByteArray &data,
     auto count = data.length();
     int bytes = item.metacounter + count;
 
-    /*qDebug() << "metacounter:" << item.metacounter;
+    /*qDebug() << "========== processShoutcastMetadata ==========";
+    qDebug() << "metacounter:" << item.metacounter;
     qDebug() << "metaint:" << item.metaint;
     qDebug() << "count:" << count;
-    qDebug() << "bytes:" << bytes;*/
+    qDebug() << "bytes:" << bytes;
+    qDebug() << "data size:" << data.size();*/
 
     if (bytes > item.metaint) {
         Q_ASSERT(item.metaint >= item.metacounter);
 
-        int size = 16 * static_cast<uchar>(data.at(item.metaint - item.metacounter));
-        int maxsize = count - (item.metaint - item.metacounter);
+        int nmeta = bytes / item.metaint;
+        int totalsize = 0;
+        QList<QPair<int,int>> rpoints; // (start,size) to remove from data
 
-        //qDebug() << "metadata size:" << size;
-        //qDebug() << "metadata max size:" << maxsize;
+        for (int i = 0; i < nmeta; ++i) {
+            int offset = i * item.metaint + totalsize + i;
+            int start = item.metaint - item.metacounter;
+            int size = 16 * static_cast<uchar>(data.at(start + offset));
+            int maxsize = count - (start + offset);
 
-        if (size > maxsize) {
-            // partial metadata received
-            auto metadata = data.mid(item.metaint - item.metacounter, maxsize);
-            data.remove(item.metaint - item.metacounter, maxsize);
-            item.data = metadata;
-            item.metacounter = bytes - metadata.size();
-        } else {
-            // full metadata received
-            if (size > 0) {
-                auto metadata = data.mid(item.metaint - item.metacounter + 1, size);
-                emit shoutcastMetadataReceived(item.id, metadata);
+            /*qDebug() << "------- Soutcast metadata detected ---------";
+            qDebug() << "totalsize:" << totalsize;
+            qDebug() << "offset:" << offset;
+            qDebug() << "start:" << start;
+            qDebug() << "start+offset:" << start + offset;
+            qDebug() << "metadata size:" << size;
+            qDebug() << "metadata max size:" << maxsize;
+            qDebug() << "data size:" << data.size();
+            qDebug() << "metacounter:" << item.metacounter;
+            qDebug() << "metaint:" << item.metaint;*/
+
+            if (size > maxsize) {
+                // partial metadata received
+                qDebug() << "Partial metadata received";
+                auto metadata = data.mid(start + offset, maxsize);
+                data.remove(start + offset, maxsize);
+                item.data = metadata;
+                item.metacounter = bytes - metadata.size();
+                return;
+            } else {
+                // full metadata received
+                if (size > 0) {
+                    auto metadata = data.mid(start + offset + 1, size);
+                    emit shoutcastMetadataReceived(item.id, metadata);
+                    totalsize += size;
+                }
+
+                if (!item.meta) {
+                    // Shoutcast meta data wasn't requested by client, so marking to remove
+                    rpoints.append({start + offset, size +1});
+                }
             }
+        }
 
-            if (!item.meta) {
-                // Shoutcast meta data wasn't requested by client, so removing it
-                data.remove(item.metaint - item.metacounter, size + 1);
+        item.metacounter = bytes - nmeta * (item.metaint + 1) - totalsize;
+
+        if (!item.meta && !rpoints.isEmpty()) {
+            // Removing metadata from stream
+            int offset = 0;
+            for (auto& p : rpoints) {
+                data.remove(offset + p.first, p.second);
+                offset = p.second;
             }
+        }
 
-            item.metacounter = bytes - item.metaint - size - 1;
-         }
     } else {
         item.metacounter = bytes;
     }
@@ -2169,9 +2200,7 @@ void ContentServer::proxyItemRemovedHandler(const QUrl &id)
 void ContentServer::shoutcastMetadataHandler(const QUrl &id,
                                              const QByteArray &metadata)
 {
-    qDebug() << "Shoutcast Metadata";
-    qDebug() << " Id:" << id.toString();
-    qDebug() << " Metadata:" << metadata;
+    qDebug() << "Shoutcast Metadata:" << metadata;
 
     QString data(metadata);
     QRegExp rx("StreamTitle=\'?([^\';]*)\'?", Qt::CaseInsensitive);
