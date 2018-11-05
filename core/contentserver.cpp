@@ -55,6 +55,7 @@ extern "C" {
 
 #ifdef SAILFISH
 #include <sailfishapp.h>
+#include "iconprovider.h"
 #endif
 
 ContentServer* ContentServer::m_instance = nullptr;
@@ -975,9 +976,9 @@ ContentServer::Type ContentServer::typeFromMime(const QString &mime)
         return ContentServer::TypePlaylist;
 
     // hack for application/ogg
-    if (mime.contains("/ogg"))
+    if (mime.contains("/ogg", Qt::CaseInsensitive))
         return ContentServer::TypeMusic;
-    if (mime.contains("/ogv"))
+    if (mime.contains("/ogv", Qt::CaseInsensitive))
         return ContentServer::TypeVideo;
 
     auto name = mime.split("/").first().toLower();
@@ -1902,8 +1903,7 @@ ContentServer::makeMicItemMeta(const QUrl &url)
     //meta.artist = "Jupii";
 
 #ifdef SAILFISH
-    auto dir = QDir(SailfishApp::pathTo("images").toLocalFile());
-    meta.albumArt = dir.filePath("mic-cover.png");
+    meta.albumArt = IconProvider::pathToId("icon-l-mic-cover");
 #endif
 
     return metaCache.insert(url, meta);

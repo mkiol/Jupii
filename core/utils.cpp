@@ -15,6 +15,7 @@
 #include <QDebug>
 #include <QStringList>
 #include <QFile>
+#include <QFileInfo>
 #include <QIODevice>
 #include <QTextStream>
 #include <QDir>
@@ -184,17 +185,18 @@ bool Utils::getNetworkIf(QString& ifname, QString& address)
     return false;
 }
 
-bool Utils::writeToCacheFile(const QString &filename, const QByteArray &data)
+bool Utils::writeToCacheFile(const QString &filename, const QByteArray &data, bool del)
 {
-    const QString cacheDir = Settings::instance()->getCacheDir();
-    return writeToFile(cacheDir + "/" + filename, data);
+    QDir dir(Settings::instance()->getCacheDir());
+    return writeToFile(dir.absoluteFilePath(filename), data, del);
 }
 
-bool Utils::writeToFile(const QString &path, const QByteArray &data)
+bool Utils::writeToFile(const QString &path, const QByteArray &data, bool del)
 {
-    const QString cacheDir = Settings::instance()->getCacheDir();
-
     QFile f(path);
+    if (del && f.exists())
+        f.remove();
+
     if (!f.exists()) {
         if (f.open(QIODevice::WriteOnly)) {
             f.write(data);
@@ -239,11 +241,10 @@ bool Utils::createPlaylistDir()
     return true;
 }
 
-bool Utils::readFromFile(const QString &filename, QByteArray &data)
+bool Utils::readFromCacheFile(const QString &filename, QByteArray &data)
 {
-    const QString cacheDir = Settings::instance()->getCacheDir();
-
-    QFile f(cacheDir + "/" + filename);
+    QDir dir(Settings::instance()->getCacheDir());
+    QFile f(dir.absoluteFilePath(filename));
     if (f.exists()) {
         if (f.open(QIODevice::ReadOnly)) {
             data = f.readAll();
@@ -258,6 +259,12 @@ bool Utils::readFromFile(const QString &filename, QByteArray &data)
     }
 
     return false;
+}
+
+bool Utils::cacheFileExists(const QString &filename)
+{
+    QDir dir(Settings::instance()->getCacheDir());
+    return QFileInfo::exists(dir.absoluteFilePath(filename));
 }
 
 QString Utils::hash(const QString &value)

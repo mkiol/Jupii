@@ -108,3 +108,6 @@ OTHER_FILES += \
     rpm/$${TARGET}.yaml \
     rpm/$${TARGET}.changes.in \
     rpm/$${TARGET}.spec
+
+DISTFILES += \
+    qml/IcecastPage.qml

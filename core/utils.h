@@ -67,14 +67,15 @@ public:
                                         QUrl *icon = nullptr,
                                         QString *desc = nullptr,
                                         QString *author = nullptr);
-
     static QString randString(int len = 5);
     static void removeFile(const QString &path);
+    static bool writeToCacheFile(const QString &filename, const QByteArray &data, bool del = false);
+    static bool writeToFile(const QString &path, const QByteArray &data, bool del = false);
+    static bool readFromCacheFile(const QString &filename, QByteArray &data);
+    static bool cacheFileExists(const QString &filename);
+
     bool createCacheDir();
     bool createPlaylistDir();
-    bool writeToCacheFile(const QString &filename, const QByteArray &data);
-    bool writeToFile(const QString &path, const QByteArray &data);
-    bool readFromFile(const QString &filename, QByteArray &data);
 
 private:
     static Utils* m_instance;

@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef SOMAFMMODEL_H
-#define SOMAFMMODEL_H
+#ifndef ICECASTMODEL_H
+#define ICECASTMODEL_H
 
 #include <QString>
 #include <QHash>
@@ -14,40 +14,35 @@
 #include <QByteArray>
 #include <QVariant>
 #include <QUrl>
-#include <QJsonArray>
 #include <QDir>
+#include <QNetworkAccessManager>
+#include <QDomNodeList>
+#include <memory>
 
-#ifdef DESKTOP
-#include <QIcon>
-#endif
-
+#include "contentserver.h"
 #include "listmodel.h"
 #include "itemmodel.h"
 
-class SomafmItem : public SelectableItem
+class IcecastItem : public SelectableItem
 {
     Q_OBJECT
 public:
     enum Roles {
         NameRole = Qt::DisplayRole,
-        IconRole = Qt::DecorationRole,
         IdRole = Qt::UserRole,
+        TypeRole,
         UrlRole,
         DescriptionRole,
         SelectedRole
     };
 
 public:
-    SomafmItem(QObject *parent = nullptr): SelectableItem(parent) {}
-    explicit SomafmItem(const QString &id,
+    IcecastItem(QObject *parent = nullptr): SelectableItem(parent) {}
+    explicit IcecastItem(const QString &id,
                       const QString &name,
                       const QString &description,
                       const QUrl &url,
-#ifdef SAILFISH
-                      const QUrl &icon,
-#else
-                      const QIcon &icon,
-#endif
+                      ContentServer::Type type,
                       QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
@@ -55,34 +50,44 @@ public:
     inline QString name() const { return m_name; }
     inline QString description() const { return m_description; }
     inline QUrl url() const { return m_url; }
-#ifdef SAILFISH
-    inline QUrl icon() const { return m_icon; }
-#else
-    inline QIcon icon() const { return m_icon; }
-#endif
+    inline ContentServer::Type type() const { return m_type; }
 private:
     QString m_id;
     QString m_name;
     QString m_description;
     QUrl m_url;
-#ifdef SAILFISH
-    QUrl m_icon;
-#else
-    QIcon m_icon;
-#endif
+    ContentServer::Type m_type;
 };
 
-class SomafmModel : public SelectableItemModel
+class IcecastModel : public SelectableItemModel
 {
     Q_OBJECT
+
+    Q_PROPERTY (bool refreshing READ isRefreshing NOTIFY refreshingChanged)
+
 public:
-    explicit SomafmModel(QObject *parent = nullptr);\
+    explicit IcecastModel(QObject *parent = nullptr);
+    bool isRefreshing();
     Q_INVOKABLE QVariantList selectedItems();
 
+public slots:
+    void refresh();
+
+signals:
+    void refreshingChanged();
+    void error();
+
 private:
+    static const QString m_dirUrl;
+    static const QString m_dirFilename;
+    static const int httpTimeout = 100000;
+
+    std::unique_ptr<QNetworkAccessManager> nam;
+    QDomNodeList m_entries;
+    bool m_refreshing = false;
+
     QList<ListItem*> makeItems();
-    QJsonArray m_channels;
-    QDir m_dir;
+    bool parseData();
 };
 
-#endif // SOMAFMMODEL_H
+#endif // ICECASTMODEL_H

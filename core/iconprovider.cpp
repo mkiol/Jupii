@@ -20,10 +20,14 @@
 
 IconProvider::IconProvider() : QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
-#ifdef SAILFISH
-    // Getting pixel ratio
-    double ratio = MGConfItem("/desktop/sailfish/silica/theme_pixel_ratio").value().toDouble();
+    this->themeDir = IconProvider::themeDirPath();
+}
 
+QString IconProvider::themeDirPath()
+{
+    QString themeDir;
+#ifdef SAILFISH
+    double ratio = MGConfItem("/desktop/sailfish/silica/theme_pixel_ratio").value().toDouble();
     if (ratio == 0) {
         qWarning() << "Pixel ratio is 0, defaulting to 1.0.";
         themeDir = SailfishApp::pathTo("images/z1.0").toString(QUrl::RemoveScheme);
@@ -46,6 +50,20 @@ IconProvider::IconProvider() : QQuickImageProvider(QQuickImageProvider::Pixmap)
 #else
     //TODO theme dir for desktop
 #endif
+    return themeDir;
+}
+
+QString IconProvider::pathToId(const QString &id)
+{
+    QDir dir(IconProvider::themeDirPath());
+    auto filepath = dir.absoluteFilePath(id.split('?').at(0) + ".png");
+
+    if (!QFile::exists(filepath)) {
+        // Icon file is not exist -> fallback to default icon
+        filepath = dir.absoluteFilePath("icon-m-item.png");
+    }
+
+    return filepath;
 }
 
 QPixmap IconProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)

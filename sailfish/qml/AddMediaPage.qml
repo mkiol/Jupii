@@ -21,6 +21,7 @@ Page {
     property var filePickerPage
     property var urlPickerPage
     property var somafmPickerPage
+    property var icecastPickerPage
     property var gpodderPickerPage
 
     SilicaFlickable {
@@ -139,7 +140,7 @@ Page {
 
             SimpleListItem {
                 visible: utils.isGpodderAvailable();
-                title.text: qsTr("gPodder")
+                title.text: "gPodder"
                 icon.source: "image://icons/icon-m-gpodder"
                 onClicked: {
                     pageStack.replace(gpodderPickerPage)
@@ -147,8 +148,16 @@ Page {
             }
 
             SimpleListItem {
-                title.text: qsTr("SomaFM")
-                icon.source: "somafm.jpg"
+                title.text: "Icecast"
+                icon.source: "image://icons/icon-m-icecast"
+                onClicked: {
+                    pageStack.replace(icecastPickerPage)
+                }
+            }
+
+            SimpleListItem {
+                title.text: "SomaFM"
+                icon.source: "image://icons/icon-m-somafm"
                 onClicked: {
                     pageStack.replace(somafmPickerPage)
                 }

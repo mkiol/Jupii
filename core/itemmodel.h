@@ -59,13 +59,13 @@ protected:
     std::unique_ptr<ItemWorker> m_worker;
     virtual QList<ListItem*> makeItems() = 0;
     virtual void clear();
+    void setBusy(bool busy);
 
 private slots:
     bool isBusy();
 
 private:
     bool m_busy = true;
-    void setBusy(bool busy);
 };
 
 class SelectableItem: public ListItem

@@ -22,6 +22,8 @@ Page {
 
     property bool busy: av.busy || rc.busy
     property bool inited: av.inited && rc.inited
+    property bool isMic: utils.isIdMic(av.currentURL)
+
     property bool _doPop: false
 
     Component.onCompleted: {
@@ -218,7 +220,16 @@ Page {
         id: somafmPickerPage
         SomafmPage {
             onAccepted: {
-                playlist.addItemUrl(url, name, "SomaFM", icon);
+                playlist.addItemUrls(selectedItems);
+            }
+        }
+    }
+
+    Component {
+        id: icecastPickerPage
+        IcecastPage {
+            onAccepted: {
+                playlist.addItemUrls(selectedItems);
             }
         }
     }
@@ -433,6 +444,7 @@ Page {
                                        filePickerPage: filePickerPage,
                                        urlPickerPage: urlPickerPage,
                                        somafmPickerPage: somafmPickerPage,
+                                       icecastPickerPage: icecastPickerPage,
                                        gpodderPickerPage: gpodderPickerPage
                                    })
                 }
@@ -540,7 +552,8 @@ Page {
               !root.busy && root.status === PageStatus.Active
 
         title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
-        subtitle: app.streamTitle.length === 0 ? av.currentAuthor : app.streamTitle
+        subtitle: app.streamTitle.length === 0 ?
+                      (!root.isMic ? av.currentAuthor : "") : app.streamTitle
 
         prevEnabled: playlist.prevSupported
         nextEnabled: playlist.nextSupported

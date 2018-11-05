@@ -51,6 +51,25 @@ SomafmModel::SomafmModel(QObject *parent) :
     m_channels = obj["channels"].toArray();
 }
 
+QVariantList SomafmModel::selectedItems()
+{
+    QVariantList list;
+
+    for (auto item : m_list) {
+        auto channel = dynamic_cast<SomafmItem*>(item);
+        if (channel->selected()) {
+            QVariantMap map;
+            map.insert("url", QVariant(channel->url()));
+            map.insert("name", QVariant(channel->name()));
+            map.insert("icon", QVariant(channel->icon()));
+            map.insert("author", QVariant("SomaFM"));
+            list << map;
+        }
+    }
+
+    return list;
+}
+
 QList<ListItem*> SomafmModel::makeItems()
 {
     QList<ListItem*> items;
@@ -114,6 +133,7 @@ QHash<int, QByteArray> SomafmItem::roleNames() const
     names[DescriptionRole] = "description";
     names[UrlRole] = "url";
     names[IconRole] = "icon";
+    names[SelectedRole] = "selected";
     return names;
 }
 
@@ -130,6 +150,8 @@ QVariant SomafmItem::data(int role) const
         return url();
     case IconRole:
         return icon();
+    case SelectedRole:
+        return selected();
     default:
         return QVariant();
     }

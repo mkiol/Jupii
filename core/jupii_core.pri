@@ -32,7 +32,8 @@ HEADERS += \
     $$CORE_DIR/info.h \
     $$CORE_DIR/somafmmodel.h \
     $$CORE_DIR/gpoddermodel.h \
-    $$CORE_DIR/itemmodel.h
+    $$CORE_DIR/itemmodel.h \
+    $$CORE_DIR/icecastmodel.h
 
 
 SOURCES += \
@@ -62,7 +63,8 @@ SOURCES += \
     $$CORE_DIR/services.cpp \
     $$CORE_DIR/somafmmodel.cpp \
     $$CORE_DIR/gpoddermodel.cpp \
-    $$CORE_DIR/itemmodel.cpp
+    $$CORE_DIR/itemmodel.cpp \
+    $$CORE_DIR/icecastmodel.cpp
 
 sailfish {
     HEADERS += \

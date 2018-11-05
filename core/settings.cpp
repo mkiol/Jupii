@@ -161,8 +161,7 @@ bool Settings::writeDeviceXML(const QString &id, QString& url)
         QString _id(id);
         QString filename = "device-" + _id.replace(':','-') + ".xml";
 
-        auto u = Utils::instance();
-        if (u->writeToCacheFile(filename, QByteArray::fromStdString(ddesc.XMLText))) {
+        if (Utils::writeToCacheFile(filename, QByteArray::fromStdString(ddesc.XMLText))) {
             url = QString::fromStdString(ddesc.URLBase);
             return true;
         } else {
@@ -181,8 +180,7 @@ bool Settings::readDeviceXML(const QString &id, QByteArray& xml)
     QString _id(id);
     QString filename = "device-" + _id.replace(':','-') + ".xml";
 
-    auto u = Utils::instance();
-    if (u->readFromFile(filename, xml)) {
+    if (Utils::readFromCacheFile(filename, xml)) {
         return true;
     } else {
         qWarning() << "Can't read description file for device" << id;

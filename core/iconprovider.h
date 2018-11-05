@@ -16,6 +16,9 @@
 class IconProvider : public QQuickImageProvider
 {
 public:
+    static QString pathToId(const QString &id);
+    static QString themeDirPath();
+
     IconProvider();
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
 
