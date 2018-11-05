@@ -115,21 +115,21 @@ Page {
                 DetailItem {
                     label: qsTr("Stream title")
                     value: app.streamTitle
-                    visible: value.length !== 0 &&
+                    visible: !isMic && value.length !== 0 &&
                              av.currentType !== AVTransport.T_Image
                 }
 
                 DetailItem {
                     label: qsTr("Author")
                     value: av.currentAuthor
-                    visible: av.currentType !== AVTransport.T_Image &&
+                    visible: !isMic && av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
                 }
 
                 DetailItem {
                     label: qsTr("Album")
                     value: av.currentAlbum
-                    visible: av.currentType !== AVTransport.T_Image &&
+                    visible: !isMic && av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
                 }
 
@@ -149,7 +149,7 @@ Page {
 
             SectionHeader {
                 text: qsTr("Description")
-                visible: av.currentDescription.length !== 0
+                visible: !isMic && av.currentDescription.length !== 0
             }
 
             Label {

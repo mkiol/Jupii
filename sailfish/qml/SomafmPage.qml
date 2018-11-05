@@ -10,32 +10,20 @@ import Sailfish.Silica 1.0
 
 import harbour.jupii.SomafmModel 1.0
 
-Page {
+Dialog {
     id: root
 
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge
 
-    property bool _doPop: false
+    property var selectedItems
 
-    signal accepted(url url, string name, url icon, string desc);
+    canAccept: itemModel.selectedCount > 0
 
-    function doPop() {
-        if (pageStack.busy)
-            _doPop = true
-        else
-            pageStack.pop(pageStack.previousPage(root))
-    }
-
-    Connections {
-        target: pageStack
-        onBusyChanged: {
-            if (!pageStack.busy && root._doPop) {
-                root._doPop = false
-                pageStack.pop()
-            }
-        }
+    onDone: {
+        if (result === DialogResult.Accepted)
+            selectedItems = itemModel.selectedItems()
     }
 
     // Hack to update model after all transitions
@@ -68,35 +56,48 @@ Page {
 
         model: itemModel
 
-        header: SearchPageHeader {
+        header: SearchDialogHeader {
             implicitWidth: root.width
-            title: "SomaFM"
             searchPlaceholderText: qsTr("Search channels")
             model: itemModel
+            dialog: root
             view: listView
+
+            onActiveFocusChanged: {
+                listView.currentIndex = -1
+            }
+        }
+
+        PullDownMenu {
+            id: menu
+
+            enabled: itemModel.count !== 0
+
+            MenuItem {
+                text: itemModel.count === itemModel.selectedCount ?
+                          qsTr("Unselect all") :
+                          qsTr("Select all")
+                onClicked: {
+                    if (itemModel.count === itemModel.selectedCount)
+                        itemModel.setAllSelected(false)
+                    else
+                        itemModel.setAllSelected(true)
+                }
+            }
         }
 
         delegate: DoubleListItem {
-            id: listItem
+            property color primaryColor: highlighted ?
+                                         Theme.highlightColor : Theme.primaryColor
+            highlighted: down || model.selected
             title.text: model.name
             subtitle.text: model.description
             icon.source: model.icon
-            defaultIcon.source: "image://icons/icon-m-browser?" + (highlighted ?
-                                    Theme.highlightColor : Theme.primaryColor)
+            defaultIcon.source: "image://icons/icon-m-browser?" + primaryColor
 
-            menu: ContextMenu {
-                MenuItem {
-                    text: qsTr("Add channel")
-                    onClicked: click()
-                }
-            }
-
-            onClicked: click()
-
-            function click() {
-                root.accepted(model.url, model.name,
-                              model.icon, model.description)
-                root.doPop()
+            onClicked: {
+                var selected = model.selected
+                itemModel.setSelected(model.index, !selected);
             }
         }
 

@@ -38,7 +38,7 @@ Page {
 
             LogItem {
                 title: "Improved UI for playlist files"
-                description: "Possibility to search and select individual items from playlist files was added."
+                description: "Possibility to search and select individual items from playlist files."
             }
 
             LogItem {
@@ -66,7 +66,7 @@ Page {
                 title: "Support for URL content"
                 description: "In addition to local files, URL content " +
                              "(e.g. internet radio streams, remote media files) can be added to a playlist. " +
-                             "An URL should point to direct stream or to a playlist file (pls format). " +
+                             "An URL should point to direct stream or to a playlist file. " +
                              "Only HTTP URLs are supported right now."
             }
 

@@ -25,7 +25,6 @@ ApplicationWindow
 
     // -- stream title --
     property string streamTitle: ""
-
     function updateStreamTitle() {
         streamTitle = cserver.streamTitle(av.currentId)
     }

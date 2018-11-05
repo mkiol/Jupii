@@ -103,6 +103,7 @@ Dialog {
                         return "image://theme/icon-m-file-other?" + primaryColor
                     }
             }
+
             onClicked: {
                 var selected = model.selected
                 itemModel.setSelected(model.index, !selected);
