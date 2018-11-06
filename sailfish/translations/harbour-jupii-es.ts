@@ -150,7 +150,7 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="71"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sólo se admiten LURs HTTP. Si la LUR apunta a un archivo de lista de reproducción, se agregará el primer elemento de reproducción. Si no se proporciona el nombre, se autodescubrirá basándose en los metadatos del flujo.</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="58"/>
@@ -425,32 +425,32 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/IcecastPage.qml" line="44"/>
         <source>Cannot download or parse Icecast directory</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede descargar o analizar el directorio Icecast</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="63"/>
         <source>Search stations</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar estaciones</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="77"/>
         <source>Refresh station list</source>
-        <translation type="unfinished"></translation>
+        <translation>Refrescar lista de  estación </translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="85"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Deseleccionar todo</translation>
+        <translation>Deseleccionar todo</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="86"/>
         <source>Select all</source>
-        <translation type="unfinished">Seleccionar todo</translation>
+        <translation>Seleccionar todo</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="123"/>
         <source>No stations</source>
-        <translation type="unfinished"></translation>
+        <translation>No estaciones</translation>
     </message>
 </context>
 <context>
@@ -694,7 +694,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="33"/>
         <source>When Jupii starts, the last playlist will be automatically loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cuando Jupii se inicia, la última lista de reproducción se autocargará.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="56"/>
@@ -724,7 +724,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Adding devices manually</source>
-        <translation>Añadir dispositivo manualmente</translation>
+        <translation>Añadir manual</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
@@ -759,7 +759,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="88"/>
         <source>All devices visible</source>
-        <translation>Todos los dispositivos visibles</translation>
+        <translation>Dispositivos visibles</translation>
     </message>
 </context>
 <context>
@@ -772,12 +772,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SomafmPage.qml" line="78"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Deseleccionar todo</translation>
+        <translation>Deseleccionar todo</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="79"/>
         <source>Select all</source>
-        <translation type="unfinished">Seleccionar todo</translation>
+        <translation>Seleccionar todo</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="106"/>
