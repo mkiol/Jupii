@@ -90,14 +90,6 @@
         <translation type="unfinished">URL</translation>
     </message>
     <message>
-        <source>SomaFM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>gPodder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Apps &amp; services</source>
         <translation type="unfinished"></translation>
     </message>
@@ -133,7 +125,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file (pls format), first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
+        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -347,6 +339,33 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
 </context>
 <context>
+    <name>IcecastPage</name>
+    <message>
+        <source>Refresh station list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No stations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search stations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot download or parse Icecast directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MediaInfoPage</name>
     <message>
         <source>Title</source>
@@ -542,10 +561,6 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation>Beginnen me’ de laatsten afspeellijst</translation>
     </message>
     <message>
-        <source>When Jupii connects to a device, the last playlist will be automatically loaded.</source>
-        <translation>Wanneer da Jupii verbind me een apparaat, ga’ de laatsten afspeellijst automatisch worden geladen.</translation>
-    </message>
-    <message>
         <source>Volume control with hardware keys</source>
         <translation>Volumebesturing me hardwareknoppen</translation>
     </message>
@@ -597,19 +612,27 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <source>Experiments</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>When Jupii starts, the last playlist will be automatically loaded.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SomafmPage</name>
-    <message>
-        <source>Add channel</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>No channels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Search channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
