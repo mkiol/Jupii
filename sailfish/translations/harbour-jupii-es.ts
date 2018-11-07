@@ -24,24 +24,29 @@
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="77"/>
+        <location filename="../qml/AboutPage.qml" line="63"/>
+        <source>Authors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AboutPage.qml" line="76"/>
+        <source>Translations are provided by:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AboutPage.qml" line="87"/>
         <source>%1 is developed as an open source project under %2.</source>
         <translation>%1 es desarrollado  como un proyecto de código abierto bajo %2.</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="63"/>
-        <source>Authors &amp; license</source>
-        <translation>Autores &amp; licencia</translation>
+        <location filename="../qml/AboutPage.qml" line="93"/>
+        <source>Libraries</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="69"/>
         <source>Copyright &amp;copy; %1 %2</source>
         <translation>Derechos de autor: &amp;copy; %1 %2</translation>
-    </message>
-    <message>
-        <location filename="../qml/AboutPage.qml" line="83"/>
-        <source>Third party components</source>
-        <translation>Componentes terceros</translation>
     </message>
 </context>
 <context>
@@ -193,8 +198,8 @@
     <name>ArtistPage</name>
     <message>
         <location filename="../qml/ArtistPage.qml" line="74"/>
-        <source>Albums</source>
-        <translation>Álbumes</translation>
+        <source>Artists</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="75"/>
@@ -229,15 +234,16 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="52"/>
-        <location filename="../qml/ChangelogPage.qml" line="62"/>
-        <location filename="../qml/ChangelogPage.qml" line="94"/>
-        <location filename="../qml/ChangelogPage.qml" line="104"/>
-        <location filename="../qml/ChangelogPage.qml" line="120"/>
-        <location filename="../qml/ChangelogPage.qml" line="135"/>
-        <location filename="../qml/ChangelogPage.qml" line="170"/>
+        <location filename="../qml/ChangelogPage.qml" line="41"/>
+        <location filename="../qml/ChangelogPage.qml" line="63"/>
+        <location filename="../qml/ChangelogPage.qml" line="73"/>
+        <location filename="../qml/ChangelogPage.qml" line="105"/>
+        <location filename="../qml/ChangelogPage.qml" line="115"/>
+        <location filename="../qml/ChangelogPage.qml" line="131"/>
+        <location filename="../qml/ChangelogPage.qml" line="146"/>
         <location filename="../qml/ChangelogPage.qml" line="181"/>
-        <location filename="../qml/ChangelogPage.qml" line="227"/>
+        <location filename="../qml/ChangelogPage.qml" line="192"/>
+        <location filename="../qml/ChangelogPage.qml" line="238"/>
         <source>Version %1</source>
         <translation>Versión %1</translation>
     </message>
@@ -410,12 +416,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation>Buscar pódcast</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="86"/>
+        <location filename="../qml/GpodderPage.qml" line="87"/>
         <source>Select episodes</source>
         <translation>Seleccionar episodios</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="104"/>
+        <location filename="../qml/GpodderPage.qml" line="105"/>
         <source>No podcasts</source>
         <translation>No hay pódcast</translation>
     </message>
@@ -742,6 +748,16 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation>La transmisión desde internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predeterminado) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido de un host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para hacer un funcionamiento de transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 en no es necesario que se habilite todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
     </message>
     <message>
+        <location filename="../qml/SettingsPage.qml" line="121"/>
+        <source>Proxy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="122"/>
+        <source>Redirection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
         <source></source>
         <translation></translation>
@@ -765,7 +781,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
 <context>
     <name>SomafmPage</name>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="61"/>
+        <location filename="../qml/SomafmPage.qml" line="58"/>
         <source>Search channels</source>
         <translation>Buscar canales</translation>
     </message>

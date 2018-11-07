@@ -16,15 +16,7 @@
         <translation>Wijzigingslogboek</translation>
     </message>
     <message>
-        <source>Authors &amp; license</source>
-        <translation>Auteurs &amp; licentie</translation>
-    </message>
-    <message>
         <source>Copyright &amp;copy; %1 %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Third party components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -33,6 +25,18 @@
     </message>
     <message>
         <source>%1 is developed as an open source project under %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Libraries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Authors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Translations are provided by:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -173,11 +177,11 @@
         <translation>Geen artiesten</translation>
     </message>
     <message>
-        <source>Albums</source>
+        <source>Search artists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Search artists</source>
+        <source>Artists</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -614,6 +618,14 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>When Jupii starts, the last playlist will be automatically loaded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Proxy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Redirection</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

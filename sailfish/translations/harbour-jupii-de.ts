@@ -24,23 +24,28 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="77"/>
+        <location filename="../qml/AboutPage.qml" line="63"/>
+        <source>Authors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AboutPage.qml" line="87"/>
         <source>%1 is developed as an open source project under %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="63"/>
-        <source>Authors &amp; license</source>
-        <translation>Autoren &amp; Lizenz</translation>
+        <location filename="../qml/AboutPage.qml" line="76"/>
+        <source>Translations are provided by:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AboutPage.qml" line="93"/>
+        <source>Libraries</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="69"/>
         <source>Copyright &amp;copy; %1 %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/AboutPage.qml" line="83"/>
-        <source>Third party components</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -193,7 +198,7 @@
     <name>ArtistPage</name>
     <message>
         <location filename="../qml/ArtistPage.qml" line="74"/>
-        <source>Albums</source>
+        <source>Artists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -229,15 +234,16 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="52"/>
-        <location filename="../qml/ChangelogPage.qml" line="62"/>
-        <location filename="../qml/ChangelogPage.qml" line="94"/>
-        <location filename="../qml/ChangelogPage.qml" line="104"/>
-        <location filename="../qml/ChangelogPage.qml" line="120"/>
-        <location filename="../qml/ChangelogPage.qml" line="135"/>
-        <location filename="../qml/ChangelogPage.qml" line="170"/>
+        <location filename="../qml/ChangelogPage.qml" line="41"/>
+        <location filename="../qml/ChangelogPage.qml" line="63"/>
+        <location filename="../qml/ChangelogPage.qml" line="73"/>
+        <location filename="../qml/ChangelogPage.qml" line="105"/>
+        <location filename="../qml/ChangelogPage.qml" line="115"/>
+        <location filename="../qml/ChangelogPage.qml" line="131"/>
+        <location filename="../qml/ChangelogPage.qml" line="146"/>
         <location filename="../qml/ChangelogPage.qml" line="181"/>
-        <location filename="../qml/ChangelogPage.qml" line="227"/>
+        <location filename="../qml/ChangelogPage.qml" line="192"/>
+        <location filename="../qml/ChangelogPage.qml" line="238"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
@@ -410,12 +416,12 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="86"/>
+        <location filename="../qml/GpodderPage.qml" line="87"/>
         <source>Select episodes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="104"/>
+        <location filename="../qml/GpodderPage.qml" line="105"/>
         <source>No podcasts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -742,6 +748,16 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/SettingsPage.qml" line="121"/>
+        <source>Proxy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="122"/>
+        <source>Redirection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
         <source></source>
         <translation></translation>
@@ -765,7 +781,7 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>SomafmPage</name>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="61"/>
+        <location filename="../qml/SomafmPage.qml" line="58"/>
         <source>Search channels</source>
         <translation type="unfinished"></translation>
     </message>
