@@ -26,12 +26,12 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="63"/>
         <source>Authors</source>
-        <translation type="unfinished"></translation>
+        <translation>Autores</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="76"/>
         <source>Translations are provided by:</source>
-        <translation type="unfinished"></translation>
+        <translation>Traducciones por:</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="87"/>
@@ -41,7 +41,7 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="93"/>
         <source>Libraries</source>
-        <translation type="unfinished"></translation>
+        <translation>Librerias</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="69"/>
@@ -199,7 +199,7 @@
     <message>
         <location filename="../qml/ArtistPage.qml" line="74"/>
         <source>Artists</source>
-        <translation type="unfinished"></translation>
+        <translation>Artistas</translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="75"/>
@@ -347,7 +347,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="72"/>
         <source>Add device manually</source>
-        <translation>Añadir dispositivo manualmente</translation>
+        <translation>Agregar manual</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="79"/>
@@ -441,7 +441,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/IcecastPage.qml" line="77"/>
         <source>Refresh station list</source>
-        <translation>Refrescar lista de  estación </translation>
+        <translation>Refrescar lista de  estación</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="85"/>
@@ -730,7 +730,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Adding devices manually</source>
-        <translation>Añadir manual</translation>
+        <translation>Agregar manual</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
@@ -750,12 +750,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="121"/>
         <source>Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="122"/>
         <source>Redirection</source>
-        <translation type="unfinished"></translation>
+        <translation>Redirección</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
