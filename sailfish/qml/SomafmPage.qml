@@ -44,9 +44,6 @@ Dialog {
         id: listView
 
         anchors.fill: parent
-        /*width: parent.width
-        height: parent.height - (tip.height + 2*Theme.paddingLarge)
-        clip: true*/
 
         opacity: itemModel.busy ? 0.0 : 1.0
         visible: opacity > 0.0
@@ -59,6 +56,9 @@ Dialog {
         header: SearchDialogHeader {
             implicitWidth: root.width
             searchPlaceholderText: qsTr("Search channels")
+            //tip: qsTr("SomaFM is supported entirely by the listeners. " +
+            //          "If you enjoy, please consider making a " +
+            //          "<a href=\"%1\">donation</a>.").arg("http://somafm.com/support/");
             model: itemModel
             dialog: root
             view: listView
@@ -116,12 +116,4 @@ Dialog {
     VerticalScrollDecorator {
         flickable: listView
     }
-
-    /*Tip {
-        id: tip
-        anchors.bottom: parent.bottom
-        anchors.topMargin: Theme.paddingLarge
-        anchors.bottomMargin: Theme.paddingLarge
-        text: qsTr("SomaFM is supported entirely by the listeners. If you enjoy, please consider making a <a href=\"%1\">donation</a>.").arg("http://somafm.com/support/");
-    }*/
 }

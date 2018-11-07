@@ -60,7 +60,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Authors & license")
+                text: qsTr("Authors")
             }
 
             PaddedLabel {
@@ -73,6 +73,16 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
+                text: qsTr("Translations are provided by:")
+            }
+
+            PaddedLabel {
+                horizontalAlignment: Text.AlignLeft
+                text: "Åke Engelbrektson \ncarlosgonz \nd9h20f \nВячеслав Диконов \ndrosjesjaafoer"
+            }
+
+            PaddedLabel {
+                horizontalAlignment: Text.AlignLeft
                 textFormat: Text.StyledText
                 text: qsTr("%1 is developed as an open source project under %2.")
                 .arg(APP_NAME)
@@ -80,7 +90,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Third party components")
+                text: qsTr("Libraries")
             }
 
             PaddedLabel {

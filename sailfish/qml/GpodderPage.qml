@@ -69,6 +69,7 @@ Page {
             implicitWidth: root.width
             title: qsTr("Podcasts")
             searchPlaceholderText: qsTr("Search podcasts")
+            //tip: qsTr("Only podcasts that contain at least one downloaded episode are visible.")
             model: itemModel
             view: listView
         }
