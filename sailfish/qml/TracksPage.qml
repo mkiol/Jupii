@@ -40,10 +40,6 @@ Dialog {
 
         anchors.fill: parent
 
-        opacity: itemModel.busy ? 0.0 : 1.0
-        visible: opacity > 0.0
-        Behavior on opacity { FadeAnimation {} }
-
         currentIndex: -1
 
         model: itemModel
@@ -87,6 +83,7 @@ Dialog {
             title.text: model.title
             subtitle.text: root.albumId.length !== 0 || root.playlistId.length !== 0 ?
                                model.artist : model.album
+            enabled: !itemModel.busy
             //icon.source: model.icon.toString().length !== 0 ? (model.icon + "?" + primaryColor) : ""
             defaultIcon.source: {
                 if (isMic)

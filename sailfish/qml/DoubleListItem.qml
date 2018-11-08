@@ -16,6 +16,10 @@ ListItem {
     property alias icon: _icon
     property alias defaultIcon: _dicon
 
+    opacity: enabled ? 1.0 : 0.0
+    visible: opacity > 0.0
+    Behavior on opacity { FadeAnimation {} }
+
     contentHeight: Theme.itemSizeMedium
 
     anchors {
