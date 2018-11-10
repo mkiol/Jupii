@@ -50,14 +50,15 @@ void ItemModel::clear()
 
 void ItemModel::workerDone()
 {
-    if (m_worker && m_worker->isFinished()) {
+    auto worker = dynamic_cast<ItemWorker*>(sender());
+    if (worker) {
         int old_l = m_list.length();
 
         if (m_list.length() != 0)
             removeRows(0,rowCount());
 
-        if (!m_worker->items.isEmpty())
-            appendRows(m_worker->items);
+        if (!worker->items.isEmpty())
+            appendRows(worker->items);
         else
             qWarning() << "No items";
 
@@ -198,5 +199,6 @@ void SelectableItemModel::workerDone()
 void SelectableItemModel::updateModel(const QString &data)
 {
     Q_UNUSED(data)
+    setAllSelected(false);
     ItemModel::updateModel(m_filter);
 }
