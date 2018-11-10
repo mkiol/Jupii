@@ -63,6 +63,10 @@ bool IcecastModel::isRefreshing()
 void IcecastModel::refresh()
 {
     if (!m_refreshing) {
+        setBusy(true);
+        m_refreshing = true;
+        emit refreshingChanged();
+
         QNetworkRequest request;
         request.setUrl(m_dirUrl);
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -106,9 +110,6 @@ void IcecastModel::refresh()
             else
                 emit error();
         });
-
-        setBusy(true);
-        m_refreshing = true; emit refreshingChanged();
     } else {
         qWarning() << "Refreshing already active";
     }

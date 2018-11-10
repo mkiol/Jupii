@@ -208,6 +208,7 @@ bool Utils::writeToFile(const QString &path, const QByteArray &data, bool del)
         }
     } else {
         qDebug() << "File" << f.fileName() << "already exists";
+        return false;
     }
 
     return true;

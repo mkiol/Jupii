@@ -79,7 +79,8 @@ OTHER_FILES += \
     qml/GpodderPage.qml \
     qml/GpodderEpisodesPage.qml \
     qml/SearchPageHeader.qml \
-    qml/SearchDialogHeader.qml
+    qml/SearchDialogHeader.qml \
+    qml/IcecastPage.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 
@@ -108,6 +109,3 @@ OTHER_FILES += \
     rpm/$${TARGET}.yaml \
     rpm/$${TARGET}.changes.in \
     rpm/$${TARGET}.spec
-
-DISTFILES += \
-    qml/IcecastPage.qml

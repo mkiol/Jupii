@@ -38,10 +38,6 @@ Dialog {
 
         anchors.fill: parent
 
-        opacity: itemModel.busy ? 0.0 : 1.0
-        visible: opacity > 0.0
-        Behavior on opacity { FadeAnimation {} }
-
         currentIndex: -1
 
         model: itemModel
@@ -79,6 +75,7 @@ Dialog {
             highlighted: down || model.selected
             title.text: model.title
             subtitle.text: model.description
+            enabled: !itemModel.busy
             //icon.source: model.icon + "?" + primaryColor
             defaultIcon.source: {
                 switch (model.type) {

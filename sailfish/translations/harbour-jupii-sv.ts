@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sv">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="sv" version="2.1">
 <context>
     <name>AboutPage</name>
     <message>
@@ -21,32 +19,32 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="57"/>
         <source>Project website</source>
-        <translation type="unfinished"></translation>
+        <translation>Projektets hemsida</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="63"/>
         <source>Authors</source>
-        <translation type="unfinished"></translation>
+        <translation>Utvecklare</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="87"/>
         <source>%1 is developed as an open source project under %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 är utvecklat som ett öppen källkodsprojekt under %2.</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="76"/>
         <source>Translations are provided by:</source>
-        <translation type="unfinished"></translation>
+        <translation>Översättningar levereras av:</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="93"/>
         <source>Libraries</source>
-        <translation type="unfinished"></translation>
+        <translation>Bibliotek</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="69"/>
         <source>Copyright &amp;copy; %1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Copyright &amp;copy; %1 %2</translation>
     </message>
 </context>
 <context>
@@ -112,22 +110,22 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="127"/>
         <source>Microphone</source>
-        <translation type="unfinished"></translation>
+        <translation>Mikrofon</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="138"/>
         <source>Apps &amp; services</source>
-        <translation type="unfinished"></translation>
+        <translation>Appar &amp; tjänster</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="118"/>
         <source>URL</source>
-        <translation type="unfinished">URL</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="72"/>
         <source>Playlist file</source>
-        <translation type="unfinished"></translation>
+        <translation>Spellningslista</translation>
     </message>
 </context>
 <context>
@@ -135,61 +133,58 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="32"/>
         <source>Add URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till URL</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="38"/>
         <source>Enter URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Ange URL</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="39"/>
         <source>URL</source>
-        <translation type="unfinished">URL</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="57"/>
         <source>Enter Name (optional)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ange namn (frivilligt)</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="71"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Endast HTTP-formatet stöds. Om URL:en pekar mot en spelningslista, läggs första listobjektet till. Om namn inte anges, kommer det att hämtas automatiskt från strömmens metadata.</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="58"/>
         <source>Name</source>
-        <translation type="unfinished">Namn</translation>
+        <translation>Namn</translation>
     </message>
 </context>
 <context>
     <name>AlbumsPage</name>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="74"/>
+        <location filename="../qml/AlbumsPage.qml" line="70"/>
         <source>Albums</source>
-        <translation type="unfinished"></translation>
+        <translation>Album</translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="75"/>
+        <location filename="../qml/AlbumsPage.qml" line="71"/>
         <source>Search albums</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök album</translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/AlbumsPage.qml" line="82"/>
+        <location filename="../qml/AlbumsPage.qml" line="78"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n spår</numerusform>
-            <numerusform>%n spår</numerusform>
-        </translation>
+        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="89"/>
+        <location filename="../qml/AlbumsPage.qml" line="86"/>
         <source>Select tracks</source>
         <translation>Välj spår</translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="107"/>
+        <location filename="../qml/AlbumsPage.qml" line="104"/>
         <source>No albums</source>
         <translation>Inga album</translation>
     </message>
@@ -197,30 +192,27 @@
 <context>
     <name>ArtistPage</name>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="74"/>
+        <location filename="../qml/ArtistPage.qml" line="70"/>
         <source>Artists</source>
-        <translation type="unfinished"></translation>
+        <translation>Artister</translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="75"/>
+        <location filename="../qml/ArtistPage.qml" line="71"/>
         <source>Search artists</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök artist</translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/ArtistPage.qml" line="82"/>
+        <location filename="../qml/ArtistPage.qml" line="78"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n spår</numerusform>
-            <numerusform>%n spår</numerusform>
-        </translation>
+        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="89"/>
+        <location filename="../qml/ArtistPage.qml" line="86"/>
         <source>Select tracks</source>
         <translation>Välj spår</translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="107"/>
+        <location filename="../qml/ArtistPage.qml" line="104"/>
         <source>No artists</source>
         <translation>Inga artister</translation>
     </message>
@@ -261,7 +253,7 @@
     <message>
         <location filename="../qml/CoverPage.qml" line="20"/>
         <source>Unknown</source>
-        <translation type="unfinished">Okänd</translation>
+        <translation>Okänd</translation>
     </message>
 </context>
 <context>
@@ -367,63 +359,63 @@
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="127"/>
-        <source>No devices found. 
+        <source>No devices found.
 Pull down to find more devices in your network.</source>
-        <translation>Inga enheter hittades. 
+        <translation>Inga enheter hittades.
 Dra neråt för att söka efter fler enheter i ditt nätverk.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="129"/>
-        <source>Not connected. 
+        <source>Not connected.
 Pull down to connect to the local network.</source>
-        <translation>Inte ansluten. 
+        <translation>Inte ansluten.
 Dra neråt för att ansluta till det lokala nätverket.</translation>
     </message>
 </context>
 <context>
     <name>GpodderEpisodesPage</name>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="51"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="47"/>
         <source>Search episodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök avsnitt</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="64"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="60"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Avmarkera alla</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="65"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="61"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Markera alla</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="104"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="101"/>
         <source>No episodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga avsnitt</translation>
     </message>
 </context>
 <context>
     <name>GpodderPage</name>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="70"/>
+        <location filename="../qml/GpodderPage.qml" line="66"/>
         <source>Podcasts</source>
-        <translation type="unfinished"></translation>
+        <translation>Poddar</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="71"/>
+        <location filename="../qml/GpodderPage.qml" line="67"/>
         <source>Search podcasts</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök poddar</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="87"/>
+        <location filename="../qml/GpodderPage.qml" line="84"/>
         <source>Select episodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Välj avsnitt</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="105"/>
+        <location filename="../qml/GpodderPage.qml" line="102"/>
         <source>No podcasts</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga poddar</translation>
     </message>
 </context>
 <context>
@@ -431,32 +423,32 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/IcecastPage.qml" line="44"/>
         <source>Cannot download or parse Icecast directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte ladda ner eller tolka Icecast-katalogen</translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="63"/>
+        <location filename="../qml/IcecastPage.qml" line="59"/>
         <source>Search stations</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök stationer</translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="77"/>
+        <location filename="../qml/IcecastPage.qml" line="74"/>
         <source>Refresh station list</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdatera stationslistan</translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="85"/>
+        <location filename="../qml/IcecastPage.qml" line="82"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Avmarkera alla</translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="86"/>
+        <location filename="../qml/IcecastPage.qml" line="83"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Markera alla</translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="123"/>
+        <location filename="../qml/IcecastPage.qml" line="121"/>
         <source>No stations</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga stationer</translation>
     </message>
 </context>
 <context>
@@ -484,7 +476,7 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="144"/>
         <source>Content type</source>
-        <translation type="unfinished"></translation>
+        <translation>Innehållstyp</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="151"/>
@@ -494,22 +486,22 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="116"/>
         <source>Stream title</source>
-        <translation type="unfinished"></translation>
+        <translation>Strömtitel</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="35"/>
         <source>Copy URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiera URL</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="35"/>
         <source>Copy path</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiera sökväg</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="40"/>
         <source>Copy stream title</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiera strömtitel</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="166"/>
@@ -519,12 +511,12 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="166"/>
         <source>URL</source>
-        <translation type="unfinished">URL</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="184"/>
         <source>Microphone volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Mikrofonvolym</translation>
     </message>
 </context>
 <context>
@@ -532,27 +524,27 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="314"/>
         <source>Item is already added</source>
-        <translation type="unfinished"></translation>
+        <translation>Objektet är redan tillagt</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="316"/>
         <source>Item cannot be added</source>
-        <translation type="unfinished"></translation>
+        <translation>Objektet kan inte läggas till</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="318"/>
         <source>Some items cannot be added</source>
-        <translation type="unfinished"></translation>
+        <translation>Vissa objekt kan inte läggas till</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="320"/>
         <source>Items cannot be added</source>
-        <translation type="unfinished"></translation>
+        <translation>Objekt kan inte läggas till</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="322"/>
         <source>Unknown error</source>
-        <translation type="unfinished"></translation>
+        <translation>Okänt fel</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="345"/>
@@ -607,43 +599,40 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="554"/>
         <source>Unknown</source>
-        <translation type="unfinished">Okänd</translation>
+        <translation>Okänd</translation>
     </message>
 </context>
 <context>
     <name>PlaylistPage</name>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="74"/>
+        <location filename="../qml/PlaylistPage.qml" line="70"/>
         <source>Playlist files</source>
-        <translation type="unfinished"></translation>
+        <translation>Spelningslistor</translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="75"/>
+        <location filename="../qml/PlaylistPage.qml" line="71"/>
         <source>Search playlist files</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök spelningslistor</translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/PlaylistPage.qml" line="85"/>
+        <location filename="../qml/PlaylistPage.qml" line="81"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n spår</numerusform>
-            <numerusform>%n spår</numerusform>
-        </translation>
+        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="93"/>
+        <location filename="../qml/PlaylistPage.qml" line="90"/>
         <source>Select tracks</source>
-        <translation type="unfinished">Välj spår</translation>
+        <translation>Välj spår</translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="98"/>
+        <location filename="../qml/PlaylistPage.qml" line="95"/>
         <source>Delete playlist file</source>
-        <translation type="unfinished"></translation>
+        <translation>Ta bort spelningslista</translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="122"/>
+        <location filename="../qml/PlaylistPage.qml" line="119"/>
         <source>No playlist files</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga spelningslistor</translation>
     </message>
 </context>
 <context>
@@ -672,17 +661,14 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
 <context>
     <name>SearchDialogHeader</name>
     <message numerus="yes">
-        <location filename="../qml/SearchDialogHeader.qml" line="35"/>
+        <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation type="unfinished">
-            <numerusform>%n markerad</numerusform>
-            <numerusform>%n markerade</numerusform>
-        </translation>
+        <translation><numerusform>%n markerad</numerusform><numerusform>%n markerade</numerusform></translation>
     </message>
     <message>
-        <location filename="../qml/SearchDialogHeader.qml" line="45"/>
+        <location filename="../qml/SearchDialogHeader.qml" line="49"/>
         <source>Search episodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök avsnitt</translation>
     </message>
 </context>
 <context>
@@ -700,12 +686,12 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="33"/>
         <source>When Jupii starts, the last playlist will be automatically loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation>När Jupii startas, kommere den senaste spelningslistan att läsas in automatiskt.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="56"/>
         <source>Experiments</source>
-        <translation type="unfinished"></translation>
+        <translation>Experiment</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="62"/>
@@ -740,27 +726,27 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="117"/>
         <source>Internet streaming mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Internetströmmningsläge</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation type="unfinished"></translation>
+        <translation>Strömning från Internet till UPnP-enheter kan hanteras i två lägen, Proxy (standard) eller omdirigering. I proxyläget reläar %1 varje paket som tas emot från en strömmningsvärd (t.ex. internetradioserver) till en UPnP-enhet som finns i ditt hemnätverk. Detta läge är transparent för en UPnP-enhet, så det fungerar i de flesta fall. Eftersom paketen går igenom din telefon surfplatta måste %1 vara aktivt hela tiden för att strömmningen skall fungera. I omdirigeringsläget använder %1 HTTP-omdirigering för att instruera UPnP-enheten var internetvärden finns. Den faktiska strömmingen går direkt mellan UPnP-enheten och en strömmningsserver, så %1 behöver inte vara aktivt hela tiden. Nackdelen med omdirigeringsläget är att inte varje UPnP-enhet stödjer omdirigering. Därför fungerar inte detta läge korrekt, på vissa enheter.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="121"/>
         <source>Proxy</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="122"/>
         <source>Redirection</source>
-        <translation type="unfinished"></translation>
+        <translation>Omdirigering</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
-        <source></source>
-        <translation></translation>
+        <source/>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="48"/>
@@ -781,45 +767,45 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
 <context>
     <name>SomafmPage</name>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="58"/>
+        <location filename="../qml/SomafmPage.qml" line="54"/>
         <source>Search channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök kanaler</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="78"/>
+        <location filename="../qml/SomafmPage.qml" line="74"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Avmarkera alla</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="79"/>
+        <location filename="../qml/SomafmPage.qml" line="75"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Markera alla</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="106"/>
+        <location filename="../qml/SomafmPage.qml" line="103"/>
         <source>No channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga kanaler</translation>
     </message>
 </context>
 <context>
     <name>TracksPage</name>
     <message>
-        <location filename="../qml/TracksPage.qml" line="53"/>
+        <location filename="../qml/TracksPage.qml" line="49"/>
         <source>Search tracks</source>
         <translation>Sök spår</translation>
     </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="70"/>
+        <location filename="../qml/TracksPage.qml" line="66"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Avmarkera alla</translation>
     </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="71"/>
+        <location filename="../qml/TracksPage.qml" line="67"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Markera alla</translation>
     </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="115"/>
+        <location filename="../qml/TracksPage.qml" line="112"/>
         <source>No tracks</source>
         <translation>Inga spår</translation>
     </message>

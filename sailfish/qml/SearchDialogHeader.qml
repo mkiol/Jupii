@@ -21,6 +21,10 @@ FocusScope {
 
     onHeightChanged: view.scrollToTop()
 
+    opacity: enabled ? 1.0 : 0.0
+    visible: opacity > 0.0
+    Behavior on opacity { FadeAnimation {} }
+
     Column {
         id: column
         width: parent.width

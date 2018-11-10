@@ -61,10 +61,6 @@ Page {
 
         anchors.fill: parent
 
-        opacity: itemModel.busy ? 0.0 : 1.0
-        visible: opacity > 0.0
-        Behavior on opacity { FadeAnimation {} }
-
         currentIndex: -1
 
         model: itemModel
@@ -80,6 +76,7 @@ Page {
         delegate: DoubleListItem {
             title.text: model.name
             subtitle.text: qsTr("%n track(s)", "", model.count)
+            enabled: !itemModel.busy
             icon.source: model.icon
             defaultIcon.source: "image://theme/icon-m-media-artists?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)

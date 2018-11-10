@@ -15,8 +15,6 @@ CoverBackground {
 
     property string image: av.transportStatus === AVTransport.TPS_Ok ?
                                av.currentAlbumArtURI : ""
-    //property string title: av.currentTitle.length > 0 ? av.currentTitle : qsTr("Unknown")
-    //property string author: av.currentAuthor.length > 0 ? av.currentAuthor : ""
     property string title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
     property string author: app.streamTitle.length === 0 ? av.currentAuthor : app.streamTitle
 
@@ -32,62 +30,57 @@ CoverBackground {
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        opacity: 0.3
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: "#8200dd" }
-            GradientStop { position: 1.0; color: "#5a00f7" }
-        }
-    }
-
     Image {
         id: bg
         anchors.fill: parent
         source: root.image
-        opacity: 0.5
         fillMode: Image.PreserveAspectCrop
     }
 
-    Item {
-        anchors.fill: parent
-        width: Theme.iconSizeLarge
-        height: Theme.iconSizeLarge
+    OpacityRampEffect {
+        sourceItem: bg
+        direction: OpacityRamp.BottomToTop
+        offset: 0.5
+        slope: 3
+    }
 
-        Image {
-            id: image
-            y: Theme.paddingLarge
-            anchors.horizontalCenter: parent.horizontalCenter
-            opacity: 0.4
-            source: "image://icons/icon-a-jupii"
-            visible: bg.status !== Image.Ready
+    Image {
+        anchors.fill: parent
+        source: "image://icons/icon-c-cover"
+        opacity: bg.status === Image.Ready ? 0.5 : 1.0
+    }
+
+    Column {
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            leftMargin: Theme.paddingSmall
+            rightMargin: Theme.paddingSmall
+            topMargin: Theme.paddingMedium
+        }
+        spacing: Theme.paddingSmall
+
+        Label {
+            width: parent.width
+            color: Theme.primaryColor
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            wrapMode: Text.Wrap
+            text: av.controlable ? root.title : APP_NAME
+            font.pixelSize: av.controlable ?
+                                Theme.fontSizeMedium :
+                                Theme.fontSizeLarge
         }
 
-        Column {
-            anchors.centerIn: parent
-            spacing: Theme.paddingSmall
-            width: parent.width - (screen.sizeCategory > Screen.Medium
-                                   ? 2*Theme.paddingMedium : 2*Theme.paddingLarge)
-
-            Label {
-                width: parent.width
-                color: Theme.primaryColor
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                wrapMode: Text.Wrap
-                text: av.controlable ? root.title : APP_NAME
-            }
-
-            Label {
-                width: parent.width
-                color: Theme.secondaryColor
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                wrapMode: Text.Wrap
-                //fontSizeMode: Text.Fit
-                text: root.author
-                visible: av.controlable
-            }
+        Label {
+            width: parent.width
+            color: Theme.secondaryColor
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            wrapMode: Text.Wrap
+            text: root.author
+            visible: av.controlable
         }
     }
 

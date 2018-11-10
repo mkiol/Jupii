@@ -166,17 +166,17 @@
 <context>
     <name>AlbumsPage</name>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="74"/>
+        <location filename="../qml/AlbumsPage.qml" line="70"/>
         <source>Albums</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="75"/>
+        <location filename="../qml/AlbumsPage.qml" line="71"/>
         <source>Search albums</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/AlbumsPage.qml" line="82"/>
+        <location filename="../qml/AlbumsPage.qml" line="78"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n Titel</numerusform>
@@ -184,12 +184,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="89"/>
+        <location filename="../qml/AlbumsPage.qml" line="86"/>
         <source>Select tracks</source>
         <translation>Titel auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/AlbumsPage.qml" line="107"/>
+        <location filename="../qml/AlbumsPage.qml" line="104"/>
         <source>No albums</source>
         <translation>Keine Alben</translation>
     </message>
@@ -197,17 +197,17 @@
 <context>
     <name>ArtistPage</name>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="74"/>
+        <location filename="../qml/ArtistPage.qml" line="70"/>
         <source>Artists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="75"/>
+        <location filename="../qml/ArtistPage.qml" line="71"/>
         <source>Search artists</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/ArtistPage.qml" line="82"/>
+        <location filename="../qml/ArtistPage.qml" line="78"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n Titel</numerusform>
@@ -215,12 +215,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="89"/>
+        <location filename="../qml/ArtistPage.qml" line="86"/>
         <source>Select tracks</source>
         <translation>Titel auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/ArtistPage.qml" line="107"/>
+        <location filename="../qml/ArtistPage.qml" line="104"/>
         <source>No artists</source>
         <translation>Keine Künstler</translation>
     </message>
@@ -383,22 +383,22 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>GpodderEpisodesPage</name>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="51"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="47"/>
         <source>Search episodes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="64"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="60"/>
         <source>Unselect all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="65"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="61"/>
         <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="104"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="101"/>
         <source>No episodes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -406,22 +406,22 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>GpodderPage</name>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="70"/>
+        <location filename="../qml/GpodderPage.qml" line="66"/>
         <source>Podcasts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="71"/>
+        <location filename="../qml/GpodderPage.qml" line="67"/>
         <source>Search podcasts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="87"/>
+        <location filename="../qml/GpodderPage.qml" line="84"/>
         <source>Select episodes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/GpodderPage.qml" line="105"/>
+        <location filename="../qml/GpodderPage.qml" line="102"/>
         <source>No podcasts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -434,27 +434,27 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="63"/>
+        <location filename="../qml/IcecastPage.qml" line="59"/>
         <source>Search stations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="77"/>
+        <location filename="../qml/IcecastPage.qml" line="74"/>
         <source>Refresh station list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="85"/>
+        <location filename="../qml/IcecastPage.qml" line="82"/>
         <source>Unselect all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="86"/>
+        <location filename="../qml/IcecastPage.qml" line="83"/>
         <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="123"/>
+        <location filename="../qml/IcecastPage.qml" line="121"/>
         <source>No stations</source>
         <translation type="unfinished"></translation>
     </message>
@@ -613,17 +613,17 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>PlaylistPage</name>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="74"/>
+        <location filename="../qml/PlaylistPage.qml" line="70"/>
         <source>Playlist files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="75"/>
+        <location filename="../qml/PlaylistPage.qml" line="71"/>
         <source>Search playlist files</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/PlaylistPage.qml" line="85"/>
+        <location filename="../qml/PlaylistPage.qml" line="81"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n Titel</numerusform>
@@ -631,17 +631,17 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         </translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="93"/>
+        <location filename="../qml/PlaylistPage.qml" line="90"/>
         <source>Select tracks</source>
         <translation type="unfinished">Titel auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="98"/>
+        <location filename="../qml/PlaylistPage.qml" line="95"/>
         <source>Delete playlist file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="122"/>
+        <location filename="../qml/PlaylistPage.qml" line="119"/>
         <source>No playlist files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -672,7 +672,7 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>SearchDialogHeader</name>
     <message numerus="yes">
-        <location filename="../qml/SearchDialogHeader.qml" line="35"/>
+        <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
         <translation type="unfinished">
             <numerusform>%n ausgewählt</numerusform>
@@ -680,7 +680,7 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         </translation>
     </message>
     <message>
-        <location filename="../qml/SearchDialogHeader.qml" line="45"/>
+        <location filename="../qml/SearchDialogHeader.qml" line="49"/>
         <source>Search episodes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -781,22 +781,22 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>SomafmPage</name>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="58"/>
+        <location filename="../qml/SomafmPage.qml" line="54"/>
         <source>Search channels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="78"/>
+        <location filename="../qml/SomafmPage.qml" line="74"/>
         <source>Unselect all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="79"/>
+        <location filename="../qml/SomafmPage.qml" line="75"/>
         <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="106"/>
+        <location filename="../qml/SomafmPage.qml" line="103"/>
         <source>No channels</source>
         <translation type="unfinished"></translation>
     </message>
@@ -804,22 +804,22 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>TracksPage</name>
     <message>
-        <location filename="../qml/TracksPage.qml" line="53"/>
+        <location filename="../qml/TracksPage.qml" line="49"/>
         <source>Search tracks</source>
         <translation>Suche Titel</translation>
     </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="70"/>
+        <location filename="../qml/TracksPage.qml" line="66"/>
         <source>Unselect all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="71"/>
+        <location filename="../qml/TracksPage.qml" line="67"/>
         <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/TracksPage.qml" line="115"/>
+        <location filename="../qml/TracksPage.qml" line="112"/>
         <source>No tracks</source>
         <translation>Keine Titel</translation>
     </message>

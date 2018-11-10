@@ -27,6 +27,17 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("1.9.3")
+            }
+
+            LogItem {
+                title: "Icecast directory"
+                description: "Icecast directory is a listing of broadcast streams. " +
+                             "Jupii has built-in browser for searching and adding " +
+                             "Icecast stations to its playlist queue."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("1.9.2")
             }
 
@@ -42,10 +53,10 @@ Page {
             }
 
             LogItem {
-                title: "Shoutcast meta data support"
-                description: "Many internet radio services use Shoutcast streaming. " +
-                             "Jupii is able to display stream title retrieved from Shoutcast meta data. " +
-                             "It also removes in-stream meta data if UPnP device doesn't support Shoutcast protocol."
+                title: "SHOUTcast meta data support"
+                description: "Many internet radio services use SHOUTcast streaming. " +
+                             "Jupii is able to display stream title retrieved from meta data. " +
+                             "It also removes in-stream meta data if UPnP device doesn't support SHOUTcast protocol."
             }
 
             SectionHeader {

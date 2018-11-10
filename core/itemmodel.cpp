@@ -50,7 +50,7 @@ void ItemModel::clear()
 
 void ItemModel::workerDone()
 {
-    if (m_worker) {
+    if (m_worker && m_worker->isFinished()) {
         int old_l = m_list.length();
 
         if (m_list.length() != 0)
