@@ -134,7 +134,7 @@ DockedPanel_ {
                         leftMargin: Theme.horizontalPageMargin
                     }
 
-                    source: "image://theme/graphic-grid-playlist"
+                    source: "image://theme/graphic-grid-playlist?" + Theme.primaryColor
 
                     Image {
                         id: _image

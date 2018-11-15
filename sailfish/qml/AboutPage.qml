@@ -66,7 +66,7 @@ Page {
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
                 textFormat: Text.RichText
-                text: qsTr("Copyright &copy; %1 %2")
+                text: ("Copyright &copy; %1 %2")
                 .arg(COPYRIGHT_YEAR)
                 .arg(AUTHOR)
             }
@@ -78,7 +78,7 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "Åke Engelbrektson \ncarlosgonz \nd9h20f \nВячеслав Диконов \ndrosjesjaafoer"
+                text: "Åke Engelbrektson \nCarlos Gonzalez \nd9h20f \nВячеслав Диконов \ndrosjesjaafoer"
             }
 
             PaddedLabel {
