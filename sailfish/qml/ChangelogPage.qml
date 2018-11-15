@@ -27,6 +27,21 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("1.9.4")
+            }
+
+            LogItem {
+                title: "Improved cover design"
+                description: "Cover page has a new background image."
+            }
+
+            LogItem {
+                title: "Russian, Swedish and Spanish translations update"
+                description: "Translations have been updated thanks to " +
+                             "Вячеслав Диконов, Åke Engelbrektson and Carlos Gonzalez."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("1.9.3")
             }
 
@@ -35,6 +50,12 @@ Page {
                 description: "Icecast directory is a listing of broadcast streams. " +
                              "Jupii has built-in browser for searching and adding " +
                              "Icecast stations to its playlist queue."
+            }
+
+            LogItem {
+                title: "M3U, XSPF and PLS playlist formats support"
+                description: "The file picker now supports three major playlist formats. " +
+                             "When playlist file is selected all playlist items are added to current queue."
             }
 
             SectionHeader {

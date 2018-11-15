@@ -8,6 +8,11 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Thu Nov 15 2018 Michal Kosciesza <michal@mkiol.net> 1.9.4-1
+- New cover design
+- Russian and Swedish translations update
+- Bug fixes
+
 * We Nov 07 2018 Michal Kosciesza <michal@mkiol.net> 1.9.3-1
 - Icecast directory browser
 - Improved stability and bug fixes

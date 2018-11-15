@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 #ifdef SAILFISH
     QTranslator translator;
     const QString locale = QLocale::system().name();
-    //const QString locale = "es";
+    //const QString locale = "ru";
     const QString transDir = SailfishApp::pathTo("translations").toLocalFile();
     if(translator.load("harbour-jupii-" + locale, transDir)) {
         app->installTranslator(&translator);
