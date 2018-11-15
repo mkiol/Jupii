@@ -40,13 +40,13 @@ CoverBackground {
     OpacityRampEffect {
         sourceItem: bg
         direction: OpacityRamp.BottomToTop
-        offset: 0.5
-        slope: 3
+        offset: 0.4
+        slope: 2
     }
 
     Image {
         anchors.fill: parent
-        source: "image://icons/icon-c-cover"
+        source: "image://icons/icon-c-cover?" + Theme.primaryColor
         opacity: bg.status === Image.Ready ? 0.5 : 1.0
     }
 
