@@ -26,7 +26,7 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="63"/>
         <source>Authors</source>
-    <translation>Autores</translation>
+        <translation>Autores</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="76"/>
@@ -42,11 +42,6 @@
         <location filename="../qml/AboutPage.qml" line="93"/>
         <source>Libraries</source>
         <translation>Librerias</translation>
-    </message>
-    <message>
-        <location filename="../qml/AboutPage.qml" line="69"/>
-        <source>Copyright &amp;copy; %1 %2</source>
-        <translation>Derechos de autor: &amp;copy; %1 %2</translation>
     </message>
 </context>
 <context>
@@ -234,16 +229,17 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="41"/>
-        <location filename="../qml/ChangelogPage.qml" line="63"/>
-        <location filename="../qml/ChangelogPage.qml" line="73"/>
-        <location filename="../qml/ChangelogPage.qml" line="105"/>
-        <location filename="../qml/ChangelogPage.qml" line="115"/>
-        <location filename="../qml/ChangelogPage.qml" line="131"/>
-        <location filename="../qml/ChangelogPage.qml" line="146"/>
-        <location filename="../qml/ChangelogPage.qml" line="181"/>
-        <location filename="../qml/ChangelogPage.qml" line="192"/>
-        <location filename="../qml/ChangelogPage.qml" line="238"/>
+        <location filename="../qml/ChangelogPage.qml" line="45"/>
+        <location filename="../qml/ChangelogPage.qml" line="62"/>
+        <location filename="../qml/ChangelogPage.qml" line="84"/>
+        <location filename="../qml/ChangelogPage.qml" line="94"/>
+        <location filename="../qml/ChangelogPage.qml" line="126"/>
+        <location filename="../qml/ChangelogPage.qml" line="136"/>
+        <location filename="../qml/ChangelogPage.qml" line="152"/>
+        <location filename="../qml/ChangelogPage.qml" line="167"/>
+        <location filename="../qml/ChangelogPage.qml" line="202"/>
+        <location filename="../qml/ChangelogPage.qml" line="213"/>
+        <location filename="../qml/ChangelogPage.qml" line="259"/>
         <source>Version %1</source>
         <translation>Versión %1</translation>
     </message>
@@ -259,7 +255,7 @@
 <context>
     <name>CoverPage</name>
     <message>
-        <location filename="../qml/CoverPage.qml" line="20"/>
+        <location filename="../qml/CoverPage.qml" line="18"/>
         <source>Unknown</source>
         <translation>Desconocido</translation>
     </message>

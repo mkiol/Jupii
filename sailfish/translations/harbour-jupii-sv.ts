@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="sv" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="sv">
 <context>
     <name>AboutPage</name>
     <message>
@@ -40,11 +42,6 @@
         <location filename="../qml/AboutPage.qml" line="93"/>
         <source>Libraries</source>
         <translation>Bibliotek</translation>
-    </message>
-    <message>
-        <location filename="../qml/AboutPage.qml" line="69"/>
-        <source>Copyright &amp;copy; %1 %2</source>
-        <translation>Copyright &amp;copy; %1 %2</translation>
     </message>
 </context>
 <context>
@@ -176,7 +173,10 @@
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="78"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
+        <translation>
+            <numerusform>%n spår</numerusform>
+            <numerusform>%n spår</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="86"/>
@@ -204,7 +204,10 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="78"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
+        <translation>
+            <numerusform>%n spår</numerusform>
+            <numerusform>%n spår</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="86"/>
@@ -226,16 +229,17 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="41"/>
-        <location filename="../qml/ChangelogPage.qml" line="63"/>
-        <location filename="../qml/ChangelogPage.qml" line="73"/>
-        <location filename="../qml/ChangelogPage.qml" line="105"/>
-        <location filename="../qml/ChangelogPage.qml" line="115"/>
-        <location filename="../qml/ChangelogPage.qml" line="131"/>
-        <location filename="../qml/ChangelogPage.qml" line="146"/>
-        <location filename="../qml/ChangelogPage.qml" line="181"/>
-        <location filename="../qml/ChangelogPage.qml" line="192"/>
-        <location filename="../qml/ChangelogPage.qml" line="238"/>
+        <location filename="../qml/ChangelogPage.qml" line="45"/>
+        <location filename="../qml/ChangelogPage.qml" line="62"/>
+        <location filename="../qml/ChangelogPage.qml" line="84"/>
+        <location filename="../qml/ChangelogPage.qml" line="94"/>
+        <location filename="../qml/ChangelogPage.qml" line="126"/>
+        <location filename="../qml/ChangelogPage.qml" line="136"/>
+        <location filename="../qml/ChangelogPage.qml" line="152"/>
+        <location filename="../qml/ChangelogPage.qml" line="167"/>
+        <location filename="../qml/ChangelogPage.qml" line="202"/>
+        <location filename="../qml/ChangelogPage.qml" line="213"/>
+        <location filename="../qml/ChangelogPage.qml" line="259"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
@@ -251,7 +255,7 @@
 <context>
     <name>CoverPage</name>
     <message>
-        <location filename="../qml/CoverPage.qml" line="20"/>
+        <location filename="../qml/CoverPage.qml" line="18"/>
         <source>Unknown</source>
         <translation>Okänd</translation>
     </message>
@@ -359,17 +363,15 @@
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="127"/>
-        <source>No devices found.
+        <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation>Inga enheter hittades.
-Dra neråt för att söka efter fler enheter i ditt nätverk.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="129"/>
-        <source>Not connected.
+        <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation>Inte ansluten.
-Dra neråt för att ansluta till det lokala nätverket.</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -617,7 +619,10 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="81"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
+        <translation>
+            <numerusform>%n spår</numerusform>
+            <numerusform>%n spår</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="90"/>
@@ -663,7 +668,10 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message numerus="yes">
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation><numerusform>%n markerad</numerusform><numerusform>%n markerade</numerusform></translation>
+        <translation>
+            <numerusform>%n markerad</numerusform>
+            <numerusform>%n markerade</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="49"/>
@@ -745,8 +753,8 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
-        <source/>
-        <translation type="unfinished"/>
+        <source></source>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="48"/>

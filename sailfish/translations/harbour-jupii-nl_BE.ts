@@ -16,10 +16,6 @@
         <translation>Wijzigingslogboek</translation>
     </message>
     <message>
-        <source>Copyright &amp;copy; %1 %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Project website</source>
         <translation type="unfinished"></translation>
     </message>
