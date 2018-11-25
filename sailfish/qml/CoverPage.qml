@@ -75,7 +75,7 @@ CoverBackground {
 
         Label {
             width: parent.width
-            color: Theme.secondaryColor
+            color: Theme.highlightColor
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.Wrap

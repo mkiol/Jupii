@@ -76,7 +76,7 @@ class SomafmModel : public SelectableItemModel
 {
     Q_OBJECT
 public:
-    explicit SomafmModel(QObject *parent = nullptr);\
+    explicit SomafmModel(QObject *parent = nullptr);
     Q_INVOKABLE QVariantList selectedItems();
 
 private:
