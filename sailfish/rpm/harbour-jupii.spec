@@ -15,7 +15,7 @@ Name:       harbour-jupii
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
-Version:    1.9.4
+Version:    2.0.0
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE

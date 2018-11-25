@@ -27,77 +27,13 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("1.9.4")
+                text: qsTr("Version %1").arg("2.0.0")
             }
 
             LogItem {
-                title: "Improved cover design"
-                description: "Cover page has a new background image."
-            }
-
-            LogItem {
-                title: "Russian, Swedish and Spanish translations update"
-                description: "Translations have been updated thanks to " +
-                             "Вячеслав Диконов, Åke Engelbrektson and Carlos Gonzalez."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("1.9.3")
-            }
-
-            LogItem {
-                title: "Icecast directory"
-                description: "Icecast directory is a listing of broadcast streams. " +
-                             "Jupii has built-in browser for searching and adding " +
-                             "Icecast stations to its playlist queue."
-            }
-
-            LogItem {
-                title: "M3U, XSPF and PLS playlist formats support"
-                description: "The file picker now supports three major playlist formats. " +
-                             "When playlist file is selected all playlist items are added to current queue."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("1.9.2")
-            }
-
-            LogItem {
-                title: "Microphone"
-                description: "Use microphone as a source for audio stream that is played on your UPnP device. " +
-                             "Add Item list contains additional item - Microphone."
-            }
-
-            LogItem {
-                title: "Improved UI for playlist files"
-                description: "Possibility to search and select individual items from playlist files."
-            }
-
-            LogItem {
-                title: "SHOUTcast meta data support"
-                description: "Many internet radio services use SHOUTcast streaming. " +
-                             "Jupii is able to display stream title retrieved from meta data. " +
-                             "It also removes in-stream meta data if UPnP device doesn't support SHOUTcast protocol."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("1.9.1")
-            }
-
-            LogItem {
-                title: "Podcasts browser for gPodder"
-                description: "A convenient built-in browser that allows you to add episodes " +
-                             "previously downloaded with gPodder podcast player."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("1.9.0")
-            }
-
-            LogItem {
-                title: "Support for URL content"
+                title: "Support for Internet streaming content"
                 description: "In addition to local files, URL content " +
-                             "(e.g. internet radio streams, remote media files) can be added to a playlist. " +
+                             "(e.g. internet radio streams, remote media files) can be added to the playlist queue. " +
                              "An URL should point to direct stream or to a playlist file. " +
                              "Only HTTP URLs are supported right now."
             }
@@ -112,9 +48,48 @@ Page {
             }
 
             LogItem {
-                title: "Playlist UI polish"
-                description: "Playlist UI has been polished. When track provides meta data, " +
+                title: "Icecast directory"
+                description: "Icecast directory is a listing of broadcast streams. " +
+                             "Jupii has built-in browser for searching and adding " +
+                             "Icecast stations to its playlist queue."
+            }
+
+            LogItem {
+                title: "Podcasts browser for gPodder"
+                description: "A convenient built-in browser that allows you to add episodes " +
+                             "previously downloaded with gPodder podcast player. " +
+                             "Option is visible only if gPodder app is installed."
+            }
+
+            LogItem {
+                title: "Microphone"
+                description: "Use microphone as a source for audio stream that is played on your UPnP device. " +
+                             "Add Item list contains additional item - Microphone."
+            }
+
+            LogItem {
+                title: "Playlist queue polish"
+                description: "Playlist queue has been polished. When track provides meta data, " +
                              "playlist item contains title, author and album art image."
+            }
+
+            LogItem {
+                title: "Improved support for playlist files"
+                description: "Interface for browsing and adding tracks from playlist files has been improved. " +
+                             "Now it is possible to search and select individual tracks. " +
+                             "Additionally, the file picker supports three major playlist formats (M3U, XSPF and PLS)."
+            }
+
+            LogItem {
+                title: "SHOUTcast meta data support"
+                description: "Many internet radio services use SHOUTcast streaming. " +
+                             "Jupii is able to display stream title retrieved from meta data. " +
+                             "It also removes in-stream meta data if UPnP device doesn't support SHOUTcast protocol."
+            }
+
+            LogItem {
+                title: "Improved cover design"
+                description: "Cover page has a new background image."
             }
 
             LogItem {
@@ -127,7 +102,7 @@ Page {
             }
 
             LogItem {
-                title: "Spanish translation"
+                title: "Spanish Swedish & German translations"
                 description: "Many thanks to Carlos Gonzalez for " +
                              "providing Spanish translation."
             }
