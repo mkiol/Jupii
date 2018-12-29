@@ -124,6 +124,18 @@ Page {
             }
 
             SimpleListItem {
+                visible: settings.pulseSupported
+                title.text: qsTr("Audio output")
+                icon.source: "image://theme/icon-m-speaker?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+
+                onClicked: {
+                    playlist.addItemUrl("jupii://pulse")
+                    pageStack.pop()
+                }
+            }
+
+            SimpleListItem {
                 title.text: qsTr("Microphone")
                 icon.source: "image://theme/icon-m-mic?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
@@ -139,7 +151,7 @@ Page {
             }
 
             SimpleListItem {
-                visible: utils.isGpodderAvailable();
+                visible: utils.isGpodderAvailable()
                 title.text: "gPodder"
                 icon.source: "image://icons/icon-m-gpodder"
                 onClicked: {

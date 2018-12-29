@@ -27,6 +27,24 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.1.0")
+            }
+
+            LogItem {
+                title: "Capture audio output"
+                description: "This option enables capturing the audio output of any application. " +
+                             "It provides similar functionality to pulseaudio-dlna server. It means that " +
+                             "Jupii can stream current PulseAudio's application playback to an UPnP/DLNA device. " +
+                             "For instance, you can capture web browser audio playback and listen YouTube on a remote speaker. " +
+                             "Be aware that currently audio stream is sent uncompressed, " +
+                             "therefore significant network bandwidth will be consumed and " +
+                             "likely your battery drain will increase. " +
+                             "This feature is not enabled by default, " +
+                             "it must be activated in the settings (Experiments section)."
+
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.0.0")
             }
 
@@ -63,7 +81,7 @@ Page {
 
             LogItem {
                 title: "Microphone"
-                description: "Use microphone as a source for audio stream that is played on your UPnP device. " +
+                description: "Use microphone as a source for audio stream that is played on your UPnP/DLNA device. " +
                              "Add Item list contains additional item - Microphone."
             }
 

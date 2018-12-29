@@ -12,6 +12,7 @@
 #include <QString>
 #include <QUrl>
 #include <QHash>
+#include <QMultiHash>
 #include <QVector>
 #include <QStringList>
 #include <QFile>
@@ -35,8 +36,25 @@ extern "C" {
 }
 #endif
 
+#ifdef PULSE
+extern "C" {
+#include <pulse/mainloop.h>
+#include <pulse/mainloop-signal.h>
+#include <pulse/mainloop-api.h>
+#include <pulse/context.h>
+#include <pulse/error.h>
+#include <pulse/introspect.h>
+#include <pulse/subscribe.h>
+#include <pulse/stream.h>
+#include <pulse/xmalloc.h>
+}
+#endif
+
 class ContentServerWorker;
 class MicDevice;
+#ifdef PULSE
+class PulseDevice;
+#endif
 
 class ContentServer :
         public QThread
@@ -92,6 +110,11 @@ public:
     const static int micChannelCount = 1;
     const static int micSampleSize = 16;
 
+    //const static int pulseSampleRate = 44100;
+    const static int pulseSampleRate = 22050;
+    const static int pulseChannelCount = 2;
+    const static int pulseSampleSize = 16;
+
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);
     static QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr, bool* isFile = nullptr, bool *isArt = nullptr);
@@ -125,8 +148,9 @@ signals:
 
 private slots:
     void shoutcastMetadataHandler(const QUrl &id, const QByteArray &metadata);
-    void proxyItemAddedHandler(const QUrl &id);
-    void proxyItemRemovedHandler(const QUrl &id);
+    void pulseStreamNameHandler(const QUrl &id, const QString &name);
+    void itemAddedHandler(const QUrl &id);
+    void itemRemovedHandler(const QUrl &id);
 
 private:
     enum DLNA_ORG_FLAGS {
@@ -158,6 +182,7 @@ private:
     struct StreamData {
         QUrl id;
         QString title;
+        int count = 0;
     };
 
     static ContentServer* m_instance;
@@ -188,9 +213,8 @@ private:
 
     QHash<QUrl, ItemMeta> metaCache; // url => ItemMeta
     QHash<QUrl, StreamData> streams; // id => StreamData
-    ContentServerWorker* worker;
-
     QMutex metaCacheMutex;
+    QString pulseStreamName;
 
     static QByteArray encrypt(const QByteArray& data);
     static QByteArray decrypt(const QByteArray& data);
@@ -208,6 +232,7 @@ private:
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
+    const QHash<QUrl, ItemMeta>::const_iterator makePulseItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
@@ -229,15 +254,19 @@ class ContentServerWorker :
 {
     Q_OBJECT
     friend MicDevice;
+#ifdef PULSE
+    friend PulseDevice;
+#endif
 public:
+    static ContentServerWorker* instance(QObject *parent = nullptr);
     QHttpServer* server;
     QNetworkAccessManager* nam;
-    ContentServerWorker(QObject *parent = nullptr);
 
 signals:
-    void shoutcastMetadataReceived(const QUrl &id, const QByteArray &metadata);
-    void proxyItemAdded(const QUrl &id);
-    void proxyItemRemoved(const QUrl &id);
+    void shoutcastMetadataUpdated(const QUrl &id, const QByteArray &metadata);
+    void pulseStreamUpdated(const QUrl &id, const QString& name);
+    void itemAdded(const QUrl &id);
+    void itemRemoved(const QUrl &id);
 
 private slots:
     void proxyMetaDataChanged();
@@ -246,7 +275,13 @@ private slots:
     void proxyReadyRead();
     void startMic();
     void stopMic();
-    void responseDone();
+    void responseForMicDone();
+#ifdef PULSE
+    void startPulse();
+    void stopPulse();
+    void responseForPulseDone();
+#endif
+    void responseForUrlDone();
 
 private:
     struct ProxyItem {
@@ -264,36 +299,46 @@ private:
         QByteArray data;
     };
 
-    struct MicItem {
+    struct SimpleProxyItem {
+        QUrl id;
         QHttpRequest* req = nullptr;
         QHttpResponse* resp = nullptr;
     };
 
+    static ContentServerWorker* m_instance;
+
     std::unique_ptr<QAudioInput> micInput;
     std::unique_ptr<MicDevice> micDev;
+#ifdef PULSE
+    std::unique_ptr<PulseDevice> pulseDev;
+#endif
 
     QHash<QNetworkReply*, ProxyItem> proxyItems;
     QHash<QHttpResponse*, QNetworkReply*> responseToReplyMap;
-    QList<MicItem> micItems;
+    QList<SimpleProxyItem> micItems;
+    QList<SimpleProxyItem> pulseItems;
 
+    ContentServerWorker(QObject *parent = nullptr);
     void streamFile(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);
     bool seqWriteData(QFile &file, qint64 size, QHttpResponse *resp);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     void requestForFileHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void requestForUrlHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void requestForMicHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
+    void requestForPulseHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void sendEmptyResponse(QHttpResponse *resp, int code);
-    void sendResponse(QHttpResponse *resp, int code, const QByteArray &data = "");
+    void sendResponse(QHttpResponse *resp, int code, const QByteArray &data = QByteArray());
     void sendRedirection(QHttpResponse *resp, const QString &location);
     void processShoutcastMetadata(QByteArray &data, ProxyItem &item);
+    void updatePulseStreamName(const QString& name);
+    void writePulseData(const char* data, size_t maxSize);
 };
 
 class MicDevice : public QIODevice
 {
     Q_OBJECT
-
 public:
-    MicDevice(ContentServerWorker* worker, QObject *parent = nullptr);
+    MicDevice(QObject *parent = nullptr);
     void setActive(bool value);
     bool isActive();
 
@@ -303,7 +348,62 @@ protected:
 
 private:
     bool active = false;
-    ContentServerWorker *worker;
 };
+
+#ifdef PULSE
+class PulseDevice : public QObject
+{
+    Q_OBJECT
+public:
+    struct SinkInput {
+        uint32_t idx;
+        uint32_t clientIdx;
+        QString name;
+    };
+    struct Client {
+        uint32_t idx;
+        QString name;
+        QString binary;
+        QString icon;
+    };
+
+    const static pa_sample_spec sampleSpec;
+    const static int timerDelta;
+
+    static bool timerActive;
+    static bool muted;
+    static pa_stream* stream;
+    static uint32_t connectedSinkInput;
+    static pa_mainloop* ml;
+    static pa_mainloop_api* mla;
+    static pa_context *ctx;
+    static QHash<uint32_t, PulseDevice::Client> clients;
+    static QHash<uint32_t, PulseDevice::SinkInput> sinkInputs;
+    //static void sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, int eol, void *userdata);
+    static void subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata);
+    static void stateCallback(pa_context *ctx, void *userdata);
+    static void successSubscribeCallback(pa_context *ctx, int success, void *userdata);
+    static void streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata);
+    static bool startRecordStream(pa_context *ctx, uint32_t si, const Client& client);
+    static void stopRecordStream();
+    static void exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e, int sig, void *userdata);
+    static void sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata);
+    static void clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata);
+    static void timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata);
+    static void discoverStream();
+    static bool setupContext();
+    static bool startTimer();
+    static void stopTimer();
+    static void restartTimer(pa_time_event *e, const struct timeval *tv);
+    static void muteConnectedSinkInput();
+    static void unmuteConnectedSinkInput();
+    static bool isBlacklisted(const char* name);
+    static QString subscriptionEventToStr(pa_subscription_event_type_t t);
+    static QList<PulseDevice::Client> activeClients();
+    static bool isInited();
+
+    PulseDevice(QObject *parent = nullptr);
+};
+#endif
 
 #endif // CONTENTSERVER_H

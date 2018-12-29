@@ -340,6 +340,11 @@ bool Utils::isIdMic(const QUrl &id)
     return Utils::isUrlMic(id);
 }
 
+bool Utils::isIdPulse(const QUrl &id)
+{
+    return Utils::isUrlPulse(id);
+}
+
 bool Utils::isUrlValid(const QUrl &url)
 {
     if (!url.isValid())
@@ -375,6 +380,11 @@ bool Utils::isIdValid(const QUrl &id)
 bool Utils::isUrlMic(const QUrl &url)
 {
     return url.scheme() == "jupii" && url.host() == "mic";
+}
+
+bool Utils::isUrlPulse(const QUrl &url)
+{
+    return url.scheme() == "jupii" && url.host() == "pulse";
 }
 
 QUrl Utils::urlFromText(const QString &text, const QString &context)

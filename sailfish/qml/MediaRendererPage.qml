@@ -23,6 +23,7 @@ Page {
     property bool busy: av.busy || rc.busy
     property bool inited: av.inited && rc.inited
     property bool isMic: utils.isIdMic(av.currentURL)
+    property bool isPulse: utils.isIdPulse(av.currentURL)
 
     property bool _doPop: false
 
@@ -460,6 +461,7 @@ Page {
                                          Theme.secondaryHighlightColor : Theme.secondaryColor
             property bool isImage: model.type === AVTransport.T_Image
             property bool isMic: utils.isIdMic(model.id)
+            property bool isPulse: utils.isIdPulse(model.id)
 
             opacity: playlist.busy ? 0.0 : 1.0
             visible: opacity > 0.0
@@ -468,6 +470,8 @@ Page {
             defaultIcon.source: {
                 if (isMic)
                     return "image://theme/icon-m-mic?" + primaryColor
+                else if (isPulse)
+                    return "image://theme/icon-m-speaker?" + primaryColor
                 else
                     switch (model.type) {
                     case AVTransport.T_Image:
@@ -480,7 +484,7 @@ Page {
                         return "image://theme/icon-m-file-other?" + primaryColor
                     }
             }
-            icon.source: isMic ? "" : model.icon
+            icon.source: isMic || isPulse ? "" : model.icon
             icon.visible: !model.toBeActive
             title.text: model.name
             title.color: primaryColor
@@ -553,7 +557,7 @@ Page {
 
         title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
         subtitle: app.streamTitle.length === 0 ?
-                      (!root.isMic ? av.currentAuthor : "") : app.streamTitle
+                      (!root.isMic && !root.isPulse ? av.currentAuthor : "") : app.streamTitle
 
         prevEnabled: playlist.prevSupported
         nextEnabled: playlist.nextSupported

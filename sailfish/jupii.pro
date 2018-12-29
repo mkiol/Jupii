@@ -1,6 +1,6 @@
 TARGET = harbour-jupii
 
-CONFIG += c++11 sailfishapp json no_lflags_merge object_parallel_to_source
+CONFIG += c++11 sailfishapp json no_lflags_merge object_parallel_to_source pulse
 
 QT += dbus sql multimedia xml
 
@@ -12,6 +12,7 @@ linux-g++: CONFIG += arm
 PROJECTDIR = $$PWD/..
 
 INCLUDEPATH += /usr/include/c++/7
+INCLUDEPATH += /usr/include
 
 CONFIG += sailfish ffmpeg
 DEFINES += SAILFISH

@@ -59,6 +59,7 @@ extern "C" {
 #endif
 
 ContentServer* ContentServer::m_instance = nullptr;
+ContentServerWorker* ContentServerWorker::m_instance = nullptr;
 
 const QString ContentServer::queryTemplate =
         "SELECT ?item " \
@@ -146,6 +147,15 @@ const QString ContentServer::dlnaOrgOpFlagsSeekBytes = "DLNA.ORG_OP=01";
 const QString ContentServer::dlnaOrgOpFlagsNoSeek = "DLNA.ORG_OP=00";
 const QString ContentServer::dlnaOrgCiFlags = "DLNA.ORG_CI=0";
 
+ContentServerWorker* ContentServerWorker::instance(QObject *parent)
+{
+    if (ContentServerWorker::m_instance == nullptr) {
+        ContentServerWorker::m_instance = new ContentServerWorker(parent);
+    }
+
+    return ContentServerWorker::m_instance;
+}
+
 ContentServerWorker::ContentServerWorker(QObject *parent) :
     QObject(parent),
     server(new QHttpServer(parent)),
@@ -209,14 +219,18 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
         }
     }
 
-    bool isMic = Utils::isUrlMic(id);
-
     if (isFile) {
         requestForFileHandler(id, meta, req, resp);
-    } else if (isMic) {
-        requestForMicHandler(id, meta, req, resp);
     } else {
-        requestForUrlHandler(id, meta, req, resp);
+        bool isMic = Utils::isUrlMic(id);
+        bool isPulse = Utils::isUrlPulse(id);
+        if (isMic) {
+            requestForMicHandler(id, meta, req, resp);
+        } else if (isPulse) {
+            requestForPulseHandler(id, meta, req, resp);
+        } else {
+            requestForUrlHandler(id, meta, req, resp);
+        }
     }
 }
 
@@ -242,6 +256,53 @@ void ContentServerWorker::stopMic()
     }
 }
 
+#ifdef PULSE
+void ContentServerWorker::responseForPulseDone()
+{
+    qDebug() << "Pulse HTTP response done";
+    auto resp = sender();
+    for (int i = 0; i < pulseItems.size(); ++i) {
+        if (resp == pulseItems[i].resp) {
+            qDebug() << "Removing finished pulse item";
+            auto id = pulseItems.at(i).id;
+            pulseItems.removeAt(i);
+            emit itemRemoved(id);
+            break;
+        }
+    }
+}
+
+void ContentServerWorker::startPulse()
+{
+    if (PulseDevice::isInited()) {
+        qDebug() << "Starting pulse device";
+        if (!pulseDev)
+            pulseDev = std::unique_ptr<PulseDevice>(new PulseDevice(this));
+        PulseDevice::startTimer();
+        PulseDevice::discoverStream();
+    } else {
+        qWarning() << "Pulse-audio is not inited";
+    }
+}
+
+void ContentServerWorker::stopPulse()
+{
+    if (PulseDevice::isInited()) {
+        qDebug() << "Stopping pulse device";
+        if (pulseDev) {
+            // TODO: fix "PulseDevice::m_instance"
+            PulseDevice::stopRecordStream();
+            PulseDevice::stopTimer();
+            pulseDev.reset(nullptr);
+        } else {
+            qDebug() << "Pulse device doesn't exist";
+        }
+    } else {
+        qWarning() << "Pulse-audio is not inited";
+    }
+}
+#endif
+
 void ContentServerWorker::startMic()
 {
     qDebug() << "Starting mic";
@@ -256,6 +317,29 @@ void ContentServerWorker::startMic()
     format.setSampleType(QAudioFormat::SignedInt);
 
     auto dev = QAudioDeviceInfo::defaultInputDevice();
+
+    /*auto devName = QAudioDeviceInfo::defaultOutputDevice().deviceName() + ".monitor";
+    auto devName = QString("sink.deep_buffer.monitor");
+    auto devs = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
+    for (auto& d : devs) {
+        qDebug() << "input dev:" << d.deviceName();
+        if (d.deviceName() == devName) {
+            dev = d;
+            qDebug() << "Got dev:" << dev.deviceName();
+        }
+    }*/
+
+    qDebug() << "Available input devs:";
+    auto idevs = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
+    for (auto& d : idevs) {
+        qDebug() << "  " << d.deviceName();
+    }
+    qDebug() << "Available output devs:";
+    auto odevs = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
+    for (auto& d : odevs) {
+        qDebug() << "  " << d.deviceName();
+    }
+
     if (!dev.isFormatSupported(format)) {
         qWarning() << "Default audio format not supported, trying to use the nearest.";
         format = dev.nearestFormat(format);
@@ -268,7 +352,7 @@ void ContentServerWorker::startMic()
 
     if (!micDev)
         micDev = std::unique_ptr<MicDevice>(new MicDevice(this));
-    micInput = std::unique_ptr<QAudioInput>(new QAudioInput(format, this));
+    micInput = std::unique_ptr<QAudioInput>(new QAudioInput(dev, format, this));
     micDev->setActive(true);
     micInput->start(micDev.get());
 }
@@ -357,9 +441,9 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         connect(reply, &QNetworkReply::readyRead,
                 this, &ContentServerWorker::proxyReadyRead);
         connect(resp, &QHttpResponse::done,
-                this, &ContentServerWorker::responseDone);
+                this, &ContentServerWorker::responseForUrlDone);
 
-        emit proxyItemAdded(item.id);
+        emit itemAdded(item.id);
     }
 }
 
@@ -386,12 +470,54 @@ void ContentServerWorker::requestForMicHandler(const QUrl &id,
             startMic();
         }
 
-        MicItem item;
+        SimpleProxyItem item;
+        item.id = id;
         item.req = req;
         item.resp = resp;
         micItems.append(item);
+
+        connect(resp, &QHttpResponse::done, this, &ContentServerWorker::responseForMicDone);
     }
 }
+
+void ContentServerWorker::requestForPulseHandler(const QUrl &id,
+                                                const ContentServer::ItemMeta *meta,
+                                                QHttpRequest *req, QHttpResponse *resp)
+{
+    qDebug() << "Pulse request handler";
+#ifdef PULSE
+    bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
+
+    resp->setHeader("Content-Type", meta->mime);
+    resp->setHeader("Connection", "close");
+    resp->setHeader("transferMode.dlna.org", "Streaming");
+    resp->setHeader("contentFeatures.dlna.org",
+                    ContentServer::dlnaContentFeaturesHeader(meta->mime));
+
+    if (isHead) {
+        qDebug() << "Sending 200 response without content";
+        sendResponse(resp, 200, "");
+    } else {
+        qDebug() << "Sending 200 response and starting streaming";
+        resp->writeHead(200);
+
+        SimpleProxyItem item;
+        item.id = id;
+        item.req = req;
+        item.resp = resp;
+        pulseItems.append(item);
+        emit itemAdded(item.id);
+        connect(resp, &QHttpResponse::done, this, &ContentServerWorker::responseForPulseDone);
+        startPulse();
+    }
+#else
+    Q_UNUSED(meta)
+    Q_UNUSED(req)
+    qWarning() << "Pulse URL requested but pulse-audio is disabled";
+    sendEmptyResponse(resp, 404);
+#endif
+}
+
 
 bool ContentServerWorker::seqWriteData(QFile& file, qint64 size, QHttpResponse *resp)
 {
@@ -446,7 +572,20 @@ void ContentServerWorker::sendRedirection(QHttpResponse *resp, const QString &lo
     resp->end();
 }
 
-void ContentServerWorker::responseDone()
+void ContentServerWorker::responseForMicDone()
+{
+    qDebug() << "Mic HTTP response done";
+    auto resp = sender();
+    for (int i = 0; i < micItems.size(); ++i) {
+        if (resp == micItems[i].resp) {
+            qDebug() << "Removing finished mic item";
+            micItems.removeAt(i);
+            break;
+        }
+    }
+}
+
+void ContentServerWorker::responseForUrlDone()
 {
     qDebug() << "Response done";
     auto resp = dynamic_cast<QHttpResponse*>(sender());
@@ -535,7 +674,7 @@ void ContentServerWorker::proxyMetaDataChanged()
         return;
     }
 
-    emit proxyItemRemoved(item.id);
+    emit itemRemoved(item.id);
     proxyItems.remove(reply);
     responseToReplyMap.remove(item.resp);
     reply->abort();
@@ -577,7 +716,7 @@ void ContentServerWorker::proxyFinished()
         item.resp->end();
     }
 
-    emit proxyItemRemoved(item.id);
+    emit itemRemoved(item.id);
     proxyItems.remove(reply);
     responseToReplyMap.remove(item.resp);
     reply->deleteLater();
@@ -632,7 +771,7 @@ void ContentServerWorker::processShoutcastMetadata(QByteArray &data,
                 // full metadata received
                 if (size > 0) {
                     auto metadata = data.mid(start + offset + 1, size);
-                    emit shoutcastMetadataReceived(item.id, metadata);
+                    emit shoutcastMetadataUpdated(item.id, metadata);
                     totalsize += size;
                 }
 
@@ -659,6 +798,14 @@ void ContentServerWorker::processShoutcastMetadata(QByteArray &data,
     }
 }
 
+void ContentServerWorker::updatePulseStreamName(const QString &name)
+{
+    for (const auto& item : pulseItems) {
+        qDebug() << "pulseStreamUpdated:" << item.id << name;
+        emit pulseStreamUpdated(item.id, name);
+    }
+}
+
 void ContentServerWorker::proxyReadyRead()
 {
     auto reply = dynamic_cast<QNetworkReply*>(sender());
@@ -676,7 +823,7 @@ void ContentServerWorker::proxyReadyRead()
 
     if (item.resp->isFinished()) {
         qWarning() << "Server request already finished, so ending client side";
-        emit proxyItemRemoved(item.id);
+        emit itemRemoved(item.id);
         proxyItems.remove(reply);
         responseToReplyMap.remove(item.resp);
         reply->abort();
@@ -687,7 +834,7 @@ void ContentServerWorker::proxyReadyRead()
     if (item.state == 1) {
         if (!item.resp->isHeaderWritten()) {
             qWarning() << "Head not written but state=1 => this should not happen";
-            emit proxyItemRemoved(item.id);
+            emit itemRemoved(item.id);
             proxyItems.remove(reply);
             responseToReplyMap.remove(item.resp);
             reply->abort();
@@ -1909,6 +2056,33 @@ ContentServer::makeMicItemMeta(const QUrl &url)
     return metaCache.insert(url, meta);
 }
 
+const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+ContentServer::makePulseItemMeta(const QUrl &url)
+{
+    ContentServer::ItemMeta meta;
+    meta.valid = true;
+    meta.url = url;
+    meta.channels = ContentServer::pulseChannelCount;
+    meta.sampleRate = ContentServer::pulseSampleRate;
+    meta.mime = QString("audio/L%1;rate=%2;channels=%3")
+            .arg(ContentServer::pulseSampleSize)
+            .arg(meta.sampleRate)
+            .arg(meta.channels);
+    meta.bitrate = meta.sampleRate * ContentServer::pulseSampleSize * meta.channels;
+    meta.type = ContentServer::TypeMusic;
+    meta.size = 0;
+    meta.local = true;
+    meta.seekSupported = false;
+
+    meta.title = tr("Audio output");
+
+#ifdef SAILFISH
+    meta.albumArt = IconProvider::pathToId("icon-l-pulse-cover");
+#endif
+
+    return metaCache.insert(url, meta);
+}
+
 QString ContentServer::mimeFromDisposition(const QString &disposition)
 {
     QString mime;
@@ -2141,6 +2315,9 @@ ContentServer::makeItemMeta(const QUrl &url)
     } else if (Utils::isUrlMic(url)) {
         qDebug() << "Mic url detected";
         it = makeMicItemMeta(url);
+    } else if (Utils::isUrlPulse(url)) {
+        qDebug() << "Pulse url detected";
+        it = makePulseItemMeta(url);
     } else {
         qDebug() << "Geting meta using HTTP request";
         it = makeItemMetaUsingHTTPRequest(url);
@@ -2164,11 +2341,37 @@ void ContentServer::run()
 {
     qDebug() << "Creating content server worker in thread:"
              << QThread::currentThreadId();
-    worker = new ContentServerWorker();
 
-    connect(worker, &ContentServerWorker::shoutcastMetadataReceived, this, &ContentServer::shoutcastMetadataHandler);
-    connect(worker, &ContentServerWorker::proxyItemAdded, this, &ContentServer::proxyItemAddedHandler);
-    connect(worker, &ContentServerWorker::proxyItemRemoved, this, &ContentServer::proxyItemRemovedHandler);
+    auto worker = ContentServerWorker::instance();
+    connect(worker, &ContentServerWorker::shoutcastMetadataUpdated, this, &ContentServer::shoutcastMetadataHandler);
+    connect(worker, &ContentServerWorker::pulseStreamUpdated, this, &ContentServer::pulseStreamNameHandler);
+    connect(worker, &ContentServerWorker::itemAdded, this, &ContentServer::itemAddedHandler);
+    connect(worker, &ContentServerWorker::itemRemoved, this, &ContentServer::itemRemovedHandler);
+
+#ifdef PULSE
+    if (Settings::instance()->getPulseSupported()) {
+        // Pulse audio loop
+        qDebug() << "Starting pulse-audio module";
+        if (PulseDevice::setupContext()) {
+            QEventLoop qtLoop;
+            // TODO: Loop exit
+            int ret = 0;
+            while (!ret) {
+                while (pa_mainloop_iterate(PulseDevice::ml, 0, &ret) > 0)
+                    continue;
+                qtLoop.processEvents();
+            }
+
+            qWarning() << "Disconnecting pulse-audio";
+            pa_context_disconnect(PulseDevice::ctx);
+            pa_context_unref(PulseDevice::ctx);
+            pa_mainloop_free(PulseDevice::ml);
+            return;
+        } else {
+            qWarning() << "Cannot start pulse-audio module";
+        }
+    }
+#endif
 
     // TODO: Loop exit
     QThread::exec();
@@ -2178,23 +2381,41 @@ void ContentServer::run()
 
 QString ContentServer::streamTitle(const QUrl &id) const
 {
-    if (streams.contains(id))
+    if (streams.contains(id)) {
         return streams.value(id).title;
+    }
+
     return QString();
 }
 
-void ContentServer::proxyItemAddedHandler(const QUrl &id)
+void ContentServer::itemAddedHandler(const QUrl &id)
 {
-    qDebug() << "New proxy item for id:" << id;
+    qDebug() << "New item for id:" << id;
     auto &stream = streams[id];
+    stream.count++;
     stream.id = id;
 }
 
-void ContentServer::proxyItemRemovedHandler(const QUrl &id)
+void ContentServer::itemRemovedHandler(const QUrl &id)
 {
-    qDebug() << "Proxy item removed for id:" << id;
-    streams.remove(id);
-    streamTitleChanged(id, QString());
+    qDebug() << "Item removed for id:" << id;
+    auto &stream = streams[id];
+    stream.count--;
+    if (stream.count < 1) {
+        streams.remove(id);
+        emit streamTitleChanged(id, QString());
+    }
+}
+
+void ContentServer::pulseStreamNameHandler(const QUrl &id,
+                                           const QString &name)
+{
+    qDebug() << "Pulse-audio stream name updated:" << id << name;
+
+    auto &stream = streams[id];
+    stream.id = id;
+    stream.title = name;
+    emit streamTitleChanged(id, name);
 }
 
 void ContentServer::shoutcastMetadataHandler(const QUrl &id,
@@ -2383,9 +2604,8 @@ ContentServer::parseXspf(const QByteArray &data, const QString context)
     return list;
 }
 
-MicDevice::MicDevice(ContentServerWorker *worker, QObject *parent) :
-    QIODevice(parent),
-    worker(worker)
+MicDevice::MicDevice(QObject *parent) :
+    QIODevice(parent)
 {
 }
 
@@ -2413,8 +2633,9 @@ qint64 MicDevice::readData(char* data, qint64 maxSize)
 
 qint64 MicDevice::writeData(const char* data, qint64 maxSize)
 {
-    if (!worker->micItems.isEmpty()) {
+    auto worker = ContentServerWorker::instance();
 
+    if (!worker->micItems.isEmpty()) {
         QByteArray d = QByteArray::fromRawData(data, static_cast<int>(maxSize));
         QByteArray d2;
 
@@ -2462,3 +2683,500 @@ qint64 MicDevice::writeData(const char* data, qint64 maxSize)
 
     return maxSize;
 }
+
+#ifdef PULSE
+const pa_sample_spec PulseDevice::sampleSpec = {PA_SAMPLE_S16BE,
+                                                ContentServer::pulseSampleRate,
+                                                ContentServer::pulseChannelCount
+                                               };
+const int PulseDevice::timerDelta = 1;
+bool PulseDevice::timerActive = false;
+bool PulseDevice::muted = false;
+pa_stream* PulseDevice::stream = nullptr;
+uint32_t PulseDevice::connectedSinkInput = PA_INVALID_INDEX;
+pa_mainloop* PulseDevice::ml = nullptr;
+pa_mainloop_api* PulseDevice::mla = nullptr;
+pa_context* PulseDevice::ctx = nullptr;
+QHash<uint32_t, PulseDevice::Client> PulseDevice::clients = QHash<uint32_t, PulseDevice::Client>();
+QHash<uint32_t, PulseDevice::SinkInput> PulseDevice::sinkInputs = QHash<uint32_t, PulseDevice::SinkInput>();
+
+QString PulseDevice::subscriptionEventToStr(pa_subscription_event_type_t t)
+{
+    auto facility = t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK;
+    auto type = t & PA_SUBSCRIPTION_EVENT_TYPE_MASK;
+
+    QString facility_str("UNKNOWN");
+
+    switch (facility) {
+    case PA_SUBSCRIPTION_EVENT_SINK: facility_str = "SINK"; break;
+    case PA_SUBSCRIPTION_EVENT_SOURCE: facility_str = "SOURCE"; break;
+    case PA_SUBSCRIPTION_EVENT_SINK_INPUT: facility_str = "SINK_INPUT"; break;
+    case PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT: facility_str = "SOURCE_OUTPUT"; break;
+    case PA_SUBSCRIPTION_EVENT_MODULE: facility_str = "SOURCE_OUTPUT"; break;
+    case PA_SUBSCRIPTION_EVENT_CLIENT: facility_str = "CLIENT"; break;
+    case PA_SUBSCRIPTION_EVENT_SAMPLE_CACHE: facility_str = "SAMPLE_CACHE"; break;
+    case PA_SUBSCRIPTION_EVENT_SERVER: facility_str = "SERVER"; break;
+    case PA_SUBSCRIPTION_EVENT_AUTOLOAD: facility_str = "AUTOLOAD"; break;
+    case PA_SUBSCRIPTION_EVENT_CARD: facility_str = "CARD"; break;
+    }
+
+    QString type_str("UNKNOWN");
+
+    switch (type) {
+    case PA_SUBSCRIPTION_EVENT_NEW: type_str = "NEW"; break;
+    case PA_SUBSCRIPTION_EVENT_CHANGE: type_str = "CHANGE"; break;
+    case PA_SUBSCRIPTION_EVENT_REMOVE: type_str = "REMOVE"; break;
+    }
+
+    return facility_str + " " + type_str;
+}
+
+void PulseDevice::subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata)
+{
+    Q_ASSERT(ctx);
+    Q_UNUSED(userdata);
+
+    qDebug() << "Pulse-audio subscriptionCallback:" << subscriptionEventToStr(t) << idx;
+
+    auto facility = t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK;
+    auto type = t & PA_SUBSCRIPTION_EVENT_TYPE_MASK;
+
+    if (facility == PA_SUBSCRIPTION_EVENT_SINK_INPUT) {
+        if (type == PA_SUBSCRIPTION_EVENT_NEW || type == PA_SUBSCRIPTION_EVENT_CHANGE) {
+            pa_operation_unref(pa_context_get_sink_input_info(ctx, idx, sinkInputInfoCallback, nullptr));
+        } else if (type == PA_SUBSCRIPTION_EVENT_REMOVE) {
+            qDebug() << "Removing pulse-audio sink input:" << idx;
+            sinkInputs.remove(idx);
+            discoverStream();
+        }
+    } else if (facility == PA_SUBSCRIPTION_EVENT_CLIENT) {
+        if (type == PA_SUBSCRIPTION_EVENT_NEW || type == PA_SUBSCRIPTION_EVENT_CHANGE) {
+            pa_operation_unref(pa_context_get_client_info(ctx, idx, clientInfoCallback, nullptr));
+        } else if (type == PA_SUBSCRIPTION_EVENT_REMOVE) {
+            qDebug() << "Removing pulse-audio client:" << idx;
+            clients.remove(idx);
+        }
+    }
+}
+
+void PulseDevice::successSubscribeCallback(pa_context *ctx, int success, void *userdata)
+{
+    Q_ASSERT(ctx);
+    Q_UNUSED(userdata);
+
+    if (success) {
+         pa_operation_unref(pa_context_get_client_info_list(ctx, clientInfoCallback, nullptr));
+         pa_operation_unref(pa_context_get_sink_input_info_list(ctx, sinkInputInfoCallback, nullptr));
+    }
+}
+
+void PulseDevice::stateCallback(pa_context *ctx, void *userdata)
+{
+    Q_ASSERT(ctx);
+    Q_UNUSED(userdata);
+
+    switch (pa_context_get_state(ctx)) {
+        case PA_CONTEXT_CONNECTING:
+            qDebug() << "Pulse-audio connecting";
+            break;
+        case PA_CONTEXT_AUTHORIZING:
+            qDebug() << "Pulse-audio authorizing";
+            break;
+        case PA_CONTEXT_SETTING_NAME:
+            qDebug() << "Pulse-audio setting name";
+            break;
+        case PA_CONTEXT_READY: {
+            qDebug() << "Pulse-audio ready";
+            auto mask = static_cast<pa_subscription_mask_t>(PA_SUBSCRIPTION_MASK_SINK_INPUT|PA_SUBSCRIPTION_MASK_CLIENT);
+            pa_operation_unref(pa_context_subscribe(
+                                   ctx, mask, successSubscribeCallback, nullptr));
+            break;
+        }
+        case PA_CONTEXT_TERMINATED:
+            qDebug() << "Pulse-audio terminated";
+            break;
+        case PA_CONTEXT_FAILED:
+            qDebug() << "Pulse-audio failed";
+            break;
+        default:
+            qDebug() << "Pulse-audio connection failure: " << pa_strerror(pa_context_errno(ctx));
+    }
+}
+
+void PulseDevice::streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata)
+{
+    Q_ASSERT(stream);
+    Q_UNUSED(userdata);
+
+    if (nbytes <= 0) {
+        qWarning() << "Pulse-audio stream nbytes <= 0";
+        return;
+    }
+
+    const void *data;
+    if (pa_stream_peek(stream, &data, &nbytes) < 0) {
+        qWarning() << "Pulse-audio stream peek failed";
+        return;
+    }
+
+    if (!data) {
+        qWarning() << "Pulse-audio stream peek data is null";
+        return;
+    }
+
+    if (nbytes <= 0) {
+        qWarning() << "Pulse-audio stream peeked nbytes <= 0";
+        return;
+    }
+
+    auto worker = ContentServerWorker::instance();
+    worker->writePulseData(static_cast<const char*>(data), nbytes);
+
+    pa_stream_drop(stream);
+}
+
+void PulseDevice::stopRecordStream()
+{
+    if (stream) {
+        unmuteConnectedSinkInput();
+        qDebug() << "Disconnecting pulse-audio stream";
+        pa_stream_disconnect(stream);
+        pa_stream_unref(stream);
+        stream = nullptr;
+        connectedSinkInput = PA_INVALID_INDEX;
+    }
+}
+
+void PulseDevice::muteConnectedSinkInput()
+{
+#ifdef SAILFISH
+    if (!muted && connectedSinkInput != PA_INVALID_INDEX) {
+        qDebug() << "Muting sink input by moving it to null sink:" << connectedSinkInput;
+        // on sfos:
+        // - sink id = 0 => sink.null
+        // - sink id = 1 => sink.primary
+        pa_operation_unref(pa_context_move_sink_input_by_index(ctx, connectedSinkInput, 0, nullptr, nullptr));
+        muted = true;
+    }
+#endif
+}
+
+void PulseDevice::unmuteConnectedSinkInput()
+{
+#ifdef SAILFISH
+    if (connectedSinkInput != PA_INVALID_INDEX && sinkInputs.contains(connectedSinkInput)) {
+        qDebug() << "Unmuting sink input by moving it to primary sink:" << connectedSinkInput;
+        // on sfos:
+        // - sink id = 0 => sink.null
+        // - sink id = 1 => sink.primary
+        pa_operation_unref(pa_context_move_sink_input_by_index(ctx, connectedSinkInput, 1, nullptr, nullptr));
+    }
+    muted = false;
+#endif
+}
+
+bool PulseDevice::startRecordStream(pa_context *ctx, uint32_t si, const Client &client)
+{
+    stopRecordStream();
+
+    qDebug() << "Creating new pulse-audio stream connected to sink input";
+    stream = pa_stream_new(ctx, Jupii::APP_NAME, &sampleSpec, nullptr);
+    pa_stream_set_read_callback(stream, streamRequestCallback, nullptr);
+    connectedSinkInput = si;
+
+    muteConnectedSinkInput();
+
+    if (pa_stream_set_monitor_stream(stream, si) < 0) {
+        qWarning() << "Pulse-audio stream set monitor error";
+    } else if (pa_stream_connect_record(stream, nullptr, nullptr, PA_STREAM_NOFLAGS) < 0) {
+        qWarning() << "Pulse-audio stream connect record error";
+    } else {
+        qDebug() << "Sink input successfully connected";
+        return true;
+    }
+
+    // something went wrong, so reseting stream
+    pa_stream_disconnect(stream);
+    pa_stream_unref(stream);
+    unmuteConnectedSinkInput();
+    stream = nullptr;
+    connectedSinkInput = PA_INVALID_INDEX;
+
+    return false;
+}
+
+void PulseDevice::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata)
+{
+    Q_ASSERT(ctx);
+    Q_UNUSED(userdata);
+
+    if (!eol) {
+        qDebug() << "sinkInputInfoCallback:";
+        qDebug() << "  index:" << i->index;
+        qDebug() << "  name:" << i->name;
+        qDebug() << "  client:" << i->client;
+        qDebug() << "  has_volume:" << i->has_volume;
+        qDebug() << "  mute:" << i->mute;
+        qDebug() << "  volume.channels:" << i->volume.channels;
+        qDebug() << "  volume.values[0]:" << i->volume.values[0];
+        qDebug() << "  sample_spec:" << pa_sample_format_to_string(i->sample_spec.format) << " "
+             << i->sample_spec.rate << " "
+             << static_cast<uint>(i->sample_spec.channels);
+
+        sinkInputs.insert(i->index, SinkInput{i->index, i->client, QString(i->name)});
+    } else {
+        discoverStream();
+    }
+}
+
+void PulseDevice::discoverStream()
+{
+    if (isInited()) {
+        auto worker = ContentServerWorker::instance();
+        if (worker->pulseDev) {
+            QHash<uint32_t, SinkInput>::const_iterator i;
+            for (i = sinkInputs.begin(); i != sinkInputs.end(); ++i) {
+                const auto si = i.value();
+                if (clients.contains(si.clientIdx)) {
+                    const auto client = clients.value(si.clientIdx);
+                    bool needUpdate = false;
+                    if (connectedSinkInput != si.idx) {
+                        qDebug() << "Starting recording for:";
+                        qDebug() << "  sink input:" << si.idx << si.name;
+                        qDebug() << "  client:" << client.idx << client.name;
+                        if (startRecordStream(ctx, si.idx, client))
+                            needUpdate = true;
+                    } else {
+                        qDebug() << "Sink is already connected";
+                        needUpdate = true;
+                    }
+
+                    if (needUpdate) {
+                        qDebug() << "Updating stream name to name of sink input's client:" << client.name;
+                        worker->updatePulseStreamName(client.name);
+                    } else {
+                        worker->updatePulseStreamName(QString());
+                    }
+
+                    return;
+                }
+            }
+
+            qDebug() << "No proper pulse-audio sink found";
+        } else {
+            qDebug() << "Pulse dev not created";
+        }
+        worker->updatePulseStreamName(QString());
+        stopRecordStream();
+    } else {
+        qWarning() << "Pulse-audio is not inited";
+    }
+}
+
+QList<PulseDevice::Client> PulseDevice::activeClients()
+{
+    QList<PulseDevice::Client> list;
+
+    for (auto ci : clients.keys()) {
+        for (auto& s : sinkInputs.values()) {
+            if (s.clientIdx == ci) {
+                list << clients[ci];
+                break;
+            }
+        }
+    }
+
+    return list;
+}
+
+bool PulseDevice::isBlacklisted(const char* name)
+{
+#ifdef SAILFISH
+    if (!strcmp(name, "ngfd") ||
+        !strcmp(name, "feedback-event") ||
+        !strcmp(name, "keyboard_0") ||
+        !strcmp(name, "keyboard_1")) {
+        return true;
+    }
+#endif
+    return false;
+}
+
+void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata)
+{
+    Q_ASSERT(ctx);
+    Q_UNUSED(userdata);
+
+    if (!eol) {
+        qDebug() << "clientInfoCallback:";
+        qDebug() << "  index:" << i->index;
+        qDebug() << "  name:" << i->name;
+        auto props = pa_proplist_to_string(i->proplist); qDebug() << "  props:" << props; pa_xfree(props);
+
+        if (!isBlacklisted(i->name)) {
+            Client client;
+            client.idx = i->index;
+            client.name = QString::fromLatin1(i->name);
+            if (pa_proplist_contains(i->proplist, PA_PROP_APPLICATION_PROCESS_BINARY)) {
+                const void* data; size_t size;
+                if (pa_proplist_get(i->proplist, PA_PROP_APPLICATION_PROCESS_BINARY, &data, &size) >= 0) {
+                    client.binary = QString::fromUtf8(static_cast<const char*>(data), size-1);
+                }
+            }
+            if (pa_proplist_contains(i->proplist, PA_PROP_APPLICATION_ICON_NAME)) {
+                const void* data; size_t size;
+                if (pa_proplist_get(i->proplist, PA_PROP_APPLICATION_ICON_NAME, &data, &size) >= 0) {
+                    client.icon = QString::fromUtf8(static_cast<const char*>(data), size-1);
+                }
+            }
+
+            clients.insert(client.idx, client);
+        } else {
+            qDebug() << "Client blacklisted";
+        }
+    }
+}
+
+void PulseDevice::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata)
+{
+    Q_UNUSED(mla);
+    Q_UNUSED(userdata);
+
+    //qDebug() << "timeEventCallback";
+
+    auto worker = ContentServerWorker::instance();
+    if (worker->pulseDev) {
+        if (worker->pulseItems.isEmpty()) {
+            worker->stopPulse();
+            return;
+        } else if (!stream) {
+            // sending null data to connected device because no sink is connected
+            //const size_t size = sampleSpec.rate * 2 * sampleSpec.channels * timerDelta;
+            const size_t size = sampleSpec.rate * 1 * sampleSpec.channels * timerDelta;
+            worker->writePulseData(nullptr, size);
+        }
+
+        restartTimer(e, tv);
+    }
+}
+
+void PulseDevice::exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e, int sig, void *userdata)
+{
+    Q_UNUSED(userdata);
+    Q_UNUSED(mla);
+    Q_UNUSED(e);
+    Q_UNUSED(sig);
+    qDebug() << "Pulse-audio exit signal";
+}
+
+bool PulseDevice::isInited()
+{
+    return ml && mla && ctx;
+}
+
+bool PulseDevice::setupContext()
+{
+    ml = pa_mainloop_new();
+    mla = pa_mainloop_get_api(ml);
+
+    if (pa_signal_init(mla) < 0) {
+        qWarning() << "Cannot init pulse-audio signals";
+        pa_mainloop_free(ml);
+        ml = nullptr;
+        mla = nullptr;
+    } else {
+        pa_signal_new(SIGINT, exitSignalCallback, nullptr);
+        pa_signal_new(SIGTERM, exitSignalCallback, nullptr);
+
+        ctx = pa_context_new(mla, Jupii::APP_NAME);
+        if (!ctx) {
+            qWarning() << "New pulse-audio context failed";
+            pa_mainloop_free(ml);
+            ml = nullptr;
+            mla = nullptr;
+        } else {
+            pa_context_set_state_callback(ctx, stateCallback, nullptr);
+            pa_context_set_subscribe_callback(ctx, subscriptionCallback, nullptr);
+
+            if (pa_context_connect(ctx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
+                qWarning() << "Cannot connect pulse-audio context:" << pa_strerror(pa_context_errno(ctx));
+                pa_context_unref(ctx);
+                ctx = nullptr;
+            } else {
+                qDebug() << "Pulse-audio context setup successful";
+                return true;
+            }
+        }
+    }
+
+    qWarning() << "Pulse-audio context setup error";
+    return false;
+}
+
+bool PulseDevice::startTimer()
+{
+    if (!timerActive) {
+        timeval tv; gettimeofday(&tv, nullptr); tv.tv_sec += timerDelta;
+        if (!mla->time_new(mla, &tv, timeEventCallback, nullptr)) {
+            qWarning() << "Timer event failed";
+            return false;
+        }
+    }
+
+    timerActive = true;
+    return true;
+}
+
+void PulseDevice::restartTimer(pa_time_event *e, const struct timeval *tv)
+{
+    if (timerActive) {
+        // restarting timer to current time + timerDelta
+        timeval ntv = {tv->tv_sec + timerDelta, tv->tv_usec};
+        mla->time_restart(e, &ntv);
+    }
+}
+
+void PulseDevice::stopTimer()
+{
+    timerActive = false;
+}
+
+PulseDevice::PulseDevice(QObject *parent) :
+    QObject(parent)
+{
+}
+
+void ContentServerWorker::writePulseData(const char *data, size_t maxSize)
+{
+    if (!pulseItems.isEmpty()) {
+        //QByteArray d = QByteArray::fromRawData(data, static_cast<int>(maxSize));
+        QByteArray d;
+        if (data) {
+            d = QByteArray(data, static_cast<int>(maxSize));
+        } else {
+            // Writing null data
+            d = QByteArray(static_cast<int>(maxSize),0);
+        }
+
+        auto i = pulseItems.begin();
+        while (i != pulseItems.end()) {
+            if (!i->resp->isHeaderWritten()) {
+                qWarning() << "Head not written";
+                i->resp->end();
+            }
+            if (i->resp->isFinished()) {
+                qWarning() << "Server request already finished, so removing pulse item";
+                auto id = i->id;
+                i = pulseItems.erase(i);
+                emit itemRemoved(id);
+            } else {
+                i->resp->write(d);
+                ++i;
+            }
+        }
+    } else {
+        qDebug() << "No pulse items so stopping";
+        stopPulse();
+    }
+}
+#endif

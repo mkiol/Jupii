@@ -272,6 +272,19 @@ bool Settings::getImageSupported()
     return settings.value("imagesupported", false).toBool();
 }
 
+void Settings::setPulseSupported(bool value)
+{
+    if (getPulseSupported() != value) {
+        settings.setValue("pulsesupported", value);
+        emit pulseSupportedChanged();
+    }
+}
+
+bool Settings::getPulseSupported()
+{
+    return settings.value("pulsesupported", false).toBool();
+}
+
 void Settings::setUseDbusVolume(bool value)
 {
     if (getUseDbusVolume() != value) {

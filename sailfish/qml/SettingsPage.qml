@@ -84,6 +84,23 @@ Page {
 
             TextSwitch {
                 automaticCheck: false
+                checked: settings.pulseSupported
+                text: qsTr("Capture audio output (restart needed)")
+                description: qsTr("This option enables capturing the audio output of any application. " +
+                                  "It provides similar functionality to pulseaudio-dlna server. It means that " +
+                                  "%1 can stream current PulseAudio's application playback to an UPnP/DLNA device. " +
+                                  "For instance, you can capture web browser audio playback and listen YouTube on a remote speaker. " +
+                                  "When enabled, \"Audio output\" option is visible in \"Add item\" menu. " +
+                                  "Be aware that currently audio stream is sent uncompressed, " +
+                                  "therefore significant network bandwidth will be consumed and " +
+                                  "likely your battery drain will increase.").arg(APP_NAME)
+                onClicked: {
+                    settings.pulseSupported = !settings.pulseSupported
+                }
+            }
+
+            TextSwitch {
+                automaticCheck: false
                 checked: settings.showAllDevices
                 text: qsTr("All devices visible")
                 description: qsTr("%1 supports only Media Renderer devices. With this option enabled, " +

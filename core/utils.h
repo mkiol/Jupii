@@ -36,12 +36,14 @@ public:
     Q_INVOKABLE bool isUrlOk(const QUrl &url);
     Q_INVOKABLE bool isGpodderAvailable();
     Q_INVOKABLE bool isIdMic(const QUrl &id);
+    Q_INVOKABLE bool isIdPulse(const QUrl &id);
 
     QString hash(const QString &value);
     static bool isIdValid(const QString &id);
     static bool isUrlValid(const QUrl &url);
     static bool isIdValid(const QUrl &id);
-    static bool isUrlMic(const QUrl &url);\
+    static bool isUrlMic(const QUrl &url);
+    static bool isUrlPulse(const QUrl &url);
     static QUrl urlFromText(const QString &text, const QString &context = QString());
     static QString pathFromId(const QString &id);
     static QString pathFromId(const QUrl &id);

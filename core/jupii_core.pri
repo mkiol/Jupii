@@ -73,3 +73,8 @@ sailfish {
     SOURCES += \
         $$CORE_DIR/iconprovider.cpp
 }
+
+pulse {
+    DEFINES += PULSE
+    LIBS += -lpulse
+}

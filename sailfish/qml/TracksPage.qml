@@ -78,6 +78,7 @@ Dialog {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
             property bool isMic: utils.isIdMic(model.url)
+            property bool isPulse: utils.isIdPulse(model.id)
 
             highlighted: down || model.selected
             title.text: model.title
@@ -88,6 +89,8 @@ Dialog {
             defaultIcon.source: {
                 if (isMic)
                     return "image://theme/icon-m-mic?" + primaryColor
+                else if (isPulse)
+                    return "image://theme/icon-m-speaker?" + primaryColor
                 else
                     switch (model.type) {
                     case AVTransport.T_Image:

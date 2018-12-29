@@ -108,7 +108,7 @@ Page {
             }
 
             function remove() {
-                remorseAction("Deleting", function() {
+                remorseAction(qsTr("Deleting"), function() {
                     itemModel.deleteFile(model.id)
                 })
             }

@@ -35,6 +35,7 @@ class Settings:
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
     Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
+    Q_PROPERTY (bool pulseSupported READ getPulseSupported WRITE setPulseSupported NOTIFY pulseSupportedChanged)
 
 public:
     static Settings* instance();
@@ -50,6 +51,9 @@ public:
 
     void setImageSupported(bool value);
     bool getImageSupported();
+
+    void setPulseSupported(bool value);
+    bool getPulseSupported();
 
     void setRememberPlaylist(bool value);
     bool getRememberPlaylist();
@@ -97,6 +101,7 @@ signals:
     void showAllDevicesChanged();
     void forwardTimeChanged();
     void imageSupportedChanged();
+    void pulseSupportedChanged();
     void rememberPlaylistChanged();
     void useDbusVolumeChanged();
     void ssdpIpEnabledChanged();
