@@ -2919,11 +2919,22 @@ void PulseDevice::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_inf
         qDebug() << "  mute:" << i->mute;
         qDebug() << "  volume.channels:" << i->volume.channels;
         qDebug() << "  volume.values[0]:" << i->volume.values[0];
+        qDebug() << "  corked:" << i->corked;
+        qDebug() << "  driver:" << i->driver;
+        qDebug() << "  owner_module:" << i->owner_module;
+        qDebug() << "  sink:" << i->sink;
         qDebug() << "  sample_spec:" << pa_sample_format_to_string(i->sample_spec.format) << " "
              << i->sample_spec.rate << " "
              << static_cast<uint>(i->sample_spec.channels);
+        auto props = pa_proplist_to_string(i->proplist);
+        qDebug() << "  props:\n" << props;
+        pa_xfree(props);
 
-        sinkInputs.insert(i->index, SinkInput{i->index, i->client, QString(i->name)});
+        auto& si = sinkInputs[i->index];
+        si.idx = i->index;
+        si.clientIdx = i->client;
+        si.name = i->name;
+        si.corked = i->corked;
     } else {
         discoverStream();
     }
@@ -2937,7 +2948,7 @@ void PulseDevice::discoverStream()
             QHash<uint32_t, SinkInput>::const_iterator i;
             for (i = sinkInputs.begin(); i != sinkInputs.end(); ++i) {
                 const auto si = i.value();
-                if (clients.contains(si.clientIdx)) {
+                if (!si.corked && clients.contains(si.clientIdx)) {
                     const auto client = clients.value(si.clientIdx);
                     bool needUpdate = false;
                     if (connectedSinkInput != si.idx) {
@@ -3011,12 +3022,15 @@ void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, i
         qDebug() << "clientInfoCallback:";
         qDebug() << "  index:" << i->index;
         qDebug() << "  name:" << i->name;
-        auto props = pa_proplist_to_string(i->proplist); qDebug() << "  props:" << props; pa_xfree(props);
+        auto props = pa_proplist_to_string(i->proplist);
+        qDebug() << "  props:\n" << props;
+        pa_xfree(props);
 
         if (!isBlacklisted(i->name)) {
-            Client client;
+            auto& client = clients[i->index];
             client.idx = i->index;
             client.name = QString::fromLatin1(i->name);
+
             if (pa_proplist_contains(i->proplist, PA_PROP_APPLICATION_PROCESS_BINARY)) {
                 const void* data; size_t size;
                 if (pa_proplist_get(i->proplist, PA_PROP_APPLICATION_PROCESS_BINARY, &data, &size) >= 0) {
@@ -3029,8 +3043,6 @@ void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, i
                     client.icon = QString::fromUtf8(static_cast<const char*>(data), size-1);
                 }
             }
-
-            clients.insert(client.idx, client);
         } else {
             qDebug() << "Client blacklisted";
         }

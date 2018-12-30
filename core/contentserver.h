@@ -356,12 +356,13 @@ class PulseDevice : public QObject
     Q_OBJECT
 public:
     struct SinkInput {
-        uint32_t idx;
-        uint32_t clientIdx;
+        uint32_t idx = PA_INVALID_INDEX;
+        uint32_t clientIdx = PA_INVALID_INDEX;
         QString name;
+        bool corked = false;
     };
     struct Client {
-        uint32_t idx;
+        uint32_t idx = PA_INVALID_INDEX;
         QString name;
         QString binary;
         QString icon;
