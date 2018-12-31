@@ -3246,7 +3246,8 @@ void ContentServerWorker::writePulseData(const char *data, size_t maxSize)
         //QByteArray d = QByteArray::fromRawData(data, static_cast<int>(maxSize));
         QByteArray d;
         if (data) {
-            d = QByteArray(data, static_cast<int>(maxSize));
+            //d = QByteArray(data, static_cast<int>(maxSize));
+            d = QByteArray::fromRawData(data, static_cast<int>(maxSize));
         } else {
             // Writing null data
             d = QByteArray(static_cast<int>(maxSize),0);
