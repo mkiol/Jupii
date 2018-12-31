@@ -34,8 +34,8 @@ Page {
                 title: "Capture audio output"
                 description: "This option enables capturing the audio output of any application. " +
                              "It provides similar functionality to pulseaudio-dlna server. It means that " +
-                             "Jupii can stream current PulseAudio's application playback to an UPnP/DLNA device. " +
-                             "For instance, you can capture web browser audio playback and listen YouTube on a remote speaker. " +
+                             "Jupii can stream certain application's PulseAudio playback to an UPnP/DLNA device. " +
+                             "For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. " +
                              "Be aware that currently audio stream is sent uncompressed, " +
                              "therefore significant network bandwidth will be consumed and " +
                              "likely your battery drain will increase. " +

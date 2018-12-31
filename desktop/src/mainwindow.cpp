@@ -33,10 +33,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    auto settings = Settings::instance();
+
     QMetaObject::connectSlotsByName(this);
     ui->setupUi(this);
     setWindowTitle(QApplication::applicationDisplayName());
     ui->actionAbout->setText(tr("About %1").arg(QApplication::applicationDisplayName()));
+    ui->actionPulse->setEnabled(settings->getPulseSupported());
     settingsDialog = std::unique_ptr<SettingsDialog>(new SettingsDialog(this));
 
     enablePlaylist(false);
@@ -676,4 +679,9 @@ void MainWindow::on_actionClear_triggered()
 void MainWindow::on_actionMic_triggered()
 {
     PlaylistModel::instance()->addItemUrl(QUrl("jupii://mic"));
+}
+
+void MainWindow::on_actionPulse_triggered()
+{
+    PlaylistModel::instance()->addItemUrl(QUrl("jupii://pulse"));
 }

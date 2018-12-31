@@ -12,7 +12,6 @@
 #include <QString>
 #include <QUrl>
 #include <QHash>
-#include <QMultiHash>
 #include <QVector>
 #include <QStringList>
 #include <QFile>
@@ -106,13 +105,13 @@ public:
         int length = 0;
     };
 
-    const static int micSampleRate = 44100;
+    const static int micSampleRate = 22050;
     const static int micChannelCount = 1;
     const static int micSampleSize = 16;
 
     //const static int pulseSampleRate = 44100;
-    const static int pulseSampleRate = 22050;
-    const static int pulseChannelCount = 2;
+    //const static int pulseSampleRate = 22050;
+    //const static int pulseChannelCount = 2;
     const static int pulseSampleSize = 16;
 
     static ContentServer* instance(QObject *parent = nullptr);
@@ -232,7 +231,9 @@ private:
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
+#ifdef PULSE
     const QHash<QUrl, ItemMeta>::const_iterator makePulseItemMeta(const QUrl &url);
+#endif
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
@@ -368,9 +369,9 @@ public:
         QString icon;
     };
 
-    const static pa_sample_spec sampleSpec;
     const static int timerDelta;
 
+    static pa_sample_spec sampleSpec;
     static bool timerActive;
     static bool muted;
     static pa_stream* stream;
@@ -399,6 +400,7 @@ public:
     static void muteConnectedSinkInput();
     static void unmuteConnectedSinkInput();
     static bool isBlacklisted(const char* name);
+    static void correctClientName(Client &client);
     static QString subscriptionEventToStr(pa_subscription_event_type_t t);
     static QList<PulseDevice::Client> activeClients();
     static bool isInited();

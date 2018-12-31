@@ -73,6 +73,7 @@ private slots:
     void on_actionURL_triggered();
     void on_actionClear_triggered();
     void on_actionMic_triggered();
+    void on_actionPulse_triggered();
 
 private:
     Ui::MainWindow *ui;

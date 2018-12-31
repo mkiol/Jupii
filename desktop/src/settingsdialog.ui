@@ -34,7 +34,7 @@
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="netInfsLayout">
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
@@ -80,6 +80,48 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="pulseCheckBox">
+           <property name="text">
+            <string>Capture audio output</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="pulseModeLayout">
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Audio output format</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="pulseModeComboBox">
+             <item>
+              <property name="text">
+               <string>PCM 44100Hz stereo (default)</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PCM 44100Hz mono</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PCM 22050Hz stereo</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PCM 22050Hz mono</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="QCheckBox" name="allDevicesCheckBox">
            <property name="enabled">
             <bool>true</bool>
@@ -90,7 +132,7 @@
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <layout class="QHBoxLayout" name="remoteContentModeLayout">
            <item>
             <widget class="QLabel" name="label_2">
              <property name="text">

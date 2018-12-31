@@ -285,6 +285,23 @@ bool Settings::getPulseSupported()
     return settings.value("pulsesupported", false).toBool();
 }
 
+void Settings::setPulseMode(int value)
+{
+    if (getPulseMode() != value) {
+        settings.setValue("pulsemode", value);
+        emit pulseModeChanged();
+    }
+}
+
+int Settings::getPulseMode()
+{
+    // 0 - 44100 stereo (default)
+    // 1 - 44100 mono
+    // 2 - 22050 stereo
+    // 3 - 22050 mono
+    return settings.value("pulsemode", 0).toInt();
+}
+
 void Settings::setUseDbusVolume(bool value)
 {
     if (getUseDbusVolume() != value) {

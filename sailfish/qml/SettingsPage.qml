@@ -88,14 +88,34 @@ Page {
                 text: qsTr("Capture audio output (restart needed)")
                 description: qsTr("This option enables capturing the audio output of any application. " +
                                   "It provides similar functionality to pulseaudio-dlna server. It means that " +
-                                  "%1 can stream current PulseAudio's application playback to an UPnP/DLNA device. " +
-                                  "For instance, you can capture web browser audio playback and listen YouTube on a remote speaker. " +
+                                  "%1 can stream certain application's PulseAudio playback to an UPnP/DLNA device. " +
+                                  "For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. " +
                                   "When enabled, \"Audio output\" option is visible in \"Add item\" menu. " +
                                   "Be aware that currently audio stream is sent uncompressed, " +
                                   "therefore significant network bandwidth will be consumed and " +
-                                  "likely your battery drain will increase.").arg(APP_NAME)
+                                  "likely your battery drain will increase. " +
+                                  "%1 restart needed to apply changes.").arg(APP_NAME)
                 onClicked: {
                     settings.pulseSupported = !settings.pulseSupported
+                }
+            }
+
+            ComboBox {
+                label: qsTr("Audio output format (restart needed)")
+                enabled: settings.pulseSupported
+                description: qsTr("Stream format used in audio output capturing. " +
+                                  "The better quality the bigger bitrate and quicker battery drain. " +
+                                  "%1 restart needed to apply changes.").arg(APP_NAME)
+                currentIndex: settings.pulseMode
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("PCM 44100Hz stereo (default)") }
+                    MenuItem { text: qsTr("PCM 44100Hz mono") }
+                    MenuItem { text: qsTr("PCM 22050Hz stereo") }
+                    MenuItem { text: qsTr("PCM 22050Hz mono") }
+                }
+
+                onCurrentIndexChanged: {
+                    settings.pulseMode = currentIndex
                 }
             }
 

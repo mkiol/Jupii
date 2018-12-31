@@ -2056,14 +2056,28 @@ ContentServer::makeMicItemMeta(const QUrl &url)
     return metaCache.insert(url, meta);
 }
 
+#ifdef PULSE
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makePulseItemMeta(const QUrl &url)
 {
+    auto mode = Settings::instance()->getPulseMode();
+
+    // modes:
+    // 0 - 44100 stereo
+    // 1 - 44100 mono
+    // 2 - 22050 stereo
+    // 3 - 22050 mono
+    PulseDevice::sampleSpec = {
+        PA_SAMPLE_S16BE,
+        mode == 0 || mode == 1 ? 44100 : 22050,
+        mode == 0 || mode == 2 ? 2 : 1
+    };
+
     ContentServer::ItemMeta meta;
     meta.valid = true;
     meta.url = url;
-    meta.channels = ContentServer::pulseChannelCount;
-    meta.sampleRate = ContentServer::pulseSampleRate;
+    meta.channels = PulseDevice::sampleSpec.channels;
+    meta.sampleRate = PulseDevice::sampleSpec.rate;
     meta.mime = QString("audio/L%1;rate=%2;channels=%3")
             .arg(ContentServer::pulseSampleSize)
             .arg(meta.sampleRate)
@@ -2082,6 +2096,7 @@ ContentServer::makePulseItemMeta(const QUrl &url)
 
     return metaCache.insert(url, meta);
 }
+#endif
 
 QString ContentServer::mimeFromDisposition(const QString &disposition)
 {
@@ -2315,9 +2330,11 @@ ContentServer::makeItemMeta(const QUrl &url)
     } else if (Utils::isUrlMic(url)) {
         qDebug() << "Mic url detected";
         it = makeMicItemMeta(url);
+#ifdef PULSE
     } else if (Utils::isUrlPulse(url)) {
         qDebug() << "Pulse url detected";
         it = makePulseItemMeta(url);
+#endif
     } else {
         qDebug() << "Geting meta using HTTP request";
         it = makeItemMetaUsingHTTPRequest(url);
@@ -2685,13 +2702,10 @@ qint64 MicDevice::writeData(const char* data, qint64 maxSize)
 }
 
 #ifdef PULSE
-const pa_sample_spec PulseDevice::sampleSpec = {PA_SAMPLE_S16BE,
-                                                ContentServer::pulseSampleRate,
-                                                ContentServer::pulseChannelCount
-                                               };
 const int PulseDevice::timerDelta = 1;
 bool PulseDevice::timerActive = false;
 bool PulseDevice::muted = false;
+pa_sample_spec PulseDevice::sampleSpec = {PA_SAMPLE_S16BE, 22050, 2};
 pa_stream* PulseDevice::stream = nullptr;
 uint32_t PulseDevice::connectedSinkInput = PA_INVALID_INDEX;
 pa_mainloop* PulseDevice::ml = nullptr;
@@ -3013,6 +3027,17 @@ bool PulseDevice::isBlacklisted(const char* name)
     return false;
 }
 
+void PulseDevice::correctClientName(Client &client)
+{
+#ifdef SAILFISH
+    if (client.name == "CubebUtils" && !client.binary.isEmpty()) {
+        client.name = client.binary;
+    } else if (client.name == "aliendalvik_audio_glue") {
+        client.name = "Android";
+    }
+#endif
+}
+
 void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata)
 {
     Q_ASSERT(ctx);
@@ -3029,6 +3054,7 @@ void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, i
         if (!isBlacklisted(i->name)) {
             auto& client = clients[i->index];
             client.idx = i->index;
+
             client.name = QString::fromLatin1(i->name);
 
             if (pa_proplist_contains(i->proplist, PA_PROP_APPLICATION_PROCESS_BINARY)) {
@@ -3043,6 +3069,7 @@ void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, i
                     client.icon = QString::fromUtf8(static_cast<const char*>(data), size-1);
                 }
             }
+            correctClientName(client);
         } else {
             qDebug() << "Client blacklisted";
         }

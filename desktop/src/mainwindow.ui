@@ -309,6 +309,7 @@
      <addaction name="actionFiles"/>
      <addaction name="actionURL"/>
      <addaction name="actionMic"/>
+     <addaction name="actionPulse"/>
     </widget>
     <addaction name="menuAdd"/>
     <addaction name="actionClear"/>
@@ -388,7 +389,8 @@
   </action>
   <action name="actionFiles">
    <property name="icon">
-    <iconset theme="document-new"/>
+    <iconset theme="document-new">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Files</string>
@@ -396,7 +398,8 @@
   </action>
   <action name="actionURL">
    <property name="icon">
-    <iconset theme="applications-internet"/>
+    <iconset theme="applications-internet">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>URL</string>
@@ -404,7 +407,8 @@
   </action>
   <action name="actionMic">
    <property name="icon">
-    <iconset theme="audio-input-microphone"/>
+    <iconset theme="audio-input-microphone">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Mic</string>
@@ -412,10 +416,19 @@
   </action>
   <action name="actionClear">
    <property name="icon">
-    <iconset theme="delete"/>
+    <iconset theme="delete">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionPulse">
+   <property name="icon">
+    <iconset theme="audio-speakers"/>
+   </property>
+   <property name="text">
+    <string>Audio output</string>
    </property>
   </action>
  </widget>
