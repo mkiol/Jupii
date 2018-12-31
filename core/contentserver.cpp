@@ -3047,7 +3047,9 @@ bool PulseDevice::isBlacklisted(const char* name)
     if (!strcmp(name, "ngfd") ||
         !strcmp(name, "feedback-event") ||
         !strcmp(name, "keyboard_0") ||
-        !strcmp(name, "keyboard_1")) {
+        !strcmp(name, "keyboard_1") ||
+        !strcmp(name, "ngf-tonegen-plugin") ||
+        !strcmp(name, "jolla keyboard")) {
         return true;
     }
 #endif
@@ -3099,6 +3101,7 @@ void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, i
             correctClientName(client);
         } else {
             qDebug() << "Client blacklisted";
+            clients.remove(i->index);
         }
     }
 }
