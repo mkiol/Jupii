@@ -94,7 +94,7 @@ Page {
                                   "Be aware that currently audio stream is sent uncompressed, " +
                                   "therefore significant network bandwidth will be consumed and " +
                                   "likely your battery drain will increase. " +
-                                  "%1 restart needed to apply changes.").arg(APP_NAME)
+                                  "%1 restart is needed to apply changes.").arg(APP_NAME)
                 onClicked: {
                     settings.pulseSupported = !settings.pulseSupported
                 }
@@ -105,7 +105,7 @@ Page {
                 enabled: settings.pulseSupported
                 description: qsTr("Stream format used in audio output capturing. " +
                                   "The better quality the bigger bitrate and quicker battery drain. " +
-                                  "%1 restart needed to apply changes.").arg(APP_NAME)
+                                  "%1 restart is needed to apply changes.").arg(APP_NAME)
                 currentIndex: settings.pulseMode
                 menu: ContextMenu {
                     MenuItem { text: qsTr("PCM 44100Hz stereo (default)") }
