@@ -27,6 +27,16 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.1.1")
+            }
+
+            LogItem {
+                title: "Audio output encoded to MP3"
+                description: "Captured audio output by default is sent encoded to MP3 format instaead uncompressed stream. " +
+                             "Stream format/quality can be changed in the settings (Experiments section). "
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.1.0")
             }
 

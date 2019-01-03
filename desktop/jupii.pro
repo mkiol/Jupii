@@ -22,6 +22,10 @@ include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
 include($$PROJECTDIR/libs/taglib/taglib.pri)
 include($$PROJECTDIR/core/jupii_core.pri)
 
+pulse {
+    LIBS += -lmp3lame
+}
+
 INCLUDEPATH += src
 
 HEADERS += \

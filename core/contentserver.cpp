@@ -24,9 +24,7 @@
 #include <QDomText>
 #include <QSslConfiguration>
 #include <QTextStream>
-
 #include <iomanip>
-#include <memory>
 
 #include "contentserver.h"
 #include "utils.h"
@@ -48,8 +46,10 @@
 #ifdef FFMPEG
 extern "C" {
 #include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
 #include <libavutil/dict.h>
 #include <libavutil/mathematics.h>
+#include <libavutil/opt.h>
 }
 #endif
 
@@ -1601,13 +1601,13 @@ bool ContentServer::extractAudio(const QString& path,
 
     qDebug() << "Extracting audio from file:" << file;
 
-    AVFormatContext *ic = NULL;
-    if (avformat_open_input(&ic, file, NULL, NULL) < 0) {
+    AVFormatContext *ic = nullptr;
+    if (avformat_open_input(&ic, file, nullptr, nullptr) < 0) {
         qWarning() << "avformat_open_input error";
         return false;
     }
 
-    if ((avformat_find_stream_info(ic, NULL)) < 0) {
+    if ((avformat_find_stream_info(ic, nullptr)) < 0) {
         qWarning() << "Could not find stream info";
         avformat_close_input(&ic);
         return false;
@@ -1615,7 +1615,7 @@ bool ContentServer::extractAudio(const QString& path,
 
     qDebug() << "nb_streams:" << ic->nb_streams;
 
-    int aidx = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
+    int aidx = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, nullptr, 0);
     qDebug() << "audio stream index is:" << aidx;
 
     if (aidx < 0) {
@@ -1654,9 +1654,9 @@ bool ContentServer::extractAudio(const QString& path,
     qDebug() << "Audio stream channels" << data.channels;
 
     qDebug() << "av_guess_format";
-    AVOutputFormat *of = NULL;
+    AVOutputFormat *of = nullptr;
     auto t = data.type.toLatin1();
-    of = av_guess_format(t.data(), NULL, NULL);
+    of = av_guess_format(t.data(), nullptr, nullptr);
     if (!of) {
         qWarning() << "av_guess_format error";
         avformat_close_input(&ic);
@@ -1664,7 +1664,7 @@ bool ContentServer::extractAudio(const QString& path,
     }
 
     qDebug() << "avformat_alloc_context";
-    AVFormatContext *oc = NULL;
+    AVFormatContext *oc = nullptr;
     oc = avformat_alloc_context();
     if (!oc) {
         qWarning() << "avformat_alloc_context error";
@@ -1674,7 +1674,7 @@ bool ContentServer::extractAudio(const QString& path,
 
     if (ic->metadata) {
         // Debug: metadata
-        AVDictionaryEntry *tag = NULL;
+        AVDictionaryEntry *tag = nullptr;
         while ((tag = av_dict_get(ic->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
             qDebug() << tag->key << "=" << tag->value;
 
@@ -1691,7 +1691,7 @@ bool ContentServer::extractAudio(const QString& path,
     oc->oformat = of;
 
     qDebug() << "avformat_new_stream";
-    AVStream* ast = NULL;
+    AVStream* ast = nullptr;
     ast = avformat_new_stream(oc, ic->streams[aidx]->codec->codec);
     if (!ast) {
         qWarning() << "avformat_new_stream error";
@@ -1704,7 +1704,7 @@ bool ContentServer::extractAudio(const QString& path,
 
     if (ic->streams[aidx]->metadata) {
         // Debug: audio stream metadata, codec
-        AVDictionaryEntry *tag = NULL;
+        AVDictionaryEntry *tag = nullptr;
         while ((tag = av_dict_get(ic->streams[aidx]->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
             qDebug() << tag->key << "=" << tag->value;
 
@@ -1776,7 +1776,7 @@ bool ContentServer::extractAudio(const QString& path,
     }
 
     qDebug() << "avformat_write_header";
-    if (avformat_write_header(oc, NULL) < 0) {
+    if (avformat_write_header(oc, nullptr) < 0) {
         qWarning() << "avformat_write_header error";
         avformat_close_input(&ic);
         avio_close(oc->pb);
@@ -2063,14 +2063,15 @@ ContentServer::makePulseItemMeta(const QUrl &url)
     auto mode = Settings::instance()->getPulseMode();
 
     // modes:
-    // 0 - 44100 stereo
-    // 1 - 44100 mono
-    // 2 - 22050 stereo
-    // 3 - 22050 mono
+    // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
+    // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
+    // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
+    // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
+    PulseDevice::mode = mode;
     PulseDevice::sampleSpec = {
-        PA_SAMPLE_S16BE,
-        mode == 0 || mode == 1 ? 44100 : 22050,
-        mode == 0 || mode == 2 ? 2 : 1
+        mode > 1 ? PA_SAMPLE_S16BE : PA_SAMPLE_S16LE,
+        mode > 2 ? 22050 : 44100,
+        2
     };
 
     ContentServer::ItemMeta meta;
@@ -2078,11 +2079,16 @@ ContentServer::makePulseItemMeta(const QUrl &url)
     meta.url = url;
     meta.channels = PulseDevice::sampleSpec.channels;
     meta.sampleRate = PulseDevice::sampleSpec.rate;
-    meta.mime = QString("audio/L%1;rate=%2;channels=%3")
-            .arg(ContentServer::pulseSampleSize)
-            .arg(meta.sampleRate)
-            .arg(meta.channels);
-    meta.bitrate = meta.sampleRate * ContentServer::pulseSampleSize * meta.channels;
+    if (mode > 1) {
+        meta.mime = QString("audio/L%1;rate=%2;channels=%3")
+                .arg(ContentServer::pulseSampleSize)
+                .arg(meta.sampleRate)
+                .arg(meta.channels);
+        meta.bitrate = meta.sampleRate * ContentServer::pulseSampleSize * meta.channels;
+    } else {
+        meta.mime = m_musicExtMap.value("mp3");
+        meta.bitrate = mode == 0 ? 128000/8 : 96000/8;
+    }
     meta.type = ContentServer::TypeMusic;
     meta.size = 0;
     meta.local = true;
@@ -2369,7 +2375,7 @@ void ContentServer::run()
     if (Settings::instance()->getPulseSupported()) {
         // Pulse audio loop
         qDebug() << "Starting pulse-audio module";
-        if (PulseDevice::setupContext()) {
+        if (PulseDevice::init()) {
             QEventLoop qtLoop;
             // TODO: Loop exit
             int ret = 0;
@@ -2702,10 +2708,14 @@ qint64 MicDevice::writeData(const char* data, qint64 maxSize)
 }
 
 #ifdef PULSE
+lame_global_flags* PulseDevice::lame_gfp = nullptr;
+uint8_t* PulseDevice::lame_buf = nullptr;
+int PulseDevice::lame_buf_size = 0;
 const int PulseDevice::timerDelta = 1;
 bool PulseDevice::timerActive = false;
 bool PulseDevice::muted = false;
-pa_sample_spec PulseDevice::sampleSpec = {PA_SAMPLE_S16BE, 22050, 2};
+pa_sample_spec PulseDevice::sampleSpec = {PA_SAMPLE_INVALID, 0, 0};
+int PulseDevice::mode = 0;
 pa_stream* PulseDevice::stream = nullptr;
 uint32_t PulseDevice::connectedSinkInput = PA_INVALID_INDEX;
 #ifdef SAILFISH
@@ -2866,7 +2876,7 @@ void PulseDevice::streamRequestCallback(pa_stream *stream, size_t nbytes, void *
     }
 
     auto worker = ContentServerWorker::instance();
-    worker->writePulseData(static_cast<const char*>(data), nbytes);
+    worker->writePulseData(data, static_cast<int>(nbytes));
 
     pa_stream_drop(stream);
 }
@@ -2918,7 +2928,7 @@ void PulseDevice::unmuteConnectedSinkInput()
 #endif
 }
 
-bool PulseDevice::startRecordStream(pa_context *ctx, uint32_t si, const Client &client)
+bool PulseDevice::startRecordStream(pa_context *ctx, uint32_t si)
 {
     stopRecordStream();
 
@@ -2996,7 +3006,7 @@ void PulseDevice::discoverStream()
                         qDebug() << "Starting recording for:";
                         qDebug() << "  sink input:" << si.idx << si.name;
                         qDebug() << "  client:" << client.idx << client.name;
-                        if (startRecordStream(ctx, si.idx, client))
+                        if (startRecordStream(ctx, si.idx))
                             needUpdate = true;
                     } else {
                         qDebug() << "Sink is already connected";
@@ -3168,16 +3178,13 @@ bool PulseDevice::isInited()
     return ml && mla && ctx;
 }
 
-bool PulseDevice::setupContext()
+bool PulseDevice::init()
 {
     ml = pa_mainloop_new();
     mla = pa_mainloop_get_api(ml);
 
     if (pa_signal_init(mla) < 0) {
         qWarning() << "Cannot init pulse-audio signals";
-        pa_mainloop_free(ml);
-        ml = nullptr;
-        mla = nullptr;
     } else {
         pa_signal_new(SIGINT, exitSignalCallback, nullptr);
         pa_signal_new(SIGTERM, exitSignalCallback, nullptr);
@@ -3185,25 +3192,29 @@ bool PulseDevice::setupContext()
         ctx = pa_context_new(mla, Jupii::APP_NAME);
         if (!ctx) {
             qWarning() << "New pulse-audio context failed";
-            pa_mainloop_free(ml);
-            ml = nullptr;
-            mla = nullptr;
         } else {
             pa_context_set_state_callback(ctx, stateCallback, nullptr);
             pa_context_set_subscribe_callback(ctx, subscriptionCallback, nullptr);
 
             if (pa_context_connect(ctx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
                 qWarning() << "Cannot connect pulse-audio context:" << pa_strerror(pa_context_errno(ctx));
-                pa_context_unref(ctx);
-                ctx = nullptr;
+            } else if (!initLame()) {
+                pa_context_disconnect(ctx);
             } else {
-                qDebug() << "Pulse-audio context setup successful";
+                qDebug() << "Pulse-audio inited successful";
                 return true;
             }
+
+            pa_context_unref(ctx);
+            ctx = nullptr;
         }
     }
 
-    qWarning() << "Pulse-audio context setup error";
+    pa_mainloop_free(ml);
+    ml = nullptr;
+    mla = nullptr;
+
+    qWarning() << "Pulse-audio init error";
     return false;
 }
 
@@ -3240,17 +3251,40 @@ PulseDevice::PulseDevice(QObject *parent) :
 {
 }
 
-void ContentServerWorker::writePulseData(const char *data, size_t maxSize)
+void ContentServerWorker::writePulseData(const void *data, int size)
 {
     if (!pulseItems.isEmpty()) {
-        //QByteArray d = QByteArray::fromRawData(data, static_cast<int>(maxSize));
         QByteArray d;
-        if (data) {
-            //d = QByteArray(data, static_cast<int>(maxSize));
-            d = QByteArray::fromRawData(data, static_cast<int>(maxSize));
+        if (PulseDevice::mode > 1) {
+            // No MP3 encoding, sending raw LPCM stream
+            if (data) {
+                d = QByteArray::fromRawData(static_cast<const char*>(data), size);
+            } else {
+                // Writing null data
+                d = QByteArray(size,'\0');
+            }
         } else {
-            // Writing null data
-            d = QByteArray(static_cast<int>(maxSize),0);
+            // Doing MP3 encoding
+            const void *in_data;
+            if (data) {
+                in_data = data;
+            } else {
+                // Writing null data
+                in_data = static_cast<void*>(new char[size]{});
+            }
+
+            void *out_data;
+            int out_size;
+
+            if (PulseDevice::encode(in_data, size, &out_data, &out_size)) {
+                if (out_size > 0) {
+                    d = QByteArray::fromRawData(static_cast<const char*>(out_data), out_size);
+                }
+            }
+
+            if (!data) {
+                delete[] static_cast<const char*>(in_data);
+            }
         }
 
         auto i = pulseItems.begin();
@@ -3273,5 +3307,62 @@ void ContentServerWorker::writePulseData(const char *data, size_t maxSize)
         qDebug() << "No pulse items so stopping";
         stopPulse();
     }
+}
+
+void PulseDevice::deinitLame()
+{
+    qDebug() << "Deiniting LAME encoder";
+    lame_close(lame_gfp);
+}
+
+bool PulseDevice::initLame()
+{
+    lame_gfp = lame_init();
+    if (!lame_gfp) {
+        qDebug() << "lame_init failed";
+    } else {
+        auto mode = Settings::instance()->getPulseMode();
+        // modes:
+        // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
+        // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
+
+        lame_set_num_channels(lame_gfp, PulseDevice::sampleSpec.channels);
+        lame_set_in_samplerate(lame_gfp, PulseDevice::sampleSpec.rate);
+        lame_set_brate(lame_gfp, mode == 0 ? 128 : 96);
+        lame_set_mode(lame_gfp, STEREO);
+        lame_set_quality(lame_gfp, 7);
+        if (lame_init_params(lame_gfp) < 0) {
+            qDebug() << "lame_init_params failed";
+        } else {
+            lame_buf_size = static_cast<int>(1.25 * 11025 + 7200);
+            lame_buf = new uint8_t[lame_buf_size];
+            qDebug() << "LAME encoder inited successfully";
+            return true;
+        }
+    }
+
+    qDebug() << "LAME encoder not inited";
+    return false;
+}
+
+bool PulseDevice::encode(const void *in_data, int in_size,
+                         void **out_data, int *out_size)
+{
+    //qDebug() << "in_size:" << in_size;
+    int nb_samples = static_cast<int>(in_size/(PulseDevice::sampleSpec.channels*2));
+    //qDebug() << "nb_samples:" << nb_samples;
+    int ret = lame_encode_buffer_interleaved(lame_gfp,
+                         static_cast<short int*>(const_cast<void*>(in_data)),
+                         nb_samples, lame_buf, lame_buf_size);
+    //qDebug() << "ret:" << ret;
+    if (ret < 0) {
+        qDebug() << "lame_encode_buffer_interleaved failed";
+        return false;
+    } else {
+        *out_size = ret;
+        *out_data = static_cast<void*>(lame_buf);
+    }
+
+    return true;
 }
 #endif

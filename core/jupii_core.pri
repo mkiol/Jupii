@@ -2,6 +2,11 @@ CORE_DIR = ../core
 
 INCLUDEPATH += $$CORE_DIR
 
+include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
+include($$PROJECTDIR/libs/libupnp/libupnp.pri)
+include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
+include($$PROJECTDIR/libs/taglib/taglib.pri)
+
 system(qdbusxml2cpp $$PROJECTDIR/dbus/org.jupii.xml -a $$CORE_DIR/dbus_jupii_adaptor)
 system(qdbusxml2cpp $$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml -p $$CORE_DIR/dbus_tracker_inf)
 

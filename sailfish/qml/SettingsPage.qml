@@ -91,9 +91,6 @@ Page {
                                   "%1 can stream certain application's PulseAudio playback to an UPnP/DLNA device. " +
                                   "For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. " +
                                   "When enabled, \"Audio output\" option is visible in \"Add item\" menu. " +
-                                  "Be aware that currently audio stream is sent uncompressed, " +
-                                  "therefore significant network bandwidth will be consumed and " +
-                                  "likely your battery drain will increase. " +
                                   "%1 restart is needed to apply changes.").arg(APP_NAME)
                 onClicked: {
                     settings.pulseSupported = !settings.pulseSupported
@@ -101,17 +98,22 @@ Page {
             }
 
             ComboBox {
+                // modes:
+                // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
+                // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
+                // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
+                // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
                 label: qsTr("Audio output format (restart needed)")
                 enabled: settings.pulseSupported
                 description: qsTr("Stream format used in audio output capturing. " +
-                                  "The better quality the bigger bitrate and quicker battery drain. " +
+                                  "The bigger bitrate the quicker battery drain. " +
                                   "%1 restart is needed to apply changes.").arg(APP_NAME)
                 currentIndex: settings.pulseMode
                 menu: ContextMenu {
-                    MenuItem { text: qsTr("PCM 44100Hz stereo (default)") }
-                    MenuItem { text: qsTr("PCM 44100Hz mono") }
-                    MenuItem { text: qsTr("PCM 22050Hz stereo") }
-                    MenuItem { text: qsTr("PCM 22050Hz mono") }
+                    MenuItem { text: qsTr("MP3 44100Hz 128 kbps (default)") }
+                    MenuItem { text: qsTr("MP3 44100Hz 96 kbps") }
+                    MenuItem { text: qsTr("PCM 44100Hz 1411 kbps") }
+                    MenuItem { text: qsTr("PCM 22050Hz 706 kbps") }
                 }
 
                 onCurrentIndexChanged: {

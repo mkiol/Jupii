@@ -295,10 +295,11 @@ void Settings::setPulseMode(int value)
 
 int Settings::getPulseMode()
 {
-    // 0 - 44100 stereo (default)
-    // 1 - 44100 mono
-    // 2 - 22050 stereo
-    // 3 - 22050 mono
+    // modes:
+    // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
+    // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
+    // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
+    // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
     return settings.value("pulsemode", 0).toInt();
 }
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>300</height>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -99,22 +99,22 @@
             <widget class="QComboBox" name="pulseModeComboBox">
              <item>
               <property name="text">
-               <string>PCM 44100Hz stereo (default)</string>
+               <string>MP3 44100Hz 128 kbps (default)</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>PCM 44100Hz mono</string>
+               <string>MP3 44100Hz 96 kbps</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>PCM 22050Hz stereo</string>
+               <string>PCM 44100Hz 1411 kbps</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>PCM 22050Hz mono</string>
+               <string>PCM 22050Hz 706 kbps</string>
               </property>
              </item>
             </widget>

@@ -21,10 +21,10 @@ ffmpeg {
     DEFINES += FFMPEG
     INCLUDEPATH += $$PWD/libav/src
 
-    x86: lib.files = libav/i486/*
-    arm: lib.files = libav/arm/*
-    lib.path = /usr/share/$${TARGET}/lib
-    INSTALLS += lib
+    x86: libav.files = libav/i486/*
+    arm: libav.files = libav/arm/*
+    libav.path = /usr/share/$${TARGET}/lib
+    INSTALLS += libav
 
     x86 {
         LIBS += -L$$PWD/libav/i486/ -l:libavutil.so.55
@@ -41,11 +41,11 @@ ffmpeg {
     }
 }
 
-include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
-include($$PROJECTDIR/libs/libupnp/libupnp.pri)
-include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
-include($$PROJECTDIR/libs/taglib/taglib.pri)
 include($$PROJECTDIR/core/jupii_core.pri)
+
+pulse {
+    include($$PROJECTDIR/libs/lame/lame.pri)
+}
 
 INCLUDEPATH += src
 

@@ -22,6 +22,7 @@
 #include <QIODevice>
 #include <QAudioInput>
 #include <memory>
+#include <cstddef>
 
 #include <qhttpserver.h>
 #include <qhttprequest.h>
@@ -32,6 +33,7 @@
 #ifdef FFMPEG
 extern "C" {
 #include <libavcodec/avcodec.h>
+#include <libavresample/avresample.h>
 }
 #endif
 
@@ -46,6 +48,11 @@ extern "C" {
 #include <pulse/subscribe.h>
 #include <pulse/stream.h>
 #include <pulse/xmalloc.h>
+#ifdef SAILFISH
+#include "lame.h"
+#else
+#include <lame/lame.h>
+#endif
 }
 #endif
 
@@ -332,7 +339,7 @@ private:
     void sendRedirection(QHttpResponse *resp, const QString &location);
     void processShoutcastMetadata(QByteArray &data, ProxyItem &item);
     void updatePulseStreamName(const QString& name);
-    void writePulseData(const char* data, size_t maxSize);
+    void writePulseData(const void *data, int size);
 };
 
 class MicDevice : public QIODevice
@@ -374,14 +381,14 @@ public:
     static pa_sample_spec sampleSpec;
     static bool timerActive;
     static bool muted;
-    static pa_stream* stream;
+    static pa_stream *stream;
     static uint32_t connectedSinkInput;
 #ifdef SAILFISH
     static uint32_t nullSink;
     static uint32_t primarySink;
 #endif
-    static pa_mainloop* ml;
-    static pa_mainloop_api* mla;
+    static pa_mainloop *ml;
+    static pa_mainloop_api *mla;
     static pa_context *ctx;
     static QHash<uint32_t, PulseDevice::Client> clients;
     static QHash<uint32_t, PulseDevice::SinkInput> sinkInputs;
@@ -390,7 +397,7 @@ public:
     static void stateCallback(pa_context *ctx, void *userdata);
     static void successSubscribeCallback(pa_context *ctx, int success, void *userdata);
     static void streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata);
-    static bool startRecordStream(pa_context *ctx, uint32_t si, const Client& client);
+    static bool startRecordStream(pa_context *ctx, uint32_t si);
     static void stopRecordStream();
     static void exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e, int sig, void *userdata);
     static void sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata);
@@ -400,7 +407,7 @@ public:
 #endif
     static void timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata);
     static void discoverStream();
-    static bool setupContext();
+    static bool init();
     static bool startTimer();
     static void stopTimer();
     static void restartTimer(pa_time_event *e, const struct timeval *tv);
@@ -410,9 +417,18 @@ public:
     static void correctClientName(Client &client);
     static QString subscriptionEventToStr(pa_subscription_event_type_t t);
     static QList<PulseDevice::Client> activeClients();
+    static int mode;
     static bool isInited();
-
+    static bool encode(const void *in_data, int in_size,
+                       void **out_data, int *out_size);
     PulseDevice(QObject *parent = nullptr);
+
+private:
+    static lame_global_flags *lame_gfp;
+    static int lame_buf_size;
+    static uint8_t *lame_buf;
+    static bool initLame();
+    static void deinitLame();
 };
 #endif
 
