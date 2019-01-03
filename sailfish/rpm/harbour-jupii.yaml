@@ -25,9 +25,11 @@ PkgConfigBR:
   - Qt5Core
   - Qt5Qml
   - Qt5Quick
+  - libcurl
 
 # Build dependencies without a pkgconfig setup can be listed here
-# PkgBR:
+PkgBR:
+  - pulseaudio-devel
 #   - package-needed-to-build
 
 # Runtime dependencies which are not automatically detected
