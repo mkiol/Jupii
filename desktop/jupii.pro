@@ -10,21 +10,7 @@ PROJECTDIR = $$PWD/..
 CONFIG += desktop
 DEFINES += DESKTOP
 
-ffmpeg {
-    DEFINES += FFMPEG
-    LIBS += -lavutil -lavformat -lavcodec -lavresample
-    INCLUDEPATH += /usr/include/ffmpeg
-}
-
-include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
-include($$PROJECTDIR/libs/libupnp/libupnp.pri)
-include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
-include($$PROJECTDIR/libs/taglib/taglib.pri)
 include($$PROJECTDIR/core/jupii_core.pri)
-
-pulse {
-    LIBS += -lmp3lame
-}
 
 INCLUDEPATH += src
 

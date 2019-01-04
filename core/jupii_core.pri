@@ -5,10 +5,46 @@ INCLUDEPATH += $$CORE_DIR
 include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
 include($$PROJECTDIR/libs/libupnp/libupnp.pri)
 include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
-include($$PROJECTDIR/libs/taglib/taglib.pri)
 
 system(qdbusxml2cpp $$PROJECTDIR/dbus/org.jupii.xml -a $$CORE_DIR/dbus_jupii_adaptor)
 system(qdbusxml2cpp $$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml -p $$CORE_DIR/dbus_tracker_inf)
+
+pulse {
+    DEFINES += PULSE
+    LIBS += -lpulse
+}
+
+desktop {
+    INCLUDEPATH += /usr/include/taglib
+    LIBS += -ltag
+
+    pulse {
+        LIBS += -lmp3lame
+    }
+
+    ffmpeg {
+        LIBS += -lavutil -lavformat -lavcodec -lavresample
+        INCLUDEPATH += /usr/include/ffmpeg
+    }
+}
+
+sailfish {
+    include($$PROJECTDIR/libs/taglib/taglib.pri)
+
+    pulse {
+        include($$PROJECTDIR/libs/lame/lame.pri)
+    }
+
+    ffmpeg {
+        include($$PROJECTDIR/libs/libav/libav.pri)
+    }
+
+    HEADERS += \
+        $$CORE_DIR/iconprovider.h
+
+    SOURCES += \
+        $$CORE_DIR/iconprovider.cpp
+}
 
 HEADERS += \
     $$CORE_DIR/dbus_jupii_adaptor.h \
@@ -70,16 +106,3 @@ SOURCES += \
     $$CORE_DIR/gpoddermodel.cpp \
     $$CORE_DIR/itemmodel.cpp \
     $$CORE_DIR/icecastmodel.cpp
-
-sailfish {
-    HEADERS += \
-        $$CORE_DIR/iconprovider.h
-
-    SOURCES += \
-        $$CORE_DIR/iconprovider.cpp
-}
-
-pulse {
-    DEFINES += PULSE
-    LIBS += -lpulse
-}

@@ -17,35 +17,7 @@ INCLUDEPATH += /usr/include
 CONFIG += sailfish ffmpeg
 DEFINES += SAILFISH
 
-ffmpeg {
-    DEFINES += FFMPEG
-    INCLUDEPATH += $$PWD/libav/src
-
-    x86: libav.files = libav/i486/*
-    arm: libav.files = libav/arm/*
-    libav.path = /usr/share/$${TARGET}/lib
-    INSTALLS += libav
-
-    x86 {
-        LIBS += -L$$PWD/libav/i486/ -l:libavutil.so.55
-        LIBS += -L$$PWD/libav/i486/ -l:libavformat.so.57
-        LIBS += -L$$PWD/libav/i486/ -l:libavcodec.so.57
-        LIBS += -L$$PWD/libav/i486/ -l:libavresample.so.3
-    }
-
-    arm {
-        LIBS += -L$$PWD/libav/arm/ -l:libavutil.so.55
-        LIBS += -L$$PWD/libav/arm/ -l:libavformat.so.57
-        LIBS += -L$$PWD/libav/arm/ -l:libavcodec.so.57
-        LIBS += -L$$PWD/libav/arm/ -l:libavresample.so.3
-    }
-}
-
 include($$PROJECTDIR/core/jupii_core.pri)
-
-pulse {
-    include($$PROJECTDIR/libs/lame/lame.pri)
-}
 
 INCLUDEPATH += src
 
