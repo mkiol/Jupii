@@ -340,6 +340,7 @@ private:
     void processShoutcastMetadata(QByteArray &data, ProxyItem &item);
     void updatePulseStreamName(const QString& name);
     void writePulseData(const void *data, int size);
+    void adjustVolume(QByteArray *data, float factor, bool le = true);
 };
 
 class MicDevice : public QIODevice
@@ -376,7 +377,7 @@ public:
         QString icon;
     };
 
-    const static int timerDelta;
+    const static long timerDelta; // micro seconds
 
     static pa_sample_spec sampleSpec;
     static bool timerActive;
@@ -419,7 +420,7 @@ public:
     static QList<PulseDevice::Client> activeClients();
     static int mode;
     static bool isInited();
-    static bool encode(const void *in_data, int in_size,
+    static bool encode(void *in_data, int in_size,
                        void **out_data, int *out_size);
     PulseDevice(QObject *parent = nullptr);
 

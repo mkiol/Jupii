@@ -2711,7 +2711,7 @@ qint64 MicDevice::writeData(const char* data, qint64 maxSize)
 lame_global_flags* PulseDevice::lame_gfp = nullptr;
 uint8_t* PulseDevice::lame_buf = nullptr;
 int PulseDevice::lame_buf_size = 0;
-const int PulseDevice::timerDelta = 1;
+const long PulseDevice::timerDelta = 500000l; // micro seconds
 bool PulseDevice::timerActive = false;
 bool PulseDevice::muted = false;
 pa_sample_spec PulseDevice::sampleSpec = {PA_SAMPLE_INVALID, 0, 0};
@@ -3155,8 +3155,7 @@ void PulseDevice::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, cons
             return;
         } else if (!stream) {
             // sending null data to connected device because no sink is connected
-            //const size_t size = sampleSpec.rate * 2 * sampleSpec.channels * timerDelta;
-            const size_t size = sampleSpec.rate * 1 * sampleSpec.channels * timerDelta;
+            const size_t size = (0.7f * sampleSpec.rate * sampleSpec.channels);
             worker->writePulseData(nullptr, size);
         }
 
@@ -3221,7 +3220,10 @@ bool PulseDevice::init()
 bool PulseDevice::startTimer()
 {
     if (!timerActive) {
-        timeval tv; gettimeofday(&tv, nullptr); tv.tv_sec += timerDelta;
+        timeval tv; gettimeofday(&tv, nullptr);
+        long ms = tv.tv_usec + timerDelta;
+        tv.tv_sec += ms / 1000000l;
+        tv.tv_usec = ms % 1000000l;
         if (!mla->time_new(mla, &tv, timeEventCallback, nullptr)) {
             qWarning() << "Timer event failed";
             return false;
@@ -3236,7 +3238,10 @@ void PulseDevice::restartTimer(pa_time_event *e, const struct timeval *tv)
 {
     if (timerActive) {
         // restarting timer to current time + timerDelta
-        timeval ntv = {tv->tv_sec + timerDelta, tv->tv_usec};
+        timeval ntv;
+        long ms = tv->tv_usec + timerDelta;
+        ntv.tv_sec = tv->tv_sec + ms / 1000000l;
+        ntv.tv_usec = ms % 1000000l;
         mla->time_restart(e, &ntv);
     }
 }
@@ -3251,39 +3256,46 @@ PulseDevice::PulseDevice(QObject *parent) :
 {
 }
 
+void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)
+{
+    QDataStream sr(data, QIODevice::ReadOnly);
+    sr.setByteOrder(le ? QDataStream::LittleEndian : QDataStream::BigEndian);
+    QDataStream sw(data, QIODevice::WriteOnly);
+    sw.setByteOrder(le ? QDataStream::LittleEndian : QDataStream::BigEndian);
+    int16_t sample; // assuming 16-bit LPCM sample
+    while (!sr.atEnd()) {
+        sr >> sample;
+        sample = static_cast<int16_t>(sample * factor);
+        sw << sample;
+    }
+}
+
 void ContentServerWorker::writePulseData(const void *data, int size)
 {
     if (!pulseItems.isEmpty()) {
         QByteArray d;
-        if (PulseDevice::mode > 1) {
-            // No MP3 encoding, sending raw LPCM stream
-            if (data) {
-                d = QByteArray::fromRawData(static_cast<const char*>(data), size);
-            } else {
-                // Writing null data
-                d = QByteArray(size,'\0');
-            }
+
+        if (data) {
+            // deep copy :-(
+            d = QByteArray(static_cast<const char*>(data), size);
+            // BE for PCM, LE for MP3
+            adjustVolume(&d, 2.5f, PulseDevice::mode > 1 ? false : true);
         } else {
-            // Doing MP3 encoding
-            const void *in_data;
-            if (data) {
-                in_data = data;
-            } else {
-                // Writing null data
-                in_data = static_cast<void*>(new char[size]{});
-            }
+            // writing null data
+            d = QByteArray(size,'\0'); // null data
+        }
 
-            void *out_data;
-            int out_size;
-
-            if (PulseDevice::encode(in_data, size, &out_data, &out_size)) {
+        if (PulseDevice::mode < 2) {
+            // doing MP3 encoding
+            void *out_data; int out_size;
+            if (PulseDevice::encode(static_cast<void*>(d.data()), size, &out_data, &out_size)) {
                 if (out_size > 0) {
+                    // bytes are not copied :-)
                     d = QByteArray::fromRawData(static_cast<const char*>(out_data), out_size);
+                } else {
+                    // encoder didn't return any data
+                    return;
                 }
-            }
-
-            if (!data) {
-                delete[] static_cast<const char*>(in_data);
             }
         }
 
@@ -3325,16 +3337,15 @@ bool PulseDevice::initLame()
         // modes:
         // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
         // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
-
+        lame_set_brate(lame_gfp, mode == 0 ? 128 : 96);
         lame_set_num_channels(lame_gfp, PulseDevice::sampleSpec.channels);
         lame_set_in_samplerate(lame_gfp, PulseDevice::sampleSpec.rate);
-        lame_set_brate(lame_gfp, mode == 0 ? 128 : 96);
         lame_set_mode(lame_gfp, STEREO);
         lame_set_quality(lame_gfp, 7);
         if (lame_init_params(lame_gfp) < 0) {
             qDebug() << "lame_init_params failed";
         } else {
-            lame_buf_size = static_cast<int>(1.25 * 11025 + 7200);
+            lame_buf_size = static_cast<int>(1.25 * 7000 + 7200);
             lame_buf = new uint8_t[lame_buf_size];
             qDebug() << "LAME encoder inited successfully";
             return true;
@@ -3345,16 +3356,14 @@ bool PulseDevice::initLame()
     return false;
 }
 
-bool PulseDevice::encode(const void *in_data, int in_size,
+bool PulseDevice::encode(void *in_data, int in_size,
                          void **out_data, int *out_size)
 {
-    //qDebug() << "in_size:" << in_size;
-    int nb_samples = static_cast<int>(in_size/(PulseDevice::sampleSpec.channels*2));
+    const int nb_samples = in_size/(PulseDevice::sampleSpec.channels * 2);
     //qDebug() << "nb_samples:" << nb_samples;
     int ret = lame_encode_buffer_interleaved(lame_gfp,
-                         static_cast<short int*>(const_cast<void*>(in_data)),
+                         static_cast<short int*>(in_data),
                          nb_samples, lame_buf, lame_buf_size);
-    //qDebug() << "ret:" << ret;
     if (ret < 0) {
         qDebug() << "lame_encode_buffer_interleaved failed";
         return false;

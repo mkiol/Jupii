@@ -14,6 +14,10 @@ pulse {
     LIBS += -lpulse
 }
 
+ffmpeg {
+    DEFINES += FFMPEG
+}
+
 desktop {
     INCLUDEPATH += /usr/include/taglib
     LIBS += -ltag

@@ -31,9 +31,11 @@ Page {
             }
 
             LogItem {
-                title: "Audio output encoded to MP3"
-                description: "Captured audio output by default is sent encoded to MP3 format instaead uncompressed stream. " +
-                             "Stream format/quality can be changed in the settings (Experiments section). "
+                title: "Audio output stream encoded to MP3 format"
+                description: "By default captured audio output stream will be encoded to MP3 format. " +
+                             "Encoding adds extra delay comparing to uncommpressed stream but it is " +
+                             "much more efficient for overall performance. " +
+                             "A stream format/quality can be changed in the settings (Experiments section). "
             }
 
             SectionHeader {
@@ -51,7 +53,6 @@ Page {
                              "likely your battery drain will increase. " +
                              "This feature is not enabled by default, " +
                              "it must be activated in the settings (Experiments section)."
-
             }
 
             SectionHeader {
