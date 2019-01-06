@@ -25,6 +25,7 @@
 #include <QSslConfiguration>
 #include <QTextStream>
 #include <iomanip>
+#include <limits>
 
 #include "contentserver.h"
 #include "utils.h"
@@ -49,7 +50,6 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavutil/dict.h>
 #include <libavutil/mathematics.h>
-#include <libavutil/opt.h>
 }
 #endif
 
@@ -2070,7 +2070,7 @@ ContentServer::makePulseItemMeta(const QUrl &url)
     PulseDevice::mode = mode;
     PulseDevice::sampleSpec = {
         mode > 1 ? PA_SAMPLE_S16BE : PA_SAMPLE_S16LE,
-        mode > 2 ? 22050 : 44100,
+        mode > 2 ? 22050u : 44100u,
         2
     };
 
@@ -3062,6 +3062,8 @@ bool PulseDevice::isBlacklisted(const char* name)
         !strcmp(name, "jolla keyboard")) {
         return true;
     }
+#else
+    Q_UNUSED(name)
 #endif
     return false;
 }
@@ -3074,6 +3076,8 @@ void PulseDevice::correctClientName(Client &client)
     } else if (client.name == "aliendalvik_audio_glue") {
         client.name = "Android";
     }
+#else
+    Q_UNUSED(client)
 #endif
 }
 
@@ -3099,13 +3103,15 @@ void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, i
             if (pa_proplist_contains(i->proplist, PA_PROP_APPLICATION_PROCESS_BINARY)) {
                 const void* data; size_t size;
                 if (pa_proplist_get(i->proplist, PA_PROP_APPLICATION_PROCESS_BINARY, &data, &size) >= 0) {
-                    client.binary = QString::fromUtf8(static_cast<const char*>(data), size-1);
+                    client.binary = QString::fromUtf8(static_cast<const char*>(data),
+                                                      static_cast<int>(size) - 1);
                 }
             }
             if (pa_proplist_contains(i->proplist, PA_PROP_APPLICATION_ICON_NAME)) {
                 const void* data; size_t size;
                 if (pa_proplist_get(i->proplist, PA_PROP_APPLICATION_ICON_NAME, &data, &size) >= 0) {
-                    client.icon = QString::fromUtf8(static_cast<const char*>(data), size-1);
+                    client.icon = QString::fromUtf8(static_cast<const char*>(data),
+                                                    static_cast<int>(size) - 1);
                 }
             }
             correctClientName(client);
@@ -3146,16 +3152,17 @@ void PulseDevice::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, cons
     Q_UNUSED(mla);
     Q_UNUSED(userdata);
 
-    //qDebug() << "timeEventCallback";
-
     auto worker = ContentServerWorker::instance();
     if (worker->pulseDev) {
         if (worker->pulseItems.isEmpty()) {
             worker->stopPulse();
             return;
         } else if (!stream) {
-            // sending null data to connected device because no sink is connected
-            const size_t size = (0.7f * sampleSpec.rate * sampleSpec.channels);
+            // sending null data to connected device because there is no valid
+            // source of audio (no valid sink input)
+            // timer event is triggered every 0.5s, but 0.7 of needed data is sent
+            // to bypass buffering on the client side
+            const auto size = static_cast<int>(0.7f * sampleSpec.rate * sampleSpec.channels);
             worker->writePulseData(nullptr, size);
         }
 
@@ -3263,9 +3270,17 @@ void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)
     QDataStream sw(data, QIODevice::WriteOnly);
     sw.setByteOrder(le ? QDataStream::LittleEndian : QDataStream::BigEndian);
     int16_t sample; // assuming 16-bit LPCM sample
+
     while (!sr.atEnd()) {
         sr >> sample;
-        sample = static_cast<int16_t>(sample * factor);
+        int32_t s = factor * static_cast<int32_t>(sample);
+        if (s > std::numeric_limits<int16_t>::max()) {
+            sample = std::numeric_limits<int16_t>::max();
+        } else if (s < std::numeric_limits<int16_t>::min()) {
+            sample = std::numeric_limits<int16_t>::min();
+        } else {
+            sample = static_cast<int16_t>(s);
+        }
         sw << sample;
     }
 }
@@ -3278,8 +3293,11 @@ void ContentServerWorker::writePulseData(const void *data, int size)
         if (data) {
             // deep copy :-(
             d = QByteArray(static_cast<const char*>(data), size);
-            // BE for PCM, LE for MP3
-            adjustVolume(&d, 2.5f, PulseDevice::mode > 1 ? false : true);
+#ifdef SAILFISH
+            // increasing volume level only in SFOS
+            // endianness: BE for PCM, LE for MP3            
+            adjustVolume(&d, 2.4f, PulseDevice::mode > 1 ? false : true);
+#endif
         } else {
             // writing null data
             d = QByteArray(size,'\0'); // null data
@@ -3339,7 +3357,7 @@ bool PulseDevice::initLame()
         // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
         lame_set_brate(lame_gfp, mode == 0 ? 128 : 96);
         lame_set_num_channels(lame_gfp, PulseDevice::sampleSpec.channels);
-        lame_set_in_samplerate(lame_gfp, PulseDevice::sampleSpec.rate);
+        lame_set_in_samplerate(lame_gfp, static_cast<int>(PulseDevice::sampleSpec.rate));
         lame_set_mode(lame_gfp, STEREO);
         lame_set_quality(lame_gfp, 7);
         if (lame_init_params(lame_gfp) < 0) {
