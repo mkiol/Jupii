@@ -2050,7 +2050,7 @@ ContentServer::makeMicItemMeta(const QUrl &url)
     //meta.artist = "Jupii";
 
 #ifdef SAILFISH
-    meta.albumArt = IconProvider::pathToId("icon-l-mic-cover");
+    meta.albumArt = IconProvider::pathToId("icon-x-mic-cover");
 #endif
 
     return metaCache.insert(url, meta);
@@ -2097,7 +2097,7 @@ ContentServer::makePulseItemMeta(const QUrl &url)
     meta.title = tr("Audio output");
 
 #ifdef SAILFISH
-    meta.albumArt = IconProvider::pathToId("icon-l-pulse-cover");
+    meta.albumArt = IconProvider::pathToId("icon-x-pulse-cover");
 #endif
 
     return metaCache.insert(url, meta);
