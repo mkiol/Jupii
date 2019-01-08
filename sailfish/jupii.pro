@@ -66,7 +66,8 @@ TRANSLATIONS += \
     translations/harbour-jupii-ru.ts \
     translations/harbour-jupii-de.ts \
     translations/harbour-jupii-sv.ts \
-    translations/harbour-jupii-es.ts
+    translations/harbour-jupii-es.ts \
+    translations/harbour-jupii-zh_CN.ts
 
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images

@@ -78,7 +78,7 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "Åke Engelbrektson \nCarlos Gonzalez \nd9h20f \nВячеслав Диконов \ndrosjesjaafoer"
+                text: "Åke Engelbrektson \nCarlos Gonzalez \nd9h20f \nВячеслав Диконов \ndrosjesjaafoer \nrui kon"
             }
 
             PaddedLabel {
