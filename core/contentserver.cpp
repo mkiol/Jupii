@@ -2718,10 +2718,6 @@ pa_sample_spec PulseDevice::sampleSpec = {PA_SAMPLE_INVALID, 0, 0};
 int PulseDevice::mode = 0;
 pa_stream* PulseDevice::stream = nullptr;
 uint32_t PulseDevice::connectedSinkInput = PA_INVALID_INDEX;
-#ifdef SAILFISH
-uint32_t PulseDevice::nullSink = PA_INVALID_INDEX;
-uint32_t PulseDevice::primarySink = PA_INVALID_INDEX;
-#endif
 pa_mainloop* PulseDevice::ml = nullptr;
 pa_mainloop_api* PulseDevice::mla = nullptr;
 pa_context* PulseDevice::ctx = nullptr;
@@ -2784,12 +2780,6 @@ void PulseDevice::subscriptionCallback(pa_context *ctx, pa_subscription_event_ty
             qDebug() << "Removing pulse-audio client:" << idx;
             clients.remove(idx);
         }
-#ifdef SAILFISH
-    } else if (facility == PA_SUBSCRIPTION_EVENT_SINK) {
-        if (type == PA_SUBSCRIPTION_EVENT_NEW || type == PA_SUBSCRIPTION_EVENT_CHANGE) {
-            pa_operation_unref(pa_context_get_sink_info_by_index(ctx, idx, sinkInfoCallback, nullptr));
-        }
-#endif
     }
 }
 
@@ -2801,9 +2791,6 @@ void PulseDevice::successSubscribeCallback(pa_context *ctx, int success, void *u
     if (success) {
          pa_operation_unref(pa_context_get_client_info_list(ctx, clientInfoCallback, nullptr));
          pa_operation_unref(pa_context_get_sink_input_info_list(ctx, sinkInputInfoCallback, nullptr));
-#ifdef SAILFISH
-         pa_operation_unref(pa_context_get_sink_info_list(ctx, sinkInfoCallback, nullptr));
-#endif
     }
 }
 
@@ -2824,16 +2811,9 @@ void PulseDevice::stateCallback(pa_context *ctx, void *userdata)
             break;
         case PA_CONTEXT_READY: {
             qDebug() << "Pulse-audio ready";
-#ifdef SAILFISH
-            auto mask = static_cast<pa_subscription_mask_t>(
-                        PA_SUBSCRIPTION_MASK_SINK_INPUT|
-                        PA_SUBSCRIPTION_MASK_CLIENT|
-                        PA_SUBSCRIPTION_MASK_SINK);
-#else
             auto mask = static_cast<pa_subscription_mask_t>(
                         PA_SUBSCRIPTION_MASK_SINK_INPUT|
                         PA_SUBSCRIPTION_MASK_CLIENT);
-#endif
             pa_operation_unref(pa_context_subscribe(
                                    ctx, mask, successSubscribeCallback, nullptr));
             break;
@@ -2896,13 +2876,11 @@ void PulseDevice::stopRecordStream()
 void PulseDevice::muteConnectedSinkInput()
 {
 #ifdef SAILFISH
-    qDebug() << "Mute:";
-    qDebug() << "  sink input:" << connectedSinkInput;
-    qDebug() << "  null sink:" << nullSink;
-    if (!muted && connectedSinkInput != PA_INVALID_INDEX && nullSink != PA_INVALID_INDEX) {
+    if (!muted && connectedSinkInput != PA_INVALID_INDEX) {
         qDebug() << "Muting sink input by moving it to null sink";
-        pa_operation_unref(pa_context_move_sink_input_by_index(
-                               ctx, connectedSinkInput, nullSink, nullptr, nullptr));
+        pa_operation_unref(pa_context_move_sink_input_by_name(
+                               ctx, connectedSinkInput, "sink.null",
+                               nullptr, nullptr));
         muted = true;
     } else {
         qDebug() << "Cannot mute";
@@ -2913,14 +2891,12 @@ void PulseDevice::muteConnectedSinkInput()
 void PulseDevice::unmuteConnectedSinkInput()
 {
 #ifdef SAILFISH
-    qDebug() << "Unmute:";
-    qDebug() << "  sink input:" << connectedSinkInput;
-    qDebug() << "  primary sink:" << primarySink;
-    if (connectedSinkInput != PA_INVALID_INDEX && primarySink != PA_INVALID_INDEX &&
+    if (connectedSinkInput != PA_INVALID_INDEX &&
             sinkInputs.contains(connectedSinkInput)) {
         qDebug() << "Unmuting sink input by moving it to primary sink";
-        pa_operation_unref(pa_context_move_sink_input_by_index(
-                               ctx, connectedSinkInput, primarySink, nullptr, nullptr));
+        pa_operation_unref(pa_context_move_sink_input_by_name(
+                               ctx, connectedSinkInput, "sink.primary",
+                               nullptr, nullptr));
     } else {
         qDebug() << "Cannot unmute";
     }
@@ -3121,31 +3097,6 @@ void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, i
         }
     }
 }
-
-#ifdef SAILFISH
-void PulseDevice::sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, int eol, void *userdata)
-{
-    Q_ASSERT(ctx);
-    Q_UNUSED(userdata);
-
-    if (!eol) {
-        qDebug() << "sinkInfoCallback:";
-        qDebug() << "  index:" << i->index;
-        qDebug() << "  name:" << i->name;
-        if (!strcmp(i->name, "sink.null")) {
-            if (nullSink != i->index) {
-                qDebug() << "Null sink index changed";
-                nullSink = i->index;
-            }
-        } else if (!strcmp(i->name, "sink.primary")) {
-            if (primarySink != i->index) {
-                qDebug() << "Primary sink index changed";
-                primarySink = i->index;
-            }
-        }
-    }
-}
-#endif
 
 void PulseDevice::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata)
 {

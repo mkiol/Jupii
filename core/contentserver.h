@@ -376,23 +376,18 @@ public:
         QString icon;
     };
 
-    const static long timerDelta; // micro seconds
+    static const long timerDelta; // micro seconds
 
     static pa_sample_spec sampleSpec;
     static bool timerActive;
     static bool muted;
     static pa_stream *stream;
     static uint32_t connectedSinkInput;
-#ifdef SAILFISH
-    static uint32_t nullSink;
-    static uint32_t primarySink;
-#endif
     static pa_mainloop *ml;
     static pa_mainloop_api *mla;
     static pa_context *ctx;
     static QHash<uint32_t, PulseDevice::Client> clients;
     static QHash<uint32_t, PulseDevice::SinkInput> sinkInputs;
-    //static void sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, int eol, void *userdata);
     static void subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata);
     static void stateCallback(pa_context *ctx, void *userdata);
     static void successSubscribeCallback(pa_context *ctx, int success, void *userdata);
@@ -402,9 +397,6 @@ public:
     static void exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e, int sig, void *userdata);
     static void sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata);
     static void clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata);
-#ifdef SAILFISH
-    static void sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, int eol, void *userdata);
-#endif
     static void timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata);
     static void discoverStream();
     static bool init();
