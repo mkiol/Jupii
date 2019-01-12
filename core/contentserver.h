@@ -267,6 +267,7 @@ class ContentServerWorker :
 #endif
 public:
     static ContentServerWorker* instance(QObject *parent = nullptr);
+    static void adjustVolume(QByteArray *data, float factor, bool le = true);
     QHttpServer* server;
     QNetworkAccessManager* nam;
 
@@ -338,7 +339,6 @@ private:
     void processShoutcastMetadata(QByteArray &data, ProxyItem &item);
     void updatePulseStreamName(const QString& name);
     void writePulseData(const void *data, int size);
-    void adjustVolume(QByteArray *data, float factor, bool le = true);
 };
 
 class MicDevice : public QIODevice

@@ -2615,27 +2615,14 @@ qint64 MicDevice::writeData(const char* data, qint64 maxSize)
 
     if (!worker->micItems.isEmpty()) {
         QByteArray d = QByteArray::fromRawData(data, static_cast<int>(maxSize));
-        QByteArray d2;
 
         float volume = Settings::instance()->getMicVolume();
         if (volume != 1.0f) {
-            // changing mic volume
-            QDataStream sr(&d, QIODevice::ReadOnly);
-            sr.setByteOrder(QDataStream::BigEndian);
-            QDataStream sw(&d2, QIODevice::WriteOnly);
-            sw.setByteOrder(QDataStream::BigEndian);
-
-            qint16 sample;
-            while (!sr.atEnd()) {
-                sr >> sample;
-                sample = static_cast<qint16>(sample * volume);
-                sw << sample;
-            }
+            ContentServerWorker::adjustVolume(&d, volume, false);
         }
 
         auto i = worker->micItems.begin();
         while (i != worker->micItems.end()) {
-            //qDebug() << "Mic item, remote addr:" << i->req->remoteAddress();
             if (!i->resp->isHeaderWritten()) {
                 qWarning() << "Head not written";
                 i->resp->end();
@@ -2646,7 +2633,7 @@ qint64 MicDevice::writeData(const char* data, qint64 maxSize)
                 i = worker->micItems.erase(i);
             } else {
                 if (active) {
-                    i->resp->write(d2.isEmpty() ? d : d2);
+                    i->resp->write(d);
                 } else {
                     qDebug() << "Mic dev is not active, so disconnecting server request";
                     i->resp->end();
