@@ -32,7 +32,7 @@ Tracker::Tracker(QObject *parent) :
                    QStandardPaths::GenericCacheLocation))
 {
     if (!createTrackerInf())
-        qWarning() << "Can't create Tracker Dbus interface";
+        qWarning() << "Cannot create Tracker Dbus interface";
 }
 
 Tracker* Tracker::instance(QObject *parent)
@@ -49,7 +49,7 @@ bool Tracker::createUnixPipe(int &readFd, int &writeFd)
     int fds[2];
 
     if (::pipe(fds) < 0) {
-        qWarning() << "Can't create Unix pipe";
+        qWarning() << "Cannot create Unix pipe";
         return false;
     }
 
@@ -79,7 +79,7 @@ bool Tracker::query(const QString &query, bool emitSignal)
     int readFd, writeFd;
 
     if (!createUnixPipe(readFd, writeFd)) {
-        qWarning() << "Can't create Unix pipe";
+        qWarning() << "Cannot create Unix pipe";
         emit queryError();
         return false;
     }
@@ -176,7 +176,7 @@ bool Tracker::createTrackerInf()
                     bus);
 
         if (!m_tracker_inf->isValid()) {
-            qWarning() << "Tracker interface can't be created";
+            qWarning() << "Tracker interface cannot be created";
             delete m_tracker_inf;
             m_tracker_inf = nullptr;
             return false;

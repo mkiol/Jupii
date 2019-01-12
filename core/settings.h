@@ -35,7 +35,6 @@ class Settings:
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
     Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
-    Q_PROPERTY (bool pulseSupported READ getPulseSupported WRITE setPulseSupported NOTIFY pulseSupportedChanged)
     Q_PROPERTY (int pulseMode READ getPulseMode WRITE setPulseMode NOTIFY pulseModeChanged)
 
 public:
@@ -52,9 +51,6 @@ public:
 
     void setImageSupported(bool value);
     bool getImageSupported();
-
-    void setPulseSupported(bool value);
-    bool getPulseSupported();
 
     void setPulseMode(int value);
     int getPulseMode();

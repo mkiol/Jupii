@@ -124,8 +124,7 @@ Page {
             }
 
             SimpleListItem {
-                visible: settings.pulseSupported
-                title.text: qsTr("Audio output")
+                title.text: qsTr("Audio capture")
                 icon.source: "image://theme/icon-m-speaker?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
 

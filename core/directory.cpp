@@ -37,7 +37,7 @@ void Directory::init()
     QString ifname, addr;
 
     if (!u->getNetworkIf(ifname, addr)) {
-        qWarning() << "Can't find valid network interface";
+        qWarning() << "Cannot find valid network interface";
         setInited(false);
         emit error(1);
         return;
@@ -48,7 +48,7 @@ void Directory::init()
     );
 
     if (m_lib == 0) {
-        qWarning() << "Can't initialize UPnPP lib";
+        qWarning() << "Cannot initialize UPnPP lib";
         setInited(false);
         emit error(2);
         return;
@@ -63,7 +63,7 @@ void Directory::init()
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(4);
 
     if (m_directory == 0) {
-        qWarning() << "Can't initialize UPnPP directory";
+        qWarning() << "Cannot initialize UPnPP directory";
         setInited(false);
         emit error(3);
         return;
@@ -95,7 +95,7 @@ void Directory::discover(const QString& ssdpIp)
     }
 
     if (!Utils::instance()->checkNetworkIf()) {
-        qWarning() << "Can't find valid network interface";
+        qWarning() << "Cannot find valid network interface";
         setInited(false);
         return;
     }
@@ -255,7 +255,7 @@ bool Directory::getServiceDesc(const QString& deviceId, const QString& serviceId
         return true;
     }
 
-    qWarning() << "Can't find device" << deviceId << "with service" << serviceId;
+    qWarning() << "Cannot find device" << deviceId << "with service" << serviceId;
 
     return false;
 }
@@ -268,7 +268,7 @@ bool Directory::getDeviceDesc(const QString& deviceId, UPnPClient::UPnPDeviceDes
         return true;
     }
 
-    qWarning() << "Can't find device" << deviceId;
+    qWarning() << "Cannot find device" << deviceId;
 
     return false;
 }

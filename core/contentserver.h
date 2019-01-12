@@ -21,6 +21,7 @@
 #include <QMutex>
 #include <QIODevice>
 #include <QAudioInput>
+#include <QEventLoop>
 #include <memory>
 #include <cstddef>
 
@@ -58,7 +59,7 @@ extern "C" {
 class ContentServerWorker;
 class MicDevice;
 #ifdef PULSE
-class PulseDevice;
+class Pulse;
 #endif
 
 class ContentServer :
@@ -262,7 +263,7 @@ class ContentServerWorker :
     Q_OBJECT
     friend MicDevice;
 #ifdef PULSE
-    friend PulseDevice;
+    friend Pulse;
 #endif
 public:
     static ContentServerWorker* instance(QObject *parent = nullptr);
@@ -274,6 +275,9 @@ signals:
     void pulseStreamUpdated(const QUrl &id, const QString& name);
     void itemAdded(const QUrl &id);
     void itemRemoved(const QUrl &id);
+#ifdef PULSE
+    void startPulse();
+#endif
 
 private slots:
     void proxyMetaDataChanged();
@@ -284,8 +288,6 @@ private slots:
     void stopMic();
     void responseForMicDone();
 #ifdef PULSE
-    void startPulse();
-    void stopPulse();
     void responseForPulseDone();
 #endif
     void responseForUrlDone();
@@ -316,9 +318,6 @@ private:
 
     std::unique_ptr<QAudioInput> micInput;
     std::unique_ptr<MicDevice> micDev;
-#ifdef PULSE
-    std::unique_ptr<PulseDevice> pulseDev;
-#endif
 
     QHash<QNetworkReply*, ProxyItem> proxyItems;
     QHash<QHttpResponse*, QNetworkReply*> responseToReplyMap;
@@ -359,10 +358,18 @@ private:
 };
 
 #ifdef PULSE
-class PulseDevice : public QObject
+class Pulse
 {
-    Q_OBJECT
 public:
+    static int mode;
+    static pa_sample_spec sampleSpec;
+    static bool inited();
+    static void startLoop(QEventLoop &qtLoop);
+    static void stopLoop();
+    static void discoverStream();
+    static bool encode(void *in_data, int in_size,
+                       void **out_data, int *out_size);
+private:
     struct SinkInput {
         uint32_t idx = PA_INVALID_INDEX;
         uint32_t clientIdx = PA_INVALID_INDEX;
@@ -375,10 +382,10 @@ public:
         QString binary;
         QString icon;
     };
-
     static const long timerDelta; // micro seconds
-
-    static pa_sample_spec sampleSpec;
+    static lame_global_flags *lame_gfp;
+    static int lame_buf_size;
+    static uint8_t *lame_buf;
     static bool timerActive;
     static bool muted;
     static pa_stream *stream;
@@ -386,20 +393,18 @@ public:
     static pa_mainloop *ml;
     static pa_mainloop_api *mla;
     static pa_context *ctx;
-    static QHash<uint32_t, PulseDevice::Client> clients;
-    static QHash<uint32_t, PulseDevice::SinkInput> sinkInputs;
+    static QHash<uint32_t, Pulse::Client> clients;
+    static QHash<uint32_t, Pulse::SinkInput> sinkInputs;
     static void subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata);
     static void stateCallback(pa_context *ctx, void *userdata);
     static void successSubscribeCallback(pa_context *ctx, int success, void *userdata);
     static void streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata);
     static bool startRecordStream(pa_context *ctx, uint32_t si);
     static void stopRecordStream();
-    static void exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e, int sig, void *userdata);
+    //static void exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e, int sig, void *userdata);
     static void sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata);
     static void clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata);
     static void timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata);
-    static void discoverStream();
-    static bool init();
     static bool startTimer();
     static void stopTimer();
     static void restartTimer(pa_time_event *e, const struct timeval *tv);
@@ -408,17 +413,9 @@ public:
     static bool isBlacklisted(const char* name);
     static void correctClientName(Client &client);
     static QString subscriptionEventToStr(pa_subscription_event_type_t t);
-    static QList<PulseDevice::Client> activeClients();
-    static int mode;
-    static bool isInited();
-    static bool encode(void *in_data, int in_size,
-                       void **out_data, int *out_size);
-    PulseDevice(QObject *parent = nullptr);
-
-private:
-    static lame_global_flags *lame_gfp;
-    static int lame_buf_size;
-    static uint8_t *lame_buf;
+    static QList<Pulse::Client> activeClients();
+    static bool init();
+    static void deinit();
     static bool initLame();
     static void deinitLame();
 };

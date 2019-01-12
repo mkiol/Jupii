@@ -425,10 +425,11 @@
   </action>
   <action name="actionPulse">
    <property name="icon">
-    <iconset theme="audio-speakers"/>
+    <iconset theme="audio-speakers">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Audio output</string>
+    <string>Audio capture</string>
    </property>
   </action>
  </widget>

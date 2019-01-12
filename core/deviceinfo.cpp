@@ -22,7 +22,7 @@ void DeviceInfo::setUdn(const QString& value)
             m_udn = value;
             emit dataChanged();
         } else {
-            qWarning() << "Can't find device description";
+            qWarning() << "Cannot find device description";
         }
     }
 }

@@ -536,7 +536,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
     }
 
     if (!Utils::instance()->checkNetworkIf()) {
-        qWarning() << "Can't find valid network interface";
+        qWarning() << "Cannot find valid network interface";
         emit error(E_LostConnection);
         return;
     }
@@ -558,7 +558,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 
         if (do_current) {
             if (!cs->getContentUrl(cid, cURL, cmeta, m_currentURI)) {
-                qWarning() << "Id" << cid << "can't be converted to URL";
+                qWarning() << "Id" << cid << "cannot be converted to URL";
                 emit error(E_InvalidPath);
                 return;
             }
@@ -575,7 +575,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 
         if (do_next) {
             if (!cs->getContentUrl(nid, nURL, nmeta, m_nextURI)) {
-                qWarning() << "Id" << nid << "can't be converted to URL";
+                qWarning() << "Id" << nid << "cannot be converted to URL";
                 emit error(E_InvalidPath);
                 return;
             }

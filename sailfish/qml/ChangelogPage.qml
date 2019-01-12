@@ -31,8 +31,8 @@ Page {
             }
 
             LogItem {
-                title: "Audio output stream encoded to MP3 format"
-                description: "By default captured audio output stream will be encoded to MP3 format. " +
+                title: "Audio capture stream encoded to MP3 format"
+                description: "By default captured audio stream will be encoded to MP3 format. " +
                              "Encoding adds extra delay comparing to uncommpressed stream but it is " +
                              "much more efficient for overall performance. " +
                              "A stream format/quality can be changed in the settings (Experiments section). "
@@ -43,16 +43,12 @@ Page {
             }
 
             LogItem {
-                title: "Capture audio output"
+                title: "Audio capture of any application"
                 description: "This option enables capturing the audio output of any application. " +
                              "It provides similar functionality to pulseaudio-dlna server. It means that " +
-                             "Jupii can stream certain application's PulseAudio playback to an UPnP/DLNA device. " +
+                             "Jupii can stream certain application's audio playback to an UPnP/DLNA device. " +
                              "For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. " +
-                             "Be aware that currently audio stream is sent uncompressed, " +
-                             "therefore significant network bandwidth will be consumed and " +
-                             "likely your battery drain will increase. " +
-                             "This feature is not enabled by default, " +
-                             "it must be activated in the settings (Experiments section)."
+                             "You can enable audio capturing by adding \"Audio capture\" from \"Add item\" menu."
             }
 
             SectionHeader {

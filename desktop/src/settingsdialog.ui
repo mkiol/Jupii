@@ -80,18 +80,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="pulseCheckBox">
-           <property name="text">
-            <string>Capture audio output</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <layout class="QHBoxLayout" name="pulseModeLayout">
            <item>
             <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>Audio output format</string>
+              <string>Audio capture format</string>
              </property>
             </widget>
            </item>

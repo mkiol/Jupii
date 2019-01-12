@@ -202,7 +202,7 @@ bool Utils::writeToFile(const QString &path, const QByteArray &data, bool del)
             f.write(data);
             f.close();
         } else {
-            qWarning() << "Can't open file" << f.fileName() <<
+            qWarning() << "Cannott open file" << f.fileName() <<
                           "for writing (" + f.errorString() + ")";
             return false;
         }
@@ -252,7 +252,7 @@ bool Utils::readFromCacheFile(const QString &filename, QByteArray &data)
             f.close();
             return true;
         } else {
-            qWarning() << "Can't open file" << f.fileName() <<
+            qWarning() << "Cannot open file" << f.fileName() <<
                           "for reading (" + f.errorString() + ")";
         }
     } else {

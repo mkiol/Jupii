@@ -31,14 +31,14 @@ SomafmModel::SomafmModel(QObject *parent) :
 
     QFile f(jfile);
     if (!f.exists() || !f.open(QIODevice::ReadOnly)) {
-        qWarning() << "File" << jfile << "can't be opened";
+        qWarning() << "File" << jfile << "cannot be opened";
         return;
     }
 
     auto doc = QJsonDocument::fromJson(f.readAll());
     f.close();
     if (doc.isEmpty() || !doc.isObject()) {
-        qWarning() << "Can't parse json file" << jfile;
+        qWarning() << "Cannot parse json file" << jfile;
         return;
     }
 

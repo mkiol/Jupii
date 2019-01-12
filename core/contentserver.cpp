@@ -11,7 +11,6 @@
 #include <QImage>
 #include <QThread>
 #include <QNetworkRequest>
-#include <QEventLoop>
 #include <QTextStream>
 #include <QRegExp>
 #include <QTimer>
@@ -271,36 +270,6 @@ void ContentServerWorker::responseForPulseDone()
         }
     }
 }
-
-void ContentServerWorker::startPulse()
-{
-    if (PulseDevice::isInited()) {
-        qDebug() << "Starting pulse device";
-        if (!pulseDev)
-            pulseDev = std::unique_ptr<PulseDevice>(new PulseDevice(this));
-        PulseDevice::startTimer();
-        PulseDevice::discoverStream();
-    } else {
-        qWarning() << "Pulse-audio is not inited";
-    }
-}
-
-void ContentServerWorker::stopPulse()
-{
-    if (PulseDevice::isInited()) {
-        qDebug() << "Stopping pulse device";
-        if (pulseDev) {
-            // TODO: fix "PulseDevice::m_instance"
-            PulseDevice::stopRecordStream();
-            PulseDevice::stopTimer();
-            pulseDev.reset(nullptr);
-        } else {
-            qDebug() << "Pulse device doesn't exist";
-        }
-    } else {
-        qWarning() << "Pulse-audio is not inited";
-    }
-}
 #endif
 
 void ContentServerWorker::startMic()
@@ -377,7 +346,7 @@ void ContentServerWorker::requestForFileHandler(const QUrl &id,
 
         streamFile(data.path, data.mime, req, resp);
 #else
-        qWarning() << "Video content and type is audio => can't extract audio "
+        qWarning() << "Video content and type is audio => cannot extract audio "
                       "because ffmpeg is disabled";
 #endif
     } else {
@@ -508,7 +477,7 @@ void ContentServerWorker::requestForPulseHandler(const QUrl &id,
         pulseItems.append(item);
         emit itemAdded(item.id);
         connect(resp, &QHttpResponse::done, this, &ContentServerWorker::responseForPulseDone);
-        startPulse();
+        emit startPulse();
     }
 #else
     Q_UNUSED(meta)
@@ -2067,8 +2036,8 @@ ContentServer::makePulseItemMeta(const QUrl &url)
     // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
     // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
     // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
-    PulseDevice::mode = mode;
-    PulseDevice::sampleSpec = {
+    Pulse::mode = mode;
+    Pulse::sampleSpec = {
         mode > 1 ? PA_SAMPLE_S16BE : PA_SAMPLE_S16LE,
         mode > 2 ? 22050u : 44100u,
         2
@@ -2077,8 +2046,8 @@ ContentServer::makePulseItemMeta(const QUrl &url)
     ContentServer::ItemMeta meta;
     meta.valid = true;
     meta.url = url;
-    meta.channels = PulseDevice::sampleSpec.channels;
-    meta.sampleRate = PulseDevice::sampleSpec.rate;
+    meta.channels = Pulse::sampleSpec.channels;
+    meta.sampleRate = Pulse::sampleSpec.rate;
     if (mode > 1) {
         meta.mime = QString("audio/L%1;rate=%2;channels=%3")
                 .arg(ContentServer::pulseSampleSize)
@@ -2094,7 +2063,7 @@ ContentServer::makePulseItemMeta(const QUrl &url)
     meta.local = true;
     meta.seekSupported = false;
 
-    meta.title = tr("Audio output");
+    meta.title = tr("Audio capture");
 
 #ifdef SAILFISH
     meta.albumArt = IconProvider::pathToId("icon-x-pulse-cover");
@@ -2354,12 +2323,6 @@ ContentServer::makeItemMeta(const QUrl &url)
     return it;
 }
 
-/*QString ContentServer::makePlaylistForUrl(const QUrl &url)
-{
-    return QString("[playlist]\nnumberofentries=1\nFile1=%1\nTitle1=Test\nLength1=-1")
-            .arg(url.toString());
-}*/
-
 void ContentServer::run()
 {
     qDebug() << "Creating content server worker in thread:"
@@ -2372,34 +2335,26 @@ void ContentServer::run()
     connect(worker, &ContentServerWorker::itemRemoved, this, &ContentServer::itemRemovedHandler);
 
 #ifdef PULSE
-    if (Settings::instance()->getPulseSupported()) {
-        // Pulse audio loop
-        qDebug() << "Starting pulse-audio module";
-        if (PulseDevice::init()) {
-            QEventLoop qtLoop;
-            // TODO: Loop exit
-            int ret = 0;
-            while (!ret) {
-                while (pa_mainloop_iterate(PulseDevice::ml, 0, &ret) > 0)
-                    continue;
-                qtLoop.processEvents();
-            }
-
-            qWarning() << "Disconnecting pulse-audio";
-            pa_context_disconnect(PulseDevice::ctx);
-            pa_context_unref(PulseDevice::ctx);
-            pa_mainloop_free(PulseDevice::ml);
-            return;
+    QEventLoop qtLoop;
+    connect(worker, &ContentServerWorker::startPulse, [&qtLoop]{
+        if (qtLoop.isRunning()) {
+            qtLoop.exit();
         } else {
-            qWarning() << "Cannot start pulse-audio module";
+            qWarning() << "Start pulse request but possibly PA loop is already active";
+            // re-discovering to update stream title
+            Pulse::discoverStream();
         }
+    });
+    while (true) {
+        qDebug() << "Starting worker QT event loop";
+        qtLoop.exec();
+        qDebug() << "Starting worker PA event loop";
+        Pulse::startLoop(qtLoop);
     }
-#endif
-
-    // TODO: Loop exit
+#else
     QThread::exec();
-    qDebug() << "Content server worker event loop exit in thread:"
-             << QThread::currentThreadId();
+#endif
+    qDebug() << "Ending worker event loop";
 }
 
 QString ContentServer::streamTitle(const QUrl &id) const
@@ -2708,23 +2663,23 @@ qint64 MicDevice::writeData(const char* data, qint64 maxSize)
 }
 
 #ifdef PULSE
-lame_global_flags* PulseDevice::lame_gfp = nullptr;
-uint8_t* PulseDevice::lame_buf = nullptr;
-int PulseDevice::lame_buf_size = 0;
-const long PulseDevice::timerDelta = 500000l; // micro seconds
-bool PulseDevice::timerActive = false;
-bool PulseDevice::muted = false;
-pa_sample_spec PulseDevice::sampleSpec = {PA_SAMPLE_INVALID, 0, 0};
-int PulseDevice::mode = 0;
-pa_stream* PulseDevice::stream = nullptr;
-uint32_t PulseDevice::connectedSinkInput = PA_INVALID_INDEX;
-pa_mainloop* PulseDevice::ml = nullptr;
-pa_mainloop_api* PulseDevice::mla = nullptr;
-pa_context* PulseDevice::ctx = nullptr;
-QHash<uint32_t, PulseDevice::Client> PulseDevice::clients = QHash<uint32_t, PulseDevice::Client>();
-QHash<uint32_t, PulseDevice::SinkInput> PulseDevice::sinkInputs = QHash<uint32_t, PulseDevice::SinkInput>();
+lame_global_flags* Pulse::lame_gfp = nullptr;
+uint8_t* Pulse::lame_buf = nullptr;
+int Pulse::lame_buf_size = 0;
+const long Pulse::timerDelta = 500000l; // micro seconds
+bool Pulse::timerActive = false;
+bool Pulse::muted = false;
+pa_sample_spec Pulse::sampleSpec = {PA_SAMPLE_INVALID, 0, 0};
+int Pulse::mode = 0;
+pa_stream* Pulse::stream = nullptr;
+uint32_t Pulse::connectedSinkInput = PA_INVALID_INDEX;
+pa_mainloop* Pulse::ml = nullptr;
+pa_mainloop_api* Pulse::mla = nullptr;
+pa_context* Pulse::ctx = nullptr;
+QHash<uint32_t, Pulse::Client> Pulse::clients = QHash<uint32_t, Pulse::Client>();
+QHash<uint32_t, Pulse::SinkInput> Pulse::sinkInputs = QHash<uint32_t, Pulse::SinkInput>();
 
-QString PulseDevice::subscriptionEventToStr(pa_subscription_event_type_t t)
+QString Pulse::subscriptionEventToStr(pa_subscription_event_type_t t)
 {
     auto facility = t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK;
     auto type = t & PA_SUBSCRIPTION_EVENT_TYPE_MASK;
@@ -2755,7 +2710,7 @@ QString PulseDevice::subscriptionEventToStr(pa_subscription_event_type_t t)
     return facility_str + " " + type_str;
 }
 
-void PulseDevice::subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata)
+void Pulse::subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -2783,7 +2738,7 @@ void PulseDevice::subscriptionCallback(pa_context *ctx, pa_subscription_event_ty
     }
 }
 
-void PulseDevice::successSubscribeCallback(pa_context *ctx, int success, void *userdata)
+void Pulse::successSubscribeCallback(pa_context *ctx, int success, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -2794,7 +2749,7 @@ void PulseDevice::successSubscribeCallback(pa_context *ctx, int success, void *u
     }
 }
 
-void PulseDevice::stateCallback(pa_context *ctx, void *userdata)
+void Pulse::stateCallback(pa_context *ctx, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -2829,7 +2784,7 @@ void PulseDevice::stateCallback(pa_context *ctx, void *userdata)
     }
 }
 
-void PulseDevice::streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata)
+void Pulse::streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata)
 {
     Q_ASSERT(stream);
     Q_UNUSED(userdata);
@@ -2861,7 +2816,7 @@ void PulseDevice::streamRequestCallback(pa_stream *stream, size_t nbytes, void *
     pa_stream_drop(stream);
 }
 
-void PulseDevice::stopRecordStream()
+void Pulse::stopRecordStream()
 {
     if (stream) {
         unmuteConnectedSinkInput();
@@ -2873,7 +2828,7 @@ void PulseDevice::stopRecordStream()
     }
 }
 
-void PulseDevice::muteConnectedSinkInput()
+void Pulse::muteConnectedSinkInput()
 {
 #ifdef SAILFISH
     if (!muted && connectedSinkInput != PA_INVALID_INDEX) {
@@ -2888,7 +2843,7 @@ void PulseDevice::muteConnectedSinkInput()
 #endif
 }
 
-void PulseDevice::unmuteConnectedSinkInput()
+void Pulse::unmuteConnectedSinkInput()
 {
 #ifdef SAILFISH
     if (connectedSinkInput != PA_INVALID_INDEX &&
@@ -2904,7 +2859,7 @@ void PulseDevice::unmuteConnectedSinkInput()
 #endif
 }
 
-bool PulseDevice::startRecordStream(pa_context *ctx, uint32_t si)
+bool Pulse::startRecordStream(pa_context *ctx, uint32_t si)
 {
     stopRecordStream();
 
@@ -2934,7 +2889,7 @@ bool PulseDevice::startRecordStream(pa_context *ctx, uint32_t si)
     return false;
 }
 
-void PulseDevice::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata)
+void Pulse::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -2967,43 +2922,39 @@ void PulseDevice::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_inf
     }
 }
 
-void PulseDevice::discoverStream()
+void Pulse::discoverStream()
 {
-    if (isInited()) {
+    if (inited()) {
         auto worker = ContentServerWorker::instance();
-        if (worker->pulseDev) {
-            QHash<uint32_t, SinkInput>::const_iterator i;
-            for (i = sinkInputs.begin(); i != sinkInputs.end(); ++i) {
-                const auto si = i.value();
-                if (!si.corked && clients.contains(si.clientIdx)) {
-                    const auto client = clients.value(si.clientIdx);
-                    bool needUpdate = false;
-                    if (connectedSinkInput != si.idx) {
-                        qDebug() << "Starting recording for:";
-                        qDebug() << "  sink input:" << si.idx << si.name;
-                        qDebug() << "  client:" << client.idx << client.name;
-                        if (startRecordStream(ctx, si.idx))
-                            needUpdate = true;
-                    } else {
-                        qDebug() << "Sink is already connected";
+        QHash<uint32_t, SinkInput>::const_iterator i;
+        for (i = sinkInputs.begin(); i != sinkInputs.end(); ++i) {
+            const auto si = i.value();
+            if (!si.corked && clients.contains(si.clientIdx)) {
+                const auto client = clients.value(si.clientIdx);
+                bool needUpdate = false;
+                if (connectedSinkInput != si.idx) {
+                    qDebug() << "Starting recording for:";
+                    qDebug() << "  sink input:" << si.idx << si.name;
+                    qDebug() << "  client:" << client.idx << client.name;
+                    if (startRecordStream(ctx, si.idx))
                         needUpdate = true;
-                    }
-
-                    if (needUpdate) {
-                        qDebug() << "Updating stream name to name of sink input's client:" << client.name;
-                        worker->updatePulseStreamName(client.name);
-                    } else {
-                        worker->updatePulseStreamName(QString());
-                    }
-
-                    return;
+                } else {
+                    qDebug() << "Sink is already connected";
+                    needUpdate = true;
                 }
-            }
 
-            qDebug() << "No proper pulse-audio sink found";
-        } else {
-            qDebug() << "Pulse dev not created";
+                if (needUpdate) {
+                    qDebug() << "Updating stream name to name of sink input's client:" << client.name;
+                    worker->updatePulseStreamName(client.name);
+                } else {
+                    worker->updatePulseStreamName(QString());
+                }
+
+                return;
+            }
         }
+
+        qDebug() << "No proper pulse-audio sink found";
         worker->updatePulseStreamName(QString());
         stopRecordStream();
     } else {
@@ -3011,9 +2962,9 @@ void PulseDevice::discoverStream()
     }
 }
 
-QList<PulseDevice::Client> PulseDevice::activeClients()
+QList<Pulse::Client> Pulse::activeClients()
 {
-    QList<PulseDevice::Client> list;
+    QList<Pulse::Client> list;
 
     for (auto ci : clients.keys()) {
         for (auto& s : sinkInputs.values()) {
@@ -3027,7 +2978,7 @@ QList<PulseDevice::Client> PulseDevice::activeClients()
     return list;
 }
 
-bool PulseDevice::isBlacklisted(const char* name)
+bool Pulse::isBlacklisted(const char* name)
 {
 #ifdef SAILFISH
     if (!strcmp(name, "ngfd") ||
@@ -3044,7 +2995,7 @@ bool PulseDevice::isBlacklisted(const char* name)
     return false;
 }
 
-void PulseDevice::correctClientName(Client &client)
+void Pulse::correctClientName(Client &client)
 {
 #ifdef SAILFISH
     if (client.name == "CubebUtils" && !client.binary.isEmpty()) {
@@ -3057,7 +3008,7 @@ void PulseDevice::correctClientName(Client &client)
 #endif
 }
 
-void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata)
+void Pulse::clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -3098,15 +3049,15 @@ void PulseDevice::clientInfoCallback(pa_context *ctx, const pa_client_info *i, i
     }
 }
 
-void PulseDevice::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata)
+void Pulse::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata)
 {
     Q_UNUSED(mla);
     Q_UNUSED(userdata);
 
-    auto worker = ContentServerWorker::instance();
-    if (worker->pulseDev) {
+    if (Pulse::inited()) {
+        auto worker = ContentServerWorker::instance();
         if (worker->pulseItems.isEmpty()) {
-            worker->stopPulse();
+            stopLoop();
             return;
         } else if (!stream) {
             // sending null data to connected device because there is no valid
@@ -3121,51 +3072,68 @@ void PulseDevice::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, cons
     }
 }
 
-void PulseDevice::exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e, int sig, void *userdata)
+/*void PulseDevice::exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e, int sig, void *userdata)
 {
     Q_UNUSED(userdata);
     Q_UNUSED(mla);
     Q_UNUSED(e);
     Q_UNUSED(sig);
     qDebug() << "Pulse-audio exit signal";
-}
+}*/
 
-bool PulseDevice::isInited()
+bool Pulse::inited()
 {
     return ml && mla && ctx;
 }
 
-bool PulseDevice::init()
+void Pulse::deinit()
+{
+    if (ctx) {
+        pa_context_disconnect(ctx);
+        pa_context_unref(ctx);
+        ctx = nullptr;
+    }
+    if (ml) {
+        pa_signal_done();
+        pa_mainloop_free(ml);
+        ml = nullptr;
+        mla = nullptr;
+    }
+}
+
+bool Pulse::init()
 {
     ml = pa_mainloop_new();
     mla = pa_mainloop_get_api(ml);
 
-    if (pa_signal_init(mla) < 0) {
+    /*if (pa_signal_init(mla) < 0) {
         qWarning() << "Cannot init pulse-audio signals";
     } else {
         pa_signal_new(SIGINT, exitSignalCallback, nullptr);
-        pa_signal_new(SIGTERM, exitSignalCallback, nullptr);
+        pa_signal_new(SIGTERM, exitSignalCallback, nullptr);*/
 
-        ctx = pa_context_new(mla, Jupii::APP_NAME);
-        if (!ctx) {
-            qWarning() << "New pulse-audio context failed";
+    ctx = pa_context_new(mla, Jupii::APP_NAME);
+    if (!ctx) {
+        qWarning() << "New pulse-audio context failed";
+    } else {
+        pa_context_set_state_callback(ctx, stateCallback, nullptr);
+        pa_context_set_subscribe_callback(ctx, subscriptionCallback, nullptr);
+
+        if (pa_context_connect(ctx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
+            qWarning() << "Cannot connect pulse-audio context:" << pa_strerror(pa_context_errno(ctx));
+        } else if (!initLame()) {
+            pa_context_disconnect(ctx);
         } else {
-            pa_context_set_state_callback(ctx, stateCallback, nullptr);
-            pa_context_set_subscribe_callback(ctx, subscriptionCallback, nullptr);
-
-            if (pa_context_connect(ctx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
-                qWarning() << "Cannot connect pulse-audio context:" << pa_strerror(pa_context_errno(ctx));
-            } else if (!initLame()) {
-                pa_context_disconnect(ctx);
-            } else {
-                qDebug() << "Pulse-audio inited successful";
-                return true;
-            }
-
-            pa_context_unref(ctx);
-            ctx = nullptr;
+            qDebug() << "Pulse-audio inited successful";
+            return true;
         }
+
+        pa_context_unref(ctx);
+        ctx = nullptr;
     }
+
+    /*    pa_signal_done();
+    }*/
 
     pa_mainloop_free(ml);
     ml = nullptr;
@@ -3175,7 +3143,7 @@ bool PulseDevice::init()
     return false;
 }
 
-bool PulseDevice::startTimer()
+bool Pulse::startTimer()
 {
     if (!timerActive) {
         timeval tv; gettimeofday(&tv, nullptr);
@@ -3192,7 +3160,7 @@ bool PulseDevice::startTimer()
     return true;
 }
 
-void PulseDevice::restartTimer(pa_time_event *e, const struct timeval *tv)
+void Pulse::restartTimer(pa_time_event *e, const struct timeval *tv)
 {
     if (timerActive) {
         // restarting timer to current time + timerDelta
@@ -3204,14 +3172,43 @@ void PulseDevice::restartTimer(pa_time_event *e, const struct timeval *tv)
     }
 }
 
-void PulseDevice::stopTimer()
+void Pulse::stopTimer()
 {
     timerActive = false;
 }
 
-PulseDevice::PulseDevice(QObject *parent) :
-    QObject(parent)
+void Pulse::startLoop(QEventLoop &qtLoop)
 {
+    if (init()) {
+        qDebug() << "Starting pulse-audio loop";
+        startTimer();
+
+        int ret = 0;
+        while (true) {
+            while (pa_mainloop_iterate(Pulse::ml, 0, &ret) > 0)
+                continue;
+            if (ret != 0) {
+                qDebug() << "Pulse-audio loop quit:" << ret;
+                break;
+            }
+            qtLoop.processEvents();
+        }
+
+        qDebug() << "Ending pulse-audio loop";
+        deinit();
+    } else {
+        qWarning() << "Cannot start pulse-audio loop";
+    }
+}
+
+void Pulse::stopLoop()
+{
+    if (inited()) {
+        stopRecordStream();
+        stopTimer();
+        qDebug() << "Requesting to stop pulse-audio loop";
+        mla->quit(mla, 10); // 10 = stop request
+    }
 }
 
 void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)
@@ -3247,17 +3244,17 @@ void ContentServerWorker::writePulseData(const void *data, int size)
 #ifdef SAILFISH
             // increasing volume level only in SFOS
             // endianness: BE for PCM, LE for MP3            
-            adjustVolume(&d, 2.4f, PulseDevice::mode > 1 ? false : true);
+            adjustVolume(&d, 2.4f, Pulse::mode > 1 ? false : true);
 #endif
         } else {
             // writing null data
-            d = QByteArray(size,'\0'); // null data
+            d = QByteArray(size,'\0');
         }
 
-        if (PulseDevice::mode < 2) {
+        if (Pulse::mode < 2) {
             // doing MP3 encoding
             void *out_data; int out_size;
-            if (PulseDevice::encode(static_cast<void*>(d.data()), size, &out_data, &out_size)) {
+            if (Pulse::encode(static_cast<void*>(d.data()), size, &out_data, &out_size)) {
                 if (out_size > 0) {
                     // bytes are not copied :-)
                     d = QByteArray::fromRawData(static_cast<const char*>(out_data), out_size);
@@ -3285,18 +3282,25 @@ void ContentServerWorker::writePulseData(const void *data, int size)
             }
         }
     } else {
-        qDebug() << "No pulse items so stopping";
-        stopPulse();
+        qDebug() << "No pulse items, so stopping";
+        Pulse::stopLoop();
     }
 }
 
-void PulseDevice::deinitLame()
+void Pulse::deinitLame()
 {
     qDebug() << "Deiniting LAME encoder";
-    lame_close(lame_gfp);
+    if (lame_gfp) {
+        lame_close(lame_gfp);
+        lame_buf = nullptr;
+    }
+    if (lame_buf) {
+        delete[] lame_buf;
+        lame_buf = nullptr;
+    }
 }
 
-bool PulseDevice::initLame()
+bool Pulse::initLame()
 {
     lame_gfp = lame_init();
     if (!lame_gfp) {
@@ -3307,8 +3311,8 @@ bool PulseDevice::initLame()
         // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
         // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
         lame_set_brate(lame_gfp, mode == 0 ? 128 : 96);
-        lame_set_num_channels(lame_gfp, PulseDevice::sampleSpec.channels);
-        lame_set_in_samplerate(lame_gfp, static_cast<int>(PulseDevice::sampleSpec.rate));
+        lame_set_num_channels(lame_gfp, Pulse::sampleSpec.channels);
+        lame_set_in_samplerate(lame_gfp, static_cast<int>(Pulse::sampleSpec.rate));
         lame_set_mode(lame_gfp, STEREO);
         lame_set_quality(lame_gfp, 7);
         if (lame_init_params(lame_gfp) < 0) {
@@ -3325,10 +3329,10 @@ bool PulseDevice::initLame()
     return false;
 }
 
-bool PulseDevice::encode(void *in_data, int in_size,
+bool Pulse::encode(void *in_data, int in_size,
                          void **out_data, int *out_size)
 {
-    const int nb_samples = in_size/(PulseDevice::sampleSpec.channels * 2);
+    const int nb_samples = in_size/(Pulse::sampleSpec.channels * 2);
     //qDebug() << "nb_samples:" << nb_samples;
     int ret = lame_encode_buffer_interleaved(lame_gfp,
                          static_cast<short int*>(in_data),

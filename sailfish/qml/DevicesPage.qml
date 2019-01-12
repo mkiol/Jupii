@@ -26,7 +26,7 @@ Page {
         onError: {
             switch(code) {
             case 1:
-                notification.show(qsTr("Can't connect to the local network"))
+                notification.show(qsTr("Cannot connect to the local network"))
                 break
             default:
                 notification.show(qsTr("An internal error occurred"))

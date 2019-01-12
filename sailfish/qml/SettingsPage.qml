@@ -82,7 +82,7 @@ Page {
                 }
             }
 
-            TextSwitch {
+            /*TextSwitch {
                 automaticCheck: false
                 checked: settings.pulseSupported
                 text: qsTr("Capture audio output (restart needed)")
@@ -95,7 +95,7 @@ Page {
                 onClicked: {
                     settings.pulseSupported = !settings.pulseSupported
                 }
-            }
+            }*/
 
             ComboBox {
                 // modes:
@@ -103,11 +103,10 @@ Page {
                 // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
                 // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
                 // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
-                label: qsTr("Audio output format (restart needed)")
-                enabled: settings.pulseSupported
-                description: qsTr("Stream format used in audio output capturing. " +
-                                  "The bigger bitrate the quicker battery drain. " +
-                                  "%1 restart is needed to apply changes.").arg(APP_NAME)
+                label: qsTr("Audio capture format")
+                description: qsTr("Stream format used when %1 captures the audio output of other application. " +
+                                  "Uncompressed stream (PCM) results in lower delay but " +
+                                  "the higher bitrate likely will cause quicker battery drain.").arg(APP_NAME)
                 currentIndex: settings.pulseMode
                 menu: ContextMenu {
                     MenuItem { text: qsTr("MP3 44100Hz 128 kbps (default)") }

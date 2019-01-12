@@ -134,7 +134,7 @@ bool Service::init(const QString &deviceId)
 
     UPnPClient::UPnPDeviceDesc ddesc;
     if (!d->getDeviceDesc(deviceId, ddesc)) {
-        qWarning() << "Can't find device description!";
+        qWarning() << "Cannot find device description!";
         return false;
     }
 
@@ -147,7 +147,7 @@ bool Service::init(const QString &deviceId)
     }
 
     if (sdesc.serviceId.empty()) {
-        qWarning() << "Can't find" << QString::fromStdString(type())
+        qWarning() << "Cannot find" << QString::fromStdString(type())
                    << "service description for" << deviceId << "device";
         return false;
     }

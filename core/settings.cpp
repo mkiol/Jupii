@@ -165,11 +165,11 @@ bool Settings::writeDeviceXML(const QString &id, QString& url)
             url = QString::fromStdString(ddesc.URLBase);
             return true;
         } else {
-            qWarning() << "Can't write description file for device" << id;
+            qWarning() << "Cannot write description file for device" << id;
         }
 
     } else {
-        qWarning() << "Can't find device description for" << id;
+        qWarning() << "Cannot find device description for" << id;
     }
 
     return false;
@@ -183,7 +183,7 @@ bool Settings::readDeviceXML(const QString &id, QByteArray& xml)
     if (Utils::readFromCacheFile(filename, xml)) {
         return true;
     } else {
-        qWarning() << "Can't read description file for device" << id;
+        qWarning() << "Cannot read description file for device" << id;
     }
 
     return false;
@@ -270,19 +270,6 @@ void Settings::setImageSupported(bool value)
 bool Settings::getImageSupported()
 {
     return settings.value("imagesupported", false).toBool();
-}
-
-void Settings::setPulseSupported(bool value)
-{
-    if (getPulseSupported() != value) {
-        settings.setValue("pulsesupported", value);
-        emit pulseSupportedChanged();
-    }
-}
-
-bool Settings::getPulseSupported()
-{
-    return settings.value("pulsesupported", false).toBool();
 }
 
 void Settings::setPulseMode(int value)

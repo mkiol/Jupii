@@ -32,11 +32,8 @@ int SettingsDialog::exec()
     ui->allDevicesCheckBox->setCheckState(s->getShowAllDevices() ? Qt::Checked : Qt::Unchecked);
     ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
 #ifdef PULSE
-    ui->pulseCheckBox->setCheckState(s->getPulseSupported() ? Qt::Checked : Qt::Unchecked);
-    ui->pulseModeComboBox->setEnabled(s->getPulseSupported());
     ui->pulseModeComboBox->setCurrentIndex(s->getPulseMode());
 #else
-    ui->pulseCheckBox->setVisible(false);
     ui->pulseModeComboBox->setEnabled(false);
 #endif
     ui->remoteContentModeComboBox->setCurrentIndex(s->getRemoteContentMode());
@@ -71,13 +68,6 @@ void SettingsDialog::on_allDevicesCheckBox_toggled(bool checked)
 {
     auto s = Settings::instance();
     s->setShowAllDevices(checked);
-}
-
-void SettingsDialog::on_pulseCheckBox_toggled(bool checked)
-{
-    auto s = Settings::instance();
-    s->setPulseSupported(checked);
-    ui->pulseModeComboBox->setEnabled(checked);
 }
 
 void SettingsDialog::on_netiInfsComboBox_activated(int index)

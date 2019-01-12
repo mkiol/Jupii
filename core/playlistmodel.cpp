@@ -89,7 +89,7 @@ void PlaylistWorker::run()
                                 qWarning() << "Playlist content is empty";
                             }
                         } else {
-                            qWarning() << "Can't open file" << f.fileName() <<
+                            qWarning() << "Cannot open file" << f.fileName() <<
                                           "for reading (" + f.errorString() + ")";
                         }
                     } else {
@@ -283,7 +283,7 @@ void PlaylistModel::next()
             av->setLocalContent(nid, "");
         }
     } else {
-        qWarning() << "Playlist is empty so can't do next()";
+        qWarning() << "Playlist is empty so cannot do next()";
     }
 }
 
@@ -655,7 +655,7 @@ void PlaylistModel::workerDone()
 
     if (m_worker) {
         if (m_worker->items.length() != m_worker->urls.length()) {
-            qWarning() << "Some urls are invalid and can't be added to the playlist";
+            qWarning() << "Some urls are invalid and cannot be added to the playlist";
             if (m_worker->urls.length() == 1)
                 emit error(E_ItemNotAdded);
             else if (m_worker->items.length() == 0)
