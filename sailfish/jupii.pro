@@ -73,10 +73,6 @@ images.files = images/*
 images.path = /usr/share/$${TARGET}/images
 INSTALLS += images
 
-somafm.files = somafm/*
-somafm.path = /usr/share/$${TARGET}/somafm
-INSTALLS += somafm
-
 DEPENDPATH += $$INCLUDEPATH
 
 OTHER_FILES += \

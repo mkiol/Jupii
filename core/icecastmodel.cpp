@@ -16,7 +16,6 @@
 #include <QDomNodeList>
 #include <QDomText>
 
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <memory>
@@ -78,7 +77,7 @@ void IcecastModel::refresh()
             auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
             auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
             auto err = reply->error();
-            qDebug() << "Response code:" << code << reason << err;
+            //qDebug() << "Response code:" << code << reason << err;
 
             if (err != QNetworkReply::NoError) {
                 qWarning() << "Error:" << err;

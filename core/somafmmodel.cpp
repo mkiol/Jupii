@@ -6,49 +6,196 @@
  */
 
 #include <QDebug>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
 #include <QFile>
 #include <QDir>
 #include <QList>
+#include <QTimer>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
+#include <QDomText>
 
-#ifdef SAILFISH
-#include <sailfishapp.h>
-#endif
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <memory>
 
 #include "somafmmodel.h"
+#include "utils.h"
+
+const QString SomafmModel::m_dirUrl = "https://somafm.com/channels.xml";
+const QString SomafmModel::m_dirFilename = "somafm.xml";
+const QString SomafmModel::m_imageFilename = "somafm_image_";
 
 SomafmModel::SomafmModel(QObject *parent) :
     SelectableItemModel(new SomafmItem, parent)
 {
-    QString jfile;
+    if (Utils::cacheFileExists(m_dirFilename))
+        parseData();
+    else
+        refresh();
+}
 
-#ifdef SAILFISH
-    m_dir = QDir(SailfishApp::pathTo("somafm").toLocalFile());
-    jfile = SailfishApp::pathTo("somafm/somafm.json").toLocalFile();
-#endif
-
-    QFile f(jfile);
-    if (!f.exists() || !f.open(QIODevice::ReadOnly)) {
-        qWarning() << "File" << jfile << "cannot be opened";
-        return;
+bool SomafmModel::parseData()
+{
+    QByteArray data;
+    if (Utils::readFromCacheFile(m_dirFilename, data)) {
+        qDebug() << "Parsing Somafm channels";
+        QDomDocument doc; QString error;
+        if (doc.setContent(data, false, &error)) {
+            m_entries = doc.elementsByTagName("channel");
+            return true;
+        } else {
+            qWarning() << "Parse error:" << error;
+            return false;
+        }
     }
 
-    auto doc = QJsonDocument::fromJson(f.readAll());
-    f.close();
-    if (doc.isEmpty() || !doc.isObject()) {
-        qWarning() << "Cannot parse json file" << jfile;
-        return;
+    qWarning() << "Cannot read somafm data";
+    return false;
+}
+
+bool SomafmModel::isRefreshing()
+{
+    return m_refreshing;
+}
+
+QString SomafmModel::bestImage(const QDomElement& entry)
+{
+    auto image = entry.elementsByTagName("ximage").at(0).toElement().text();
+    if (image.isEmpty()) {
+        image = entry.elementsByTagName("largeimage").at(0).toElement().text();
+        if (image.isEmpty()) {
+            image = entry.elementsByTagName("image").at(0).toElement().text();
+            if (image.isEmpty()) {
+                qWarning() << "Cannot find image for somafm channel";
+            }
+        }
     }
 
-    auto obj = doc.object();
-    if (!obj.contains("channels") || !obj["channels"].isArray()) {
-        qWarning() << "No channels";
-        return;
+    return image;
+}
+
+void SomafmModel::downloadImages()
+{
+    m_imagesToDownload.clear();
+    int l = m_entries.length();
+    for (int i = 0; i < l; ++i) {
+        auto entry = m_entries.at(i).toElement();
+        if (!entry.isNull() && entry.hasAttribute("id")) {
+            auto id = entry.attribute("id");
+            auto image = bestImage(entry);
+            if (!image.isNull())
+                m_imagesToDownload << QPair<QString,QString>(id, image);
+        }
     }
 
-    m_channels = obj["channels"].toArray();
+    downloadImage();
+}
+
+void SomafmModel::downloadImage()
+{
+    if (!m_imagesToDownload.isEmpty()) {
+        auto image = m_imagesToDownload.takeFirst();  // <id, image URL>
+        auto id = image.first;
+
+        QNetworkRequest request;
+        request.setUrl(image.second);
+        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+        if (!nam)
+            nam = std::unique_ptr<QNetworkAccessManager>(new QNetworkAccessManager(this));
+        auto reply = nam->get(request);
+        QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
+        connect(reply, &QNetworkReply::finished, [this, id, reply]{
+            auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+            auto err = reply->error();
+            //qDebug() << "Image download response code:" << code << reason << err;
+
+            if (err != QNetworkReply::NoError) {
+                qWarning() << "Error:" << err;
+            } else if (code > 299 && code < 399) {
+                qWarning() << "Redirection received but unsupported";
+            } else if (code > 299) {
+                qWarning() << "Unsupported response code:" << reply->error() << code << reason;
+            } else {
+                auto data = reply->readAll();
+                if (data.isEmpty()) {
+                    qWarning() << "No data received";
+                } else {
+                    auto filename = m_imageFilename + id;
+                    Utils::writeToCacheFile(filename, data, true);
+                }
+            }
+
+            reply->deleteLater();
+            downloadImage();
+        });
+    } else {
+        finishRefresh();
+    }
+}
+
+void SomafmModel::finishRefresh()
+{
+    m_refreshing = false;
+    emit refreshingChanged();
+    setBusy(false);
+
+    updateModel();
+}
+
+void SomafmModel::refresh()
+{
+    if (!m_refreshing) {
+        setBusy(true);
+        m_refreshing = true;
+        emit refreshingChanged();
+
+        QNetworkRequest request;
+        request.setUrl(m_dirUrl);
+        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+        if (!nam)
+            nam = std::unique_ptr<QNetworkAccessManager>(new QNetworkAccessManager(this));
+        auto reply = nam->get(request);
+        QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
+        connect(reply, &QNetworkReply::finished, [this, reply]{
+            auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+            auto err = reply->error();
+            //qDebug() << "Response code:" << code << reason << err;
+
+            if (err != QNetworkReply::NoError) {
+                qWarning() << "Error:" << err;
+                emit error();
+            } else if (code > 299 && code < 399) {
+                qWarning() << "Redirection received but unsupported";
+                emit error();
+            } else if (code > 299) {
+                qWarning() << "Unsupported response code:" << reply->error() << code << reason;
+                emit error();
+            } else {
+                auto data = reply->readAll();
+                if (data.isEmpty()) {
+                    qWarning() << "No data received";
+                    emit error();
+                } else {
+                    Utils::writeToCacheFile(m_dirFilename, data, true);
+                    if (!parseData()) {
+                        emit error();
+                    } else {
+                        reply->deleteLater();
+                        downloadImages();
+                        return;
+                    }
+                }
+            }
+            reply->deleteLater();
+            finishRefresh();
+        });
+    } else {
+        qWarning() << "Refreshing already active";
+    }
 }
 
 QVariantList SomafmModel::selectedItems()
@@ -74,26 +221,55 @@ QList<ListItem*> SomafmModel::makeItems()
 {
     QList<ListItem*> items;
 
-    for (const auto c : m_channels) {
-        if (c.isObject()) {
-            auto obj = c.toObject();
-            QString title = obj["title"].toString();
-            auto filter = getFilter();
-            if (filter.isEmpty() || title.contains(filter, Qt::CaseInsensitive)) {
-                auto icon = QUrl::fromLocalFile(m_dir.filePath(obj["icon"].toString()));
-                items << new SomafmItem(
-                                obj["id"].toString(),
-                                title,
-                                obj["description"].toString(),
-                                QUrl(obj["url"].toString()),
+    auto filter = getFilter();
+
+    int l = filter.isEmpty() ? 50 : m_entries.length();
+
+    for (int i = 0; i < l; ++i) {
+        auto entry = m_entries.at(i).toElement();
+        if (!entry.isNull() && entry.hasAttribute("id")) {
+            auto id = entry.attribute("id");
+
+            auto name = entry.elementsByTagName("title").at(0).toElement().text();
+            auto desc = entry.elementsByTagName("description").at(0).toElement().text();
+            auto genre = entry.elementsByTagName("genre").at(0).toElement().text();
+            auto dj = entry.elementsByTagName("dj").at(0).toElement().text();
+
+            // getting low bitrate MP3 stream URL
+            QString url;
+            auto urls = entry.elementsByTagName("fastpls");
+            int ul = urls.length();
+            for (int ui = 0; ui < ul; ++ui) {
+                auto ue = urls.at(ui).toElement();
+                if (ue.attribute("format") == "mp3") {
+                    url = ue.text();
+                }
+            }
+
+            if (!url.isEmpty() && !name.isEmpty()) {
+                if (name.contains(filter, Qt::CaseInsensitive) ||
+                    desc.contains(filter, Qt::CaseInsensitive) ||
+                    genre.contains(filter, Qt::CaseInsensitive) ||
+                    dj.contains(filter, Qt::CaseInsensitive)) {
+                    //auto icon = bestImage(entry);
+                    auto icon = QUrl(Utils::pathToCacheFile(m_imageFilename + id));
+                    items << new SomafmItem(
+                                    id, // id
+                                    name, // name
+                                    desc, // desc
+                                    QUrl(url), // url
 #ifdef SAILFISH
-                                icon
+                                    icon
 #else
-                                QIcon(icon.toLocalFile())
+                                    QIcon(icon.toLocalFile())
 #endif
-                            );
+                                );
+                }
             }
         }
+
+        if (items.length() > 49)
+            break;
     }
 
     // Sorting

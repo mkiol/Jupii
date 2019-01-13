@@ -74,6 +74,7 @@ public:
     static bool writeToCacheFile(const QString &filename, const QByteArray &data, bool del = false);
     static bool writeToFile(const QString &path, const QByteArray &data, bool del = false);
     static bool readFromCacheFile(const QString &filename, QByteArray &data);
+    static QString pathToCacheFile(const QString &filename);
     static bool cacheFileExists(const QString &filename);
 
     bool createCacheDir();

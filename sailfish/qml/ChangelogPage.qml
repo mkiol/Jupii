@@ -44,7 +44,7 @@ Page {
 
             LogItem {
                 title: "Audio capture of any application"
-                description: "This option enables capturing the audio output of any application. " +
+                description: "This option enables capturing audio output of any application. " +
                              "It provides similar functionality to pulseaudio-dlna server. It means that " +
                              "Jupii can stream certain application's audio playback to an UPnP/DLNA device. " +
                              "For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. " +

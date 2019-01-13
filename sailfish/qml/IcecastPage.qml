@@ -117,14 +117,14 @@ Dialog {
         }
 
         ViewPlaceholder {
-            enabled: listView.count === 0 && !itemModel.busy
+            enabled: listView.count === 0 && !itemModel.busy && !itemModel.refreshing
             text: qsTr("No stations")
         }
     }
 
     BusyIndicator {
         anchors.centerIn: parent
-        running: itemModel.busy
+        running: itemModel.busy || itemModel.refreshing
         size: BusyIndicatorSize.Large
     }
 

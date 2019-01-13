@@ -38,6 +38,10 @@ Dialog {
 
     SomafmModel {
         id: itemModel
+
+        onError: {
+            notification.show(qsTr("Cannot download or parse SomaFM channels"))
+        }
     }
 
     SilicaListView {
@@ -52,12 +56,10 @@ Dialog {
         header: SearchDialogHeader {
             implicitWidth: root.width
             searchPlaceholderText: qsTr("Search channels")
-            //tip: qsTr("SomaFM is supported entirely by the listeners. " +
-            //          "If you enjoy, please consider making a " +
-            //          "<a href=\"%1\">donation</a>.").arg("http://somafm.com/support/");
             model: itemModel
             dialog: root
             view: listView
+            enabled: !itemModel.refreshing
 
             onActiveFocusChanged: {
                 listView.currentIndex = -1
@@ -67,9 +69,14 @@ Dialog {
         PullDownMenu {
             id: menu
 
-            enabled: itemModel.count !== 0
+            MenuItem {
+                text: qsTr("Refresh channel list")
+                onClicked: itemModel.refresh()
+            }
 
             MenuItem {
+                visible: itemModel.count !== 0
+
                 text: itemModel.count === itemModel.selectedCount ?
                           qsTr("Unselect all") :
                           qsTr("Select all")
@@ -99,14 +106,14 @@ Dialog {
         }
 
         ViewPlaceholder {
-            enabled: listView.count === 0 && !itemModel.busy
+            enabled: listView.count === 0 && !itemModel.busy && !itemModel.refreshing
             text: qsTr("No channels")
         }
     }
 
     BusyIndicator {
         anchors.centerIn: parent
-        running: itemModel.busy
+        running: itemModel.busy || itemModel.refreshing
         size: BusyIndicatorSize.Large
     }
 

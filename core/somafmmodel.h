@@ -14,8 +14,12 @@
 #include <QByteArray>
 #include <QVariant>
 #include <QUrl>
-#include <QJsonArray>
+#include <QPair>
 #include <QDir>
+#include <QNetworkAccessManager>
+#include <QDomNodeList>
+#include <QDomElement>
+#include <memory>
 
 #ifdef DESKTOP
 #include <QIcon>
@@ -75,14 +79,37 @@ private:
 class SomafmModel : public SelectableItemModel
 {
     Q_OBJECT
+    Q_PROPERTY (bool refreshing READ isRefreshing NOTIFY refreshingChanged)
+
 public:
     explicit SomafmModel(QObject *parent = nullptr);
+    bool isRefreshing();
     Q_INVOKABLE QVariantList selectedItems();
 
+public slots:
+    void refresh();
+
+signals:
+    void refreshingChanged();
+    void error();
+
 private:
+    static const QString m_dirUrl;
+    static const QString m_dirFilename;
+    static const QString m_imageFilename;
+    static const int httpTimeout = 100000;
+
+    std::unique_ptr<QNetworkAccessManager> nam;
+    QDomNodeList m_entries;
+    QList<QPair<QString,QString>> m_imagesToDownload;  // <id, image URL>
+    bool m_refreshing = false;
+
     QList<ListItem*> makeItems();
-    QJsonArray m_channels;
-    QDir m_dir;
+    bool parseData();
+    void downloadImages();
+    void downloadImage();
+    void finishRefresh();
+    QString bestImage(const QDomElement& entry);
 };
 
 #endif // SOMAFMMODEL_H

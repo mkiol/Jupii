@@ -242,6 +242,12 @@ bool Utils::createPlaylistDir()
     return true;
 }
 
+QString Utils::pathToCacheFile(const QString &filename)
+{
+    QDir dir(Settings::instance()->getCacheDir());
+    return dir.absoluteFilePath(filename);
+}
+
 bool Utils::readFromCacheFile(const QString &filename, QByteArray &data)
 {
     QDir dir(Settings::instance()->getCacheDir());
