@@ -129,20 +129,10 @@ void SomafmModel::downloadImage()
             }
 
             reply->deleteLater();
+            refreshItem(id);
             downloadImage();
         });
-    } else {
-        finishRefresh();
     }
-}
-
-void SomafmModel::finishRefresh()
-{
-    m_refreshing = false;
-    emit refreshingChanged();
-    setBusy(false);
-
-    updateModel();
 }
 
 void SomafmModel::refresh()
@@ -184,14 +174,15 @@ void SomafmModel::refresh()
                     if (!parseData()) {
                         emit error();
                     } else {
-                        reply->deleteLater();
                         downloadImages();
-                        return;
                     }
                 }
             }
             reply->deleteLater();
-            finishRefresh();
+            m_refreshing = false;
+            emit refreshingChanged();
+            setBusy(false);
+            updateModel();
         });
     } else {
         qWarning() << "Refreshing already active";
@@ -282,6 +273,13 @@ QList<ListItem*> SomafmModel::makeItems()
     return items;
 }
 
+void SomafmModel::refreshItem(const QString &id)
+{
+    auto item = dynamic_cast<SomafmItem*>(find(id));
+    if (item)
+        item->refresh();
+}
+
 SomafmItem::SomafmItem(const QString &id,
                    const QString &name,
                    const QString &description,
@@ -331,4 +329,14 @@ QVariant SomafmItem::data(int role) const
     default:
         return QVariant();
     }
+}
+
+void SomafmItem::refresh()
+{
+    // ugly hack to refresh icon
+    auto url = m_icon;
+    m_icon.clear();
+    emit dataChanged();
+    m_icon = url;
+    emit dataChanged();
 }
