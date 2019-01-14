@@ -49,7 +49,6 @@ OTHER_FILES += \
     qml/AddUrlPage.qml \
     qml/Tip.qml \
     qml/SomafmPage.qml \
-    qml/GpodderPage.qml \
     qml/GpodderEpisodesPage.qml \
     qml/SearchPageHeader.qml \
     qml/SearchDialogHeader.qml \

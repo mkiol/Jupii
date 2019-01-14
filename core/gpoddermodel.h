@@ -37,62 +37,6 @@ private:
     static QSqlDatabase m_db;
 };
 
-class GpodderPodcastItem : public SelectableItem
-{
-    Q_OBJECT
-public:
-    enum Roles {
-        TitleRole = Qt::DisplayRole,
-        IconRole = Qt::DecorationRole,
-        IdRole = Qt::UserRole,
-        DescriptionRole,
-    };
-
-public:
-    GpodderPodcastItem(QObject *parent = nullptr) : SelectableItem(parent) {}
-    explicit GpodderPodcastItem(const QString &id,
-                      const QString &title,
-                      const QString &description,
-                      const QString &folder,
-#ifdef SAILFISH
-                      const QUrl &icon,
-#else
-                      const QIcon &icon,
-#endif
-                      QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    inline QString id() const { return m_id; }
-    inline QString title() const { return m_title; }
-    inline QString description() const { return m_description; }
-    inline QString folder() const { return m_folder; }
-#ifdef SAILFISH
-    inline QUrl icon() const { return m_icon; }
-#else
-    inline QIcon icon() const { return m_icon; }
-#endif
-private:
-    QString m_id;
-    QString m_title;
-    QString m_description;
-    QString m_folder;
-#ifdef SAILFISH
-    QUrl m_icon;
-#else
-    QIcon m_icon;
-#endif
-};
-
-class GpodderPodcastModel : public SelectableItemModel
-{
-    Q_OBJECT
-public:
-    explicit GpodderPodcastModel(QObject *parent = nullptr);
-
-private:
-    QList<ListItem*> makeItems();
-};
-
 class GpodderEpisodeItem : public SelectableItem
 {
     Q_OBJECT
@@ -164,28 +108,18 @@ private:
 class GpodderEpisodeModel : public SelectableItemModel
 {
     Q_OBJECT
-    Q_PROPERTY (QString podcastId READ getPodcastId WRITE setPodcastId NOTIFY podcastIdChanged)
+
 public:
     explicit GpodderEpisodeModel(QObject *parent = nullptr);
-
-    void setPodcastId(const QString& id);
-    QString getPodcastId();
-
     Q_INVOKABLE QVariantList selectedItems();
 
-signals:
-    void podcastIdChanged();
-
 private:
-    QString m_podcastId;
     QDir m_dir;
 #ifdef SAILFISH
     QUrl m_icon;
 #else
     QIcon m_icon;
 #endif
-
-    void updateDir();
 
 private:
     QList<ListItem*> makeItems();

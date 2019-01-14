@@ -237,9 +237,9 @@ Page {
 
     Component {
         id: gpodderPickerPage
-        GpodderPage {
+        GpodderEpisodesPage {
             onAccepted: {
-                playlist.addItemUrls(items)
+                playlist.addItemUrls(selectedItems)
             }
         }
     }

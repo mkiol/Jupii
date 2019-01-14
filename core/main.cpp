@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
                                               "PlayListModel", "Playlist is a singleton");
     qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0, "SomafmModel");
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0, "IcecastModel");
-    qmlRegisterType<GpodderPodcastModel>("harbour.jupii.GpodderPodcastModel", 1, 0, "GpodderPodcastModel");
     qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1, 0, "GpodderEpisodeModel");
 
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);

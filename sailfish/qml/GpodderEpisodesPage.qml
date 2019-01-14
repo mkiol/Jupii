@@ -14,8 +14,6 @@ import harbour.jupii.AVTransport 1.0
 Dialog {
     id: root
 
-    property alias podcastId: itemModel.podcastId
-
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge
@@ -27,6 +25,16 @@ Dialog {
     onDone: {
         if (result === DialogResult.Accepted)
             selectedItems = itemModel.selectedItems()
+    }
+
+    // Hack to update model after all transitions
+    property bool _completed: false
+    Component.onCompleted: _completed = true
+    onStatusChanged: {
+        if (status === PageStatus.Active && _completed) {
+            _completed = false
+            itemModel.updateModel()
+        }
     }
 
     GpodderEpisodeModel {
@@ -48,6 +56,10 @@ Dialog {
             model: itemModel
             dialog: root
             view: listView
+
+            onActiveFocusChanged: {
+                listView.currentIndex = -1
+            }
         }
 
         PullDownMenu {
@@ -74,9 +86,9 @@ Dialog {
 
             highlighted: down || model.selected
             title.text: model.title
-            subtitle.text: model.description
+            subtitle.text: model.podcastTitle
             enabled: !itemModel.busy
-            //icon.source: model.icon + "?" + primaryColor
+            icon.source: model.icon
             defaultIcon.source: {
                 switch (model.type) {
                 case AVTransport.T_Image:
