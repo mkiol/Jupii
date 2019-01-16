@@ -335,7 +335,11 @@ void SomafmItem::refresh()
 {
     // ugly hack to refresh icon
     auto url = m_icon;
+#ifdef SAILFISH
     m_icon.clear();
+#else
+    m_icon = QIcon();
+#endif
     emit dataChanged();
     m_icon = url;
     emit dataChanged();

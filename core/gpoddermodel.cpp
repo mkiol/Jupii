@@ -138,7 +138,7 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
                 items << new GpodderEpisodeItem(
                                 query.value(0).toString(), // id
                                 query.value(1).toString(), // title
-                                query.value(2).toString(), // desc
+                                QString(), // query.value(2).toString(), // desc
                                 query.value(8).toString(), // podcast title
                                 QUrl::fromLocalFile(dir.absoluteFilePath(filename)), // url
                                 query.value(5).toInt(), // duration
