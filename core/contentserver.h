@@ -104,6 +104,10 @@ public:
         double sampleRate = 0.0;
         int channels = 0;
         int64_t size = 0;
+        // modes:
+        // 0 - stream proxy (default)
+        // 1 - playlist proxy (e.g. for HLS playlists)
+        bool mode = 0;
     };
 
     struct PlaylistItemMeta {
@@ -115,10 +119,6 @@ public:
     const static int micSampleRate = 22050;
     const static int micChannelCount = 1;
     const static int micSampleSize = 16;
-
-    //const static int pulseSampleRate = 44100;
-    //const static int pulseSampleRate = 22050;
-    //const static int pulseChannelCount = 2;
     const static int pulseSampleSize = 16;
 
     static ContentServer* instance(QObject *parent = nullptr);
@@ -132,6 +132,7 @@ public:
     static QList<PlaylistItemMeta> parsePls(const QByteArray &data, const QString context = QString());
     static QList<PlaylistItemMeta> parseM3u(const QByteArray &data, const QString context = QString());
     static QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString context = QString());
+    static void resolveM3u(QByteArray &data, const QString context);
 
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
     Type getContentType(const QString &path);
@@ -228,13 +229,14 @@ private:
     static QString dlnaOrgFlagsForFile();
     static QString dlnaOrgFlagsForStreaming();
     static QString dlnaOrgPnFlags(const QString& mime);
-    static QString dlnaContentFeaturesHeader(const QString& mime, bool seek = true, bool flags = true);
+    static QString dlnaContentFeaturesHeader(const QString& mime, bool seek = true,
+                                             bool flags = true);
     static QString getContentMimeByExtension(const QString &path);
     static QString getContentMimeByExtension(const QUrl &url);
     static QString mimeFromDisposition(const QString &disposition);
-
+    static bool hlsPlaylist(const QByteArray &data);
     ContentServer(QObject *parent = nullptr);
-    bool getContentMeta(const QString &id, const QUrl &url, QString &meta);
+    bool getContentMeta(const QString &id, const QUrl &url, QString &meta, const ItemMeta* item);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
@@ -304,9 +306,11 @@ private:
         bool meta = false; // shoutcast metadata requested by client
         int metaint = 0; // shoutcast metadata interval received from server
         int metacounter = 0; // bytes couter reseted every metaint
-        //int metasize = 0; // shoutcast metadata size detected
-        //QByteArray metadata; // shoutcast metadata readed so far
         QByteArray data;
+        // modes:
+        // 0 - stream proxy (default)
+        // 1 - playlist proxy (e.g. for HLS playlists)
+        int mode = 0;
     };
 
     struct SimpleProxyItem {

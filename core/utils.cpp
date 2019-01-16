@@ -395,11 +395,19 @@ bool Utils::isUrlPulse(const QUrl &url)
 
 QUrl Utils::urlFromText(const QString &text, const QString &context)
 {
-    // check if text is a relative file path
     if (!context.isEmpty()) {
+        // check if text is a relative file path
         QDir dir(context);
         if (dir.exists(text))
             return QUrl::fromLocalFile(dir.absoluteFilePath(text));
+
+        // check if text is a ralative URL
+        QUrl url(text);
+        if (url.isRelative()) {
+            url = QUrl(context).resolved(url);
+            if (Utils::isUrlValid(url))
+                return url;
+        }
     }
 
     // check if text is a absolute file path

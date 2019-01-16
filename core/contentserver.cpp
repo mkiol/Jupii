@@ -398,6 +398,7 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         item.id = id;
         item.meta = headers.contains("icy-metadata");
         item.seek = meta->seekSupported;
+        item.mode = meta->mode;
 
         responseToReplyMap.insert(resp, reply);
 
@@ -636,7 +637,10 @@ void ContentServerWorker::proxyMetaDataChanged()
                 item.resp->setHeader(h.first, h.second);
         }
 
-        item.state = 1;
+        // state change
+        // stream proxy (0) => sending partial data every ready read signal (1)
+        // playlist proxy (1) => sending all data when request finished (2)
+        item.state = item.mode == 1 ? 2 : 1;
 
         qDebug() << "Sending head for request with code:" << code;
         item.resp->writeHead(code);
@@ -679,11 +683,20 @@ void ContentServerWorker::proxyFinished()
             code = 404;
         qDebug() << "Ending request with code:" << code;
         sendEmptyResponse(item.resp, code);
-    } else {
-        qDebug() << "Ending request";
-        // TODO: Do not end if resp doesn't exists!
-        item.resp->end();
+    } else if (item.state == 2) {
+        qDebug() << "Playlist proxy mode, so sending all data";
+        auto data = reply->readAll();
+        if (!data.isEmpty()) {
+            ContentServer::resolveM3u(data, reply->url().toString());
+            item.resp->write(data);
+        } else {
+            qWarning() << "Data is empty";
+        }
     }
+
+    qDebug() << "Ending request";
+    // TODO: Do not end if resp doesn't exists!
+    item.resp->end();
 
     emit itemRemoved(item.id);
     proxyItems.remove(reply);
@@ -789,6 +802,11 @@ void ContentServerWorker::proxyReadyRead()
     }
 
     auto &item = proxyItems[reply];
+
+    if (item.state == 2) {
+        // ignoring, all will be handled in proxyFinished
+        return;
+    }
 
     if (item.resp->isFinished()) {
         qWarning() << "Server request already finished, so ending client side";
@@ -1208,7 +1226,8 @@ void ContentServer::fillCoverArt(ItemMeta& item)
     item.albumArt.clear();
 }
 
-bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &meta)
+bool ContentServer::getContentMeta(const QString &id, const QUrl &url,
+                                   QString &meta, const ItemMeta *item)
 {
     QString path, name, desc, author; int t = 0; QUrl icon;
     if (!Utils::pathTypeNameCookieIconFromId(id, &path, &t, &name, nullptr,
@@ -1217,12 +1236,6 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url, QString &
 
     bool audioType = static_cast<Type>(t) == TypeMusic; // extract audio stream from video
     QUrl urlFromId = Utils::urlFromId(id);
-
-    const auto item = getMeta(urlFromId);
-    if (!item) {
-        qWarning() << "No meta item found";
-        return false;
-    }
 
     AvData data;
     if (audioType && item->local) {
@@ -1372,7 +1385,13 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         return true;
     }
 
-    if (!getContentMeta(id, url, meta)) {
+    const auto item = getMeta(Utils::urlFromId(id));
+    if (!item) {
+        qWarning() << "No meta item found";
+        return false;
+    }
+
+    if (!getContentMeta(id, url, meta, item)) {
         qWarning() << "Cannot get content meta data";
         return false;
     }
@@ -2095,6 +2114,11 @@ QString ContentServer::mimeFromDisposition(const QString &disposition)
     return mime;
 }
 
+bool ContentServer::hlsPlaylist(const QByteArray &data)
+{
+    return data.contains("#EXT-X-");
+}
+
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                                             std::shared_ptr<QNetworkAccessManager> nam,
@@ -2133,13 +2157,14 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         // Bug in Qt? "Content-Disposition" cannot be retrived with QNetworkRequest::ContentDispositionHeader
         //auto disposition = reply->header(QNetworkRequest::ContentDispositionHeader).toString().toLower();
         auto disposition = QString(reply->rawHeader("Content-Disposition")).toLower();
+
         auto mime = mimeFromDisposition(disposition);
         if (mime.isEmpty())
             mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
         auto type = typeFromMime(mime);
 
         if (type == ContentServer::TypePlaylist) {
-            qWarning() << "Content is a playlist";
+            qDebug() << "Content is a playlist";
             // Content is needed, so not aborting
         } else {
             // Content is no needed, so aborting
@@ -2205,20 +2230,37 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
 
     if (type == ContentServer::TypePlaylist) {
         qDebug() << "Content is a playlist";
+
         auto size = reply->bytesAvailable();
         if (size > 0) {
             auto ptype = playlistTypeFromMime(mime);
-            auto items = ptype == PlaylistPLS ?
-                         parsePls(reply->readAll()) :
-                            ptype == PlaylistXSPF ?
-                            parseXspf(reply->readAll()) :
-                                parseM3u(reply->readAll());
+            auto data = reply->readAll();
 
-            if (!items.isEmpty()) {
-                QUrl url = items.first().url;
-                qDebug() << "Trying get meta data for first item in the playlist:" << url;
+            if (hlsPlaylist(data)) {
+                qDebug() <<  "HLS playlist";
+                ContentServer::ItemMeta meta;
+                meta.valid = true;
+                meta.url = url;
+                meta.mime = mime;
+                meta.type = ContentServer::TypePlaylist;
+                meta.filename = url.fileName();
+                meta.local = false;
+                meta.seekSupported = false;
+                meta.mode = 2; // playlist proxy
                 reply->deleteLater();
-                return makeItemMetaUsingHTTPRequest(url, nam, counter + 1);
+                return metaCache.insert(url, meta);
+            } else {
+                auto items = ptype == PlaylistPLS ?
+                             parsePls(data, reply->url().toString()) :
+                                ptype == PlaylistXSPF ?
+                                parseXspf(data, reply->url().toString()) :
+                                    parseM3u(data, reply->url().toString());
+                if (!items.isEmpty()) {
+                    QUrl url = items.first().url;
+                    qDebug() << "Trying get meta data for first item in the playlist:" << url;
+                    reply->deleteLater();
+                    return makeItemMetaUsingHTTPRequest(url, nam, counter + 1);
+                }
             }
         }
 
@@ -2499,6 +2541,26 @@ ContentServer::parsePls(const QByteArray &data, const QString context)
     return map.values();
 }
 
+void ContentServer::resolveM3u(QByteArray &data, const QString context)
+{
+    QStringList lines;
+
+    QTextStream s(data, QIODevice::ReadOnly);
+    s.setAutoDetectUnicode(true);
+
+    while (!s.atEnd()) {
+        auto line = s.readLine();
+        if (!line.startsWith("#"))
+            lines << line;
+    }
+
+    for (const auto& line : lines) {
+        auto url = Utils::urlFromText(line, context);
+        if (!url.isEmpty())
+            data.replace(line, url.toString().toUtf8());
+    }
+}
+
 QList<ContentServer::PlaylistItemMeta>
 ContentServer::parseM3u(const QByteArray &data, const QString context)
 {
@@ -2511,7 +2573,6 @@ ContentServer::parseM3u(const QByteArray &data, const QString context)
 
     while (!s.atEnd()) {
         auto line = s.readLine();
-        qDebug() << "line:" << line;
         if (line.startsWith("#")) {
             // TODO: read title from M3U playlist
         } else {
@@ -2519,6 +2580,7 @@ ContentServer::parseM3u(const QByteArray &data, const QString context)
             if (!url.isEmpty()) {
                 PlaylistItemMeta item;
                 item.url = url;
+                qDebug() << url;
                 list.append(item);
             }
         }
