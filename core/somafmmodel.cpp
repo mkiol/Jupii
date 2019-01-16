@@ -243,7 +243,7 @@ QList<ListItem*> SomafmModel::makeItems()
                     genre.contains(filter, Qt::CaseInsensitive) ||
                     dj.contains(filter, Qt::CaseInsensitive)) {
                     //auto icon = bestImage(entry);
-                    auto icon = QUrl(Utils::pathToCacheFile(m_imageFilename + id));
+                    auto icon = QUrl::fromLocalFile(Utils::pathToCacheFile(m_imageFilename + id));
                     items << new SomafmItem(
                                     id, // id
                                     name, // name

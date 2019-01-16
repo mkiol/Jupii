@@ -192,6 +192,8 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     bool valid, isFile, isArt;
     auto id = ContentServer::idUrlFromUrl(req->url(), &valid, &isFile, &isArt);
 
+    qDebug() << "Id:" << id.toString();
+
     if (!valid) {
         qWarning() << "Unknown content requested!";
         sendEmptyResponse(resp, 404);
@@ -687,6 +689,7 @@ void ContentServerWorker::proxyFinished()
         qDebug() << "Playlist proxy mode, so sending all data";
         auto data = reply->readAll();
         if (!data.isEmpty()) {
+            // Resolving relative URLs in a playlist
             ContentServer::resolveM3u(data, reply->url().toString());
             item.resp->write(data);
         } else {
@@ -1235,7 +1238,6 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url,
         return false;
 
     bool audioType = static_cast<Type>(t) == TypeMusic; // extract audio stream from video
-    QUrl urlFromId = Utils::urlFromId(id);
 
     AvData data;
     if (audioType && item->local) {
