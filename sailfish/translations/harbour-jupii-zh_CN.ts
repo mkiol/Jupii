@@ -105,17 +105,17 @@
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="128"/>
-        <source>Audio output</source>
+        <location filename="../qml/AddMediaPage.qml" line="127"/>
+        <source>Audio capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="139"/>
+        <location filename="../qml/AddMediaPage.qml" line="138"/>
         <source>Microphone</source>
         <translation>麦克风</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="150"/>
+        <location filename="../qml/AddMediaPage.qml" line="149"/>
         <source>Apps &amp; services</source>
         <translation>应用和服务</translation>
     </message>
@@ -232,17 +232,36 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="42"/>
-        <location filename="../qml/ChangelogPage.qml" line="59"/>
-        <location filename="../qml/ChangelogPage.qml" line="130"/>
-        <location filename="../qml/ChangelogPage.qml" line="140"/>
-        <location filename="../qml/ChangelogPage.qml" line="156"/>
-        <location filename="../qml/ChangelogPage.qml" line="171"/>
-        <location filename="../qml/ChangelogPage.qml" line="206"/>
-        <location filename="../qml/ChangelogPage.qml" line="217"/>
-        <location filename="../qml/ChangelogPage.qml" line="263"/>
+        <location filename="../qml/ChangelogPage.qml" line="61"/>
+        <location filename="../qml/ChangelogPage.qml" line="73"/>
+        <location filename="../qml/ChangelogPage.qml" line="86"/>
+        <location filename="../qml/ChangelogPage.qml" line="157"/>
+        <location filename="../qml/ChangelogPage.qml" line="167"/>
+        <location filename="../qml/ChangelogPage.qml" line="183"/>
+        <location filename="../qml/ChangelogPage.qml" line="198"/>
+        <location filename="../qml/ChangelogPage.qml" line="233"/>
+        <location filename="../qml/ChangelogPage.qml" line="244"/>
+        <location filename="../qml/ChangelogPage.qml" line="290"/>
         <source>Version %1</source>
         <translation>翻译 %1</translation>
+    </message>
+</context>
+<context>
+    <name>ContentServer</name>
+    <message>
+        <location filename="../../core/contentserver.cpp" line="1415"/>
+        <source>Unknown</source>
+        <translation type="unfinished">未知</translation>
+    </message>
+    <message>
+        <location filename="../../core/contentserver.cpp" line="2039"/>
+        <source>Microphone</source>
+        <translation type="unfinished">麦克风</translation>
+    </message>
+    <message>
+        <location filename="../../core/contentserver.cpp" line="2087"/>
+        <source>Audio capture</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -318,8 +337,8 @@
     <name>DevicesPage</name>
     <message>
         <location filename="../qml/DevicesPage.qml" line="29"/>
-        <source>Can&apos;t connect to the local network</source>
-        <translation>不能连接到本地网络</translation>
+        <source>Cannot connect to the local network</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="32"/>
@@ -378,47 +397,24 @@ Pull down to connect to the local network.</source>
 <context>
     <name>GpodderEpisodesPage</name>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="47"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="55"/>
         <source>Search episodes</source>
         <translation>搜索片段</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="60"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="72"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="61"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="73"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="101"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="113"/>
         <source>No episodes</source>
         <translation>没有片段</translation>
-    </message>
-</context>
-<context>
-    <name>GpodderPage</name>
-    <message>
-        <location filename="../qml/GpodderPage.qml" line="66"/>
-        <source>Podcasts</source>
-        <translation>播客</translation>
-    </message>
-    <message>
-        <location filename="../qml/GpodderPage.qml" line="67"/>
-        <source>Search podcasts</source>
-        <translation>寻找播客</translation>
-    </message>
-    <message>
-        <location filename="../qml/GpodderPage.qml" line="84"/>
-        <source>Select episodes</source>
-        <translation>选择片段</translation>
-    </message>
-    <message>
-        <location filename="../qml/GpodderPage.qml" line="102"/>
-        <source>No podcasts</source>
-        <translation>没有播客</translation>
     </message>
 </context>
 <context>
@@ -528,8 +524,12 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="186"/>
+        <source>Microphone sensitivity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Microphone volume</source>
-        <translation>麦克风音量</translation>
+        <translation type="vanished">麦克风音量</translation>
     </message>
 </context>
 <context>
@@ -613,6 +613,14 @@ Pull down to connect to the local network.</source>
         <location filename="../qml/MediaRendererPage.qml" line="558"/>
         <source>Unknown</source>
         <translation>未知</translation>
+    </message>
+</context>
+<context>
+    <name>PlaylistModel</name>
+    <message>
+        <location filename="../../core/playlistmodel.cpp" line="475"/>
+        <source>Playlist</source>
+        <translation type="unfinished">播放列表</translation>
     </message>
 </context>
 <context>
@@ -731,77 +739,62 @@ Pull down to connect to the local network.</source>
         <translation>在UPnP设备播放影像目前工作得还不是很好。至今还有一些镜像错误还未移除。该操作将强制播放%1 的影像，尽管可能出现一些错误。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="88"/>
-        <source>Capture audio output (restart needed)</source>
+        <location filename="../qml/SettingsPage.qml" line="92"/>
+        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="89"/>
-        <source>This option enables capturing the audio output of any application. It provides similar functionality to pulseaudio-dlna server. It means that %1 can stream certain application&apos;s PulseAudio playback to an UPnP/DLNA device. For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. When enabled, &quot;Audio output&quot; option is visible in &quot;Add item&quot; menu. %1 restart is needed to apply changes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="106"/>
-        <source>Audio output format (restart needed)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="108"/>
-        <source>Stream format used in audio output capturing. The bigger bitrate the quicker battery drain. %1 restart is needed to apply changes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="113"/>
+        <location filename="../qml/SettingsPage.qml" line="97"/>
         <source>MP3 44100Hz 128 kbps (default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="114"/>
+        <location filename="../qml/SettingsPage.qml" line="98"/>
         <source>MP3 44100Hz 96 kbps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="115"/>
+        <location filename="../qml/SettingsPage.qml" line="99"/>
         <source>PCM 44100Hz 1411 kbps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="116"/>
+        <location filename="../qml/SettingsPage.qml" line="100"/>
         <source>PCM 22050Hz 706 kbps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="128"/>
+        <location filename="../qml/SettingsPage.qml" line="112"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
         <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP 设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1 仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="142"/>
+        <location filename="../qml/SettingsPage.qml" line="126"/>
         <source>Adding devices manually</source>
         <translation>自动添加设备</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="143"/>
+        <location filename="../qml/SettingsPage.qml" line="127"/>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
         <translation>如果%1 发现设备失败。（例如因为它在不同的LAN），你可以用IP地址手动添加它。当启用时，下拉菜单包含附加的操作以手动添加设备。确保你的设备没有使用NAT 和防火墙。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="156"/>
+        <location filename="../qml/SettingsPage.qml" line="140"/>
         <source>Internet streaming mode</source>
         <translation>网络流模式</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="157"/>
+        <location filename="../qml/SettingsPage.qml" line="141"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
         <translation>来自网络的流媒体在UPnP设备上可以用两种模式操控。代理 (默认) 或改寄。 在代理模式，%1传递每个来自流媒体主机的信息包（例如网络收音机服务器）到家用网络中的UPnP设备。此操作对于UPnP 设备很透明，所以它在大多数情况下工作。因为信息包在你的手机/平板通过，%1必须被一直启用以确保流媒体工作。在该寄模式, %1 使用 HTTP 转而命令网络主机位于的 UPnP 设备。现行的的流媒体在UPnP 设备和流媒体服务器之间运动，所以没有要求 %1一直启用。改寄模式的缺陷在于不是所有的 UPnP设备都支持改寄。因此在某些设备中该模式不能恰当地工作。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="160"/>
+        <location filename="../qml/SettingsPage.qml" line="144"/>
         <source>Proxy</source>
         <translation>代理</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="161"/>
+        <location filename="../qml/SettingsPage.qml" line="145"/>
         <source>Redirection</source>
         <translation>改变方向</translation>
     </message>
@@ -821,7 +814,12 @@ Pull down to connect to the local network.</source>
         <translation>影像内容</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="127"/>
+        <location filename="../qml/SettingsPage.qml" line="91"/>
+        <source>Audio capture format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="111"/>
         <source>All devices visible</source>
         <translation>所有设备可见</translation>
     </message>
@@ -829,24 +827,42 @@ Pull down to connect to the local network.</source>
 <context>
     <name>SomafmPage</name>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="54"/>
+        <location filename="../qml/SomafmPage.qml" line="43"/>
+        <source>Cannot download or parse SomaFM channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SomafmPage.qml" line="58"/>
         <source>Search channels</source>
         <translation>搜索频道</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="74"/>
+        <location filename="../qml/SomafmPage.qml" line="73"/>
+        <source>Refresh channel list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SomafmPage.qml" line="81"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="75"/>
+        <location filename="../qml/SomafmPage.qml" line="82"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="103"/>
+        <location filename="../qml/SomafmPage.qml" line="110"/>
         <source>No channels</source>
         <translation>没有频道</translation>
+    </message>
+</context>
+<context>
+    <name>TrackModel</name>
+    <message>
+        <location filename="../../core/trackmodel.cpp" line="150"/>
+        <source>Microphone</source>
+        <translation type="unfinished">麦克风</translation>
     </message>
 </context>
 <context>

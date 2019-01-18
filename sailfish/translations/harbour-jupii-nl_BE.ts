@@ -101,6 +101,10 @@
         <source>Microphone</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Audio capture</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AddUrlPage</name>
@@ -193,6 +197,21 @@
     </message>
 </context>
 <context>
+    <name>ContentServer</name>
+    <message>
+        <source>Unknown</source>
+        <translation type="unfinished">Onbekend</translation>
+    </message>
+    <message>
+        <source>Microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CopyableLabel</name>
     <message>
         <source>Copy</source>
@@ -252,10 +271,6 @@
 <context>
     <name>DevicesPage</name>
     <message>
-        <source>Can&apos;t connect to the local network</source>
-        <translation>Kan geen verbinding maken me ’t lokaal netwerk</translation>
-    </message>
-    <message>
         <source>An internal error occurred</source>
         <translation>Der is een interne fout opgetreden</translation>
     </message>
@@ -299,6 +314,10 @@ Pull down to connect to the local network.</source>
         <translation>Nie’ verbonden.
 Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
+    <message>
+        <source>Cannot connect to the local network</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GpodderEpisodesPage</name>
@@ -316,25 +335,6 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>No episodes</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>GpodderPage</name>
-    <message>
-        <source>Podcasts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search podcasts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No podcasts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select episodes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -400,10 +400,6 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Microphone volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Stream title</source>
         <translation type="unfinished"></translation>
     </message>
@@ -417,6 +413,18 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Copy path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Captured application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone sensitivity</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -488,6 +496,13 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
 </context>
 <context>
+    <name>PlaylistModel</name>
+    <message>
+        <source>Playlist</source>
+        <translation type="unfinished">Afspeellijst</translation>
+    </message>
+</context>
+<context>
     <name>PlaylistPage</name>
     <message numerus="yes">
         <source>%n track(s)</source>
@@ -515,6 +530,10 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     <message>
         <source>Select tracks</source>
         <translation type="unfinished">Nummers selecteren</translation>
+    </message>
+    <message>
+        <source>Deleting</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -624,6 +643,30 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <source>Redirection</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>MP3 44100Hz 128 kbps (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MP3 44100Hz 96 kbps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PCM 44100Hz 1411 kbps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PCM 22050Hz 706 kbps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio capture format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SomafmPage</name>
@@ -641,6 +684,21 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot download or parse SomaFM channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh channel list</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TrackModel</name>
+    <message>
+        <source>Microphone</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -12,7 +12,6 @@ linux-g++: CONFIG += arm
 PROJECTDIR = $$PWD/..
 
 INCLUDEPATH += /usr/include/c++/7
-INCLUDEPATH += /usr/include
 
 CONFIG += sailfish ffmpeg pulse
 DEFINES += SAILFISH
@@ -56,7 +55,8 @@ OTHER_FILES += \
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 
-CONFIG += sailfishapp_i18n
+TRANSLATION_SOURCE_DIRS += $$PROJECTDIR/core
+CONFIG += sailfishapp_i18n_include_obsolete
 TRANSLATIONS += \
     translations/harbour-jupii.ts \
     translations/harbour-jupii-pl.ts \
@@ -67,6 +67,7 @@ TRANSLATIONS += \
     translations/harbour-jupii-sv.ts \
     translations/harbour-jupii-es.ts \
     translations/harbour-jupii-zh_CN.ts
+include(sailfishapp_i18n.pri)
 
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images
