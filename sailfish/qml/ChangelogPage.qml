@@ -27,6 +27,37 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.2.0")
+            }
+
+            LogItem {
+                title: "Audio capture improvements"
+                description: "Audio capture feature is now stable enough to be enabled by default. " +
+                             "Some tweaks were made to improve stream quality e.g. volume " +
+                             "level is adjusted to be more loud."
+            }
+
+            LogItem {
+                title: "Option to update SomaFM channel list"
+                description: "To download the latest list of SomaFM channels " +
+                             "choose \"Refresh channel list\" from pull-down menu. " +
+                             "If you enjoy SomaFM radio, please consider making a " +
+                             "<a href=\"http://somafm.com/support/\">donation</a>."
+            }
+
+            LogItem {
+                title: "Better support for playlist formats"
+                description: "Playlists with relative URLs are now accepted. " +
+                             "Also initial support for HLS format was implemented. "
+            }
+
+            LogItem {
+                title: "Chinese translation"
+                description: "Many thanks to Rui Kon for " +
+                             "providing Chinese translation (zh-CN)."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.1.1")
             }
 

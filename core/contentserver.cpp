@@ -1775,7 +1775,7 @@ bool ContentServer::extractAudio(const QString& path,
         return false;
     }
 
-    AVPacket pkt = { 0 };
+    AVPacket pkt = {};
     av_init_packet(&pkt);
 
     while (!av_read_frame(ic, &pkt)) {

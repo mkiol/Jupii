@@ -82,21 +82,6 @@ Page {
                 }
             }
 
-            /*TextSwitch {
-                automaticCheck: false
-                checked: settings.pulseSupported
-                text: qsTr("Capture audio output (restart needed)")
-                description: qsTr("This option enables capturing the audio output of any application. " +
-                                  "It provides similar functionality to pulseaudio-dlna server. It means that " +
-                                  "%1 can stream certain application's PulseAudio playback to an UPnP/DLNA device. " +
-                                  "For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. " +
-                                  "When enabled, \"Audio output\" option is visible in \"Add item\" menu. " +
-                                  "%1 restart is needed to apply changes.").arg(APP_NAME)
-                onClicked: {
-                    settings.pulseSupported = !settings.pulseSupported
-                }
-            }*/
-
             ComboBox {
                 // modes:
                 // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
