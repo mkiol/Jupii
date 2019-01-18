@@ -305,7 +305,7 @@ bool Settings::getUseDbusVolume()
 
 void Settings::setMicVolume(float value)
 {
-    value = value < 0 ? 0 : value > 70 ? 70 : value;
+    value = value < 0 ? 0 : value > 100 ? 100 : value;
 
     if (getMicVolume() != value) {
         settings.setValue("micvolume", value);

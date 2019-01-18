@@ -178,12 +178,12 @@ Page {
                 visible: isMic
                 width: parent.width
                 minimumValue: 0
-                maximumValue: 70
+                maximumValue: 100
                 stepSize: 1
                 handleVisible: true
                 value: settings.micVolume
                 valueText: value
-                label: qsTr("Microphone volume")
+                label: qsTr("Microphone sensitivity")
 
                 onValueChanged: {
                     settings.micVolume = value
