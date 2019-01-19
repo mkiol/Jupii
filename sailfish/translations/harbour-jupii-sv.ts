@@ -107,7 +107,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="127"/>
         <source>Audio capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Ljudinspelning</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="138"/>
@@ -253,17 +253,17 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="1415"/>
         <source>Unknown</source>
-        <translation type="unfinished">Okänd</translation>
+        <translation>Okänd</translation>
     </message>
     <message>
         <location filename="../../core/contentserver.cpp" line="2039"/>
         <source>Microphone</source>
-        <translation type="unfinished">Mikrofon</translation>
+        <translation>Mikrofon</translation>
     </message>
     <message>
         <location filename="../../core/contentserver.cpp" line="2087"/>
         <source>Audio capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Ljudinspelning</translation>
     </message>
 </context>
 <context>
@@ -340,7 +340,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="29"/>
         <source>Cannot connect to the local network</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte ansluta till det lokala nätverket</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="32"/>
@@ -387,13 +387,15 @@
         <location filename="../qml/DevicesPage.qml" line="127"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga enheter hittades. 
+Dra neråt för att hitta fler enheter i ditt nätverk.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="129"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Inte ansluten. 
+Dra neråt för att ansluta till det lokala nätverket.</translation>
     </message>
 </context>
 <context>
@@ -507,12 +509,12 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="117"/>
         <source>Captured application</source>
-        <translation type="unfinished"></translation>
+        <translation>Inspelad app</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="119"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingen</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="168"/>
@@ -527,7 +529,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="186"/>
         <source>Microphone sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Mikrofonkänslighet</translation>
     </message>
     <message>
         <source>Microphone volume</source>
@@ -622,7 +624,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../../core/playlistmodel.cpp" line="475"/>
         <source>Playlist</source>
-        <translation type="unfinished">Spellista</translation>
+        <translation>Spellista</translation>
     </message>
 </context>
 <context>
@@ -658,7 +660,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="111"/>
         <source>Deleting</source>
-        <translation type="unfinished"></translation>
+        <translation>Tar bort</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="119"/>
@@ -745,27 +747,27 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="91"/>
         <source>Audio capture format</source>
-        <translation type="unfinished"></translation>
+        <translation>Ljudinspelningsformat</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="97"/>
         <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>MP3 44100Hz 128 kbps (standard)</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="98"/>
         <source>MP3 44100Hz 96 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>MP3 44100Hz 96 kbps</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="99"/>
         <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>PCM 44100Hz 1411 kbps</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
         <source>PCM 22050Hz 706 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>PCM 22050Hz 706 kbps</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="112"/>
@@ -820,7 +822,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="92"/>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation type="unfinished"></translation>
+        <translation>Strömningsformat som används när %1 spelar in utdata från en annan app. Okomprimerad ström (PMC) resulterar i lägre fördröjning men den högre bithastigheten, dränerar troligen batteriet snabbare.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="111"/>
@@ -833,7 +835,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SomafmPage.qml" line="43"/>
         <source>Cannot download or parse SomaFM channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte ladda ner eller tolka SomaFM-kanaler</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="58"/>
@@ -843,7 +845,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SomafmPage.qml" line="73"/>
         <source>Refresh channel list</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdatera kanallistan</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="81"/>
@@ -866,7 +868,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../../core/trackmodel.cpp" line="150"/>
         <source>Microphone</source>
-        <translation type="unfinished">Mikrofon</translation>
+        <translation>Mikrofon</translation>
     </message>
 </context>
 <context>
