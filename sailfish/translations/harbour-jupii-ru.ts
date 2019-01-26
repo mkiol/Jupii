@@ -107,7 +107,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="127"/>
         <source>Audio capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Захват звука</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="138"/>
@@ -255,17 +255,17 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="1415"/>
         <source>Unknown</source>
-        <translation type="unfinished">Неизвестно</translation>
+        <translation>Неизвестно</translation>
     </message>
     <message>
         <location filename="../../core/contentserver.cpp" line="2039"/>
         <source>Microphone</source>
-        <translation type="unfinished">Микрофон</translation>
+        <translation>Микрофон</translation>
     </message>
     <message>
         <location filename="../../core/contentserver.cpp" line="2087"/>
         <source>Audio capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Захват звука</translation>
     </message>
 </context>
 <context>
@@ -342,7 +342,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="29"/>
         <source>Cannot connect to the local network</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет соединения с локальной сетью</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="32"/>
@@ -389,13 +389,15 @@
         <location filename="../qml/DevicesPage.qml" line="127"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройства не найдены.
+Вытяните меню для добавления дополнительных устройств.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="129"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет подключения.
+Вытяните меню для подключения к локальной сети.</translation>
     </message>
 </context>
 <context>
@@ -509,12 +511,12 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="117"/>
         <source>Captured application</source>
-        <translation type="unfinished"></translation>
+        <translation>Приложение-источник звука</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="119"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Ничего</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="168"/>
@@ -529,11 +531,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="186"/>
         <source>Microphone sensitivity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Microphone volume</source>
-        <translation type="vanished">Чувствительность микрофона</translation>
+        <translation>Чувствительность микрофона</translation>
     </message>
 </context>
 <context>
@@ -622,9 +620,9 @@ Pull down to connect to the local network.</source>
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../../core/playlistmodel.cpp" line="475"/>
+        <location filename="../../core/playlistmodel.cpp" line="484"/>
         <source>Playlist</source>
-        <translation type="unfinished">Список воспроизведения</translation>
+        <translation>Список воспроизведения</translation>
     </message>
 </context>
 <context>
@@ -661,7 +659,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="111"/>
         <source>Deleting</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаление</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="119"/>
@@ -749,27 +747,27 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="91"/>
         <source>Audio capture format</source>
-        <translation type="unfinished"></translation>
+        <translation>Формат записи звука</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="97"/>
         <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>MP3 44100 Гц, 128 кб/сек (стандартно)</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="98"/>
         <source>MP3 44100Hz 96 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>MP3 44100 Гц, 96 кб/сек</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="99"/>
         <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>PCM 44100 Гц, 1411 кб/сек</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
         <source>PCM 22050Hz 706 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>PCM 22050 Гц, 706 кб/сек</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="112"/>
@@ -794,7 +792,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="141"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation>Воспроизведение аудиопотоков из Интернета на устройствах стандарта UPnP возможно в двух режимах: Прокси (по умолчанию) и Перенаправления. В режиме Прокси %1 передает все пакеты, получаемые от сервера потока (например интернет-радио) на UPnP-устройство в домашней сети. При этом работа UPnP-устройства не отличается от обычной, и этот режим работает почти всегда. Поскольку данные потока проходят через ваш телефон/планшет, он должен быть постоянно включен во время прослушивания. В режиме Перенаправления %1 использует перенаправление HTTP, чтобы сообщить, где находится интернет-сервер вешающий поток. Собственно данные передаются напрямую между сервером и устройством UPnP. Это позволяет %1 не быть в сети постоянно. Недостатком этого режима является то, что не все UPnP-устройства поддерживают перенаправление. На некоторых устройствах это не работает.</translation>
+        <translation>Воспроизведение аудиопотоков из Интернета на устройствах стандарта UPnP возможно в двух режимах: Прокси (по умолчанию) и Перенаправления. В режиме Прокси %1 передает все пакеты, получаемые от сервера потока (например интернет-радио) на  UPnP-устройство в домашней сети. При этом работа UPnP-устройства не отличается от обычной, и этот режим работает почти всегда. Поскольку данные потока проходят через ваш телефон/планшет, он должен быть постоянно включен во время прослушивания. В режиме Перенаправления %1 использует перенаправление HTTP, чтобы сообщить, где находится интернет-сервер вешающий поток. Собственно данные передаются напрямую между сервером и устройством UPnP. Это позволяет %1 не быть в сети постоянно. Недостатком этого режима является то, что не все  UPnP-устройства поддерживают перенаправление. На некоторых устройствах это не работает.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="144"/>
@@ -824,7 +822,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="92"/>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation type="unfinished"></translation>
+        <translation>Формат звуковых данных когда %1 захватывает звук другого приложения. Несжатый поток (PCM) обеспечивает наименьшую задержку, но больший объем передаваемых данных в этом режиме будет быстрее разряжать аккумулятор.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="111"/>
@@ -837,7 +835,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SomafmPage.qml" line="43"/>
         <source>Cannot download or parse SomaFM channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно загрузить или использовать каналы SomaFM</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="58"/>
@@ -847,7 +845,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SomafmPage.qml" line="73"/>
         <source>Refresh channel list</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновить список каналов</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="81"/>
@@ -870,7 +868,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../../core/trackmodel.cpp" line="150"/>
         <source>Microphone</source>
-        <translation type="unfinished">Микрофон</translation>
+        <translation>Микрофон</translation>
     </message>
 </context>
 <context>
