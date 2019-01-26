@@ -15,7 +15,7 @@
 struct FileMetaData {
     QString path;
     QString filename;
-    qint64 size;
+    qint64 size = 0;
     QString date;
     QString icon;
     ContentServer::Type type;

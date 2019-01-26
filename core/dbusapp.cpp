@@ -45,6 +45,11 @@ DbusProxy::DbusProxy(QObject *parent) :
     }
 }
 
+DbusProxy::~DbusProxy()
+{
+    setCanControl(false);
+}
+
 bool DbusProxy::canControl()
 {
     qDebug() << "Dbus canControl, value:" << m_canControl;
@@ -83,6 +88,58 @@ void DbusProxy::addUrl(const QString& url, const QString& name)
 
     auto pl = PlaylistModel::instance();
     pl->addItemUrl(QUrl(url), name);
+}
+
+void DbusProxy::addPathOnce(const QString& path, const QString& name)
+{
+    qDebug() << "Dbus addPathOnce, path:" << path << name;
+
+    auto pl = PlaylistModel::instance();
+    if (pl->pathExists(path)) {
+        qDebug() << "Path already exists";
+    } else {
+        pl->addItemPath(path, name);
+    }
+}
+
+void DbusProxy::addPathOnceAndPlay(const QString& path, const QString& name)
+{
+    qDebug() << "Dbus addPathOnceAndPlay, path:" << path << name;
+
+    auto pl = PlaylistModel::instance();
+    if (pl->playPath(path)) {
+        qDebug() << "Path already exists";
+    } else {
+        pl->addItemPath(path, name, true);
+    }
+}
+
+void DbusProxy::addUrlOnce(const QString& url, const QString& name)
+{
+    qDebug() << "Dbus addUrlOnce, url:" << url << name;
+
+    QUrl u(url);
+
+    auto pl = PlaylistModel::instance();
+    if (pl->urlExists(u)) {
+        qDebug() << "Url already exists";
+    } else {
+        pl->addItemUrl(u, name);
+    }
+}
+
+void DbusProxy::addUrlOnceAndPlay(const QString& url, const QString& name)
+{
+    qDebug() << "Dbus addUrlOnceAndPlay, url:" << url << name;
+
+    QUrl u(url);
+
+    auto pl = PlaylistModel::instance();
+    if (pl->playUrl(u)) {
+        qDebug() << "Url already exists";
+    } else {
+        pl->addItemUrl(u, name, {}, {}, {}, true);
+    }
 }
 
 void DbusProxy::clearPlaylist()

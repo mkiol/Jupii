@@ -70,8 +70,8 @@ private:
     QUrl m_url;
     QUrl m_icon;
     ContentServer::Type m_type = ContentServer::TypeUnknown;
-    int m_number;
-    int m_length;
+    int m_number = 0;
+    int m_length = 0;
 };
 
 class TrackModel : public SelectableItemModel

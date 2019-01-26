@@ -85,8 +85,8 @@ private:
 #else
     QUrl m_icon;
 #endif
-    bool m_active;
-    bool m_supported;
+    bool m_active = false;
+    bool m_supported = false;
 };
 
 class DeviceModel : public ListModel

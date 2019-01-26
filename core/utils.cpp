@@ -31,6 +31,7 @@ const QString Utils::nameKey = "jupii_name";
 const QString Utils::authorKey = "jupii_author";
 const QString Utils::iconKey = "jupii_icon";
 const QString Utils::descKey = "jupii_desc";
+const QString Utils::playKey = "jupii_play";
 
 Utils* Utils::m_instance = nullptr;
 
@@ -293,7 +294,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
                                      QString* cookie,
                                      QUrl* icon,
                                      QString* desc,
-                                     QString* author)
+                                     QString* author,
+                                     bool* play)
 {
     if (!id.isValid()) {
         //qWarning() << "FromId: Id is invalid:" << id.toString();
@@ -307,7 +309,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             path->clear();
     }
 
-    if (type || cookie || name || desc || author || icon) {
+    if (type || cookie || name || desc || author || icon || play) {
         QUrlQuery q(id);
         if (type && q.hasQueryItem(Utils::typeKey))
             *type = q.queryItemValue(Utils::typeKey).toInt();
@@ -321,6 +323,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             *desc = q.queryItemValue(Utils::descKey);
         if (author && q.hasQueryItem(Utils::authorKey))
             *author = q.queryItemValue(Utils::authorKey);
+        if (play && q.hasQueryItem(Utils::playKey))
+            *play = (q.queryItemValue(Utils::playKey) == "true");
     }
 
     return true;
@@ -545,6 +549,16 @@ QString Utils::idFromUrl(const QUrl &url, const QString &cookie)
     return id.toString();
 }
 
+QUrl Utils::cleanId(const QUrl &id)
+{
+    QUrlQuery q(id);
+    if (q.hasQueryItem(Utils::playKey))
+        q.removeAllQueryItems(Utils::playKey);
+    QUrl url(id);
+    url.setQuery(q);
+    return url;
+}
+
 QUrl Utils::urlFromId(const QUrl &id)
 {
     QUrlQuery q(id);
@@ -560,6 +574,8 @@ QUrl Utils::urlFromId(const QUrl &id)
         q.removeAllQueryItems(Utils::descKey);
     if (q.hasQueryItem(Utils::authorKey))
         q.removeAllQueryItems(Utils::authorKey);
+    if (q.hasQueryItem(Utils::playKey))
+        q.removeAllQueryItems(Utils::playKey);
     QUrl url(id);
     url.setQuery(q);
     return url;
@@ -570,6 +586,8 @@ QUrl Utils::urlWithTypeFromId(const QUrl &id)
     QUrlQuery q(id);
     if (q.hasQueryItem(Utils::cookieKey))
         q.removeAllQueryItems(Utils::cookieKey);
+    if (q.hasQueryItem(Utils::playKey))
+        q.removeAllQueryItems(Utils::playKey);
     QUrl url(id);
     url.setQuery(q);
     return url;

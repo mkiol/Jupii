@@ -57,8 +57,8 @@ private:
     QString m_title;
     QString m_artist;
     QUrl m_icon;
-    int m_count;
-    int m_length;
+    int m_count = 0;
+    int m_length = 0;
 };
 
 class AlbumModel : public SelectableItemModel
@@ -74,8 +74,8 @@ private:
         QString title;
         QString artist;
         QUrl icon;
-        int count;
-        int length;
+        int count = 0;
+        int length = 0;
     };
 
     static const QString albumsQueryTemplate;

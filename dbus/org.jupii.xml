@@ -2,21 +2,46 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
     <interface name="org.jupii.Player">
+        <!-- canControl: returns 'true' if Jupii is connected to UPnP device -->
         <property name="canControl" type="b" access="read" />
         <signal name="CanControlPropertyChanged">
           <arg type="b" name="canControl" direction="out" />
         </signal>
+        <!-- appendPath: deprecated, use 'addPath' instead -->
         <method name="appendPath">
             <arg name="path" type="s" direction="in" />
         </method>
+        <!-- addPath: if 'path' is a valid media file, appends it to a playlist queue -->
         <method name="addPath">
             <arg name="path" type="s" direction="in" />
             <arg name="name" type="s" direction="in" />
         </method>
+        <!-- addPathOnce: same as 'addPath', but appends only if 'path' doesn't exist in a playlist queue -->
+        <method name="addPathOnce">
+            <arg name="path" type="s" direction="in" />
+            <arg name="name" type="s" direction="in" />
+        </method>
+        <!-- addPathOnceAndPlay: same as 'addPathOnce', but after adding path will be played -->
+        <method name="addPathOnceAndPlay">
+            <arg name="path" type="s" direction="in" />
+            <arg name="name" type="s" direction="in" />
+        </method>
+        <!-- addUrl: if 'url' points to a valid media resource, appends it to a playlist queue -->
         <method name="addUrl">
             <arg name="url" type="s" direction="in" />
             <arg name="name" type="s" direction="in" />
         </method>
+        <!-- addUrlOnce: same as 'addUrl', but appends only if 'url' doesn't exist in a playlist queue -->
+        <method name="addUrlOnce">
+            <arg name="url" type="s" direction="in" />
+            <arg name="name" type="s" direction="in" />
+        </method>
+        <!-- addUrlOnceAndPlay: same as 'addUrlOnce', but after adding url will be played -->
+        <method name="addUrlOnceAndPlay">
+            <arg name="url" type="s" direction="in" />
+            <arg name="name" type="s" direction="in" />
+        </method>
+         <!-- clearPlaylist: removes all items from a playlist queue -->
         <method name="clearPlaylist" />
     </interface>
 </node>

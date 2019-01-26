@@ -40,6 +40,7 @@ struct UrlItem {
     QString author;
     QUrl icon;
     QString desc;
+    bool play = false;
 };
 
 class PlaylistItem :
@@ -69,6 +70,7 @@ public:
     explicit PlaylistItem(const QUrl &id,
                       const QString &name,
                       const QUrl &url,
+                      const QUrl &origUrl,
                       ContentServer::Type type,
                       const QString &title,
                       const QString &artist,
@@ -81,8 +83,9 @@ public:
 #else
                       const QIcon &icon,
 #endif
-                      bool active = false,
-                      bool toBeActive = false,
+                      bool active,
+                      bool toBeActive,
+                      bool play, // auto play after adding
                       QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
@@ -91,6 +94,7 @@ public:
     //inline QUrl idUrl() const { return m_id; }
     inline QString name() const { return m_name; }
     inline QUrl url() const { return m_url; }
+    inline QUrl origUrl() const { return m_origUrl; }
     inline ContentServer::Type type() const { return m_type; }
     inline QString title() const { return m_title; }
     inline QString artist() const { return m_artist; }
@@ -105,8 +109,10 @@ public:
 #endif
     inline bool active() const { return m_active; }
     inline bool toBeActive() const { return m_tobeactive; }
+    inline bool play() const { return m_play; }
     void setActive(bool value);
     void setToBeActive(bool value);
+    void setPlay(bool value);
 #ifdef DESKTOP
     QBrush foreground() const;
 #endif
@@ -115,20 +121,22 @@ private:
     QUrl m_id;
     QString m_name;
     QUrl m_url;
+    QUrl m_origUrl;
     ContentServer::Type m_type;
     QString m_title;
     QString m_artist;
     QString m_album;
     QString m_date;
-    int m_duration;
-    qint64 m_size;
+    int m_duration = 0;
+    qint64 m_size = 0;
 #ifdef SAILFISH
     QUrl m_icon;
 #else
     QIcon m_icon;
 #endif
-    bool m_active;
-    bool m_tobeactive;
+    bool m_active = false;
+    bool m_tobeactive = false;
+    bool m_play = false;
 };
 
 class PlaylistWorker :
@@ -193,7 +201,7 @@ public:
     Q_INVOKABLE QString nextId(const QString &id) const;
     Q_INVOKABLE void load();
     Q_INVOKABLE bool saveToFile(const QString& title);
-    Q_INVOKABLE void update(bool play = false);
+    Q_INVOKABLE void update(bool autoPlay = false);
     Q_INVOKABLE void next();
     Q_INVOKABLE void prev();
     int getActiveItemIndex() const;
@@ -201,6 +209,10 @@ public:
     void setPlayMode(int value);
     bool isNextSupported();
     bool isPrevSupported();
+    bool pathExists(const QString& path);
+    bool playPath(const QString& path);
+    bool urlExists(const QUrl& url);
+    bool playUrl(const QUrl& url);
 
 signals:
     void itemsRemoved();
@@ -217,14 +229,16 @@ signals:
 public slots:
     void addItemPaths(const QStringList& paths);
     void addItemPath(const QString& path,
-                     const QString &name = QString());
+                     const QString &name = QString(),
+                     bool autoPlay = false);
     void addItemUrls(const QList<UrlItem>& urls);
     void addItemUrls(const QVariantList& urls);
     void addItemUrl(const QUrl& url,
                     const QString& name = QString(),
                     const QString &author = QString(),
                     const QUrl& icon = QUrl(),
-                    const QString& desc = QString());
+                    const QString& desc = QString(),
+                    bool autoPlay = false);
     void addItemPathsAsAudio(const QStringList& paths);
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
@@ -268,6 +282,7 @@ private:
     void setBusy(bool busy);
     void updateNextSupported();
     void updatePrevSupported();
+    void autoPlay();
 };
 
 #endif // PLAYLISTMODEL_H

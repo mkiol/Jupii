@@ -45,10 +45,34 @@ void PlayerAdaptor::addPath(const QString &path, const QString &name)
     QMetaObject::invokeMethod(parent(), "addPath", Q_ARG(QString, path), Q_ARG(QString, name));
 }
 
+void PlayerAdaptor::addPathOnce(const QString &path, const QString &name)
+{
+    // handle method call org.jupii.Player.addPathOnce
+    QMetaObject::invokeMethod(parent(), "addPathOnce", Q_ARG(QString, path), Q_ARG(QString, name));
+}
+
+void PlayerAdaptor::addPathOnceAndPlay(const QString &path, const QString &name)
+{
+    // handle method call org.jupii.Player.addPathOnceAndPlay
+    QMetaObject::invokeMethod(parent(), "addPathOnceAndPlay", Q_ARG(QString, path), Q_ARG(QString, name));
+}
+
 void PlayerAdaptor::addUrl(const QString &url, const QString &name)
 {
     // handle method call org.jupii.Player.addUrl
     QMetaObject::invokeMethod(parent(), "addUrl", Q_ARG(QString, url), Q_ARG(QString, name));
+}
+
+void PlayerAdaptor::addUrlOnce(const QString &url, const QString &name)
+{
+    // handle method call org.jupii.Player.addUrlOnce
+    QMetaObject::invokeMethod(parent(), "addUrlOnce", Q_ARG(QString, url), Q_ARG(QString, name));
+}
+
+void PlayerAdaptor::addUrlOnceAndPlay(const QString &url, const QString &name)
+{
+    // handle method call org.jupii.Player.addUrlOnceAndPlay
+    QMetaObject::invokeMethod(parent(), "addUrlOnceAndPlay", Q_ARG(QString, url), Q_ARG(QString, name));
 }
 
 void PlayerAdaptor::appendPath(const QString &path)

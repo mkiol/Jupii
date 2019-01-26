@@ -20,6 +20,7 @@ class DbusProxy :
 
 public:
     explicit DbusProxy(QObject *parent = nullptr);
+    ~DbusProxy();
     bool canControl();
     void setCanControl(bool value);
 
@@ -33,6 +34,10 @@ public slots:
     void appendPath(const QString& path);
     void addPath(const QString& path, const QString& name);
     void addUrl(const QString& url, const QString& name);
+    void addPathOnce(const QString& path, const QString& name);
+    void addPathOnceAndPlay(const QString& path, const QString& name);
+    void addUrlOnce(const QString& url, const QString& name);
+    void addUrlOnceAndPlay(const QString& url, const QString& name);
     void clearPlaylist();
 
 private:

@@ -61,8 +61,8 @@ private:
     QString m_list;
     QString m_path;
     QUrl m_icon;
-    int m_count;
-    int m_length;
+    int m_count = 0;
+    int m_length = 0;
 };
 
 class PlaylistFileModel : public SelectableItemModel

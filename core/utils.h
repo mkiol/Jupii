@@ -24,6 +24,7 @@ public:
     static const QString authorKey;
     static const QString iconKey;
     static const QString descKey;
+    static const QString playKey;
 
     static Utils* instance(QObject *parent = nullptr);
 
@@ -60,6 +61,7 @@ public:
     static QUrl urlFromId(const QString &id);
     static QUrl urlWithTypeFromId(const QUrl &id);
     static QUrl urlWithTypeFromId(const QString &id);
+    static QUrl cleanId(const QUrl &id);
     static QUrl iconFromId(const QUrl &id);
     static bool pathTypeNameCookieIconFromId(const QUrl &id,
                                         QString* path = nullptr,
@@ -68,7 +70,8 @@ public:
                                         QString* cookie = nullptr,
                                         QUrl *icon = nullptr,
                                         QString *desc = nullptr,
-                                        QString *author = nullptr);
+                                        QString *author = nullptr,
+                                        bool *play = nullptr);
     static QString randString(int len = 5);
     static void removeFile(const QString &path);
     static bool writeToCacheFile(const QString &filename, const QByteArray &data, bool del = false);

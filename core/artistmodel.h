@@ -53,8 +53,8 @@ private:
     QString m_id;
     QString m_name;
     QUrl m_icon;
-    int m_count;
-    int m_length;
+    int m_count = 0;
+    int m_length = 0;
 };
 
 class ArtistModel : public SelectableItemModel
