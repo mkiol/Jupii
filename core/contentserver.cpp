@@ -3295,7 +3295,7 @@ void ContentServerWorker::writePulseData(const void *data, int size)
 #ifdef SAILFISH
             // increasing volume level only in SFOS
             // endianness: BE for PCM, LE for MP3            
-            adjustVolume(&d, 2.4f, Pulse::mode > 1 ? false : true);
+            adjustVolume(&d, 2.3f, Pulse::mode > 1 ? false : true);
 #endif
         } else {
             // writing null data

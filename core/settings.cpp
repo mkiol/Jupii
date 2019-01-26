@@ -316,7 +316,7 @@ void Settings::setMicVolume(float value)
 float Settings::getMicVolume()
 {
 #ifdef SAILFISH
-    return settings.value("micvolume", 35.0).toFloat();
+    return settings.value("micvolume", 50.0).toFloat();
 #else
     return settings.value("micvolume", 1.0).toFloat();
 #endif
