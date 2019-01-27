@@ -107,7 +107,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="127"/>
         <source>Audio capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Capturar audio</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="138"/>
@@ -253,17 +253,17 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="1415"/>
         <source>Unknown</source>
-        <translation type="unfinished">Desconocido</translation>
+        <translation>Desconocido</translation>
     </message>
     <message>
         <location filename="../../core/contentserver.cpp" line="2039"/>
         <source>Microphone</source>
-        <translation type="unfinished">Micrófono</translation>
+        <translation>Micrófono</translation>
     </message>
     <message>
         <location filename="../../core/contentserver.cpp" line="2087"/>
         <source>Audio capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Capturar audio</translation>
     </message>
 </context>
 <context>
@@ -340,7 +340,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="29"/>
         <source>Cannot connect to the local network</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede conectar a la red local</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="32"/>
@@ -484,12 +484,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="117"/>
         <source>Captured application</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicación capturada</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="119"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Ninguno</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="125"/>
@@ -529,11 +529,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="186"/>
         <source>Microphone sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Sensibilidad del micrófono</translation>
     </message>
     <message>
         <source>Microphone volume</source>
-        <translation type="vanished">Volumen de micrófono</translation>
+        <translation>Volumen de micrófono</translation>
     </message>
 </context>
 <context>
@@ -624,7 +624,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../../core/playlistmodel.cpp" line="475"/>
         <source>Playlist</source>
-        <translation type="unfinished">reproducciones</translation>
+        <translation>reproducciones</translation>
     </message>
 </context>
 <context>
@@ -660,7 +660,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/PlaylistPage.qml" line="111"/>
         <source>Deleting</source>
-        <translation type="unfinished"></translation>
+        <translation>Borrando</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="119"/>
@@ -732,12 +732,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="62"/>
         <source>Volume control with hardware keys</source>
-        <translation>Volumen con teclas física</translation>
+        <translation>Volumen tangible</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="63"/>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation>Cambiar el nivel de volumen usando las teclas de volumen del teléfono físico. El nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
+        <translation>Cambia el nivel de volumen usando las teclas de volumen del teléfono físico, el nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="76"/>
@@ -747,32 +747,32 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="91"/>
         <source>Audio capture format</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato de audio</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="97"/>
         <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>MP3 44100Hz 128 kbps(predefinido)</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="98"/>
         <source>MP3 44100Hz 96 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>MP3 44100Hz 96 kbps</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="99"/>
         <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>PCM 44100Hz 1411 kbps</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
         <source>PCM 22050Hz 706 kbps</source>
-        <translation type="unfinished"></translation>
+        <translation>PCM 22050Hz 706 kbps</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="112"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluyendo los no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en su red local.</translation>
+        <translation>%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluyendo los no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en la red local.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="126"/>
@@ -792,7 +792,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="141"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation>La transmisión desde internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predeterminado) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido de un host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para hacer un funcionamiento de transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 en no es necesario que se habilite todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
+        <translation>La transmisión de internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predefinido) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido a host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para funcione la transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 no es necesario que se habilitarlo todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="144"/>
@@ -822,7 +822,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="92"/>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato de transmisión utilizado cuando %1 captura la salida de audio de otra aplicación. La transmisión no comprimida (PCM) produce un retraso menor, pero la tasa de bits más alta probablemente causará un mayor desgaste de la batería</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="111"/>
@@ -835,7 +835,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SomafmPage.qml" line="43"/>
         <source>Cannot download or parse SomaFM channels</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede descargar o analizar los canales SomaFM</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="58"/>
@@ -845,7 +845,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SomafmPage.qml" line="73"/>
         <source>Refresh channel list</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualizar lista de canales</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="81"/>
@@ -868,7 +868,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../../core/trackmodel.cpp" line="150"/>
         <source>Microphone</source>
-        <translation type="unfinished">Micrófono</translation>
+        <translation>Micrófono</translation>
     </message>
 </context>
 <context>
