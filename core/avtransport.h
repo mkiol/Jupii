@@ -244,6 +244,7 @@ private:
     void setNextURISupported(bool value);
     void updateMeta();
     void announceMetaChanged();
+    bool isIgnoreActions();
     std::string type() const;
 };
 

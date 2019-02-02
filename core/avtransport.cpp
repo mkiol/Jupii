@@ -459,38 +459,62 @@ QString AVTransport::getCurrentAlbum()
 
 bool AVTransport::getNextSupported()
 {
-    return (m_currentTransportActions & UPnPClient::AVTransport::TPA_Next) &&
-            !m_nextURI.isEmpty();
+    if (isIgnoreActions()) {
+        return !m_nextURI.isEmpty();
+    } else {
+        return (m_currentTransportActions & UPnPClient::AVTransport::TPA_Next) &&
+                !m_nextURI.isEmpty();
+    }
 }
 
 bool AVTransport::getPauseSupported()
 {
-    return m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause;
+    if (isIgnoreActions()) {
+        return true;
+    } else {
+        return m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause;
+    }
 }
 
 bool AVTransport::getPlaySupported()
 {
-    return (m_currentTransportActions & UPnPClient::AVTransport::TPA_Play) &&
-            !m_currentURI.isEmpty();
+    if (isIgnoreActions()) {
+        return !m_currentURI.isEmpty();
+    } else {
+        return (m_currentTransportActions & UPnPClient::AVTransport::TPA_Play) &&
+                !m_currentURI.isEmpty();
+    }
 }
 
 bool AVTransport::getPreviousSupported()
 {
-    return m_currentTransportActions & UPnPClient::AVTransport::TPA_Previous;
+    if (isIgnoreActions()) {
+        return true;
+    } else {
+        return m_currentTransportActions & UPnPClient::AVTransport::TPA_Previous;
+    }
 }
 
 bool AVTransport::getSeekSupported()
 {
-    if (m_transportState == Playing)
-        return m_currentTrackDuration > 0 &&
-                (m_currentTransportActions & UPnPClient::AVTransport::TPA_Seek);
-    else
-        return false;
+    if (isIgnoreActions()) {
+        return m_transportState == Playing ? m_currentTrackDuration > 0 : false;
+    } else {
+        if (m_transportState == Playing)
+            return m_currentTrackDuration > 0 &&
+                    (m_currentTransportActions & UPnPClient::AVTransport::TPA_Seek);
+        else
+            return false;
+    }
 }
 
 bool AVTransport::getStopSupported()
 {
-    return m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop;
+    if (isIgnoreActions()) {
+        return true;
+    } else {
+        return m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop;
+    }
 }
 
 bool AVTransport::getPlayable()
@@ -526,6 +550,34 @@ void AVTransport::setNextURISupported(bool value)
         m_nextURISupported = value;
         emit nextURISupportedChanged();
     }
+}
+
+bool AVTransport::isIgnoreActions()
+{
+    // ignore supported actions when they don't make any sense
+    // workaround for some creapy DLNA implementations
+    bool ignore = false;
+    if (m_transportState == Playing &&
+            m_currentTransportActions & UPnPClient::AVTransport::TPA_Play &&
+            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause) &&
+            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop)) {
+        ignore = true;
+    } else if (m_transportState == Stopped &&
+            m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop &&
+            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause) &&
+            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Play)) {
+        ignore = true;
+    } else if ((m_transportState == PausedPlayback || m_transportState == PausedRecording) &&
+            m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause &&
+            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop) &&
+            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Play)) {
+        ignore = true;
+    }
+
+    if (ignore)
+        qWarning() << "Ignoring supported actions";
+
+    return ignore;
 }
 
 void AVTransport::setLocalContent(const QString &cid, const QString &nid)
@@ -1383,12 +1435,12 @@ void AVTransport::updateCurrentTransportActions()
     if (handleError(srv->getCurrentTransportActions(ac))) {
         qDebug() << "CurrentTransportActions:";
         qDebug() << "  actions:" << ac;
-        qDebug() << "  Next:" << (ac & UPnPClient::AVTransport::TPA_Next);
-        qDebug() << "  Pause:" << (ac & UPnPClient::AVTransport::TPA_Pause);
-        qDebug() << "  Play:" << (ac & UPnPClient::AVTransport::TPA_Play);
-        qDebug() << "  Previous:" << (ac & UPnPClient::AVTransport::TPA_Previous);
-        qDebug() << "  Seek:" << (ac & UPnPClient::AVTransport::TPA_Seek);
-        qDebug() << "  Stop:" << (ac & UPnPClient::AVTransport::TPA_Stop);
+        qDebug() << "  Next:" << ((ac & UPnPClient::AVTransport::TPA_Next) > 0);
+        qDebug() << "  Pause:" << ((ac & UPnPClient::AVTransport::TPA_Pause) > 0);
+        qDebug() << "  Play:" << ((ac & UPnPClient::AVTransport::TPA_Play) > 0);
+        qDebug() << "  Previous:" << ((ac & UPnPClient::AVTransport::TPA_Previous) > 0);
+        qDebug() << "  Seek:" << ((ac & UPnPClient::AVTransport::TPA_Seek) > 0);
+        qDebug() << "  Stop:" << ((ac & UPnPClient::AVTransport::TPA_Stop) > 0);
     } else {
         qWarning() << "Unable to get Transport Actions";
     }
