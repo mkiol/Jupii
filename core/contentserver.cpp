@@ -160,8 +160,11 @@ ContentServerWorker::ContentServerWorker(QObject *parent) :
     server(new QHttpServer(parent)),
     nam(new QNetworkAccessManager(parent))
 {
-    QObject::connect(server, &QHttpServer::newRequest,
+    connect(server, &QHttpServer::newRequest,
                      this, &ContentServerWorker::requestHandler);
+    connect(this, &ContentServerWorker::contSeqWriteData,
+                     this, &ContentServerWorker::seqWriteData,
+                     Qt::QueuedConnection);
 
     if (!server->listen(static_cast<quint16>(Settings::instance()->getPort()))) {
         qWarning() << "Unable to start HTTP server!";
@@ -491,35 +494,35 @@ void ContentServerWorker::requestForPulseHandler(const QUrl &id,
 }
 
 
-bool ContentServerWorker::seqWriteData(QFile& file, qint64 size, QHttpResponse *resp)
+void ContentServerWorker::seqWriteData(QFile *file, qint64 size, QHttpResponse *resp)
 {
-    qint64 rlen = size;
-
-    qDebug() << "Start of writting" << rlen << "of data";
-
-    do {
-        if (resp->isFinished()) {
-            qWarning() << "Connection closed by server";
-            return false;
-        }
-
+    if (resp->isFinished()) {
+        qWarning() << "Connection closed by server, so skiping data sending";
+    } else {
+        qint64 rlen = size;
         const qint64 len = rlen < ContentServer::qlen ? rlen : ContentServer::qlen;
+        //qDebug() << "Sending" << len << "of data";
         QByteArray data; data.resize(static_cast<int>(len));
         auto cdata = data.data();
-        const int count = static_cast<int>(file.read(cdata, len));
+        auto count = static_cast<int>(file->read(cdata, len));
         rlen = rlen - len;
 
         if (count > 0) {
             resp->write(data);
-            //QThread::currentThread()->msleep(ContentServer::threadWait);
+            if (rlen > 0) {
+                emit contSeqWriteData(file, rlen, resp);
+                return;
+            }
         } else {
-            break;
+            qWarning() << "No more data to read";
         }
-    } while (rlen > 0);
 
-    qDebug() << "End of writting all data";
+        qDebug() << "All data sent, so ending connection";
+    }
 
-    return true;
+    resp->end();
+    file->close();
+    delete file;
 }
 
 void ContentServerWorker::sendEmptyResponse(QHttpResponse *resp, int code)
@@ -849,106 +852,115 @@ void ContentServerWorker::proxyReadyRead()
     }
 }
 
-void ContentServerWorker::streamFile(const QString& path, const QString& mime,
-                           QHttpRequest *req, QHttpResponse *resp)
+void ContentServerWorker::streamFileRange(QFile *file,
+                                          QHttpRequest *req,
+                                          QHttpResponse *resp)
 {
-    QFile file(path);
-
-    if (!file.open(QFile::ReadOnly)) {
-        qWarning() << "Unable to open file" << file.fileName() << "to read!";
-        sendEmptyResponse(resp, 500);
-        return;
-    }
-
+    auto length = file->bytesAvailable();
     const auto& headers = req->headers();
-    qint64 length = file.bytesAvailable();
-    bool isRange = headers.contains("range");
-    bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
+    bool head = req->method() == QHttpRequest::HTTP_HEAD;
 
-    qDebug() << "Content file name:" << file.fileName();
-    qDebug() << "Content size:" << length;
-    qDebug() << "Content type:" << mime;
-    qDebug() << "Content request contains Range header:" << isRange;
-    qDebug() << "Content request is HEAD:" << isHead;
+    QRegExp rx("bytes[\\s]*=[\\s]*([\\d]+)-([\\d]*)");
+    if (rx.indexIn(headers.value("range")) >= 0) {
+        qint64 startByte = rx.cap(1).toInt();
+        qint64 endByte = (rx.cap(3) == "" ? length-1 : rx.cap(3).toInt());
+        qint64 rangeLength = endByte-startByte+1;
 
-    resp->setHeader("Content-Type", mime);
-    resp->setHeader("Accept-Ranges", "bytes");
-    resp->setHeader("Connection", "close");
-    resp->setHeader("transferMode.dlna.org", "Streaming");
-    resp->setHeader("contentFeatures.dlna.org", ContentServer::dlnaContentFeaturesHeader(mime));
+        /*qDebug() << "Range start:" << startByte;
+        qDebug() << "Range end:" << endByte;
+        qDebug() << "Range length:" << rangeLength;*/
 
-    if (isRange) {
-        QRegExp rx("bytes[\\s]*=[\\s]*([\\d]+)-([\\d]*)");
-        if (rx.indexIn(headers.value("range")) >= 0) {
-            qint64 startByte = rx.cap(1).toInt();
-            qint64 endByte = (rx.cap(3) == "" ? length-1 : rx.cap(3).toInt());
-            qint64 rangeLength = endByte-startByte+1;
-
-            /*qDebug() << "Range start:" << startByte;
-            qDebug() << "Range end:" << endByte;
-            qDebug() << "Range length:" << rangeLength;*/
-
-            if (endByte > length-1) {
-                qWarning() << "Range end byte is higher than content lenght";
-                sendEmptyResponse(resp, 416);
-                file.close();
-                return;
-            }
-
+        if (endByte > length-1) {
+            qWarning() << "Range end byte is higher than content lenght";
+            sendEmptyResponse(resp, 416);
+            file->close();
+            delete file;
+        } else {
             resp->setHeader("Content-Length", QString::number(rangeLength));
             resp->setHeader("Content-Range", "bytes " +
                             QString::number(startByte) + "-" +
                             QString::number(endByte) + "/" +
                             QString::number(length-1));
 
-            qDebug() << "Sending 206 response";
-            if (isHead) {
-                sendResponse(resp, 206, "");
-                file.close();
-                return;
+            const int code = startByte == 0 && endByte == length-1 ? 200 : 206;
+            qDebug() << "Sending" << code << "response";
+            if (head) {
+                sendResponse(resp, code, "");
+                file->close();
+                delete file;
+            } else {
+                resp->writeHead(code);
+                // Sending data
+                file->seek(startByte);
+                seqWriteData(file, rangeLength, resp);
             }
-            resp->writeHead(206);
-
-            // Sending data
-            file.seek(startByte);
-            if (!seqWriteData(file, rangeLength, resp)) {
-                file.close();
-                return;
-            }
-
-            resp->end();
-            file.close();
-            return;
         }
-
-        qWarning() << "Unable to read Range header - regexp doesn't match.";
+    } else {
+        qWarning() << "Unable to read Range header";
         sendEmptyResponse(resp, 416);
-        file.close();
-        return;
+        file->close();
+        delete file;
     }
+}
 
-    qDebug() << "Reqest doesn't contain Range header";
+void ContentServerWorker::streamFileNoRange(QFile *file,
+                                            QHttpRequest *req,
+                                            QHttpResponse *resp)
+{
+    Q_UNUSED(resp)
+    qint64 length = file->bytesAvailable();
+    bool head = req->method() == QHttpRequest::HTTP_HEAD;
 
     resp->setHeader("Content-Length", QString::number(length));
 
-    if (isHead) {
+    if (head) {
         qDebug() << "Sending 200 response without content";
         sendResponse(resp, 200, "");
-        file.close();
+        file->close();
+        delete file;
         return;
+    } else {
+        qDebug() << "Sending 200 response";
+        resp->writeHead(200);
+        qDebug() << "Sending data";
+        seqWriteData(file, length, resp);
     }
+}
 
-    qDebug() << "Sending 200 response";
+void ContentServerWorker::streamFile(const QString& path, const QString& mime,
+                           QHttpRequest *req, QHttpResponse *resp)
+{
+    auto file = new QFile(path);
 
-    resp->writeHead(200);
+    if (file->open(QFile::ReadOnly)) {
+        const auto& headers = req->headers();
+        qint64 length = file->bytesAvailable();
+        bool range = headers.contains("range");
+        bool head = req->method() == QHttpRequest::HTTP_HEAD;
 
-    if (!seqWriteData(file, length, resp)) {
-        file.close();
-        return;
+        qDebug() << "Content file name:" << file->fileName();
+        qDebug() << "Content size:" << length;
+        qDebug() << "Content type:" << mime;
+        qDebug() << "Content request contains Range header:" << range;
+        qDebug() << "Content request is HEAD:" << head;
+
+        resp->setHeader("Content-Type", mime);
+        resp->setHeader("Accept-Ranges", "bytes");
+        resp->setHeader("Connection", "close");
+        resp->setHeader("Cache-Control", "no-cache");
+        resp->setHeader("TransferMode.DLNA.ORG", "Streaming");
+        resp->setHeader("contentFeatures.DLNA.ORG", ContentServer::dlnaContentFeaturesHeader(mime));
+
+        if (range) {
+            streamFileRange(file, req, resp);
+        } else {
+            streamFileNoRange(file, req, resp);
+        }
+    } else {
+        qWarning() << "Unable to open file" << file->fileName() << "to read!";
+        sendEmptyResponse(resp, 500);
+        delete file;
     }
-
-    resp->end();
-    file.close();
 }
 
 ContentServer::ContentServer(QObject *parent) :
@@ -981,6 +993,7 @@ QString ContentServer::dlnaOrgFlagsForFile()
     sprintf(flags, "%s=%.8x%.24x", "DLNA.ORG_FLAGS",
             DLNA_ORG_FLAG_BYTE_BASED_SEEK |
             DLNA_ORG_FLAG_INTERACTIVE_TRANSFERT_MODE |
+            DLNA_ORG_FLAG_STREAMING_TRANSFER_MODE |
             DLNA_ORG_FLAG_BACKGROUND_TRANSFER_MODE, 0);
     QString f(flags);
     qDebug() << f;

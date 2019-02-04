@@ -278,6 +278,7 @@ signals:
     void pulseStreamUpdated(const QUrl &id, const QString& name);
     void itemAdded(const QUrl &id);
     void itemRemoved(const QUrl &id);
+    void contSeqWriteData(QFile* file, qint64 size, QHttpResponse *resp);
 #ifdef PULSE
     void startPulse();
 #endif
@@ -294,6 +295,7 @@ private slots:
     void responseForPulseDone();
 #endif
     void responseForUrlDone();
+    void seqWriteData(QFile* file, qint64 size, QHttpResponse *resp);
 
 private:
     struct ProxyItem {
@@ -331,7 +333,8 @@ private:
 
     ContentServerWorker(QObject *parent = nullptr);
     void streamFile(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);
-    bool seqWriteData(QFile &file, qint64 size, QHttpResponse *resp);
+    void streamFileRange(QFile *file, QHttpRequest *req, QHttpResponse *resp);
+    void streamFileNoRange(QFile *file, QHttpRequest *req, QHttpResponse *resp);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     void requestForFileHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void requestForUrlHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
