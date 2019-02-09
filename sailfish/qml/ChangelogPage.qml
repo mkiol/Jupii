@@ -27,6 +27,34 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.2.1")
+            }
+
+            LogItem {
+                title: "Streaming improvements"
+                description: "Streaming of local files has been improved to be more compatible with various DLNA implementations. " +
+                             "Especially it applies to Samsung TV devices. "
+            }
+
+            LogItem {
+                title: "Initial support for HLS URLs"
+                description: "Very basic support for HTTP Live Streaming has been added. " +
+                             "When Jupii detects that URL points to HLS playlist it will " +
+                             "just pass it to a DLNA device without streaming relay. " +
+                             "Your DLNA device has to support HLS to make it work."
+            }
+
+            LogItem {
+                title: "Translation update"
+                description: "Swedish, Russian and Spanish translations have been updated."
+            }
+
+            LogItem {
+                title: "DBus API extension"
+                description: "Addional methods to DBus API have been added."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.2.0")
             }
 
@@ -77,7 +105,7 @@ Page {
                 title: "Audio capture of any application"
                 description: "This option enables capturing audio output of any application. " +
                              "It provides similar functionality to pulseaudio-dlna server. It means that " +
-                             "Jupii can stream certain application's audio playback to an UPnP/DLNA device. " +
+                             "Jupii can stream certain application's audio playback to a DLNA device. " +
                              "For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. " +
                              "You can enable audio capturing by adding \"Audio capture\" from \"Add item\" menu."
             }
@@ -119,7 +147,7 @@ Page {
 
             LogItem {
                 title: "Microphone"
-                description: "Use microphone as a source for audio stream that is played on your UPnP/DLNA device. " +
+                description: "Use microphone as a source for audio stream that is played on your DLNA device. " +
                              "Add Item list contains additional item - Microphone."
             }
 
@@ -140,7 +168,7 @@ Page {
                 title: "SHOUTcast meta data support"
                 description: "Many internet radio services use SHOUTcast streaming. " +
                              "Jupii is able to display stream title retrieved from meta data. " +
-                             "It also removes in-stream meta data if UPnP device doesn't support SHOUTcast protocol."
+                             "It also removes in-stream meta data if DLNA device doesn't support SHOUTcast protocol."
             }
 
             LogItem {
@@ -200,7 +228,7 @@ Page {
 
             LogItem {
                 title: "Play audio stream extracted from video files"
-                description: "Some UPnP devices support only audio content. " +
+                description: "Some DLNA devices support only audio content. " +
                              "In order to play video files on such devices, " +
                              "Jupii can extract an audio stream from a video file."
             }
