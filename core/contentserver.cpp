@@ -1995,38 +1995,43 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
     meta.size = file.size();
     meta.filename = file.fileName();
     meta.local = true;
-    meta.seekSupported = true;
 
-    TagLib::FileRef f(path.toUtf8().constData());
-    if(f.isNull()) {
-        qWarning() << "Cannot extract meta data with TagLib";
+    if (meta.type == ContentServer::TypeImage) {
+        meta.seekSupported = false;
     } else {
-        if(f.tag()) {
-            TagLib::Tag *tag = f.tag();
-            meta.title = QString::fromWCharArray(tag->title().toCWString());
-            meta.artist = QString::fromWCharArray(tag->artist().toCWString());
-            meta.album = QString::fromWCharArray(tag->album().toCWString());
+        meta.seekSupported = true;
+
+        TagLib::FileRef f(path.toUtf8().constData());
+        if(f.isNull()) {
+            qWarning() << "Cannot extract meta data with TagLib";
+        } else {
+            if(f.tag()) {
+                TagLib::Tag *tag = f.tag();
+                meta.title = QString::fromWCharArray(tag->title().toCWString());
+                meta.artist = QString::fromWCharArray(tag->artist().toCWString());
+                meta.album = QString::fromWCharArray(tag->album().toCWString());
+            }
+
+            if(f.audioProperties()) {
+                TagLib::AudioProperties *properties = f.audioProperties();
+                meta.duration = properties->length();
+                meta.bitrate = properties->bitrate();
+                meta.sampleRate = properties->sampleRate();
+                meta.channels = properties->channels();
+            }
         }
 
-        if(f.audioProperties()) {
-            TagLib::AudioProperties *properties = f.audioProperties();
-            meta.duration = properties->length();
-            meta.bitrate = properties->bitrate();
-            meta.sampleRate = properties->sampleRate();
-            meta.channels = properties->channels();
-        }
+        if (meta.mime == "audio/mpeg")
+            fillCoverArt(meta);
+
+        // defauls
+        /*if (meta.title.isEmpty())
+            meta.title = file.fileName();
+        if (meta.artist.isEmpty())
+            meta.artist = tr("Unknown");
+        if (meta.album.isEmpty())
+            meta.album = tr("Unknown");*/
     }
-
-    if (meta.mime == "audio/mpeg")
-        fillCoverArt(meta);
-
-    // defauls
-    /*if (meta.title.isEmpty())
-        meta.title = file.fileName();
-    if (meta.artist.isEmpty())
-        meta.artist = tr("Unknown");
-    if (meta.album.isEmpty())
-        meta.album = tr("Unknown");*/
 
     return metaCache.insert(url, meta);
 }

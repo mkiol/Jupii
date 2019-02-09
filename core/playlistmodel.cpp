@@ -805,7 +805,9 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     if (name.isEmpty())
         name = ContentServer::bestName(*meta);
 
-    QString iconUrl = ficon.isEmpty() ? meta->albumArt : ficon.toString();
+    QString iconUrl = ficon.isEmpty() ?
+                type == ContentServer::TypeImage ? meta->url.toString() : meta->albumArt
+                                                 : ficon.toString();
 #ifndef SAILFISH
     QIcon icon;
     if (iconUrl.isEmpty()) {
