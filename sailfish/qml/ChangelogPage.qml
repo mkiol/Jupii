@@ -27,42 +27,20 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.2.1")
+                text: qsTr("Version %1").arg("2.2.2")
             }
 
             LogItem {
-                title: "Streaming improvements"
-                description: "Streaming of local files has been improved to be more compatible with various DLNA implementations. " +
-                             "Especially it applies to Samsung TV devices. "
-            }
-
-            LogItem {
-                title: "Initial support for HLS URLs"
-                description: "Very basic support for HTTP Live Streaming has been added. " +
-                             "When Jupii detects that URL points to HLS playlist it will " +
-                             "just pass it to a DLNA device without streaming relay. " +
-                             "Your DLNA device has to support HLS to make it work."
-            }
-
-            LogItem {
-                title: "Translation update"
-                description: "Swedish, Russian and Spanish translations have been updated."
-            }
-
-            LogItem {
-                title: "DBus API extension"
-                description: "Addional methods to DBus API have been added."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.2.0")
-            }
-
-            LogItem {
-                title: "Audio capture improvements"
-                description: "Audio capture feature is now stable enough to be enabled by default. " +
-                             "Some tweaks were made to improve stream quality e.g. volume " +
-                             "level is adjusted to be more loud."
+                title: "Audio capture of any application"
+                description: "This option enables capturing audio output of any application. " +
+                             "It provides similar functionality to pulseaudio-dlna server. It means that " +
+                             "Jupii can stream certain application's audio playback to a DLNA device. " +
+                             "For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. " +
+                             "You can enable audio capturing by adding \"Audio capture\" from \"Add item\" menu. " +
+                             "By default captured audio stream will be encoded to MP3 format. " +
+                             "Encoding adds extra delay comparing to uncommpressed stream but it is " +
+                             "much more efficient for overall performance. " +
+                             "A stream format/quality can be changed in the settings (Experiments section). "
             }
 
             LogItem {
@@ -74,40 +52,33 @@ Page {
             }
 
             LogItem {
+                title: "Initial support for HLS URLs"
+                description: "Very basic support for HTTP Live Streaming has been added. " +
+                             "When Jupii detects that URL points to HLS playlist it will " +
+                             "just pass it to a DLNA device without streaming relay. " +
+                             "Your DLNA device has to support HLS to make it work."
+            }
+
+            LogItem {
+                title: "Streaming improvements"
+                description: "Streaming of local files has been improved to be more compatible with various DLNA implementations. " +
+                             "Especially it applies to Samsung TV devices. "
+            }
+
+            LogItem {
                 title: "Better support for playlist formats"
-                description: "Playlists with relative URLs are now accepted. " +
-                             "Also initial support for HLS format was implemented. "
+                description: "Playlists with relative URLs are now accepted."
             }
 
             LogItem {
-                title: "Chinese translation"
-                description: "Many thanks to Rui Kon for " +
-                             "providing Chinese translation (zh-CN)."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.1.1")
+                title: "DBus API extension"
+                description: "Addional methods to DBus API have been added."
             }
 
             LogItem {
-                title: "Audio capture stream encoded to MP3 format"
-                description: "By default captured audio stream will be encoded to MP3 format. " +
-                             "Encoding adds extra delay comparing to uncommpressed stream but it is " +
-                             "much more efficient for overall performance. " +
-                             "A stream format/quality can be changed in the settings (Experiments section). "
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.1.0")
-            }
-
-            LogItem {
-                title: "Audio capture of any application"
-                description: "This option enables capturing audio output of any application. " +
-                             "It provides similar functionality to pulseaudio-dlna server. It means that " +
-                             "Jupii can stream certain application's audio playback to a DLNA device. " +
-                             "For instance, you can capture web browser audio playback to listen YouTube on a remote speaker. " +
-                             "You can enable audio capturing by adding \"Audio capture\" from \"Add item\" menu."
+                title: "Slovenian and Chinese translations"
+                description: "Many thanks to Rui Kon and Boštjan Štrumbelj for " +
+                             "providing Chinese and Slovenian translations."
             }
 
             SectionHeader {
