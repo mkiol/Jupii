@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun Feb 17 2019 Michal Kosciesza <michal@mkiol.net> 2.2.2-1
+- Slovenian translation
+- Chinese translation update
+
 * Sat Feb 09 2019 Michal Kosciesza <michal@mkiol.net> 2.2.1-1
 - Streaming improvements
 - Additional Dbus methods

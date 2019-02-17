@@ -27,6 +27,15 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.2.2")
+            }
+
+            LogItem {
+                title: "Translation update"
+                description: "Slovenian and Chinese translations have been updated."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.2.1")
             }
 
