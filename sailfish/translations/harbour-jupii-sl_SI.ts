@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<TS version="2.1" language="sl_SI">
 <context>
     <name>AboutPage</name>
     <message>
         <location filename="../qml/AboutPage.qml" line="26"/>
         <source>About</source>
-        <translation>关于</translation>
+        <translation>O programu</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="42"/>
         <source>Version %1</source>
-        <translation>翻译 %1</translation>
+        <translation>Različica %1</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="51"/>
         <source>Changelog</source>
-        <translation>更新日志</translation>
+        <translation>Spremembe</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="57"/>
         <source>Project website</source>
-        <translation>项目网页</translation>
+        <translation>Spletna stran projekta</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="63"/>
         <source>Authors</source>
-        <translation>作者</translation>
+        <translation>Avtorji</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="87"/>
         <source>%1 is developed as an open source project under %2.</source>
-        <translation> %2下%1被作为开源项目开发。</translation>
+        <translation>%1 je razvit kod odprtokodni pojekt, skladen z licenco %2.</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="76"/>
         <source>Translations are provided by:</source>
-        <translation>翻译由以下人士提供：</translation>
+        <translation>Prevode so prispevali:</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="93"/>
         <source>Libraries</source>
-        <translation>库</translation>
+        <translation>Knjižnice</translation>
     </message>
 </context>
 <context>
@@ -49,17 +49,17 @@
     <message>
         <location filename="../qml/AddDevicePage.qml" line="37"/>
         <source>Add</source>
-        <translation>添加</translation>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="../qml/AddDevicePage.qml" line="43"/>
         <source>Enter IP address</source>
-        <translation>输入IP地址</translation>
+        <translation>Vnesi IP naslov</translation>
     </message>
     <message>
         <location filename="../qml/AddDevicePage.qml" line="44"/>
         <source>IP address</source>
-        <translation>IP地址</translation>
+        <translation>IP naslov</translation>
     </message>
 </context>
 <context>
@@ -67,67 +67,67 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="41"/>
         <source>Add item</source>
-        <translation>添加项目</translation>
+        <translation>Dodaj element</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="45"/>
         <source>Music</source>
-        <translation>音乐</translation>
+        <translation>Glasba</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="54"/>
         <source>Album</source>
-        <translation>图库</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="63"/>
         <source>Artist</source>
-        <translation>艺术家</translation>
+        <translation>Izvajalec</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="81"/>
         <source>Audio from Video</source>
-        <translation>来自视频的音频</translation>
+        <translation>Avdio iz Videa</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="90"/>
         <source>Video</source>
-        <translation>视频</translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="99"/>
         <source>Image</source>
-        <translation>图像</translation>
+        <translation>Slika</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="109"/>
         <source>File</source>
-        <translation>文件</translation>
+        <translation>Datoteka</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="127"/>
         <source>Audio capture</source>
-        <translation>音频采集</translation>
+        <translation>Zajem zvoka</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="138"/>
         <source>Microphone</source>
-        <translation>麦克风</translation>
+        <translation>Mikrofon</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="149"/>
         <source>Apps &amp; services</source>
-        <translation>应用和服务</translation>
+        <translation>Aplikacije &amp; servisi</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="118"/>
         <source>URL</source>
-        <translation>网址</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="72"/>
         <source>Playlist file</source>
-        <translation>播放列表文件</translation>
+        <translation>Seznam predvajanja</translation>
     </message>
 </context>
 <context>
@@ -135,32 +135,32 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="32"/>
         <source>Add URL</source>
-        <translation>添加网址</translation>
+        <translation>Dodaj URL</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="38"/>
         <source>Enter URL</source>
-        <translation>输入网址</translation>
+        <translation>Vnesi URL</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="39"/>
         <source>URL</source>
-        <translation>网址</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="57"/>
         <source>Enter Name (optional)</source>
-        <translation>输入名称（可选的）</translation>
+        <translation>Vnesi ime (neobvezno)</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="71"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation>只支持HTTP 网址. 如果网址指向一个播放列表文件, 首先播放列表项目会被添加 。如果没有提供名称，将会基于流媒体数据自动发现。</translation>
+        <translation>Podprti so le HTTP URL-ji. Če URL kaže na seznam predvajanja (datoteka/playlist), bo dodan prvi element iz seznama. V primeru, da ime ni podatno, se bo samodejno izluščilo iz medatpodatkov pretoka.</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="58"/>
         <source>Name</source>
-        <translation>i名称</translation>
+        <translation>Ime</translation>
     </message>
 </context>
 <context>
@@ -168,29 +168,32 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="70"/>
         <source>Albums</source>
-        <translation>专辑</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="71"/>
         <source>Search albums</source>
-        <translation>搜索专辑</translation>
+        <translation>Preišči albume</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="78"/>
         <source>%n track(s)</source>
         <translation>
-            <numerusform>%n 乐曲</numerusform>
+            <numerusform>%n skladba</numerusform>
+            <numerusform>%n skladbi</numerusform>
+            <numerusform>%n skladbe</numerusform>
+            <numerusform>%n skladb</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="86"/>
         <source>Select tracks</source>
-        <translation>选取乐曲</translation>
+        <translation>Izberi skladbe</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="104"/>
         <source>No albums</source>
-        <translation>没有专辑</translation>
+        <translation>Ni albumov</translation>
     </message>
 </context>
 <context>
@@ -198,29 +201,32 @@
     <message>
         <location filename="../qml/ArtistPage.qml" line="70"/>
         <source>Artists</source>
-        <translation>艺术家</translation>
+        <translation>Izvajalci</translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="71"/>
         <source>Search artists</source>
-        <translation>搜索艺术家</translation>
+        <translation>Išči med izvajalci</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="78"/>
         <source>%n track(s)</source>
         <translation>
-            <numerusform>%n 乐曲</numerusform>
+            <numerusform>%n skladba</numerusform>
+            <numerusform>%n skladbi</numerusform>
+            <numerusform>%n skladbe</numerusform>
+            <numerusform>%n skladb</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="86"/>
         <source>Select tracks</source>
-        <translation>选取乐曲</translation>
+        <translation>Izberi skladbe</translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="104"/>
         <source>No artists</source>
-        <translation>没有艺术家 </translation>
+        <translation>Ni izvajalcev</translation>
     </message>
 </context>
 <context>
@@ -228,7 +234,7 @@
     <message>
         <location filename="../qml/ChangelogPage.qml" line="26"/>
         <source>Changelog</source>
-        <translation>更新日志</translation>
+        <translation>Spremembe</translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
@@ -245,7 +251,7 @@
         <location filename="../qml/ChangelogPage.qml" line="281"/>
         <location filename="../qml/ChangelogPage.qml" line="327"/>
         <source>Version %1</source>
-        <translation>翻译 %1</translation>
+        <translation>Različica %1</translation>
     </message>
 </context>
 <context>
@@ -253,17 +259,17 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="1428"/>
         <source>Unknown</source>
-        <translation>未知</translation>
+        <translation>Neznano</translation>
     </message>
     <message>
         <location filename="../../core/contentserver.cpp" line="2057"/>
         <source>Microphone</source>
-        <translation>麦克风</translation>
+        <translation>Mikrofon</translation>
     </message>
     <message>
         <location filename="../../core/contentserver.cpp" line="2105"/>
         <source>Audio capture</source>
-        <translation>音频采集</translation>
+        <translation>Zajem zvoka</translation>
     </message>
 </context>
 <context>
@@ -271,7 +277,7 @@
     <message>
         <location filename="../qml/CopyableLabel.qml" line="34"/>
         <source>Copy</source>
-        <translation>副本</translation>
+        <translation>Kopiraj</translation>
     </message>
 </context>
 <context>
@@ -279,7 +285,7 @@
     <message>
         <location filename="../qml/CoverPage.qml" line="18"/>
         <source>Unknown</source>
-        <translation>未知</translation>
+        <translation>Neznano</translation>
     </message>
 </context>
 <context>
@@ -287,37 +293,37 @@
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="34"/>
         <source>Device description</source>
-        <translation>设备描述</translation>
+        <translation>Opis naprave</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="43"/>
         <source>Copy XML description</source>
-        <translation>复制 XML 描述</translation>
+        <translation>Kopiraj XML opis</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="48"/>
         <source>Description copied to the clipboard</source>
-        <translation>描述已被复制到剪贴板</translation>
+        <translation>Opis je kopiran v odložišče</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="70"/>
         <source>Name</source>
-        <translation>名称</translation>
+        <translation>Ime</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="75"/>
         <source>Device type</source>
-        <translation>设备类型</translation>
+        <translation>Tip naprave</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="80"/>
         <source>Model name</source>
-        <translation>模式名称</translation>
+        <translation>Model</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="85"/>
         <source>Manufacturer</source>
-        <translation>制造商</translation>
+        <translation>Proizvajalec</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="90"/>
@@ -327,12 +333,12 @@
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="95"/>
         <source>URL</source>
-        <translation>网址</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../qml/DeviceInfoPage.qml" line="101"/>
         <source>Services</source>
-        <translation>服务</translation>
+        <translation>Servisi</translation>
     </message>
 </context>
 <context>
@@ -340,70 +346,62 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="29"/>
         <source>Cannot connect to the local network</source>
-        <translation>无法连接到本地网络</translation>
+        <translation>Ne morem se povezati v lokalno omrežje</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="32"/>
         <source>An internal error occurred</source>
-        <translation>发生了一个内部错误</translation>
+        <translation>Prišlo je do notranje napake</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="55"/>
         <source>Devices</source>
-        <translation>设备</translation>
+        <translation>Naprave</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="62"/>
         <source>About</source>
-        <translation>关于</translation>
+        <translation>O programu</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="67"/>
         <source>Settings</source>
-        <translation>设置</translation>
+        <translation>Nastavitve</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="72"/>
         <source>Add device manually</source>
-        <translation>手动添加设备</translation>
+        <translation>Ročno dodaj napravo</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="79"/>
         <source>Find devices</source>
-        <translation>发现设备</translation>
+        <translation>Iskanje naprav</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="79"/>
         <location filename="../qml/DevicesPage.qml" line="99"/>
         <source>Connect</source>
-        <translation>连接</translation>
+        <translation>Poveži</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="108"/>
         <source>Show description</source>
-        <translation>显示描述</translation>
+        <translation>Prikaži opis</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="127"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ni najdenih naprav. 
+Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="129"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No devices found.
-Pull down to find more devices in your network.</source>
-        <translation type="vanished">没有发现设备。下拉以发现更多网络中的设备。</translation>
-    </message>
-    <message>
-        <source>Not connected.
-Pull down to connect to the local network.</source>
-        <translation type="vanished">未连接。下拉以连接到本地网络。</translation>
+        <translation>Brez povezave. 
+Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     </message>
 </context>
 <context>
@@ -411,22 +409,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="55"/>
         <source>Search episodes</source>
-        <translation>搜索片段</translation>
+        <translation>Išči po epizodah</translation>
     </message>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="72"/>
         <source>Unselect all</source>
-        <translation>取消全选</translation>
+        <translation>Počisti vse</translation>
     </message>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="73"/>
         <source>Select all</source>
-        <translation>全选</translation>
+        <translation>Izveri vse</translation>
     </message>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="113"/>
         <source>No episodes</source>
-        <translation>没有片段</translation>
+        <translation>Ni epizod</translation>
     </message>
 </context>
 <context>
@@ -434,32 +432,32 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/IcecastPage.qml" line="44"/>
         <source>Cannot download or parse Icecast directory</source>
-        <translation>无法下载或解析icecast目录</translation>
+        <translation>Ne morem prenesti ali prebrati Icecast Radio Directory</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="59"/>
         <source>Search stations</source>
-        <translation>搜台</translation>
+        <translation>Išči postaje</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="74"/>
         <source>Refresh station list</source>
-        <translation>更新电台列表</translation>
+        <translation>Osveži seznam postaj</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="82"/>
         <source>Unselect all</source>
-        <translation>取消全选</translation>
+        <translation>Počisti vse</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="83"/>
         <source>Select all</source>
-        <translation>全选</translation>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../qml/IcecastPage.qml" line="121"/>
         <source>No stations</source>
-        <translation>没有电台</translation>
+        <translation>Ni postaj</translation>
     </message>
 </context>
 <context>
@@ -467,77 +465,77 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="111"/>
         <source>Title</source>
-        <translation>字幕</translation>
+        <translation>Naslov</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="125"/>
         <source>Author</source>
-        <translation>作者</translation>
+        <translation>Avtor</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="132"/>
         <source>Album</source>
-        <translation>专辑</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="139"/>
         <source>Duration</source>
-        <translation>持续时间</translation>
+        <translation>Trajanje</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="146"/>
         <source>Content type</source>
-        <translation>内容类型</translation>
+        <translation>Tip vsebine</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="153"/>
         <source>Description</source>
-        <translation>描述</translation>
+        <translation>Opis</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="117"/>
         <source>Stream title</source>
-        <translation>流动字幕</translation>
+        <translation>Naslov pretoka</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="36"/>
         <source>Copy URL</source>
-        <translation>复制网址</translation>
+        <translation>Kopiraj URL</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="36"/>
         <source>Copy path</source>
-        <translation>复制捷径</translation>
+        <translation>Kopiraj pot</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="41"/>
         <source>Copy stream title</source>
-        <translation>复制流动字幕</translation>
+        <translation>Kopiraj naslov pretoka</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="117"/>
         <source>Captured application</source>
-        <translation>采集软件</translation>
+        <translation>Zajeta aplikacija</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="119"/>
         <source>None</source>
-        <translation>无</translation>
+        <translation>Nič</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="168"/>
         <source>Path</source>
-        <translation>捷径</translation>
+        <translation>Pot</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="168"/>
         <source>URL</source>
-        <translation>网址</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="186"/>
         <source>Microphone sensitivity</source>
-        <translation>麦克风灵敏度</translation>
+        <translation>Občutljivost mikrofona</translation>
     </message>
 </context>
 <context>
@@ -545,82 +543,82 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="315"/>
         <source>Item is already added</source>
-        <translation>项目已添加</translation>
+        <translation>Element je že dodan</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="317"/>
         <source>Item cannot be added</source>
-        <translation>无法添加项目</translation>
+        <translation>Elementa ni možno dodati</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="319"/>
         <source>Some items cannot be added</source>
-        <translation>无法添加某些项目</translation>
+        <translation>Nekaterih elementov ni možno dodati</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="321"/>
         <source>Items cannot be added</source>
-        <translation>无法添加项目</translation>
+        <translation>Elementov ni možno dodati</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="323"/>
         <source>Unknown error</source>
-        <translation>未知错误</translation>
+        <translation>Neznana napaka</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="346"/>
         <source>Playlist</source>
-        <translation>播放列表</translation>
+        <translation>Seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="353"/>
         <source>Empty</source>
-        <translation>空空如也</translation>
+        <translation>Prazno</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="359"/>
         <source>Not connected</source>
-        <translation>没有连接</translation>
+        <translation>Brez povezave</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="418"/>
         <source>Save playlist</source>
-        <translation>保存播放列表</translation>
+        <translation>Shrani seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="428"/>
         <source>Clear playlist</source>
-        <translation>清空播放列表</translation>
+        <translation>Počisti seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="434"/>
         <source>Add item</source>
-        <translation>添加项目</translation>
+        <translation>Dodaj element</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="503"/>
         <source>Play</source>
-        <translation>播放</translation>
+        <translation>Predvajaj</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="503"/>
         <source>Show</source>
-        <translation>显示</translation>
+        <translation>Prikaži</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="516"/>
         <source>Pause</source>
-        <translation>暂停</translation>
+        <translation>Pavza</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="524"/>
         <source>Remove</source>
-        <translation>移除</translation>
+        <translation>Odstrani</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="558"/>
         <source>Unknown</source>
-        <translation>未知</translation>
+        <translation>Neznano</translation>
     </message>
 </context>
 <context>
@@ -628,7 +626,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../../core/playlistmodel.cpp" line="484"/>
         <source>Playlist</source>
-        <translation>播放列表</translation>
+        <translation>Seznam predvajanja</translation>
     </message>
 </context>
 <context>
@@ -636,39 +634,42 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="70"/>
         <source>Playlist files</source>
-        <translation>播放列表文件</translation>
+        <translation>Seznami predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="71"/>
         <source>Search playlist files</source>
-        <translation>搜索播放列表文件</translation>
+        <translation>Išči po seznamih predvajanja</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="81"/>
         <source>%n track(s)</source>
         <translation>
-            <numerusform>%n 乐曲</numerusform>
+            <numerusform>%n skladba</numerusform>
+            <numerusform>%n skladbi</numerusform>
+            <numerusform>%n skladbe</numerusform>
+            <numerusform>%n skladb</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="90"/>
         <source>Select tracks</source>
-        <translation>选择乐曲</translation>
+        <translation>Izberi skladbe</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="95"/>
         <source>Delete playlist file</source>
-        <translation>删除播放列表文件</translation>
+        <translation>Izbriši seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="111"/>
         <source>Deleting</source>
-        <translation>删除</translation>
+        <translation>Brisanje</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="119"/>
         <source>No playlist files</source>
-        <translation>没有播放列表文件</translation>
+        <translation>Ni seznamov predvajanja</translation>
     </message>
 </context>
 <context>
@@ -676,22 +677,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="20"/>
         <source>Playlist was saved</source>
-        <translation>播放列表已保存</translation>
+        <translation>Seznam predvajanja je shranjen</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="35"/>
         <source>Save</source>
-        <translation>保存</translation>
+        <translation>Shrani</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="42"/>
         <source>Enter playlist name</source>
-        <translation>输入播放列表名称</translation>
+        <translation>Poimenuj seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="43"/>
         <source>Name</source>
-        <translation>名称</translation>
+        <translation>Ime</translation>
     </message>
 </context>
 <context>
@@ -700,13 +701,16 @@ Pull down to connect to the local network.</source>
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
         <translation>
-            <numerusform>%n 已选取</numerusform>
+            <numerusform>%n izbran</numerusform>
+            <numerusform>%n izbrana</numerusform>
+            <numerusform>%n izbrani</numerusform>
+            <numerusform>%n izbranih</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="49"/>
         <source>Search episodes</source>
-        <translation>搜索片段</translation>
+        <translation>Išči po epizodah</translation>
     </message>
 </context>
 <context>
@@ -714,47 +718,47 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="26"/>
         <source>Settings</source>
-        <translation>设置</translation>
+        <translation>Nastavitve</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="32"/>
         <source>Start with last playlist</source>
-        <translation>以上次的播放列表打开</translation>
+        <translation>Začni z zadnjim seznamom predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="33"/>
         <source>When Jupii starts, the last playlist will be automatically loaded.</source>
-        <translation>当jupli打开时，自动加载上次的播放列表</translation>
+        <translation>Ob zagonu Jupii bo zadnji seznam predvajanja samodejno naložen</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="56"/>
         <source>Experiments</source>
-        <translation>实验</translation>
+        <translation>Ekperimenti</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="62"/>
         <source>Volume control with hardware keys</source>
-        <translation>用实体按键控制音量</translation>
+        <translation>Upravljanje glasnosti s fizičnimi gumbi</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="63"/>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation>使用手机实体按键控制音量水平。媒体设备的音量将和手机通知音量保持一致。</translation>
+        <translation>Spremenite jakost predvajanja z gumbi za glasnost. Jakost na predvajalni napravi bo enaka jakosti zvonenja na telefonu.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="76"/>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation>在UPnP设备播放影像目前工作得还不是很好。至今还有一些镜像错误还未移除。该操作将强制播放%1 的影像，尽管可能出现一些错误。</translation>
+        <translation>Predvajnje slik na UPnP nprave trenutno ne deluje zadovoljivo. Ta možnost vsili %1, da kljub težavam skuša predvajati slike.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="91"/>
         <source>Audio capture format</source>
-        <translation>音频采集格式</translation>
+        <translation>Format zajema zvoka</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="97"/>
         <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation>MP3 44100Hz 128 kbps (默认)</translation>
+        <translation>MP3 44100Hz 128 kbps (privzeto)</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="98"/>
@@ -774,62 +778,61 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="112"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP 设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1 仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
+        <translation>%1 podpira le naprave tipa Media Renderer Devices. Ta možnost prikaže vse UPnP naprave, tudi uradno nepodprte, kot so domači usmerjevalniki in serverji. Za nepodprte naprave %1 prikaže le najbolj osnovne informacije. Možnost je dobrodošla za primer, ko želite videti vse UPnP naprave v domačem omrežju.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="126"/>
         <source>Adding devices manually</source>
-        <translation>自动添加设备</translation>
+        <translation>Ročno dodaj napravo</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="127"/>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation>如果%1 发现设备失败。（例如因为它在不同的LAN），你可以用IP地址手动添加它。当启用时，下拉菜单包含附加的操作以手动添加设备。确保你的设备没有使用NAT 和防火墙。</translation>
+        <translation>Če %1 ne odkrije samodejno vseh naprav (recimo, da niso v domačem omrežju), lahko ročno dodate IP naslov naprave. Ko je vključeno, bo potezni meni vseboval možnost ročnega dodajanja naprave. Preverite, da se naprava ne nahaja za NAT ali požernim zidom.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="140"/>
         <source>Internet streaming mode</source>
-        <translation>网络流模式</translation>
+        <translation>Internetni pretok</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="141"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation>来自网络的流媒体在UPnP设备上可以用两种模式操控。代理 (默认) 或改寄。 在代理模式，%1传递每个来自流媒体主机的信息包（例如网络收音机服务器）到家用网络中的UPnP设备。此操作对于UPnP 设备很透明，所以它在大多数情况下工作。因为信息包在你的手机/平板通过，%1必须被一直启用以确保流媒体工作。在该寄模式, %1 使用 HTTP 转而命令网络主机位于的 UPnP 设备。现行的的流媒体在UPnP 设备和流媒体服务器之间运动，所以没有要求 %1一直启用。改寄模式的缺陷在于不是所有的 UPnP设备都支持改寄。因此在某些设备中该模式不能恰当地工作。</translation>
+        <translation>Pretakanje iz interneta v naprave UPnP lahko poteka na dva načina: Proxy (privzeto) ali Preusmeritev.
+
+V načinu Proxy %1 vsak paket, ki ste ga prejeli od gostitelja pretakanja (npr. internetni radio) prenese na napravo UPnP, ki se nahaja v domačem omrežju. Ker gredo paketi skozi telefon/tablico, mora biti % 1 ves čas omogočen, da pretakanje deluje. Ta način je pregleden za napravo UPnP, zato deluje v večini primerov.
+
+V načinu Preusmeritev %1 uporablja preusmeritev HTTP da javi UPnP napravi, kje se nahaja internetni gostitelj. Dejansko pretakanje nato poteka neposredno med napravo UPnP in strežnikom za pretakanje zato ni potrebno, da je %1 ves čas omogočen. Žal vse UPnP naprave ne podpirajo načina Preusmeritev, zato na nekaterih napravah ta način ne bo deloval pravilno.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="144"/>
         <source>Proxy</source>
-        <translation>代理</translation>
+        <translation>Proxy</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="145"/>
         <source>Redirection</source>
-        <translation>改变方向</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="118"/>
-        <source></source>
-        <translation></translation>
+        <translation>Preusmeritev</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="48"/>
         <source>Forward/backward time-step interval</source>
-        <translation>前进/后退间隔步长</translation>
+        <translation>Časovni interval naprej/nazaj</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="75"/>
         <source>Image content</source>
-        <translation>影像内容</translation>
+        <translation>Slikovna vsebina</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="92"/>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation>当 %1 采集的音频由另一个软件输出时，使用流格式。使用未压缩的流（PCM）延迟更低，但更高的比特率可能造成电量更快耗尽。</translation>
+        <translation>Uporabljen format pretoka, ko %1 zajame avdio izhod druge aplikacije. Nekompresirani pretok (PCM) nudi manjši zamik, a zaradi večjega bitnega pretoka tudi hitreje prazni baterijo.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="111"/>
         <source>All devices visible</source>
-        <translation>所有设备可见</translation>
+        <translation>Vse naprave so vidne</translation>
     </message>
 </context>
 <context>
@@ -837,32 +840,32 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SomafmPage.qml" line="43"/>
         <source>Cannot download or parse SomaFM channels</source>
-        <translation>无法下载或解析SomaFM 频道</translation>
+        <translation>Ne morem prenesti ali prebrati SomaFM kanalov</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="58"/>
         <source>Search channels</source>
-        <translation>搜索频道</translation>
+        <translation>Išči po kanalih</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="73"/>
         <source>Refresh channel list</source>
-        <translation>刷新频道列表</translation>
+        <translation>Osveži seznam kanalov</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="81"/>
         <source>Unselect all</source>
-        <translation>取消全选</translation>
+        <translation>Počisti vse</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="82"/>
         <source>Select all</source>
-        <translation>全选</translation>
+        <translation>Izveri vse</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="110"/>
         <source>No channels</source>
-        <translation>没有频道</translation>
+        <translation>Ni kanalov</translation>
     </message>
 </context>
 <context>
@@ -870,7 +873,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../../core/trackmodel.cpp" line="150"/>
         <source>Microphone</source>
-        <translation>麦克风</translation>
+        <translation>Mikrofon</translation>
     </message>
 </context>
 <context>
@@ -878,22 +881,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/TracksPage.qml" line="49"/>
         <source>Search tracks</source>
-        <translation>搜索乐曲</translation>
+        <translation>Išči skladbe</translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="66"/>
         <source>Unselect all</source>
-        <translation>取消全选</translation>
+        <translation>Počisti vse</translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="67"/>
         <source>Select all</source>
-        <translation>取消全选</translation>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="115"/>
         <source>No tracks</source>
-        <translation>没有乐曲</translation>
+        <translation>Ni skladb</translation>
     </message>
 </context>
 </TS>

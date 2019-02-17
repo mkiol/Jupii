@@ -66,7 +66,8 @@ TRANSLATIONS += \
     translations/harbour-jupii-de.ts \
     translations/harbour-jupii-sv.ts \
     translations/harbour-jupii-es.ts \
-    translations/harbour-jupii-zh_CN.ts
+    translations/harbour-jupii-zh_CN.ts \
+    translations/harbour-jupii-sl_SI.ts
 include(sailfishapp_i18n.pri)
 
 images.files = images/*

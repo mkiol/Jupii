@@ -236,16 +236,18 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="61"/>
-        <location filename="../qml/ChangelogPage.qml" line="73"/>
-        <location filename="../qml/ChangelogPage.qml" line="86"/>
-        <location filename="../qml/ChangelogPage.qml" line="157"/>
-        <location filename="../qml/ChangelogPage.qml" line="167"/>
-        <location filename="../qml/ChangelogPage.qml" line="183"/>
-        <location filename="../qml/ChangelogPage.qml" line="198"/>
-        <location filename="../qml/ChangelogPage.qml" line="233"/>
-        <location filename="../qml/ChangelogPage.qml" line="244"/>
-        <location filename="../qml/ChangelogPage.qml" line="290"/>
+        <location filename="../qml/ChangelogPage.qml" line="39"/>
+        <location filename="../qml/ChangelogPage.qml" line="67"/>
+        <location filename="../qml/ChangelogPage.qml" line="98"/>
+        <location filename="../qml/ChangelogPage.qml" line="110"/>
+        <location filename="../qml/ChangelogPage.qml" line="123"/>
+        <location filename="../qml/ChangelogPage.qml" line="194"/>
+        <location filename="../qml/ChangelogPage.qml" line="204"/>
+        <location filename="../qml/ChangelogPage.qml" line="220"/>
+        <location filename="../qml/ChangelogPage.qml" line="235"/>
+        <location filename="../qml/ChangelogPage.qml" line="270"/>
+        <location filename="../qml/ChangelogPage.qml" line="281"/>
+        <location filename="../qml/ChangelogPage.qml" line="327"/>
         <source>Version %1</source>
         <translation>Wersja %1</translation>
     </message>
@@ -253,17 +255,17 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1415"/>
+        <location filename="../../core/contentserver.cpp" line="1428"/>
         <source>Unknown</source>
         <translation>Nieznany</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2039"/>
+        <location filename="../../core/contentserver.cpp" line="2057"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2087"/>
+        <location filename="../../core/contentserver.cpp" line="2105"/>
         <source>Audio capture</source>
         <translation>Przechwytywanie dźwięku</translation>
     </message>
@@ -622,7 +624,7 @@ Pull down to connect to the local network.</source>
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../../core/playlistmodel.cpp" line="475"/>
+        <location filename="../../core/playlistmodel.cpp" line="484"/>
         <source>Playlist</source>
         <translation>Playlista</translation>
     </message>
@@ -769,7 +771,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
         <source>PCM 22050Hz 706 kbps</source>
-        <translation></translation>
+        <translation>PCM 22050Hz 706 kbps</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="112"/>

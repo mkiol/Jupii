@@ -234,16 +234,18 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="30"/>
-        <location filename="../qml/ChangelogPage.qml" line="61"/>
-        <location filename="../qml/ChangelogPage.qml" line="73"/>
-        <location filename="../qml/ChangelogPage.qml" line="86"/>
-        <location filename="../qml/ChangelogPage.qml" line="157"/>
-        <location filename="../qml/ChangelogPage.qml" line="167"/>
-        <location filename="../qml/ChangelogPage.qml" line="183"/>
-        <location filename="../qml/ChangelogPage.qml" line="198"/>
-        <location filename="../qml/ChangelogPage.qml" line="233"/>
-        <location filename="../qml/ChangelogPage.qml" line="244"/>
-        <location filename="../qml/ChangelogPage.qml" line="290"/>
+        <location filename="../qml/ChangelogPage.qml" line="39"/>
+        <location filename="../qml/ChangelogPage.qml" line="67"/>
+        <location filename="../qml/ChangelogPage.qml" line="98"/>
+        <location filename="../qml/ChangelogPage.qml" line="110"/>
+        <location filename="../qml/ChangelogPage.qml" line="123"/>
+        <location filename="../qml/ChangelogPage.qml" line="194"/>
+        <location filename="../qml/ChangelogPage.qml" line="204"/>
+        <location filename="../qml/ChangelogPage.qml" line="220"/>
+        <location filename="../qml/ChangelogPage.qml" line="235"/>
+        <location filename="../qml/ChangelogPage.qml" line="270"/>
+        <location filename="../qml/ChangelogPage.qml" line="281"/>
+        <location filename="../qml/ChangelogPage.qml" line="327"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
@@ -251,17 +253,17 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1415"/>
+        <location filename="../../core/contentserver.cpp" line="1428"/>
         <source>Unknown</source>
         <translation type="unfinished">Unbekannt</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2039"/>
+        <location filename="../../core/contentserver.cpp" line="2057"/>
         <source>Microphone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2087"/>
+        <location filename="../../core/contentserver.cpp" line="2105"/>
         <source>Audio capture</source>
         <translation type="unfinished"></translation>
     </message>
@@ -618,7 +620,7 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../../core/playlistmodel.cpp" line="475"/>
+        <location filename="../../core/playlistmodel.cpp" line="484"/>
         <source>Playlist</source>
         <translation type="unfinished">Wiedergabeliste</translation>
     </message>
