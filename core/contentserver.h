@@ -313,6 +313,7 @@ private:
         // 0 - stream proxy (default)
         // 1 - playlist proxy (e.g. for HLS playlists)
         int mode = 0;
+        bool head = false;
     };
 
     struct SimpleProxyItem {

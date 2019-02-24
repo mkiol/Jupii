@@ -374,6 +374,7 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
     } else {
         // Proxy mode
         qDebug() << "Proxy mode enabled => creating proxy";
+
         QNetworkRequest request;
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         request.setUrl(url);
@@ -387,14 +388,12 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         request.setRawHeader("User-Agent", ContentServer::userAgent);
 
         QNetworkReply *reply;
-        bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
-        if (isHead) {
-            qDebug() << "HEAD request for url:" << url;
-            reply = nam->head(request);
-        } else {
-            qDebug() << "GET request for url:" << url;
-            reply = nam->get(request);
-        }
+        bool head = req->method() == QHttpRequest::HTTP_HEAD;
+        qDebug() << (head ? "HEAD" : "GET") << "request for url:" << url;
+
+        // Always sending GET request to remote server because some
+        // DLNA renderers are confused when they receives error for HEAD
+        reply = nam->get(request);
 
         ProxyItem &item = proxyItems[reply];
         item.req = req;
@@ -404,6 +403,7 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         item.meta = headers.contains("icy-metadata");
         item.seek = meta->seekSupported;
         item.mode = meta->mode;
+        item.head = head; // orig request is HEAD
 
         responseToReplyMap.insert(resp, reply);
 
@@ -593,9 +593,10 @@ void ContentServerWorker::proxyMetaDataChanged()
     auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
     auto mime = reply->header(QNetworkRequest::ContentTypeHeader).toString();
     auto error = reply->error();
+    bool head = item.req->method() == QHttpRequest::HTTP_HEAD;
 
     // -- debug --
-    qDebug() << "Request:" << (item.req->method() == QHttpRequest::HTTP_GET ? "GET" : "HEAD")
+    qDebug() << "Request:" << (head ? "HEAD" : "GET")
              << item.id;
     qDebug() << "Reply status:" << code << reason;
     qDebug() << "Error code:" << error;
@@ -607,8 +608,9 @@ void ContentServerWorker::proxyMetaDataChanged()
 
     if (error != QNetworkReply::NoError || code > 299) {
         qWarning() << "Error response from network server";
-        if (code < 400)
+        if (code < 400) {
             code = 404;
+        }
         qDebug() << "Ending request with code:" << code;
         sendEmptyResponse(item.resp, code);
     } else if (mime.isEmpty()) {
@@ -642,14 +644,19 @@ void ContentServerWorker::proxyMetaDataChanged()
                 item.resp->setHeader(h.first, h.second);
         }
 
-        // state change
-        // stream proxy (0) => sending partial data every ready read signal (1)
-        // playlist proxy (1) => sending all data when request finished (2)
-        item.state = item.mode == 1 ? 2 : 1;
+        if (item.head) {
+            qDebug() << "Orig reqest is HEAD, so ending proxy request with code:" << code;
+            sendEmptyResponse(item.resp, code);
+        } else {
+            // state change
+            // stream proxy (0) => sending partial data every ready read signal (1)
+            // playlist proxy (1) => sending all data when request finished (2)
+            item.state = item.mode == 1 ? 2 : 1;
 
-        qDebug() << "Sending head for request with code:" << code;
-        item.resp->writeHead(code);
-        return;
+            qDebug() << "Sending head for request with code:" << code;
+            item.resp->writeHead(code);
+            return;
+        }
     }
 
     emit itemRemoved(item.id);
