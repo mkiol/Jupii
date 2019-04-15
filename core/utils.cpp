@@ -21,6 +21,9 @@
 #include <QDir>
 #include <QUrlQuery>
 #include <QTime>
+#ifdef SAILFISH
+#include <QMetaObject>
+#endif
 
 #include "settings.h"
 #include "gpoddermodel.h"
@@ -627,3 +630,17 @@ void Utils::removeFile(const QString &path)
     if (file.exists())
         file.remove();
 }
+
+#ifdef SAILFISH
+void Utils::setQmlRootItem(QQuickItem *rootItem)
+{
+    qmlRootItem = rootItem;
+}
+
+void Utils::activateWindow()
+{
+    if (qmlRootItem) {
+        QMetaObject::invokeMethod(qmlRootItem, "activate");
+    }
+}
+#endif

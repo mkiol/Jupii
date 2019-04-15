@@ -14,6 +14,7 @@
 #include <QQmlEngine>
 #include <QQuickView>
 #include <QQmlContext>
+#include <QQuickItem>
 #include <sailfishapp.h>
 #include "iconprovider.h"
 #endif
@@ -136,6 +137,8 @@ int main(int argc, char *argv[])
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
     view->show();
+
+    utils->setQmlRootItem(view->rootObject());
 #endif
 
 #ifdef DESKTOP

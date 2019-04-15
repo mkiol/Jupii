@@ -15,6 +15,7 @@
 #include "playlistmodel.h"
 #include "avtransport.h"
 #include "services.h"
+#include "utils.h"
 
 DbusProxy::DbusProxy(QObject *parent) :
     QObject(parent)
@@ -112,6 +113,10 @@ void DbusProxy::addPathOnceAndPlay(const QString& path, const QString& name)
     } else {
         pl->addItemPath(path, name, true);
     }
+
+    // bringing app to foreground
+    auto utils = Utils::instance();
+    utils->activateWindow();
 }
 
 void DbusProxy::addUrlOnce(const QString& url, const QString& name)
@@ -140,6 +145,10 @@ void DbusProxy::addUrlOnceAndPlay(const QString& url, const QString& name)
     } else {
         pl->addItemUrl(u, name, {}, {}, {}, true);
     }
+
+    // bringing app to foreground
+    auto utils = Utils::instance();
+    utils->activateWindow();
 }
 
 void DbusProxy::clearPlaylist()

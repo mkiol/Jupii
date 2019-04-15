@@ -646,7 +646,8 @@ void ContentServerWorker::proxyMetaDataChanged()
 
         if (item.head) {
             qDebug() << "Orig reqest is HEAD, so ending proxy request with code:" << code;
-            sendEmptyResponse(item.resp, code);
+            item.resp->writeHead(code);
+            item.resp->end();
         } else {
             // state change
             // stream proxy (0) => sending partial data every ready read signal (1)
