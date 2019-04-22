@@ -101,19 +101,15 @@ int main(int argc, char *argv[])
 
 #ifdef SAILFISH
     QTranslator translator;
-    const QString locale = QLocale::system().name();
-    //const QString locale = "ru";
-    const QString transDir = SailfishApp::pathTo("translations").toLocalFile();
-    if(translator.load("harbour-jupii-" + locale, transDir)) {
-        app->installTranslator(&translator);
-    } else {
-        qWarning() << "Couldn't load translation for" << locale;
-        if (translator.load("harbour-jupii", transDir)) {
-            app->installTranslator(&translator);
-        } else {
-            qWarning() << "Couldn't load default translation";
+    auto transDir = SailfishApp::pathTo("translations").toLocalFile();
+    auto locale = QLocale::system().name();
+    if(!translator.load(locale, "harbour-jupii", "-", transDir, ".qm")) {
+        qDebug() << "Cannot load translation:" << locale << transDir;
+        if (!translator.load("harbour-jupii-en", transDir)) {
+            qDebug() << "Cannot load default translation";
         }
     }
+    app->installTranslator(&translator);
 #endif
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));

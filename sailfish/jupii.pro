@@ -58,7 +58,7 @@ SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 TRANSLATION_SOURCE_DIRS += $$PROJECTDIR/core
 CONFIG += sailfishapp_i18n_include_obsolete
 TRANSLATIONS += \
-    translations/harbour-jupii.ts \
+    translations/harbour-jupii-en.ts \
     translations/harbour-jupii-pl.ts \
     translations/harbour-jupii-nl.ts \
     translations/harbour-jupii-nl_BE.ts \
