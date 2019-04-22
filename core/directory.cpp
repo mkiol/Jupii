@@ -12,7 +12,6 @@
 #include <QStringList>
 #include <QByteArray>
 #include <QFile>
-
 #include <string>
 
 #include <libupnpp/control/description.hxx>
@@ -25,7 +24,8 @@ Directory* Directory::m_instance = nullptr;
 
 Directory::Directory(QObject *parent) :
     QObject(parent),
-    TaskExecutor(parent)
+    TaskExecutor(parent),
+    nm(new QNetworkAccessManager())
 {
     init();
 }
@@ -124,7 +124,9 @@ void Directory::discover(const QString& ssdpIp)
             m_directory->setSsdpIP(ssdpIp.toStdString());
 
         bool found = false;
-        auto traverseFun = [this, &found, ssdpIp](const UPnPClient::UPnPDeviceDesc &ddesc,
+        QHash<QString,bool> xcs;
+
+        auto traverseFun = [this, &found, ssdpIp, &xcs](const UPnPClient::UPnPDeviceDesc &ddesc,
                 const UPnPClient::UPnPServiceDesc &sdesc) {
             /*qDebug() << "==> Visitor";
             qDebug() << " Device";
@@ -139,12 +141,22 @@ void Directory::discover(const QString& ssdpIp)
             qDebug() << "  SCPDURL:" << QString::fromStdString(sdesc.SCPDURL);
             qDebug() << "  serviceId:" << QString::fromStdString(sdesc.serviceId);
             qDebug() << "  serviceType:" << QString::fromStdString(sdesc.serviceType);*/
+            //qDebug() << "  ddesc.XMLText:" << QString::fromStdString(ddesc.XMLText);
 
             auto did = QString::fromStdString(ddesc.UDN);
             auto sid = QString::fromStdString(sdesc.serviceId);
 
             this->m_devsdesc.insert(did, ddesc);
             this->m_servsdesc.insert(did + sid, sdesc);
+
+            if (!xcs.contains(did)) {
+                xcs[did] = true;
+                auto data = XCParser::parse(QString::fromStdString(ddesc.XMLText));
+                if (data.valid) {
+                    auto xc = new YamahaXC(); xc->data = data;
+                    this->m_xcs.insert(did, xc);
+                }
+            }
 
             if (ssdpIp.isEmpty()) {
                 found = true;
@@ -217,9 +229,7 @@ void Directory::discoverFavs()
             auto did = QString::fromStdString(ddesc.UDN);
 
             for (auto& sdesc : ddesc.services) {
-
                 auto sid = QString::fromStdString(sdesc.serviceId);
-
                 this->m_servsdesc.insert(did + sid, sdesc);
             }
 
@@ -273,9 +283,32 @@ bool Directory::getDeviceDesc(const QString& deviceId, UPnPClient::UPnPDeviceDes
     return false;
 }
 
+YamahaXC* Directory::deviceXC(const QString& deviceId)
+{
+    auto it = m_xcs.find(deviceId);
+    if (it != m_xcs.end())
+        return it.value();
+    return nullptr;
+}
+
+bool Directory::xcExists(const QString& deviceId)
+{
+    return m_xcs.contains(deviceId);
+}
+
 bool Directory::getBusy()
 {
     return m_busy;
+}
+
+void Directory::xcTogglePower(const QString& deviceId)
+{
+    auto xc = deviceXC(deviceId);
+    if (xc) {
+        xc->powerToggle();
+    } else {
+        qWarning() << "Device doesn't have XC API";
+    }
 }
 
 bool Directory::getInited()

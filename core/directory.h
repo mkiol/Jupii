@@ -14,7 +14,8 @@
 #include <QList>
 #include <QString>
 #include <QUrl>
-
+#include <QNetworkAccessManager>
+#include <memory>
 #include <functional>
 
 #include <libupnpp/upnpplib.hxx>
@@ -22,6 +23,7 @@
 #include <libupnpp/control/description.hxx>
 
 #include "taskexecutor.h"
+#include "yamahaextendedcontrol.h"
 
 class Directory :
         public QObject,
@@ -32,18 +34,25 @@ class Directory :
     Q_PROPERTY (bool inited READ getInited NOTIFY initedChanged)
 
 public:
+    std::unique_ptr<QNetworkAccessManager> nm;
+
     static Directory* instance(QObject *parent = nullptr);
 
     bool getBusy();
     bool getInited();
     bool getServiceDesc(const QString& deviceId, const QString& serviceId, UPnPClient::UPnPServiceDesc& sdesc);
     bool getDeviceDesc(const QString& deviceId, UPnPClient::UPnPDeviceDesc& ddesc);
+    YamahaXC* deviceXC(const QString& deviceId);
+    bool xcExists(const QString& deviceId);
     const QHash<QString,UPnPClient::UPnPDeviceDesc>& getDeviceDescs();
     QUrl getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc);
     Q_INVOKABLE void init();
     Q_INVOKABLE void discover();
     Q_INVOKABLE void discover(const QString& ssdpIp);
     Q_INVOKABLE void discoverFavs();
+
+    // Extended control API
+    Q_INVOKABLE void xcTogglePower(const QString& deviceId);
 
 signals:
     void discoveryReady();
@@ -59,6 +68,7 @@ private:
     UPnPClient::UPnPDeviceDirectory* m_directory;
     QHash<QString,UPnPClient::UPnPServiceDesc> m_servsdesc;
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_devsdesc;
+    QHash<QString,YamahaXC*> m_xcs;
     explicit Directory(QObject *parent = nullptr);
     void setBusy(bool busy);
     void setInited(bool inited);

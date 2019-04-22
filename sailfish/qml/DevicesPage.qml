@@ -110,6 +110,14 @@ Page {
                         pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),{udn: model.id})
                     }
                 }
+
+                MenuItem {
+                    text: qsTr("Toggle power")
+                    visible: model.xc
+                    onClicked: {
+                        directory.xcTogglePower(model.id)
+                    }
+                }
             }
 
             onClicked: {

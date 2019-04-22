@@ -46,12 +46,13 @@ void DeviceModel::updateModel()
     auto s = Settings::instance();
     auto av = Services::instance()->avTransport;
 
-    auto ddescs = d->getDeviceDescs();
+    auto& ddescs = d->getDeviceDescs();
     bool showAll = s->getShowAllDevices();
 
     clear();
 
-    for (auto ddesc : ddescs) {
+    for (auto it = ddescs.begin(); it != ddescs.end(); ++it) {
+        auto& ddesc = it.value();
         /*bool supported = ddesc.deviceType == "urn:schemas-upnp-org:device:MediaRenderer:1" ||
                          ddesc.deviceType == "urn:schemas-upnp-org:device:MediaServer:1";*/
         bool supported = ddesc.deviceType == "urn:schemas-upnp-org:device:MediaRenderer:1";
@@ -60,7 +61,7 @@ void DeviceModel::updateModel()
             QString id = QString::fromStdString(ddesc.UDN);
             QUrl iconUrl = d->getDeviceIconUrl(ddesc);
             bool active = av && av->getDeviceId() == id;
-
+            bool xc = d->xcExists(it.key());
             appendRow(new DeviceItem(id,
                                      QString::fromStdString(ddesc.friendlyName),
                                      QString::fromStdString(ddesc.deviceType),
@@ -71,7 +72,8 @@ void DeviceModel::updateModel()
                                      iconUrl,
 #endif
                                      supported,
-                                     active
+                                     active,
+                                     xc
                                      ));
 
 #ifdef DESKTOP
@@ -126,6 +128,7 @@ DeviceItem::DeviceItem(const QString &id,
 #endif
                    bool supported,
                    bool active,
+                   bool jxc,
                    QObject *parent) :
     ListItem(parent),
     m_id(id),
@@ -134,7 +137,8 @@ DeviceItem::DeviceItem(const QString &id,
     m_model(model),
     m_icon(icon),
     m_active(active),
-    m_supported(supported)
+    m_supported(supported),
+    m_xc(jxc)
 {
 
     QObject::connect(Settings::instance(), &Settings::favDevicesChanged,
@@ -152,6 +156,7 @@ QHash<int, QByteArray> DeviceItem::roleNames() const
     names[IconRole] = "icon";
     names[SupportedRole] = "supported";
     names[ActiveRole] = "active";
+    names[XcRole] = "xc";
     return names;
 }
 
@@ -174,6 +179,8 @@ QVariant DeviceItem::data(int role) const
         return supported();
     case ActiveRole:
         return active();
+    case XcRole:
+        return xc();
 #ifdef DESKTOP
     case ForegroundRole:
         return foreground();

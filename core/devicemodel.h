@@ -38,7 +38,8 @@ public:
         ActiveRole,
         ModelRole,
         FavRole,
-        SupportedRole
+        SupportedRole,
+        XcRole
     };
 
 public:
@@ -54,6 +55,7 @@ public:
 #endif
                       bool supported,
                       bool active,
+                      bool jxc,
                       QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
@@ -68,6 +70,7 @@ public:
 #endif
     inline bool supported() const { return m_supported; }
     inline bool active() const { return m_active; }
+    inline bool xc() const { return m_xc; }
     bool isFav() const;
     void setActive(bool value);
 #ifdef DESKTOP
@@ -87,6 +90,7 @@ private:
 #endif
     bool m_active = false;
     bool m_supported = false;
+    bool m_xc = false;
 };
 
 class DeviceModel : public ListModel

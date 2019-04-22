@@ -78,8 +78,8 @@ HEADERS += \
     $$CORE_DIR/somafmmodel.h \
     $$CORE_DIR/gpoddermodel.h \
     $$CORE_DIR/itemmodel.h \
-    $$CORE_DIR/icecastmodel.h
-
+    $$CORE_DIR/icecastmodel.h \
+    $$CORE_DIR/yamahaextendedcontrol.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -109,4 +109,5 @@ SOURCES += \
     $$CORE_DIR/somafmmodel.cpp \
     $$CORE_DIR/gpoddermodel.cpp \
     $$CORE_DIR/itemmodel.cpp \
-    $$CORE_DIR/icecastmodel.cpp
+    $$CORE_DIR/icecastmodel.cpp \
+    $$CORE_DIR/yamahaextendedcontrol.cpp
