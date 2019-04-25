@@ -136,7 +136,7 @@ Page {
                 }
             }
 
-            ComboBox {
+            /*ComboBox {
                 label: qsTr("Internet streaming mode")
                 description: qsTr("Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.").arg(APP_NAME)
                 currentIndex: settings.remoteContentMode
@@ -148,7 +148,7 @@ Page {
                 onCurrentIndexChanged: {
                     settings.remoteContentMode = currentIndex
                 }
-            }
+            }*/
 
             Spacer {}
         }

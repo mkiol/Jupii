@@ -33,7 +33,7 @@ class Settings:
     Q_PROPERTY (QStringList lastPlaylist READ getLastPlaylist WRITE setLastPlaylist NOTIFY lastPlaylistChanged)
     Q_PROPERTY (bool useDbusVolume READ getUseDbusVolume WRITE setUseDbusVolume NOTIFY useDbusVolumeChanged)
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
-    Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
+    //Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
     Q_PROPERTY (int pulseMode READ getPulseMode WRITE setPulseMode NOTIFY pulseModeChanged)
 
@@ -90,8 +90,8 @@ public:
     QString getPrefNetInf();
     void setPrefNetInf(const QString& value);
 
-    void setRemoteContentMode(int value);
-    int getRemoteContentMode();
+    /*void setRemoteContentMode(int value);
+    int getRemoteContentMode();*/
 
 signals:
     void portChanged();
@@ -107,7 +107,7 @@ signals:
     void useDbusVolumeChanged();
     void ssdpIpEnabledChanged();
     void prefNetInfChanged();
-    void remoteContentModeChanged();
+    //void remoteContentModeChanged();
     void micVolumeChanged();
 
 private:

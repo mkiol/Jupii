@@ -367,59 +367,59 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
 {
     auto url = Utils::urlFromId(id);
 
-    if (Settings::instance()->getRemoteContentMode() == 1) {
+    /*if (Settings::instance()->getRemoteContentMode() == 1) {
         // Redirection mode
         qDebug() << "Redirection mode enabled => sending HTTP redirection";
         sendRedirection(resp, url.toString());
-    } else {
-        // Proxy mode
-        qDebug() << "Proxy mode enabled => creating proxy";
+    } else {*/
 
-        QNetworkRequest request;
-        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        request.setUrl(url);
+    // Proxy mode
+    qDebug() << "Proxy mode enabled => creating proxy";
 
-        // Add headers
-        const auto& headers = req->headers();
-        if (headers.contains("range"))
-            request.setRawHeader("Range", headers.value("range").toLatin1());
-        request.setRawHeader("Icy-MetaData", "1");
-        request.setRawHeader("Connection", "close");
-        request.setRawHeader("User-Agent", ContentServer::userAgent);
+    QNetworkRequest request;
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    request.setUrl(url);
 
-        QNetworkReply *reply;
-        bool head = req->method() == QHttpRequest::HTTP_HEAD;
-        qDebug() << (head ? "HEAD" : "GET") << "request for url:" << url;
+    // Add headers
+    const auto& headers = req->headers();
+    if (headers.contains("range"))
+        request.setRawHeader("Range", headers.value("range").toLatin1());
+    request.setRawHeader("Icy-MetaData", "1");
+    request.setRawHeader("Connection", "close");
+    request.setRawHeader("User-Agent", ContentServer::userAgent);
 
-        // Always sending GET request to remote server because some
-        // DLNA renderers are confused when they receives error for HEAD
-        reply = nam->get(request);
+    QNetworkReply *reply;
+    bool head = req->method() == QHttpRequest::HTTP_HEAD;
+    qDebug() << (head ? "HEAD" : "GET") << "request for url:" << url;
 
-        ProxyItem &item = proxyItems[reply];
-        item.req = req;
-        item.resp = resp;
-        item.reply = reply;
-        item.id = id;
-        item.meta = headers.contains("icy-metadata");
-        item.seek = meta->seekSupported;
-        item.mode = meta->mode;
-        item.head = head; // orig request is HEAD
+    // Always sending GET request to remote server because some
+    // DLNA renderers are confused when they receives error for HEAD
+    reply = nam->get(request);
 
-        responseToReplyMap.insert(resp, reply);
+    ProxyItem &item = proxyItems[reply];
+    item.req = req;
+    item.resp = resp;
+    item.reply = reply;
+    item.id = id;
+    item.meta = headers.contains("icy-metadata");
+    item.seek = meta->seekSupported;
+    item.mode = meta->mode;
+    item.head = head; // orig request is HEAD
 
-        connect(reply, &QNetworkReply::metaDataChanged,
-                this, &ContentServerWorker::proxyMetaDataChanged);
-        connect(reply, &QNetworkReply::redirected,
-                this, &ContentServerWorker::proxyRedirected);
-        connect(reply, &QNetworkReply::finished,
-                this, &ContentServerWorker::proxyFinished);
-        connect(reply, &QNetworkReply::readyRead,
-                this, &ContentServerWorker::proxyReadyRead);
-        connect(resp, &QHttpResponse::done,
-                this, &ContentServerWorker::responseForUrlDone);
+    responseToReplyMap.insert(resp, reply);
 
-        emit itemAdded(item.id);
-    }
+    connect(reply, &QNetworkReply::metaDataChanged,
+            this, &ContentServerWorker::proxyMetaDataChanged);
+    connect(reply, &QNetworkReply::redirected,
+            this, &ContentServerWorker::proxyRedirected);
+    connect(reply, &QNetworkReply::finished,
+            this, &ContentServerWorker::proxyFinished);
+    connect(reply, &QNetworkReply::readyRead,
+            this, &ContentServerWorker::proxyReadyRead);
+    connect(resp, &QHttpResponse::done,
+            this, &ContentServerWorker::responseForUrlDone);
+
+    emit itemAdded(item.id);
 }
 
 void ContentServerWorker::requestForMicHandler(const QUrl &id,

@@ -49,7 +49,7 @@ int Settings::getPort()
     return settings.value("port", 9092).toInt();
 }
 
-void Settings::setRemoteContentMode(int value)
+/*void Settings::setRemoteContentMode(int value)
 {
     // 0 - proxy
     // 1 - redirection
@@ -57,14 +57,14 @@ void Settings::setRemoteContentMode(int value)
         settings.setValue("remotecontentmode", value);
         emit remoteContentModeChanged();
     }
-}
+}*/
 
-int Settings::getRemoteContentMode()
+/*int Settings::getRemoteContentMode()
 {
     // 0 - proxy
     // 1 - redirection
     return settings.value("remotecontentmode", 0).toInt();
-}
+}*/
 
 void Settings::setForwardTime(int value)
 {
