@@ -36,7 +36,6 @@ int SettingsDialog::exec()
 #else
     ui->pulseModeComboBox->setEnabled(false);
 #endif
-    ui->remoteContentModeComboBox->setCurrentIndex(s->getRemoteContentMode());
 
     // Interfaces
     auto infs = Utils::instance()->getNetworkIfs();
@@ -80,12 +79,6 @@ void SettingsDialog::on_netiInfsComboBox_activated(int index)
         qDebug() << "New prefered network interface:" << inf;
         s->setPrefNetInf(inf);
     }
-}
-
-void SettingsDialog::on_remoteContentModeComboBox_activated(int index)
-{
-    auto s = Settings::instance();
-    s->setRemoteContentMode(index);
 }
 
 void SettingsDialog::on_pulseModeComboBox_activated(int index)

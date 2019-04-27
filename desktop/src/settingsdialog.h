@@ -28,7 +28,6 @@ private slots:
     void on_imageCheckBox_toggled(bool checked);
     void on_allDevicesCheckBox_toggled(bool checked);
     void on_netiInfsComboBox_activated(int index);
-    void on_remoteContentModeComboBox_activated(int index);
     void on_pulseModeComboBox_activated(int index);
 
 private:

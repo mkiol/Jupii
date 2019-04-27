@@ -114,9 +114,11 @@ void DbusProxy::addPathOnceAndPlay(const QString& path, const QString& name)
         pl->addItemPath(path, name, true);
     }
 
+#ifdef SAILFISH
     // bringing app to foreground
     auto utils = Utils::instance();
     utils->activateWindow();
+#endif
 }
 
 void DbusProxy::addUrlOnce(const QString& url, const QString& name)
@@ -146,9 +148,11 @@ void DbusProxy::addUrlOnceAndPlay(const QString& url, const QString& name)
         pl->addItemUrl(u, name, {}, {}, {}, true);
     }
 
+#ifdef SAILFISH
     // bringing app to foreground
     auto utils = Utils::instance();
     utils->activateWindow();
+#endif
 }
 
 void DbusProxy::clearPlaylist()
