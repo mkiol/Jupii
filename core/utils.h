@@ -45,6 +45,7 @@ public:
     Q_INVOKABLE bool isGpodderAvailable();
     Q_INVOKABLE bool isIdMic(const QUrl &id);
     Q_INVOKABLE bool isIdPulse(const QUrl &id);
+    Q_INVOKABLE QString dirNameFromPath(const QString &path);
 
     QString hash(const QString &value);
     static bool isIdValid(const QString &id);

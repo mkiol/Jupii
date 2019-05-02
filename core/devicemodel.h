@@ -42,7 +42,6 @@ public:
         XcRole
     };
 
-public:
     DeviceItem(QObject *parent = nullptr): ListItem(parent) {}
     explicit DeviceItem(const QString &id,
                       const QString &title,

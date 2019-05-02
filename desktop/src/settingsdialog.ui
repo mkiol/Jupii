@@ -115,6 +115,13 @@
           </layout>
          </item>
          <item>
+          <widget class="QCheckBox" name="recCheckBox">
+           <property name="text">
+            <string>Stream recorder</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QCheckBox" name="allDevicesCheckBox">
            <property name="enabled">
             <bool>true</bool>

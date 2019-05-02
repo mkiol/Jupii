@@ -74,6 +74,9 @@ private slots:
     void on_actionClear_triggered();
     void on_actionMic_triggered();
     void on_actionPulse_triggered();
+    void on_recButton_toggled(bool checked);
+    void on_cs_streamToRecordChanged(const QUrl &id, bool value);
+    void on_cs_streamRecordableChanged(const QUrl &id, bool value);
 
 private:
     Ui::MainWindow *ui;

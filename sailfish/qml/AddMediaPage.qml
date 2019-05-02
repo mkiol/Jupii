@@ -23,6 +23,7 @@ Page {
     property var somafmPickerPage
     property var icecastPickerPage
     property var gpodderPickerPage
+    property var recPickerPage
 
     SilicaFlickable {
         id: flick
@@ -142,6 +143,15 @@ Page {
                 onClicked: {
                     playlist.addItemUrl("jupii://mic")
                     pageStack.pop()
+                }
+            }
+
+            SimpleListItem {
+                visible: settings.rec
+                title.text: "Recordings"
+                icon.source: "image://icons/icon-m-record"
+                onClicked: {
+                    pageStack.replace(recPickerPage)
                 }
             }
 

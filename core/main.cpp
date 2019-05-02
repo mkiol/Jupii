@@ -51,6 +51,8 @@
 #include "somafmmodel.h"
 #include "gpoddermodel.h"
 #include "icecastmodel.h"
+#include "dirmodel.h"
+#include "recmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -75,6 +77,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0, "SomafmModel");
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0, "IcecastModel");
     qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1, 0, "GpodderEpisodeModel");
+    qmlRegisterType<DirModel>("harbour.jupii.DirModel", 1, 0, "DirModel");
+    qmlRegisterType<RecModel>("harbour.jupii.RecModel", 1, 0, "RecModel");
 
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 

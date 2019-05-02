@@ -81,7 +81,6 @@ class SomafmModel : public SelectableItemModel
 {
     Q_OBJECT
     Q_PROPERTY (bool refreshing READ isRefreshing NOTIFY refreshingChanged)
-
 public:
     explicit SomafmModel(QObject *parent = nullptr);
     bool isRefreshing();

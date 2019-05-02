@@ -23,19 +23,26 @@ ApplicationWindow
         id: notification
     }
 
-    // -- stream title --
+    // -- stream --
     property string streamTitle: ""
-    function updateStreamTitle() {
+    property bool streamRecordable: false
+    property bool streamToRecord: false
+    function updateStreamInfo() {
         streamTitle = cserver.streamTitle(av.currentId)
+        streamRecordable = cserver.isStreamRecordable(av.currentId)
+        streamToRecord = cserver.isStreamToRecord(av.currentId)
     }
-
     Connections {
         target: av
-        onCurrentIdChanged: updateStreamTitle()
+        onCurrentIdChanged: updateStreamInfo()
     }
-
     Connections {
         target: cserver
-        onStreamTitleChanged: updateStreamTitle()
+        onStreamTitleChanged: updateStreamInfo()
+        onStreamRecordableChanged: updateStreamInfo()
+        onStreamToRecordChanged: updateStreamInfo()
+        onStreamRecorded: {
+            notification.show(qsTr("Track \"%1\" saved").arg(title))
+        }
     }
 }

@@ -23,6 +23,7 @@
 #include <QDomText>
 #include <QSslConfiguration>
 #include <QTextStream>
+#include <QStandardPaths>
 #include <iomanip>
 #include <limits>
 
@@ -89,6 +90,15 @@ const QHash<QString,QString> ContentServer::m_musicExtMap {
     {"ape", "audio/x-monkeys-audio"},
     {"ogg", "audio/ogg"}, {"oga", "audio/ogg"},
     {"wma", "audio/x-ms-wma"}
+};
+
+const QHash<QString,QString> ContentServer::m_musicMimeToExtMap {
+    {"audio/mpeg", "mp3"},
+    {"audio/mp4", "m4a"},
+    //{"audio/aac", "aac"},
+    //{"audio/aacp", "aac"},
+    {"audio/ogg", "ogg"},
+    {"application/ogg", "ogg"}
 };
 
 const QHash<QString,QString> ContentServer::m_videoExtMap {
@@ -169,6 +179,124 @@ ContentServerWorker::ContentServerWorker(QObject *parent) :
     if (!server->listen(static_cast<quint16>(Settings::instance()->getPort()))) {
         qWarning() << "Unable to start HTTP server!";
         //TODO: Handle: Unable to start HTTP server
+    }
+
+    cleanRecFiles();
+}
+
+bool ContentServerWorker::isStreamToRecord(const QUrl &id)
+{
+    proxyItemsMutex.lock();
+    for (ProxyItem& item : proxyItems) {
+        if (item.id == id) {
+            proxyItemsMutex.unlock();
+            return item.saveRec;
+        }
+    }
+    proxyItemsMutex.unlock();
+
+    return false;
+}
+
+bool ContentServerWorker::isStreamRecordable(const QUrl &id)
+{
+    proxyItemsMutex.lock();
+    for (ProxyItem& item : proxyItems) {
+        if (item.id == id) {
+            proxyItemsMutex.unlock();
+            return item.recFile && item.recFile->isOpen();
+        }
+    }
+    proxyItemsMutex.unlock();
+
+    return false;
+}
+
+void ContentServerWorker::closeRecFile(ProxyItem &item)
+{
+    if (item.recFile) {
+        item.recFile->remove();
+        item.saveRec = false;
+        emit streamToRecordChanged(item.id, item.saveRec);
+        emit streamRecordableChanged(item.id, false);
+    }
+}
+
+void ContentServerWorker::cleanRecFiles()
+{
+    auto recDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    QDir dir(recDir);
+    dir.setNameFilters(QStringList() << "rec-*.*");
+    dir.setFilter(QDir::Files);
+    for (const QString& f : dir.entryList()) {
+        qDebug() << "Removing old rec file:" << f;
+        dir.remove(f);
+    }
+}
+
+void ContentServerWorker::openRecFile(ProxyItem &item)
+{
+    if (item.recFile) {
+        item.recFile->remove();
+        auto recDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+        auto recFilePath = QDir(recDir).filePath(QString("rec-%1.%2").arg(
+                                        Utils::randString(), item.recExt));
+        qDebug() << "Opening file for recording:" << recFilePath;
+        item.recFile->setFileName(recFilePath);
+        item.recFile->remove();
+        if (item.recFile->open(QIODevice::WriteOnly)) {
+            item.saveRec = false;
+            emit streamToRecordChanged(item.id, item.saveRec);
+            emit streamRecordableChanged(item.id, true);
+        } else {
+            qWarning() << "File for recording cannot be open";
+        }
+    }
+}
+
+void ContentServerWorker::saveRecFile(ProxyItem &item)
+{
+    if (item.recFile) {
+        if (item.saveRec) {
+            auto title = ContentServer::streamTitleFromShoutcastMetadata(item.metadata);
+            if (!title.isEmpty()) {
+                qDebug() << "Saving recorded file for title:" << title;
+                item.recFile->close();
+                auto recFilePath = QDir(Settings::instance()->getRecDir()).filePath(
+                            QString("%1.%2.%3.%4").arg(title, Utils::randString(),
+                                                       "jupii_rec", item.recExt));
+                if (item.recFile->exists() && item.recFile->size() > ContentServer::recMinSize) {
+                    if (item.recFile->copy(recFilePath)) {
+                        auto url = Utils::urlFromId(item.id).toString();
+                        QString comment = "Recorded by Jupii from " + url;
+                        ContentServer::updateMetaUsingTaglib(recFilePath,
+                                       title, item.title, "Recordings by Jupii", comment);
+                        emit streamRecorded(title, recFilePath);
+                    } else {
+                        qWarning() << "Cannot copy file:"
+                                   << item.recFile->fileName() << recFilePath;
+                    }
+                } else {
+                    qWarning() << "Recorded file doesn't exist or tiny size:"
+                               << item.recFile->fileName();
+                }
+            } else {
+                qWarning() << "Title is null so not saving recorded file";
+            }
+        }
+        item.recFile->remove();
+    }
+
+    item.saveRec = false;
+    emit streamToRecordChanged(item.id, item.saveRec);
+    emit streamRecordableChanged(item.id, false);
+}
+
+ContentServerWorker::ProxyItem::~ProxyItem()
+{
+    if (this->id.isValid()) {
+        auto worker = ContentServerWorker::instance();
+        worker->saveRecFile(*this);
     }
 }
 
@@ -375,6 +503,7 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
 
     // Proxy mode
     qDebug() << "Proxy mode enabled => creating proxy";
+    qDebug() << "Proxy items count:" << proxyItems.size();
 
     QNetworkRequest request;
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -405,6 +534,10 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
     item.seek = meta->seekSupported;
     item.mode = meta->mode;
     item.head = head; // orig request is HEAD
+
+    QString name;
+    Utils::pathTypeNameCookieIconFromId(item.id, nullptr, nullptr, &name);
+    item.title = name.isEmpty() ? ContentServer::bestName(*meta) : name;
 
     responseToReplyMap.insert(resp, reply);
 
@@ -565,7 +698,12 @@ void ContentServerWorker::responseForUrlDone()
     qDebug() << "Response done";
     auto resp = dynamic_cast<QHttpResponse*>(sender());
     if (responseToReplyMap.contains(resp)) {
-        auto reply = responseToReplyMap.value(resp);
+        auto reply = responseToReplyMap.take(resp);
+        if (proxyItems.contains(reply)) {
+            auto &item = proxyItems[reply];
+            item.finished = true;
+            qDebug() << "Setting proxy item as finished:" << item.id;
+        }
         if (reply->isFinished()) {
             qDebug() << "Reply already finished";
         } else {
@@ -583,7 +721,7 @@ void ContentServerWorker::proxyMetaDataChanged()
     auto reply = dynamic_cast<QNetworkReply*>(sender());
 
     if (!proxyItems.contains(reply)) {
-        qWarning() << "Proxy meta data: Cannot find proxy item";
+        qWarning() << "Cannot find proxy item";
         return;
     }
 
@@ -654,16 +792,27 @@ void ContentServerWorker::proxyMetaDataChanged()
             // playlist proxy (1) => sending all data when request finished (2)
             item.state = item.mode == 1 ? 2 : 1;
 
+            // recording only when: stream proxy mode && shoutcast && valid audio extension
+            if (item.state == 1 && item.metaint > 0 &&
+                Settings::instance()->getRec()) {
+                auto ext = ContentServer::getExtensionFromAudioContentType(mime);
+                if (!ext.isEmpty()) {
+                    qDebug() << "Stream should be recorded";
+                    item.recExt = ext;
+                    item.recFile = std::make_shared<QFile>();
+                }
+            }
+
             qDebug() << "Sending head for request with code:" << code;
             item.resp->writeHead(code);
             return;
         }
     }
 
-    emit itemRemoved(item.id);
-    proxyItems.remove(reply);
-    responseToReplyMap.remove(item.resp);
-    reply->abort();
+    if (!reply->isFinished()) {
+        qDebug() << "Aborting reply";
+        reply->abort();
+    }
 }
 
 void ContentServerWorker::proxyRedirected(const QUrl &url)
@@ -677,45 +826,65 @@ void ContentServerWorker::proxyFinished()
     auto reply = dynamic_cast<QNetworkReply*>(sender());
 
     if (!proxyItems.contains(reply)) {
-        //qWarning() << "Cannot find proxy item";
+        qWarning() << "Deleting reply because cannot find proxy item";
         reply->deleteLater();
         return;
     }
 
     auto &item = proxyItems[reply];
 
-    auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-    auto error = reply->error();
-    qDebug() << "Request:" << (item.req->method() == QHttpRequest::HTTP_GET ? "GET" : "HEAD")
-             << item.id;
-    qDebug() << "Error code:" << error;
+    if (!item.finished) {
+        auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+        auto error = reply->error();
+        qDebug() << "Request:" << (item.req->method() == QHttpRequest::HTTP_GET ? "GET" : "HEAD")
+                 << item.id;
+        qDebug() << "Error code:" << error;
 
-    if (item.state == 0) {
-        if (code < 200)
-            code = 404;
-        qDebug() << "Ending request with code:" << code;
-        sendEmptyResponse(item.resp, code);
-    } else if (item.state == 2) {
-        qDebug() << "Playlist proxy mode, so sending all data";
-        auto data = reply->readAll();
-        if (!data.isEmpty()) {
-            // Resolving relative URLs in a playlist
-            ContentServer::resolveM3u(data, reply->url().toString());
-            item.resp->write(data);
-        } else {
-            qWarning() << "Data is empty";
+        if (item.state == 0) {
+            if (code < 200)
+                code = 404;
+            qDebug() << "Ending request with code:" << code;
+            sendEmptyResponse(item.resp, code);
+        } else if (item.state == 2) {
+            qDebug() << "Playlist proxy mode, so sending all data";
+            auto data = reply->readAll();
+            if (!data.isEmpty()) {
+                // Resolving relative URLs in a playlist
+                ContentServer::resolveM3u(data, reply->url().toString());
+                item.resp->write(data);
+            } else {
+                qWarning() << "Data is empty";
+            }
         }
+
+        qDebug() << "Ending request";
+        item.resp->end();
+    } else {
+        qDebug() << "Proxy item is finished";
     }
 
-    qDebug() << "Ending request";
-    // TODO: Do not end if resp doesn't exists!
-    item.resp->end();
-
+    qDebug() << "Removing proxy item";
     emit itemRemoved(item.id);
-    proxyItems.remove(reply);
+    proxyItemsMutex.lock(); proxyItems.remove(reply); proxyItemsMutex.unlock();
     responseToReplyMap.remove(item.resp);
+    qDebug() << "Deleting reply";
     reply->deleteLater();
+}
+
+void ContentServerWorker::setStreamToRecord(const QUrl &id, bool value)
+{
+    for (ProxyItem& item : proxyItems) {
+        if (item.id == id) {
+            if (item.saveRec != value) {
+                qDebug() << "Setting stream to record:" << id;
+                item.saveRec = value;
+                emit streamToRecordChanged(id, value);
+            } else {
+                break;
+            }
+        }
+    }
 }
 
 void ContentServerWorker::processShoutcastMetadata(QByteArray &data,
@@ -723,6 +892,7 @@ void ContentServerWorker::processShoutcastMetadata(QByteArray &data,
 {
     auto count = data.length();
     int bytes = item.metacounter + count;
+    QByteArray dataWithoutMeta;
 
     /*qDebug() << "========== processShoutcastMetadata ==========";
     qDebug() << "metacounter:" << item.metacounter;
@@ -767,30 +937,60 @@ void ContentServerWorker::processShoutcastMetadata(QByteArray &data,
                 // full metadata received
                 if (size > 0) {
                     auto metadata = data.mid(start + offset + 1, size);
-                    emit shoutcastMetadataUpdated(item.id, metadata);
+                    if (metadata != item.metadata) {
+                        // recorder
+                        auto newTitle = ContentServer::streamTitleFromShoutcastMetadata(metadata);
+                        auto oldTitle = ContentServer::streamTitleFromShoutcastMetadata(item.metadata);
+                        qDebug() << "old metadata:" << item.metadata << oldTitle;
+                        qDebug() << "new metadata:" << metadata << newTitle;
+                        if (item.recFile) {
+                            if (item.recFile->isOpen())
+                                saveRecFile(item);
+                            if (!newTitle.isEmpty())
+                                openRecFile(item);
+                        }
+                        //--
+                        item.metadata = metadata;
+                        emit shoutcastMetadataUpdated(item.id, item.metadata);
+                    }
                     totalsize += size;
                 }
 
-                if (!item.meta) {
-                    // Shoutcast meta data wasn't requested by client, so marking to remove
-                    rpoints.append({start + offset, size +1});
-                }
+                // Metadata point to remove from stream
+                rpoints.append({start + offset, size +1});
             }
         }
 
         item.metacounter = bytes - nmeta * (item.metaint + 1) - totalsize;
 
-        if (!item.meta && !rpoints.isEmpty()) {
-            // Removing metadata from stream
-            int offset = 0;
-            for (auto& p : rpoints) {
-                data.remove(offset + p.first, p.second);
-                offset = p.second;
+        if (!rpoints.isEmpty()) {
+            if (!item.meta) {
+                // Shoutcast meta data wasn't requested by client, so removing
+                removePoints(rpoints, data);
+            } else if (item.recFile && item.recFile->isOpen()) {
+                // Removing metadata from stream for recording
+                dataWithoutMeta = data; // deep copy
+                removePoints(rpoints, dataWithoutMeta);
             }
         }
-
     } else {
         item.metacounter = bytes;
+    }
+
+    // recording
+    if (item.recFile && item.recFile->isOpen()) {
+        if (item.recFile->size() < ContentServer::recMaxSize)
+            item.recFile->write(dataWithoutMeta.isEmpty() ? data : dataWithoutMeta);
+    }
+}
+
+void ContentServerWorker::removePoints(const QList<QPair<int,int>> &rpoints,
+                                       QByteArray &data)
+{
+    int offset = 0;
+    for (auto& p : rpoints) {
+        data.remove(offset + p.first, p.second);
+        offset = p.second;
     }
 }
 
@@ -822,25 +1022,16 @@ void ContentServerWorker::proxyReadyRead()
         return;
     }
 
-    if (item.resp->isFinished()) {
-        qWarning() << "Server request already finished, so ending client side";
-        emit itemRemoved(item.id);
-        proxyItems.remove(reply);
-        responseToReplyMap.remove(item.resp);
-        reply->abort();
-        reply->deleteLater();
+    if (item.finished) {
+        qWarning() << "Server request already finished, so ignoring";
         return;
     }
 
     if (item.state == 1) {
         if (!item.resp->isHeaderWritten()) {
             qWarning() << "Head not written but state=1 => this should not happen";
-            emit itemRemoved(item.id);
-            proxyItems.remove(reply);
-            responseToReplyMap.remove(item.resp);
+            qDebug() << "Aborting reply";
             reply->abort();
-            reply->deleteLater();
-            item.resp->end();
             return;
         }
 
@@ -1193,6 +1384,11 @@ QString ContentServer::getContentMimeByExtension(const QString &path)
 QString ContentServer::getContentMimeByExtension(const QUrl &url)
 {
     return getContentMimeByExtension(url.path());
+}
+
+QString ContentServer::getExtensionFromAudioContentType(const QString &mime)
+{
+   return m_musicMimeToExtMap.value(mime);
 }
 
 QString ContentServer::getContentMime(const QString &path)
@@ -1988,6 +2184,22 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
     return metaCache.end();
 }
 
+void ContentServer::updateMetaUsingTaglib(const QString& path, const QString& title,
+                                          const QString& artist, const QString& album,
+                                          const QString &comment)
+{
+    TagLib::FileRef f(path.toUtf8().constData(), false);
+    if(f.isNull()) {
+        qWarning() << "Cannot open file with TagLib:" << path;
+    } else {
+        f.tag()->setTitle(title.toStdWString());
+        f.tag()->setArtist(artist.toStdWString());
+        f.tag()->setAlbum(album.toStdWString());
+        f.tag()->setComment(comment.toStdWString());
+        f.save();
+    }
+}
+
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
 {
@@ -2399,10 +2611,22 @@ void ContentServer::run()
              << QThread::currentThreadId();
 
     auto worker = ContentServerWorker::instance();
-    connect(worker, &ContentServerWorker::shoutcastMetadataUpdated, this, &ContentServer::shoutcastMetadataHandler);
-    connect(worker, &ContentServerWorker::pulseStreamUpdated, this, &ContentServer::pulseStreamNameHandler);
-    connect(worker, &ContentServerWorker::itemAdded, this, &ContentServer::itemAddedHandler);
-    connect(worker, &ContentServerWorker::itemRemoved, this, &ContentServer::itemRemovedHandler);
+    connect(worker, &ContentServerWorker::shoutcastMetadataUpdated, this,
+            &ContentServer::shoutcastMetadataHandler);
+    connect(worker, &ContentServerWorker::pulseStreamUpdated, this,
+            &ContentServer::pulseStreamNameHandler);
+    connect(worker, &ContentServerWorker::itemAdded, this,
+            &ContentServer::itemAddedHandler);
+    connect(worker, &ContentServerWorker::itemRemoved, this,
+            &ContentServer::itemRemovedHandler);
+    connect(this, &ContentServer::requestStreamToRecord, worker,
+            &ContentServerWorker::setStreamToRecord);
+    connect(worker, &ContentServerWorker::streamToRecordChanged, this,
+            &ContentServer::streamToRecordChangedHandler);
+    connect(worker, &ContentServerWorker::streamRecordableChanged, this,
+            &ContentServer::streamRecordableChangedHandler);
+    connect(worker, &ContentServerWorker::streamRecorded, this,
+            &ContentServer::streamRecordedHandler);
 
 #ifdef PULSE
     QEventLoop qtLoop;
@@ -2436,6 +2660,38 @@ QString ContentServer::streamTitle(const QUrl &id) const
     return QString();
 }
 
+bool ContentServer::isStreamToRecord(const QUrl &id)
+{
+    auto worker = ContentServerWorker::instance();
+    return worker->isStreamToRecord(id);
+}
+
+bool ContentServer::isStreamRecordable(const QUrl &id)
+{
+    auto worker = ContentServerWorker::instance();
+    return worker->isStreamRecordable(id);
+}
+
+void ContentServer::setStreamToRecord(const QUrl &id, bool value)
+{
+    emit requestStreamToRecord(id, value);
+}
+
+void ContentServer::streamToRecordChangedHandler(const QUrl &id, bool value)
+{
+    emit streamToRecordChanged(id, value);
+}
+
+void ContentServer::streamRecordableChangedHandler(const QUrl &id, bool value)
+{
+    emit streamRecordableChanged(id, value);
+}
+
+void ContentServer::streamRecordedHandler(const QString& title, const QString& path)
+{
+    emit streamRecorded(title, path);
+}
+
 void ContentServer::itemAddedHandler(const QUrl &id)
 {
     qDebug() << "New item for id:" << id;
@@ -2466,17 +2722,21 @@ void ContentServer::pulseStreamNameHandler(const QUrl &id,
     emit streamTitleChanged(id, name);
 }
 
-void ContentServer::shoutcastMetadataHandler(const QUrl &id,
-                                             const QByteArray &metadata)
+QString ContentServer::streamTitleFromShoutcastMetadata(const QByteArray &metadata)
 {
-    qDebug() << "Shoutcast Metadata:" << metadata;
-
-    QString data(metadata);
-    QRegExp rx("StreamTitle=\'?([^\';]*)\'?", Qt::CaseInsensitive);
+    auto data = QString::fromUtf8(metadata);
+    /*qDebug() << "title1:" << QString(metadata);
+    qDebug() << "title2:" << QString::fromUtf8(metadata);
+    qDebug() << "title3:" << QString::fromLocal8Bit(metadata);
+    qDebug() << "title4:" << QString::fromLatin1(metadata);*/
+    data.remove('\'').remove('\"');
+    QRegExp rx("StreamTitle=([^;]*)", Qt::CaseInsensitive);
     int pos = 0;
     QString title;
     while ((pos = rx.indexIn(data, pos)) != -1) {
-        title = rx.cap(1).trimmed();
+        title = rx.cap(1).remove('$').remove('%').remove('*').remove('&')
+                .remove('?').remove('.').remove('/').remove('\\').remove(',')
+                .remove('+').trimmed();
         if (!title.isEmpty()) {
             qDebug() << "Stream title:" << title;
             break;
@@ -2484,10 +2744,17 @@ void ContentServer::shoutcastMetadataHandler(const QUrl &id,
         pos += rx.matchedLength();
     }
 
+    return title;
+}
+
+void ContentServer::shoutcastMetadataHandler(const QUrl &id,
+                                             const QByteArray &metadata)
+{
+    qDebug() << "Shoutcast Metadata:" << metadata;
     auto &stream = streams[id];
     stream.id = id;
-    stream.title = title;
-    emit streamTitleChanged(id, title);
+    stream.title = streamTitleFromShoutcastMetadata(metadata);
+    emit streamTitleChanged(id, stream.title);
 }
 
 QList<ContentServer::PlaylistItemMeta>

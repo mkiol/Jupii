@@ -31,6 +31,7 @@ int SettingsDialog::exec()
     ui->lastPlaylistCheckBox->setCheckState(s->getRememberPlaylist() ? Qt::Checked : Qt::Unchecked);
     ui->allDevicesCheckBox->setCheckState(s->getShowAllDevices() ? Qt::Checked : Qt::Unchecked);
     ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
+    ui->recCheckBox->setCheckState(s->getRec() ? Qt::Checked : Qt::Unchecked);
 #ifdef PULSE
     ui->pulseModeComboBox->setCurrentIndex(s->getPulseMode());
 #else
@@ -85,4 +86,10 @@ void SettingsDialog::on_pulseModeComboBox_activated(int index)
 {
     auto s = Settings::instance();
     s->setPulseMode(index);
+}
+
+void SettingsDialog::on_recCheckBox_toggled(bool checked)
+{
+    auto s = Settings::instance();
+    s->setRec(checked);
 }

@@ -631,6 +631,13 @@ void Utils::removeFile(const QString &path)
         file.remove();
 }
 
+QString Utils::dirNameFromPath(const QString &path)
+{
+    QDir dir(path);
+    dir.makeAbsolute();
+    return dir.dirName();
+}
+
 #ifdef SAILFISH
 void Utils::setQmlRootItem(QQuickItem *rootItem)
 {

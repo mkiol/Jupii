@@ -207,6 +207,40 @@ QString Settings::getLastDir()
     return settings.value("lastdir", "").toString();
 }
 
+void Settings::setRecDir(const QString& value)
+{
+    if (getRecDir() != value) {
+        settings.setValue("recdir", QDir(value).exists() ? value : "");
+        emit recDirChanged();
+    }
+}
+
+QString Settings::getRecDir()
+{
+    auto defDir = QStandardPaths::writableLocation(
+                           QStandardPaths::MusicLocation) + "/JupiiRecordings";
+    auto recDir = settings.value("recdir", defDir).toString();
+    QDir d(recDir);
+    if (recDir.isEmpty()) {
+        d.mkpath(defDir);
+        settings.setValue("recdir", defDir);
+        emit recDirChanged();
+        return defDir;
+    } else {
+        if (!d.exists()) {
+            qWarning() << "Recording dir doesn't exist";
+            if (!d.mkpath(recDir)) {
+                qWarning() << "Cannot create recording dir";
+                d.mkpath(defDir);
+                settings.setValue("recdir", defDir);
+                emit recDirChanged();
+                return defDir;
+            }
+        }
+    }
+    return recDir;
+}
+
 void Settings::setPrefNetInf(const QString& value)
 {
     if (getPrefNetInf() != value) {
@@ -257,6 +291,19 @@ void Settings::setShowAllDevices(bool value)
 bool Settings::getShowAllDevices()
 {
     return settings.value("showalldevices", false).toBool();
+}
+
+void Settings::setRec(bool value)
+{
+    if (getRec() != value) {
+        settings.setValue("rec", value);
+        emit recChanged();
+    }
+}
+
+bool Settings::getRec()
+{
+    return settings.value("rec", false).toBool();
 }
 
 void Settings::setImageSupported(bool value)

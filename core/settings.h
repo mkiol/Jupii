@@ -36,6 +36,8 @@ class Settings:
     //Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
     Q_PROPERTY (int pulseMode READ getPulseMode WRITE setPulseMode NOTIFY pulseModeChanged)
+    Q_PROPERTY (QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
+    Q_PROPERTY (bool rec READ getRec WRITE setRec NOTIFY recChanged)
 
 public:
     static Settings* instance();
@@ -48,6 +50,9 @@ public:
 
     void setShowAllDevices(bool value);
     bool getShowAllDevices();
+
+    void setRec(bool value);
+    bool getRec();
 
     void setImageSupported(bool value);
     bool getImageSupported();
@@ -71,6 +76,9 @@ public:
 
     QString getLastDir();
     void setLastDir(const QString& value);
+
+    QString getRecDir();
+    void setRecDir(const QString& value);
 
     void setSsdpIpEnabled(bool value);
     bool getSsdpIpEnabled();
@@ -97,6 +105,7 @@ signals:
     void portChanged();
     void favDevicesChanged();
     void lastDirChanged();
+    void recDirChanged();
     void lastPlaylistChanged();
     void showAllDevicesChanged();
     void forwardTimeChanged();
@@ -109,6 +118,7 @@ signals:
     void prefNetInfChanged();
     //void remoteContentModeChanged();
     void micVolumeChanged();
+    void recChanged();
 
 private:
     QSettings settings;

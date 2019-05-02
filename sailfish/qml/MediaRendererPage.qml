@@ -244,6 +244,15 @@ Page {
         }
     }
 
+    Component {
+        id: recPickerPage
+        RecPage {
+            onAccepted: {
+                playlist.addItemUrls(selectedItems);
+            }
+        }
+    }
+
     // ----
 
     Connections {
@@ -446,7 +455,8 @@ Page {
                                        urlPickerPage: urlPickerPage,
                                        somafmPickerPage: somafmPickerPage,
                                        icecastPickerPage: icecastPickerPage,
-                                       gpodderPickerPage: gpodderPickerPage
+                                       gpodderPickerPage: gpodderPickerPage,
+                                       recPickerPage: recPickerPage
                                    })
                 }
             }
@@ -566,6 +576,8 @@ Page {
                         av.transportState === AVTransport.Playing &&
                         av.currentType !== AVTransport.T_Image
         backwardEnabled: forwardEnabled
+        recordEnabled: app.streamRecordable
+        recordActive: app.streamToRecord
 
         playMode: playlist.playMode
 
@@ -594,6 +606,10 @@ Page {
 
         onRepeatClicked: {
             playlist.togglePlayMode()
+        }
+
+        onRecordClicked: {
+            cserver.setStreamToRecord(av.currentId, !app.streamToRecord)
         }
     }
 }

@@ -23,6 +23,8 @@ DockedPanel_ {
     property alias forwardEnabled: forwardButton.enabled
     property alias backwardEnabled: backwardButton.enabled
     property alias playmodeEnabled: playmodeButton.enabled
+    property alias recordEnabled: recordButton.enabled
+    property bool recordActive: false
 
     property string title: ""
     property string subtitle: ""
@@ -34,6 +36,7 @@ DockedPanel_ {
     signal backwardClicked
     signal togglePlayClicked
     signal repeatClicked
+    signal recordClicked
 
     width: parent.width
     height: column.height
@@ -257,6 +260,15 @@ DockedPanel_ {
                 anchors.verticalCenter: parent.verticalCenter
                 icon.source: "image://theme/icon-m-next"
                 onClicked: nextClicked()
+            }
+
+            IconButton {
+                id: recordButton
+                width: parent.size; height: parent.size
+                anchors.verticalCenter: parent.verticalCenter
+                icon.source: recordActive ? "image://icons/icon-m-record-active" : "image://icons/icon-m-record"
+                onClicked: recordClicked()
+                visible: enabled
             }
 
             IconButton {

@@ -77,6 +77,10 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::on_av_currentMetaDataChanged);
     connect(cs, &ContentServer::streamTitleChanged,
             this, &MainWindow::on_av_currentMetaDataChanged);
+    connect(cs, &ContentServer::streamToRecordChanged,
+            this, &MainWindow::on_cs_streamToRecordChanged);
+    connect(cs, &ContentServer::streamRecordableChanged,
+            this, &MainWindow::on_cs_streamRecordableChanged);
     connect(av.get(), &AVTransport::relativeTimePositionChanged,
             this, &MainWindow::on_av_positionChanged);
     connect(av.get(), &AVTransport::currentAlbumArtChanged,
@@ -277,6 +281,8 @@ void MainWindow::on_av_currentMetaDataChanged()
     QUrl id = av->getCurrentId();
     auto title = av->getCurrentTitle();
     auto streamTitle = cs->streamTitle(id);
+    auto recordable = cs->isStreamRecordable(id);
+    auto streamToRecord = cs->isStreamToRecord(id);
     auto author = streamTitle.isEmpty() ? av->getCurrentAuthor() : streamTitle;
 
     // Max size is 40 characters
@@ -289,6 +295,8 @@ void MainWindow::on_av_currentMetaDataChanged()
     ui->trackTitle->setText(title.isEmpty() ? tr("Unknown") : title);
     ui->artistName->setText(author.isEmpty() ? tr("Unknown") : author);
     ui->playButton->setEnabled(controlable && !image);
+    ui->recButton->setEnabled(recordable);
+    ui->recButton->setChecked(streamToRecord);
 }
 
 void MainWindow::on_av_positionChanged()
@@ -681,4 +689,31 @@ void MainWindow::on_actionMic_triggered()
 void MainWindow::on_actionPulse_triggered()
 {
     PlaylistModel::instance()->addItemUrl(QUrl("jupii://pulse"));
+}
+
+void MainWindow::on_recButton_toggled(bool checked)
+{
+    auto av = Services::instance()->avTransport;
+
+    if (av->getTransportState() == AVTransport::Playing) {
+        auto id = av->getCurrentId();
+        auto cserver = ContentServer::instance();
+        cserver->setStreamToRecord(id, checked);
+    }
+}
+
+void MainWindow::on_cs_streamToRecordChanged(const QUrl &id, bool value)
+{
+    auto aid = Services::instance()->avTransport->getCurrentId();
+    if (id == aid) {
+        ui->recButton->setChecked(value);
+    }
+}
+
+void MainWindow::on_cs_streamRecordableChanged(const QUrl &id, bool value)
+{
+    auto aid = Services::instance()->avTransport->getCurrentId();
+    if (id == aid) {
+        ui->recButton->setEnabled(value);
+    }
 }

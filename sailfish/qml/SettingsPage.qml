@@ -107,6 +107,72 @@ Page {
 
             TextSwitch {
                 automaticCheck: false
+                checked: settings.rec
+                text: qsTr("Stream recorder")
+                description: qsTr("Enables recording of tracks from SHOUTcast stream. " +
+                                  "When stream provides information " +
+                                  "about the title of the currently played track, " +
+                                  "you can save this track to a file. To enable " +
+                                  "recording use \"Record\" button located next to " +
+                                  "\"Forward\" button on the bottom bar. " +
+                                  "This button is visible only when recording is possible. " +
+                                  "When the \"Record\" button is activated before " +
+                                  "the end of the track, the whole recording " +
+                                  "(from the begining to the end of the track) " +
+                                  "will be saved as a file. " +
+                                  "Currently only MP3, MP4 and OGG streams can be recorded.")
+                onClicked: {
+                    settings.rec = !settings.rec
+                }
+            }
+
+            ListItem {
+                visible: settings.rec
+                contentHeight: visible ? recflow.height + 2*Theme.paddingLarge : 0
+
+                Flow {
+                    id: recflow
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: parent.left; right: parent.right
+                        leftMargin: Theme.paddingLarge
+                        rightMargin: Theme.paddingLarge
+                    }
+                    spacing: Theme.paddingMedium
+
+                    Label {
+                        text: qsTr("Directory for recordings")
+                    }
+
+                    Label {
+                        color: Theme.highlightColor
+                        text: utils.dirNameFromPath(settings.recDir)
+                    }
+                }
+
+                onClicked: openMenu();
+
+                menu: ContextMenu {
+                    MenuItem {
+                        text: qsTr("Change")
+                        onClicked: {
+                            var obj = pageStack.push(Qt.resolvedUrl("DirPage.qml"));
+                            obj.accepted.connect(function() {
+                                settings.recDir = obj.selectedPath
+                            })
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("Set default")
+                        onClicked: {
+                            settings.recDir = ""
+                        }
+                    }
+                }
+            }
+
+            TextSwitch {
+                automaticCheck: false
                 checked: settings.showAllDevices
                 text: qsTr("All devices visible")
                 description: qsTr("%1 supports only Media Renderer devices. With this option enabled, " +

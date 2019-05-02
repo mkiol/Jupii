@@ -51,7 +51,9 @@ OTHER_FILES += \
     qml/GpodderEpisodesPage.qml \
     qml/SearchPageHeader.qml \
     qml/SearchDialogHeader.qml \
-    qml/IcecastPage.qml
+    qml/IcecastPage.qml \
+    qml/DirPage.qml \
+    qml/RecPage.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 

@@ -133,6 +133,7 @@ public:
     static QList<PlaylistItemMeta> parseM3u(const QByteArray &data, const QString context = QString());
     static QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString context = QString());
     static void resolveM3u(QByteArray &data, const QString context);
+    static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
 
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
     Type getContentType(const QString &path);
@@ -149,11 +150,22 @@ public:
     const ItemMeta* getMeta(const QUrl &url, bool createNew = true);
     const ItemMeta* getMetaForId(const QUrl &id, bool createNew = true);
     Q_INVOKABLE QString streamTitle(const QUrl &id) const;
+    Q_INVOKABLE void setStreamToRecord(const QUrl &id, bool value);
+    Q_INVOKABLE bool isStreamToRecord(const QUrl &id);
+    Q_INVOKABLE bool isStreamRecordable(const QUrl &id);
 
 signals:
+    void streamRecordError(const QString& title);
+    void streamRecorded(const QString& title, const QString& filename);
     void streamTitleChanged(const QUrl &id, const QString &title);
+    void requestStreamToRecord(const QUrl &id, bool value);
+    void streamToRecordChanged(const QUrl &id, bool value);
+    void streamRecordableChanged(const QUrl &id, bool value);
 
 private slots:
+    void streamRecordedHandler(const QString& title, const QString& path);
+    void streamToRecordChangedHandler(const QUrl &id, bool value);
+    void streamRecordableChangedHandler(const QUrl &id, bool value);
     void shoutcastMetadataHandler(const QUrl &id, const QByteArray &metadata);
     void pulseStreamNameHandler(const QUrl &id, const QString &name);
     void itemAddedHandler(const QUrl &id);
@@ -196,6 +208,7 @@ private:
 
     static const QHash<QString,QString> m_imgExtMap;
     static const QHash<QString,QString> m_musicExtMap;
+    static const QHash<QString,QString> m_musicMimeToExtMap;
     static const QHash<QString,QString> m_videoExtMap;
     static const QHash<QString,QString> m_playlistExtMap;
     static const QStringList m_m3u_mimes;
@@ -217,6 +230,8 @@ private:
     static const int threadWait = 1;
     static const int maxRedirections = 5;
     static const int httpTimeout = 10000;
+    static const qint64 recMaxSize = 500000000;
+    static const qint64 recMinSize = 100000;
 
     QHash<QUrl, ItemMeta> metaCache; // url => ItemMeta
     QHash<QUrl, StreamData> streams; // id => StreamData
@@ -233,8 +248,13 @@ private:
                                              bool flags = true);
     static QString getContentMimeByExtension(const QString &path);
     static QString getContentMimeByExtension(const QUrl &url);
+    static QString getExtensionFromAudioContentType(const QString &mime);
     static QString mimeFromDisposition(const QString &disposition);
     static bool hlsPlaylist(const QByteArray &data);
+    static void updateMetaUsingTaglib(const QString& path, const QString& title,
+                                      const QString& artist = QString(),
+                                      const QString& album = QString(),
+                                      const QString& comment = QString());
     ContentServer(QObject *parent = nullptr);
     bool getContentMeta(const QString &id, const QUrl &url, QString &meta, const ItemMeta* item);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
@@ -269,11 +289,16 @@ class ContentServerWorker :
 #endif
 public:
     static ContentServerWorker* instance(QObject *parent = nullptr);
-    static void adjustVolume(QByteArray *data, float factor, bool le = true);
     QHttpServer* server;
     QNetworkAccessManager* nam;
+    static void adjustVolume(QByteArray *data, float factor, bool le = true);
+    bool isStreamToRecord(const QUrl &id);
+    bool isStreamRecordable(const QUrl &id);
 
 signals:
+    void streamRecorded(const QString& title, const QString& path);
+    void streamToRecordChanged(const QUrl &id, bool value);
+    void streamRecordableChanged(const QUrl &id, bool value);
     void shoutcastMetadataUpdated(const QUrl &id, const QByteArray &metadata);
     void pulseStreamUpdated(const QUrl &id, const QString& name);
     void itemAdded(const QUrl &id);
@@ -282,6 +307,9 @@ signals:
 #ifdef PULSE
     void startPulse();
 #endif
+
+public slots:
+    void setStreamToRecord(const QUrl &id, bool value);
 
 private slots:
     void proxyMetaDataChanged();
@@ -309,11 +337,18 @@ private:
         int metaint = 0; // shoutcast metadata interval received from server
         int metacounter = 0; // bytes couter reseted every metaint
         QByteArray data;
+        QByteArray metadata;
         // modes:
         // 0 - stream proxy (default)
         // 1 - playlist proxy (e.g. for HLS playlists)
         int mode = 0;
         bool head = false;
+        std::shared_ptr<QFile> recFile;
+        bool saveRec = false;
+        QString title;
+        QString recExt;
+        bool finished = false;
+        ~ProxyItem();
     };
 
     struct SimpleProxyItem {
@@ -331,6 +366,7 @@ private:
     QHash<QHttpResponse*, QNetworkReply*> responseToReplyMap;
     QList<SimpleProxyItem> micItems;
     QList<SimpleProxyItem> pulseItems;
+    QMutex proxyItemsMutex;
 
     ContentServerWorker(QObject *parent = nullptr);
     void streamFile(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);
@@ -347,6 +383,11 @@ private:
     void processShoutcastMetadata(QByteArray &data, ProxyItem &item);
     void updatePulseStreamName(const QString& name);
     void writePulseData(const void *data, int size);
+    static void removePoints(const QList<QPair<int,int>> &rpoints, QByteArray &data);
+    void openRecFile(ProxyItem &item);
+    void saveRecFile(ProxyItem &item);
+    void closeRecFile(ProxyItem &item);
+    static void cleanRecFiles();
 };
 
 class MicDevice : public QIODevice
