@@ -42,6 +42,7 @@ class RecModel : public SelectableItemModel
 public:
     explicit RecModel(QObject *parent = nullptr);
     Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE void deleteSelected();
 
 private:
     QDir m_dir;

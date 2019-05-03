@@ -65,6 +65,16 @@ Dialog {
             id: menu
 
             MenuItem {
+                visible: itemModel.selectedCount > 0
+                text: qsTr("Delete selected")
+                onClicked: {
+                    Remorse.popupAction(root,
+                        qsTr("Deleting %n item(s)", "", itemModel.selectedCount),
+                        function(){itemModel.deleteSelected()})
+                }
+            }
+
+            MenuItem {
                 visible: itemModel.count !== 0
 
                 text: itemModel.count === itemModel.selectedCount ?

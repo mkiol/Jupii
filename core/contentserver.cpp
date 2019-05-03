@@ -95,6 +95,7 @@ const QHash<QString,QString> ContentServer::m_musicExtMap {
 const QHash<QString,QString> ContentServer::m_musicMimeToExtMap {
     {"audio/mpeg", "mp3"},
     {"audio/mp4", "m4a"},
+    // Disabling AAC because TagLib doesn't support ADTS https://github.com/taglib/taglib/issues/508
     //{"audio/aac", "aac"},
     //{"audio/aacp", "aac"},
     {"audio/ogg", "ogg"},
