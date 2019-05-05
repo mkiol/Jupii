@@ -27,6 +27,48 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.3.0 (beta)")
+            }
+
+            LogItem {
+                title: "Stream recorder"
+                description: "Enables recording of tracks from SHOUTcast stream. " +
+                             "When stream provides information " +
+                             "about the title of the currently played track, " +
+                             "you can save this track to a file. " +
+                             "Stream recording feature can be turn on in Experiments " +
+                             "section in the settings."
+            }
+
+            LogItem {
+                title: "Better volume up/down hardware keys support"
+                description: "You can change the volume level of a remote DLNA " +
+                             "device using phone hardware " +
+                             "keys without changing phone volume level. " +
+                             "Support for hardware keys is enabled by default but it can be " +
+                             "disabled in the settings"
+            }
+
+            LogItem {
+                title: "Initial Yamaha XC API support - Toggle power option"
+                description: "When remote device supports Yamaha XC API, " +
+                             "option to toggle power is visible in the context menu."
+            }
+
+            LogItem {
+                title: "DBus API improvements"
+                description: "App is bring to foreground when addPathOnceAndPlay " +
+                             "or addUrlOnceAndPlay is invoked."
+            }
+
+            LogItem {
+                title: "SomaFM streaming improvements"
+                description: "Streaming of SomaFM has been improved to be more " +
+                             "compatible with various DLNA implementations. " +
+                             "Especially it applies to Samsung TV devices. "
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.2.2")
             }
 

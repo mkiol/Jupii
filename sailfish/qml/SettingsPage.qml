@@ -133,7 +133,7 @@ Page {
                                   "the end of the track, the whole recording " +
                                   "(from the begining to the end of the track) " +
                                   "will be saved as a file. " +
-                                  "Currently only MP3, MP4 and OGG streams can be recorded.")
+                                  "Currently AAC streams cannot be recorded.")
                 onClicked: {
                     settings.rec = !settings.rec
                 }
