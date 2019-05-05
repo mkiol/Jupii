@@ -17,6 +17,7 @@
 #include <QQuickItem>
 #include <sailfishapp.h>
 #include "iconprovider.h"
+#include "resourcehandler.h"
 #endif
 
 #ifdef DESKTOP
@@ -136,8 +137,14 @@ int main(int argc, char *argv[])
     context->setContextProperty("playlist", playlist);
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
-    view->show();
 
+    ResourceHandler handler; handler.acquire();
+    QObject::connect(view, &QQuickView::focusObjectChanged,
+                     &handler, &ResourceHandler::handleFocusChange);
+    QObject::connect(settings, &Settings::useHWVolumeChanged,
+                     &handler, &ResourceHandler::handleSettingsChange);
+
+    view->show();
     utils->setQmlRootItem(view->rootObject());
 #endif
 

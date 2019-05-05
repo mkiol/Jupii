@@ -148,4 +148,12 @@ Page {
     VerticalScrollDecorator {
         flickable: listView
     }
+
+    focus: true
+    Keys.onVolumeUpPressed: {
+        rc.volUpPressed()
+    }
+    Keys.onVolumeDownPressed: {
+        rc.volDownPressed()
+    }
 }

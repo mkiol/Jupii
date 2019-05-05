@@ -15,6 +15,7 @@
 #include <QStringList>
 #ifdef SAILFISH
 #include <QQuickItem>
+#include <notification.h>
 #endif
 
 class Utils : public QObject
@@ -37,6 +38,8 @@ public:
 #ifdef SAILFISH
     void setQmlRootItem(QQuickItem* rootItem);
     void activateWindow();
+    void showNotification(const QString& text, const QString& icon = QString(),
+                          bool replace = true);
 #endif
     Q_INVOKABLE QString friendlyDeviceType(const QString &deviceType);
     Q_INVOKABLE QString friendlyServiceType(const QString &serviceType);
@@ -94,6 +97,8 @@ public:
 private:
     static Utils* m_instance;
 #ifdef SAILFISH
+    qint32 notifId = 0;
+    //Notification notif;
     QQuickItem* qmlRootItem = nullptr;
 #endif
     explicit Utils(QObject *parent = nullptr);

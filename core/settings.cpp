@@ -49,6 +49,19 @@ int Settings::getPort()
     return settings.value("port", 9092).toInt();
 }
 
+void Settings::setVolStep(int value)
+{
+    if (getVolStep() != value) {
+        settings.setValue("volstep", value);
+        emit volStepChanged();
+    }
+}
+
+int Settings::getVolStep()
+{
+    return settings.value("volstep", 5).toInt();
+}
+
 /*void Settings::setRemoteContentMode(int value)
 {
     // 0 - proxy
@@ -337,17 +350,17 @@ int Settings::getPulseMode()
     return settings.value("pulsemode", 0).toInt();
 }
 
-void Settings::setUseDbusVolume(bool value)
+void Settings::setUseHWVolume(bool value)
 {
-    if (getUseDbusVolume() != value) {
-        settings.setValue("usedbusvolume", value);
-        emit useDbusVolumeChanged();
+    if (getUseHWVolume() != value) {
+        settings.setValue("usehwvolume", value);
+        emit useHWVolumeChanged();
     }
 }
 
-bool Settings::getUseDbusVolume()
+bool Settings::getUseHWVolume()
 {
-    return settings.value("usedbusvolume", false).toBool();
+    return settings.value("usehwvolume", true).toBool();
 }
 
 void Settings::setMicVolume(float value)

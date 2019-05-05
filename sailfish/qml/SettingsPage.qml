@@ -52,21 +52,34 @@ Page {
                 }
             }
 
-            SectionHeader {
-                text: qsTr("Experiments")
-            }
-
             TextSwitch {
                 automaticCheck: false
-                checked: settings.useDbusVolume
+                checked: settings.useHWVolume
                 text: qsTr("Volume control with hardware keys")
-                description: qsTr("Change volume level using phone hardware volume keys. " +
-                                  "The volume level of the media device will be " +
-                                  "set to be the same as the volume level of the ringing alert " +
-                                  "on the phone.")
+                description: qsTr("Change volume level using phone hardware volume keys.")
                 onClicked: {
-                    settings.useDbusVolume = !settings.useDbusVolume
+                    settings.useHWVolume = !settings.useHWVolume
                 }
+            }
+
+            Slider {
+                visible: settings.useHWVolume
+                width: parent.width
+                minimumValue: 1
+                maximumValue: 10
+                stepSize: 1
+                handleVisible: true
+                value: settings.volStep
+                valueText: value
+                label: qsTr("Volume level step")
+
+                onValueChanged: {
+                    settings.volStep = value
+                }
+            }
+
+            SectionHeader {
+                text: qsTr("Experiments")
             }
 
             TextSwitch {
@@ -222,5 +235,13 @@ Page {
 
     VerticalScrollDecorator {
         flickable: flick
+    }
+
+    focus: true
+    Keys.onVolumeUpPressed: {
+        rc.volUpPressed()
+    }
+    Keys.onVolumeDownPressed: {
+        rc.volDownPressed()
     }
 }

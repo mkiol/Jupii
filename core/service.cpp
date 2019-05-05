@@ -93,12 +93,12 @@ void Service::setInited(bool value)
     }
 }
 
-QString Service::getDeviceId()
+QString Service::getDeviceId() const
 {
     return m_deviceId;
 }
 
-QString Service::getDeviceFriendlyName()
+QString Service::getDeviceFriendlyName() const
 {
     return m_deviceFriendlyName;
 }

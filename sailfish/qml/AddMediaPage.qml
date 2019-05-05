@@ -189,4 +189,12 @@ Page {
     VerticalScrollDecorator {
         flickable: flick
     }
+
+    focus: true
+    Keys.onVolumeUpPressed: {
+        rc.volUpPressed()
+    }
+    Keys.onVolumeDownPressed: {
+        rc.volDownPressed()
+    }
 }

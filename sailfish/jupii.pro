@@ -20,6 +20,12 @@ include($$PROJECTDIR/core/jupii_core.pri)
 
 INCLUDEPATH += src
 
+HEADERS += \
+    src/resourcehandler.h
+
+SOURCES += \
+    src/resourcehandler.cpp
+
 OTHER_FILES += \
     translations/*.ts \
     $$PROJECTDIR/dbus/org.jupii.xml \
@@ -82,3 +88,8 @@ OTHER_FILES += \
     rpm/$${TARGET}.yaml \
     rpm/$${TARGET}.changes.in \
     rpm/$${TARGET}.spec
+
+PKGCONFIG += \
+    audioresource \
+    nemonotifications-qt5
+LIBS += -ldl

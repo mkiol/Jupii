@@ -9,6 +9,7 @@
 #define RENDERINGCONTROL_H
 
 #include <QTimer>
+#include <QMutex>
 
 #include <libupnpp/control/renderingcontrol.hxx>
 #include <libupnpp/control/service.hxx>
@@ -28,6 +29,10 @@ public:
     void setVolume(int value);
     bool getMute();
     Q_INVOKABLE void setMute(bool value);
+#ifdef SAILFISH
+    Q_INVOKABLE void volUpPressed();
+    Q_INVOKABLE void volDownPressed();
+#endif
 
 signals:
     void volumeChanged();
@@ -38,6 +43,9 @@ public slots:
 
 private slots:
     void volumeTimeout();
+#ifdef SAILFISH
+    void volumeUpTimeout();
+#endif
     void handleApplicationStateChanged(Qt::ApplicationState state);
 
 private:
@@ -45,6 +53,9 @@ private:
     bool m_mute = false;
 
     QTimer m_volumeTimer;
+#ifdef SAILFISH
+    QTimer m_volumeUpTimer;
+#endif
     int m_futureVolume = 0;
 
     void changed(const QString &name, const QVariant &value);
@@ -55,12 +66,16 @@ private:
     std::string type() const;
 
     UPnPClient::RenderingControl* s();
+    QMutex m_volUpMutex;
 
     void update();
     void updateMute();
     void updateVolume();
     void asyncUpdateMute();
     void asyncUpdateVolume();
+#ifdef SAILFISH
+    void showVolNofification() const;
+#endif
 };
 
 #endif // RENDERINGCONTROL_H

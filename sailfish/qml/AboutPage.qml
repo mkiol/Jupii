@@ -122,4 +122,12 @@ Page {
 
         VerticalScrollDecorator {}
     }
+
+    focus: true
+    Keys.onVolumeUpPressed: {
+        rc.volUpPressed()
+    }
+    Keys.onVolumeDownPressed: {
+        rc.volDownPressed()
+    }
 }

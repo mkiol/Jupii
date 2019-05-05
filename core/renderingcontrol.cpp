@@ -12,6 +12,8 @@
 #include "renderingcontrol.h"
 #include "directory.h"
 #include "devicemodel.h"
+#include "utils.h"
+#include "settings.h"
 
 RenderingControl::RenderingControl(QObject *parent) : Service(parent),
     m_volumeTimer(parent)
@@ -19,6 +21,12 @@ RenderingControl::RenderingControl(QObject *parent) : Service(parent),
     m_volumeTimer.setInterval(500);
     m_volumeTimer.setSingleShot(true);
     QObject::connect(&m_volumeTimer, &QTimer::timeout, this, &RenderingControl::volumeTimeout);
+
+#ifdef SAILFISH
+    m_volumeUpTimer.setInterval(500);
+    m_volumeUpTimer.setSingleShot(true);
+    QObject::connect(&m_volumeUpTimer, &QTimer::timeout, this, &RenderingControl::volumeUpTimeout);
+#endif
 }
 
 void RenderingControl::changed(const QString &name, const QVariant &_value)
@@ -59,6 +67,7 @@ void RenderingControl::postInit()
 void RenderingControl::reset()
 {
     m_volume = 0;
+    m_futureVolume = 0;
     m_mute = false;
     emit volumeChanged();
     emit muteChanged();
@@ -138,6 +147,8 @@ void RenderingControl::volumeTimeout()
 
                 emit volumeChanged();
             }
+
+            m_futureVolume = 0;
         });
     }
 }
@@ -234,3 +245,64 @@ void RenderingControl::updateMute()
         emit muteChanged();
     }
 }
+
+#ifdef SAILFISH
+void RenderingControl::showVolNofification() const
+{
+    auto name = getDeviceFriendlyName().isEmpty() ? tr("Remote device") : getDeviceFriendlyName();
+    Utils::instance()->showNotification(tr("Volume level of %1 is %2").arg(name).arg(m_volume), m_volume > 0 ?
+                         "icon-system-volume" : "icon-system-volume-mute");
+}
+
+void RenderingControl::volumeUpTimeout()
+{
+    if (m_volUpMutex.tryLock()) {
+        startTask([this](){
+            auto srv = s();
+
+            if (!getInited() || !srv) {
+                qWarning() << "RenderingControl service is not inited";
+                m_volUpMutex.unlock();
+                return;
+            }
+
+            if (handleError(srv->setVolume(m_futureVolume))) {
+                m_volume = m_futureVolume;
+                emit volumeChanged();
+                showVolNofification();
+            }
+
+            m_futureVolume = 0;
+            m_volUpMutex.unlock();
+        });
+    }
+}
+
+void RenderingControl::volUpPressed()
+{
+    qDebug() << "Volume up pressed";
+
+    if (m_volUpMutex.tryLock()) {
+        m_volUpMutex.unlock();
+        auto step = Settings::instance()->getVolStep();
+        auto vol = step + (m_futureVolume > 0 ? m_futureVolume : getVolume());
+        vol -= vol%step;
+        m_futureVolume = vol > 100 ? 100 : vol;
+        m_volumeUpTimer.start();
+    }
+}
+
+void RenderingControl::volDownPressed()
+{
+    qDebug() << "Volume down pressed";
+
+    if (m_volUpMutex.tryLock()) {
+        m_volUpMutex.unlock();
+        auto step = Settings::instance()->getVolStep();
+        auto vol = (m_futureVolume > 0 ? m_futureVolume : getVolume()) - step;
+        vol += vol%step;
+        m_futureVolume = vol < 0 ? 0 : vol;
+        m_volumeUpTimer.start();
+    }
+}
+#endif

@@ -26,6 +26,8 @@ PkgConfigBR:
   - Qt5Qml
   - Qt5Quick
   - libcurl
+  - audioresource
+  - nemonotifications-qt5
 
 # Build dependencies without a pkgconfig setup can be listed here
 PkgBR:

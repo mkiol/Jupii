@@ -31,13 +31,14 @@ class Settings:
     Q_PROPERTY (bool imageSupported READ getImageSupported WRITE setImageSupported NOTIFY imageSupportedChanged)
     Q_PROPERTY (bool rememberPlaylist READ getRememberPlaylist WRITE setRememberPlaylist NOTIFY rememberPlaylistChanged)
     Q_PROPERTY (QStringList lastPlaylist READ getLastPlaylist WRITE setLastPlaylist NOTIFY lastPlaylistChanged)
-    Q_PROPERTY (bool useDbusVolume READ getUseDbusVolume WRITE setUseDbusVolume NOTIFY useDbusVolumeChanged)
+    Q_PROPERTY (bool useHWVolume READ getUseHWVolume WRITE setUseHWVolume NOTIFY useHWVolumeChanged)
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
     //Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
     Q_PROPERTY (int pulseMode READ getPulseMode WRITE setPulseMode NOTIFY pulseModeChanged)
     Q_PROPERTY (QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
     Q_PROPERTY (bool rec READ getRec WRITE setRec NOTIFY recChanged)
+    Q_PROPERTY (int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
 
 public:
     static Settings* instance();
@@ -47,6 +48,9 @@ public:
 
     void setForwardTime(int value);
     int getForwardTime();
+
+    void setVolStep(int value);
+    int getVolStep();
 
     void setShowAllDevices(bool value);
     bool getShowAllDevices();
@@ -63,8 +67,8 @@ public:
     void setRememberPlaylist(bool value);
     bool getRememberPlaylist();
 
-    void setUseDbusVolume(bool value);
-    bool getUseDbusVolume();
+    void setUseHWVolume(bool value);
+    bool getUseHWVolume();
 
     void setFavDevices(const QHash<QString,QVariant> &devs);
     void addFavDevice(const QString &id);
@@ -113,12 +117,13 @@ signals:
     void pulseSupportedChanged();
     void pulseModeChanged();
     void rememberPlaylistChanged();
-    void useDbusVolumeChanged();
+    void useHWVolumeChanged();
     void ssdpIpEnabledChanged();
     void prefNetInfChanged();
     //void remoteContentModeChanged();
     void micVolumeChanged();
     void recChanged();
+    void volStepChanged();
 
 private:
     QSettings settings;

@@ -110,17 +110,6 @@ Page {
         }
     }
 
-    DBusVolumeAgent {
-        id: volumeAgent
-
-        onVolumeChanged: {
-            console.log("DBus volume is: " + volume)
-
-            if (rc.inited && settings.useDbusVolume)
-                rc.volume = volume
-        }
-    }
-
     // -- Pickers --
 
     Component {
@@ -275,11 +264,6 @@ Page {
         onError: {
             handleError(code)
         }
-
-        onInitedChanged: {
-            if (rc.inited && settings.useDbusVolume)
-                rc.volume = volumeAgent.volume
-        }
     }
 
     Connections {
@@ -392,7 +376,7 @@ Page {
 
                     minimumValue: 0
                     maximumValue: 100
-                    stepSize: 1
+                    stepSize: settings.volStep
                     valueText: value
                     opacity: rc.mute ? 0.7 : 1.0
 
@@ -611,5 +595,13 @@ Page {
         onRecordClicked: {
             cserver.setStreamToRecord(av.currentId, !app.streamToRecord)
         }
+    }
+
+    focus: true
+    Keys.onVolumeUpPressed: {
+        rc.volUpPressed()
+    }
+    Keys.onVolumeDownPressed: {
+        rc.volDownPressed()
     }
 }

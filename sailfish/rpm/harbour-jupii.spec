@@ -28,6 +28,8 @@ BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(audioresource)
+BuildRequires:  pkgconfig(nemonotifications-qt5)
 BuildRequires:  pulseaudio-devel
 BuildRequires:  desktop-file-utils
 

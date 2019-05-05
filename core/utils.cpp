@@ -27,6 +27,8 @@
 
 #include "settings.h"
 #include "gpoddermodel.h"
+#include "services.h"
+#include "renderingcontrol.h"
 
 const QString Utils::typeKey = "jupii_type";
 const QString Utils::cookieKey = "jupii_cookie";
@@ -649,5 +651,19 @@ void Utils::activateWindow()
     if (qmlRootItem) {
         QMetaObject::invokeMethod(qmlRootItem, "activate");
     }
+}
+
+void Utils::showNotification(const QString& text, const QString& icon, bool replace)
+{
+    Notification notif;
+    if (replace)
+        notif.setReplacesId(notifId);
+    notif.setBody(text);
+    notif.setMaxContentLines(10);
+    notif.setPreviewBody(text);
+    notif.setExpireTimeout(4000);
+    notif.setIcon(icon);
+    notif.publish();
+    notifId = notif.replacesId();
 }
 #endif

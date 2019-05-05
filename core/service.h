@@ -49,8 +49,8 @@ public:
     bool getInited();
     bool isInitedOrIniting();
     bool getBusy();
-    QString getDeviceId();
-    QString getDeviceFriendlyName();
+    QString getDeviceId() const;
+    QString getDeviceFriendlyName() const;
 
 signals:
     void initedChanged();
