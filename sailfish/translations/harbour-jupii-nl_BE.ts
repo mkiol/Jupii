@@ -160,6 +160,16 @@
     </message>
 </context>
 <context>
+    <name>AlternativeDialogHeader</name>
+    <message numerus="yes">
+        <source>%n selected</source>
+        <translation type="obsolete">
+            <numerusform>%n geselecteerd</numerusform>
+            <numerusform>%n geselecteerd</numerusform>
+        </translation>
+    </message>
+</context>
+<context>
     <name>ArtistPage</name>
     <message numerus="yes">
         <source>%n track(s)</source>
@@ -316,6 +326,25 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Cannot connect to the local network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle power</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DirPage</name>
+    <message>
+        <source>No directories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SD Card</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -537,6 +566,47 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
 </context>
 <context>
+    <name>RecPage</name>
+    <message>
+        <source>Search recordings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No recordings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleting %n item(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+</context>
+<context>
+    <name>RenderingControl</name>
+    <message>
+        <source>Remote device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume level of %1 is %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SavePlaylistPage</name>
     <message>
         <source>Playlist was saved</source>
@@ -585,7 +655,7 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation>Past ’t volume aan me’ de volumeknoppen van uwe gsm. ’t Volume van ’t media-apparaat word automatisch gelijkgesteld aan ’t oproepvolume van uwe gsm.</translation>
+        <translation type="vanished">Past ’t volume aan me’ de volumeknoppen van uwe gsm. ’t Volume van ’t media-apparaat word automatisch gelijkgesteld aan ’t oproepvolume van uwe gsm.</translation>
     </message>
     <message>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
@@ -620,27 +690,11 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation></translation>
     </message>
     <message>
-        <source>Internet streaming mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Experiments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>When Jupii starts, the last playlist will be automatically loaded.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Proxy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Redirection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -665,6 +719,34 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stream recorder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Directory for recordings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change volume level using phone hardware volume keys.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume level step</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -718,6 +800,13 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>main</name>
+    <message>
+        <source>Track &quot;%1&quot; saved</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
