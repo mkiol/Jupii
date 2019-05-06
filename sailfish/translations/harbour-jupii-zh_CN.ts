@@ -808,7 +808,7 @@ Pull down to connect to the local network.</source>
         <translation>当jupli打开时，自动加载上次的播放列表</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="82"/>
+        <location filename="../qml/SettingsPage.qml" line="81"/>
         <source>Experiments</source>
         <translation>实验</translation>
     </message>
@@ -822,67 +822,67 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">使用手机实体按键控制音量水平。媒体设备的音量将和手机通知音量保持一致。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="89"/>
+        <location filename="../qml/SettingsPage.qml" line="88"/>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
         <translation>在UPnP设备播放影像目前工作得还不是很好。至今还有一些镜像错误还未移除。该操作将强制播放%1 的影像，尽管可能出现一些错误。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="104"/>
+        <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Audio capture format</source>
         <translation>音频采集格式</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="110"/>
+        <location filename="../qml/SettingsPage.qml" line="109"/>
         <source>MP3 44100Hz 128 kbps (default)</source>
         <translation>MP3 44100Hz 128 kbps (默认)</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="111"/>
+        <location filename="../qml/SettingsPage.qml" line="110"/>
         <source>MP3 44100Hz 96 kbps</source>
         <translation>MP3 44100Hz 96 kbps</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="112"/>
+        <location filename="../qml/SettingsPage.qml" line="111"/>
         <source>PCM 44100Hz 1411 kbps</source>
         <translation>PCM 44100Hz 1411 kbps</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="113"/>
+        <location filename="../qml/SettingsPage.qml" line="112"/>
         <source>PCM 22050Hz 706 kbps</source>
         <translation>PCM 22050Hz 706 kbps</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="124"/>
+        <location filename="../qml/SettingsPage.qml" line="123"/>
         <source>Stream recorder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="125"/>
+        <location filename="../qml/SettingsPage.qml" line="124"/>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="170"/>
+        <location filename="../qml/SettingsPage.qml" line="169"/>
         <source>Change</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="179"/>
+        <location filename="../qml/SettingsPage.qml" line="178"/>
         <source>Set default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="191"/>
+        <location filename="../qml/SettingsPage.qml" line="190"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
         <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP 设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1 仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="205"/>
+        <location filename="../qml/SettingsPage.qml" line="204"/>
         <source>Adding devices manually</source>
         <translation>自动添加设备</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="206"/>
+        <location filename="../qml/SettingsPage.qml" line="205"/>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
         <translation>如果%1 发现设备失败。（例如因为它在不同的LAN），你可以用IP地址手动添加它。当启用时，下拉菜单包含附加的操作以手动添加设备。确保你的设备没有使用NAT 和防火墙。</translation>
     </message>
@@ -913,32 +913,27 @@ Pull down to connect to the local network.</source>
         <translation>前进/后退间隔步长</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="59"/>
-        <source>Change volume level using phone hardware volume keys.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="74"/>
+        <location filename="../qml/SettingsPage.qml" line="73"/>
         <source>Volume level step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="88"/>
+        <location filename="../qml/SettingsPage.qml" line="87"/>
         <source>Image content</source>
         <translation>影像内容</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="105"/>
+        <location filename="../qml/SettingsPage.qml" line="104"/>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
         <translation>当 %1 采集的音频由另一个软件输出时，使用流格式。使用未压缩的流（PCM）延迟更低，但更高的比特率可能造成电量更快耗尽。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="157"/>
+        <location filename="../qml/SettingsPage.qml" line="156"/>
         <source>Directory for recordings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="190"/>
+        <location filename="../qml/SettingsPage.qml" line="189"/>
         <source>All devices visible</source>
         <translation>所有设备可见</translation>
     </message>

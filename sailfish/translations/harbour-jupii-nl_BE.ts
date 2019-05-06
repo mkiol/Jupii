@@ -738,10 +738,6 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Change volume level using phone hardware volume keys.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Volume level step</source>
         <translation type="unfinished"></translation>
     </message>

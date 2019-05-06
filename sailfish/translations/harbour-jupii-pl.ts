@@ -402,7 +402,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="115"/>
         <source>Toggle power</source>
-        <translation type="unfinished"></translation>
+        <translation>Włącz/Wyłącz</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="135"/>
@@ -422,17 +422,17 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/DirPage.qml" line="59"/>
         <source>SD Card</source>
-        <translation type="unfinished"></translation>
+        <translation>Karta SD</translation>
     </message>
     <message>
         <location filename="../qml/DirPage.qml" line="64"/>
         <source>Home</source>
-        <translation type="unfinished"></translation>
+        <translation>Katalog domowy</translation>
     </message>
     <message>
         <location filename="../qml/DirPage.qml" line="80"/>
         <source>No directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak katalogów</translation>
     </message>
 </context>
 <context>
@@ -711,36 +711,36 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/RecPage.qml" line="54"/>
         <source>Search recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyszukaj nagrania</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="69"/>
         <source>Delete selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń zaznaczone</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="72"/>
         <source>Deleting %n item(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Usuwanie %n nagrania</numerusform>
+            <numerusform>Usuwanie %n nagrań</numerusform>
+            <numerusform>Usuwanie %n nagrań</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="81"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Wyczyść zaznaczenia</translation>
+        <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="82"/>
         <source>Select all</source>
-        <translation type="unfinished">Zaznacz wszystkie</translation>
+        <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="109"/>
         <source>No recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak plików z nagraniami</translation>
     </message>
 </context>
 <context>
@@ -748,12 +748,12 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../../core/renderingcontrol.cpp" line="252"/>
         <source>Remote device</source>
-        <translation type="unfinished"></translation>
+        <translation>Zdalne urządzenie</translation>
     </message>
     <message>
         <location filename="../../core/renderingcontrol.cpp" line="253"/>
         <source>Volume level of %1 is %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Głośność %1: %2</translation>
     </message>
 </context>
 <context>
@@ -814,7 +814,7 @@ Pull down to connect to the local network.</source>
         <translation>Przy uruchomieniu ostatnia playlista zostanie automatycznie wczytana.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="82"/>
+        <location filename="../qml/SettingsPage.qml" line="81"/>
         <source>Experiments</source>
         <translation>Eksperymenty</translation>
     </message>
@@ -828,67 +828,67 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Zmieniaj poziom głośności przy pomocy sprzętowch przycisków. Głośność będzie ustawiana na taki sam poziom jak głośność w telefonie.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="89"/>
+        <location filename="../qml/SettingsPage.qml" line="88"/>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
         <translation>Wyświetlanie obrazów na urządzeniach UPnP nie jest w pełni zaimplementowane. Ta opcja odblokowuje możliwość wyświetlania obrazów pomimo tego, że może powodować to błędy w %1m.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="104"/>
+        <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Audio capture format</source>
         <translation>Format przechwytywania dźwięku</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="110"/>
+        <location filename="../qml/SettingsPage.qml" line="109"/>
         <source>MP3 44100Hz 128 kbps (default)</source>
         <translation>MP3 44100Hz 128 kbps (domyślny)</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="111"/>
+        <location filename="../qml/SettingsPage.qml" line="110"/>
         <source>MP3 44100Hz 96 kbps</source>
         <translation>MP3 44100Hz 96 kbps</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="112"/>
+        <location filename="../qml/SettingsPage.qml" line="111"/>
         <source>PCM 44100Hz 1411 kbps</source>
         <translation>PCM 44100Hz 1411 kbps</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="113"/>
+        <location filename="../qml/SettingsPage.qml" line="112"/>
         <source>PCM 22050Hz 706 kbps</source>
         <translation>PCM 22050Hz 706 kbps</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="124"/>
+        <location filename="../qml/SettingsPage.qml" line="123"/>
         <source>Stream recorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Nagrywanie</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="125"/>
+        <location filename="../qml/SettingsPage.qml" line="124"/>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
-        <translation type="unfinished"></translation>
+        <translation>Umożliwia nagrywanie utworów ze strumieni SHOUTcast. Jeśli strumień zawiera informacje o odtwarzanym utworze to można ten utwór zapisać do pliku. Aby włączyć nagrywanie użyj przycisku &quot;Nagraj&quot; znajdującego się obok przycisku &quot;Przewiń&quot; na dolnym panelu. Przycisk ten jest widoczny tylko wtedy gdy nagrywanie jest możliwe. Gdy przycisk &quot;Nagraj&quot; zostanie aktywowany to cały obecnie odtwarzany utwór będzie zapisany w postaci pliku (od początku do końca). Strumienie AAC nie mogą być nagrawane.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="170"/>
+        <location filename="../qml/SettingsPage.qml" line="169"/>
         <source>Change</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmień</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="179"/>
+        <location filename="../qml/SettingsPage.qml" line="178"/>
         <source>Set default</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustaw domyślny</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="191"/>
+        <location filename="../qml/SettingsPage.qml" line="190"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
         <translation>%1 obsługuje tylko urządzenia typu Media Renderer. Jeśli ta opcja jest włączona, wszystkie urządzenia UPnP będą widoczne, czyli także te które nie są obsługiwane np. domowy ruter lub Media Server. Dla nieobsługiwanych urządzeń, %1 jest wstanie pokazać tylko podstawowe informacje konfiguracyjne.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="205"/>
+        <location filename="../qml/SettingsPage.qml" line="204"/>
         <source>Adding devices manually</source>
         <translation>Ręczne dodawanie urządzeń</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="206"/>
+        <location filename="../qml/SettingsPage.qml" line="205"/>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
         <translation>Jeśli %1 nie będzie wstanie automatycznie wykryć urządzenia (np. z powodu tego, że jest w innej sieci LAN), możesz dodać takie urządzenie podając jego adres IP. Jeśli ta opcja jest włączona, górne menu zawiera dodatkowy element - Ręcznie dodaj urządzenie. Upewnij się, że twoje urządzenie nie jest blokowane przez firewall lub NAT.</translation>
     </message>
@@ -919,32 +919,31 @@ Pull down to connect to the local network.</source>
         <translation>Skok przewijania</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="59"/>
         <source>Change volume level using phone hardware volume keys.</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Sterowanie głośnością za pomocą sprzętowych przycisków.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="74"/>
+        <location filename="../qml/SettingsPage.qml" line="73"/>
         <source>Volume level step</source>
-        <translation type="unfinished"></translation>
+        <translation>Skok zmiany głośności</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="88"/>
+        <location filename="../qml/SettingsPage.qml" line="87"/>
         <source>Image content</source>
         <translation>Możliwość wyświetlania obrazów</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="105"/>
+        <location filename="../qml/SettingsPage.qml" line="104"/>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
         <translation>Format audio, który jest używany gdy %1 przechwytuje dźwięk innej aplikacji. Nieskompresowany strumień (PCM) skutkuje niższym opóźnieniem ale także szybszym wyczerpaniem baterii.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="157"/>
+        <location filename="../qml/SettingsPage.qml" line="156"/>
         <source>Directory for recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Katalog z nagraniami</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="190"/>
+        <location filename="../qml/SettingsPage.qml" line="189"/>
         <source>All devices visible</source>
         <translation>Wszystkie urządzenia widoczne</translation>
     </message>
@@ -1018,7 +1017,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/main.qml" line="45"/>
         <source>Track &quot;%1&quot; saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwór &quot;%1&quot; został zapisany</translation>
     </message>
 </context>
 </TS>

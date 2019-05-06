@@ -56,7 +56,6 @@ Page {
                 automaticCheck: false
                 checked: settings.useHWVolume
                 text: qsTr("Volume control with hardware keys")
-                description: qsTr("Change volume level using phone hardware volume keys.")
                 onClicked: {
                     settings.useHWVolume = !settings.useHWVolume
                 }
