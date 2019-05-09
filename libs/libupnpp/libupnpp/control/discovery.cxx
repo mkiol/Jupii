@@ -384,9 +384,7 @@ bool UPnPDeviceDirectory::search()
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         LOGDEB1("UPnPDeviceDirectory::search: calling upnpsearchasync" << endl);
-        int code1 = m_ssdp_ip.empty() ?
-                    UpnpSearchAsync(lib->getclh(), m_searchTimeout, cp, lib) :
-                    UpnpSearchAsyncWithSsdpIP(lib->getclh(), m_searchTimeout, cp, lib, m_ssdp_ip.c_str());
+        int code1 = UpnpSearchAsync(lib->getclh(), m_searchTimeout, cp, lib);
         if (code1 != UPNP_E_SUCCESS) {
             m_reason = LibUPnP::errAsString("UpnpSearchAsync", code1);
             LOGERR("UPnPDeviceDirectory::search: UpnpSearchAsync failed: " <<

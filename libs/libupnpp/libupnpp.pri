@@ -5,7 +5,7 @@ QMAKE_CXXFLAGS += -std=c++11 -D_FILE_OFFSET_BITS=64 -pthread
 QMAKE_LFLAGS += -Wl,-zdefs
 
 libupnpp_BASE = ../libs/libupnpp
-libupnp_BASE = ../libs/libupnp
+pupnp_BASE = ../libs/pupnp
 
 libupnpp_HEADERS += \
   $$libupnpp_BASE/libupnpp/control/avlastchg.hxx \
@@ -86,7 +86,7 @@ SOURCES += \
 INCLUDEPATH += \
   $$libupnpp_BASE \
   $$libupnpp_BASE/libupnpp \
-  $$libupnp_BASE \
-  $$libupnp_BASE/upnp \
-  $$libupnp_BASE/ixml/inc \
-  $$libupnp_BASE/threadutil/inc
+  $$pupnp_BASE \
+  $$pupnp_BASE/upnp \
+  $$pupnp_BASE/ixml \
+  $$pupnp_BASE/threadutil

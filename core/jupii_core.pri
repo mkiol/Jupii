@@ -3,7 +3,7 @@ CORE_DIR = ../core
 INCLUDEPATH += $$CORE_DIR
 
 include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
-include($$PROJECTDIR/libs/libupnp/libupnp.pri)
+include($$PROJECTDIR/libs/pupnp/pupnp.pri)
 include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
 
 system(qdbusxml2cpp $$PROJECTDIR/dbus/org.jupii.xml -a $$CORE_DIR/dbus_jupii_adaptor)
