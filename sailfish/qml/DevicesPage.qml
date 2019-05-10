@@ -16,7 +16,6 @@ Page {
     property real preferredItemHeight: root && root.isLandscape ? Theme.itemSizeSmall : Theme.itemSizeLarge
 
     Component.onCompleted: {
-        //directory.discoverFavs()
         directory.discover()
     }
 
@@ -66,13 +65,6 @@ Page {
             MenuItem {
                 text: qsTr("Settings")
                 onClicked: pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
-            }
-
-            MenuItem {
-                text: qsTr("Add device manually")
-                visible: !directory.busy && settings.ssdpIpEnabled
-                enabled: visible && directory.inited
-                onClicked: pageStack.push(Qt.resolvedUrl("AddDevicePage.qml"))
             }
 
             MenuItem {

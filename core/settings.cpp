@@ -62,23 +62,6 @@ int Settings::getVolStep()
     return settings.value("volstep", 5).toInt();
 }
 
-/*void Settings::setRemoteContentMode(int value)
-{
-    // 0 - proxy
-    // 1 - redirection
-    if (getRemoteContentMode() != value) {
-        settings.setValue("remotecontentmode", value);
-        emit remoteContentModeChanged();
-    }
-}*/
-
-/*int Settings::getRemoteContentMode()
-{
-    // 0 - proxy
-    // 1 - redirection
-    return settings.value("remotecontentmode", 0).toInt();
-}*/
-
 void Settings::setForwardTime(int value)
 {
     if (value < 1 || value > 60)
@@ -265,19 +248,6 @@ void Settings::setPrefNetInf(const QString& value)
 QString Settings::getPrefNetInf()
 {
     return settings.value("prefnetinf", "").toString();
-}
-
-void Settings::setSsdpIpEnabled(bool value)
-{
-    if (getSsdpIpEnabled() != value) {
-        settings.setValue("ssdpipenabled", value);
-        emit ssdpIpEnabledChanged();
-    }
-}
-
-bool Settings::getSsdpIpEnabled()
-{
-    return settings.value("ssdpipenabled", false).toBool();
 }
 
 void Settings::setLastPlaylist(const QStringList& value)

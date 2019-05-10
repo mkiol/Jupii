@@ -335,7 +335,7 @@ void UPnPDeviceDirectory::expireDevices()
 // This means that you have to wait for the specified period before
 // the results are complete. 
 UPnPDeviceDirectory::UPnPDeviceDirectory(time_t search_window)
-    : m_ok(false), m_searchTimeout(int(search_window)), m_ssdp_ip()
+    : m_ok(false), m_searchTimeout(int(search_window))
 {
     addCallback(std::bind(&UPnPDeviceDirectory::deviceFound, this, _1, _2));
 

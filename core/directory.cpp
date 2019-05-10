@@ -54,10 +54,6 @@ void Directory::init()
         return;
     }
 
-    // Delete old libupnpp log files
-    //Utils::removeFile("/home/nemo/IUpnpErrFile.txt");
-    //Utils::removeFile("/home/nemo/IUpnpInfoFile.txt");
-
     m_lib->setLogFileName("", UPnPP::LibUPnP::LogLevelError);
 
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(4);
@@ -87,7 +83,7 @@ void Directory::clearLists()
     this->m_servsdesc.clear();
 }
 
-void Directory::discover(const QString& ssdpIp)
+void Directory::discover()
 {
     if (!m_inited) {
         qWarning() << "Directory not inited.";
@@ -107,7 +103,7 @@ void Directory::discover(const QString& ssdpIp)
 
     setBusy(true);
 
-    startTask([this, ssdpIp](){
+    startTask([this](){
 
         clearLists();
 
@@ -118,15 +114,10 @@ void Directory::discover(const QString& ssdpIp)
             return;
         }
 
-        if (ssdpIp.isEmpty())
-            m_directory->resetSsdpIP();
-        else
-            m_directory->setSsdpIP(ssdpIp.toStdString());
-
         bool found = false;
         QHash<QString,bool> xcs;
 
-        auto traverseFun = [this, &found, ssdpIp, &xcs](const UPnPClient::UPnPDeviceDesc &ddesc,
+        auto traverseFun = [this, &found, &xcs](const UPnPClient::UPnPDeviceDesc &ddesc,
                 const UPnPClient::UPnPServiceDesc &sdesc) {
             /*qDebug() << "==> Visitor";
             qDebug() << " Device";
@@ -158,14 +149,7 @@ void Directory::discover(const QString& ssdpIp)
                 }
             }
 
-            if (ssdpIp.isEmpty()) {
-                found = true;
-            } else {
-                // Assuming that URLBase's host equals device IP address
-                QString ip = QUrl(QString::fromStdString(ddesc.URLBase)).host();
-                found = (ip == ssdpIp);
-                //qDebug() << "Found manually added device"
-            }
+            found = true;
 
             return true;
         };
@@ -185,17 +169,10 @@ void Directory::discover(const QString& ssdpIp)
 
         //qDebug() << "traverse end";
 
-        m_directory->resetSsdpIP();
-
         emit discoveryReady();
 
         setBusy(false);
     });
-}
-
-void Directory::discover()
-{
-    discover(QString());
 }
 
 void Directory::discoverFavs()

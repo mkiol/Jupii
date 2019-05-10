@@ -25,7 +25,6 @@ class Settings:
     Q_OBJECT
     Q_PROPERTY (int port READ getPort WRITE setPort NOTIFY portChanged)
     Q_PROPERTY (QString lastDir READ getLastDir WRITE setLastDir NOTIFY lastDirChanged)
-    Q_PROPERTY (bool ssdpIpEnabled READ getSsdpIpEnabled WRITE setSsdpIpEnabled NOTIFY ssdpIpEnabledChanged)
     Q_PROPERTY (bool showAllDevices READ getShowAllDevices WRITE setShowAllDevices NOTIFY showAllDevicesChanged)
     Q_PROPERTY (int forwardTime READ getForwardTime WRITE setForwardTime NOTIFY forwardTimeChanged)
     Q_PROPERTY (bool imageSupported READ getImageSupported WRITE setImageSupported NOTIFY imageSupportedChanged)
@@ -33,7 +32,6 @@ class Settings:
     Q_PROPERTY (QStringList lastPlaylist READ getLastPlaylist WRITE setLastPlaylist NOTIFY lastPlaylistChanged)
     Q_PROPERTY (bool useHWVolume READ getUseHWVolume WRITE setUseHWVolume NOTIFY useHWVolumeChanged)
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
-    //Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
     Q_PROPERTY (int pulseMode READ getPulseMode WRITE setPulseMode NOTIFY pulseModeChanged)
     Q_PROPERTY (QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
@@ -84,9 +82,6 @@ public:
     QString getRecDir();
     void setRecDir(const QString& value);
 
-    void setSsdpIpEnabled(bool value);
-    bool getSsdpIpEnabled();
-
     void setMicVolume(float value);
     float getMicVolume();
 
@@ -102,9 +97,6 @@ public:
     QString getPrefNetInf();
     void setPrefNetInf(const QString& value);
 
-    /*void setRemoteContentMode(int value);
-    int getRemoteContentMode();*/
-
 signals:
     void portChanged();
     void favDevicesChanged();
@@ -118,9 +110,7 @@ signals:
     void pulseModeChanged();
     void rememberPlaylistChanged();
     void useHWVolumeChanged();
-    void ssdpIpEnabledChanged();
     void prefNetInfChanged();
-    //void remoteContentModeChanged();
     void micVolumeChanged();
     void recChanged();
     void volStepChanged();
