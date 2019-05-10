@@ -227,7 +227,22 @@ DockedPanel_ {
             property real size: Theme.itemSizeSmall
 
             height: Theme.iconSizeExtraLarge
-            spacing: parent.width/4 - size - 2 * Theme.horizontalPageMargin
+            spacing: {
+                var count = 0
+                if (prevButton.visible)
+                    count++
+                if (backwardButton.visible)
+                    count++
+                if (forwardButton.visible)
+                    count++
+                if (nextButton.visible)
+                    count++
+                if (recordButton.visible)
+                    count++
+                if (playmodeButton.visible)
+                    count++
+                return count > 1 ? (parent.width - count * size - 2 * Theme.horizontalPageMargin)/(count-1) : 0
+            }
             anchors.horizontalCenter: parent.horizontalCenter
 
             IconButton {

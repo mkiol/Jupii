@@ -11,6 +11,8 @@ import Sailfish.Silica 1.0
 Page {
     id: root
 
+    allowedOrientations: Orientation.All
+
     property var musicPickerDialog
     property var videoPickerDialog
     property var audioFromVideoPickerDialog

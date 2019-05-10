@@ -8,12 +8,11 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-ApplicationWindow
-{
+ApplicationWindow {
     id: app
 
     cover: Qt.resolvedUrl("CoverPage.qml")
-    allowedOrientations: Orientation.PortraitMask
+    allowedOrientations: Orientation.All
 
     initialPage: Component {
         DevicesPage {}

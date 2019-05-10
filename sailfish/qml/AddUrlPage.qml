@@ -11,6 +11,8 @@ import Sailfish.Silica 1.0
 Dialog {
     id: root
 
+    allowedOrientations: Orientation.All
+
     property alias url: urlField.text
     property alias name: nameField.text
     property bool ok: utils.isUrlOk(urlField.text.trim())

@@ -13,6 +13,8 @@ import harbour.jupii.DeviceInfo 1.0
 Page {
     id: root
 
+    allowedOrientations: Orientation.All
+
     property alias udn: deviceInfo.udn
 
     DeviceInfo {

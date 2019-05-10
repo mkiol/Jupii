@@ -14,6 +14,8 @@ import harbour.jupii.AVTransport 1.0
 Dialog {
     id: root
 
+    allowedOrientations: Orientation.All
+
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge

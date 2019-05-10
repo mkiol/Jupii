@@ -14,6 +14,8 @@ import harbour.jupii.AVTransport 1.0
 Dialog {
     id: root
 
+    allowedOrientations: Orientation.All
+
     property alias albumId: itemModel.albumId
     property alias artistId: itemModel.artistId
     property alias playlistId: itemModel.playlistId

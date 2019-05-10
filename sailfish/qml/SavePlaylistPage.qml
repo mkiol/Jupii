@@ -11,6 +11,8 @@ import Sailfish.Silica 1.0
 Dialog {
     id: root
 
+    allowedOrientations: Orientation.All
+
     property var playlist
 
     canAccept: textField.text.trim().length > 0

@@ -17,6 +17,8 @@ import harbour.jupii.PlayListModel 1.0
 Page {
     id: root
 
+    allowedOrientations: Orientation.All
+
     property string deviceId
     property string deviceName
 
@@ -115,6 +117,7 @@ Page {
     Component {
         id: filePickerPage
         FilePickerPage {
+            allowedOrientations: Orientation.All
             nameFilters: cserver.getExtensions(settings.imageSupported ? 263 : 262)
             onSelectedContentPropertiesChanged: {
                 playlist.addItemPath(selectedContentProperties.filePath)
@@ -125,6 +128,7 @@ Page {
     Component {
         id: musicPickerDialog
         MultiMusicPickerDialog {
+            allowedOrientations: Orientation.All
             onAccepted: {
                 var paths = [];
                 for (var i = 0; i < selectedContent.count; ++i)
@@ -164,6 +168,7 @@ Page {
     Component {
         id: videoPickerDialog
         MultiVideoPickerDialog {
+            allowedOrientations: Orientation.All
             onAccepted: {
                 var paths = [];
                 for (var i = 0; i < selectedContent.count; ++i)
@@ -176,6 +181,7 @@ Page {
     Component {
         id: audioFromVideoPickerDialog
         MultiVideoPickerDialog {
+            allowedOrientations: Orientation.All
             onAccepted: {
                 var paths = [];
                 for (var i = 0; i < selectedContent.count; ++i)
@@ -188,6 +194,7 @@ Page {
     Component {
         id: imagePickerDialog
         MultiImagePickerDialog {
+            allowedOrientations: Orientation.All
             onAccepted: {
                 var paths = [];
                 for (var i = 0; i < selectedContent.count; ++i)

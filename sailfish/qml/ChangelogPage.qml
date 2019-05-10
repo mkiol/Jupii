@@ -11,6 +11,8 @@ import Sailfish.Silica 1.0
 Page {
     id: root
 
+    allowedOrientations: Orientation.All
+
     SilicaFlickable {
         id: flick
         anchors.fill: parent

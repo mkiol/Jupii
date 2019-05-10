@@ -14,7 +14,9 @@ import harbour.jupii.RenderingControl 1.0
 Page {
     id: root
 
-    property bool imgOk: image.status === Image.Ready
+    allowedOrientations: Orientation.All
+
+    property bool imgOk: imagep.status === Image.Ready || imagel.status === Image.Ready
     property bool showPath: av.currentPath.length > 0
     property bool isMic: utils.isIdMic(av.currentURL)
     property bool isPulse: utils.isIdPulse(av.currentURL)
@@ -23,6 +25,32 @@ Page {
     SilicaFlickable {
         anchors.fill: parent
         contentHeight: column.height
+
+        Image {
+            id: imagel
+            visible: root.isLandscape
+            x: root.width/2
+            width: root.width/2
+            height: {
+                if (status !== Image.Ready)
+                    return 1
+
+                var w = width
+                var ratio = w / implicitWidth
+                var h = implicitHeight * ratio
+                return h > w ? w : h
+            }
+
+            fillMode: Image.PreserveAspectCrop
+            source: av.currentAlbumArtURI
+        }
+
+        OpacityRampEffect {
+            sourceItem: imagel
+            direction: OpacityRamp.BottomToTop
+            offset: root.imgOk ? 0.5 : -0.5
+            slope: 1.8
+        }
 
         Column {
             id: column
@@ -46,33 +74,29 @@ Page {
             }
 
             Item {
+                visible: root.isPortrait
                 width: parent.width
-                height: Math.max(image.height, header.height)
+                height: Math.max(imagep.height, header.height)
 
                 Image {
-                    id: image
-
+                    id: imagep
                     width: parent.width
                     height: {
-                        if (!root.imgOk)
+                        if (status !== Image.Ready)
                             return 1
 
-                        var w = parent.width
+                        var w = width
                         var ratio = w / implicitWidth
                         var h = implicitHeight * ratio
                         return h > w ? w : h
                     }
 
-                    sourceSize.width: 500
-                    sourceSize.height: 500
-
                     fillMode: Image.PreserveAspectCrop
-
                     source: av.currentAlbumArtURI
                 }
 
                 OpacityRampEffect {
-                    sourceItem: image
+                    sourceItem: imagep
                     direction: OpacityRamp.BottomToTop
                     offset: root.imgOk ? 0.5 : -0.5
                     slope: 1.8
@@ -80,15 +104,20 @@ Page {
 
                 PageHeader {
                     id: header
-                    //title: qsTr("Item details")
                     title: av.currentTitle
                 }
+            }
+
+            PageHeader {
+                visible: root.isLandscape
+                title: av.currentTitle
             }
 
             Spacer {}
 
             Column {
-                width: root.width
+                width: root.isLandscape && root.imgOk ? root.width/2 : root.width
+                anchors.left: parent.left
                 spacing: Theme.paddingMedium
 
                 /*DetailItem {
@@ -149,44 +178,49 @@ Page {
                 }
             }
 
-            SectionHeader {
-                text: qsTr("Description")
-                visible: !isMic && !isPulse && av.currentDescription.length !== 0
-            }
+            Column {
+                width: root.isLandscape && root.imgOk ? root.width/2 : root.width
+                anchors.left: parent.left
 
-            Label {
-                x: Theme.horizontalPageMargin
-                width: parent.width - 2 * Theme.horizontalPageMargin
-                text: av.currentDescription
-                visible: av.currentDescription.length !== 0
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                color: Theme.highlightColor
-                font.pixelSize: Theme.fontSizeSmall
-            }
+                SectionHeader {
+                    text: qsTr("Description")
+                    visible: !isMic && !isPulse && av.currentDescription.length !== 0
+                }
 
-            SectionHeader {
-                text: av.currentPath.length !== 0 ? qsTr("Path") : qsTr("URL")
-                visible: !isMic && !isPulse && isOwn
-            }
+                Label {
+                    x: Theme.horizontalPageMargin
+                    width: parent.width - 2 * Theme.horizontalPageMargin
+                    text: av.currentDescription
+                    visible: av.currentDescription.length !== 0
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    color: Theme.highlightColor
+                    font.pixelSize: Theme.fontSizeSmall
+                }
 
-            PaddedLabel {
-                text: av.currentPath.length !== 0 ? av.currentPath : av.currentURL
-                visible: !isMic && !isPulse && isOwn
-            }
+                SectionHeader {
+                    text: av.currentPath.length !== 0 ? qsTr("Path") : qsTr("URL")
+                    visible: !isMic && !isPulse && isOwn
+                }
 
-            Slider {
-                visible: isMic
-                width: parent.width
-                minimumValue: 0
-                maximumValue: 100
-                stepSize: 1
-                handleVisible: true
-                value: settings.micVolume
-                valueText: value
-                label: qsTr("Microphone sensitivity")
+                PaddedLabel {
+                    text: av.currentPath.length !== 0 ? av.currentPath : av.currentURL
+                    visible: !isMic && !isPulse && isOwn
+                }
 
-                onValueChanged: {
-                    settings.micVolume = value
+                Slider {
+                    visible: isMic
+                    width: parent.width
+                    minimumValue: 0
+                    maximumValue: 100
+                    stepSize: 1
+                    handleVisible: true
+                    value: settings.micVolume
+                    valueText: value
+                    label: qsTr("Microphone sensitivity")
+
+                    onValueChanged: {
+                        settings.micVolume = value
+                    }
                 }
             }
 
