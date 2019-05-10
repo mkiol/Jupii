@@ -63,6 +63,7 @@ Dialog {
 
         PullDownMenu {
             id: menu
+            visible: itemModel.count !== 0
 
             MenuItem {
                 visible: itemModel.selectedCount > 0
