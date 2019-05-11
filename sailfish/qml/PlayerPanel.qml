@@ -25,6 +25,8 @@ DockedPanel_ {
     property alias playmodeEnabled: playmodeButton.enabled
     property alias recordEnabled: recordButton.enabled
     property bool recordActive: false
+    property bool isPortrait: pageStack.currentPage.isPortrait
+    property bool isLandscape: pageStack.currentPage.isLandscape
 
     property string title: ""
     property string subtitle: ""
@@ -61,7 +63,6 @@ DockedPanel_ {
         id: column
 
         width: parent.width
-        spacing: Theme.paddingMedium
 
         Column {
             width: parent.width
@@ -74,7 +75,7 @@ DockedPanel_ {
                     bottomMargin: Theme.paddingMedium + Theme.paddingSmall
                     topMargin: Theme.paddingMedium + Theme.paddingSmall
                 }
-                font.pixelSize: Theme.fontSizeHuge
+                font.pixelSize: root.isPortrait ? Theme.fontSizeHuge : Theme.fontSizeExtraLarge
                 horizontalAlignment: Text.AlignHCenter
                 visible: av.currentType !== AVTransport.T_Image &&
                          root.full &&
@@ -122,32 +123,37 @@ DockedPanel_ {
 
             Item {
                 id: lbi
+                property int imgSize: root.isPortrait ? Theme.itemSizeLarge : 0.8 * Theme.itemSizeLarge
                 width: parent.width
-                height: Theme.itemSizeLarge + 2 * Theme.paddingMedium
+                height: imgSize + 2 *
+                        (root.full ? (root.isPortrait ? Theme.paddingMedium : 0) : Theme.paddingMedium)
 
                 Image {
                     id: image
-
-                    width: Theme.itemSizeLarge
-                    height: Theme.itemSizeLarge
-
+                    visible: _image.status !== Image.Ready
+                    width: lbi.imgSize
+                    height: lbi.imgSize
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
                         leftMargin: Theme.horizontalPageMargin
                     }
-
                     source: "image://theme/graphic-grid-playlist?" + Theme.primaryColor
+                }
 
-                    Image {
-                        id: _image
-
-                        anchors.fill: parent
-                        sourceSize.width: width
-                        sourceSize.height: height
-                        fillMode: Image.PreserveAspectCrop
-                        source: av.currentAlbumArtURI
+                Image {
+                    id: _image
+                    width: lbi.imgSize
+                    height: lbi.imgSize
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: parent.left
+                        leftMargin: Theme.horizontalPageMargin
                     }
+                    sourceSize.width: lbi.imgSize
+                    sourceSize.height: lbi.imgSize
+                    fillMode: Image.PreserveAspectCrop
+                    source: av.currentAlbumArtURI
                 }
 
                 Column {
@@ -156,7 +162,7 @@ DockedPanel_ {
                     spacing: Theme.paddingSmall
                     anchors {
                         verticalCenter: parent.verticalCenter
-                        left: image.right
+                        left: _image.status !== Image.Ready ? image.right : _image.right
                         leftMargin: Theme.paddingLarge
                         right: playButton.visible ? playButton.left : parent.right
                         rightMargin: Theme.paddingLarge
@@ -226,7 +232,7 @@ DockedPanel_ {
 
             property real size: Theme.itemSizeSmall
 
-            height: Theme.iconSizeExtraLarge
+            height: root.isPortrait ? Theme.iconSizeExtraLarge : Theme.iconSizeLarge
             spacing: {
                 var count = 0
                 if (prevButton.visible)
