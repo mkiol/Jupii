@@ -14,8 +14,8 @@
 #include <QMetaMethod>
 #include <QUrl>
 
-#include <libupnpp/control/avtransport.hxx>
-#include <libupnpp/control/service.hxx>
+#include "libupnpp/control/avtransport.hxx"
+#include "libupnpp/control/service.hxx"
 #include "libupnpp/control/cdircontent.hxx"
 
 #include "service.h"

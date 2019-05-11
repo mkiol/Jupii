@@ -19,8 +19,8 @@ ffmpeg {
 }
 
 desktop {
-    INCLUDEPATH += /usr/include/taglib
     LIBS += -ltag
+    INCLUDEPATH += /usr/include/taglib
 
     pulse {
         LIBS += -lmp3lame

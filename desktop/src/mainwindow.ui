@@ -70,7 +70,7 @@
       <property name="enabled">
        <bool>false</bool>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_1">
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
@@ -89,7 +89,7 @@
       <property name="enabled">
        <bool>true</bool>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
         <widget class="QListView" name="playlistView">
          <property name="contextMenuPolicy">
@@ -101,7 +101,7 @@
         <widget class="QFrame" name="player">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
              <widget class="QSlider" name="progressSlider">
               <property name="tracking">
@@ -149,7 +149,7 @@
              </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
+             <layout class="QVBoxLayout" name="verticalLayout_6">
               <item>
                <widget class="QLabel" name="trackTitle">
                 <property name="layoutDirection">

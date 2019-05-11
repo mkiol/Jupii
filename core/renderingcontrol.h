@@ -11,8 +11,8 @@
 #include <QTimer>
 #include <QMutex>
 
-#include <libupnpp/control/renderingcontrol.hxx>
-#include <libupnpp/control/service.hxx>
+#include "libupnpp/control/renderingcontrol.hxx"
+#include "libupnpp/control/service.hxx"
 
 #include "service.h"
 

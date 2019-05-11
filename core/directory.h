@@ -18,9 +18,9 @@
 #include <memory>
 #include <functional>
 
-#include <libupnpp/upnpplib.hxx>
-#include <libupnpp/control/discovery.hxx>
-#include <libupnpp/control/description.hxx>
+#include "libupnpp/upnpplib.hxx"
+#include "libupnpp/control/discovery.hxx"
+#include "libupnpp/control/description.hxx"
 
 #include "taskexecutor.h"
 #include "yamahaextendedcontrol.h"
