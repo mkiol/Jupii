@@ -150,7 +150,7 @@ Page {
 
             SimpleListItem {
                 visible: settings.rec
-                title.text: "Recordings"
+                title.text: qsTr("Recordings")
                 icon.source: "image://icons/icon-m-record"
                 onClicked: {
                     pageStack.replace(recPickerPage)

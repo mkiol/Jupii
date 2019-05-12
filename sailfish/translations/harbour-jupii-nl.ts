@@ -40,15 +40,15 @@
     <name>AddDevicePage</name>
     <message>
         <source>Add</source>
-        <translation>Toevoegen</translation>
+        <translation type="vanished">Toevoegen</translation>
     </message>
     <message>
         <source>Enter IP address</source>
-        <translation>Voer IP-adres in</translation>
+        <translation type="vanished">Voer IP-adres in</translation>
     </message>
     <message>
         <source>IP address</source>
-        <translation>IP-adres</translation>
+        <translation type="vanished">IP-adres</translation>
     </message>
 </context>
 <context>
@@ -103,6 +103,10 @@
     </message>
     <message>
         <source>Audio capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recordings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -298,7 +302,7 @@
     </message>
     <message>
         <source>Add device manually</source>
-        <translation>Apparaat handmatig toevoegen</translation>
+        <translation type="vanished">Apparaat handmatig toevoegen</translation>
     </message>
     <message>
         <source>Find devices</source>
@@ -667,11 +671,11 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Adding devices manually</source>
-        <translation>Apparaten handmatig toevoegen</translation>
+        <translation type="vanished">Apparaten handmatig toevoegen</translation>
     </message>
     <message>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation>Als %1 een apparaat niet kan ontdekken (bijv. wanneer het zich in een ander LAN-netwerk bevindt), kan je het handmatig toevoegen met het IP-adres. Indien ingeschakeld, bevat het uittrekmenu een extra optie om apparaten handmatig toe te voegen. Zorg dat je apparaat zich niet achter een NAT of firewall bevindt.</translation>
+        <translation type="vanished">Als %1 een apparaat niet kan ontdekken (bijv. wanneer het zich in een ander LAN-netwerk bevindt), kan je het handmatig toevoegen met het IP-adres. Indien ingeschakeld, bevat het uittrekmenu een extra optie om apparaten handmatig toe te voegen. Zorg dat je apparaat zich niet achter een NAT of firewall bevindt.</translation>
     </message>
     <message>
         <source>Forward/backward time-step interval</source>
