@@ -84,8 +84,10 @@ Page {
         delegate: SimpleListItem {
             title.text: model.title
             icon.source: model.icon
-            defaultIcon.source: "image://icons/icon-m-device?" + (highlighted ?
-                                    Theme.highlightColor : Theme.primaryColor)
+            active: model.active
+            defaultIcon.source: "image://icons/icon-m-device?" +
+                                (highlighted || model.active ?
+                                Theme.highlightColor : Theme.primaryColor)
             visible: !directory.busy && directory.inited
 
             menu: ContextMenu {

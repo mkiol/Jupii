@@ -14,6 +14,7 @@ ListItem {
     property alias title: _title
     property alias icon: _icon
     property alias defaultIcon: _dicon
+    property bool active: false
 
     contentHeight: Theme.itemSizeMedium
 
@@ -57,6 +58,6 @@ ListItem {
             verticalCenter: parent.verticalCenter
         }
 
-        color: root.highlighted ? Theme.highlightColor : Theme.primaryColor
+        color: root.highlighted || root.active ? Theme.highlightColor : Theme.primaryColor
     }
 }

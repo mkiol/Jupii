@@ -225,7 +225,7 @@ void MainWindow::on_deviceList_activated(const QModelIndex &index)
         QString id = item->id();
         rc->init(id);
         av->init(id);
-        deviceModel->setActiveIndex(index.row());
+        //deviceModel->setActiveIndex(index.row());
         enablePlaylist(true);
     } else {
         qWarning() << "Device not supported";

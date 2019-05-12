@@ -30,14 +30,25 @@ const int icon_size = 64;
 DeviceModel::DeviceModel(QObject *parent) :
     ListModel(new DeviceItem, parent)
 {
-    QObject::connect(Directory::instance(),
-                     &Directory::discoveryReady,
-                     this,
-                     &DeviceModel::updateModel);
+    connect(Directory::instance(), &Directory::discoveryReady,
+            this, &DeviceModel::updateModel);
+    connect(Services::instance()->avTransport.get(), &Service::initedChanged,
+            this, &DeviceModel::serviceInitedHandler);
+    connect(Services::instance()->renderingControl.get(), &Service::initedChanged,
+            this, &DeviceModel::serviceInitedHandler);
 }
 
-DeviceModel::~DeviceModel()
+void DeviceModel::serviceInitedHandler()
 {
+    auto service = dynamic_cast<Service*>(sender());
+    if (service) {
+        int l = rowCount();
+        for (int i = 0; i < l; ++i) {
+            auto item = dynamic_cast<DeviceItem*>(readRow(i));
+            if (item)
+                item->setActive(item->id() == service->getDeviceId());
+        }
+    }
 }
 
 void DeviceModel::updateModel()
@@ -105,16 +116,6 @@ void DeviceModel::updateModel()
 void DeviceModel::clear()
 {
     if(rowCount()>0) removeRows(0,rowCount());
-}
-
-void DeviceModel::setActiveIndex(int index)
-{
-    int l = rowCount();
-    for (int i = 0; i < l; ++i) {
-        auto item = dynamic_cast<DeviceItem*>(readRow(i));
-        if (item)
-            item->setActive(i == index);
-    }
 }
 
 DeviceItem::DeviceItem(const QString &id,

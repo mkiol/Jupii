@@ -98,12 +98,11 @@ class DeviceModel : public ListModel
 
 public:
     explicit DeviceModel(QObject *parent = nullptr);
-    ~DeviceModel();
     void clear();
 
 public slots:
     void updateModel();
-    void setActiveIndex(int index);
+    void serviceInitedHandler();
 };
 
 #endif // DEVICEMODEL_H
