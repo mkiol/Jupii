@@ -114,7 +114,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
         <source>Recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Записи</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="161"/>
@@ -403,30 +403,20 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="111"/>
         <source>Toggle power</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить&sol;выключить</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="131"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройства не найдены. 
+Для поиска устройств в сети вытяните меню и выберите команду &quot;Найти устройства&quot;.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="133"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No devices found.
-Pull down to find more devices in your network.</source>
-        <translation type="vanished">Устройства не найдены.
-Вытяните меню для добавления дополнительных устройств.</translation>
-    </message>
-    <message>
-        <source>Not connected.
-Pull down to connect to the local network.</source>
-        <translation type="vanished">Нет подключения.
+        <translation>Нет подключения.
 Вытяните меню для подключения к локальной сети.</translation>
     </message>
 </context>
@@ -435,17 +425,17 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/DirPage.qml" line="61"/>
         <source>SD Card</source>
-        <translation type="unfinished"></translation>
+        <translation>SD-карта</translation>
     </message>
     <message>
         <location filename="../qml/DirPage.qml" line="66"/>
         <source>Home</source>
-        <translation type="unfinished"></translation>
+        <translation>Домашний каталог</translation>
     </message>
     <message>
         <location filename="../qml/DirPage.qml" line="82"/>
         <source>No directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет каталогов</translation>
     </message>
 </context>
 <context>
@@ -720,36 +710,36 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/RecPage.qml" line="56"/>
         <source>Search recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск записей</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="72"/>
         <source>Delete selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить выделенные</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="75"/>
         <source>Deleting %n item(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Удаляется %n запись</numerusform>
+            <numerusform>Удаляется %n записи</numerusform>
+            <numerusform>Удаляется %n записей</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="84"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Отменить выбор</translation>
+        <translation>Отменить выбор</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="85"/>
         <source>Select all</source>
-        <translation type="unfinished">Выбрать все</translation>
+        <translation>Выбрать все</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="112"/>
         <source>No recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет записей</translation>
     </message>
 </context>
 <context>
@@ -757,12 +747,12 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../../core/renderingcontrol.cpp" line="252"/>
         <source>Remote device</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалённое устройство</translation>
     </message>
     <message>
         <location filename="../../core/renderingcontrol.cpp" line="253"/>
         <source>Volume level of %1 is %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Громкость %1 - %2</translation>
     </message>
 </context>
 <context>
@@ -770,7 +760,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="22"/>
         <source>Playlist was saved</source>
-        <translation>Список сохранен</translation>
+        <translation>Список сохранён</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="37"/>
@@ -869,22 +859,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="125"/>
         <source>Stream recorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Запись потоков</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="126"/>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
-        <translation type="unfinished"></translation>
+        <translation>Позволяет записывать потоки SHOUTcast. Если поток содержит название передаваемой песни, то вы можете сохранить её в файл. Чтобы начать запись, нажмите кнопку  &quot;Запись&quot;, которая находится рядом с кнопкой  &quot;Вперёд&quot; внизу. Эта кнопка видна только если запись возможна При нажатии кнопки &quot;Запись&quot; до окончания песни в файл записывается вся песня целиком (от начала до конца дорожки). Запись потоков в формате AAC пока не поддерживается.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="171"/>
         <source>Change</source>
-        <translation type="unfinished"></translation>
+        <translation>Сменить</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="180"/>
         <source>Set default</source>
-        <translation type="unfinished"></translation>
+        <translation>Назначить по умолчанию</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="192"/>
@@ -923,7 +913,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="75"/>
         <source>Volume level step</source>
-        <translation type="unfinished"></translation>
+        <translation>Шаг изменения громкости</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="89"/>
@@ -938,7 +928,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="158"/>
         <source>Directory for recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Каталог для записей</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="191"/>
@@ -1015,7 +1005,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/main.qml" line="44"/>
         <source>Track &quot;%1&quot; saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Дорожка &quot;%1&quot; сохранена</translation>
     </message>
 </context>
 </TS>
