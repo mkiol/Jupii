@@ -224,6 +224,10 @@
         <source>Audio capture</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Screen casting</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CopyableLabel</name>

@@ -36,7 +36,7 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="89"/>
         <source>%1 is developed as an open source project under %2.</source>
-        <translation>&#xa0;%2下%1被作为开源项目开发。</translation>
+        <translation> %2下%1被作为开源项目开发。</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="95"/>
@@ -234,15 +234,16 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="74"/>
-        <location filename="../qml/ChangelogPage.qml" line="129"/>
-        <location filename="../qml/ChangelogPage.qml" line="200"/>
-        <location filename="../qml/ChangelogPage.qml" line="210"/>
+        <location filename="../qml/ChangelogPage.qml" line="48"/>
+        <location filename="../qml/ChangelogPage.qml" line="90"/>
+        <location filename="../qml/ChangelogPage.qml" line="145"/>
+        <location filename="../qml/ChangelogPage.qml" line="216"/>
         <location filename="../qml/ChangelogPage.qml" line="226"/>
-        <location filename="../qml/ChangelogPage.qml" line="241"/>
-        <location filename="../qml/ChangelogPage.qml" line="276"/>
-        <location filename="../qml/ChangelogPage.qml" line="287"/>
-        <location filename="../qml/ChangelogPage.qml" line="333"/>
+        <location filename="../qml/ChangelogPage.qml" line="242"/>
+        <location filename="../qml/ChangelogPage.qml" line="257"/>
+        <location filename="../qml/ChangelogPage.qml" line="292"/>
+        <location filename="../qml/ChangelogPage.qml" line="303"/>
+        <location filename="../qml/ChangelogPage.qml" line="349"/>
         <source>Version %1</source>
         <translation>翻译 %1</translation>
     </message>
@@ -250,19 +251,24 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1633"/>
+        <location filename="../../core/contentserver.cpp" line="1695"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2278"/>
+        <location filename="../../core/contentserver.cpp" line="2340"/>
         <source>Microphone</source>
         <translation>麦克风</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2326"/>
+        <location filename="../../core/contentserver.cpp" line="2388"/>
         <source>Audio capture</source>
         <translation>音频采集</translation>
+    </message>
+    <message>
+        <location filename="../../core/contentserver.cpp" line="2410"/>
+        <source>Screen casting</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -888,7 +894,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="192"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP&#xa0;设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1&#xa0;仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
+        <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP 设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1 仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
     </message>
     <message>
         <source>Adding devices manually</source>
@@ -896,7 +902,7 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation type="vanished">如果%1&#xa0;发现设备失败。（例如因为它在不同的LAN），你可以用IP地址手动添加它。当启用时，下拉菜单包含附加的操作以手动添加设备。确保你的设备没有使用NAT&#xa0;和防火墙。</translation>
+        <translation type="vanished">如果%1 发现设备失败。（例如因为它在不同的LAN），你可以用IP地址手动添加它。当启用时，下拉菜单包含附加的操作以手动添加设备。确保你的设备没有使用NAT 和防火墙。</translation>
     </message>
 </context>
 <context>

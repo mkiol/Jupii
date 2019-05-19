@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun May 19 2019 Michal Kosciesza <michal@mkiol.net> 2.3.1-1
+- Landscape mode
+- Translations update: pl, ru, sl, sv, zh_CN
+
 * Sun May 05 2019 Michal Kosciesza <michal@mkiol.net> 2.3.0-1
 - Stream recorder
 - Volume up/down HW keys support

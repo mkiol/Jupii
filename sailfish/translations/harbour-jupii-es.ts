@@ -250,15 +250,16 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="74"/>
-        <location filename="../qml/ChangelogPage.qml" line="129"/>
-        <location filename="../qml/ChangelogPage.qml" line="200"/>
-        <location filename="../qml/ChangelogPage.qml" line="210"/>
+        <location filename="../qml/ChangelogPage.qml" line="48"/>
+        <location filename="../qml/ChangelogPage.qml" line="90"/>
+        <location filename="../qml/ChangelogPage.qml" line="145"/>
+        <location filename="../qml/ChangelogPage.qml" line="216"/>
         <location filename="../qml/ChangelogPage.qml" line="226"/>
-        <location filename="../qml/ChangelogPage.qml" line="241"/>
-        <location filename="../qml/ChangelogPage.qml" line="276"/>
-        <location filename="../qml/ChangelogPage.qml" line="287"/>
-        <location filename="../qml/ChangelogPage.qml" line="333"/>
+        <location filename="../qml/ChangelogPage.qml" line="242"/>
+        <location filename="../qml/ChangelogPage.qml" line="257"/>
+        <location filename="../qml/ChangelogPage.qml" line="292"/>
+        <location filename="../qml/ChangelogPage.qml" line="303"/>
+        <location filename="../qml/ChangelogPage.qml" line="349"/>
         <source>Version %1</source>
         <translation>Versión %1</translation>
     </message>
@@ -266,19 +267,24 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1633"/>
+        <location filename="../../core/contentserver.cpp" line="1695"/>
         <source>Unknown</source>
         <translation>Desconocido</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2278"/>
+        <location filename="../../core/contentserver.cpp" line="2340"/>
         <source>Microphone</source>
         <translation>Micrófono</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2326"/>
+        <location filename="../../core/contentserver.cpp" line="2388"/>
         <source>Audio capture</source>
         <translation>Capturar audio</translation>
+    </message>
+    <message>
+        <location filename="../../core/contentserver.cpp" line="2410"/>
+        <source>Screen casting</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -881,27 +887,27 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Adding devices manually</source>
-        <translation>Agregar manual</translation>
+        <translation type="vanished">Agregar manual</translation>
     </message>
     <message>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation>Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
+        <translation type="vanished">Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
     </message>
     <message>
         <source>Internet streaming mode</source>
-        <translation>Modo transmisión por internet</translation>
+        <translation type="vanished">Modo transmisión por internet</translation>
     </message>
     <message>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation>La transmisión de internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predefinido) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido a host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para funcione la transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 no es necesario que se habilitarlo todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
+        <translation type="vanished">La transmisión de internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predefinido) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido a host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para funcione la transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 no es necesario que se habilitarlo todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
     </message>
     <message>
         <source>Proxy</source>
-        <translation>Proxy</translation>
+        <translation type="vanished">Proxy</translation>
     </message>
     <message>
         <source>Redirection</source>
-        <translation>Redirección</translation>
+        <translation type="vanished">Redirección</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>

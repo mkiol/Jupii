@@ -221,15 +221,16 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="74"/>
-        <location filename="../qml/ChangelogPage.qml" line="129"/>
-        <location filename="../qml/ChangelogPage.qml" line="200"/>
-        <location filename="../qml/ChangelogPage.qml" line="210"/>
+        <location filename="../qml/ChangelogPage.qml" line="48"/>
+        <location filename="../qml/ChangelogPage.qml" line="90"/>
+        <location filename="../qml/ChangelogPage.qml" line="145"/>
+        <location filename="../qml/ChangelogPage.qml" line="216"/>
         <location filename="../qml/ChangelogPage.qml" line="226"/>
-        <location filename="../qml/ChangelogPage.qml" line="241"/>
-        <location filename="../qml/ChangelogPage.qml" line="276"/>
-        <location filename="../qml/ChangelogPage.qml" line="287"/>
-        <location filename="../qml/ChangelogPage.qml" line="333"/>
+        <location filename="../qml/ChangelogPage.qml" line="242"/>
+        <location filename="../qml/ChangelogPage.qml" line="257"/>
+        <location filename="../qml/ChangelogPage.qml" line="292"/>
+        <location filename="../qml/ChangelogPage.qml" line="303"/>
+        <location filename="../qml/ChangelogPage.qml" line="349"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -237,18 +238,23 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1633"/>
+        <location filename="../../core/contentserver.cpp" line="1695"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2278"/>
+        <location filename="../../core/contentserver.cpp" line="2340"/>
         <source>Microphone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2326"/>
+        <location filename="../../core/contentserver.cpp" line="2388"/>
         <source>Audio capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../core/contentserver.cpp" line="2410"/>
+        <source>Screen casting</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

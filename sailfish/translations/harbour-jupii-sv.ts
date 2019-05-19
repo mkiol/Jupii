@@ -45,21 +45,6 @@
     </message>
 </context>
 <context>
-    <name>AddDevicePage</name>
-    <message>
-        <source>Add</source>
-        <translation type="vanished">Lägg till</translation>
-    </message>
-    <message>
-        <source>Enter IP address</source>
-        <translation type="vanished">Ange IP-adress</translation>
-    </message>
-    <message>
-        <source>IP address</source>
-        <translation type="vanished">IP-adress</translation>
-    </message>
-</context>
-<context>
     <name>AddMediaPage</name>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="44"/>
@@ -124,7 +109,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
         <source>Recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Inspelningar</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="161"/>
@@ -236,15 +221,16 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="74"/>
-        <location filename="../qml/ChangelogPage.qml" line="129"/>
-        <location filename="../qml/ChangelogPage.qml" line="200"/>
-        <location filename="../qml/ChangelogPage.qml" line="210"/>
+        <location filename="../qml/ChangelogPage.qml" line="48"/>
+        <location filename="../qml/ChangelogPage.qml" line="90"/>
+        <location filename="../qml/ChangelogPage.qml" line="145"/>
+        <location filename="../qml/ChangelogPage.qml" line="216"/>
         <location filename="../qml/ChangelogPage.qml" line="226"/>
-        <location filename="../qml/ChangelogPage.qml" line="241"/>
-        <location filename="../qml/ChangelogPage.qml" line="276"/>
-        <location filename="../qml/ChangelogPage.qml" line="287"/>
-        <location filename="../qml/ChangelogPage.qml" line="333"/>
+        <location filename="../qml/ChangelogPage.qml" line="242"/>
+        <location filename="../qml/ChangelogPage.qml" line="257"/>
+        <location filename="../qml/ChangelogPage.qml" line="292"/>
+        <location filename="../qml/ChangelogPage.qml" line="303"/>
+        <location filename="../qml/ChangelogPage.qml" line="349"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
@@ -252,19 +238,24 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1633"/>
+        <location filename="../../core/contentserver.cpp" line="1695"/>
         <source>Unknown</source>
         <translation>Okänd</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2278"/>
+        <location filename="../../core/contentserver.cpp" line="2340"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2326"/>
+        <location filename="../../core/contentserver.cpp" line="2388"/>
         <source>Audio capture</source>
         <translation>Ljudinspelning</translation>
+    </message>
+    <message>
+        <location filename="../../core/contentserver.cpp" line="2410"/>
+        <source>Screen casting</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -364,24 +355,6 @@
         <translation>Inställningar</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="131"/>
-        <source>No devices found. 
-Pull down to find more devices in your network.</source>
-        <translation>Inga enheter hittades.
-Dra neråt för att hitta fler enheter i ditt nätverk.</translation>
-    </message>
-    <message>
-        <location filename="../qml/DevicesPage.qml" line="133"/>
-        <source>Not connected. 
-Pull down to connect to the local network.</source>
-        <translation>Inte ansluten.
-Dra neråt för att ansluta till det lokala nätverket.</translation>
-    </message>
-    <message>
-        <source>Add device manually</source>
-        <translation type="vanished">Lägg till enhet manuellt</translation>
-    </message>
-    <message>
         <location filename="../qml/DevicesPage.qml" line="73"/>
         <source>Find devices</source>
         <translation>Sök enheter</translation>
@@ -401,6 +374,18 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
         <location filename="../qml/DevicesPage.qml" line="111"/>
         <source>Toggle power</source>
         <translation>På/Av</translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="131"/>
+        <source>No devices found. 
+Pull down to find more devices in your network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="133"/>
+        <source>Not connected. 
+Pull down to connect to the local network.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>No devices found.
@@ -898,14 +883,6 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
         <location filename="../qml/SettingsPage.qml" line="192"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
         <translation>%1 stödjer endast mediarenderingsenheter. Med detta alternativ aktiverat visas alla UPnP-enheter, inklusive enheter som inte stöds, såsom routrar eller mediaservrar. %1 kan bara visa basal information om enheter som inte stöds. Detta alternativ kan vara användbart för att granska UPnP-enheter i ditt lokala nät.</translation>
-    </message>
-    <message>
-        <source>Adding devices manually</source>
-        <translation type="vanished">Lägga till enheter manuellt</translation>
-    </message>
-    <message>
-        <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation type="vanished">Om %1 misslyckas med att upptäcka en enhet (t.ex. för att den finns i ett annat LAN), kan du lägga till den manuellt via IP-adressen. Vid aktivering läggs ett alternativ, för manuell anslutning, till i toppmenyn. Tillse att din enhet inte är bakom en NAT eller brandvägg.</translation>
     </message>
 </context>
 <context>

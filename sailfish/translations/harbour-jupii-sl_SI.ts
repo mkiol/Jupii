@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="sl_SI">
+<TS version="2.1" language="sl_SI" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -29,34 +29,19 @@
         <translation>Avtorji</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="89"/>
-        <source>%1 is developed as an open source project under %2.</source>
-        <translation>%1 je razvit kod odprtokodni pojekt, skladen z licenco %2.</translation>
-    </message>
-    <message>
         <location filename="../qml/AboutPage.qml" line="78"/>
         <source>Translations are provided by:</source>
         <translation>Prevode so prispevali:</translation>
     </message>
     <message>
+        <location filename="../qml/AboutPage.qml" line="89"/>
+        <source>%1 is developed as an open source project under %2.</source>
+        <translation>%1 je razvit kod odprtokodni pojekt, skladen z licenco %2.</translation>
+    </message>
+    <message>
         <location filename="../qml/AboutPage.qml" line="95"/>
         <source>Libraries</source>
         <translation>Knjižnice</translation>
-    </message>
-</context>
-<context>
-    <name>AddDevicePage</name>
-    <message>
-        <source>Add</source>
-        <translation type="vanished">Dodaj</translation>
-    </message>
-    <message>
-        <source>Enter IP address</source>
-        <translation type="vanished">Vnesi IP naslov</translation>
-    </message>
-    <message>
-        <source>IP address</source>
-        <translation type="vanished">IP naslov</translation>
     </message>
 </context>
 <context>
@@ -82,6 +67,11 @@
         <translation>Izvajalec</translation>
     </message>
     <message>
+        <location filename="../qml/AddMediaPage.qml" line="75"/>
+        <source>Playlist file</source>
+        <translation>Seznam predvajanja</translation>
+    </message>
+    <message>
         <location filename="../qml/AddMediaPage.qml" line="84"/>
         <source>Audio from Video</source>
         <translation>Avdio iz Videa</translation>
@@ -102,6 +92,11 @@
         <translation>Datoteka</translation>
     </message>
     <message>
+        <location filename="../qml/AddMediaPage.qml" line="121"/>
+        <source>URL</source>
+        <translation>URL</translation>
+    </message>
+    <message>
         <location filename="../qml/AddMediaPage.qml" line="130"/>
         <source>Audio capture</source>
         <translation>Zajem zvoka</translation>
@@ -114,22 +109,12 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
         <source>Recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Posnetki</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="161"/>
         <source>Apps &amp; services</source>
         <translation>Aplikacije &amp; servisi</translation>
-    </message>
-    <message>
-        <location filename="../qml/AddMediaPage.qml" line="121"/>
-        <source>URL</source>
-        <translation>URL</translation>
-    </message>
-    <message>
-        <location filename="../qml/AddMediaPage.qml" line="75"/>
-        <source>Playlist file</source>
-        <translation>Seznam predvajanja</translation>
     </message>
 </context>
 <context>
@@ -155,14 +140,14 @@
         <translation>Vnesi ime (neobvezno)</translation>
     </message>
     <message>
-        <location filename="../qml/AddUrlPage.qml" line="73"/>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation>Podprti so le HTTP URL-ji. Če URL kaže na seznam predvajanja (datoteka/playlist), bo dodan prvi element iz seznama. V primeru, da ime ni podatno, se bo samodejno izluščilo iz medatpodatkov pretoka.</translation>
-    </message>
-    <message>
         <location filename="../qml/AddUrlPage.qml" line="60"/>
         <source>Name</source>
         <translation>Ime</translation>
+    </message>
+    <message>
+        <location filename="../qml/AddUrlPage.qml" line="73"/>
+        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
+        <translation>Podprti so le HTTP URL-ji. Če URL kaže na seznam predvajanja (datoteka/playlist), bo dodan prvi element iz seznama. V primeru, da ime ni podatno, se bo samodejno izluščilo iz medatpodatkov pretoka.</translation>
     </message>
 </context>
 <context>
@@ -196,22 +181,6 @@
         <location filename="../qml/AlbumsPage.qml" line="106"/>
         <source>No albums</source>
         <translation>Ni albumov</translation>
-    </message>
-</context>
-<context>
-    <name>AlternativeDialogHeader</name>
-    <message numerus="yes">
-        <source>%n selected</source>
-        <translation type="obsolete">
-            <numerusform>%n izbran</numerusform>
-            <numerusform>%n izbrana</numerusform>
-            <numerusform>%n izbrani</numerusform>
-            <numerusform>%n izbranih</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>Search episodes</source>
-        <translation type="obsolete">Išči po epizodah</translation>
     </message>
 </context>
 <context>
@@ -256,15 +225,16 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="74"/>
-        <location filename="../qml/ChangelogPage.qml" line="129"/>
-        <location filename="../qml/ChangelogPage.qml" line="200"/>
-        <location filename="../qml/ChangelogPage.qml" line="210"/>
+        <location filename="../qml/ChangelogPage.qml" line="48"/>
+        <location filename="../qml/ChangelogPage.qml" line="90"/>
+        <location filename="../qml/ChangelogPage.qml" line="145"/>
+        <location filename="../qml/ChangelogPage.qml" line="216"/>
         <location filename="../qml/ChangelogPage.qml" line="226"/>
-        <location filename="../qml/ChangelogPage.qml" line="241"/>
-        <location filename="../qml/ChangelogPage.qml" line="276"/>
-        <location filename="../qml/ChangelogPage.qml" line="287"/>
-        <location filename="../qml/ChangelogPage.qml" line="333"/>
+        <location filename="../qml/ChangelogPage.qml" line="242"/>
+        <location filename="../qml/ChangelogPage.qml" line="257"/>
+        <location filename="../qml/ChangelogPage.qml" line="292"/>
+        <location filename="../qml/ChangelogPage.qml" line="303"/>
+        <location filename="../qml/ChangelogPage.qml" line="349"/>
         <source>Version %1</source>
         <translation>Različica %1</translation>
     </message>
@@ -272,19 +242,24 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1633"/>
+        <location filename="../../core/contentserver.cpp" line="1695"/>
         <source>Unknown</source>
         <translation>Neznano</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2278"/>
+        <location filename="../../core/contentserver.cpp" line="2340"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2326"/>
+        <location filename="../../core/contentserver.cpp" line="2388"/>
         <source>Audio capture</source>
         <translation>Zajem zvoka</translation>
+    </message>
+    <message>
+        <location filename="../../core/contentserver.cpp" line="2410"/>
+        <source>Screen casting</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -384,10 +359,6 @@
         <translation>Nastavitve</translation>
     </message>
     <message>
-        <source>Add device manually</source>
-        <translation type="vanished">Ročno dodaj napravo</translation>
-    </message>
-    <message>
         <location filename="../qml/DevicesPage.qml" line="73"/>
         <source>Find devices</source>
         <translation>Iskanje naprav</translation>
@@ -406,20 +377,30 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="111"/>
         <source>Toggle power</source>
-        <translation type="unfinished"></translation>
+        <translation>Vklop/izklop</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="131"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation>Ni najdenih naprav. 
-Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="133"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation>Brez povezave. 
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No devices found.
+Pull down to find more devices in your network.</source>
+        <translation type="vanished">Ni najdenih naprav.
+Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
+    </message>
+    <message>
+        <source>Not connected.
+Pull down to connect to the local network.</source>
+        <translation type="vanished">Brez povezave.
 Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     </message>
 </context>
@@ -428,17 +409,17 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/DirPage.qml" line="61"/>
         <source>SD Card</source>
-        <translation type="unfinished"></translation>
+        <translation>SD kartica</translation>
     </message>
     <message>
         <location filename="../qml/DirPage.qml" line="66"/>
         <source>Home</source>
-        <translation type="unfinished"></translation>
+        <translation>Domov</translation>
     </message>
     <message>
         <location filename="../qml/DirPage.qml" line="82"/>
         <source>No directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Ni map</translation>
     </message>
 </context>
 <context>
@@ -456,7 +437,7 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="75"/>
         <source>Select all</source>
-        <translation>Izveri vse</translation>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="115"/>
@@ -500,9 +481,39 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
 <context>
     <name>MediaInfoPage</name>
     <message>
+        <location filename="../qml/MediaInfoPage.qml" line="64"/>
+        <source>Copy path</source>
+        <translation>Kopiraj pot</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="64"/>
+        <source>Copy URL</source>
+        <translation>Kopiraj URL</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="69"/>
+        <source>Copy stream title</source>
+        <translation>Kopiraj naslov pretoka</translation>
+    </message>
+    <message>
         <location filename="../qml/MediaInfoPage.qml" line="140"/>
         <source>Title</source>
         <translation>Naslov</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="146"/>
+        <source>Captured application</source>
+        <translation>Zajeta aplikacija</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="146"/>
+        <source>Stream title</source>
+        <translation>Naslov pretoka</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="148"/>
+        <source>None</source>
+        <translation>Nič</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="154"/>
@@ -528,36 +539,6 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <location filename="../qml/MediaInfoPage.qml" line="186"/>
         <source>Description</source>
         <translation>Opis</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="146"/>
-        <source>Stream title</source>
-        <translation>Naslov pretoka</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="64"/>
-        <source>Copy URL</source>
-        <translation>Kopiraj URL</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="64"/>
-        <source>Copy path</source>
-        <translation>Kopiraj pot</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="69"/>
-        <source>Copy stream title</source>
-        <translation>Kopiraj naslov pretoka</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="146"/>
-        <source>Captured application</source>
-        <translation>Zajeta aplikacija</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="148"/>
-        <source>None</source>
-        <translation>Nič</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="201"/>
@@ -634,13 +615,13 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="504"/>
-        <source>Play</source>
-        <translation>Predvajaj</translation>
+        <source>Show</source>
+        <translation>Prikaži</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="504"/>
-        <source>Show</source>
-        <translation>Prikaži</translation>
+        <source>Play</source>
+        <translation>Predvajaj</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="517"/>
@@ -714,37 +695,37 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/RecPage.qml" line="56"/>
         <source>Search recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Iskanje posnetkov</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="72"/>
         <source>Delete selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Izbriši izbrano</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="75"/>
         <source>Deleting %n item(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Brisanje izbrane</numerusform>
+            <numerusform>Brisanje izbranih</numerusform>
+            <numerusform>Brisanje izbranih</numerusform>
+            <numerusform>Brisanje izbranih</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="84"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Počisti vse</translation>
+        <translation>Počisti izbor</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="85"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="112"/>
         <source>No recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ni posnetkov</translation>
     </message>
 </context>
 <context>
@@ -752,12 +733,12 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../../core/renderingcontrol.cpp" line="252"/>
         <source>Remote device</source>
-        <translation type="unfinished"></translation>
+        <translation>Oddaljena naprava</translation>
     </message>
     <message>
         <location filename="../../core/renderingcontrol.cpp" line="253"/>
         <source>Volume level of %1 is %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Glasnost %1 je %2</translation>
     </message>
 </context>
 <context>
@@ -816,7 +797,12 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="35"/>
         <source>When Jupii starts, the last playlist will be automatically loaded.</source>
-        <translation>Ob zagonu Jupii bo zadnji seznam predvajanja samodejno naložen</translation>
+        <translation>Ob zagonu Jupii bo zadnji seznam predvajanja samodejno naložen.</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="50"/>
+        <source>Forward/backward time-step interval</source>
+        <translation>Časovni interval naprej/nazaj</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="83"/>
@@ -829,8 +815,14 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <translation>Upravljanje glasnosti s fizičnimi gumbi</translation>
     </message>
     <message>
-        <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation type="vanished">Spremenite jakost predvajanja z gumbi za glasnost. Jakost na predvajalni napravi bo enaka jakosti zvonenja na telefonu.</translation>
+        <location filename="../qml/SettingsPage.qml" line="75"/>
+        <source>Volume level step</source>
+        <translation>Nastavitev korakov glasnosti</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="89"/>
+        <source>Image content</source>
+        <translation>Slikovna vsebina</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="90"/>
@@ -841,6 +833,11 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <location filename="../qml/SettingsPage.qml" line="105"/>
         <source>Audio capture format</source>
         <translation>Format zajema zvoka</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="106"/>
+        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
+        <translation>Uporabljen format pretoka, ko %1 zajame avdio izhod druge aplikacije. Nekompresirani pretok (PCM) nudi manjši zamik, a zaradi večjega bitnega pretoka tudi hitreje prazni baterijo.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="111"/>
@@ -865,85 +862,37 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="125"/>
         <source>Stream recorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Snemalnik pretoka</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="126"/>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="171"/>
-        <source>Change</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="180"/>
-        <source>Set default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="192"/>
-        <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 podpira le naprave tipa Media Renderer Devices. Ta možnost prikaže vse UPnP naprave, tudi uradno nepodprte, kot so domači usmerjevalniki in serverji. Za nepodprte naprave %1 prikaže le najbolj osnovne informacije. Možnost je dobrodošla za primer, ko želite videti vse UPnP naprave v domačem omrežju.</translation>
-    </message>
-    <message>
-        <source>Adding devices manually</source>
-        <translation type="vanished">Ročno dodaj napravo</translation>
-    </message>
-    <message>
-        <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation type="vanished">Če %1 ne odkrije samodejno vseh naprav (recimo, da niso v domačem omrežju), lahko ročno dodate IP naslov naprave. Ko je vključeno, bo potezni meni vseboval možnost ročnega dodajanja naprave. Preverite, da se naprava ne nahaja za NAT ali požernim zidom.</translation>
-    </message>
-    <message>
-        <source>Internet streaming mode</source>
-        <translation type="vanished">Internetni pretok</translation>
-    </message>
-    <message>
-        <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation type="vanished">Pretakanje iz interneta v naprave UPnP lahko poteka na dva načina: Proxy (privzeto) ali Preusmeritev.
-
-V načinu Proxy %1 vsak paket, ki ste ga prejeli od gostitelja pretakanja (npr. internetni radio) prenese na napravo UPnP, ki se nahaja v domačem omrežju. Ker gredo paketi skozi telefon/tablico, mora biti % 1 ves čas omogočen, da pretakanje deluje. Ta način je pregleden za napravo UPnP, zato deluje v večini primerov.
-
-V načinu Preusmeritev %1 uporablja preusmeritev HTTP da javi UPnP napravi, kje se nahaja internetni gostitelj. Dejansko pretakanje nato poteka neposredno med napravo UPnP in strežnikom za pretakanje zato ni potrebno, da je %1 ves čas omogočen. Žal vse UPnP naprave ne podpirajo načina Preusmeritev, zato na nekaterih napravah ta način ne bo deloval pravilno.</translation>
-    </message>
-    <message>
-        <source>Proxy</source>
-        <translation type="vanished">Proxy</translation>
-    </message>
-    <message>
-        <source>Redirection</source>
-        <translation type="vanished">Preusmeritev</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="50"/>
-        <source>Forward/backward time-step interval</source>
-        <translation>Časovni interval naprej/nazaj</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="75"/>
-        <source>Volume level step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="89"/>
-        <source>Image content</source>
-        <translation>Slikovna vsebina</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="106"/>
-        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation>Uporabljen format pretoka, ko %1 zajame avdio izhod druge aplikacije. Nekompresirani pretok (PCM) nudi manjši zamik, a zaradi večjega bitnega pretoka tudi hitreje prazni baterijo.</translation>
+        <translation>Omogoči snemanje posnetkov pretoka SHOUTcast. Ko pretok poda informacijo o naslovu trenutno predvajane skladbe, lahko to skladbo shranite v datoteko. Za pričetek snemanja uporabite gumb &quot;Snemaj&quot;, ki se nahaja poleg gumba &quot;Naprej&quot; na spodnji vrstici. Ta gumb je viden le, če je snemanje možno! Gumb &quot;Snemaj&quot; lahko aktivirate med predvajanjem skladbe in celoten posnetek (od začetka do konca skladbe) se shrani kot datoteka. Pretoki tipa AAC se trenutno ne morejo shranjevati.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="158"/>
         <source>Directory for recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Mapa za posnetke</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="171"/>
+        <source>Change</source>
+        <translation>Spremeni</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="180"/>
+        <source>Set default</source>
+        <translation>Nastavi privzeto</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="191"/>
         <source>All devices visible</source>
         <translation>Vse naprave so vidne</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="192"/>
+        <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
+        <translation>%1 podpira le naprave tipa Media Renderer Devices. Ta možnost prikaže vse UPnP naprave, tudi uradno nepodprte, kot so domači usmerjevalniki in serverji. Za nepodprte naprave %1 prikaže le najbolj osnovne informacije. Možnost je dobrodošla za primer, ko želite videti vse UPnP naprave v domačem omrežju.</translation>
     </message>
 </context>
 <context>
@@ -971,7 +920,7 @@ V načinu Preusmeritev %1 uporablja preusmeritev HTTP da javi UPnP napravi, kje 
     <message>
         <location filename="../qml/SomafmPage.qml" line="84"/>
         <source>Select all</source>
-        <translation>Izveri vse</translation>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="112"/>
@@ -1015,7 +964,7 @@ V načinu Preusmeritev %1 uporablja preusmeritev HTTP da javi UPnP napravi, kje 
     <message>
         <location filename="../qml/main.qml" line="44"/>
         <source>Track &quot;%1&quot; saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Posnetek &quot;%1&quot; je shranjen</translation>
     </message>
 </context>
 </TS>

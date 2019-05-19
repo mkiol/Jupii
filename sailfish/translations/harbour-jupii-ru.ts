@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru">
+<TS version="2.1" language="ru" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -29,34 +29,19 @@
         <translation>Авторы</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="89"/>
-        <source>%1 is developed as an open source project under %2.</source>
-        <translation>%1 проект с открытым исходным кодом на условиях %2.</translation>
-    </message>
-    <message>
         <location filename="../qml/AboutPage.qml" line="78"/>
         <source>Translations are provided by:</source>
         <translation>Переводчики:</translation>
     </message>
     <message>
+        <location filename="../qml/AboutPage.qml" line="89"/>
+        <source>%1 is developed as an open source project under %2.</source>
+        <translation>%1 проект с открытым исходным кодом на условиях %2.</translation>
+    </message>
+    <message>
         <location filename="../qml/AboutPage.qml" line="95"/>
         <source>Libraries</source>
         <translation>Библиотеки</translation>
-    </message>
-</context>
-<context>
-    <name>AddDevicePage</name>
-    <message>
-        <source>Add</source>
-        <translation type="vanished">Добавить</translation>
-    </message>
-    <message>
-        <source>Enter IP address</source>
-        <translation type="vanished">Введите IP-адрес</translation>
-    </message>
-    <message>
-        <source>IP address</source>
-        <translation type="vanished">IP-адрес</translation>
     </message>
 </context>
 <context>
@@ -82,6 +67,11 @@
         <translation>Исполнитель</translation>
     </message>
     <message>
+        <location filename="../qml/AddMediaPage.qml" line="75"/>
+        <source>Playlist file</source>
+        <translation>Список воспроизведения</translation>
+    </message>
+    <message>
         <location filename="../qml/AddMediaPage.qml" line="84"/>
         <source>Audio from Video</source>
         <translation>Аудиодорожка видео</translation>
@@ -102,6 +92,11 @@
         <translation>Файл</translation>
     </message>
     <message>
+        <location filename="../qml/AddMediaPage.qml" line="121"/>
+        <source>URL</source>
+        <translation>URL</translation>
+    </message>
+    <message>
         <location filename="../qml/AddMediaPage.qml" line="130"/>
         <source>Audio capture</source>
         <translation>Захват звука</translation>
@@ -114,22 +109,12 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
         <source>Recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Записи</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="161"/>
         <source>Apps &amp; services</source>
         <translation>Приложения и службы</translation>
-    </message>
-    <message>
-        <location filename="../qml/AddMediaPage.qml" line="121"/>
-        <source>URL</source>
-        <translation>URL</translation>
-    </message>
-    <message>
-        <location filename="../qml/AddMediaPage.qml" line="75"/>
-        <source>Playlist file</source>
-        <translation>Список воспроизведения</translation>
     </message>
 </context>
 <context>
@@ -155,14 +140,14 @@
         <translation>Введите название (необязательно)</translation>
     </message>
     <message>
-        <location filename="../qml/AddUrlPage.qml" line="73"/>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation>Поддерживаются только HTTP-адреса. Если дан URL файла со списком источников, то добавляется первый пункт этого списка. Если Название потока не указано, оно будет взято из метаданных потока.</translation>
-    </message>
-    <message>
         <location filename="../qml/AddUrlPage.qml" line="60"/>
         <source>Name</source>
         <translation>Название</translation>
+    </message>
+    <message>
+        <location filename="../qml/AddUrlPage.qml" line="73"/>
+        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
+        <translation>Поддерживаются только HTTP-адреса. Если дан URL файла со списком источников, то добавляется первый пункт этого списка. Если Название потока не указано, оно будет взято из метаданных потока.</translation>
     </message>
 </context>
 <context>
@@ -195,21 +180,6 @@
         <location filename="../qml/AlbumsPage.qml" line="106"/>
         <source>No albums</source>
         <translation>Нет альбомов</translation>
-    </message>
-</context>
-<context>
-    <name>AlternativeDialogHeader</name>
-    <message numerus="yes">
-        <source>%n selected</source>
-        <translation type="obsolete">
-            <numerusform>%n выбрана</numerusform>
-            <numerusform>%n выбрано</numerusform>
-            <numerusform>%n выбрано</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>Search episodes</source>
-        <translation type="obsolete">Поиск эпизодов</translation>
     </message>
 </context>
 <context>
@@ -253,15 +223,16 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="74"/>
-        <location filename="../qml/ChangelogPage.qml" line="129"/>
-        <location filename="../qml/ChangelogPage.qml" line="200"/>
-        <location filename="../qml/ChangelogPage.qml" line="210"/>
+        <location filename="../qml/ChangelogPage.qml" line="48"/>
+        <location filename="../qml/ChangelogPage.qml" line="90"/>
+        <location filename="../qml/ChangelogPage.qml" line="145"/>
+        <location filename="../qml/ChangelogPage.qml" line="216"/>
         <location filename="../qml/ChangelogPage.qml" line="226"/>
-        <location filename="../qml/ChangelogPage.qml" line="241"/>
-        <location filename="../qml/ChangelogPage.qml" line="276"/>
-        <location filename="../qml/ChangelogPage.qml" line="287"/>
-        <location filename="../qml/ChangelogPage.qml" line="333"/>
+        <location filename="../qml/ChangelogPage.qml" line="242"/>
+        <location filename="../qml/ChangelogPage.qml" line="257"/>
+        <location filename="../qml/ChangelogPage.qml" line="292"/>
+        <location filename="../qml/ChangelogPage.qml" line="303"/>
+        <location filename="../qml/ChangelogPage.qml" line="349"/>
         <source>Version %1</source>
         <translation>Версия %1</translation>
     </message>
@@ -269,19 +240,24 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1633"/>
+        <location filename="../../core/contentserver.cpp" line="1695"/>
         <source>Unknown</source>
         <translation>Неизвестно</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2278"/>
+        <location filename="../../core/contentserver.cpp" line="2340"/>
         <source>Microphone</source>
         <translation>Микрофон</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2326"/>
+        <location filename="../../core/contentserver.cpp" line="2388"/>
         <source>Audio capture</source>
         <translation>Захват звука</translation>
+    </message>
+    <message>
+        <location filename="../../core/contentserver.cpp" line="2410"/>
+        <source>Screen casting</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -381,10 +357,6 @@
         <translation>Настройка</translation>
     </message>
     <message>
-        <source>Add device manually</source>
-        <translation type="vanished">Добавить вручную</translation>
-    </message>
-    <message>
         <location filename="../qml/DevicesPage.qml" line="73"/>
         <source>Find devices</source>
         <translation>Найти устройства</translation>
@@ -403,7 +375,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="111"/>
         <source>Toggle power</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить/выключить</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="131"/>
@@ -421,13 +393,13 @@ Pull down to connect to the local network.</source>
         <source>No devices found.
 Pull down to find more devices in your network.</source>
         <translation type="vanished">Устройства не найдены.
-Вытяните меню для добавления дополнительных устройств.</translation>
+Для поиска устройств в сети вытяните меню и выберите команду &quot;Найти устройства&quot;.</translation>
     </message>
     <message>
         <source>Not connected.
 Pull down to connect to the local network.</source>
         <translation type="vanished">Нет подключения.
-Вытяните меню для подключения к локальной сети.</translation>
+Для входа в локальную сеть вытяните меню и выберите команду &quot;Подключить&quot;.</translation>
     </message>
 </context>
 <context>
@@ -435,17 +407,17 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/DirPage.qml" line="61"/>
         <source>SD Card</source>
-        <translation type="unfinished"></translation>
+        <translation>SD-карта</translation>
     </message>
     <message>
         <location filename="../qml/DirPage.qml" line="66"/>
         <source>Home</source>
-        <translation type="unfinished"></translation>
+        <translation>Домашний каталог</translation>
     </message>
     <message>
         <location filename="../qml/DirPage.qml" line="82"/>
         <source>No directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет каталогов</translation>
     </message>
 </context>
 <context>
@@ -507,9 +479,39 @@ Pull down to connect to the local network.</source>
 <context>
     <name>MediaInfoPage</name>
     <message>
+        <location filename="../qml/MediaInfoPage.qml" line="64"/>
+        <source>Copy path</source>
+        <translation>Копировать путь</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="64"/>
+        <source>Copy URL</source>
+        <translation>Копировать URL</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="69"/>
+        <source>Copy stream title</source>
+        <translation>Копировать название</translation>
+    </message>
+    <message>
         <location filename="../qml/MediaInfoPage.qml" line="140"/>
         <source>Title</source>
         <translation>Название</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="146"/>
+        <source>Captured application</source>
+        <translation>Приложение-источник звука</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="146"/>
+        <source>Stream title</source>
+        <translation>Название потока</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="148"/>
+        <source>None</source>
+        <translation>Ничего</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="154"/>
@@ -535,36 +537,6 @@ Pull down to connect to the local network.</source>
         <location filename="../qml/MediaInfoPage.qml" line="186"/>
         <source>Description</source>
         <translation>Описание</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="146"/>
-        <source>Stream title</source>
-        <translation>Название потока</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="64"/>
-        <source>Copy URL</source>
-        <translation>Копировать URL</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="64"/>
-        <source>Copy path</source>
-        <translation>Копировать путь</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="69"/>
-        <source>Copy stream title</source>
-        <translation>Копировать название</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="146"/>
-        <source>Captured application</source>
-        <translation>Приложение-источник звука</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="148"/>
-        <source>None</source>
-        <translation>Ничего</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="201"/>
@@ -641,13 +613,13 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="504"/>
-        <source>Play</source>
-        <translation>Играть</translation>
+        <source>Show</source>
+        <translation>Показать</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="504"/>
-        <source>Show</source>
-        <translation>Показать</translation>
+        <source>Play</source>
+        <translation>Слушать</translation>
     </message>
     <message>
         <location filename="../qml/MediaRendererPage.qml" line="517"/>
@@ -720,36 +692,36 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/RecPage.qml" line="56"/>
         <source>Search recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск записей</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="72"/>
         <source>Delete selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить выделенные</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="75"/>
         <source>Deleting %n item(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Удаляется %n запись</numerusform>
+            <numerusform>Удаляется %n записи</numerusform>
+            <numerusform>Удаляется %n записей</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="84"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Отменить выбор</translation>
+        <translation>Отменить выбор</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="85"/>
         <source>Select all</source>
-        <translation type="unfinished">Выбрать все</translation>
+        <translation>Выбрать всё</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="112"/>
         <source>No recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет записей</translation>
     </message>
 </context>
 <context>
@@ -757,12 +729,12 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../../core/renderingcontrol.cpp" line="252"/>
         <source>Remote device</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалённое устройство</translation>
     </message>
     <message>
         <location filename="../../core/renderingcontrol.cpp" line="253"/>
         <source>Volume level of %1 is %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Громкость %1 - %2</translation>
     </message>
 </context>
 <context>
@@ -770,7 +742,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="22"/>
         <source>Playlist was saved</source>
-        <translation>Список сохранен</translation>
+        <translation>Список сохранён</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="37"/>
@@ -823,6 +795,11 @@ Pull down to connect to the local network.</source>
         <translation>При запуске Jupii будет загружаться последний список воспроизведения.</translation>
     </message>
     <message>
+        <location filename="../qml/SettingsPage.qml" line="50"/>
+        <source>Forward/backward time-step interval</source>
+        <translation>Шаг перехода вперёд/назад</translation>
+    </message>
+    <message>
         <location filename="../qml/SettingsPage.qml" line="83"/>
         <source>Experiments</source>
         <translation>Экспериментальные функции</translation>
@@ -833,8 +810,14 @@ Pull down to connect to the local network.</source>
         <translation>Регулировать громкость кнопками</translation>
     </message>
     <message>
-        <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation type="vanished">Использовать аппаратные кнопки телефона для управления громкостью. При этом громкость устройства воспроизведения будет соответствовать громкости звонка телефона.</translation>
+        <location filename="../qml/SettingsPage.qml" line="75"/>
+        <source>Volume level step</source>
+        <translation>Шаг изменения громкости</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="89"/>
+        <source>Image content</source>
+        <translation>Вывод изображений</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="90"/>
@@ -845,6 +828,11 @@ Pull down to connect to the local network.</source>
         <location filename="../qml/SettingsPage.qml" line="105"/>
         <source>Audio capture format</source>
         <translation>Формат записи звука</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="106"/>
+        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
+        <translation>Формат звуковых данных когда %1 захватывает звук другого приложения. Несжатый поток (PCM) обеспечивает наименьшую задержку, но больший объём передаваемых данных в этом режиме будет быстрее разряжать аккумулятор.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="111"/>
@@ -869,81 +857,37 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="125"/>
         <source>Stream recorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Запись потоков</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="126"/>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="171"/>
-        <source>Change</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="180"/>
-        <source>Set default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="192"/>
-        <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 поддерживает только воспроизводящие (Media Renderer) устройства. Этот параметр заставляет показывать все UpNP-устройства, в том числе неподдерживаемые, например маршрутизаторы и медиасерверы. Для неподдрживаемых устройств %1 может только показывать простое описание. Позволяет обнаруживать любые UPnP-устройства в вашей локальной сети.</translation>
-    </message>
-    <message>
-        <source>Adding devices manually</source>
-        <translation type="vanished">Ручное добавление устройств</translation>
-    </message>
-    <message>
-        <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation type="vanished">Если %1 не может найти устройство (например потому, что оно находится в другой ЛВС), его можно добавить вручную введя IP-адрес. Этот параметр включает дополнительный пункт меню для ручного ввода адресов устройств. Убедитесь, что устройство не отгорожено NAT или брандмауэром.</translation>
-    </message>
-    <message>
-        <source>Internet streaming mode</source>
-        <translation type="vanished">Интернет вещание</translation>
-    </message>
-    <message>
-        <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation type="vanished">Воспроизведение аудиопотоков из Интернета на устройствах стандарта UPnP возможно в двух режимах: Прокси (по умолчанию) и Перенаправления. В режиме Прокси %1 передает все пакеты, получаемые от сервера потока (например интернет-радио) на  UPnP-устройство в домашней сети. При этом работа UPnP-устройства не отличается от обычной, и этот режим работает почти всегда. Поскольку данные потока проходят через ваш телефон/планшет, он должен быть постоянно включен во время прослушивания. В режиме Перенаправления %1 использует перенаправление HTTP, чтобы сообщить, где находится интернет-сервер вешающий поток. Собственно данные передаются напрямую между сервером и устройством UPnP. Это позволяет %1 не быть в сети постоянно. Недостатком этого режима является то, что не все  UPnP-устройства поддерживают перенаправление. На некоторых устройствах это не работает.</translation>
-    </message>
-    <message>
-        <source>Proxy</source>
-        <translation type="vanished">Прокси</translation>
-    </message>
-    <message>
-        <source>Redirection</source>
-        <translation type="vanished">Перенаправление</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="50"/>
-        <source>Forward/backward time-step interval</source>
-        <translation>Шаг перехода вперед/назад</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="75"/>
-        <source>Volume level step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="89"/>
-        <source>Image content</source>
-        <translation>Вывод изображений</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="106"/>
-        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation>Формат звуковых данных когда %1 захватывает звук другого приложения. Несжатый поток (PCM) обеспечивает наименьшую задержку, но больший объем передаваемых данных в этом режиме будет быстрее разряжать аккумулятор.</translation>
+        <translation>Позволяет записывать потоки SHOUTcast. Если поток содержит название передаваемой песни, то вы можете сохранить её в файл. Чтобы начать запись, нажмите кнопку &quot;Запись&quot; рядом с кнопкой &quot;Вперёд&quot; на всплывающей панели управления воспроизведением. Эта кнопка видна только когда запись возможна. При нажатии кнопки &quot;Запись&quot; до окончания песни в файл записывается вся песня целиком (от начала до конца дорожки). Запись потоков в формате AAC пока не поддерживается.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="158"/>
         <source>Directory for recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Каталог для записей</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="171"/>
+        <source>Change</source>
+        <translation>Свой</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="180"/>
+        <source>Set default</source>
+        <translation>Стандартный</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="191"/>
         <source>All devices visible</source>
         <translation>Показывать все устройства</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="192"/>
+        <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
+        <translation>%1 поддерживает только воспроизводящие (Media Renderer) устройства. Этот параметр заставляет показывать все UpNP-устройства, в том числе неподдерживаемые, например маршрутизаторы и медиасерверы. Для неподдрживаемых устройств %1 может только показывать простое описание. Позволяет обнаруживать любые UPnP-устройства в вашей локальной сети.</translation>
     </message>
 </context>
 <context>
@@ -971,7 +915,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SomafmPage.qml" line="84"/>
         <source>Select all</source>
-        <translation>Выбрать все</translation>
+        <translation>Выбрать всё</translation>
     </message>
     <message>
         <location filename="../qml/SomafmPage.qml" line="112"/>
@@ -1002,7 +946,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/TracksPage.qml" line="69"/>
         <source>Select all</source>
-        <translation>Выбрать все</translation>
+        <translation>Выбрать всё</translation>
     </message>
     <message>
         <location filename="../qml/TracksPage.qml" line="117"/>
@@ -1015,7 +959,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/main.qml" line="44"/>
         <source>Track &quot;%1&quot; saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Дорожка &quot;%1&quot; сохранена</translation>
     </message>
 </context>
 </TS>

@@ -29,6 +29,22 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.3.1 (beta)")
+            }
+
+            LogItem {
+                title: "Landscape mode"
+                description: "Landscape orientation is now supported."
+            }
+
+            LogItem {
+                title: "Translations update"
+                description: "Following translations have been updated: " +
+                             "Slovenian, Chinese, Russian, Polish and Swedish. " +
+                             "Many thanks to all contributors."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.3.0 (beta)")
             }
 
