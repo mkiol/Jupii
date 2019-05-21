@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh_CN" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_CN" sourcelanguage="en_US" version="2.1">
 <context>
     <name>AboutPage</name>
     <message>
@@ -42,21 +40,6 @@
         <location filename="../qml/AboutPage.qml" line="95"/>
         <source>Libraries</source>
         <translation>库</translation>
-    </message>
-</context>
-<context>
-    <name>AddDevicePage</name>
-    <message>
-        <source>Add</source>
-        <translation type="vanished">添加</translation>
-    </message>
-    <message>
-        <source>Enter IP address</source>
-        <translation type="vanished">输入IP地址</translation>
-    </message>
-    <message>
-        <source>IP address</source>
-        <translation type="vanished">IP地址</translation>
     </message>
 </context>
 <context>
@@ -124,7 +107,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
         <source>Recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>录音</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="161"/>
@@ -180,9 +163,7 @@
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="80"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n 乐曲</numerusform>
-        </translation>
+        <translation><numerusform>%n 乐曲</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="88"/>
@@ -210,9 +191,7 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="80"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n 乐曲</numerusform>
-        </translation>
+        <translation><numerusform>%n 乐曲</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="88"/>
@@ -234,16 +213,15 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="48"/>
-        <location filename="../qml/ChangelogPage.qml" line="90"/>
-        <location filename="../qml/ChangelogPage.qml" line="145"/>
-        <location filename="../qml/ChangelogPage.qml" line="216"/>
+        <location filename="../qml/ChangelogPage.qml" line="74"/>
+        <location filename="../qml/ChangelogPage.qml" line="129"/>
+        <location filename="../qml/ChangelogPage.qml" line="200"/>
+        <location filename="../qml/ChangelogPage.qml" line="210"/>
         <location filename="../qml/ChangelogPage.qml" line="226"/>
-        <location filename="../qml/ChangelogPage.qml" line="242"/>
-        <location filename="../qml/ChangelogPage.qml" line="257"/>
-        <location filename="../qml/ChangelogPage.qml" line="292"/>
-        <location filename="../qml/ChangelogPage.qml" line="303"/>
-        <location filename="../qml/ChangelogPage.qml" line="349"/>
+        <location filename="../qml/ChangelogPage.qml" line="241"/>
+        <location filename="../qml/ChangelogPage.qml" line="276"/>
+        <location filename="../qml/ChangelogPage.qml" line="287"/>
+        <location filename="../qml/ChangelogPage.qml" line="333"/>
         <source>Version %1</source>
         <translation>翻译 %1</translation>
     </message>
@@ -251,24 +229,19 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1695"/>
+        <location filename="../../core/contentserver.cpp" line="1633"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2340"/>
+        <location filename="../../core/contentserver.cpp" line="2278"/>
         <source>Microphone</source>
         <translation>麦克风</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2388"/>
+        <location filename="../../core/contentserver.cpp" line="2326"/>
         <source>Audio capture</source>
         <translation>音频采集</translation>
-    </message>
-    <message>
-        <location filename="../../core/contentserver.cpp" line="2410"/>
-        <source>Screen casting</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -368,22 +341,6 @@
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="131"/>
-        <source>No devices found. 
-Pull down to find more devices in your network.</source>
-        <translation>没有发现设备。下拉以发现更多网络中的设备。</translation>
-    </message>
-    <message>
-        <location filename="../qml/DevicesPage.qml" line="133"/>
-        <source>Not connected. 
-Pull down to connect to the local network.</source>
-        <translation>未连接。下拉以连接到本地网络。</translation>
-    </message>
-    <message>
-        <source>Add device manually</source>
-        <translation type="vanished">手动添加设备</translation>
-    </message>
-    <message>
         <location filename="../qml/DevicesPage.qml" line="73"/>
         <source>Find devices</source>
         <translation>发现设备</translation>
@@ -405,14 +362,16 @@ Pull down to connect to the local network.</source>
         <translation>切换功率</translation>
     </message>
     <message>
+        <location filename="../qml/DevicesPage.qml" line="131"/>
         <source>No devices found.
 Pull down to find more devices in your network.</source>
-        <translation type="vanished">没有发现设备。下拉以发现更多网络中的设备。</translation>
+        <translation>没有发现设备。下拉以发现更多网络中的设备。</translation>
     </message>
     <message>
+        <location filename="../qml/DevicesPage.qml" line="133"/>
         <source>Not connected.
 Pull down to connect to the local network.</source>
-        <translation type="vanished">未连接。下拉以连接到本地网络。</translation>
+        <translation>未连接。下拉以连接到本地网络。</translation>
     </message>
 </context>
 <context>
@@ -673,9 +632,7 @@ Pull down to connect to the local network.</source>
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="83"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n 乐曲</numerusform>
-        </translation>
+        <translation><numerusform>%n 乐曲</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="92"/>
@@ -713,9 +670,7 @@ Pull down to connect to the local network.</source>
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="75"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>正在删除 %n 项目</numerusform>
-        </translation>
+        <translation><numerusform>正在删除 %n 项目</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="84"/>
@@ -774,9 +729,7 @@ Pull down to connect to the local network.</source>
     <message numerus="yes">
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n 已选取</numerusform>
-        </translation>
+        <translation><numerusform>%n 已选取</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="49"/>
@@ -895,14 +848,6 @@ Pull down to connect to the local network.</source>
         <location filename="../qml/SettingsPage.qml" line="192"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
         <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP 设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1 仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
-    </message>
-    <message>
-        <source>Adding devices manually</source>
-        <translation type="vanished">自动添加设备</translation>
-    </message>
-    <message>
-        <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation type="vanished">如果%1 发现设备失败。（例如因为它在不同的LAN），你可以用IP地址手动添加它。当启用时，下拉菜单包含附加的操作以手动添加设备。确保你的设备没有使用NAT 和防火墙。</translation>
     </message>
 </context>
 <context>

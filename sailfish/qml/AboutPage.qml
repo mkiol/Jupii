@@ -80,7 +80,7 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "Åke Engelbrektson \nCarlos Gonzalez \nd9h20f \nВячеслав Диконов \ndrosjesjaafoer \nRui Kon \nBoštjan Štrumbelj"
+                text: "Åke Engelbrektson \nCarlos Gonzalez \nd9h20f \nВячеслав Диконов \ndrosjesjaafoer \nRui Kon \nBoštjan Štrumbelj \njgibbon"
             }
 
             PaddedLabel {
