@@ -14,6 +14,11 @@ pulse {
     LIBS += -lpulse
 }
 
+screen {
+    DEFINES += SCREEN
+    CONFIG += ffmpeg
+}
+
 ffmpeg {
     DEFINES += FFMPEG
 }
@@ -27,9 +32,11 @@ desktop {
     }
 
     ffmpeg {
-        LIBS += -lavutil -lavformat -lavcodec -lavresample
+        LIBS += -lavdevice -lavutil -lavformat -lavcodec -lswscale -lswresample
         INCLUDEPATH += /usr/include/ffmpeg
     }
+
+    #include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
 }
 
 sailfish {

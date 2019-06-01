@@ -320,6 +320,7 @@
      <addaction name="actionURL"/>
      <addaction name="actionMic"/>
      <addaction name="actionPulse"/>
+     <addaction name="actionScreen"/>
     </widget>
     <addaction name="menuAdd"/>
     <addaction name="actionClear"/>
@@ -440,6 +441,11 @@
    </property>
    <property name="text">
     <string>Audio capture</string>
+   </property>
+  </action>
+  <action name="actionScreen">
+   <property name="text">
+    <string>Screen capture</string>
    </property>
   </action>
  </widget>

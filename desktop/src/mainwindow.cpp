@@ -39,6 +39,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionAbout->setText(tr("About %1").arg(QApplication::applicationDisplayName()));
     settingsDialog = std::unique_ptr<SettingsDialog>(new SettingsDialog(this));
 
+#ifdef PULSE
+    ui->actionPulse->setEnabled(true);
+#else
+    ui->actionPulse->setEnabled(false);
+#endif
+#ifdef SCREEN
+    ui->actionScreen->setEnabled(true);
+#else
+    ui->actionScreen->setEnabled(false);
+#endif
+
     enablePlaylist(false);
 
     auto directory = Directory::instance();
@@ -134,7 +145,6 @@ void MainWindow::togglePlay()
     auto av = Services::instance()->avTransport;
 
     bool playing = av->getTransportState() == AVTransport::Playing;
-
     if (!playing) {
         av->setSpeed(1);
         av->play();
@@ -689,6 +699,11 @@ void MainWindow::on_actionMic_triggered()
 void MainWindow::on_actionPulse_triggered()
 {
     PlaylistModel::instance()->addItemUrl(QUrl("jupii://pulse"));
+}
+
+void MainWindow::on_actionScreen_triggered()
+{
+    PlaylistModel::instance()->addItemUrl(QUrl("jupii://screen"));
 }
 
 void MainWindow::on_recButton_toggled(bool checked)

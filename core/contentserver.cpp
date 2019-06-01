@@ -43,13 +43,17 @@
 #include "id3v2tag.h"
 #include "attachedpictureframe.h"
 
-// Libav
+// FFMPEG
 #ifdef FFMPEG
 extern "C" {
-#include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
 #include <libavutil/dict.h>
 #include <libavutil/mathematics.h>
+#ifdef SCREEN
+#include <libavdevice/avdevice.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/timestamp.h>
+#include <libavutil/time.h>
+#endif
 }
 #endif
 
@@ -111,7 +115,9 @@ const QHash<QString,QString> ContentServer::m_videoExtMap {
     {"mov", "video/quicktime"}, {"qt", "video/quicktime"},
     {"wmv", "video/x-ms-wmv"},
     {"mp4", "video/mp4"}, {"m4v", "video/mp4"},
-    {"mpg", "video/mpeg"}, {"mpeg", "video/mpeg"}, {"m2v", "video/mpeg"}
+    {"mpg", "video/mpeg"}, {"mpeg", "video/mpeg"}, {"m2v", "video/mpeg"},
+    {"ts", "video/MP2T"}
+    //{"ts", "video/vnd.dlna.mpeg-tts"}
 };
 
 const QHash<QString,QString> ContentServer::m_playlistExtMap {
@@ -181,6 +187,10 @@ ContentServerWorker::ContentServerWorker(QObject *parent) :
         qWarning() << "Unable to start HTTP server!";
         //TODO: Handle: Unable to start HTTP server
     }
+
+#ifdef PULSE
+    pulseSource = std::make_unique<PulseAudioSource>();
+#endif
 
     cleanRecFiles();
 }
@@ -355,11 +365,11 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     if (isFile) {
         requestForFileHandler(id, meta, req, resp);
     } else {
-        bool isMic = Utils::isUrlMic(id);
-        bool isPulse = Utils::isUrlPulse(id);
-        if (isMic) {
+        if (Utils::isUrlScreen(id)) {
+            requestForScreenHandler(id, meta, req, resp);
+        } else if (Utils::isUrlMic(id)) {
             requestForMicHandler(id, meta, req, resp);
-        } else if (isPulse) {
+        } else if (Utils::isUrlPulse(id)) {
             requestForPulseHandler(id, meta, req, resp);
         } else {
             requestForUrlHandler(id, meta, req, resp);
@@ -369,12 +379,12 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
 
 void ContentServerWorker::stopMic()
 {
-    if (micDev) {
+    if (micSource) {
         qDebug() << "Stopping mic";
-        micDev->setActive(false);
+        micSource->setActive(false);
 
         if (micItems.isEmpty()) {
-            micDev->close();
+            micSource->close();
 
             auto t = new QTimer(this);
             t->setSingleShot(true);
@@ -403,6 +413,44 @@ void ContentServerWorker::responseForPulseDone()
             break;
         }
     }
+}
+#endif
+
+#ifdef SCREEN
+void ContentServerWorker::responseForScreenDone()
+{
+    qDebug() << "Screen HTTP response done";
+    auto resp = sender();
+    for (int i = 0; i < screenItems.size(); ++i) {
+        if (resp == screenItems[i].resp) {
+            qDebug() << "Removing finished screen item";
+            auto id = screenItems.at(i).id;
+            screenItems.removeAt(i);
+            emit itemRemoved(id);
+            break;
+        }
+    }
+
+    if (screenItems.isEmpty()) {
+        qDebug() << "No clients for screen streaming connected, "
+                    "so ending screen casting";
+        screenSource.reset(nullptr);
+    }
+}
+
+void ContentServerWorker::screenErrorHandler()
+{
+    qWarning() << "Error in screen casting, "
+                  "so disconnecting clients and ending casting";
+    for (auto& item : screenItems) {
+        item.resp->end();
+    }
+    for (auto& item : screenItems) {
+        emit itemRemoved(item.id);
+    }
+
+    screenItems.clear();
+    screenSource.reset(nullptr);
 }
 #endif
 
@@ -453,11 +501,11 @@ void ContentServerWorker::startMic()
         qDebug() << " channelCount:" << format.channelCount();
     }
 
-    if (!micDev)
-        micDev = std::unique_ptr<MicDevice>(new MicDevice(this));
+    if (!micSource)
+        micSource = std::unique_ptr<MicSource>(new MicSource(this));
     micInput = std::unique_ptr<QAudioInput>(new QAudioInput(dev, format, this));
-    micDev->setActive(true);
-    micInput->start(micDev.get());
+    micSource->setActive(true);
+    micInput->start(micSource.get());
 }
 
 void ContentServerWorker::requestForFileHandler(const QUrl &id,
@@ -567,6 +615,8 @@ void ContentServerWorker::requestForMicHandler(const QUrl &id,
     resp->setHeader("transferMode.dlna.org", "Streaming");
     resp->setHeader("contentFeatures.dlna.org",
                     ContentServer::dlnaContentFeaturesHeader(meta->mime));
+    //resp->setHeader("Transfer-Encoding", "chunked");
+    resp->setHeader("Accept-Ranges", "none");
 
     if (isHead) {
         qDebug() << "Sending 200 response without content";
@@ -575,7 +625,7 @@ void ContentServerWorker::requestForMicHandler(const QUrl &id,
         qDebug() << "Sending 200 response and starting streaming";
         resp->writeHead(200);
 
-        if (!micDev || !micDev->isOpen()) {
+        if (!micSource || !micSource->isOpen()) {
             startMic();
         }
 
@@ -602,6 +652,8 @@ void ContentServerWorker::requestForPulseHandler(const QUrl &id,
     resp->setHeader("transferMode.dlna.org", "Streaming");
     resp->setHeader("contentFeatures.dlna.org",
                     ContentServer::dlnaContentFeaturesHeader(meta->mime));
+    //resp->setHeader("Transfer-Encoding", "chunked");
+    resp->setHeader("Accept-Ranges", "none");
 
     if (isHead) {
         qDebug() << "Sending 200 response without content";
@@ -617,7 +669,11 @@ void ContentServerWorker::requestForPulseHandler(const QUrl &id,
         pulseItems.append(item);
         emit itemAdded(item.id);
         connect(resp, &QHttpResponse::done, this, &ContentServerWorker::responseForPulseDone);
-        emit startPulse();
+
+        if (!pulseSource->start()) {
+            qWarning() << "Pulse cannot be started";
+            sendEmptyResponse(resp, 500);
+        }
     }
 #else
     Q_UNUSED(meta)
@@ -627,6 +683,66 @@ void ContentServerWorker::requestForPulseHandler(const QUrl &id,
 #endif
 }
 
+void ContentServerWorker::requestForScreenHandler(const QUrl &id,
+                                                const ContentServer::ItemMeta *meta,
+                                                QHttpRequest *req, QHttpResponse *resp)
+{
+    qDebug() << "Screen request handler";
+#ifdef SCREEN
+    bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
+
+    resp->setHeader("Content-Type", meta->mime);
+    resp->setHeader("Connection", "close");
+    resp->setHeader("transferMode.dlna.org", "Streaming");
+    resp->setHeader("contentFeatures.dlna.org",
+                    ContentServer::dlnaContentFeaturesHeader(meta->mime, false));
+    //resp->setHeader("Transfer-Encoding", "chunked");
+    resp->setHeader("Accept-Ranges", "none");
+
+    if (isHead) {
+        qDebug() << "Sending 200 response without content";
+        sendResponse(resp, 200, "");
+    } else {
+        qDebug() << "Sending 200 response and starting streaming";
+
+        bool startNeeded = false;
+        if (!screenSource) {
+            screenSource = std::make_unique<ScreenSource>();
+            connect(screenSource.get(), &ScreenSource::frameError,
+                    this, &ContentServerWorker::screenErrorHandler);
+            if (!screenSource->init()) {
+                qWarning() << "Cannot init screen caster";
+                screenSource.reset(nullptr);
+                sendEmptyResponse(resp, 500);
+                return;
+            }
+            startNeeded = true;
+        }
+
+        resp->writeHead(200);
+
+        SimpleProxyItem item;
+        item.id = id;
+        item.req = req;
+        item.resp = resp;
+        screenItems.append(item);
+        emit itemAdded(item.id);
+        connect(resp, &QHttpResponse::done, this, &ContentServerWorker::responseForScreenDone);
+
+        if (startNeeded) {
+            screenSource->start();
+#ifdef PULSE
+            pulseSource->start();
+#endif
+        }
+    }
+#else
+    Q_UNUSED(meta)
+    Q_UNUSED(req)
+    qWarning() << "Screen URL requested but screen casting is disabled";
+    sendEmptyResponse(resp, 404);
+#endif
+}
 
 void ContentServerWorker::seqWriteData(QFile *file, qint64 size, QHttpResponse *resp)
 {
@@ -762,13 +878,21 @@ void ContentServerWorker::proxyMetaDataChanged()
                              ContentServer::dlnaContentFeaturesHeader(mime, item.seek));
         item.resp->setHeader("Content-Type", mime);
         item.resp->setHeader("Connection", "close");
-        if (reply->header(QNetworkRequest::ContentLengthHeader).isValid())
+        if (reply->header(QNetworkRequest::ContentLengthHeader).isValid()) {
             item.resp->setHeader("Content-Length",
                                  reply->header(QNetworkRequest::ContentLengthHeader).toString());
-        if (reply->hasRawHeader("Accept-Ranges"))
+        } /*else {
+            item.resp->setHeader("Transfer-Encoding", "chunked");
+        }*/
+        if (reply->hasRawHeader("Accept-Ranges")) {
             item.resp->setHeader("Accept-Ranges", reply->rawHeader("Accept-Ranges"));
-        if (reply->hasRawHeader("Content-Range"))
+        }
+        if (reply->hasRawHeader("Content-Range")) {
             item.resp->setHeader("Content-Range", reply->rawHeader("Content-Range"));
+        } else {
+            if (!reply->hasRawHeader("Accept-Ranges"))
+                item.resp->setHeader("Accept-Ranges", "none");
+        }
 
         if (reply->hasRawHeader("icy-metaint")) {
             item.metaint = reply->rawHeader("icy-metaint").toInt();
@@ -1169,9 +1293,16 @@ ContentServer::ContentServer(QObject *parent) :
     qDebug() << "Creating Content Server in thread:" << QThread::currentThreadId();
 #ifdef FFMPEG
     // Libav stuff
+#ifdef QT_DEBUG
     av_log_set_level(AV_LOG_DEBUG);
+#else
+    av_log_set_level(AV_LOG_ERROR);
+#endif
     av_register_all();
     avcodec_register_all();
+#ifdef SCREEN
+    avdevice_register_all();
+#endif
 #endif
 
     // starting worker
@@ -1886,7 +2017,7 @@ bool ContentServer::extractAudio(const QString& path,
         while ((tag = av_dict_get(ic->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
             qDebug() << tag->key << "=" << tag->value;
 
-        if (!av_dict_copy(&oc->metadata, ic->metadata, 0) < 0) {
+        if (av_dict_copy(&oc->metadata, ic->metadata, 0) < 0) {
             qWarning() << "oc->metadata av_dict_copy error";
             avformat_close_input(&ic);
             avformat_free_context(oc);
@@ -1916,7 +2047,7 @@ bool ContentServer::extractAudio(const QString& path,
         while ((tag = av_dict_get(ic->streams[aidx]->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
             qDebug() << tag->key << "=" << tag->value;
 
-        if (!av_dict_copy(&ast->metadata, ic->streams[aidx]->metadata, 0) < 0) {
+        if (av_dict_copy(&ast->metadata, ic->streams[aidx]->metadata, 0) < 0) {
             qWarning() << "av_dict_copy error";
             avformat_close_input(&ic);
             avformat_free_context(oc);
@@ -2296,8 +2427,8 @@ ContentServer::makePulseItemMeta(const QUrl &url)
     // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
     // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
     // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
-    Pulse::mode = mode;
-    Pulse::sampleSpec = {
+    PulseAudioSource::mode = mode;
+    PulseAudioSource::sampleSpec = {
         mode > 1 ? PA_SAMPLE_S16BE : PA_SAMPLE_S16LE,
         mode > 2 ? 22050u : 44100u,
         2
@@ -2306,8 +2437,8 @@ ContentServer::makePulseItemMeta(const QUrl &url)
     ContentServer::ItemMeta meta;
     meta.valid = true;
     meta.url = url;
-    meta.channels = Pulse::sampleSpec.channels;
-    meta.sampleRate = Pulse::sampleSpec.rate;
+    meta.channels = PulseAudioSource::sampleSpec.channels;
+    meta.sampleRate = PulseAudioSource::sampleSpec.rate;
     if (mode > 1) {
         meta.mime = QString("audio/L%1;rate=%2;channels=%3")
                 .arg(ContentServer::pulseSampleSize)
@@ -2328,6 +2459,24 @@ ContentServer::makePulseItemMeta(const QUrl &url)
 #ifdef SAILFISH
     meta.albumArt = IconProvider::pathToId("icon-x-pulse-cover");
 #endif
+
+    return metaCache.insert(url, meta);
+}
+#endif
+
+#ifdef SCREEN
+const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+ContentServer::makeScreenItemMeta(const QUrl &url)
+{
+    ContentServer::ItemMeta meta;
+    meta.valid = true;
+    meta.url = url;
+    meta.mime = m_videoExtMap.value("ts");
+    meta.type = ContentServer::TypeVideo;
+    meta.size = 0;
+    meta.local = true;
+    meta.seekSupported = false;
+    meta.title = tr("Screen casting");
 
     return metaCache.insert(url, meta);
 }
@@ -2586,18 +2735,25 @@ ContentServer::makeItemMeta(const QUrl &url)
             it = metaCache.end();
         }
     } else if (Utils::isUrlMic(url)) {
-        qDebug() << "Mic url detected";
+        qDebug() << "Mic URL detected";
         it = makeMicItemMeta(url);
 #ifdef PULSE
     } else if (Utils::isUrlPulse(url)) {
-        qDebug() << "Pulse url detected";
+        qDebug() << "Pulse URL detected";
         it = makePulseItemMeta(url);
 #endif
+#ifdef SCREEN
+    } else if (Utils::isUrlScreen(url)) {
+        qDebug() << "Screen url detected";
+        it = makeScreenItemMeta(url);
+#endif
+    } else if (url.scheme() == "jupii") {
+        qDebug() << "Unsupported Jupii URL detected";
+        it = metaCache.end();
     } else {
         qDebug() << "Geting meta using HTTP request";
         it = makeItemMetaUsingHTTPRequest(url);
     }
-
     /*if (it == metaCache.end()) {
         qWarning() << "Fallbacking to extension";
         it = makeItemMetaUsingExtension(url);
@@ -2628,27 +2784,7 @@ void ContentServer::run()
             &ContentServer::streamRecordableChangedHandler);
     connect(worker, &ContentServerWorker::streamRecorded, this,
             &ContentServer::streamRecordedHandler);
-
-#ifdef PULSE
-    QEventLoop qtLoop;
-    connect(worker, &ContentServerWorker::startPulse, [&qtLoop]{
-        if (qtLoop.isRunning()) {
-            qtLoop.exit();
-        } else {
-            qWarning() << "Start pulse request but possibly PA loop is already active";
-            // re-discovering to update stream title
-            Pulse::discoverStream();
-        }
-    });
-    while (true) {
-        qDebug() << "Starting worker QT event loop";
-        qtLoop.exec();
-        qDebug() << "Starting worker PA event loop";
-        Pulse::startLoop(qtLoop);
-    }
-#else
     QThread::exec();
-#endif
     qDebug() << "Ending worker event loop";
 }
 
@@ -2940,12 +3076,12 @@ ContentServer::parseXspf(const QByteArray &data, const QString context)
     return list;
 }
 
-MicDevice::MicDevice(QObject *parent) :
+MicSource::MicSource(QObject *parent) :
     QIODevice(parent)
 {
 }
 
-void MicDevice::setActive(bool value)
+void MicSource::setActive(bool value)
 {
     if (value != active) {
         active = value;
@@ -2955,19 +3091,19 @@ void MicDevice::setActive(bool value)
     }
 }
 
-bool MicDevice::isActive()
+bool MicSource::isActive()
 {
     return active;
 }
 
-qint64 MicDevice::readData(char* data, qint64 maxSize)
+qint64 MicSource::readData(char* data, qint64 maxSize)
 {
     Q_UNUSED(data)
     Q_UNUSED(maxSize)
     return 0;
 }
 
-qint64 MicDevice::writeData(const char* data, qint64 maxSize)
+qint64 MicSource::writeData(const char* data, qint64 maxSize)
 {
     auto worker = ContentServerWorker::instance();
 
@@ -3007,24 +3143,61 @@ qint64 MicDevice::writeData(const char* data, qint64 maxSize)
     return maxSize;
 }
 
-#ifdef PULSE
-lame_global_flags* Pulse::lame_gfp = nullptr;
-uint8_t* Pulse::lame_buf = nullptr;
-int Pulse::lame_buf_size = 0;
-const long Pulse::timerDelta = 500000l; // micro seconds
-bool Pulse::timerActive = false;
-bool Pulse::muted = false;
-pa_sample_spec Pulse::sampleSpec = {PA_SAMPLE_INVALID, 0, 0};
-int Pulse::mode = 0;
-pa_stream* Pulse::stream = nullptr;
-uint32_t Pulse::connectedSinkInput = PA_INVALID_INDEX;
-pa_mainloop* Pulse::ml = nullptr;
-pa_mainloop_api* Pulse::mla = nullptr;
-pa_context* Pulse::ctx = nullptr;
-QHash<uint32_t, Pulse::Client> Pulse::clients = QHash<uint32_t, Pulse::Client>();
-QHash<uint32_t, Pulse::SinkInput> Pulse::sinkInputs = QHash<uint32_t, Pulse::SinkInput>();
+void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)
+{
+    QDataStream sr(data, QIODevice::ReadOnly);
+    sr.setByteOrder(le ? QDataStream::LittleEndian : QDataStream::BigEndian);
+    QDataStream sw(data, QIODevice::WriteOnly);
+    sw.setByteOrder(le ? QDataStream::LittleEndian : QDataStream::BigEndian);
+    int16_t sample; // assuming 16-bit LPCM sample
 
-QString Pulse::subscriptionEventToStr(pa_subscription_event_type_t t)
+    while (!sr.atEnd()) {
+        sr >> sample;
+        int32_t s = factor * static_cast<int32_t>(sample);
+        if (s > std::numeric_limits<int16_t>::max()) {
+            sample = std::numeric_limits<int16_t>::max();
+        } else if (s < std::numeric_limits<int16_t>::min()) {
+            sample = std::numeric_limits<int16_t>::min();
+        } else {
+            sample = static_cast<int16_t>(s);
+        }
+        sw << sample;
+    }
+}
+
+#ifdef PULSE
+int PulseAudioSource::nullDataSize = 0;
+bool PulseAudioSource::started = false;
+lame_global_flags* PulseAudioSource::lame_gfp = nullptr;
+uint8_t* PulseAudioSource::lame_buf = nullptr;
+int PulseAudioSource::lame_buf_size = 0;
+//const long PulseAudioSource::timerDelta = 500000l; // micro seconds
+const long PulseAudioSource::timerDelta = 10000l; // micro seconds
+bool PulseAudioSource::timerActive = false;
+bool PulseAudioSource::muted = false;
+pa_sample_spec PulseAudioSource::sampleSpec = {PA_SAMPLE_INVALID, 0, 0};
+int PulseAudioSource::mode = 0;
+pa_stream* PulseAudioSource::stream = nullptr;
+uint32_t PulseAudioSource::connectedSinkInput = PA_INVALID_INDEX;
+pa_mainloop* PulseAudioSource::ml = nullptr;
+pa_mainloop_api* PulseAudioSource::mla = nullptr;
+pa_context* PulseAudioSource::ctx = nullptr;
+QHash<uint32_t, PulseAudioSource::Client> PulseAudioSource::clients = QHash<uint32_t, PulseAudioSource::Client>();
+QHash<uint32_t, PulseAudioSource::SinkInput> PulseAudioSource::sinkInputs = QHash<uint32_t, PulseAudioSource::SinkInput>();
+
+PulseAudioSource::PulseAudioSource(QObject *parent) : QObject(parent)
+{
+    connect(this, &PulseAudioSource::doNextPulseIteration,
+            this, &PulseAudioSource::doPulseIteration, Qt::QueuedConnection);
+}
+
+PulseAudioSource::~PulseAudioSource()
+{
+    deinit();
+}
+
+
+QString PulseAudioSource::subscriptionEventToStr(pa_subscription_event_type_t t)
 {
     auto facility = t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK;
     auto type = t & PA_SUBSCRIPTION_EVENT_TYPE_MASK;
@@ -3055,7 +3228,7 @@ QString Pulse::subscriptionEventToStr(pa_subscription_event_type_t t)
     return facility_str + " " + type_str;
 }
 
-void Pulse::subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata)
+void PulseAudioSource::subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -3083,7 +3256,7 @@ void Pulse::subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t
     }
 }
 
-void Pulse::successSubscribeCallback(pa_context *ctx, int success, void *userdata)
+void PulseAudioSource::successSubscribeCallback(pa_context *ctx, int success, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -3094,7 +3267,7 @@ void Pulse::successSubscribeCallback(pa_context *ctx, int success, void *userdat
     }
 }
 
-void Pulse::stateCallback(pa_context *ctx, void *userdata)
+void PulseAudioSource::stateCallback(pa_context *ctx, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -3129,7 +3302,7 @@ void Pulse::stateCallback(pa_context *ctx, void *userdata)
     }
 }
 
-void Pulse::streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata)
+void PulseAudioSource::streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata)
 {
     Q_ASSERT(stream);
     Q_UNUSED(userdata);
@@ -3155,13 +3328,21 @@ void Pulse::streamRequestCallback(pa_stream *stream, size_t nbytes, void *userda
         return;
     }
 
+    uint64_t latency = 0; int negative = 0;
+    if (pa_stream_get_latency(stream, &latency, &negative) >= 0) {
+        if (negative)
+            latency = 0 - latency;
+    } else {
+        //qWarning() << "pa_stream_get_latency failed";
+    }
+
     auto worker = ContentServerWorker::instance();
-    worker->writePulseData(data, static_cast<int>(nbytes));
+    worker->writePulseData(data, static_cast<int>(nbytes), latency);
 
     pa_stream_drop(stream);
 }
 
-void Pulse::stopRecordStream()
+void PulseAudioSource::stopRecordStream()
 {
     if (stream) {
         unmuteConnectedSinkInput();
@@ -3173,7 +3354,7 @@ void Pulse::stopRecordStream()
     }
 }
 
-void Pulse::muteConnectedSinkInput()
+void PulseAudioSource::muteConnectedSinkInput()
 {
 #ifdef SAILFISH
     if (!muted && connectedSinkInput != PA_INVALID_INDEX) {
@@ -3188,7 +3369,7 @@ void Pulse::muteConnectedSinkInput()
 #endif
 }
 
-void Pulse::unmuteConnectedSinkInput()
+void PulseAudioSource::unmuteConnectedSinkInput()
 {
 #ifdef SAILFISH
     if (connectedSinkInput != PA_INVALID_INDEX &&
@@ -3204,7 +3385,7 @@ void Pulse::unmuteConnectedSinkInput()
 #endif
 }
 
-bool Pulse::startRecordStream(pa_context *ctx, uint32_t si)
+bool PulseAudioSource::startRecordStream(pa_context *ctx, uint32_t si)
 {
     stopRecordStream();
 
@@ -3234,7 +3415,7 @@ bool Pulse::startRecordStream(pa_context *ctx, uint32_t si)
     return false;
 }
 
-void Pulse::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata)
+void PulseAudioSource::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -3243,7 +3424,7 @@ void Pulse::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, 
         qDebug() << "sinkInputInfoCallback:";
         qDebug() << "  index:" << i->index;
         qDebug() << "  name:" << i->name;
-        qDebug() << "  client:" << i->client;
+        qDebug() << "  client:" << (i->client == PA_INVALID_INDEX ? 0 : i->client);
         qDebug() << "  has_volume:" << i->has_volume;
         qDebug() << "  mute:" << i->mute;
         qDebug() << "  volume.channels:" << i->volume.channels;
@@ -3267,7 +3448,7 @@ void Pulse::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, 
     }
 }
 
-void Pulse::discoverStream()
+void PulseAudioSource::discoverStream()
 {
     if (inited()) {
         auto worker = ContentServerWorker::instance();
@@ -3307,9 +3488,9 @@ void Pulse::discoverStream()
     }
 }
 
-QList<Pulse::Client> Pulse::activeClients()
+QList<PulseAudioSource::Client> PulseAudioSource::activeClients()
 {
-    QList<Pulse::Client> list;
+    QList<PulseAudioSource::Client> list;
 
     for (auto ci : clients.keys()) {
         for (auto& s : sinkInputs.values()) {
@@ -3323,7 +3504,7 @@ QList<Pulse::Client> Pulse::activeClients()
     return list;
 }
 
-bool Pulse::isBlacklisted(const char* name)
+bool PulseAudioSource::isBlacklisted(const char* name)
 {
 #ifdef SAILFISH
     if (!strcmp(name, "ngfd") ||
@@ -3335,12 +3516,16 @@ bool Pulse::isBlacklisted(const char* name)
         return true;
     }
 #else
-    Q_UNUSED(name)
+    //Q_UNUSED(name)
+    if (!strcmp(name, "Kodi") ||
+        !strcmp(name, "speech-dispatcher-dummy")) {
+        return true;
+    }
 #endif
     return false;
 }
 
-void Pulse::correctClientName(Client &client)
+void PulseAudioSource::correctClientName(Client &client)
 {
 #ifdef SAILFISH
     if (client.name == "CubebUtils" && !client.binary.isEmpty()) {
@@ -3353,7 +3538,8 @@ void Pulse::correctClientName(Client &client)
 #endif
 }
 
-void Pulse::clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata)
+void PulseAudioSource::clientInfoCallback(pa_context *ctx, const pa_client_info *i,
+                                          int eol, void *userdata)
 {
     Q_ASSERT(ctx);
     Q_UNUSED(userdata);
@@ -3394,30 +3580,28 @@ void Pulse::clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol
     }
 }
 
-void Pulse::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata)
+void PulseAudioSource::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e,
+                                         const struct timeval *tv, void *userdata)
 {
     Q_UNUSED(mla);
     Q_UNUSED(userdata);
 
-    if (Pulse::inited()) {
+    if (PulseAudioSource::inited()) {
         auto worker = ContentServerWorker::instance();
-        if (worker->pulseItems.isEmpty()) {
-            stopLoop();
+        if (worker->pulseItems.isEmpty() && worker->screenItems.isEmpty()) {
+            worker->pulseSource->stop();
             return;
         } else if (!stream) {
             // sending null data to connected device because there is no valid
             // source of audio (no valid sink input)
-            // timer event is triggered every 0.5s, but 0.7 of needed data is sent
-            // to bypass buffering on the client side
-            const auto size = static_cast<int>(0.7f * sampleSpec.rate * sampleSpec.channels);
-            worker->writePulseData(nullptr, size);
+            worker->writePulseData(nullptr, nullDataSize);
         }
-
         restartTimer(e, tv);
     }
 }
 
-/*void PulseDevice::exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e, int sig, void *userdata)
+/*void PulseDevice::exitSignalCallback(pa_mainloop_api *mla, pa_signal_event *e,
+                                       int sig, void *userdata)
 {
     Q_UNUSED(userdata);
     Q_UNUSED(mla);
@@ -3426,13 +3610,16 @@ void Pulse::timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const stru
     qDebug() << "Pulse-audio exit signal";
 }*/
 
-bool Pulse::inited()
+bool PulseAudioSource::inited()
 {
     return ml && mla && ctx;
 }
 
-void Pulse::deinit()
+void PulseAudioSource::deinit()
 {
+    deinitLame();
+
+    qDebug() << "Deiniting pulse audio client";
     if (ctx) {
         pa_context_disconnect(ctx);
         pa_context_unref(ctx);
@@ -3446,8 +3633,11 @@ void Pulse::deinit()
     }
 }
 
-bool Pulse::init()
+bool PulseAudioSource::init()
 {
+    started = false;
+    nullDataSize = static_cast<int>((static_cast<float>(timerDelta)/1000000l) *
+                                    2 * sampleSpec.rate * sampleSpec.channels);
     ml = pa_mainloop_new();
     mla = pa_mainloop_get_api(ml);
 
@@ -3465,10 +3655,11 @@ bool Pulse::init()
         pa_context_set_subscribe_callback(ctx, subscriptionCallback, nullptr);
 
         if (pa_context_connect(ctx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
-            qWarning() << "Cannot connect pulse-audio context:" << pa_strerror(pa_context_errno(ctx));
+            qWarning() << "Cannot connect pulse-audio context:"
+                       << pa_strerror(pa_context_errno(ctx));
         } else if (!initLame()) {
             pa_context_disconnect(ctx);
-        } else {
+        } else { 
             qDebug() << "Pulse-audio inited successful";
             return true;
         }
@@ -3488,7 +3679,7 @@ bool Pulse::init()
     return false;
 }
 
-bool Pulse::startTimer()
+bool PulseAudioSource::startTimer()
 {
     if (!timerActive) {
         timeval tv; gettimeofday(&tv, nullptr);
@@ -3505,7 +3696,7 @@ bool Pulse::startTimer()
     return true;
 }
 
-void Pulse::restartTimer(pa_time_event *e, const struct timeval *tv)
+void PulseAudioSource::restartTimer(pa_time_event *e, const struct timeval *tv)
 {
     if (timerActive) {
         // restarting timer to current time + timerDelta
@@ -3513,82 +3704,88 @@ void Pulse::restartTimer(pa_time_event *e, const struct timeval *tv)
         long ms = tv->tv_usec + timerDelta;
         ntv.tv_sec = tv->tv_sec + ms / 1000000l;
         ntv.tv_usec = ms % 1000000l;
+        //qDebug() << "restartTimer:" << ntv.tv_sec << ntv.tv_usec;
         mla->time_restart(e, &ntv);
     }
 }
 
-void Pulse::stopTimer()
+void PulseAudioSource::stopTimer()
 {
     timerActive = false;
 }
 
-void Pulse::startLoop(QEventLoop &qtLoop)
+void PulseAudioSource::doPulseIteration()
 {
-    if (init()) {
-        qDebug() << "Starting pulse-audio loop";
-        startTimer();
-
-        int ret = 0;
-        while (true) {
-            while (pa_mainloop_iterate(Pulse::ml, 0, &ret) > 0)
-                continue;
-            if (ret != 0) {
-                qDebug() << "Pulse-audio loop quit:" << ret;
-                break;
-            }
-            qtLoop.processEvents();
-        }
-
-        qDebug() << "Ending pulse-audio loop";
-        deinit();
+    int ret = 0;
+    while (pa_mainloop_iterate(PulseAudioSource::ml, 0, &ret) > 0)
+        continue;
+    if (ret == 0) {
+        emit doNextPulseIteration();
     } else {
-        qWarning() << "Cannot start pulse-audio loop";
+        qDebug() << "Pulse-audio loop quit:" << ret;
+        deinit();
     }
 }
 
-void Pulse::stopLoop()
+void PulseAudioSource::stop()
 {
-    if (inited()) {
+    if (inited() && started) {
         stopRecordStream();
         stopTimer();
-        qDebug() << "Requesting to stop pulse-audio loop";
+        qDebug() << "Requesting to stop pulse-audio";
         mla->quit(mla, 10); // 10 = stop request
+        started = false;
     }
 }
 
-void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)
+bool PulseAudioSource::start()
 {
-    QDataStream sr(data, QIODevice::ReadOnly);
-    sr.setByteOrder(le ? QDataStream::LittleEndian : QDataStream::BigEndian);
-    QDataStream sw(data, QIODevice::WriteOnly);
-    sw.setByteOrder(le ? QDataStream::LittleEndian : QDataStream::BigEndian);
-    int16_t sample; // assuming 16-bit LPCM sample
-
-    while (!sr.atEnd()) {
-        sr >> sample;
-        int32_t s = factor * static_cast<int32_t>(sample);
-        if (s > std::numeric_limits<int16_t>::max()) {
-            sample = std::numeric_limits<int16_t>::max();
-        } else if (s < std::numeric_limits<int16_t>::min()) {
-            sample = std::numeric_limits<int16_t>::min();
-        } else {
-            sample = static_cast<int16_t>(s);
+    if (!inited()) {
+        if (!init()) {
+            qWarning() << "Pluse loop cannot be inited";
+            return false;
         }
-        sw << sample;
     }
+
+    if (!started) {
+        startTimer();
+        discoverStream();
+        emit doNextPulseIteration();
+        started = true;
+    } else {
+        qDebug() << "Pluse loop already started";
+    }
+    return true;
 }
 
-void ContentServerWorker::writePulseData(const void *data, int size)
+void ContentServerWorker::writePulseData(const void *data, int size,
+                                         uint64_t latency)
 {
-    if (!pulseItems.isEmpty()) {
-        QByteArray d;
+    bool audioCaptureEnabled = !pulseItems.isEmpty();
+#ifdef SCREEN
+    bool screenAudioEnabled = screenSource &&
+            screenSource->audioEnabled() && !screenItems.isEmpty();
 
+    if (screenAudioEnabled) {
+        QByteArray d;
+        if (data) {
+            d = QByteArray::fromRawData(static_cast<const char*>(data), size);
+        } else {
+            // writing null data
+            //qDebug() << "writing null data:" << size;
+            d = QByteArray(size,'\0');
+        }
+        screenSource->writeAudioData(d, latency);
+    } else
+#endif
+    if (audioCaptureEnabled) {
+        QByteArray d;
         if (data) {
             // deep copy :-(
             d = QByteArray(static_cast<const char*>(data), size);
 #ifdef SAILFISH
             // increasing volume level only in SFOS
-            // endianness: BE for PCM, LE for MP3            
+            // endianness: BE for PCM, LE for MP3
             adjustVolume(&d, 2.3f, Pulse::mode > 1 ? false : true);
 #endif
         } else {
@@ -3596,13 +3793,15 @@ void ContentServerWorker::writePulseData(const void *data, int size)
             d = QByteArray(size,'\0');
         }
 
-        if (Pulse::mode < 2) {
+        if (PulseAudioSource::mode < 2) {
             // doing MP3 encoding
             void *out_data; int out_size;
-            if (Pulse::encode(static_cast<void*>(d.data()), size, &out_data, &out_size)) {
+            if (PulseAudioSource::encode(static_cast<void*>(d.data()),
+                                         size, &out_data, &out_size)) {
                 if (out_size > 0) {
                     // bytes are not copied :-)
-                    d = QByteArray::fromRawData(static_cast<const char*>(out_data), out_size);
+                    d = QByteArray::fromRawData(
+                                static_cast<const char*>(out_data), out_size);
                 } else {
                     // encoder didn't return any data
                     return;
@@ -3617,22 +3816,24 @@ void ContentServerWorker::writePulseData(const void *data, int size)
                 i->resp->end();
             }
             if (i->resp->isFinished()) {
-                qWarning() << "Server request already finished, so removing pulse item";
+                qWarning() << "Server request already finished, "
+                              "so removing pulse item";
                 auto id = i->id;
                 i = pulseItems.erase(i);
                 emit itemRemoved(id);
             } else {
+                //qDebug() << "pulse write:" << d.size();
                 i->resp->write(d);
                 ++i;
             }
         }
     } else {
-        qDebug() << "No pulse items, so stopping";
-        Pulse::stopLoop();
+        qDebug() << "No audio capture required, so stopping pulse source";
+        pulseSource->stop();
     }
 }
 
-void Pulse::deinitLame()
+void PulseAudioSource::deinitLame()
 {
     qDebug() << "Deiniting LAME encoder";
     if (lame_gfp) {
@@ -3645,7 +3846,7 @@ void Pulse::deinitLame()
     }
 }
 
-bool Pulse::initLame()
+bool PulseAudioSource::initLame()
 {
     lame_gfp = lame_init();
     if (!lame_gfp) {
@@ -3656,8 +3857,8 @@ bool Pulse::initLame()
         // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
         // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
         lame_set_brate(lame_gfp, mode == 0 ? 128 : 96);
-        lame_set_num_channels(lame_gfp, Pulse::sampleSpec.channels);
-        lame_set_in_samplerate(lame_gfp, static_cast<int>(Pulse::sampleSpec.rate));
+        lame_set_num_channels(lame_gfp, PulseAudioSource::sampleSpec.channels);
+        lame_set_in_samplerate(lame_gfp, static_cast<int>(PulseAudioSource::sampleSpec.rate));
         lame_set_mode(lame_gfp, STEREO);
         lame_set_quality(lame_gfp, 7);
         if (lame_init_params(lame_gfp) < 0) {
@@ -3674,10 +3875,10 @@ bool Pulse::initLame()
     return false;
 }
 
-bool Pulse::encode(void *in_data, int in_size,
+bool PulseAudioSource::encode(void *in_data, int in_size,
                          void **out_data, int *out_size)
 {
-    const int nb_samples = in_size/(Pulse::sampleSpec.channels * 2);
+    const int nb_samples = in_size/(PulseAudioSource::sampleSpec.channels * 2);
     //qDebug() << "nb_samples:" << nb_samples;
     int ret = lame_encode_buffer_interleaved(lame_gfp,
                          static_cast<short int*>(in_data),
@@ -3692,4 +3893,576 @@ bool Pulse::encode(void *in_data, int in_size,
 
     return true;
 }
+#endif // PULSE
+
+#ifdef SCREEN
+void ContentServerWorker::writeScreenData(const void *data, int size)
+{
+    if (!screenItems.isEmpty()) {
+        QByteArray d = QByteArray::fromRawData(static_cast<const char*>(data),
+                                               size);
+        auto i = screenItems.begin();
+        while (i != screenItems.end()) {
+            if (!i->resp->isHeaderWritten()) {
+                qWarning() << "Head not written";
+                i->resp->end();
+            }
+            if (i->resp->isFinished()) {
+                qWarning() << "Server request already finished, "
+                              "so removing screen item";
+                auto id = i->id;
+                i = screenItems.erase(i);
+                emit itemRemoved(id);
+            } else {
+                i->resp->write(d);
+                ++i;
+            }
+        }
+    } else {
+        qDebug() << "No screen items";
+    }
+}
+
+ScreenSource::ScreenSource(QObject *parent) : QObject(parent)
+{
+    connect(this, &ScreenSource::readNextVideoFrame,
+            this, &ScreenSource::readVideoFrame, Qt::QueuedConnection);
+}
+
+ScreenSource::~ScreenSource()
+{
+    if (video_sws_ctx) {
+        sws_freeContext(video_sws_ctx);
+        video_sws_ctx = nullptr;
+    }
+    if (in_frame_s) {
+        av_frame_free(&in_frame_s);
+        in_frame_s = nullptr;
+    }
+    if (video_outbuf) {
+        av_free(video_outbuf);
+        video_outbuf = nullptr;
+    }
+    if (out_format_ctx) {
+        if (out_format_ctx->pb) {
+            if (out_format_ctx->pb->buffer) {
+                av_free(out_format_ctx->pb->buffer);
+                out_format_ctx->pb->buffer = nullptr;
+            }
+            avio_context_free(&out_format_ctx->pb);
+            out_format_ctx->pb = nullptr;
+        }
+        avformat_free_context(out_format_ctx);
+        out_format_ctx = nullptr;
+    }
+    if (in_frame) {
+        av_frame_free(&in_frame);
+        in_frame = nullptr;
+    }
+    if (in_video_format_ctx) {
+        avformat_close_input(&in_video_format_ctx);
+        in_video_format_ctx = nullptr;
+    }
+#ifdef PULSE
+    if (audio_swr_ctx) {
+        swr_free(&audio_swr_ctx);
+        audio_swr_ctx = nullptr;
+    }
+    if (in_audio_codec_ctx) {
+        avcodec_free_context(&in_audio_codec_ctx);
+        in_audio_codec_ctx = nullptr;
+    }
 #endif
+}
+
+bool ScreenSource::init()
+{
+    qDebug() << "ScreenCaster init";
+
+    // in video
+
+    auto in_video_format = av_find_input_format("x11grab");
+
+    AVDictionary* options = nullptr;
+    if (av_dict_set(&options, "framerate", "15", 0) < 0 ||
+        av_dict_set(&options, "preset", "fast", 0) < 0 ||
+        av_dict_set(&options, "video_size", "1920x1080", 0) < 0 ||
+        //av_dict_set(&options, "show_region", "1", 0) < 0 ||
+        //av_dict_set(&options, "region_border", "1", 0) < 0 ||
+        //av_dict_set(&options, "follow_mouse", "centered", 0) < 0 ||
+        av_dict_set(&options, "draw_mouse", "1", 0) < 0) {
+        qWarning() << "Error in av_dict_set";
+        return false;
+    }
+
+    in_video_format_ctx = nullptr;
+    if (avformat_open_input(&in_video_format_ctx, ":0.0", in_video_format,
+                            &options) < 0) {
+        qWarning() << "Error in avformat_open_input for video";
+        av_dict_free(&options);
+        return false;
+    }
+    av_dict_free(&options);
+
+    int in_video_stream_idx = 0;
+    if (in_video_format_ctx->streams[in_video_stream_idx]->
+            codecpar->codec_type != AVMEDIA_TYPE_VIDEO) {
+        qWarning() << "x11grab stream[0] is not video";
+        return false;
+    }
+
+    /*qDebug() << "x11grab video stream:";
+    qDebug() << " id:" << in_video_format_ctx->streams[in_video_stream_idx]->id;
+    qDebug() << " height:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->height;
+    qDebug() << " width:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->width;
+    qDebug() << " codec_id:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->codec_id;
+    qDebug() << " codec_type:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->codec_type;*/
+
+    auto in_video_codec = avcodec_find_decoder(in_video_format_ctx->
+                                               streams[in_video_stream_idx]->
+                                               codecpar->codec_id);
+    if (!in_video_codec) {
+        qWarning() << "Error in avcodec_find_decoder for video";
+        return false;
+    }
+
+    auto in_audio_codec = avcodec_find_decoder(AV_CODEC_ID_PCM_S16LE);
+    if (!in_audio_codec) {
+        qWarning() << "Error in avcodec_find_decoder for audio";
+        return false;
+    }
+
+    in_video_codec_ctx = in_video_format_ctx->streams[in_video_stream_idx]->codec;
+    if (!in_video_codec_ctx) {
+        qWarning() << "Error: in_video_codec_ctx is null";
+        return false;
+    }
+
+    if (avcodec_open2(in_video_codec_ctx, in_video_codec, nullptr) < 0) {
+        qWarning() << "Error in avcodec_open2 for video";
+        return false;
+    }
+
+    in_video_codec_ctx->time_base.num = 1;
+    in_video_codec_ctx->time_base.den = 15;
+    /*qDebug() << "In video codec params:";
+    qDebug() << " time_base.num:" << in_video_codec_ctx->time_base.num;
+    qDebug() << " time_base.den:" << in_video_codec_ctx->time_base.den;*/
+
+    in_frame = av_frame_alloc();
+    if(!in_frame) {
+        qWarning() << "Error in av_frame_alloc";
+        return false;
+    }
+
+    av_init_packet(&in_pkt);
+
+#ifdef PULSE
+    // in audio
+
+    in_audio_codec_ctx = avcodec_alloc_context3(in_audio_codec);
+    if (!in_audio_codec_ctx) {
+        qWarning() << "Error: avcodec_alloc_context3 is null";
+        return false;
+    }
+    in_audio_codec_ctx->channels = PulseAudioSource::sampleSpec.channels;
+    in_audio_codec_ctx->channel_layout = av_get_default_channel_layout(in_audio_codec_ctx->channels);
+    in_audio_codec_ctx->sample_rate = PulseAudioSource::sampleSpec.rate;
+    in_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
+    in_audio_codec_ctx->time_base.num = 1;
+    in_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
+    in_audio_codec_ctx->frame_size = 1024;
+
+    audio_frame_size = av_samples_get_buffer_size(nullptr,
+                                          in_audio_codec_ctx->channels,
+                                          in_audio_codec_ctx->frame_size,
+                                          in_audio_codec_ctx->sample_fmt, 0);
+
+    if (avcodec_open2(in_audio_codec_ctx, in_audio_codec, nullptr) < 0) {
+        qWarning() << "Error in avcodec_open2 for audio";
+        return false;
+    }
+
+    /*qDebug() << "In audio codec params:";
+    qDebug() << " channels:" << in_audio_codec_ctx->channels;
+    qDebug() << " channel_layout:" << in_audio_codec_ctx->channel_layout;
+    qDebug() << " sample_rate:" << in_audio_codec_ctx->sample_rate;
+    qDebug() << " codec_id:" << in_audio_codec_ctx->codec_id;
+    qDebug() << " codec_type:" << in_audio_codec_ctx->codec_type;
+    qDebug() << " sample_fmt:" << in_audio_codec_ctx->sample_fmt;
+    qDebug() << " frame_size:" << in_audio_codec_ctx->frame_size;
+    qDebug() << " time_base.num:" << in_audio_codec_ctx->time_base.num;
+    qDebug() << " time_base.den:" << in_audio_codec_ctx->time_base.den;*/
+#endif
+
+    // out
+
+    if (avformat_alloc_output_context2(&out_format_ctx, nullptr, "mpegts", nullptr) < 0) {
+    //if (avformat_alloc_output_context2(&out_format_ctx, nullptr, nullptr, "output.mp4") < 0) {
+        qWarning() << "Error in avformat_alloc_output_context2";
+        return false;
+    }
+
+    auto out_video_codec = avcodec_find_encoder(AV_CODEC_ID_H264);
+    if (!out_video_codec) {
+        qWarning() << "Error in avcodec_find_encoder for H264";
+        return false;
+    }
+
+    AVStream *out_video_stream = avformat_new_stream(out_format_ctx, out_video_codec);
+    if (!out_video_stream) {
+        qWarning() << "Error in avformat_new_stream for video";
+        return false;
+    }
+    out_video_stream->id = 0;
+    out_video_codec_ctx = out_video_stream->codec;
+    //out_codec_ctx->codec_id = AV_CODEC_ID_MPEG4;
+    //out_codec_ctx->codec_type = AVMEDIA_TYPE_VIDEO;
+    out_video_codec_ctx->pix_fmt  = AV_PIX_FMT_YUV420P;
+    //out_codec_ctx->bit_rate = 400000;
+    out_video_codec_ctx->width = 1920;
+    out_video_codec_ctx->height = 1080;
+    //out_codec_ctx->gop_size = 3;
+    //out_codec_ctx->max_b_frames = 2;
+    out_video_codec_ctx->time_base.num = 1;
+    out_video_codec_ctx->time_base.den = 30;
+
+    /*qDebug() << "Out video codec params:" << out_video_codec_ctx->codec_id;
+    qDebug() << " codec_id:" << out_video_codec_ctx->codec_id;
+    qDebug() << " codec_type:" << out_video_codec_ctx->codec_type;
+    qDebug() << " pix_fmt:" << out_video_codec_ctx->pix_fmt;
+    qDebug() << " bit_rate:" << out_video_codec_ctx->bit_rate;
+    qDebug() << " width:" << out_video_codec_ctx->width;
+    qDebug() << " height:" << out_video_codec_ctx->height;
+    qDebug() << " gop_size:" << out_video_codec_ctx->gop_size;
+    qDebug() << " max_b_frames:" << out_video_codec_ctx->max_b_frames;
+    qDebug() << " time_base.num:" << out_video_codec_ctx->time_base.num;
+    qDebug() << " time_base.den:" << out_video_codec_ctx->time_base.den;*/
+
+    if (av_dict_set(&options, "preset", "fast", 0) < 0) {
+        qWarning() << "Error in av_dict_set";
+        return false;
+    }
+
+    if (avcodec_open2(out_video_codec_ctx, out_video_codec, &options) < 0) {
+        qWarning() << "Error in avcodec_open2 for video";
+        av_dict_free(&options);
+        return false;
+    }
+    av_dict_free(&options);
+
+    int nbytes = av_image_get_buffer_size(out_video_codec_ctx->pix_fmt,
+                                          out_video_codec_ctx->width,
+                                          out_video_codec_ctx->height, 32);
+
+    video_outbuf = (uint8_t*)av_malloc(nbytes);
+    if (!video_outbuf) {
+        qWarning() << "Unable to allocate memory";
+        return false;
+    }
+
+    in_frame_s = av_frame_alloc();
+    if(!in_frame_s) {
+        qWarning() << "Error in av_frame_alloc";
+        return false;
+    }
+
+    if (av_image_fill_arrays(in_frame_s->data, in_frame_s->linesize,
+                                 video_outbuf, out_video_codec_ctx->pix_fmt,
+                                 out_video_codec_ctx->width,
+                                 out_video_codec_ctx->height, 1) < 0) {
+        qWarning() << "Error in av_image_fill_arrays";
+        return false;
+    }
+
+    video_sws_ctx = sws_getContext(in_video_codec_ctx->width, in_video_codec_ctx->height,
+                        in_video_codec_ctx->pix_fmt, out_video_codec_ctx->width,
+                        out_video_codec_ctx->height, out_video_codec_ctx->pix_fmt,
+                        SWS_BICUBIC, nullptr, nullptr, nullptr);
+    if (!video_sws_ctx) {
+        qWarning() << "Error in sws_getContext";
+        return false;
+    }
+
+    const size_t outbuf_size = 500000;
+    uint8_t *outbuf = (uint8_t*)av_malloc(outbuf_size);
+    if (!outbuf) {
+        qWarning() << "Unable to allocate memory";
+        return false;
+    }
+
+    out_format_ctx->pb = avio_alloc_context(outbuf, outbuf_size, 1, nullptr, nullptr,
+                                            write_packet_callback, nullptr);
+
+#ifdef PULSE
+    if (audioEnabled()) {
+        auto out_audio_codec = avcodec_find_encoder(AV_CODEC_ID_AAC);
+        if (!out_audio_codec) {
+            qWarning() << "Error in avcodec_find_encoder for AAC";
+            return false;
+        }
+
+        AVStream *out_audio_stream = avformat_new_stream(out_format_ctx, out_audio_codec);
+        if (!out_audio_stream) {
+            qWarning() << "Error in avformat_new_stream for audio";
+            return false;
+        }
+        out_audio_stream->id = 1;
+        out_audio_codec_ctx = out_audio_stream->codec;
+        out_audio_codec_ctx->channels = in_audio_codec_ctx->channels;
+        out_audio_codec_ctx->sample_rate = in_audio_codec_ctx->sample_rate;
+        out_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_FLTP;
+        out_audio_codec_ctx->channel_layout = in_audio_codec_ctx->channel_layout;
+        out_audio_codec_ctx->time_base.num = 1;
+        out_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
+
+        qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;
+        qDebug() << " codec_id:" << out_audio_codec_ctx->codec_id;
+        qDebug() << " codec_type:" << out_audio_codec_ctx->codec_type;
+        qDebug() << " bit_rate:" << out_audio_codec_ctx->bit_rate;
+        qDebug() << " channels:" << out_audio_codec_ctx->channels;
+        qDebug() << " channel_layout:" << out_audio_codec_ctx->channel_layout;
+        qDebug() << " sample_rate:" << out_audio_codec_ctx->sample_rate;
+        qDebug() << " sample_fmt:" << out_audio_codec_ctx->sample_fmt;
+        qDebug() << " time_base.num:" << out_audio_codec_ctx->time_base.num;
+        qDebug() << " time_base.den:" << out_audio_codec_ctx->time_base.den;
+        qDebug() << " frame_size:" << out_audio_codec_ctx->frame_size;
+
+        if (avcodec_open2(out_audio_codec_ctx, out_audio_codec, nullptr) < 0) {
+            qWarning() << "Error in avcodec_open2 for audio";
+            return false;
+        }
+
+        audio_swr_ctx = swr_alloc();
+        av_opt_set_int(audio_swr_ctx, "in_channel_layout", in_audio_codec_ctx->channel_layout, 0);
+        av_opt_set_int(audio_swr_ctx, "out_channel_layout", out_audio_codec_ctx->channel_layout,  0);
+        av_opt_set_int(audio_swr_ctx, "in_sample_rate", in_audio_codec_ctx->sample_rate, 0);
+        av_opt_set_int(audio_swr_ctx, "out_sample_rate", out_audio_codec_ctx->sample_rate, 0);
+        av_opt_set_sample_fmt(audio_swr_ctx, "in_sample_fmt",  in_audio_codec_ctx->sample_fmt, 0);
+        av_opt_set_sample_fmt(audio_swr_ctx, "out_sample_fmt", out_audio_codec_ctx->sample_fmt,  0);
+        swr_init(audio_swr_ctx);
+    }
+#endif
+
+    int ret = avformat_write_header(out_format_ctx, nullptr);
+    if (ret == AVSTREAM_INIT_IN_WRITE_HEADER) {
+        qWarning() << "avformat_write_header returned AVSTREAM_INIT_IN_WRITE_HEADER";
+    } else if (ret == AVSTREAM_INIT_IN_INIT_OUTPUT) {
+        qWarning() << "avformat_write_header returned AVSTREAM_INIT_IN_INIT_OUTPUT";
+    } else {
+        char errbuf[50];
+        qWarning() << "Error in avformat_write_header:"
+                   << av_make_error_string(errbuf, 50, ret);
+        return false;
+    }
+
+    av_init_packet(&out_pkt);
+    return true;
+}
+
+void ScreenSource::start()
+{
+    emit readNextVideoFrame();
+}
+
+bool ScreenSource::audioEnabled()
+{
+    return audio_frame_size > 0;
+}
+
+int ScreenSource::write_packet_callback(void *opaque, uint8_t *buf, int buf_size)
+{
+    Q_UNUSED(opaque);
+    //qDebug() << "write_packet_callback buff_size:" << buf_size;
+
+    auto worker = ContentServerWorker::instance();
+    worker->writeScreenData(static_cast<void*>(buf), buf_size);
+
+    return buf_size;
+}
+
+#ifdef PULSE
+bool ScreenSource::writeAudioData(const QByteArray& data, uint64_t latency)
+{
+    //qDebug() << "========= ScreenCaster::writeAudioData";
+    audio_outbuf.append(data);
+    if (audio_outbuf.size() >= audio_frame_size) {
+        const char* d = audio_outbuf.data();
+        bool error = false;
+        int ret = -1;
+
+        if (av_new_packet(&in_pkt, audio_frame_size) < 0) {
+            qDebug() << "Error in av_new_packet";
+            error = true;
+        } else {
+            //char errbuf[50];
+            in_pkt.dts = av_gettime() - latency;
+            in_pkt.pts = in_pkt.dts;
+            memcpy(in_pkt.data, d, audio_frame_size);
+            ret = avcodec_send_packet(in_audio_codec_ctx, &in_pkt);
+            //qDebug() << "avcodec_send_packet:" << av_make_error_string(errbuf, 50, ret);
+            if (ret == 0) {
+                ret = avcodec_receive_frame(in_audio_codec_ctx, in_frame);
+                //qDebug() << "avcodec_receive_frame:" << av_make_error_string(errbuf, 50, ret);
+                if (ret == 0 || ret == AVERROR(EAGAIN)) {
+                    //qDebug() << "Audio frame decoded";
+                    out_pkt.data = nullptr; out_pkt.size = 0;
+                    // resampling
+                    AVFrame* frame = av_frame_alloc();
+                    frame->channel_layout = out_audio_codec_ctx->channel_layout;
+                    frame->format = out_audio_codec_ctx->sample_fmt;
+                    frame->sample_rate = out_audio_codec_ctx->sample_rate;
+                    swr_convert_frame(audio_swr_ctx, frame, in_frame);
+                    frame->pts = in_frame->pts;
+                    ret = avcodec_send_frame(out_audio_codec_ctx, frame);
+                    av_frame_free(&frame);
+                    //qDebug() << "avcodec_send_frame:" << av_make_error_string(errbuf, 50, ret);
+                    if (ret == 0 || ret == AVERROR(EAGAIN)) {
+                        ret = avcodec_receive_packet(out_audio_codec_ctx, &out_pkt);
+                        //qDebug() << "avcodec_receive_packet:" << av_make_error_string(errbuf, 50, ret);
+                        if (ret == 0) {
+                            //qDebug() << "Audio packet encoded";
+                            auto in_tb  = AVRational{1, 1000000};
+                            auto out_tb = out_format_ctx->streams[1]->time_base;
+                            out_pkt.stream_index = 1; // audio output stream
+                            out_pkt.pts = av_rescale_q_rnd(out_pkt.pts, in_tb, out_tb,
+                               static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+                            out_pkt.dts = av_rescale_q_rnd(out_pkt.dts, in_tb, out_tb,
+                               static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+                            out_pkt.duration = av_rescale_q(out_pkt.duration, in_tb, out_tb);
+                            out_pkt.pos = -1;
+                            //ret = av_write_frame(out_format_ctx, &out_pkt);
+                            ret = av_interleaved_write_frame(out_format_ctx, &out_pkt);
+                            //qDebug() << "av_write_frame:" << av_make_error_string(errbuf, 50, ret);
+                            if (ret < 0) {
+                                qWarning() << "Error in av_write_frame for audio";
+                            }
+                        } else if (ret == AVERROR(EAGAIN)) {
+                            //qDebug() << "Packet not ready";
+                        } else {
+                            qWarning() << "Error in avcodec_receive_packet for audio";
+                            error = true;
+                        }
+                    } else {
+                        qWarning() << "Error in avcodec_send_frame for audio";
+                        error = true;
+                    }
+                } else if (ret == AVERROR(EAGAIN)) {
+                    //qDebug() << "Audio frame not ready";
+                } else {
+                    qWarning() << "Error in avcodec_receive_frame";
+                    error = true;
+                }
+            } else {
+                qWarning() << "Error in avcodec_receive_frame";
+                error = true;
+            }
+
+            av_packet_unref(&in_pkt);
+            av_packet_unref(&out_pkt);
+        }
+
+        audio_outbuf.remove(0, audio_frame_size);
+
+        if (error) {
+            qWarning() << "Error writeAudioFrame";
+            return false;
+        }
+    }
+
+    return true;
+}
+#endif
+
+void ScreenSource::readVideoFrame()
+{
+    //qDebug() << "========= ScreenCaster::readVideoFrame";
+    //char errbuf[50];
+    bool error = false;
+    if (av_read_frame(in_video_format_ctx, &in_pkt) >= 0) {
+        if (in_pkt.stream_index == 0) { // video in stream
+            int ret = avcodec_send_packet(in_video_codec_ctx, &in_pkt);
+            //qDebug() << "avcodec_send_packet:" << av_make_error_string(errbuf, 50, ret);
+            if (ret == 0 || ret == AVERROR(EAGAIN)) {
+                ret = avcodec_receive_frame(in_video_codec_ctx, in_frame);
+                //qDebug() << "avcodec_receive_frame:" << av_make_error_string(errbuf, 50, ret);
+                if (ret == 0) {
+                    //qDebug() << "Video frame decoded";
+                    sws_scale(video_sws_ctx, in_frame->data, in_frame->linesize, 0,
+                              out_video_codec_ctx->height, in_frame_s->data,
+                              in_frame_s->linesize);
+                    in_frame_s->width = in_frame->width;
+                    in_frame_s->height = in_frame->width;
+                    in_frame_s->format = in_frame->format;
+                    av_frame_copy_props(in_frame_s, in_frame);
+                    out_pkt.data = nullptr;
+                    out_pkt.size = 0;
+                    ret = avcodec_send_frame(out_video_codec_ctx, in_frame_s);
+                    //qDebug() << "avcodec_send_frame:" << av_make_error_string(errbuf, 50, ret);
+                    if (ret == 0 || ret == AVERROR(EAGAIN)) {
+                        ret = avcodec_receive_packet(out_video_codec_ctx, &out_pkt);
+                        //qDebug() << "avcodec_receive_packet:" << av_make_error_string(errbuf, 50, ret);
+                        if (ret == 0) {
+                            //qDebug() << "Video packet encoded";
+                            auto in_video_stream  = in_video_format_ctx->streams[0];
+                            auto out_video_stream = out_format_ctx->streams[0];
+                            out_pkt.stream_index = 0; // video out stream
+                            out_pkt.pts = av_rescale_q_rnd(out_pkt.pts,
+                               in_video_stream->time_base,
+                               out_video_stream->time_base,
+                               static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+                            out_pkt.dts = av_rescale_q_rnd(out_pkt.dts,
+                               in_video_stream->time_base,
+                               out_video_stream->time_base,
+                               static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+                            out_pkt.duration = av_rescale_q(out_pkt.duration,
+                                                            in_video_stream->time_base,
+                                                            out_video_stream->time_base);
+                            out_pkt.pos = -1;
+                            //ret = av_write_frame(out_format_ctx, &out_pkt);
+                            ret = av_interleaved_write_frame(out_format_ctx, &out_pkt);
+                            //qDebug() << "av_write_frame:" << av_make_error_string(errbuf, 50, ret);
+                            if (ret < 0) {
+                                qWarning() << "Error in av_write_frame for video";
+                            }
+                            emit readNextVideoFrame();
+                        } else if (ret == AVERROR(EAGAIN)) {
+                            //qDebug() << "Packet not ready";
+                            emit readNextVideoFrame();
+                        } else {
+                            qWarning() << "Error in avcodec_receive_packet for video";
+                            error = true;
+                        }
+                    } else {
+                        qWarning() << "Error in avcodec_send_frame for video";
+                        error = true;
+                    }
+                } else if (ret == AVERROR(EAGAIN)) {
+                    //qDebug() << "Video frame not ready";
+                    emit readNextVideoFrame();
+                } else {
+                    qWarning() << "Error in avcodec_receive_frame for video";
+                    error = true;
+                }
+            } else {
+                qWarning() << "Error in avcodec_receive_frame for video";
+                error = true;
+            }
+        } else {
+            qDebug() << "stream_index != video_index for video";
+            error = true;
+        }
+    } else {
+        qWarning() << "Error in av_read_frame for video";
+        error = true;
+    }
+
+    av_packet_unref(&in_pkt);
+    av_packet_unref(&out_pkt);
+
+    if (error) {
+        qWarning() << "Error readVideoFrame";
+        emit frameError();
+    }
+}
+#endif // SCREEN
