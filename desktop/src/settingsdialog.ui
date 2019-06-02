@@ -115,6 +115,36 @@
           </layout>
          </item>
          <item>
+          <layout class="QHBoxLayout" name="screenFramerateLayout">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Screen capturing framerate</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="screenFramerateComboBox">
+             <item>
+              <property name="text">
+               <string>5</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>15 (default)</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>30</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="QCheckBox" name="recCheckBox">
            <property name="text">
             <string>Stream recorder</string>

@@ -37,6 +37,7 @@ class Settings:
     Q_PROPERTY (QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
     Q_PROPERTY (bool rec READ getRec WRITE setRec NOTIFY recChanged)
     Q_PROPERTY (int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
+    Q_PROPERTY (int screenFramerate READ getScreenFramerate WRITE setScreenFramerate NOTIFY screenFramerateChanged)
 
 public:
     static Settings* instance();
@@ -61,6 +62,9 @@ public:
 
     void setPulseMode(int value);
     int getPulseMode();
+
+    void setScreenFramerate(int value);
+    int getScreenFramerate();
 
     void setRememberPlaylist(bool value);
     bool getRememberPlaylist();
@@ -114,6 +118,7 @@ signals:
     void micVolumeChanged();
     void recChanged();
     void volStepChanged();
+    void screenFramerateChanged();
 
 private:
     QSettings settings;

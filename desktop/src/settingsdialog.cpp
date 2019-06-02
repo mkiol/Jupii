@@ -37,6 +37,15 @@ int SettingsDialog::exec()
 #else
     ui->pulseModeComboBox->setEnabled(false);
 #endif
+#ifdef SCREEN
+    int framerate = s->getScreenFramerate();
+    int index = framerate < 15 ? 0 : framerate < 30 ? 1 : 2;
+    ui->screenFramerateComboBox->setCurrentIndex(index);
+#else
+    ui->screenFramerateComboBox->setEnabled(false);
+#endif
+
+
 
     // Interfaces
     auto infs = Utils::instance()->getNetworkIfs();
@@ -86,6 +95,23 @@ void SettingsDialog::on_pulseModeComboBox_activated(int index)
 {
     auto s = Settings::instance();
     s->setPulseMode(index);
+}
+
+void SettingsDialog::on_screenFramerateComboBox_activated(int index)
+{
+    auto s = Settings::instance();
+    int framerate;
+    switch (index) {
+    case 0:
+        framerate = 5; break;
+    case 1:
+        framerate = 15; break;
+    case 2:
+        framerate = 30; break;
+    default:
+        framerate = 15;
+    }
+    s->setScreenFramerate(framerate);
 }
 
 void SettingsDialog::on_recCheckBox_toggled(bool checked)

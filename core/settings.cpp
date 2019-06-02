@@ -320,6 +320,20 @@ int Settings::getPulseMode()
     return settings.value("pulsemode", 0).toInt();
 }
 
+void Settings::setScreenFramerate(int value)
+{
+    if (getScreenFramerate() != value) {
+        settings.setValue("screenframerate", value);
+        emit screenFramerateChanged();
+    }
+}
+
+int Settings::getScreenFramerate()
+{
+    // deafult 15 fps
+    return settings.value("screenframerate", 15).toInt();
+}
+
 void Settings::setUseHWVolume(bool value)
 {
     if (getUseHWVolume() != value) {

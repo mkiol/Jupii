@@ -24,6 +24,11 @@
 #include <QSslConfiguration>
 #include <QTextStream>
 #include <QStandardPaths>
+#ifdef SCREEN
+#include <QGuiApplication>
+#include <QScreen>
+#include <QSize>
+#endif
 #include <iomanip>
 #include <limits>
 
@@ -3983,10 +3988,21 @@ bool ScreenSource::init()
 
     auto in_video_format = av_find_input_format("x11grab");
 
+    auto s = Settings::instance();
+    auto video_size = QGuiApplication::primaryScreen()->size();
+    auto video_framerate = s->getScreenFramerate();
+    auto video_ssize = QString("%1x%2").arg(video_size.width())
+            .arg(video_size.height()).toLocal8Bit();
+    qDebug() << "video size:" << video_ssize;
+    qDebug() << "video framerate:" << video_framerate;
+    if (QGuiApplication::screens().size() > 1) {
+        qWarning() << "More that one screen but capturing only first screen";
+    }
+
     AVDictionary* options = nullptr;
-    if (av_dict_set(&options, "framerate", "15", 0) < 0 ||
+    if (av_dict_set_int(&options, "framerate", video_framerate, 0) < 0 ||
         av_dict_set(&options, "preset", "fast", 0) < 0 ||
-        av_dict_set(&options, "video_size", "1920x1080", 0) < 0 ||
+        av_dict_set(&options, "video_size", video_ssize.data(), 0) < 0 ||
         //av_dict_set(&options, "show_region", "1", 0) < 0 ||
         //av_dict_set(&options, "region_border", "1", 0) < 0 ||
         //av_dict_set(&options, "follow_mouse", "centered", 0) < 0 ||
@@ -4012,7 +4028,7 @@ bool ScreenSource::init()
     }
 
     /*qDebug() << "x11grab video stream:";
-    qDebug() << " id:" << in_video_format_ctx->streams[in_video_stream_idx]->id;
+    qDebug() << " id:" << in_video_frmat_ctx->streams[in_video_stream_idx]->id;
     qDebug() << " height:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->height;
     qDebug() << " width:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->width;
     qDebug() << " codec_id:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->codec_id;
@@ -4044,7 +4060,7 @@ bool ScreenSource::init()
     }
 
     in_video_codec_ctx->time_base.num = 1;
-    in_video_codec_ctx->time_base.den = 15;
+    in_video_codec_ctx->time_base.den = video_framerate;
     /*qDebug() << "In video codec params:";
     qDebug() << " time_base.num:" << in_video_codec_ctx->time_base.num;
     qDebug() << " time_base.den:" << in_video_codec_ctx->time_base.den;*/
@@ -4065,6 +4081,15 @@ bool ScreenSource::init()
         qWarning() << "Error: avcodec_alloc_context3 is null";
         return false;
     }
+
+    // modes:
+    // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
+    // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
+    // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
+    // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
+    PulseAudioSource::mode = 0;
+    PulseAudioSource::sampleSpec = {PA_SAMPLE_S16LE, 44100u, 2};
+
     in_audio_codec_ctx->channels = PulseAudioSource::sampleSpec.channels;
     in_audio_codec_ctx->channel_layout = av_get_default_channel_layout(in_audio_codec_ctx->channels);
     in_audio_codec_ctx->sample_rate = PulseAudioSource::sampleSpec.rate;
@@ -4120,12 +4145,12 @@ bool ScreenSource::init()
     //out_codec_ctx->codec_type = AVMEDIA_TYPE_VIDEO;
     out_video_codec_ctx->pix_fmt  = AV_PIX_FMT_YUV420P;
     //out_codec_ctx->bit_rate = 400000;
-    out_video_codec_ctx->width = 1920;
-    out_video_codec_ctx->height = 1080;
+    out_video_codec_ctx->width = video_size.width();
+    out_video_codec_ctx->height = video_size.height();
     //out_codec_ctx->gop_size = 3;
     //out_codec_ctx->max_b_frames = 2;
     out_video_codec_ctx->time_base.num = 1;
-    out_video_codec_ctx->time_base.den = 30;
+    out_video_codec_ctx->time_base.den = video_framerate;
 
     /*qDebug() << "Out video codec params:" << out_video_codec_ctx->codec_id;
     qDebug() << " codec_id:" << out_video_codec_ctx->codec_id;
@@ -4216,7 +4241,7 @@ bool ScreenSource::init()
         out_audio_codec_ctx->time_base.num = 1;
         out_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
 
-        qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;
+        /*qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;
         qDebug() << " codec_id:" << out_audio_codec_ctx->codec_id;
         qDebug() << " codec_type:" << out_audio_codec_ctx->codec_type;
         qDebug() << " bit_rate:" << out_audio_codec_ctx->bit_rate;
@@ -4226,7 +4251,7 @@ bool ScreenSource::init()
         qDebug() << " sample_fmt:" << out_audio_codec_ctx->sample_fmt;
         qDebug() << " time_base.num:" << out_audio_codec_ctx->time_base.num;
         qDebug() << " time_base.den:" << out_audio_codec_ctx->time_base.den;
-        qDebug() << " frame_size:" << out_audio_codec_ctx->frame_size;
+        qDebug() << " frame_size:" << out_audio_codec_ctx->frame_size;*/
 
         if (avcodec_open2(out_audio_codec_ctx, out_audio_codec, nullptr) < 0) {
             qWarning() << "Error in avcodec_open2 for audio";

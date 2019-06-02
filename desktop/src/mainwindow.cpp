@@ -146,8 +146,10 @@ void MainWindow::togglePlay()
 
     bool playing = av->getTransportState() == AVTransport::Playing;
     if (!playing) {
-        av->setSpeed(1);
-        av->play();
+        //av->setSpeed(1);
+        //av->play();
+        auto id = av->getCurrentId();
+        av->setLocalContent(id.toString(),"");
     } else {
         if (av->getPauseSupported())
             av->pause();
@@ -524,9 +526,8 @@ void MainWindow::play(int idx)
         auto item = dynamic_cast<PlaylistItem*>(playlist->readRow(idx));
         if (item) {
             auto av = Services::instance()->avTransport;
-            bool playing = av->getTransportState() == AVTransport::Playing;
             if (item->active()) {
-                if (!playing)
+                if (av->getTransportState() != AVTransport::Playing)
                     togglePlay();
             } else {
                 playlist->setToBeActiveIndex(idx);
