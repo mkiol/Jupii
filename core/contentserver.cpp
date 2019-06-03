@@ -194,7 +194,7 @@ ContentServerWorker::ContentServerWorker(QObject *parent) :
     }
 
 #ifdef PULSE
-    pulseSource = std::make_unique<PulseAudioSource>();
+    pulseSource = std::unique_ptr<PulseAudioSource>(new PulseAudioSource());
 #endif
 
     cleanRecFiles();
@@ -3791,7 +3791,7 @@ void ContentServerWorker::writePulseData(const void *data, int size,
 #ifdef SAILFISH
             // increasing volume level only in SFOS
             // endianness: BE for PCM, LE for MP3
-            adjustVolume(&d, 2.3f, Pulse::mode > 1 ? false : true);
+            adjustVolume(&d, 2.3f, PulseAudioSource::mode > 1 ? false : true);
 #endif
         } else {
             // writing null data
