@@ -7,7 +7,7 @@ QT += core gui widgets network dbus sql multimedia xml
 
 PROJECTDIR = $$PWD/..
 
-CONFIG += desktop screen pulse
+CONFIG += desktop ffmpeg screen pulse
 DEFINES += DESKTOP
 
 include($$PROJECTDIR/core/jupii_core.pri)

@@ -9,45 +9,51 @@ include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
 system(qdbusxml2cpp $$PROJECTDIR/dbus/org.jupii.xml -a $$CORE_DIR/dbus_jupii_adaptor)
 system(qdbusxml2cpp $$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml -p $$CORE_DIR/dbus_tracker_inf)
 
-pulse {
-    DEFINES += PULSE
-    LIBS += -lpulse
-}
-
-screen {
-    DEFINES += SCREEN
-    CONFIG += ffmpeg
-}
-
-ffmpeg {
-    DEFINES += FFMPEG
-}
-
 desktop {
     LIBS += -ltag
     INCLUDEPATH += /usr/include/taglib
 
     pulse {
-        LIBS += -lmp3lame
+        DEFINES += PULSE
+        LIBS += -lpulse -lmp3lame
     }
 
+    screen {
+        DEFINES += SCREEN
+    }
+
+    # static linking
     ffmpeg {
-        LIBS += -lavdevice -lavutil -lavformat -lavcodec -lswscale -lswresample
-        INCLUDEPATH += /usr/include/ffmpeg
+        DEFINES += FFMPEG
+        LIBS += -lmp3lame -lx264
+        include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
     }
 
-    #include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
+    # dynamic linking
+    #ffmpeg {
+    #    LIBS += -lmp3lame -lx264 -lavdevice -lavutil -lavformat -lavcodec -lswscale -lswresample
+    #    INCLUDEPATH += /usr/include/ffmpeg
+    #}
 }
 
 sailfish {
     include($$PROJECTDIR/libs/taglib/taglib.pri)
 
     pulse {
+        DEFINES += PULSE
+        LIBS += -lpulse
         include($$PROJECTDIR/libs/lame/lame.pri)
     }
 
+    screen {
+        DEFINES += SCREEN
+    }
+
     ffmpeg {
-        include($$PROJECTDIR/libs/libav/libav.pri)
+        DEFINES += FFMPEG
+        include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
+        include($$PROJECTDIR/libs/lame/lame.pri)
+        include($$PROJECTDIR/libs/x264/x264.pri)
     }
 
     HEADERS += \

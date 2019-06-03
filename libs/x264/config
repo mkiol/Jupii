@@ -1,0 +1,10 @@
+x264-snapshot-20190601-2245
+===========================
+
+# Sailfish OS i486
+
+./configure --disable-asm --enable-pic --enable-shared --enable-static --enable-strip
+
+# Sailfish OS arm
+
+./configure --enable-pic --enable-shared --enable-static --enable-strip
