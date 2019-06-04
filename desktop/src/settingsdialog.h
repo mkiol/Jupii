@@ -31,6 +31,7 @@ private slots:
     void on_pulseModeComboBox_activated(int index);
     void on_screenFramerateComboBox_activated(int index);
     void on_recCheckBox_toggled(bool checked);
+    void on_cropCheckBox_toggled(bool checked);
 
 private:
     Ui::SettingsDialog *ui;

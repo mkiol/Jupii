@@ -41,8 +41,10 @@ int SettingsDialog::exec()
     int framerate = s->getScreenFramerate();
     int index = framerate < 15 ? 0 : framerate < 30 ? 1 : 2;
     ui->screenFramerateComboBox->setCurrentIndex(index);
+    ui->cropCheckBox->setCheckState(s->getScreenCropTo169() ? Qt::Checked : Qt::Unchecked);
 #else
     ui->screenFramerateComboBox->setEnabled(false);
+    ui->cropCheckBox->setEnabled(false);
 #endif
 
 
@@ -118,4 +120,10 @@ void SettingsDialog::on_recCheckBox_toggled(bool checked)
 {
     auto s = Settings::instance();
     s->setRec(checked);
+}
+
+void SettingsDialog::on_cropCheckBox_toggled(bool checked)
+{
+    auto s = Settings::instance();
+    s->setScreenCropTo169(checked);
 }

@@ -302,6 +302,19 @@ bool Settings::getImageSupported()
     return settings.value("imagesupported", false).toBool();
 }
 
+void Settings::setScreenCropTo169(bool value)
+{
+    if (getScreenCropTo169() != value) {
+        settings.setValue("screencorop169", value);
+        emit screenCropTo169Changed();
+    }
+}
+
+bool Settings::getScreenCropTo169()
+{
+    return settings.value("screencorop169", false).toBool();
+}
+
 void Settings::setPulseMode(int value)
 {
     if (getPulseMode() != value) {

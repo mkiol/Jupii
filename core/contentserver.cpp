@@ -3986,18 +3986,35 @@ bool ScreenSource::init()
 
     // in video
 
-    auto in_video_format = av_find_input_format("x11grab");
-
     auto s = Settings::instance();
-    auto video_size = QGuiApplication::primaryScreen()->size();
     auto video_framerate = s->getScreenFramerate();
+    auto video_size = QGuiApplication::primaryScreen()->size();
+    int xoff = 0; int yoff = 0;
+    if (s->getScreenCropTo169()) {
+        qDebug() << "Cropping to 16:9";
+        int h = video_size.width()*(9.0/16.0);
+        h = h - h%2;
+        if (h <= video_size.height()) {
+            yoff = (video_size.height() - h) / 2;
+            video_size.setHeight(h);
+        } else {
+            int w = video_size.height()*(16.0/9.0);
+            w = w - w%2;
+            xoff = (video_size.width() - w) / 2;
+            video_size.setWidth(w);
+        }
+    }
+    auto x11grabUrl = QString(":0.0+%1,%2").arg(xoff).arg(yoff).toLatin1();
     auto video_ssize = QString("%1x%2").arg(video_size.width())
-            .arg(video_size.height()).toLocal8Bit();
+            .arg(video_size.height()).toLatin1();
     qDebug() << "video size:" << video_ssize;
     qDebug() << "video framerate:" << video_framerate;
+    qDebug() << "video x11grabUrl:" << x11grabUrl;
     if (QGuiApplication::screens().size() > 1) {
         qWarning() << "More that one screen but capturing only first screen";
     }
+
+    auto in_video_format = av_find_input_format("x11grab");
 
     AVDictionary* options = nullptr;
     if (av_dict_set_int(&options, "framerate", video_framerate, 0) < 0 ||
@@ -4012,7 +4029,7 @@ bool ScreenSource::init()
     }
 
     in_video_format_ctx = nullptr;
-    if (avformat_open_input(&in_video_format_ctx, ":0.0", in_video_format,
+    if (avformat_open_input(&in_video_format_ctx, x11grabUrl.data(), in_video_format,
                             &options) < 0) {
         qWarning() << "Error in avformat_open_input for video";
         av_dict_free(&options);
