@@ -28,11 +28,12 @@ PkgConfigBR:
   - libcurl
   - audioresource
   - nemonotifications-qt5
+  - libpulse
 
 # Build dependencies without a pkgconfig setup can be listed here
 PkgBR:
-  - pulseaudio-devel
-#   - package-needed-to-build
+  - bzip2-devel
+# - package-needed-to-build
 
 # Runtime dependencies which are not automatically detected
 Requires:

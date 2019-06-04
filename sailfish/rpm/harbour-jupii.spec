@@ -7,7 +7,7 @@ Name:       harbour-jupii
 
 # >> macros
 %define __provides_exclude_from ^%{_datadir}/.*$
-%define __requires_exclude ^libavcodec.*|libavformat.*|libavutil.*|libavresample.*|libswscale.*|libmp3lame.*|libtag.*|libupnp.*|libixml.*|libthreadutil.*$
+%define __requires_exclude ^libx264.*|libavdevice.|libavcodec.*|libavformat.*|libavutil.*|libswresample.*|libswscale.*|libmp3lame.*|libtag.*|libupnp.*|libixml.*|libthreadutil.*$
 # << macros
 
 %{!?qtc_qmake:%define qtc_qmake %qmake}
@@ -30,7 +30,8 @@ BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(audioresource)
 BuildRequires:  pkgconfig(nemonotifications-qt5)
-BuildRequires:  pulseaudio-devel
+BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  bzip2-devel
 BuildRequires:  desktop-file-utils
 
 %description

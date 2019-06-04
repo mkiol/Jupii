@@ -48,6 +48,7 @@ public:
     Q_INVOKABLE bool isGpodderAvailable();
     Q_INVOKABLE bool isIdMic(const QUrl &id);
     Q_INVOKABLE bool isIdPulse(const QUrl &id);
+    Q_INVOKABLE bool isIdScreen(const QUrl &id);
     Q_INVOKABLE QString dirNameFromPath(const QString &path);
 
     QString hash(const QString &value);
@@ -56,6 +57,7 @@ public:
     static bool isIdValid(const QUrl &id);
     static bool isUrlMic(const QUrl &url);
     static bool isUrlPulse(const QUrl &url);
+    static bool isUrlScreen(const QUrl &url);
     static QUrl urlFromText(const QString &text, const QString &context = QString());
     static QString pathFromId(const QString &id);
     static QString pathFromId(const QUrl &id);

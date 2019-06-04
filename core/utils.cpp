@@ -360,6 +360,11 @@ bool Utils::isIdPulse(const QUrl &id)
     return Utils::isUrlPulse(id);
 }
 
+bool Utils::isIdScreen(const QUrl &id)
+{
+    return Utils::isUrlScreen(id);
+}
+
 bool Utils::isUrlValid(const QUrl &url)
 {
     if (!url.isValid())
@@ -400,6 +405,11 @@ bool Utils::isUrlMic(const QUrl &url)
 bool Utils::isUrlPulse(const QUrl &url)
 {
     return url.scheme() == "jupii" && url.host() == "pulse";
+}
+
+bool Utils::isUrlScreen(const QUrl &url)
+{
+    return url.scheme() == "jupii" && url.host() == "screen";
 }
 
 QUrl Utils::urlFromText(const QString &text, const QString &context)

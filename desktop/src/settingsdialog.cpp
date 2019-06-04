@@ -37,6 +37,17 @@ int SettingsDialog::exec()
 #else
     ui->pulseModeComboBox->setEnabled(false);
 #endif
+#ifdef SCREEN
+    int framerate = s->getScreenFramerate();
+    int index = framerate < 15 ? 0 : framerate < 30 ? 1 : 2;
+    ui->screenFramerateComboBox->setCurrentIndex(index);
+    ui->cropCheckBox->setCheckState(s->getScreenCropTo169() ? Qt::Checked : Qt::Unchecked);
+#else
+    ui->screenFramerateComboBox->setEnabled(false);
+    ui->cropCheckBox->setEnabled(false);
+#endif
+
+
 
     // Interfaces
     auto infs = Utils::instance()->getNetworkIfs();
@@ -88,8 +99,31 @@ void SettingsDialog::on_pulseModeComboBox_activated(int index)
     s->setPulseMode(index);
 }
 
+void SettingsDialog::on_screenFramerateComboBox_activated(int index)
+{
+    auto s = Settings::instance();
+    int framerate;
+    switch (index) {
+    case 0:
+        framerate = 5; break;
+    case 1:
+        framerate = 15; break;
+    case 2:
+        framerate = 30; break;
+    default:
+        framerate = 15;
+    }
+    s->setScreenFramerate(framerate);
+}
+
 void SettingsDialog::on_recCheckBox_toggled(bool checked)
 {
     auto s = Settings::instance();
     s->setRec(checked);
+}
+
+void SettingsDialog::on_cropCheckBox_toggled(bool checked)
+{
+    auto s = Settings::instance();
+    s->setScreenCropTo169(checked);
 }

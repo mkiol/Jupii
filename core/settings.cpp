@@ -302,6 +302,19 @@ bool Settings::getImageSupported()
     return settings.value("imagesupported", false).toBool();
 }
 
+void Settings::setScreenCropTo169(bool value)
+{
+    if (getScreenCropTo169() != value) {
+        settings.setValue("screencorop169", value);
+        emit screenCropTo169Changed();
+    }
+}
+
+bool Settings::getScreenCropTo169()
+{
+    return settings.value("screencorop169", false).toBool();
+}
+
 void Settings::setPulseMode(int value)
 {
     if (getPulseMode() != value) {
@@ -318,6 +331,20 @@ int Settings::getPulseMode()
     // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
     // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
     return settings.value("pulsemode", 0).toInt();
+}
+
+void Settings::setScreenFramerate(int value)
+{
+    if (getScreenFramerate() != value) {
+        settings.setValue("screenframerate", value);
+        emit screenFramerateChanged();
+    }
+}
+
+int Settings::getScreenFramerate()
+{
+    // deafult 15 fps
+    return settings.value("screenframerate", 15).toInt();
 }
 
 void Settings::setUseHWVolume(bool value)
