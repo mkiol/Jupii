@@ -31,6 +31,7 @@ desktop {
 
     # dynamic linking
     #ffmpeg {
+    #    DEFINES += FFMPEG
     #    LIBS += -lmp3lame -lx264 -lavdevice -lavutil -lavformat -lavcodec -lswscale -lswresample
     #    INCLUDEPATH += /usr/include/ffmpeg
     #}

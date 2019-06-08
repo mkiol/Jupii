@@ -96,28 +96,21 @@ Page {
                 }
             }
 
-            ComboBox {
+            /*ComboBox {
                 // modes:
                 // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
-                // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
-                // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
-                // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
+                // 1 - MPEG2-TS MP3 44100Hz 128 kbps
                 label: qsTr("Audio capture format")
-                description: qsTr("Stream format used when %1 captures audio output of another application. " +
-                                  "Uncompressed stream (PCM) results in lower delay but " +
-                                  "the higher bitrate will likely cause quicker battery drain.").arg(APP_NAME)
-                currentIndex: settings.pulseMode
+                currentIndex: settings.audioCaptureMode
                 menu: ContextMenu {
                     MenuItem { text: qsTr("MP3 44100Hz 128 kbps (default)") }
-                    MenuItem { text: qsTr("MP3 44100Hz 96 kbps") }
-                    MenuItem { text: qsTr("PCM 44100Hz 1411 kbps") }
-                    MenuItem { text: qsTr("PCM 22050Hz 706 kbps") }
+                    MenuItem { text: qsTr("MPEG2-TS MP3 44100Hz 128 kbps") }
                 }
 
                 onCurrentIndexChanged: {
-                    settings.pulseMode = currentIndex
+                    settings.audioCaptureMode = currentIndex
                 }
-            }
+            }*/
 
             TextSwitch {
                 automaticCheck: false

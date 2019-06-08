@@ -315,22 +315,33 @@ bool Settings::getScreenCropTo169()
     return settings.value("screencorop169", false).toBool();
 }
 
-void Settings::setPulseMode(int value)
+void Settings::setScreenAudio(bool value)
 {
-    if (getPulseMode() != value) {
-        settings.setValue("pulsemode", value);
-        emit pulseModeChanged();
+    if (getScreenAudio() != value) {
+        settings.setValue("screenaudio", value);
+        emit screenAudioChanged();
     }
 }
 
-int Settings::getPulseMode()
+bool Settings::getScreenAudio()
+{
+    return settings.value("screenaudio", true).toBool();
+}
+
+void Settings::setAudioCaptureMode(int value)
+{
+    if (getAudioCaptureMode() != value) {
+        settings.setValue("audiocapturemode", value);
+        emit audioCaptureModeChanged();
+    }
+}
+
+int Settings::getAudioCaptureMode()
 {
     // modes:
     // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
-    // 1 - MP3 16-bit 44100 Hz stereo 96 kbps
-    // 2 - LPCM 16-bit 44100 Hz stereo 1411 kbps
-    // 3 - LPCM 16-bit 22050 Hz stereo 706 kbps
-    return settings.value("pulsemode", 0).toInt();
+    // 1 - MPEG TS MP3 16-bit 44100 Hz stereo 128 kbps
+    return settings.value("audiocapturemode", 0).toInt();
 }
 
 void Settings::setScreenFramerate(int value)

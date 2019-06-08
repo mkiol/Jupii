@@ -33,12 +33,13 @@ class Settings:
     Q_PROPERTY (bool useHWVolume READ getUseHWVolume WRITE setUseHWVolume NOTIFY useHWVolumeChanged)
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
     Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
-    Q_PROPERTY (int pulseMode READ getPulseMode WRITE setPulseMode NOTIFY pulseModeChanged)
+    Q_PROPERTY (int audioCaptureMode READ getAudioCaptureMode WRITE setAudioCaptureMode NOTIFY audioCaptureModeChanged)
     Q_PROPERTY (QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
     Q_PROPERTY (bool rec READ getRec WRITE setRec NOTIFY recChanged)
     Q_PROPERTY (int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
     Q_PROPERTY (int screenFramerate READ getScreenFramerate WRITE setScreenFramerate NOTIFY screenFramerateChanged)
     Q_PROPERTY (bool screenCropTo169 READ getScreenCropTo169 WRITE setScreenCropTo169 NOTIFY screenCropTo169Changed)
+    Q_PROPERTY (bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY screenAudioChanged)
 
 public:
     static Settings* instance();
@@ -61,14 +62,17 @@ public:
     void setImageSupported(bool value);
     bool getImageSupported();
 
-    void setPulseMode(int value);
-    int getPulseMode();
+    void setAudioCaptureMode(int value);
+    int getAudioCaptureMode();
 
     void setScreenFramerate(int value);
     int getScreenFramerate();
 
     void setScreenCropTo169(bool value);
     bool getScreenCropTo169();
+
+    void setScreenAudio(bool value);
+    bool getScreenAudio();
 
     void setRememberPlaylist(bool value);
     bool getRememberPlaylist();
@@ -115,7 +119,7 @@ signals:
     void forwardTimeChanged();
     void imageSupportedChanged();
     void pulseSupportedChanged();
-    void pulseModeChanged();
+    void audioCaptureModeChanged();
     void rememberPlaylistChanged();
     void useHWVolumeChanged();
     void prefNetInfChanged();
@@ -124,6 +128,7 @@ signals:
     void volStepChanged();
     void screenFramerateChanged();
     void screenCropTo169Changed();
+    void screenAudioChanged();
 
 private:
     QSettings settings;
