@@ -20,6 +20,7 @@ Page {
     property bool showPath: av.currentPath.length > 0
     property bool isMic: utils.isIdMic(av.currentURL)
     property bool isPulse: utils.isIdPulse(av.currentURL)
+    property bool isScreen: utils.isIdScreen(av.currentURL)
     property bool isOwn: av.currentURL.length !== 0
 
     SilicaFlickable {
@@ -58,7 +59,7 @@ Page {
             width: root.width
 
             PullDownMenu {
-                visible: !isMic && !isPulse && isOwn
+                visible: !isMic && !isPulse && !isScreen && isOwn
 
                 MenuItem {
                     text: av.currentPath.length !== 0 ? qsTr("Copy path") : qsTr("Copy URL")
@@ -143,9 +144,9 @@ Page {
                 }
 
                 DetailItem {
-                    label: isPulse ? qsTr("Captured application") : qsTr("Stream title")
+                    label: isPulse || isScreen ? qsTr("Captured application") : qsTr("Stream title")
                     value: app.streamTitle.length !== 0 ?
-                               app.streamTitle : isPulse ? qsTr("None") : ""
+                               app.streamTitle : isPulse || isScreen ? qsTr("None") : ""
                     visible: !isMic && value.length !== 0 &&
                              av.currentType !== AVTransport.T_Image
                 }
@@ -153,14 +154,14 @@ Page {
                 DetailItem {
                     label: qsTr("Author")
                     value: av.currentAuthor
-                    visible: !isMic && !isPulse && av.currentType !== AVTransport.T_Image &&
+                    visible: !isMic && !isPulse && !isScreen && av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
                 }
 
                 DetailItem {
                     label: qsTr("Album")
                     value: av.currentAlbum
-                    visible: !isMic && !isPulse && av.currentType !== AVTransport.T_Image &&
+                    visible: !isMic && !isPulse && !isScreen && av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
                 }
 
@@ -174,7 +175,7 @@ Page {
                 DetailItem {
                     label: qsTr("Content type")
                     value: av.currentContentType
-                    visible: !isMic && !isPulse && av.currentContentType.length !== 0
+                    visible: !isMic && !isPulse && !isScreen && av.currentContentType.length !== 0
                 }
             }
 
@@ -184,7 +185,7 @@ Page {
 
                 SectionHeader {
                     text: qsTr("Description")
-                    visible: !isMic && !isPulse && av.currentDescription.length !== 0
+                    visible: !isMic && !isPulse && !isScreen && av.currentDescription.length !== 0
                 }
 
                 Label {
@@ -199,12 +200,12 @@ Page {
 
                 SectionHeader {
                     text: av.currentPath.length !== 0 ? qsTr("Path") : qsTr("URL")
-                    visible: !isMic && !isPulse && isOwn
+                    visible: !isMic && !isPulse && !isScreen && isOwn
                 }
 
                 PaddedLabel {
                     text: av.currentPath.length !== 0 ? av.currentPath : av.currentURL
-                    visible: !isMic && !isPulse && isOwn
+                    visible: !isMic && !isPulse && !isScreen && isOwn
                 }
 
                 Slider {

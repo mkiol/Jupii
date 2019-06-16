@@ -96,6 +96,46 @@ Page {
                 }
             }
 
+            TextSwitch {
+                automaticCheck: false
+                checked: settings.screenAudio
+                text: qsTr("Screen capture with audio")
+                onClicked: {
+                    settings.screenAudio = !settings.screenAudio
+                }
+            }
+
+            /*ComboBox {
+                label: qsTr("Screen capture framerate")
+                currentIndex: {
+                    if (settings.screenFramerate < 15) {
+                        return 0;
+                    } else if (settings.screenFramerate < 30) {
+                        return 1;
+                    } else {
+                        return 2;
+                    }
+                }
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("5 fps (default)") }
+                    MenuItem { text: qsTr("15 fps") }
+                    MenuItem { text: qsTr("30 fps") }
+                }
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0:
+                        settings.screenFramerate = 5; break;
+                    case 1:
+                        settings.screenFramerate = 15; break;
+                    case 2:
+                        settings.screenFramerate = 30; break;
+                    default:
+                        settings.screenFramerate = 5;
+                    }
+                }
+            }*/
+
             /*ComboBox {
                 // modes:
                 // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)

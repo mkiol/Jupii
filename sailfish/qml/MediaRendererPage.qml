@@ -43,8 +43,10 @@ Page {
 
     function togglePlay() {
         if (av.transportState !== AVTransport.Playing) {
-            av.speed = 1
-            av.play()
+            //av.speed = 1
+            //av.play()
+            var id = av.currentId;
+            av.setLocalContent(id.toString(), "");
         } else {
             if (av.pauseSupported)
                 av.pause()
@@ -463,6 +465,7 @@ Page {
             property bool isImage: model.type === AVTransport.T_Image
             property bool isMic: utils.isIdMic(model.id)
             property bool isPulse: utils.isIdPulse(model.id)
+            property bool isScreen: utils.isIdScreen(model.id)
 
             opacity: playlist.busy ? 0.0 : 1.0
             visible: opacity > 0.0
@@ -473,6 +476,8 @@ Page {
                     return "image://theme/icon-m-mic?" + primaryColor
                 else if (isPulse)
                     return "image://theme/icon-m-speaker?" + primaryColor
+                else if (isScreen)
+                    return "image://theme/icon-m-display?" + primaryColor
                 else
                     switch (model.type) {
                     case AVTransport.T_Image:
@@ -485,7 +490,7 @@ Page {
                         return "image://theme/icon-m-file-other?" + primaryColor
                     }
             }
-            icon.source: isMic || isPulse ? "" : model.icon
+            icon.source: isMic || isPulse || isScreen ? "" : model.icon
             icon.visible: !model.toBeActive
             title.text: model.name
             title.color: primaryColor

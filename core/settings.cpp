@@ -354,8 +354,13 @@ void Settings::setScreenFramerate(int value)
 
 int Settings::getScreenFramerate()
 {
-    // deafult 15 fps
+#ifdef SAILFISH
+    // default 5 fps
+    return settings.value("screenframerate", 5).toInt();
+#else
+    // default 15 fps
     return settings.value("screenframerate", 15).toInt();
+#endif
 }
 
 void Settings::setUseHWVolume(bool value)

@@ -138,6 +138,17 @@ Page {
             }
 
             SimpleListItem {
+                title.text: qsTr("Screen capture")
+                icon.source: "image://theme/icon-m-display?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+
+                onClicked: {
+                    playlist.addItemUrl("jupii://screen")
+                    pageStack.pop()
+                }
+            }
+
+            SimpleListItem {
                 title.text: qsTr("Microphone")
                 icon.source: "image://theme/icon-m-mic?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)

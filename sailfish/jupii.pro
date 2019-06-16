@@ -1,8 +1,8 @@
 TARGET = harbour-jupii
 
-CONFIG += c++11 sailfishapp json no_lflags_merge object_parallel_to_source
+CONFIG += c++11 json no_lflags_merge object_parallel_to_source
 
-QT += dbus sql multimedia xml
+QT += dbus sql multimedia xml network
 
 PKGCONFIG += mlite5
 
@@ -13,7 +13,7 @@ PROJECTDIR = $$PWD/..
 
 INCLUDEPATH += /usr/include/c++/7
 
-CONFIG += sailfish ffmpeg pulse
+CONFIG += sailfish ffmpeg pulse screen
 DEFINES += SAILFISH
 
 include($$PROJECTDIR/core/jupii_core.pri)
@@ -61,6 +61,8 @@ OTHER_FILES += \
     qml/DirPage.qml \
     qml/RecPage.qml
 
+#OTHER_FILES += $$files(rpm/*)
+
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 
 TRANSLATION_SOURCE_DIRS += $$PROJECTDIR/core
@@ -84,12 +86,9 @@ INSTALLS += images
 
 DEPENDPATH += $$INCLUDEPATH
 
-OTHER_FILES += \
-    rpm/$${TARGET}.yaml \
-    rpm/$${TARGET}.changes.in \
-    rpm/$${TARGET}.spec
-
 PKGCONFIG += \
     audioresource \
     nemonotifications-qt5
 LIBS += -ldl
+
+include(sailfishapp.pri)

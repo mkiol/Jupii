@@ -70,6 +70,7 @@ desktop-file-install --delete-original       \
 
 %files
 %defattr(-,root,root,-)
+%attr(2777, root, privileged) %{_bindir}/%{name}
 %{_bindir}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop

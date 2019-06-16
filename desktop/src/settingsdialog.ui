@@ -99,7 +99,7 @@
          <item>
           <widget class="QCheckBox" name="cropCheckBox">
            <property name="text">
-            <string>Crop size to 16:9</string>
+            <string>Crop size to 16:9 aspect ratio</string>
            </property>
           </widget>
          </item>
