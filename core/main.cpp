@@ -54,9 +54,15 @@
 #include "icecastmodel.h"
 #include "dirmodel.h"
 #include "recmodel.h"
+#ifdef LOGTOFILE
+#include "log.h"
+#endif
 
 int main(int argc, char *argv[])
 {
+#ifdef LOGTOFILE
+    qInstallMessageHandler(qtLog);
+#endif
 #ifdef SAILFISH
     auto app = SailfishApp::application(argc, argv);
     auto view = SailfishApp::createView();
@@ -152,5 +158,7 @@ int main(int argc, char *argv[])
     MainWindow devicesWindow;
     devicesWindow.show();
 #endif
-    return app->exec();
+    int ret = app->exec();
+    fcloseall();
+    return ret;
 }

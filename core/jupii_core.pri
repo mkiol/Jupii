@@ -39,6 +39,7 @@ desktop {
 
 sailfish {
     include($$PROJECTDIR/libs/taglib/taglib.pri)
+    include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
 
     pulse {
         DEFINES += PULSE
@@ -95,7 +96,8 @@ HEADERS += \
     $$CORE_DIR/icecastmodel.h \
     $$CORE_DIR/yamahaextendedcontrol.h \
     $$CORE_DIR/dirmodel.h \
-    $$CORE_DIR/recmodel.h
+    $$CORE_DIR/recmodel.h \
+    $$CORE_DIR/log.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -128,4 +130,5 @@ SOURCES += \
     $$CORE_DIR/icecastmodel.cpp \
     $$CORE_DIR/yamahaextendedcontrol.cpp \
     $$CORE_DIR/dirmodel.cpp \
-    $$CORE_DIR/recmodel.cpp
+    $$CORE_DIR/recmodel.cpp \
+    $$CORE_DIR/log.cpp
