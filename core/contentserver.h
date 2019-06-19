@@ -10,65 +10,42 @@
 
 #include <QObject>
 #include <QString>
+#include <QByteArray>
 #include <QUrl>
 #include <QHash>
-#include <QVector>
-#include <QStringList>
-#include <QFile>
+#include <QMutex>
+#include <QThread>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QThread>
-#include <QMutex>
+#include <QNetworkRequest>
+#include <QFile>
 #include <QIODevice>
-#include <QAudioInput>
-#include <QEventLoop>
-#include <QEvent>
-#include <QTimer>
 #include <memory>
-#include <cstddef>
-
 #include <qhttpserver.h>
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
 
-#include "taskexecutor.h"
-#ifdef SCREEN
-#include <QSize>
-#ifdef SAILFISH
-#include "recorder.h"
-#endif
-#endif
-#ifdef FFMPEG
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
+#include <libavutil/dict.h>
+#include <libavutil/mathematics.h>
+#include <libavdevice/avdevice.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/timestamp.h>
+#include <libavutil/time.h>
+#include <libavutil/log.h>
 }
-#endif
-#ifdef PULSE
-extern "C" {
-#include <pulse/mainloop.h>
-#include <pulse/mainloop-signal.h>
-#include <pulse/mainloop-api.h>
-#include <pulse/context.h>
-#include <pulse/error.h>
-#include <pulse/introspect.h>
-#include <pulse/subscribe.h>
-#include <pulse/stream.h>
-#include <pulse/xmalloc.h>
-}
-#endif
+
+#include "taskexecutor.h"
+#include "pulseaudiosource.h"
+#include "audiocaster.h"
+#include "screencaster.h"
 
 class ContentServerWorker;
 class MicSource;
-#ifdef PULSE
-class PulseAudioSource;
-class AudioCaster;
-#endif
-#ifdef SCREEN
-class ScreenCaster;
-#endif
 
 class ContentServer :
         public QThread
@@ -268,12 +245,8 @@ private:
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
-#ifdef PULSE
     const QHash<QUrl, ItemMeta>::const_iterator makeAudioCaptureItemMeta(const QUrl &url);
-#endif
-#ifdef SCREEN
     const QHash<QUrl, ItemMeta>::const_iterator makeScreenCaptureItemMeta(const QUrl &url);
-#endif
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
@@ -282,10 +255,8 @@ private:
     ItemMeta *makeMetaUsingExtension(const QUrl &url);
     void fillCoverArt(ItemMeta& item);
     void run();
-#ifdef FFMPEG
     static bool extractAudio(const QString& path, ContentServer::AvData& data);
     static bool fillAvDataFromCodec(const AVCodecParameters* codec, const QString &videoPath, AvData &data);
-#endif
 };
 
 class ContentServerWorker :
@@ -293,13 +264,9 @@ class ContentServerWorker :
 {
     Q_OBJECT
     friend MicSource;
-#ifdef PULSE
     friend PulseAudioSource;
     friend AudioCaster;
-#endif
-#ifdef SCREEN
     friend ScreenCaster;
-#endif
 public:
     static ContentServerWorker* instance(QObject *parent = nullptr);
     QHttpServer* server;
@@ -329,13 +296,9 @@ private slots:
     void startMic();
     void stopMic();
     void responseForMicDone();
-#ifdef PULSE
     void responseForAudioCaptureDone();
-#endif
-#ifdef SCREEN
     void responseForScreenCaptureDone();
     void screenErrorHandler();
-#endif
     void responseForUrlDone();
     void seqWriteData(QFile* file, qint64 size, QHttpResponse *resp);
 
@@ -375,13 +338,9 @@ private:
 
     std::unique_ptr<QAudioInput> micInput;
     std::unique_ptr<MicSource> micSource;
-#ifdef SCREEN
     std::unique_ptr<ScreenCaster> screenCaster;
-#endif
-#ifdef PULSE
     std::unique_ptr<PulseAudioSource> pulseSource;
     std::unique_ptr<AudioCaster> audioCaster;
-#endif
 
     QHash<QNetworkReply*, ProxyItem> proxyItems;
     QHash<QHttpResponse*, QNetworkReply*> responseToReplyMap;
@@ -431,162 +390,4 @@ private:
     bool active = false;
 };
 
-#ifdef PULSE
-class PulseAudioSource : public QObject
-{
-    Q_OBJECT
-public:
-    PulseAudioSource(QObject *parent = nullptr);
-    ~PulseAudioSource();
-    bool start();
-    void stop();
-    void delayedStop();
-    void resetDelayedStop();
-    static pa_sample_spec sampleSpec;
-    static bool inited();
-    static void discoverStream();
-    static bool encode(void *in_data, int in_size,
-                       void **out_data, int *out_size);
-private slots:
-    void doPulseIteration();
-
-private:
-    struct SinkInput {
-        uint32_t idx = PA_INVALID_INDEX;
-        uint32_t clientIdx = PA_INVALID_INDEX;
-        QString name;
-        bool corked = false;
-    };
-    struct Client {
-        uint32_t idx = PA_INVALID_INDEX;
-        QString name;
-        QString binary;
-        QString icon;
-    };
-    static const int timerDelta; // msec
-    static bool shutdown;
-    QTimer iterationTimer;
-    static int nullDataSize;
-    static bool started;
-    static bool timerActive;
-    static bool muted;
-    static pa_stream *stream;
-    static uint32_t connectedSinkInput;
-    static pa_mainloop *ml;
-    static pa_mainloop_api *mla;
-    static pa_context *ctx;
-    static QHash<uint32_t, PulseAudioSource::Client> clients;
-    static QHash<uint32_t, PulseAudioSource::SinkInput> sinkInputs;
-    static bool init();
-    static void deinit();
-    static void subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata);
-    static void stateCallback(pa_context *ctx, void *userdata);
-    static void successSubscribeCallback(pa_context *ctx, int success, void *userdata);
-    static void streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata);
-    static bool startRecordStream(pa_context *ctx, uint32_t si);
-    static void stopRecordStream();
-    static void sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata);
-    static void clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata);
-    static void timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata);
-    static void contextSuccessCallback(pa_context *ctx, int success, void *userdata);
-    static bool checkIfShouldBeEnabled();
-    static void muteConnectedSinkInput();
-    static void unmuteConnectedSinkInput();
-    static bool isBlacklisted(const char* name);
-    static void correctClientName(Client &client);
-    static QString subscriptionEventToStr(pa_subscription_event_type_t t);
-    static QList<PulseAudioSource::Client> activeClients();
-};
-
-class AudioCaster : public QObject
-{
-    Q_OBJECT
-public:
-    AudioCaster(QObject *parent = nullptr);
-    ~AudioCaster();
-    bool init();
-    bool writeAudioData(const QByteArray& data, uint64_t latency = 0);
-
-signals:
-    void frameError();
-
-private:
-    AVPacket in_pkt;
-    AVPacket out_pkt;
-    AVCodecContext* out_video_codec_ctx = nullptr;
-    AVFormatContext* out_format_ctx = nullptr;
-    AVFrame* in_frame = nullptr;
-    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
-    int audio_frame_size = 0;
-    AVCodecContext* in_audio_codec_ctx = nullptr;
-    AVCodecContext* out_audio_codec_ctx = nullptr;
-    SwrContext* audio_swr_ctx = nullptr;
-    QByteArray audio_outbuf; // pulse audio data buf
-};
-
-#endif // PULSE
-
-#ifdef SCREEN
-class ScreenCaster : public QObject
-{
-    Q_OBJECT
-public:
-    ScreenCaster(QObject *parent = nullptr);
-    ~ScreenCaster();
-    bool init();
-    void start();
-    bool audioEnabled();
-#ifdef PULSE
-    bool writeAudioData(const QByteArray& data, uint64_t latency = 0);
-#endif
-
-signals:
-#ifdef DESKTOP
-    void readNextVideoFrame();
-#endif
-    void frameError();
-
-private slots:
-#ifdef DESKTOP
-    void readVideoFrame();
-#endif
-#ifdef SAILFISH
-    void writeVideoData();
-    void repaint();
-#endif
-
-private:
-#ifdef SAILFISH
-    QTimer frameTimer;
-    QTimer repaintTimer;
-    std::unique_ptr<Recorder> recorder;
-    QImage bgImg;
-    QImage currImg;
-    uint32_t currImgTimestamp;
-    void saveCurrImg(QEvent *e);
-    bool event(QEvent *e);
-#endif
-    AVPacket in_pkt;
-    AVPacket out_pkt;
-    AVFormatContext* in_video_format_ctx = nullptr;
-    AVCodecContext* in_video_codec_ctx = nullptr;
-    AVCodecContext* out_video_codec_ctx = nullptr;
-    AVFormatContext* out_format_ctx = nullptr;
-    AVFrame* in_frame = nullptr;
-    AVFrame* in_frame_s = nullptr;
-    SwsContext* video_sws_ctx = nullptr;
-    uint8_t* video_outbuf = nullptr;
-    //static int read_packet_callback(void *opaque, uint8_t *buf, int buf_size);
-    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
-    int audio_frame_size = 0; // 0 => audio disabled for screen casting
-    int video_framerate = 0;
-    QSize video_size;
-#ifdef PULSE
-    AVCodecContext* in_audio_codec_ctx = nullptr;
-    AVCodecContext* out_audio_codec_ctx = nullptr;
-    SwrContext* audio_swr_ctx = nullptr;
-    QByteArray audio_outbuf; // pulse audio data buf
-#endif
-};
-#endif // SCREEN
 #endif // CONTENTSERVER_H

@@ -2,12 +2,12 @@ TARGET = jupii
 
 TEMPLATE = app
 
-CONFIG += c++14 json no_lflags_merge object_parallel_to_source
+CONFIG += c++11 json no_lflags_merge object_parallel_to_source
 QT += core gui widgets network dbus sql multimedia xml
 
 PROJECTDIR = $$PWD/..
 
-CONFIG += desktop ffmpeg screen pulse
+CONFIG += desktop
 DEFINES += DESKTOP
 
 include($$PROJECTDIR/core/jupii_core.pri)

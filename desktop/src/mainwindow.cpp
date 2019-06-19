@@ -38,17 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle(QApplication::applicationDisplayName());
     ui->actionAbout->setText(tr("About %1").arg(QApplication::applicationDisplayName()));
     settingsDialog = std::unique_ptr<SettingsDialog>(new SettingsDialog(this));
-
-#ifdef PULSE
     ui->actionPulse->setEnabled(true);
-#else
-    ui->actionPulse->setEnabled(false);
-#endif
-#ifdef SCREEN
     ui->actionScreen->setEnabled(true);
-#else
-    ui->actionScreen->setEnabled(false);
-#endif
 
     enablePlaylist(false);
 

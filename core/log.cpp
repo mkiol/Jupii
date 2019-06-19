@@ -11,9 +11,7 @@
 #include <QDir>
 #include <QByteArray>
 #include <cstdlib>
-#ifdef FFMPEG
 #include <libavutil/log.h>
-#endif
 
 FILE * logFile = nullptr;
 
@@ -47,7 +45,6 @@ void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg
     }
 }
 
-#ifdef FFMPEG
 void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs)
 {
     if (!logFile) {
@@ -67,4 +64,3 @@ void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs)
             level == AV_LOG_PANIC ? "Panic" : "Unknown");
     vfprintf(logFile, fmt, vargs);
 }
-#endif

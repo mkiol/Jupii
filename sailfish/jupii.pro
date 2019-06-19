@@ -13,7 +13,7 @@ PROJECTDIR = $$PWD/..
 
 INCLUDEPATH += /usr/include/c++/7
 
-CONFIG += sailfish ffmpeg pulse screen
+CONFIG += sailfish
 DEFINES += SAILFISH
 
 include($$PROJECTDIR/core/jupii_core.pri)

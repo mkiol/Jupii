@@ -32,22 +32,12 @@ int SettingsDialog::exec()
     ui->allDevicesCheckBox->setCheckState(s->getShowAllDevices() ? Qt::Checked : Qt::Unchecked);
     ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
     ui->recCheckBox->setCheckState(s->getRec() ? Qt::Checked : Qt::Unchecked);
-#ifdef PULSE
     ui->audioCaptureModeComboBox->setCurrentIndex(s->getAudioCaptureMode());
-#else
-    ui->audioCaptureModeComboBox->setEnabled(false);
-#endif
-#ifdef SCREEN
     int framerate = s->getScreenFramerate();
     int index = framerate < 15 ? 0 : framerate < 30 ? 1 : 2;
     ui->screenFramerateComboBox->setCurrentIndex(index);
     ui->cropCheckBox->setCheckState(s->getScreenCropTo169() ? Qt::Checked : Qt::Unchecked);
     ui->screenAudioCheckBox->setCheckState(s->getScreenAudio() ? Qt::Checked : Qt::Unchecked);
-#else
-    ui->screenFramerateComboBox->setEnabled(false);
-    ui->cropCheckBox->setEnabled(false);
-    ui->screenAudioCheckBox->setEnabled(false);
-#endif
 
     // Interfaces
     auto infs = Utils::instance()->getNetworkIfs();

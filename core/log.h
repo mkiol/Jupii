@@ -16,8 +16,6 @@
 
 extern FILE * logFile;
 void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg);
-#ifdef FFMPEG
 void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs);
-#endif
 
 #endif // LOGF_H

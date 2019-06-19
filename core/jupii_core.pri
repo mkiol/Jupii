@@ -10,53 +10,25 @@ system(qdbusxml2cpp $$PROJECTDIR/dbus/org.jupii.xml -a $$CORE_DIR/dbus_jupii_ada
 system(qdbusxml2cpp $$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml -p $$CORE_DIR/dbus_tracker_inf)
 
 desktop {
-    LIBS += -ltag
+    LIBS += -ltag -lpulse
     INCLUDEPATH += /usr/include/taglib
 
-    pulse {
-        DEFINES += PULSE
-        LIBS += -lpulse -lmp3lame
-    }
+    # static FFMPEG linking
+    include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
 
-    screen {
-        DEFINES += SCREEN
-    }
-
-    # static linking
-    ffmpeg {
-        DEFINES += FFMPEG
-        LIBS += -lmp3lame -lx264
-        include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
-    }
-
-    # dynamic linking
-    #ffmpeg {
-    #    DEFINES += FFMPEG
-    #    LIBS += -lmp3lame -lx264 -lavdevice -lavutil -lavformat -lavcodec -lswscale -lswresample
-    #    INCLUDEPATH += /usr/include/ffmpeg
-    #}
+    # dynamic FFMPEG linking
+    #LIBS += -lmp3lame -lx264 -lavdevice -lavutil -lavformat -lavcodec -lswscale -lswresample
+    #INCLUDEPATH += /usr/include/ffmpeg
 }
 
 sailfish {
+    LIBS += -lpulse
     include($$PROJECTDIR/libs/taglib/taglib.pri)
     include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
-
-    pulse {
-        DEFINES += PULSE
-        LIBS += -lpulse
-        include($$PROJECTDIR/libs/lame/lame.pri)
-    }
-
-    screen {
-        DEFINES += SCREEN
-    }
-
-    ffmpeg {
-        DEFINES += FFMPEG
-        include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
-        include($$PROJECTDIR/libs/lame/lame.pri)
-        include($$PROJECTDIR/libs/x264/x264.pri)
-    }
+    include($$PROJECTDIR/libs/lame/lame.pri)
+    include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
+    include($$PROJECTDIR/libs/lame/lame.pri)
+    include($$PROJECTDIR/libs/x264/x264.pri)
 
     HEADERS += \
         $$CORE_DIR/iconprovider.h
@@ -97,7 +69,10 @@ HEADERS += \
     $$CORE_DIR/yamahaextendedcontrol.h \
     $$CORE_DIR/dirmodel.h \
     $$CORE_DIR/recmodel.h \
-    $$CORE_DIR/log.h
+    $$CORE_DIR/log.h \
+    $$CORE_DIR/audiocaster.h \
+    $$CORE_DIR/screencaster.h \
+    $$CORE_DIR/pulseaudiosource.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -131,4 +106,7 @@ SOURCES += \
     $$CORE_DIR/yamahaextendedcontrol.cpp \
     $$CORE_DIR/dirmodel.cpp \
     $$CORE_DIR/recmodel.cpp \
-    $$CORE_DIR/log.cpp
+    $$CORE_DIR/log.cpp \
+    $$CORE_DIR/audiocaster.cpp \
+    $$CORE_DIR/screencaster.cpp \
+    $$CORE_DIR/pulseaudiosource.cpp
