@@ -434,3 +434,20 @@ QByteArray Settings::getKey()
 
     return key;
 }
+
+void Settings::setRemoteContentMode(int value)
+{
+    // 0 - proxy
+    // 1 - redirection
+    if (getRemoteContentMode() != value) {
+        settings.setValue("remotecontentmode", value);
+        emit remoteContentModeChanged();
+    }
+}
+
+int Settings::getRemoteContentMode()
+{
+    // 0 - proxy
+    // 1 - redirection
+    return settings.value("remotecontentmode", 0).toInt();
+}

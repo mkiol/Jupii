@@ -154,6 +154,7 @@ Page {
 
             TextSwitch {
                 automaticCheck: false
+                visible:  settings.remoteContentMode == 0
                 checked: settings.rec
                 text: qsTr("Stream recorder")
                 description: qsTr("Enables recording of tracks from SHOUTcast stream. " +
@@ -174,7 +175,7 @@ Page {
             }
 
             ListItem {
-                visible: settings.rec
+                visible: settings.rec && settings.remoteContentMode == 0
                 contentHeight: visible ? recflow.height + 2*Theme.paddingLarge : 0
 
                 Flow {
@@ -215,6 +216,31 @@ Page {
                             settings.recDir = ""
                         }
                     }
+                }
+            }
+
+            ComboBox {
+                label: qsTr("Internet streaming mode")
+                description: qsTr("Streaming from the Internet to UPnP devices can " +
+                                  "be handled in two modes: Proxy (default) or Redirection. " +
+                                  "In Proxy mode, %1 relays every packet received " +
+                                  "from a streaming host. In Redirection mode, " +
+                                  "the actual streaming goes directly between " +
+                                  "UPnP device and a streaming server, " +
+                                  "so %1 in not required to be enabled all the time. " +
+                                  "The downside of Redirection mode is that not " +
+                                  "every UPnP device supports redirection. " +
+                                  "Therefore on some devices this mode will " +
+                                  "not work properly. SHOUTcast metadata detection " +
+                                  "and Stream recorder are disabled when " +
+                                  "Redirection mode is enabled.").arg(APP_NAME)
+                currentIndex: settings.remoteContentMode
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("Proxy (default)") }
+                    MenuItem { text: qsTr("Redirection") }
+                }
+                onCurrentIndexChanged: {
+                    settings.remoteContentMode = currentIndex
                 }
             }
 

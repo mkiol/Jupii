@@ -528,64 +528,64 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
 {
     auto url = Utils::urlFromId(id);
 
-    /*if (Settings::instance()->getRemoteContentMode() == 1) {
+    if (Settings::instance()->getRemoteContentMode() == 1) {
         // Redirection mode
         qDebug() << "Redirection mode enabled => sending HTTP redirection";
         sendRedirection(resp, url.toString());
-    } else {*/
+    } else {
+        // Proxy mode
+        qDebug() << "Proxy mode enabled => creating proxy";
+        qDebug() << "Proxy items count:" << proxyItems.size();
 
-    // Proxy mode
-    qDebug() << "Proxy mode enabled => creating proxy";
-    qDebug() << "Proxy items count:" << proxyItems.size();
+        QNetworkRequest request;
+        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+        request.setUrl(url);
 
-    QNetworkRequest request;
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-    request.setUrl(url);
+        // Add headers
+        const auto& headers = req->headers();
+        if (headers.contains("range"))
+            request.setRawHeader("Range", headers.value("range").toLatin1());
+        request.setRawHeader("Icy-MetaData", "1");
+        request.setRawHeader("Connection", "close");
+        request.setRawHeader("User-Agent", ContentServer::userAgent);
 
-    // Add headers
-    const auto& headers = req->headers();
-    if (headers.contains("range"))
-        request.setRawHeader("Range", headers.value("range").toLatin1());
-    request.setRawHeader("Icy-MetaData", "1");
-    request.setRawHeader("Connection", "close");
-    request.setRawHeader("User-Agent", ContentServer::userAgent);
+        QNetworkReply *reply;
+        bool head = req->method() == QHttpRequest::HTTP_HEAD;
+        qDebug() << (head ? "HEAD" : "GET") << "request for url:" << url;
 
-    QNetworkReply *reply;
-    bool head = req->method() == QHttpRequest::HTTP_HEAD;
-    qDebug() << (head ? "HEAD" : "GET") << "request for url:" << url;
+        // Always sending GET request to remote server because some
+        // DLNA renderers are confused when they receives error for HEAD
+        reply = nam->get(request);
 
-    // Always sending GET request to remote server because some
-    // DLNA renderers are confused when they receives error for HEAD
-    reply = nam->get(request);
+        ProxyItem &item = proxyItems[reply];
+        item.req = req;
+        item.resp = resp;
+        item.reply = reply;
+        item.id = id;
+        item.meta = headers.contains("icy-metadata");
+        item.seek = meta->seekSupported;
+        item.mode = meta->mode;
+        item.head = head; // orig request is HEAD
 
-    ProxyItem &item = proxyItems[reply];
-    item.req = req;
-    item.resp = resp;
-    item.reply = reply;
-    item.id = id;
-    item.meta = headers.contains("icy-metadata");
-    item.seek = meta->seekSupported;
-    item.mode = meta->mode;
-    item.head = head; // orig request is HEAD
+        QString name;
+        Utils::pathTypeNameCookieIconFromId(item.id, nullptr, nullptr, &name);
+        item.title = name.isEmpty() ? ContentServer::bestName(*meta) : name;
 
-    QString name;
-    Utils::pathTypeNameCookieIconFromId(item.id, nullptr, nullptr, &name);
-    item.title = name.isEmpty() ? ContentServer::bestName(*meta) : name;
+        responseToReplyMap.insert(resp, reply);
 
-    responseToReplyMap.insert(resp, reply);
+        connect(reply, &QNetworkReply::metaDataChanged,
+                this, &ContentServerWorker::proxyMetaDataChanged);
+        connect(reply, &QNetworkReply::redirected,
+                this, &ContentServerWorker::proxyRedirected);
+        connect(reply, &QNetworkReply::finished,
+                this, &ContentServerWorker::proxyFinished);
+        connect(reply, &QNetworkReply::readyRead,
+                this, &ContentServerWorker::proxyReadyRead);
+        connect(resp, &QHttpResponse::done,
+                this, &ContentServerWorker::responseForUrlDone);
 
-    connect(reply, &QNetworkReply::metaDataChanged,
-            this, &ContentServerWorker::proxyMetaDataChanged);
-    connect(reply, &QNetworkReply::redirected,
-            this, &ContentServerWorker::proxyRedirected);
-    connect(reply, &QNetworkReply::finished,
-            this, &ContentServerWorker::proxyFinished);
-    connect(reply, &QNetworkReply::readyRead,
-            this, &ContentServerWorker::proxyReadyRead);
-    connect(resp, &QHttpResponse::done,
-            this, &ContentServerWorker::responseForUrlDone);
-
-    emit itemAdded(item.id);
+        emit itemAdded(item.id);
+    }
 }
 
 void ContentServerWorker::requestForMicHandler(const QUrl &id,

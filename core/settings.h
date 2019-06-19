@@ -40,6 +40,7 @@ class Settings:
     Q_PROPERTY (int screenFramerate READ getScreenFramerate WRITE setScreenFramerate NOTIFY screenFramerateChanged)
     Q_PROPERTY (bool screenCropTo169 READ getScreenCropTo169 WRITE setScreenCropTo169 NOTIFY screenCropTo169Changed)
     Q_PROPERTY (bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY screenAudioChanged)
+    Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
 
 public:
     static Settings* instance();
@@ -109,6 +110,9 @@ public:
     QString getPrefNetInf();
     void setPrefNetInf(const QString& value);
 
+    void setRemoteContentMode(int value);
+    int getRemoteContentMode();
+
 signals:
     void portChanged();
     void favDevicesChanged();
@@ -129,6 +133,7 @@ signals:
     void screenFramerateChanged();
     void screenCropTo169Changed();
     void screenAudioChanged();
+    void remoteContentModeChanged();
 
 private:
     QSettings settings;
