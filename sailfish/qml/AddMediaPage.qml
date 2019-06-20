@@ -138,6 +138,7 @@ Page {
             }
 
             SimpleListItem {
+                visible: settings.screenSupported
                 title.text: qsTr("Screen capture")
                 icon.source: "image://theme/icon-m-display?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)

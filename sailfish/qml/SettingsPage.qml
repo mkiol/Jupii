@@ -97,15 +97,19 @@ Page {
             }
 
             TextSwitch {
+                visible: settings.screenSupported
                 automaticCheck: false
                 checked: settings.screenAudio
                 text: qsTr("Screen capture with audio")
+                description: qsTr("During screen capturing, audio is captured as well. " +
+                                  "Audio capturing may cause additional delay.")
                 onClicked: {
                     settings.screenAudio = !settings.screenAudio
                 }
             }
 
             /*ComboBox {
+                visible: settings.screenSupported
                 label: qsTr("Screen capture framerate")
                 currentIndex: {
                     if (settings.screenFramerate < 15) {
@@ -222,17 +226,17 @@ Page {
             ComboBox {
                 label: qsTr("Internet streaming mode")
                 description: qsTr("Streaming from the Internet to UPnP devices can " +
-                                  "be handled in two modes: Proxy (default) or Redirection. " +
+                                  "be handled in two modes. " +
                                   "In Proxy mode, %1 relays every packet received " +
                                   "from a streaming host. In Redirection mode, " +
                                   "the actual streaming goes directly between " +
                                   "UPnP device and a streaming server, " +
                                   "so %1 in not required to be enabled all the time. " +
                                   "The downside of Redirection mode is that not " +
-                                  "every UPnP device supports redirection. " +
-                                  "Therefore on some devices this mode will " +
+                                  "every UPnP device supports redirection, " +
+                                  "therefore on some devices this mode will " +
                                   "not work properly. SHOUTcast metadata detection " +
-                                  "and Stream recorder are disabled when " +
+                                  "and Stream recorder are not available when " +
                                   "Redirection mode is enabled.").arg(APP_NAME)
                 currentIndex: settings.remoteContentMode
                 menu: ContextMenu {

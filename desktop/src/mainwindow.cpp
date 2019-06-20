@@ -33,13 +33,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    auto s = Settings::instance();
     QMetaObject::connectSlotsByName(this);
     ui->setupUi(this);
     setWindowTitle(QApplication::applicationDisplayName());
     ui->actionAbout->setText(tr("About %1").arg(QApplication::applicationDisplayName()));
     settingsDialog = std::unique_ptr<SettingsDialog>(new SettingsDialog(this));
     ui->actionPulse->setEnabled(true);
-    ui->actionScreen->setEnabled(true);
+    ui->actionScreen->setEnabled(s->getScreenSupported());
 
     enablePlaylist(false);
 

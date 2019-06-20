@@ -33,10 +33,15 @@ int SettingsDialog::exec()
     ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
     ui->recCheckBox->setCheckState(s->getRec() ? Qt::Checked : Qt::Unchecked);
     ui->audioCaptureModeComboBox->setCurrentIndex(s->getAudioCaptureMode());
+
+    bool screenEnabled = s->getScreenSupported();
+    ui->screenFramerateComboBox->setEnabled(screenEnabled);
     int framerate = s->getScreenFramerate();
     int index = framerate < 15 ? 0 : framerate < 30 ? 1 : 2;
     ui->screenFramerateComboBox->setCurrentIndex(index);
+    ui->cropCheckBox->setEnabled(screenEnabled);
     ui->cropCheckBox->setCheckState(s->getScreenCropTo169() ? Qt::Checked : Qt::Unchecked);
+    ui->screenAudioCheckBox->setEnabled(screenEnabled);
     ui->screenAudioCheckBox->setCheckState(s->getScreenAudio() ? Qt::Checked : Qt::Unchecked);
 
     // Interfaces

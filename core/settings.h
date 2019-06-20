@@ -40,6 +40,7 @@ class Settings:
     Q_PROPERTY (int screenFramerate READ getScreenFramerate WRITE setScreenFramerate NOTIFY screenFramerateChanged)
     Q_PROPERTY (bool screenCropTo169 READ getScreenCropTo169 WRITE setScreenCropTo169 NOTIFY screenCropTo169Changed)
     Q_PROPERTY (bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY screenAudioChanged)
+    Q_PROPERTY (bool screenSupported READ getScreenSupported WRITE setScreenSupported NOTIFY screenSupportedChanged)
     Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
 
 public:
@@ -62,6 +63,9 @@ public:
 
     void setImageSupported(bool value);
     bool getImageSupported();
+
+    void setScreenSupported(bool value);
+    bool getScreenSupported();
 
     void setAudioCaptureMode(int value);
     int getAudioCaptureMode();
@@ -133,6 +137,7 @@ signals:
     void screenFramerateChanged();
     void screenCropTo169Changed();
     void screenAudioChanged();
+    void screenSupportedChanged();
     void remoteContentModeChanged();
 
 private:

@@ -302,6 +302,20 @@ bool Settings::getImageSupported()
     return settings.value("imagesupported", false).toBool();
 }
 
+void Settings::setScreenSupported(bool value)
+{
+    Q_UNUSED(value)
+}
+
+bool Settings::getScreenSupported()
+{
+#ifdef HARBOUR
+    return false;
+#else
+    return true;
+#endif
+}
+
 void Settings::setScreenCropTo169(bool value)
 {
     if (getScreenCropTo169() != value) {

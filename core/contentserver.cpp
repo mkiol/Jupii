@@ -631,22 +631,21 @@ void ContentServerWorker::requestForAudioCaptureHandler(const QUrl &id,
     qDebug() << "Audio capture request handler";
     bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
 
-    resp->setHeader("Content-Type", meta->mime);
-    resp->setHeader("Connection", "close");
-    resp->setHeader("transferMode.dlna.org", "Streaming");
-    resp->setHeader("contentFeatures.dlna.org",
-                    ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                              meta->seekSupported));
-    //resp->setHeader("Transfer-Encoding", "chunked");
-    resp->setHeader("Accept-Ranges", "none");
-
     if (isHead) {
         qDebug() << "Sending 200 response without content";
+        resp->setHeader("Content-Type", meta->mime);
+        resp->setHeader("Connection", "close");
+        resp->setHeader("transferMode.dlna.org", "Streaming");
+        resp->setHeader("contentFeatures.dlna.org",
+                        ContentServer::dlnaContentFeaturesHeader(meta->mime,
+                                                  meta->seekSupported));
+        //resp->setHeader("Transfer-Encoding", "chunked");
+        resp->setHeader("Accept-Ranges", "none");
         sendResponse(resp, 200, "");
     } else {
         if (!audioCaster) {
             audioCaster = std::unique_ptr<AudioCaster>(new AudioCaster());
-            if (!audioCaster->init() || !pulseSource->start()) {
+            if (!audioCaster->init()) {
                 qWarning() << "Cannot init audio caster";
                 audioCaster.reset(nullptr);
                 sendEmptyResponse(resp, 500);
@@ -654,7 +653,22 @@ void ContentServerWorker::requestForAudioCaptureHandler(const QUrl &id,
             }
         }
 
+        if (!pulseSource->start()) {
+            qWarning() << "Cannot init pulse audio";
+            audioCaster.reset(nullptr);
+            sendEmptyResponse(resp, 500);
+            return;
+        }
+
         qDebug() << "Sending 200 response and starting streaming";
+        resp->setHeader("Content-Type", meta->mime);
+        resp->setHeader("Connection", "close");
+        resp->setHeader("transferMode.dlna.org", "Streaming");
+        resp->setHeader("contentFeatures.dlna.org",
+                        ContentServer::dlnaContentFeaturesHeader(meta->mime,
+                                                  meta->seekSupported));
+        //resp->setHeader("Transfer-Encoding", "chunked");
+        resp->setHeader("Accept-Ranges", "none");
         resp->writeHead(200);
 
         ConnectionItem item;
@@ -674,19 +688,26 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
                                                 QHttpRequest *req, QHttpResponse *resp)
 {
     qDebug() << "Screen capture request handler";
+
+    auto s = Settings::instance();
+
+    if (!s->getScreenSupported()) {
+        qWarning() << "Screen capturing is not supported";
+        sendEmptyResponse(resp, 500);
+        return;
+    }
+
     bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
-
-    resp->setHeader("Content-Type", meta->mime);
-    resp->setHeader("Connection", "close");
-    resp->setHeader("transferMode.dlna.org", "Streaming");
-    resp->setHeader("contentFeatures.dlna.org",
-                    ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                              meta->seekSupported));
-    //resp->setHeader("Transfer-Encoding", "chunked");
-    resp->setHeader("Accept-Ranges", "none");
-
     if (isHead) {
         qDebug() << "Sending 200 response without content";
+        resp->setHeader("Content-Type", meta->mime);
+        resp->setHeader("Connection", "close");
+        resp->setHeader("transferMode.dlna.org", "Streaming");
+        resp->setHeader("contentFeatures.dlna.org",
+                        ContentServer::dlnaContentFeaturesHeader(meta->mime,
+                                                  meta->seekSupported));
+        //resp->setHeader("Transfer-Encoding", "chunked");
+        resp->setHeader("Accept-Ranges", "none");
         sendResponse(resp, 200, "");
     } else {
         qDebug() << "Sending 200 response and starting streaming";
@@ -705,8 +726,6 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
             startNeeded = true;
         }
 
-        resp->writeHead(200);
-
         ConnectionItem item;
         item.id = id;
         item.req = req;
@@ -718,14 +737,24 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
 
         if (startNeeded) {
             screenCaster->start();
-            auto s = Settings::instance();
             if (s->getScreenAudio()) {
                 if (!pulseSource->start()) {
                     qWarning() << "Pulse cannot be started";
                     sendEmptyResponse(resp, 500);
+                    return;
                 }
             }
         }
+
+        resp->setHeader("Content-Type", meta->mime);
+        resp->setHeader("Connection", "close");
+        resp->setHeader("transferMode.dlna.org", "Streaming");
+        resp->setHeader("contentFeatures.dlna.org",
+                        ContentServer::dlnaContentFeaturesHeader(meta->mime,
+                                                  meta->seekSupported));
+        //resp->setHeader("Transfer-Encoding", "chunked");
+        resp->setHeader("Accept-Ranges", "none");
+        resp->writeHead(200);
     }
 }
 
@@ -1107,6 +1136,10 @@ void ContentServerWorker::removePoints(const QList<QPair<int,int>> &rpoints,
 void ContentServerWorker::updatePulseStreamName(const QString &name)
 {
     for (const auto& item : audioCaptureItems) {
+        qDebug() << "pulseStreamUpdated:" << item.id << name;
+        emit pulseStreamUpdated(item.id, name);
+    }
+    for (const auto& item : screenCaptureItems) {
         qDebug() << "pulseStreamUpdated:" << item.id << name;
         emit pulseStreamUpdated(item.id, name);
     }
@@ -2429,6 +2462,9 @@ ContentServer::makeScreenCaptureItemMeta(const QUrl &url)
     meta.local = true;
     meta.seekSupported = false;
     meta.title = tr("Screen capture");
+#ifdef SAILFISH
+    meta.albumArt = IconProvider::pathToId("icon-x-screen-cover");
+#endif
 
     return metaCache.insert(url, meta);
 }
@@ -2693,7 +2729,13 @@ ContentServer::makeItemMeta(const QUrl &url)
         it = makeAudioCaptureItemMeta(url);
     } else if (Utils::isUrlScreen(url)) {
         qDebug() << "Screen url detected";
-        it = makeScreenCaptureItemMeta(url);
+        auto s = Settings::instance();
+        if (s->getScreenSupported()) {
+            it = makeScreenCaptureItemMeta(url);
+        } else {
+            qWarning() << "Screen capturing is not supported";
+            it = metaCache.end();
+        }
     } else if (url.scheme() == "jupii") {
         qDebug() << "Unsupported Jupii URL detected";
         it = metaCache.end();

@@ -553,8 +553,9 @@ bool PulseAudioSource::start()
 
     shutdown = false;
 
+    discoverStream();
+
     if (!iterationTimer.isActive()) {
-        discoverStream();
         iterationTimer.start();
     } else {
         qDebug() << "Pluse-audio loop already started";

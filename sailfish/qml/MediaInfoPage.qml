@@ -144,7 +144,7 @@ Page {
                 }
 
                 DetailItem {
-                    label: isPulse || isScreen ? qsTr("Captured application") : qsTr("Stream title")
+                    label: isPulse || isScreen ? qsTr("Audio source") : qsTr("Stream title")
                     value: app.streamTitle.length !== 0 ?
                                app.streamTitle : isPulse || isScreen ? qsTr("None") : ""
                     visible: !isMic && value.length !== 0 &&
