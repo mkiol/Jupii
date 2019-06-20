@@ -586,11 +586,13 @@ void ScreenCaster::repaint()
 
 void ScreenCaster::writeVideoData()
 {
-    //qDebug() << "=== ScreenCaster::writeVideoData ===";
-
     bool error = false;
-    const auto size = currImg.byteCount();
-    const auto data = currImg.constBits();
+
+    auto worker = ContentServerWorker::instance();
+    auto& img = worker->displayStatus ? currImg : bgImg;
+    auto size = img.byteCount();
+    auto data = img.constBits();
+
     if (av_new_packet(&in_pkt, size) < 0) {
         qDebug() << "Error in av_new_packet";
         error = true;

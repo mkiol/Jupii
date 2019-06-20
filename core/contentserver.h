@@ -146,6 +146,10 @@ signals:
     void requestStreamToRecord(const QUrl &id, bool value);
     void streamToRecordChanged(const QUrl &id, bool value);
     void streamRecordableChanged(const QUrl &id, bool value);
+    void displayStatusChanged(bool status);
+
+public slots:
+    void displayStatusChangeHandler(QString state);
 
 private slots:
     void streamRecordedHandler(const QString& title, const QString& path);
@@ -287,6 +291,7 @@ signals:
 
 public slots:
     void setStreamToRecord(const QUrl &id, bool value);
+    void setDisplayStatus(bool status);
 
 private slots:
     void proxyMetaDataChanged();
@@ -348,6 +353,7 @@ private:
     QList<ConnectionItem> audioCaptureItems;
     QList<ConnectionItem> screenCaptureItems;
     QMutex proxyItemsMutex;
+    bool displayStatus = true;
 
     ContentServerWorker(QObject *parent = nullptr);
     void streamFile(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);

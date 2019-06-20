@@ -30,6 +30,10 @@
 #include <iomanip>
 #include <limits>
 
+#include <QDBusInterface>
+#include <QDBusMessage>
+#include <QDBusConnection>
+
 #include "utils.h"
 #include "settings.h"
 #include "tracker.h"
@@ -1011,6 +1015,11 @@ void ContentServerWorker::proxyFinished()
     reply->deleteLater();
 }
 
+void ContentServerWorker::setDisplayStatus(bool status)
+{
+    displayStatus = status;
+}
+
 void ContentServerWorker::setStreamToRecord(const QUrl &id, bool value)
 {
     for (ProxyItem& item : proxyItems) {
@@ -1324,6 +1333,14 @@ ContentServer::ContentServer(QObject *parent) :
 
     // starting worker
     start(QThread::NormalPriority);
+
+#ifdef SAILFISH
+    // screen on/off status
+    auto bus = QDBusConnection::systemBus();
+    bus.connect("com.nokia.mce", "/com/nokia/mce/signal",
+                "com.nokia.mce.signal", "display_status_ind",
+                this, SLOT(displayStatusChangeHandler(QString)));
+#endif
 }
 
 ContentServer* ContentServer::instance(QObject *parent)
@@ -1333,6 +1350,12 @@ ContentServer* ContentServer::instance(QObject *parent)
     }
 
     return ContentServer::m_instance;
+}
+
+void ContentServer::displayStatusChangeHandler(QString state)
+{
+    qDebug() << "display status:" << state;
+    emit displayStatusChanged(state == "on");
 }
 
 QString ContentServer::dlnaOrgFlagsForFile()
@@ -2773,6 +2796,8 @@ void ContentServer::run()
             &ContentServer::streamRecordableChangedHandler);
     connect(worker, &ContentServerWorker::streamRecorded, this,
             &ContentServer::streamRecordedHandler);
+    connect(this, &ContentServer::displayStatusChanged, worker,
+            &ContentServerWorker::setDisplayStatus);
     QThread::exec();
     qDebug() << "Ending worker event loop";
 }
