@@ -21,6 +21,8 @@ RecModel::RecModel(QObject *parent) :
     SelectableItemModel(new RecItem, parent),
     m_dir(Settings::instance()->getRecDir())
 {
+    auto s = Settings::instance();
+    m_queryType = s->getRecQueryType();
 }
 
 QVariantList RecModel::selectedItems()
@@ -65,7 +67,7 @@ QList<ListItem*> RecModel::makeItems()
 
     auto files = m_dir.entryInfoList(QStringList() << "*.jupii_rec.*", QDir::Files);
     for (const auto& file : files) {
-        QString path = file.absoluteFilePath();
+        auto path = file.absoluteFilePath();
         QString title, author;
         TagLib::FileRef f(path.toUtf8().constData());
         if(f.isNull() || !f.tag()) {
@@ -83,30 +85,63 @@ QList<ListItem*> RecModel::makeItems()
                          path,
                          path,
                          title,
-                         author);
+                         author,
+                         file.created());
         }
     }
 
     // Sorting
-    std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-        auto aa = dynamic_cast<RecItem*>(a);
-        auto bb = dynamic_cast<RecItem*>(b);
-        return aa->title().compare(bb->title(), Qt::CaseInsensitive) < 0;
-    });
+    if (m_queryType == 0) { // by date
+        std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
+            auto aa = dynamic_cast<RecItem*>(a);
+            auto bb = dynamic_cast<RecItem*>(b);
+            return aa->date() > bb->date();
+        });
+    } else if (m_queryType == 1) { // by title
+        std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
+            auto aa = dynamic_cast<RecItem*>(a);
+            auto bb = dynamic_cast<RecItem*>(b);
+            return aa->title().compare(bb->title(), Qt::CaseInsensitive) < 0;
+        });
+    } else { // by author (station name)
+        std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
+            auto aa = dynamic_cast<RecItem*>(a);
+            auto bb = dynamic_cast<RecItem*>(b);
+            return aa->author().compare(bb->author(), Qt::CaseInsensitive) < 0;
+        });
+    }
 
     return items;
+}
+
+int RecModel::getQueryType()
+{
+    return m_queryType;
+}
+
+void RecModel::setQueryType(int value)
+{
+    if (value != m_queryType) {
+        m_queryType = value;
+        emit queryTypeChanged();
+        auto s = Settings::instance();
+        s->setRecQueryType(m_queryType);
+        updateModel();
+    }
 }
 
 RecItem::RecItem(const QString &id,
                  const QString &path,
                  const QString &title,
                  const QString &author,
+                 const QDateTime &date,
                  QObject *parent) :
     SelectableItem(parent),
     m_id(id),
     m_path(path),
     m_title(title),
-    m_author(author)
+    m_author(author),
+    m_date(date)
 {
 }
 
@@ -118,6 +153,7 @@ QHash<int, QByteArray> RecItem::roleNames() const
     names[TitleRole] = "title";
     names[AuthorRole] = "author";
     names[SelectedRole] = "selected";
+    names[DateRole] = "date";
     return names;
 }
 
@@ -134,6 +170,8 @@ QVariant RecItem::data(int role) const
         return author();
     case SelectedRole:
         return selected();
+    case DateRole:
+        return date();
     default:
         return QVariant();
     }

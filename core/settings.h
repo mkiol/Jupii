@@ -42,7 +42,8 @@ class Settings:
     Q_PROPERTY (bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY screenAudioChanged)
     Q_PROPERTY (bool screenSupported READ getScreenSupported WRITE setScreenSupported NOTIFY screenSupportedChanged)
     Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
-
+    Q_PROPERTY (int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType NOTIFY albumQueryTypeChanged)
+    Q_PROPERTY (int albumRecType READ getRecQueryType WRITE setRecQueryType NOTIFY recQueryTypeChanged)
 public:
     static Settings* instance();
 
@@ -84,6 +85,11 @@ public:
 
     void setUseHWVolume(bool value);
     bool getUseHWVolume();
+
+    void setAlbumQueryType(int value);
+    int getAlbumQueryType();
+    void setRecQueryType(int value);
+    int getRecQueryType();
 
     void setFavDevices(const QHash<QString,QVariant> &devs);
     void addFavDevice(const QString &id);
@@ -139,6 +145,8 @@ signals:
     void screenAudioChanged();
     void screenSupportedChanged();
     void remoteContentModeChanged();
+    void albumQueryTypeChanged();
+    void recQueryTypeChanged();
 
 private:
     QSettings settings;

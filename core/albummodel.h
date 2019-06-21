@@ -64,9 +64,16 @@ private:
 class AlbumModel : public SelectableItemModel
 {
     Q_OBJECT
-
+    // 0 - query by album title, 1 - query by artist
+    Q_PROPERTY (int queryType READ getQueryType WRITE setQueryType NOTIFY queryTypeChanged)
 public:
     explicit AlbumModel(QObject *parent = nullptr);
+
+    int getQueryType();
+    void setQueryType(int value);
+
+signals:
+    void queryTypeChanged();
 
 private:
     struct AlbumData {
@@ -78,8 +85,9 @@ private:
         int length = 0;
     };
 
-    static const QString albumsQueryTemplate;
-
+    static const QString albumsQueryByAlbumTemplate;
+    static const QString albumsQueryByArtistTemplate;
+    int m_queryType = 0;
     QList<ListItem*> makeItems();
     QList<ListItem*> processTrackerReply(
             const QStringList& varNames,

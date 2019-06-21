@@ -465,3 +465,39 @@ int Settings::getRemoteContentMode()
     // 1 - redirection
     return settings.value("remotecontentmode", 0).toInt();
 }
+
+void Settings::setAlbumQueryType(int value)
+{
+    // 0 - by album title
+    // 1 - by artist
+    if (getAlbumQueryType() != value) {
+        settings.setValue("albumquerytype", value);
+        emit albumQueryTypeChanged();
+    }
+}
+
+int Settings::getAlbumQueryType()
+{
+    // 0 - by album title
+    // 1 - by artist
+    return settings.value("albumquerytype", 0).toInt();
+}
+
+void Settings::setRecQueryType(int value)
+{
+    // 0 - by rec date
+    // 1 - by title
+    // 2 - by station name
+    if (getRecQueryType() != value) {
+        settings.setValue("recquerytype", value);
+        emit recQueryTypeChanged();
+    }
+}
+
+int Settings::getRecQueryType()
+{
+    // 0 - by rec date
+    // 1 - by title
+    // 2 - by station name
+    return settings.value("recquerytype", 0).toInt();
+}

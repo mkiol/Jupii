@@ -90,6 +90,18 @@ Dialog {
                         itemModel.setAllSelected(true)
                 }
             }
+
+            MenuItem {
+                text: qsTr("Sort by: %1")
+                        .arg(itemModel.queryType == 0 ? qsTr("Time of recording") :
+                        itemModel.queryType == 1 ? qsTr("Title") : qsTr("Name of station"));
+                onClicked: {
+                    var m = itemModel.queryType + 1
+                    if (m >= 3)
+                        m = 0
+                    itemModel.queryType = m
+                }
+            }
         }
 
         delegate: DoubleListItem {
@@ -97,7 +109,7 @@ Dialog {
                                          Theme.highlightColor : Theme.primaryColor
             highlighted: down || model.selected
             title.text: model.title
-            subtitle.text: model.author
+            subtitle.text: model.author + " · " + model.date.toLocaleString(null, "yyyy-MM-dd hh:mm:ss")
             enabled: !itemModel.busy
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
 

@@ -75,9 +75,19 @@ Page {
             view: listView
         }
 
+        PullDownMenu {
+            MenuItem {
+                text: qsTr("Search and sort by: %1")
+                        .arg(itemModel.queryType == 0 ? qsTr("Album") : qsTr("Artist"));
+                onClicked: {
+                    itemModel.queryType = itemModel.queryType == 0 ? 1 : 0
+                }
+            }
+        }
+
         delegate: DoubleListItem {
             title.text: model.title
-            subtitle.text: qsTr("%n track(s)", "", model.count)
+            subtitle.text: model.artist + " · " + qsTr("%n track(s)", "", model.count)
             enabled: !itemModel.busy
             icon.source: model.icon
             defaultIcon.source: "image://theme/graphic-grid-playlist?" + (highlighted ?
