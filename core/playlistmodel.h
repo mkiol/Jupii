@@ -182,7 +182,7 @@ public:
     Q_ENUM(ErrorType)
 
     enum PlayMode {
-        PM_Normal,
+        PM_Normal = 0,
         PM_RepeatAll,
         PM_RepeatOne
     };
@@ -266,7 +266,7 @@ private:
     std::unique_ptr<PlaylistWorker> m_worker;
     bool m_busy = false;
     int m_activeItemIndex = -1;
-    int m_playMode = PM_RepeatAll;
+    int m_playMode;
     bool m_prevSupported = false;
     bool m_nextSupported = false;
 

@@ -196,6 +196,8 @@ PlaylistModel::PlaylistModel(QObject *parent) :
     auto rc = services->renderingControl;
     auto av = services->avTransport;
 
+    m_playMode = s->getPlayMode();
+
     connect(av.get(), &AVTransport::currentURIChanged,
             this, &PlaylistModel::onAvCurrentURIChanged);
     connect(av.get(), &AVTransport::nextURIChanged,
@@ -547,6 +549,8 @@ void PlaylistModel::setPlayMode(int value)
 {
     if (value != m_playMode) {
         m_playMode = value;
+        auto s = Settings::instance();
+        s->setPlayMode(m_playMode);
         emit playModeChanged();
         update();
     }

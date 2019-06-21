@@ -44,6 +44,7 @@ class Settings:
     Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY (int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType NOTIFY albumQueryTypeChanged)
     Q_PROPERTY (int albumRecType READ getRecQueryType WRITE setRecQueryType NOTIFY recQueryTypeChanged)
+    Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
 public:
     static Settings* instance();
 
@@ -90,6 +91,9 @@ public:
     int getAlbumQueryType();
     void setRecQueryType(int value);
     int getRecQueryType();
+
+    void setPlayMode(int value);
+    int getPlayMode();
 
     void setFavDevices(const QHash<QString,QVariant> &devs);
     void addFavDevice(const QString &id);
@@ -147,6 +151,7 @@ signals:
     void remoteContentModeChanged();
     void albumQueryTypeChanged();
     void recQueryTypeChanged();
+    void playModeChanged();
 
 private:
     QSettings settings;

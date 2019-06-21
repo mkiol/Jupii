@@ -501,3 +501,16 @@ int Settings::getRecQueryType()
     // 2 - by station name
     return settings.value("recquerytype", 0).toInt();
 }
+
+void Settings::setPlayMode(int value)
+{
+    if (getPlayMode() != value) {
+        settings.setValue("playmode", value);
+        emit playModeChanged();
+    }
+}
+
+int Settings::getPlayMode()
+{
+    return settings.value("playmode", 0).toInt();
+}
