@@ -16,32 +16,19 @@
 #include "trackercursor.h"
 #include "settings.h"
 
-const QString AlbumModel::albumsQueryByAlbumTemplate =
+const QString AlbumModel::albumsQueryTemplate =
         "SELECT ?album nie:title(?album) AS title " \
         "nmm:artistName(?artist) AS artist " \
         "COUNT(?song) AS songs " \
         "SUM(?length) AS totallength " \
         "WHERE { ?album a nmm:MusicAlbum . " \
-        "FILTER regex(nie:title(?album), \"%1\", \"i\") " \
+        "FILTER (regex(nie:title(?album), \"%1\", \"i\") || " \
+        "regex(nmm:artistName(?artist), \"%1\", \"i\")) " \
         "?song nmm:musicAlbum ?album; " \
         "nfo:duration ?length; " \
         "nmm:performer ?artist . " \
         "} GROUP BY ?album ?artist " \
         "ORDER BY nie:title(?album) " \
-        "LIMIT 100";
-
-const QString AlbumModel::albumsQueryByArtistTemplate =
-        "SELECT ?album nie:title(?album) AS title " \
-        "nmm:artistName(?artist) AS artist " \
-        "COUNT(?song) AS songs " \
-        "SUM(?length) AS totallength " \
-        "WHERE { ?album a nmm:MusicAlbum . " \
-        "FILTER regex(nmm:artistName(?artist), \"%1\", \"i\") " \
-        "?song nmm:musicAlbum ?album; " \
-        "nfo:duration ?length; " \
-        "nmm:performer ?artist . " \
-        "} GROUP BY ?album ?artist " \
-        "ORDER BY nmm:artistName(?artist) " \
         "LIMIT 100";
 
 AlbumModel::AlbumModel(QObject *parent) :
@@ -53,9 +40,7 @@ AlbumModel::AlbumModel(QObject *parent) :
 
 QList<ListItem*> AlbumModel::makeItems()
 {
-    const QString query = m_queryType == 0 ?
-                albumsQueryByAlbumTemplate.arg(getFilter()) :
-                albumsQueryByArtistTemplate.arg(getFilter());
+    const QString query = albumsQueryTemplate.arg(getFilter());
     auto tracker = Tracker::instance();
     if (tracker->query(query, false)) {
         auto result = tracker->getResult();

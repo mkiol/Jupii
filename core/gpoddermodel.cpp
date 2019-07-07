@@ -94,9 +94,11 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
                   "WHERE PodcastEpisode.download_filename NOTNULL AND "
                   "PodcastEpisode.download_filename != '' AND "
                   "PodcastEpisode.state = 1 AND "
-                  "PodcastEpisode.title LIKE ? "
+                  "(PodcastEpisode.title LIKE ? OR "
+                  "PodcastChannel.title LIKE ?) "
                   "ORDER BY PodcastEpisode.published DESC "
                   "LIMIT 50");
+    query.addBindValue("%" + getFilter() + "%");
     query.addBindValue("%" + getFilter() + "%");
 
     if (query.exec()) {

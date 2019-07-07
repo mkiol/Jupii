@@ -85,8 +85,7 @@ private:
         int length = 0;
     };
 
-    static const QString albumsQueryByAlbumTemplate;
-    static const QString albumsQueryByArtistTemplate;
+    static const QString albumsQueryTemplate;
     int m_queryType = 0;
     QList<ListItem*> makeItems();
     QList<ListItem*> processTrackerReply(
