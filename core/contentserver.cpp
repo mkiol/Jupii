@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2019 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -626,6 +626,8 @@ void ContentServerWorker::requestForAudioCaptureHandler(const QUrl &id,
 
         connect(resp, &QHttpResponse::done, this,
                 &ContentServerWorker::responseForAudioCaptureDone);
+
+        PulseAudioSource::discoverStream();
     }
 }
 
@@ -701,6 +703,8 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         resp->writeHead(200);
+
+        PulseAudioSource::discoverStream();
     }
 }
 

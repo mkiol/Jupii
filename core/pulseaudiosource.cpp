@@ -324,6 +324,7 @@ void PulseAudioSource::discoverStream()
                     qDebug() << "Updating stream name to name of sink input's client:" << client.name;
                     worker->updatePulseStreamName(client.name);
                 } else {
+                    qDebug() << "Reseting stream name";
                     worker->updatePulseStreamName(QString());
                 }
 
@@ -544,7 +545,7 @@ bool PulseAudioSource::start()
 
     shutdown = false;
 
-    discoverStream();
+    //discoverStream();
 
     if (!iterationTimer.isActive()) {
         iterationTimer.start();
