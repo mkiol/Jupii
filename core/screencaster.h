@@ -36,7 +36,7 @@ public:
     bool init();
     void start();
     bool audioEnabled();
-    bool writeAudioData(const QByteArray& data, uint64_t latency = 0);
+    bool writeAudioData(const QByteArray& data);
 
 signals:
 #ifdef DESKTOP

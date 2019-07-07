@@ -5,11 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef AUDIOCASTER_H
-#define AUDIOCASTER_H
+#ifndef MICCASTER_H
+#define MICCASTER_H
 
 #include <QObject>
 #include <QByteArray>
+#include <QIODevice>
+#include <QAudioInput>
+#include <memory>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -18,30 +21,38 @@ extern "C" {
 #include <libswresample/swresample.h>
 }
 
-class AudioCaster : public QObject
+class MicCaster : public QIODevice
 {
     Q_OBJECT
 public:
-    AudioCaster(QObject *parent = nullptr);
-    ~AudioCaster();
+    const static int sampleRate = 22050;
+    const static int channelCount = 1;
+    const static int sampleSize = 16;
+
+    MicCaster(QObject *parent = nullptr);
+    ~MicCaster();
     bool init();
+    void start();
     bool writeAudioData(const QByteArray& data);
 
-signals:
-    void frameError();
+protected:
+    qint64 readData(char *data, qint64 maxSize);
+    qint64 writeData(const char *data, qint64 maxSize);
 
 private:
+    std::unique_ptr<QAudioInput> input;
+    bool active = false;
+    int audio_frame_size = 0;
+    float volume = 1.0f;
     AVPacket in_pkt;
     AVPacket out_pkt;
-    AVCodecContext* out_video_codec_ctx = nullptr;
     AVFormatContext* out_format_ctx = nullptr;
     AVFrame* in_frame = nullptr;
-    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
-    int audio_frame_size = 0;
     AVCodecContext* in_audio_codec_ctx = nullptr;
     AVCodecContext* out_audio_codec_ctx = nullptr;
     SwrContext* audio_swr_ctx = nullptr;
-    QByteArray audio_outbuf; // pulse audio data buf
+    QByteArray audio_outbuf; // audio data buf
+    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
 };
 
-#endif // AUDIOCASTER_H
+#endif // MICCASTER_H

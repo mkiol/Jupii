@@ -43,9 +43,9 @@ extern "C" {
 #include "pulseaudiosource.h"
 #include "audiocaster.h"
 #include "screencaster.h"
+#include "miccaster.h"
 
 class ContentServerWorker;
-class MicSource;
 
 class ContentServer :
         public QThread
@@ -100,11 +100,6 @@ public:
         QString title;
         int length = 0;
     };
-
-    const static int micSampleRate = 22050;
-    const static int micChannelCount = 1;
-    const static int micSampleSize = 16;
-    const static int pulseSampleSize = 16;
 
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);
@@ -267,7 +262,7 @@ class ContentServerWorker :
         public QObject
 {
     Q_OBJECT
-    friend MicSource;
+    friend MicCaster;
     friend PulseAudioSource;
     friend AudioCaster;
     friend ScreenCaster;
@@ -298,8 +293,8 @@ private slots:
     void proxyRedirected(const QUrl &url);
     void proxyFinished();
     void proxyReadyRead();
-    void startMic();
-    void stopMic();
+    //void startMic();
+    //void stopMic();
     void responseForMicDone();
     void responseForAudioCaptureDone();
     void responseForScreenCaptureDone();
@@ -341,8 +336,7 @@ private:
 
     static ContentServerWorker* m_instance;
 
-    std::unique_ptr<QAudioInput> micInput;
-    std::unique_ptr<MicSource> micSource;
+    std::unique_ptr<MicCaster> micCaster;
     std::unique_ptr<ScreenCaster> screenCaster;
     std::unique_ptr<PulseAudioSource> pulseSource;
     std::unique_ptr<AudioCaster> audioCaster;
@@ -370,30 +364,15 @@ private:
     void sendRedirection(QHttpResponse *resp, const QString &location);
     void processShoutcastMetadata(QByteArray &data, ProxyItem &item);
     void updatePulseStreamName(const QString& name);
-    void dispatchPulseData(const void *data, int size, uint64_t latency = 0);
+    void dispatchPulseData(const void *data, int size);
     void sendScreenCaptureData(const void *data, int size);
     void sendAudioCaptureData(const void *data, int size);
+    void sendMicData(const void *data, int size);
     static void removePoints(const QList<QPair<int,int>> &rpoints, QByteArray &data);
     void openRecFile(ProxyItem &item);
     void saveRecFile(ProxyItem &item);
     void closeRecFile(ProxyItem &item);
     static void cleanCacheFiles();
-};
-
-class MicSource : public QIODevice
-{
-    Q_OBJECT
-public:
-    MicSource(QObject *parent = nullptr);
-    void setActive(bool value);
-    bool isActive();
-
-protected:
-    qint64 readData(char *data, qint64 maxSize);
-    qint64 writeData(const char *data, qint64 maxSize);
-
-private:
-    bool active = false;
 };
 
 #endif // CONTENTSERVER_H

@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "audiocaster.h"
+#include "miccaster.h"
 
 #include <QDebug>
 
 extern "C" {
-#include <pulse/sample.h>
 #include <libavutil/dict.h>
 #include <libavutil/mathematics.h>
 #include <libavdevice/avdevice.h>
@@ -19,16 +18,19 @@ extern "C" {
 #include <libavutil/time.h>
 }
 
-#include "settings.h"
-#include "pulseaudiosource.h"
 #include "contentserver.h"
+#include "settings.h"
 
-AudioCaster::AudioCaster(QObject *parent) : QObject(parent)
+MicCaster::MicCaster(QObject *parent) : QIODevice(parent)
 {
 }
 
-AudioCaster::~AudioCaster()
+MicCaster::~MicCaster()
 {
+    qDebug() << "Stopping mic";
+    close();
+    input->stop();
+
     if (out_format_ctx) {
         if (out_format_ctx->pb) {
             if (out_format_ctx->pb->buffer) {
@@ -55,11 +57,13 @@ AudioCaster::~AudioCaster()
     }
 }
 
-bool AudioCaster::init()
+bool MicCaster::init()
 {
-    qDebug() << "AudioCaster init";
+    qDebug() << "MicCaster init";
 
-    auto in_audio_codec = avcodec_find_decoder(AV_CODEC_ID_PCM_S16LE);
+    volume = Settings::instance()->getMicVolume();
+
+    auto in_audio_codec = avcodec_find_decoder(AV_CODEC_ID_PCM_S16BE);
     if (!in_audio_codec) {
         qWarning() << "Error in avcodec_find_decoder for audio";
         return false;
@@ -79,9 +83,9 @@ bool AudioCaster::init()
         return false;
     }
 
-    in_audio_codec_ctx->channels = PulseAudioSource::sampleSpec.channels;
+    in_audio_codec_ctx->channels = MicCaster::channelCount;
     in_audio_codec_ctx->channel_layout = av_get_default_channel_layout(in_audio_codec_ctx->channels);
-    in_audio_codec_ctx->sample_rate = PulseAudioSource::sampleSpec.rate;
+    in_audio_codec_ctx->sample_rate = MicCaster::sampleRate;
     in_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
     in_audio_codec_ctx->time_base.num = 1;
     in_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
@@ -115,7 +119,7 @@ bool AudioCaster::init()
     }
 
     const size_t outbuf_size = 500000;
-    uint8_t *outbuf = (uint8_t*)av_malloc(outbuf_size);
+    uint8_t *outbuf = static_cast<uint8_t*>(av_malloc(outbuf_size));
     if (!outbuf) {
         qWarning() << "Unable to allocate memory";
         return false;
@@ -200,22 +204,82 @@ bool AudioCaster::init()
     return true;
 }
 
-int AudioCaster::write_packet_callback(void *opaque, uint8_t *buf, int buf_size)
+void MicCaster::start()
+{
+    qDebug() << "Starting mic";
+
+    QAudioFormat format;
+    format.setSampleRate(sampleRate);
+    format.setChannelCount(channelCount);
+    format.setSampleSize(sampleSize);
+    format.setCodec("audio/pcm");
+    //format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setByteOrder(QAudioFormat::BigEndian);
+    format.setSampleType(QAudioFormat::SignedInt);
+
+    auto dev = QAudioDeviceInfo::defaultInputDevice();
+
+    /*auto devName = QAudioDeviceInfo::defaultOutputDevice().deviceName() + ".monitor";
+    auto devName = QString("sink.deep_buffer.monitor");
+    auto devs = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
+    for (auto& d : devs) {
+        qDebug() << "input dev:" << d.deviceName();
+        if (d.deviceName() == devName) {
+            dev = d;
+            qDebug() << "Got dev:" << dev.deviceName();
+        }
+    }*/
+
+    qDebug() << "Available input devs:";
+    auto idevs = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
+    for (auto& d : idevs) {
+        qDebug() << "  " << d.deviceName();
+    }
+    qDebug() << "Available output devs:";
+    auto odevs = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
+    for (auto& d : odevs) {
+        qDebug() << "  " << d.deviceName();
+    }
+
+    if (!dev.isFormatSupported(format)) {
+        qWarning() << "Default audio format not supported, trying to use the nearest";
+        format = dev.nearestFormat(format);
+        qDebug() << "Nerest format:";
+        qDebug() << " codec:" << format.codec();
+        qDebug() << " sampleSize:" << format.sampleSize();
+        qDebug() << " sampleRate:" << format.sampleRate();
+        qDebug() << " channelCount:" << format.channelCount();
+    }
+
+    qDebug() << "Input dev:" << dev.deviceName();
+
+    input = std::unique_ptr<QAudioInput>(new QAudioInput(dev, format));
+    open(QIODevice::WriteOnly);
+    input->start(this);
+}
+
+
+int MicCaster::write_packet_callback(void *opaque, uint8_t *buf, int buf_size)
 {
     Q_UNUSED(opaque);
     auto worker = ContentServerWorker::instance();
-    worker->sendAudioCaptureData(static_cast<void*>(buf), buf_size);
+    worker->sendMicData(static_cast<void*>(buf), buf_size);
     return buf_size;
 }
 
-bool AudioCaster::writeAudioData(const QByteArray& data)
+bool MicCaster::writeAudioData(const QByteArray& data)
 {
-    audio_outbuf.append(data);
+    if (volume != 1.0f) {
+        QByteArray d(data);
+        ContentServerWorker::adjustVolume(&d, volume, false);
+        audio_outbuf.append(d);
+    } else {
+        audio_outbuf.append(data);
+    }
     while (audio_outbuf.size() >= audio_frame_size) {
-        const char* d = audio_outbuf.data();
+        char* d = audio_outbuf.data();
         bool error = false;
         int ret = -1;
-
         if (av_new_packet(&in_pkt, audio_frame_size) < 0) {
             qDebug() << "Error in av_new_packet";
             error = true; break;
@@ -295,4 +359,17 @@ bool AudioCaster::writeAudioData(const QByteArray& data)
     }
 
     return true;
+}
+
+qint64 MicCaster::readData(char* data, qint64 maxSize)
+{
+    Q_UNUSED(data)
+    Q_UNUSED(maxSize)
+    return 0;
+}
+
+qint64 MicCaster::writeData(const char* data, qint64 maxSize)
+{
+    writeAudioData(QByteArray::fromRawData(data, maxSize));
+    return maxSize;
 }

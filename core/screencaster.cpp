@@ -476,15 +476,12 @@ bool ScreenCaster::audioEnabled()
 int ScreenCaster::write_packet_callback(void *opaque, uint8_t *buf, int buf_size)
 {
     Q_UNUSED(opaque);
-    //qDebug() << "write_packet_callback buff_size:" << buf_size;
-
     auto worker = ContentServerWorker::instance();
     worker->sendScreenCaptureData(static_cast<void*>(buf), buf_size);
-
     return buf_size;
 }
 
-bool ScreenCaster::writeAudioData(const QByteArray& data, uint64_t latency)
+bool ScreenCaster::writeAudioData(const QByteArray& data)
 {
     //qDebug() << "=== ScreenCaster::writeAudioData ===";
     audio_outbuf.append(data);
@@ -498,7 +495,7 @@ bool ScreenCaster::writeAudioData(const QByteArray& data, uint64_t latency)
             error = true; break;
         } else {
             //char errbuf[50];
-            in_pkt.dts = av_gettime() - latency;
+            in_pkt.dts = av_gettime();
             in_pkt.pts = in_pkt.dts;
             memcpy(in_pkt.data, d, audio_frame_size);
             ret = avcodec_send_packet(in_audio_codec_ctx, &in_pkt);
@@ -533,7 +530,6 @@ bool ScreenCaster::writeAudioData(const QByteArray& data, uint64_t latency)
                                static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
                             out_pkt.duration = av_rescale_q(out_pkt.duration, in_tb, out_tb);
                             out_pkt.pos = -1;
-                            //ret = av_write_frame(out_format_ctx, &out_pkt);
                             ret = av_interleaved_write_frame(out_format_ctx, &out_pkt);
                             //qDebug() << "av_write_frame:" << av_make_error_string(errbuf, 50, ret);
                             if (ret < 0) {
@@ -568,7 +564,7 @@ bool ScreenCaster::writeAudioData(const QByteArray& data, uint64_t latency)
 
         if (error) {
             qWarning() << "Error writeAudioFrame";
-            return false;  break;
+            return false;
         }
     }
 

@@ -72,6 +72,7 @@ HEADERS += \
     $$CORE_DIR/log.h \
     $$CORE_DIR/audiocaster.h \
     $$CORE_DIR/screencaster.h \
+    $$CORE_DIR/miccaster.h \
     $$CORE_DIR/pulseaudiosource.h
 
 SOURCES += \
@@ -109,4 +110,5 @@ SOURCES += \
     $$CORE_DIR/log.cpp \
     $$CORE_DIR/audiocaster.cpp \
     $$CORE_DIR/screencaster.cpp \
+    $$CORE_DIR/miccaster.cpp \
     $$CORE_DIR/pulseaudiosource.cpp

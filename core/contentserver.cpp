@@ -370,28 +370,6 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     }
 }
 
-void ContentServerWorker::stopMic()
-{
-    if (micSource) {
-        qDebug() << "Stopping mic";
-        micSource->setActive(false);
-
-        if (micItems.isEmpty()) {
-            micSource->close();
-
-            auto t = new QTimer(this);
-            t->setSingleShot(true);
-            connect(t, &QTimer::timeout, [this, t]{
-                if (micItems.isEmpty() && micInput)
-                    micInput.reset(nullptr);
-                t->deleteLater();
-            });
-
-            t->start(100);
-        }
-    }
-}
-
 void ContentServerWorker::responseForAudioCaptureDone()
 {
     qDebug() << "Audio capture HTTP response done";
@@ -447,60 +425,6 @@ void ContentServerWorker::screenErrorHandler()
 
     screenCaptureItems.clear();
     screenCaster.reset(nullptr);
-}
-
-void ContentServerWorker::startMic()
-{
-    qDebug() << "Starting mic";
-
-    QAudioFormat format;
-    format.setSampleRate(ContentServer::micSampleRate);
-    format.setChannelCount(ContentServer::micChannelCount);
-    format.setSampleSize(ContentServer::micSampleSize);
-    format.setCodec("audio/pcm");
-    //format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setByteOrder(QAudioFormat::BigEndian);
-    format.setSampleType(QAudioFormat::SignedInt);
-
-    auto dev = QAudioDeviceInfo::defaultInputDevice();
-
-    /*auto devName = QAudioDeviceInfo::defaultOutputDevice().deviceName() + ".monitor";
-    auto devName = QString("sink.deep_buffer.monitor");
-    auto devs = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
-    for (auto& d : devs) {
-        qDebug() << "input dev:" << d.deviceName();
-        if (d.deviceName() == devName) {
-            dev = d;
-            qDebug() << "Got dev:" << dev.deviceName();
-        }
-    }*/
-
-    qDebug() << "Available input devs:";
-    auto idevs = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
-    for (auto& d : idevs) {
-        qDebug() << "  " << d.deviceName();
-    }
-    qDebug() << "Available output devs:";
-    auto odevs = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
-    for (auto& d : odevs) {
-        qDebug() << "  " << d.deviceName();
-    }
-
-    if (!dev.isFormatSupported(format)) {
-        qWarning() << "Default audio format not supported, trying to use the nearest.";
-        format = dev.nearestFormat(format);
-        qDebug() << "Nerest format:";
-        qDebug() << " codec:" << format.codec();
-        qDebug() << " sampleSize:" << format.sampleSize();
-        qDebug() << " sampleRate:" << format.sampleRate();
-        qDebug() << " channelCount:" << format.channelCount();
-    }
-
-    if (!micSource)
-        micSource = std::unique_ptr<MicSource>(new MicSource(this));
-    micInput = std::unique_ptr<QAudioInput>(new QAudioInput(dev, format, this));
-    micSource->setActive(true);
-    micInput->start(micSource.get());
 }
 
 void ContentServerWorker::requestForFileHandler(const QUrl &id,
@@ -598,33 +522,51 @@ void ContentServerWorker::requestForMicHandler(const QUrl &id,
 {
     bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
 
-    resp->setHeader("Content-Type", meta->mime);
-    resp->setHeader("Connection", "close");
-    resp->setHeader("transferMode.dlna.org", "Streaming");
-    resp->setHeader("contentFeatures.dlna.org",
-                    ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                              meta->seekSupported));
-    //resp->setHeader("Transfer-Encoding", "chunked");
-    resp->setHeader("Accept-Ranges", "none");
-
     if (isHead) {
         qDebug() << "Sending 200 response without content";
+        resp->setHeader("Content-Type", meta->mime);
+        resp->setHeader("Connection", "close");
+        resp->setHeader("transferMode.dlna.org", "Streaming");
+        resp->setHeader("contentFeatures.dlna.org",
+                        ContentServer::dlnaContentFeaturesHeader(meta->mime,
+                                                  meta->seekSupported));
+        //resp->setHeader("Transfer-Encoding", "chunked");
+        resp->setHeader("Accept-Ranges", "none");
         sendResponse(resp, 200, "");
     } else {
         qDebug() << "Sending 200 response and starting streaming";
         resp->writeHead(200);
 
-        if (!micSource || !micSource->isOpen()) {
-            startMic();
+        if (!micCaster) {
+            micCaster = std::unique_ptr<MicCaster>(new MicCaster());
+            if (!micCaster->init()) {
+                qWarning() << "Cannot init mic caster";
+                micCaster.reset(nullptr);
+                sendEmptyResponse(resp, 500);
+                return;
+            }
         }
+
+        resp->setHeader("Content-Type", meta->mime);
+        resp->setHeader("Connection", "close");
+        resp->setHeader("transferMode.dlna.org", "Streaming");
+        resp->setHeader("contentFeatures.dlna.org",
+                        ContentServer::dlnaContentFeaturesHeader(meta->mime,
+                                                  meta->seekSupported));
+        //resp->setHeader("Transfer-Encoding", "chunked");
+        resp->setHeader("Accept-Ranges", "none");
 
         ConnectionItem item;
         item.id = id;
         item.req = req;
         item.resp = resp;
         micItems.append(item);
+        emit itemAdded(item.id);
 
-        connect(resp, &QHttpResponse::done, this, &ContentServerWorker::responseForMicDone);
+        connect(resp, &QHttpResponse::done, this,
+                &ContentServerWorker::responseForMicDone);
+
+        micCaster->start();
     }
 }
 
@@ -822,9 +764,17 @@ void ContentServerWorker::responseForMicDone()
     for (int i = 0; i < micItems.size(); ++i) {
         if (resp == micItems[i].resp) {
             qDebug() << "Removing finished mic item";
+            auto id = micItems.at(i).id;
             micItems.removeAt(i);
+            emit itemRemoved(id);
             break;
         }
+    }
+
+    if (micItems.isEmpty()) {
+        qDebug() << "No clients for mic connected, "
+                    "so ending mic casting";
+        micCaster.reset(nullptr);
     }
 }
 
@@ -2424,23 +2374,22 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeMicItemMeta(const QUrl &url)
 {
+    // modes:
+    // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
+    // 1 - MPEG TS MP3 16-bit 44100 Hz stereo 128 kbps
+    auto mode = Settings::instance()->getAudioCaptureMode();
+
     ContentServer::ItemMeta meta;
     meta.valid = true;
     meta.url = url;
-    meta.channels = ContentServer::micChannelCount;
-    meta.sampleRate = ContentServer::micSampleRate;
-    meta.mime = QString("audio/L%1;rate=%2;channels=%3")
-            .arg(ContentServer::micSampleSize)
-            .arg(meta.sampleRate)
-            .arg(meta.channels);
-    meta.bitrate = meta.sampleRate * ContentServer::micSampleSize * meta.channels;
+    meta.channels = MicCaster::channelCount;
+    meta.sampleRate = MicCaster::sampleRate;
+    meta.mime = m_musicExtMap.value(mode > 0 ? "tsa" : "mp3");
     meta.type = ContentServer::TypeMusic;
     meta.size = 0;
     meta.local = true;
     meta.seekSupported = false;
-
     meta.title = tr("Microphone");
-    //meta.artist = "Jupii";
 
 #ifdef SAILFISH
     meta.albumArt = IconProvider::pathToId("icon-x-mic-cover");
@@ -2876,10 +2825,6 @@ void ContentServer::pulseStreamNameHandler(const QUrl &id,
 QString ContentServer::streamTitleFromShoutcastMetadata(const QByteArray &metadata)
 {
     auto data = QString::fromUtf8(metadata);
-    /*qDebug() << "title1:" << QString(metadata);
-    qDebug() << "title2:" << QString::fromUtf8(metadata);
-    qDebug() << "title3:" << QString::fromLocal8Bit(metadata);
-    qDebug() << "title4:" << QString::fromLatin1(metadata);*/
     data.remove('\'').remove('\"');
     QRegExp rx("StreamTitle=([^;]*)", Qt::CaseInsensitive);
     int pos = 0;
@@ -3090,73 +3035,6 @@ ContentServer::parseXspf(const QByteArray &data, const QString context)
     return list;
 }
 
-MicSource::MicSource(QObject *parent) :
-    QIODevice(parent)
-{
-}
-
-void MicSource::setActive(bool value)
-{
-    if (value != active) {
-        active = value;
-        if (active && !isOpen()) {
-            open(QIODevice::WriteOnly);
-        }
-    }
-}
-
-bool MicSource::isActive()
-{
-    return active;
-}
-
-qint64 MicSource::readData(char* data, qint64 maxSize)
-{
-    Q_UNUSED(data)
-    Q_UNUSED(maxSize)
-    return 0;
-}
-
-qint64 MicSource::writeData(const char* data, qint64 maxSize)
-{
-    auto worker = ContentServerWorker::instance();
-
-    if (!worker->micItems.isEmpty()) {
-        QByteArray d = QByteArray::fromRawData(data, static_cast<int>(maxSize));
-
-        float volume = Settings::instance()->getMicVolume();
-        if (volume != 1.0f) {
-            ContentServerWorker::adjustVolume(&d, volume, false);
-        }
-
-        auto i = worker->micItems.begin();
-        while (i != worker->micItems.end()) {
-            if (!i->resp->isHeaderWritten()) {
-                qWarning() << "Head not written";
-                i->resp->end();
-            }
-
-            if (i->resp->isFinished()) {
-                qWarning() << "Server request already finished, so removing mic item";
-                i = worker->micItems.erase(i);
-            } else {
-                if (active) {
-                    i->resp->write(d);
-                } else {
-                    qDebug() << "Mic dev is not active, so disconnecting server request";
-                    i->resp->end();
-                }
-                ++i;
-            }
-        }
-    }
-
-    if (worker->micItems.isEmpty())
-        worker->stopMic();
-
-    return maxSize;
-}
-
 void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)
 {
     QDataStream sr(data, QIODevice::ReadOnly);
@@ -3179,8 +3057,7 @@ void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)
     }
 }
 
-void ContentServerWorker::dispatchPulseData(const void *data, int size,
-                                         uint64_t latency)
+void ContentServerWorker::dispatchPulseData(const void *data, int size)
 {
     bool audioCaptureEnabled = audioCaster && !audioCaptureItems.isEmpty();
     bool screenCaptureAudioEnabled = screenCaster &&
@@ -3202,11 +3079,38 @@ void ContentServerWorker::dispatchPulseData(const void *data, int size,
             d = QByteArray(size,'\0');
         }
         if (audioCaptureEnabled)
-            audioCaster->writeAudioData(d, latency);
+            audioCaster->writeAudioData(d);
         if (screenCaptureAudioEnabled)
-            screenCaster->writeAudioData(d, latency);
+            screenCaster->writeAudioData(d);
     } else {
         qDebug() << "No audio capture";
+    }
+}
+
+void ContentServerWorker::sendMicData(const void *data, int size)
+{
+    if (!micItems.isEmpty()) {
+        QByteArray d = QByteArray::fromRawData(static_cast<const char*>(data),
+                                               size);
+        auto i = micItems.begin();
+        while (i != micItems.end()) {
+            if (!i->resp->isHeaderWritten()) {
+                qWarning() << "Head not written";
+                i->resp->end();
+            }
+            if (i->resp->isFinished()) {
+                qWarning() << "Server request already finished, "
+                              "so removing mic item";
+                auto id = i->id;
+                i = micItems.erase(i);
+                emit itemRemoved(id);
+            } else {
+                i->resp->write(d);
+                ++i;
+            }
+        }
+    } else {
+        qDebug() << "No mic items";
     }
 }
 

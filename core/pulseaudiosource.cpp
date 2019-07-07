@@ -173,16 +173,7 @@ void PulseAudioSource::streamRequestCallback(pa_stream *stream, size_t nbytes, v
     }
 
     if (PulseAudioSource::stream) { // stream is connected
-        /*uint64_t latency = 0; int negative = 0;
-        if (pa_stream_get_latency(stream, &latency, &negative) >= 0) {
-            if (negative)
-                latency = 0 - latency;
-        } else {
-            //qWarning() << "pa_stream_get_latency failed";
-        }*/
-
         auto worker = ContentServerWorker::instance();
-        //worker->dispatchPulseData(data, static_cast<int>(nbytes), latency);
         worker->dispatchPulseData(data, static_cast<int>(nbytes));
     }
 
