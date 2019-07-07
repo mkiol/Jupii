@@ -211,6 +211,7 @@ private:
     bool m_emitNextUriChanged = false;
     bool m_blockEmitUriChanged = false;
     bool m_pendingControlableSignal = false;
+    bool m_stopCalled = false;
     const ContentServer::ItemMeta* m_currentMeta = nullptr;
 
     QTimer m_seekTimer;

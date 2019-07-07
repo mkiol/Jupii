@@ -201,6 +201,7 @@ void AVTransport::reset()
     m_currentTransportActions = 0;
     m_futureSeek = 0;
     m_nextURISupported = true;
+    m_stopCalled = false;
     updateMeta();
 
     emit currentURIChanged();
@@ -255,10 +256,12 @@ void AVTransport::transportStateHandler()
 
     if (m_transportState == Stopped &&
         m_oldTransportState == Playing &&
-        getCurrentType() != T_Image) {
+        getCurrentType() != T_Image && !m_stopCalled) {
         qDebug() << "Track has ended";
         emit trackEnded();
     }
+
+    m_stopCalled = false;
 
     //qDebug() << "--> aUPDATE transportStateHandler";
     asyncUpdate();
@@ -582,6 +585,8 @@ bool AVTransport::isIgnoreActions()
 
 void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 {
+    qDebug() << "setLocalContent:" << cid << nid;
+
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
@@ -799,8 +804,6 @@ void AVTransport::pause()
     }
 
     if (m_currentTrackDuration <= 0) {
-        // Utils::isUrlMic(getCurrentId())
-        //qDebug() << "Current url is Mic, so stopping instead pausing";
         qDebug() << "Possibly live streaming content, so stopping instead pausing";
         stop();
         return;
@@ -862,8 +865,10 @@ void AVTransport::stop()
 
         qDebug() << "Calling: stop";
 
+        m_stopCalled = true;
         if (!handleError(srv->stop())) {
             qWarning() << "Error response for stop()";
+            m_stopCalled = false;
             if (!getInited()) {
                 m_updateMutex.unlock();
                 qWarning() << "AVTransport service is not inited";
