@@ -16,7 +16,7 @@
 int PulseAudioSource::nullDataSize = 0;
 bool PulseAudioSource::started = false;
 bool PulseAudioSource::shutdown = false;
-const int PulseAudioSource::timerDelta = 1000/60; // msec
+const int PulseAudioSource::timerDelta = 1000/30; // msec
 bool PulseAudioSource::timerActive = false;
 bool PulseAudioSource::muted = false;
 pa_sample_spec PulseAudioSource::sampleSpec = {PA_SAMPLE_S16LE, 44100u, 2};

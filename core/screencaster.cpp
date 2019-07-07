@@ -382,9 +382,10 @@ bool ScreenCaster::init()
     out_format_ctx->pb = avio_alloc_context(outbuf, outbuf_size, 1, nullptr, nullptr,
                                             write_packet_callback, nullptr);
     if (s->getScreenAudio()) {
-        auto out_audio_codec = avcodec_find_encoder(AV_CODEC_ID_AAC);
+        //auto out_audio_codec = avcodec_find_encoder(AV_CODEC_ID_AAC);
+        auto out_audio_codec = avcodec_find_encoder(AV_CODEC_ID_MP3);
         if (!out_audio_codec) {
-            qWarning() << "Error in avcodec_find_encoder for AAC";
+            qWarning() << "Error in avcodec_find_encoder";
             return false;
         }
 
@@ -477,6 +478,7 @@ int ScreenCaster::write_packet_callback(void *opaque, uint8_t *buf, int buf_size
 {
     Q_UNUSED(opaque);
     auto worker = ContentServerWorker::instance();
+    qDebug() << "write_packet_callback:" << buf_size;
     worker->sendScreenCaptureData(static_cast<void*>(buf), buf_size);
     return buf_size;
 }
@@ -531,7 +533,7 @@ bool ScreenCaster::writeAudioData(const QByteArray& data)
                             out_pkt.duration = av_rescale_q(out_pkt.duration, in_tb, out_tb);
                             out_pkt.pos = -1;
                             ret = av_interleaved_write_frame(out_format_ctx, &out_pkt);
-                            //qDebug() << "av_write_frame:" << av_make_error_string(errbuf, 50, ret);
+                            //qDebug() << "audio av_write_frame:" << av_make_error_string(errbuf, 50, ret);
                             if (ret < 0) {
                                 qWarning() << "Error in av_write_frame for audio";
                             }
@@ -751,24 +753,18 @@ void ScreenCaster::readVideoFrame()
                         //qDebug() << "avcodec_receive_packet:" << av_make_error_string(errbuf, 50, ret);
                         if (ret == 0) {
                             //qDebug() << "Video packet encoded";
-                            auto in_video_stream  = in_video_format_ctx->streams[0];
-                            auto out_video_stream = out_format_ctx->streams[0];
+                            auto in_tb  = AVRational{1, 1000000};
+                            auto out_tb = out_format_ctx->streams[0]->time_base;
                             out_pkt.stream_index = 0; // video out stream
-                            out_pkt.pts = av_rescale_q_rnd(out_pkt.pts,
-                               in_video_stream->time_base,
-                               out_video_stream->time_base,
+                            out_pkt.pts = av_rescale_q_rnd(out_pkt.pts, in_tb, out_tb,
                                static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
-                            out_pkt.dts = av_rescale_q_rnd(out_pkt.dts,
-                               in_video_stream->time_base,
-                               out_video_stream->time_base,
+                            out_pkt.dts = av_rescale_q_rnd(out_pkt.dts, in_tb, out_tb,
                                static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
-                            out_pkt.duration = av_rescale_q(out_pkt.duration,
-                                                            in_video_stream->time_base,
-                                                            out_video_stream->time_base);
+                            out_pkt.duration = av_rescale_q(out_pkt.duration, in_tb, out_tb);
                             out_pkt.pos = -1;
                             //ret = av_write_frame(out_format_ctx, &out_pkt);
                             ret = av_interleaved_write_frame(out_format_ctx, &out_pkt);
-                            //qDebug() << "av_write_frame:" << av_make_error_string(errbuf, 50, ret);
+                            //qDebug() << "video av_write_frame:" << av_make_error_string(errbuf, 50, ret);
                             if (ret < 0) {
                                 qWarning() << "Error in av_write_frame for video";
                             }

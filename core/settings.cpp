@@ -339,7 +339,7 @@ void Settings::setScreenAudio(bool value)
 
 bool Settings::getScreenAudio()
 {
-    return settings.value("screenaudio", true).toBool();
+    return settings.value("screenaudio", false).toBool();
 }
 
 void Settings::setAudioCaptureMode(int value)
