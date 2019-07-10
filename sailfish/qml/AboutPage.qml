@@ -119,6 +119,12 @@ Page {
                 text: "TagLib - Copyright &copy; 2002-2008 Scott Wheeler"
             }
 
+            PaddedLabel {
+                horizontalAlignment: Text.AlignLeft
+                textFormat: Text.RichText
+                text: "FFmpeg"
+            }
+
             Spacer {}
         }
 
