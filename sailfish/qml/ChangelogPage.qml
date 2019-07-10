@@ -29,6 +29,37 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.4.0 (beta)")
+            }
+
+            LogItem {
+                title: "Screen capture"
+                description: "Screen data is sent as a video stream to remote DLNA device. " +
+                             "Be aware that due to buffering there is a delay " +
+                             "between phone and the video displayed on the remote screen. " +
+                             "Screen capturing requires Jupii to run as a privileged app, " +
+                             "therefore this feature will be enabled only in OpenRepos package. " +
+                             "The implementation is inspired and partially based on " +
+                             "<a href=\"https://github.com/mer-qa/lipstick2vnc/\">lipstick2vnc</a> project."
+            }
+
+            LogItem {
+                title: "Microphone and Audio capture improvements"
+                description: "Audio capturing and Microphone features have been significantly improved. " +
+                             "Audio streaming has lower delay and the overall performance, " +
+                             "including impact on battery, is much better. " +
+                             "Moreover, microphone data is now always encoded to MP3 which provides " +
+                             "better compatibility with various DLNA devices."
+            }
+
+            LogItem {
+                title: "Improved search on Album, Recordings and gPodder pages"
+                description: "Searching takes into account many different fields like: " +
+                             "album title, artist name, station name, podcast and episode title. " +
+                             "There is also an option to sort search results."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.3.1 (beta)")
             }
 
