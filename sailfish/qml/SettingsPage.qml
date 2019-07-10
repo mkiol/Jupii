@@ -101,8 +101,9 @@ Page {
                 automaticCheck: false
                 checked: settings.screenAudio
                 text: qsTr("Screen capture with audio")
-                description: qsTr("During screen capturing, audio is captured as well. " +
-                                  "Audio capturing may cause additional delay.")
+                description: qsTr("During a screen capturing, audio is captured as well. " +
+                                  "Capturing video along with audio is still in beta state, so " +
+                                  "it may decrease a quality of the streaming and cause additional delay.")
                 onClicked: {
                     settings.screenAudio = !settings.screenAudio
                 }

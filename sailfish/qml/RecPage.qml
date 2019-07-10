@@ -93,8 +93,8 @@ Dialog {
 
             MenuItem {
                 text: qsTr("Sort by: %1")
-                        .arg(itemModel.queryType == 0 ? qsTr("Time of recording") :
-                        itemModel.queryType == 1 ? qsTr("Title") : qsTr("Name of station"));
+                        .arg(itemModel.queryType == 0 ? qsTr("Recording time") :
+                        itemModel.queryType == 1 ? qsTr("Title") : qsTr("Station name"));
                 onClicked: {
                     var m = itemModel.queryType + 1
                     if (m >= 3)

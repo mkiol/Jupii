@@ -77,7 +77,7 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("Search and sort by: %1")
+                text: qsTr("Sort by: %1")
                         .arg(itemModel.queryType == 0 ? qsTr("Album") : qsTr("Artist"));
                 onClicked: {
                     itemModel.queryType = itemModel.queryType == 0 ? 1 : 0
