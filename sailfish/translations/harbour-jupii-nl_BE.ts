@@ -109,6 +109,10 @@
         <source>Recordings</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Screen capture</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AddUrlPage</name>
@@ -160,6 +164,18 @@
     </message>
     <message>
         <source>Search albums</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Album</source>
+        <translation type="unfinished">Album</translation>
+    </message>
+    <message>
+        <source>Artist</source>
+        <translation type="unfinished">Artiest</translation>
+    </message>
+    <message>
+        <source>Sort by: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -225,7 +241,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Screen casting</source>
+        <source>Screen capture</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -457,11 +473,11 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Captured application</source>
+        <source>Microphone sensitivity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Microphone sensitivity</source>
+        <source>Audio source</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -602,6 +618,22 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
             <numerusform></numerusform>
         </translation>
     </message>
+    <message>
+        <source>Title</source>
+        <translation type="unfinished">Titel</translation>
+    </message>
+    <message>
+        <source>Sort by: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recording time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Station name</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RenderingControl</name>
@@ -706,30 +738,6 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MP3 44100Hz 96 kbps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>PCM 22050Hz 706 kbps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Audio capture format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Stream recorder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -751,6 +759,30 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen capture with audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Internet streaming mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Proxy (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Redirection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
