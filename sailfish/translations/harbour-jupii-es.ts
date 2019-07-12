@@ -48,15 +48,15 @@
     <name>AddDevicePage</name>
     <message>
         <source>Add</source>
-        <translation type="vanished">Agregar</translation>
+        <translation>Agregar</translation>
     </message>
     <message>
         <source>Enter IP address</source>
-        <translation type="vanished">Marcar dirección IP</translation>
+        <translation>Marcar dirección IP</translation>
     </message>
     <message>
         <source>IP address</source>
-        <translation type="vanished">Dirección IP</translation>
+        <translation>Dirección IP</translation>
     </message>
 </context>
 <context>
@@ -109,7 +109,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="142"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Captura de pantalla</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
@@ -119,7 +119,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="165"/>
         <source>Recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Grabando</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="173"/>
@@ -185,17 +185,17 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="80"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar por: %1</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Album</source>
-        <translation type="unfinished">Álbum</translation>
+        <translation>Álbum</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Artist</source>
-        <translation type="unfinished">Artista</translation>
+        <translation>Artista</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
@@ -227,7 +227,7 @@
     </message>
     <message>
         <source>Search episodes</source>
-        <translation type="obsolete">Buscar episodios</translation>
+        <translation>Buscar episodios</translation>
     </message>
 </context>
 <context>
@@ -305,7 +305,7 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="2440"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Captura de pantalla</translation>
     </message>
 </context>
 <context>
@@ -406,7 +406,7 @@
     </message>
     <message>
         <source>Add device manually</source>
-        <translation type="vanished">Agregar manual</translation>
+        <translation>Agregar manual</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="73"/>
@@ -427,7 +427,7 @@
     <message>
         <location filename="../qml/DevicesPage.qml" line="111"/>
         <source>Toggle power</source>
-        <translation type="unfinished"></translation>
+        <translation>Potencia de palanca</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="131"/>
@@ -547,12 +547,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Captured application</source>
-        <translation type="vanished">Aplicación capturada</translation>
+        <translation>Aplicación capturada</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="147"/>
         <source>Audio source</source>
-        <translation type="unfinished"></translation>
+        <translation>Fuente de audio</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="149"/>
@@ -601,7 +601,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Microphone volume</source>
-        <translation type="vanished">Volumen de micrófono</translation>
+        <translation>Volumen de micrófono</translation>
     </message>
 </context>
 <context>
@@ -769,22 +769,22 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/RecPage.qml" line="95"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar por: %1</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="96"/>
         <source>Recording time</source>
-        <translation type="unfinished"></translation>
+        <translation>Tiempo de grabación</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Station name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de estación</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Title</source>
-        <translation type="unfinished">Título</translation>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="124"/>
@@ -873,7 +873,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation type="vanished">Cambia el nivel de volumen usando las teclas de volumen del teléfono físico, el nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
+        <translation>Cambia el nivel de volumen usando las teclas de volumen del teléfono físico, el nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="90"/>
@@ -882,33 +882,33 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Audio capture format</source>
-        <translation type="vanished">Formato de audio</translation>
+        <translation>Formato de audio</translation>
     </message>
     <message>
         <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="vanished">MP3 44100Hz 128 kbps(predefinido)</translation>
+        <translation>MP3 44100Hz 128 kbps(predefinido)</translation>
     </message>
     <message>
         <source>MP3 44100Hz 96 kbps</source>
-        <translation type="vanished">MP3 44100Hz 96 kbps</translation>
+        <translation>MP3 44100Hz 96 kbps</translation>
     </message>
     <message>
         <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="vanished">PCM 44100Hz 1411 kbps</translation>
+        <translation>PCM 44100Hz 1411 kbps</translation>
     </message>
     <message>
         <source>PCM 22050Hz 706 kbps</source>
-        <translation type="vanished">PCM 22050Hz 706 kbps</translation>
+        <translation>PCM 22050Hz 706 kbps</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Screen capture with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Captura de pantalla con audio.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
         <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="unfinished"></translation>
+        <translation>Durante una captura de pantalla, el audio también se captura. La captura de video junto con el audio aún se encuentra en estado beta, por lo que puede disminuir la calidad de la transmisión y causar un retraso adicional.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="164"/>
@@ -933,7 +933,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="244"/>
         <source>Proxy (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy (por defecto)</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="256"/>
@@ -942,11 +942,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Adding devices manually</source>
-        <translation type="vanished">Agregar manual</translation>
+        <translation>Agregar manual</translation>
     </message>
     <message>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation type="vanished">Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
+        <translation>Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="228"/>
@@ -955,11 +955,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation type="vanished">La transmisión de internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predefinido) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido a host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para funcione la transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 no es necesario que se habilitarlo todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
+        <translation>La transmisión de internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predefinido) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido a host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para funcione la transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 no es necesario que se habilitarlo todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
     </message>
     <message>
         <source>Proxy</source>
-        <translation type="vanished">Proxy</translation>
+        <translation>Proxy</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="245"/>
