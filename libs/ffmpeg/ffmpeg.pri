@@ -11,14 +11,18 @@ HEADERS += $$FFMPEG_ROOT/src/libswscale/*.h \
            $$FFMPEG_ROOT/src/libavutil/*.h
 
 desktop {
-    LIBS += -lz -lxcb -lxcb-shm -lxcb-xfixes -lxcb-shape -lx264 -lmp3lame -lbz2
-    LIBS += -L$$FFMPEG_ROOT/build/amd64/ \
-            -l:libavformat.a \
-            -l:libavcodec.a \
-            -l:libswscale.a \
-            -l:libswresample.a \
-            -l:libavdevice.a \
-            -l:libavutil.a
+    static_ffmpeg {
+        LIBS += -lz -lxcb -lxcb-shm -lxcb-xfixes -lxcb-shape -lmp3lame -lbz2
+        LIBS += -L$$FFMPEG_ROOT/build/amd64/ \
+                -l:libavformat.a \
+                -l:libavcodec.a \
+                -l:libswscale.a \
+                -l:libswresample.a \
+                -l:libavdevice.a \
+                -l:libavutil.a
+    } else {
+        LIBS += -lmp3lame -lavdevice -lavutil -lavformat -lavcodec -lswscale -lswresample
+    }
 }
 
 sailfish {

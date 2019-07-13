@@ -34,7 +34,9 @@ FORMS += \
 OTHER_FILES += \
     $$PROJECTDIR/dbus/org.jupii.xml \
     packages/*.spec \
-    packages/*.sh
+    packages/*.sh \
+    packages/control \
+    packages/PKGINFO
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

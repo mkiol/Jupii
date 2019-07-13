@@ -12,13 +12,8 @@ system(qdbusxml2cpp $$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml -p $
 desktop {
     LIBS += -ltag -lpulse
     INCLUDEPATH += /usr/include/taglib
-
-    # static FFMPEG linking
     include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
-
-    # dynamic FFMPEG linking
-    #LIBS += -lmp3lame -lx264 -lavdevice -lavutil -lavformat -lavcodec -lswscale -lswresample
-    #INCLUDEPATH += /usr/include/ffmpeg
+    include($$PROJECTDIR/libs/x264/x264.pri)
 }
 
 sailfish {
