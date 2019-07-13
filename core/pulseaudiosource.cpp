@@ -16,7 +16,7 @@
 int PulseAudioSource::nullDataSize = 0;
 bool PulseAudioSource::started = false;
 bool PulseAudioSource::shutdown = false;
-const int PulseAudioSource::timerDelta = 1000/30; // msec
+const int PulseAudioSource::timerDelta = 1000/25; // msec, must be divided by 4
 bool PulseAudioSource::timerActive = false;
 bool PulseAudioSource::muted = false;
 pa_sample_spec PulseAudioSource::sampleSpec = {PA_SAMPLE_S16LE, 44100u, 2};
@@ -459,8 +459,7 @@ void PulseAudioSource::deinit()
 bool PulseAudioSource::init()
 {
     shutdown = false;
-    nullDataSize = static_cast<int>((static_cast<float>(timerDelta)/1000) *
-                                    2 * sampleSpec.rate * sampleSpec.channels);
+    nullDataSize = int(double(timerDelta)/1000) * 2 * int(sampleSpec.rate) * int(sampleSpec.channels);
     qDebug() << "null data size:" << nullDataSize;
 
     ml = pa_mainloop_new();
