@@ -8,6 +8,11 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Thu Jul 11 2019 Michal Kosciesza <michal@mkiol.net> 2.4.0-1
+- Screen capture
+- Audio capture and Microphone improvements
+- Search improvements in Album, Recordings and gPodder pages
+
 * Sun May 19 2019 Michal Kosciesza <michal@mkiol.net> 2.3.1-1
 - Landscape mode
 - Translations update: pl, ru, sl, sv, zh_CN

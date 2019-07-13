@@ -15,7 +15,7 @@ Name:       harbour-jupii
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
-Version:    2.3.1
+Version:    2.4.0
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -70,7 +70,6 @@ desktop-file-install --delete-original       \
 
 %files
 %defattr(-,root,root,-)
-%attr(2777, root, privileged) %{_bindir}/%{name}
 %{_bindir}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
