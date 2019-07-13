@@ -104,7 +104,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="142"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Skärminspelning</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
@@ -170,17 +170,17 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="80"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortera efter: %1</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Album</source>
-        <translation type="unfinished">Album</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Artist</source>
-        <translation type="unfinished">Artist</translation>
+        <translation>Artist</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
@@ -276,7 +276,7 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="2440"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Skärminspelning</translation>
     </message>
 </context>
 <context>
@@ -400,24 +400,14 @@
         <location filename="../qml/DevicesPage.qml" line="131"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga enheter hittades. 
+Dra neråt för att hitta fler enheter i ditt nätverk.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="133"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No devices found.
-Pull down to find more devices in your network.</source>
-        <translation type="vanished">Inga enheter hittades.
-Dra neråt för att hitta fler enheter i ditt nätverk.</translation>
-    </message>
-    <message>
-        <source>Not connected.
-Pull down to connect to the local network.</source>
-        <translation type="vanished">Inte ansluten.
+        <translation>Inte ansluten. 
 Dra neråt för att ansluta till det lokala nätverket.</translation>
     </message>
 </context>
@@ -518,10 +508,6 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
         <translation>Titel</translation>
     </message>
     <message>
-        <source>Captured application</source>
-        <translation type="vanished">Inspelad app</translation>
-    </message>
-    <message>
         <location filename="../qml/MediaInfoPage.qml" line="147"/>
         <source>Stream title</source>
         <translation>Strömtitel</translation>
@@ -529,7 +515,7 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="147"/>
         <source>Audio source</source>
-        <translation type="unfinished"></translation>
+        <translation>Ljudkälla</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="149"/>
@@ -742,22 +728,22 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/RecPage.qml" line="95"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortera efter: %1</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="96"/>
         <source>Recording time</source>
-        <translation type="unfinished"></translation>
+        <translation>Inspelningstid</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Station name</source>
-        <translation type="unfinished"></translation>
+        <translation>Stationsnamn</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Title</source>
-        <translation type="unfinished">Titel</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="124"/>
@@ -865,38 +851,14 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
         <translation>Att visa bilder på UPnP-enheter fungerar inte bra för tillfället. Det finns några mindre problem som ännu inte är lösta. Detta alternativ tvingar %1 att visa bilder, trots att det kan orsaka problem.</translation>
     </message>
     <message>
-        <source>Audio capture format</source>
-        <translation type="vanished">Ljudinspelningsformat</translation>
-    </message>
-    <message>
-        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation type="vanished">Strömningsformat som används när %1 spelar in utdata från en annan app. Okomprimerad ström (PMC) resulterar i lägre fördröjning men den högre bithastigheten, dränerar troligen batteriet snabbare.</translation>
-    </message>
-    <message>
-        <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="vanished">MP3 44100Hz 128 kbps (standard)</translation>
-    </message>
-    <message>
-        <source>MP3 44100Hz 96 kbps</source>
-        <translation type="vanished">MP3 44100Hz 96 kbps</translation>
-    </message>
-    <message>
-        <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="vanished">PCM 44100Hz 1411 kbps</translation>
-    </message>
-    <message>
-        <source>PCM 22050Hz 706 kbps</source>
-        <translation type="vanished">PCM 22050Hz 706 kbps</translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Screen capture with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Skärminspelning med ljud</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
         <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="unfinished"></translation>
+        <translation>Under en skärminspelning, spelas även ljudet in. Videoinspelning med ljud är fortfarande i betastadiet, så det kan möjligen försämra strömningskvaliteten och orsaka viss fördröjning.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="164"/>
@@ -926,22 +888,22 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="228"/>
         <source>Internet streaming mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Internetströmmningsläge</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="229"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Strömning från Internet till UPnP-enheter kan hanteras i två lägen. I proxyläget reläar %1 varje paket som tas emot från en strömmningsvärd. I omdirigeringsläget, går den faktiska strömmingen direkt mellan UPnP-enheten och en strömmningsserver, så %1 behöver inte vara aktivt hela tiden. Nackdelen med omdirigeringsläget är att inte varje UPnP-enhet stödjer omdirigering. Därför fungerar inte detta läge korrekt, på vissa enheter. SHOUTcast metadataidentifiering och Stream-inspelaren finns inte tillgängligt när omdirigeringsläget är aktivt.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="244"/>
         <source>Proxy (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy (standard)</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="245"/>
         <source>Redirection</source>
-        <translation type="unfinished"></translation>
+        <translation>Omdirigering</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="255"/>
