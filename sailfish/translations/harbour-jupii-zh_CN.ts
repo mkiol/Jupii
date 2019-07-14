@@ -36,7 +36,7 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="89"/>
         <source>%1 is developed as an open source project under %2.</source>
-        <translation> %2下%1被作为开源项目开发。</translation>
+        <translation> %2 下 %1 被作为开源项目开发。</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="95"/>
@@ -142,7 +142,7 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="59"/>
         <source>Enter Name (optional)</source>
-        <translation>输入名称（可选的）</translation>
+        <translation>输入名称（可选）</translation>
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="60"/>
@@ -152,7 +152,7 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="73"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation>只支持HTTP 网址. 如果网址指向一个播放列表文件, 首先播放列表项目会被添加 。如果没有提供名称，将会基于流媒体数据自动发现。</translation>
+        <translation>只支持 HTTP 网址， 如果网址指向一个播放列表文件, 首先会添加播放列表项目 。如果没有提供名称，将会基于流媒体数据自动生成。</translation>
     </message>
 </context>
 <context>
@@ -160,12 +160,12 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="72"/>
         <source>Albums</source>
-        <translation>专辑</translation>
+        <translation>唱片</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="73"/>
         <source>Search albums</source>
-        <translation>搜索专辑</translation>
+        <translation>搜索唱片</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="80"/>
@@ -197,7 +197,7 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="116"/>
         <source>No albums</source>
-        <translation>没有专辑</translation>
+        <translation>没有唱片</translation>
     </message>
 </context>
 <context>
@@ -540,7 +540,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="162"/>
         <source>Album</source>
-        <translation>专辑</translation>
+        <translation>唱片</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="169"/>
