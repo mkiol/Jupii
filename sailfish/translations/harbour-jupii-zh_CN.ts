@@ -36,7 +36,7 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="89"/>
         <source>%1 is developed as an open source project under %2.</source>
-        <translation> %2 下 %1 被作为开源项目开发。</translation>
+        <translation>&#xa0;%2 下 %1 被作为开源项目开发。</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="95"/>
@@ -104,7 +104,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="142"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>录屏</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
@@ -170,17 +170,17 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="80"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>分类方式: %1</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Album</source>
-        <translation type="unfinished"></translation>
+        <translation>唱片</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Artist</source>
-        <translation type="unfinished">艺术家</translation>
+        <translation>艺术家</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
@@ -274,7 +274,7 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="2440"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>录屏</translation>
     </message>
 </context>
 <context>
@@ -398,13 +398,13 @@
         <location filename="../qml/DevicesPage.qml" line="131"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation type="unfinished"></translation>
+        <translation>没有发现设备。下拉以发现更多网络中的设备。</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="133"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>未连接。下拉以连接到本地网络。</translation>
     </message>
     <message>
         <source>No devices found.
@@ -525,7 +525,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="147"/>
         <source>Audio source</source>
-        <translation type="unfinished"></translation>
+        <translation>音源</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="149"/>
@@ -736,22 +736,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/RecPage.qml" line="95"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>分类方式: %1</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="96"/>
         <source>Recording time</source>
-        <translation type="unfinished"></translation>
+        <translation>录音时长</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Station name</source>
-        <translation type="unfinished"></translation>
+        <translation>站点名称</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Title</source>
-        <translation type="unfinished">字幕</translation>
+        <translation>字幕</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="124"/>
@@ -884,12 +884,12 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="103"/>
         <source>Screen capture with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>录屏时同时录制音频</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="104"/>
         <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="unfinished"></translation>
+        <translation>在录屏时，同时录制音频。该功能仍处于测试阶段，因此可能会降低流媒体质量并产生一些延迟。</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="164"/>
@@ -919,22 +919,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="228"/>
         <source>Internet streaming mode</source>
-        <translation type="unfinished"></translation>
+        <translation>网络流模式</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="229"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>来自网络的流媒体传输到UPnP设备可以在两种模式下处理。在代理模式下，%1 中继从流主机接收到的每个数据包。在重定向模式中，实际的流直接在UPnP设备和流媒体服务器之间传输，因此不需要一直开启 %1 。重定向模式的缺点是并非每个UPnP设备都支持重定向，因此在某些设备上这种模式将不能正常工作。启用重定向模式时，SHOUTcast元数据检测和流记录器不可用。</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="244"/>
         <source>Proxy (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>代理（默认）</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="245"/>
         <source>Redirection</source>
-        <translation type="unfinished"></translation>
+        <translation>重定向方向</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="255"/>
@@ -944,7 +944,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="256"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP 设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1 仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
+        <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP&#xa0;设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1&#xa0;仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
     </message>
 </context>
 <context>
