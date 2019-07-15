@@ -154,15 +154,15 @@ void Directory::discover()
             return true;
         };
 
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 5; ++i) {
             if (m_directory == 0) {
                 qWarning() << "Directory not initialized";
                 setInited(false);
                 emit error(3);
                 return;
             }
+            qDebug() << "traverse:" << i;
             m_directory->traverse(traverseFun);
-            //qDebug() << "traverse found:" << found;
             if (found)
                 break;
         }
