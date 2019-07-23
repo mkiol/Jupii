@@ -101,9 +101,12 @@ public:
         int length = 0;
     };
 
+    static const QString artCookie;
+
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);
-    static QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr, bool* isFile = nullptr, bool *isArt = nullptr);
+    static QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr,
+                             bool* isFile = nullptr, bool *isArt = nullptr);
     static QString bestName(const ItemMeta &meta);
     static Type getContentTypeByExtension(const QString &path);
     static Type getContentTypeByExtension(const QUrl &url);
@@ -114,6 +117,7 @@ public:
     static QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString context = QString());
     static void resolveM3u(QByteArray &data, const QString context);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
+    static bool makeUrl(const QString& id, QUrl& url);
 
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
     Type getContentType(const QString &path);
@@ -209,7 +213,6 @@ private:
     static const QString broadcastItemClass;
     static const QString defaultItemClass;
     static const QByteArray userAgent;
-    static const QString artCookie;
     static const qint64 qlen = 100000;
     static const int threadWait = 1;
     static const int maxRedirections = 5;
@@ -224,7 +227,6 @@ private:
 
     static QByteArray encrypt(const QByteArray& data);
     static QByteArray decrypt(const QByteArray& data);
-    static bool makeUrl(const QString& id, QUrl& url);
     static QString dlnaOrgFlagsForFile();
     static QString dlnaOrgFlagsForStreaming();
     static QString dlnaOrgPnFlags(const QString& mime);

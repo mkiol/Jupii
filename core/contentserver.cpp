@@ -325,7 +325,8 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     }
 
     bool valid, isFile, isArt;
-    auto id = ContentServer::idUrlFromUrl(req->url(), &valid, &isFile, &isArt);
+    auto id = ContentServer::idUrlFromUrl(req->url(), &valid,
+                                          &isFile, &isArt);
 
     qDebug() << "Id:" << id.toString();
 
@@ -340,8 +341,7 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     const ContentServer::ItemMeta *meta;
 
     if (isArt) {
-        // Album Cover Art
-        qWarning() << "Requested content is album cover!";
+        qWarning() << "Requested content is art";
         meta = cs->makeMetaUsingExtension(id);
         requestForFileHandler(id, meta, req, resp);
         delete meta;
@@ -432,9 +432,13 @@ void ContentServerWorker::requestForFileHandler(const QUrl &id,
                                                 QHttpRequest *req, QHttpResponse *resp)
 {
     auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
-
     if (meta->type == ContentServer::TypeVideo &&
         type == ContentServer::TypeMusic) {
+        if (id.scheme() == "qrc") {
+            qWarning() << "Unable to extract audio stream from qrc";
+            sendEmptyResponse(resp, 500);
+            return;
+        }
         qDebug() << "Video content and type is audio => extracting audio stream";
         ContentServer::AvData data;
         if (!ContentServer::extractAudio(meta->path, data)) {
@@ -1817,7 +1821,8 @@ QString ContentServer::pathFromUrl(const QUrl &url) const
     return QString();
 }
 
-QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile, bool* isArt)
+QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile,
+                                 bool* isArt)
 {
     QString hash = url.path();
     hash = hash.right(hash.length()-1);
@@ -1834,7 +1839,7 @@ QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile, bool* 
     QUrlQuery q(id);
     if (!q.hasQueryItem(Utils::cookieKey) ||
             q.queryItemValue(Utils::cookieKey).isEmpty()) {
-        qWarning() << "Id has no cookie";
+        //qWarning() << "Id has no cookie";
         if (ok)
             *ok = false;
         return QUrl();
@@ -2668,16 +2673,19 @@ ContentServer::ItemMeta*
 ContentServer::makeMetaUsingExtension(const QUrl &url)
 {
     bool isFile = url.isLocalFile();
+    bool isQrc = url.scheme() == "qrc";
     auto item = new ContentServer::ItemMeta;
     item->valid = true;
-    item->path = isFile ? url.toLocalFile() : "";
+    item->path = isFile ? url.toLocalFile() :
+                          isQrc ? (":" + Utils::urlFromId(url).toString().mid(6)) :
+                                  "";
     item->url = url;
     item->mime = getContentMimeByExtension(url);
     item->type = getContentTypeByExtension(url);
     item->size = 0;
     item->filename = url.fileName();
-    item->local = isFile;
-    item->seekSupported = isFile;
+    item->local = isFile || isQrc;
+    item->seekSupported = isFile || isQrc;
     return item;
 }
 
