@@ -46,9 +46,12 @@ private slots:
     void doPulseIteration();
 
 private:
+    static const char* nullSink;
+    static const char* nullSinkMonitor;
     struct SinkInput {
         uint32_t idx = PA_INVALID_INDEX;
         uint32_t clientIdx = PA_INVALID_INDEX;
+        uint32_t sinkIdx = PA_INVALID_INDEX;
         QString name;
         bool corked = false;
     };
@@ -67,25 +70,28 @@ private:
     static bool muted;
     static pa_stream *stream;
     static uint32_t connectedSinkInput;
+    static uint32_t connectedSink;
     static pa_mainloop *ml;
     static pa_mainloop_api *mla;
     static pa_context *ctx;
     static QHash<uint32_t, PulseAudioSource::Client> clients;
     static QHash<uint32_t, PulseAudioSource::SinkInput> sinkInputs;
+    static QHash<uint32_t, QByteArray> monitorSources; // sink idx => source name
     static bool init();
     static void deinit();
     static void subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata);
     static void stateCallback(pa_context *ctx, void *userdata);
     static void successSubscribeCallback(pa_context *ctx, int success, void *userdata);
     static void streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata);
-    static bool startRecordStream(pa_context *ctx, uint32_t si);
+    static bool startRecordStream(pa_context *ctx, const SinkInput &si);
     static void stopRecordStream();
     static void sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata);
+    static void sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, int eol, void *userdata);
     static void clientInfoCallback(pa_context *ctx, const pa_client_info *i, int eol, void *userdata);
     static void timeEventCallback(pa_mainloop_api *mla, pa_time_event *e, const struct timeval *tv, void *userdata);
     static void contextSuccessCallback(pa_context *ctx, int success, void *userdata);
     static bool checkIfShouldBeEnabled();
-    static void muteConnectedSinkInput();
+    static void muteConnectedSinkInput(const SinkInput &si);
     static void unmuteConnectedSinkInput();
     static bool isBlacklisted(const char* name);
     static void correctClientName(Client &client);

@@ -13,6 +13,8 @@
 #include "info.h"
 #include "contentserver.h"
 
+const char* PulseAudioSource::nullSink = "sink.null";
+const char* PulseAudioSource::nullSinkMonitor = "sink.null.monitor";
 int PulseAudioSource::nullDataSize = 0;
 bool PulseAudioSource::started = false;
 bool PulseAudioSource::shutdown = false;
@@ -22,11 +24,13 @@ bool PulseAudioSource::muted = false;
 pa_sample_spec PulseAudioSource::sampleSpec = {PA_SAMPLE_S16LE, 44100u, 2};
 pa_stream* PulseAudioSource::stream = nullptr;
 uint32_t PulseAudioSource::connectedSinkInput = PA_INVALID_INDEX;
+uint32_t PulseAudioSource::connectedSink = PA_INVALID_INDEX;
 pa_mainloop* PulseAudioSource::ml = nullptr;
 pa_mainloop_api* PulseAudioSource::mla = nullptr;
 pa_context* PulseAudioSource::ctx = nullptr;
 QHash<uint32_t, PulseAudioSource::Client> PulseAudioSource::clients = QHash<uint32_t, PulseAudioSource::Client>();
 QHash<uint32_t, PulseAudioSource::SinkInput> PulseAudioSource::sinkInputs = QHash<uint32_t, PulseAudioSource::SinkInput>();
+QHash<uint32_t, QByteArray> PulseAudioSource::monitorSources = QHash<uint32_t, QByteArray>();
 
 PulseAudioSource::PulseAudioSource(QObject *parent) : QObject(parent)
 {
@@ -97,6 +101,10 @@ void PulseAudioSource::subscriptionCallback(pa_context *ctx, pa_subscription_eve
             qDebug() << "Removing pulse-audio client:" << idx;
             clients.remove(idx);
         }
+    } else if (facility == PA_SUBSCRIPTION_EVENT_SINK) {
+        if (type == PA_SUBSCRIPTION_EVENT_NEW || type == PA_SUBSCRIPTION_EVENT_CHANGE) {
+            pa_operation_unref(pa_context_get_sink_info_by_index(ctx, idx, sinkInfoCallback, nullptr));
+        }
     }
 }
 
@@ -106,6 +114,7 @@ void PulseAudioSource::successSubscribeCallback(pa_context *ctx, int success, vo
     Q_UNUSED(userdata);
 
     if (success) {
+         pa_operation_unref(pa_context_get_sink_info_list(ctx, sinkInfoCallback, nullptr));
          pa_operation_unref(pa_context_get_client_info_list(ctx, clientInfoCallback, nullptr));
          pa_operation_unref(pa_context_get_sink_input_info_list(ctx, sinkInputInfoCallback, nullptr));
     }
@@ -129,6 +138,7 @@ void PulseAudioSource::stateCallback(pa_context *ctx, void *userdata)
         case PA_CONTEXT_READY: {
             qDebug() << "Pulse-audio ready";
             auto mask = static_cast<pa_subscription_mask_t>(
+                        PA_SUBSCRIPTION_MASK_SINK|
                         PA_SUBSCRIPTION_MASK_SINK_INPUT|
                         PA_SUBSCRIPTION_MASK_CLIENT);
             pa_operation_unref(pa_context_subscribe(
@@ -185,7 +195,10 @@ void PulseAudioSource::stopRecordStream()
     if (stream) {
         unmuteConnectedSinkInput();
         qDebug() << "Disconnecting pulse-audio stream";
-        pa_stream_disconnect(stream);
+        int ret;
+        if (ret = pa_stream_disconnect(stream) <  0) {
+            qWarning() << "Pulse-audio stream disconnect error:" << pa_strerror(ret);
+        }
         pa_stream_unref(stream);
         stream = nullptr;
         connectedSinkInput = PA_INVALID_INDEX;
@@ -199,18 +212,20 @@ void PulseAudioSource::contextSuccessCallback(pa_context *ctx, int success, void
     qDebug() << "contextSuccessCallback:" << success;
 }
 
-void PulseAudioSource::muteConnectedSinkInput()
+void PulseAudioSource::muteConnectedSinkInput(const SinkInput& si)
 {
 #ifdef SAILFISH
-    if (!muted && connectedSinkInput != PA_INVALID_INDEX) {
-        qDebug() << "Muting sink input by moving it to null sink";
+    if (!muted && connectedSinkInput != PA_INVALID_INDEX &&
+            si.sinkIdx != PA_INVALID_INDEX) {
+        qDebug() << "Muting sink input by moving it to null sink:"
+                 << connectedSinkInput << connectedSink;
         auto o = pa_context_move_sink_input_by_name(
-                    ctx, connectedSinkInput, "sink.null",
+                    ctx, connectedSinkInput, nullSink,
                     contextSuccessCallback, nullptr);
-        //qDebug() << "o:" << o;
         if (o)
             pa_operation_unref(o);
         muted = true;
+        connectedSink = si.sinkIdx;
     } else {
         qDebug() << "Cannot mute";
     }
@@ -221,12 +236,13 @@ void PulseAudioSource::unmuteConnectedSinkInput()
 {
 #ifdef SAILFISH
     if (connectedSinkInput != PA_INVALID_INDEX &&
+            connectedSink != PA_INVALID_INDEX &&
             sinkInputs.contains(connectedSinkInput)) {
-        qDebug() << "Unmuting sink input by moving it to primary sink";
-        auto o = pa_context_move_sink_input_by_name(
-                   ctx, connectedSinkInput, "sink.primary",
+        qDebug() << "Unmuting sink input by moving it to previous sink:"
+                 << connectedSinkInput << connectedSink;
+        auto o = pa_context_move_sink_input_by_index(
+                   ctx, connectedSinkInput, connectedSink,
                    contextSuccessCallback, nullptr);
-        //qDebug() << "o:" << o;
         if (o)
             pa_operation_unref(o);
     } else {
@@ -236,34 +252,54 @@ void PulseAudioSource::unmuteConnectedSinkInput()
 #endif
 }
 
-bool PulseAudioSource::startRecordStream(pa_context *ctx, uint32_t si)
+bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
 {
     stopRecordStream();
 
     qDebug() << "Creating new pulse-audio stream connected to sink input";
+    qDebug() << "Orig monitor source:" << monitorSources.value(si.sinkIdx);
     stream = pa_stream_new(ctx, Jupii::APP_NAME, &sampleSpec, nullptr);
     pa_stream_set_read_callback(stream, streamRequestCallback, nullptr);
-    connectedSinkInput = si;
+    connectedSinkInput = si.idx;
 
-    muteConnectedSinkInput();
+    muteConnectedSinkInput(si);
 
-    if (pa_stream_set_monitor_stream(stream, si) < 0) {
-        qWarning() << "Pulse-audio stream set monitor error";
-    } else if (pa_stream_connect_record(stream, nullptr, nullptr, PA_STREAM_NOFLAGS) < 0) {
-        qWarning() << "Pulse-audio stream connect record error";
+    const char* source = muted ? nullSinkMonitor : monitorSources.value(si.sinkIdx).constData();
+    qDebug() << "New monitor source:" << source;
+    int ret;
+    if (ret = pa_stream_set_monitor_stream(stream, si.idx) < 0) {
+        qCritical() << "Pulse-audio stream set monitor error:" << pa_strerror(ret);
+    } else if (ret = pa_stream_connect_record(stream, source, nullptr, PA_STREAM_NOFLAGS) < 0) {
+        qCritical() << "Pulse-audio stream connect record error:" << pa_strerror(ret);
     } else {
         qDebug() << "Sink input successfully connected";
         return true;
     }
 
     // something went wrong, so reseting stream
-    pa_stream_disconnect(stream);
+    if (ret = pa_stream_disconnect(stream) < 0) {
+        qWarning() << "Pulse-audio stream disconnect error:" << pa_strerror(ret);
+    }
     pa_stream_unref(stream);
     unmuteConnectedSinkInput();
     stream = nullptr;
     connectedSinkInput = PA_INVALID_INDEX;
 
     return false;
+}
+
+void PulseAudioSource::sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, int eol, void *userdata)
+{
+    Q_ASSERT(ctx);
+    Q_UNUSED(userdata);
+
+    if (!eol) {
+        qDebug() << "sinkInfoCallback:";
+        qDebug() << "  index:" << i->index;
+        qDebug() << "  name:" << i->name;
+        qDebug() << "  monitor_source_name:" << i->monitor_source_name;
+        monitorSources[i->index] = QByteArray(i->monitor_source_name);
+    }
 }
 
 void PulseAudioSource::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata)
@@ -294,6 +330,7 @@ void PulseAudioSource::sinkInputInfoCallback(pa_context *ctx, const pa_sink_inpu
         si.clientIdx = i->client;
         si.name = i->name;
         si.corked = i->corked;
+        si.sinkIdx = i->sink;
     } else {
         discoverStream();
     }
@@ -313,7 +350,7 @@ void PulseAudioSource::discoverStream()
                     qDebug() << "Starting recording for:";
                     qDebug() << "  sink input:" << si.idx << si.name;
                     qDebug() << "  client:" << client.idx << client.name;
-                    if (startRecordStream(ctx, si.idx))
+                    if (startRecordStream(ctx, si))
                         needUpdate = true;
                 } else {
                     qDebug() << "Sink is already connected";
@@ -454,15 +491,22 @@ void PulseAudioSource::deinit()
         ml = nullptr;
         mla = nullptr;
     }
+
+    connectedSinkInput = PA_INVALID_INDEX;
+    connectedSink = PA_INVALID_INDEX;
+    clients.clear();
+    sinkInputs.clear();
+    monitorSources.clear();
 }
 
 bool PulseAudioSource::init()
 {
     shutdown = false;
-    nullDataSize = int(double(timerDelta)/1000) * 2 * int(sampleSpec.rate) * int(sampleSpec.channels);
+    nullDataSize = int(double(timerDelta)/1000 * 2 * sampleSpec.rate * sampleSpec.channels);
     qDebug() << "null data size:" << nullDataSize;
 
     ml = pa_mainloop_new();
+
     mla = pa_mainloop_get_api(ml);
 
     ctx = pa_context_new(mla, Jupii::APP_NAME);
@@ -505,7 +549,6 @@ void PulseAudioSource::doPulseIteration()
     int ret = 0;
     while (pa_mainloop_iterate(PulseAudioSource::ml, 0, &ret) > 0)
         continue;
-    //if (ret == 0) {
     if (ret == 0 && !shutdown) {
         if (!stream) {
             // sending null data (silence) to all connected devices
