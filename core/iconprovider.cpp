@@ -28,23 +28,24 @@ QString IconProvider::themeDirPath()
     QString themeDir;
 #ifdef SAILFISH
     double ratio = MGConfItem("/desktop/sailfish/silica/theme_pixel_ratio").value().toDouble();
-    if (ratio == 0) {
-        qWarning() << "Pixel ratio is 0, defaulting to 1.0.";
-        themeDir = SailfishApp::pathTo("images/z1.0").toString(QUrl::RemoveScheme);
-    } else if (ratio == 1.0) {
+    qDebug() << "Device pixel ratio:" << ratio;
+    if (ratio == 1.0) {
         themeDir = SailfishApp::pathTo("images/z1.0").toString(QUrl::RemoveScheme);
     } else if (ratio == 1.25) {
         themeDir = SailfishApp::pathTo("images/z1.25").toString(QUrl::RemoveScheme);
     } else if (ratio == 1.5) {
         themeDir = SailfishApp::pathTo("images/z1.5").toString(QUrl::RemoveScheme);
-    } else if (ratio == 1.75 || ratio == 1.8) {
+    } else if (ratio == 1.65 || ratio == 1.75 || ratio == 1.8) {
         themeDir = SailfishApp::pathTo("images/z1.75").toString(QUrl::RemoveScheme);
     } else if (ratio == 2.0) {
         themeDir = SailfishApp::pathTo("images/z2.0").toString(QUrl::RemoveScheme);
+    } else {
+        qWarning() << "Unknown pixel ratio so, defaulting to 1.0";
+        themeDir = SailfishApp::pathTo("images/z1.0").toString(QUrl::RemoveScheme);
     }
 
     if (!QDir(themeDir).exists()) {
-        qWarning() << "Theme" << themeDir << "for ratio" << ratio << "doesn't exist!";
+        qWarning() << "Theme " + themeDir + " for ratio " + ratio + " doesn't exist";
         themeDir = SailfishApp::pathTo("images/z1.0").toString(QUrl::RemoveScheme);
     }
 #else
