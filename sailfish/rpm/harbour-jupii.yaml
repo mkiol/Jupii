@@ -1,6 +1,6 @@
 Name: harbour-jupii
 Summary: Jupii
-Version: 2.4.0
+Version: 2.4.1
 Release: 1
 # The contents of the Group field should be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
@@ -29,11 +29,11 @@ PkgConfigBR:
   - audioresource
   - nemonotifications-qt5
   - libpulse
+  - wayland-client
 
 # Build dependencies without a pkgconfig setup can be listed here
 PkgBR:
   - bzip2-devel
-# - package-needed-to-build
 
 # Runtime dependencies which are not automatically detected
 Requires:

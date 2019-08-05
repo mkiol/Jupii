@@ -15,7 +15,7 @@ Name:       harbour-jupii
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
-Version:    2.4.0
+Version:    2.4.1
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -31,6 +31,7 @@ BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(audioresource)
 BuildRequires:  pkgconfig(nemonotifications-qt5)
 BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  bzip2-devel
 BuildRequires:  desktop-file-utils
 

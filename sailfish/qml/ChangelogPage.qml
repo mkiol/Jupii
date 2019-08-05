@@ -29,6 +29,15 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.4.1 (beta)")
+            }
+
+            LogItem {
+                title: "Fixes for latest Sailfish OS release"
+                description: "Audio capture was updated to support Sailfish OS 3.1"
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.4.0 (beta)")
             }
 
