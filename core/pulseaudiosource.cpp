@@ -258,7 +258,19 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
 
     qDebug() << "Creating new pulse-audio stream connected to sink input";
     qDebug() << "Orig monitor source:" << monitorSources.value(si.sinkIdx);
+#ifdef SAILFISH
+    /* Ugly hack for SFOS 3.1.0:
+       mimicking "message-new-email" stream to trigger "event" policy group on
+       pulse-audio server. "event" group does not force pa source change to
+       "sink.primary.monitor" when calling pa_stream_connect_record()
+    */
+    pa_proplist* p = pa_proplist_new();
+    pa_proplist_sets(p, "event.id", "message-new-email");
+    stream = pa_stream_new_with_proplist(ctx, Jupii::APP_NAME, &sampleSpec, nullptr, p);
+    pa_proplist_free(p);
+#else
     stream = pa_stream_new(ctx, Jupii::APP_NAME, &sampleSpec, nullptr);
+#endif
     pa_stream_set_read_callback(stream, streamRequestCallback, nullptr);
     connectedSinkInput = si.idx;
 
