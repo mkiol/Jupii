@@ -983,7 +983,7 @@ void ContentServerWorker::setStreamToRecord(const QUrl &id, bool value)
     for (ProxyItem& item : proxyItems) {
         if (item.id == id) {
             if (item.saveRec != value) {
-                qDebug() << "Setting stream to record:" << id;
+                qDebug() << "Setting stream to record:" << id << value;
                 item.saveRec = value;
                 emit streamToRecordChanged(id, value);
             } else {
