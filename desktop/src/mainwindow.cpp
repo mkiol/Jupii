@@ -138,10 +138,10 @@ void MainWindow::togglePlay()
 
     bool playing = av->getTransportState() == AVTransport::Playing;
     if (!playing) {
-        //av->setSpeed(1);
-        //av->play();
-        auto id = av->getCurrentId();
-        av->setLocalContent(id.toString(),"");
+        av->setSpeed(1);
+        av->play();
+        //auto id = av->getCurrentId();
+        //av->setLocalContent(id.toString(),"");
     } else {
         if (av->getPauseSupported())
             av->pause();

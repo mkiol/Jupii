@@ -43,10 +43,10 @@ Page {
 
     function togglePlay() {
         if (av.transportState !== AVTransport.Playing) {
-            //av.speed = 1
-            //av.play()
-            var id = av.currentId;
-            av.setLocalContent(id.toString(), "");
+            av.speed = 1
+            av.play()
+            //var id = av.currentId;
+            //av.setLocalContent(id.toString(), "");
         } else {
             if (av.pauseSupported)
                 av.pause()

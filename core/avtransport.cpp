@@ -53,6 +53,7 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
         int value = _value.toInt();
 
         if (name == "TransportState") {
+            qDebug() << "TransportState changed:" << m_oldTransportState << m_transportState << value;
             if (m_transportState != value) {
                 m_oldTransportState = m_transportState;
                 m_transportState = value;
@@ -262,6 +263,7 @@ void AVTransport::transportStateHandler()
     }
 
     m_stopCalled = false;
+
 
     //qDebug() << "--> aUPDATE transportStateHandler";
     asyncUpdate();
@@ -998,7 +1000,7 @@ void AVTransport::seek(int value)
         return;
     }
 
-    qDebug() << "Seek:" << value;
+    //qDebug() << "Seek:" << value;
 
     m_futureSeek = value < 0 ? 0 :
                    value > m_currentTrackDuration ? m_currentTrackDuration : value;
