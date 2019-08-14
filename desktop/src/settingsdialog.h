@@ -33,6 +33,7 @@ private slots:
     void on_recCheckBox_toggled(bool checked);
     void on_cropCheckBox_toggled(bool checked);
     void on_screenAudioCheckBox_toggled(bool checked);
+    void on_contentDirCheckBox_toggled(bool checked);
 
 private:
     Ui::SettingsDialog *ui;

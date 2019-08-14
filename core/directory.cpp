@@ -54,8 +54,11 @@ void Directory::init()
         return;
     }
 
+#ifdef QT_DEBUG
+    m_lib->setLogFileName("upnp.log", UPnPP::LibUPnP::LogLevelDebug);
+#else
     m_lib->setLogFileName("", UPnPP::LibUPnP::LogLevelError);
-
+#endif
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(4);
 
     if (m_directory == 0) {

@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2019 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,13 +10,22 @@
 
 #include <QSize>
 #include <QPixmap>
-#include <QQuickImageProvider>
 #include <QString>
+#include <QUrl>
 
+#ifdef SAILFISH
+#include <QQuickImageProvider>
+#endif
+
+#ifdef SAILFISH
 class IconProvider : public QQuickImageProvider
+#else
+class IconProvider
+#endif
 {
 public:
     static QString pathToId(const QString &id);
+    static QUrl urlToImg(const QString &filename);
     static QString themeDirPath();
 
     IconProvider();

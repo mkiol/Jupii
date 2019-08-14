@@ -26,3 +26,10 @@ desktop {
     LIBS += -L$$PROJECTDIR/libs/pupnp/build/amd64/ -l:libthreadutil.a
     LIBS += -L$$PROJECTDIR/libs/pupnp/build/amd64/ -l:libixml.a
 }
+
+#INCLUDEPATH += $$PUPNP_ROOT/libupnp-1.6.25
+#INCLUDEPATH += $$PUPNP_ROOT/libupnp-1.6.25/upnp/src
+#INCLUDEPATH += $$PUPNP_ROOT/libupnp-1.6.25/upnp/src/inc
+#DEFINES += INCLUDE_DEVICE_APIS EXCLUDE_GENA=0
+#SOURCES += $$files($$PUPNP_ROOT/libupnp-1.6.25/upnp/src/*.c, true)
+#HEADERS += $$files($$PUPNP_ROOT/libupnp-1.6.25/upnp/src/*.h, true)

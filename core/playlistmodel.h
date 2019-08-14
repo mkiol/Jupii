@@ -213,6 +213,7 @@ public:
     bool playPath(const QString& path);
     bool urlExists(const QUrl& url);
     bool playUrl(const QUrl& url);
+    std::pair<int,QString> getDidlList(int max = 0, const QString &didlId = QString());
 
 signals:
     void itemsRemoved();

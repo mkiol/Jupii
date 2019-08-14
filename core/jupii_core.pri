@@ -24,12 +24,6 @@ sailfish {
     include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
     include($$PROJECTDIR/libs/lame/lame.pri)
     include($$PROJECTDIR/libs/x264/x264.pri)
-
-    HEADERS += \
-        $$CORE_DIR/iconprovider.h
-
-    SOURCES += \
-        $$CORE_DIR/iconprovider.cpp
 }
 
 HEADERS += \
@@ -68,7 +62,9 @@ HEADERS += \
     $$CORE_DIR/audiocaster.h \
     $$CORE_DIR/screencaster.h \
     $$CORE_DIR/miccaster.h \
-    $$CORE_DIR/pulseaudiosource.h
+    $$CORE_DIR/pulseaudiosource.h \
+    $$CORE_DIR/device.h \
+    $$CORE_DIR/iconprovider.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -106,4 +102,6 @@ SOURCES += \
     $$CORE_DIR/audiocaster.cpp \
     $$CORE_DIR/screencaster.cpp \
     $$CORE_DIR/miccaster.cpp \
-    $$CORE_DIR/pulseaudiosource.cpp
+    $$CORE_DIR/pulseaudiosource.cpp \
+    $$CORE_DIR/device.cpp \
+    $$CORE_DIR/iconprovider.cpp

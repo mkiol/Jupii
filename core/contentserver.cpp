@@ -1576,7 +1576,34 @@ void ContentServer::fillCoverArt(ItemMeta& item)
     item.albumArt.clear();
 }
 
-bool ContentServer::getContentMeta(const QString &id, const QUrl &url,
+bool ContentServer::getContentMetaItem(const QString &id, QString &meta)
+{
+    QUrl url;
+    if (!makeUrl(id, url)) {
+        qWarning() << "Cannot make Url form id";
+        return false;
+    }
+
+    const auto item = getMeta(Utils::urlFromId(id));
+    if (!item) {
+        qWarning() << "No meta item found";
+        return false;
+    }
+
+    return getContentMetaItem(id, url, meta, item);
+}
+
+bool ContentServer::getContentMetaItemByDidlId(const QString &didlId, QString &meta)
+{
+    if (metaIdx.contains(didlId)) {
+        getContentMetaItem(metaIdx[didlId], meta);
+        return true;
+    }
+
+    return false;
+}
+
+bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
                                    QString &meta, const ItemMeta *item)
 {
     QString path, name, desc, author; int t = 0; QUrl icon;
@@ -1596,16 +1623,10 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url,
     }
 
     auto u = Utils::instance();
-    QString hash = u->hash(id);
-    QString hash_dir = u->hash(id+"/parent");
+    QString didlId = u->hash(id);
+    metaIdx[didlId] = id;
     QTextStream m(&meta);
-
-    m << "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << endl;
-    m << "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" ";
-    m << "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ";
-    m << "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" ";
-    m << "xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\">";
-    m << "<item id=\"" << hash << "\" parentID=\"" << hash_dir << "\" restricted=\"true\">";
+    m << "<item id=\"" << didlId << "\" parentID=\"0\" restricted=\"1\">";
 
     switch (item->type) {
     case TypeImage:
@@ -1705,11 +1726,27 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url,
 
     m << ">" << url.toString() << "</res>";
     m << "</item>\n";
-    m << "</DIDL-Lite>";
-
-    qDebug() << "DIDL:" << meta;
-
     return true;
+}
+
+bool ContentServer::getContentMeta(const QString &id, const QUrl &url,
+                                   QString &meta, const ItemMeta *item)
+{
+    QTextStream m(&meta);
+    m << "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << endl;
+    m << "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" ";
+    m << "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ";
+    m << "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" ";
+    m << "xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\">";
+
+    if (getContentMetaItem(id, url, meta, item)) {
+        m << "</DIDL-Lite>";
+        qDebug() << "DIDL:" << meta;
+        return true;
+    } else {
+        qWarning() << "Meta creation error";
+        return false;
+    }
 }
 
 bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,

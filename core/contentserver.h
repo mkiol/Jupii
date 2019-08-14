@@ -137,6 +137,8 @@ public:
     Q_INVOKABLE void setStreamToRecord(const QUrl &id, bool value);
     Q_INVOKABLE bool isStreamToRecord(const QUrl &id);
     Q_INVOKABLE bool isStreamRecordable(const QUrl &id);
+    bool getContentMetaItem(const QString &id, QString &meta);
+    bool getContentMetaItemByDidlId(const QString &didlId, QString &meta);
 
 signals:
     void streamRecordError(const QString& title);
@@ -221,6 +223,7 @@ private:
     static const qint64 recMinSize = 100000;
 
     QHash<QUrl, ItemMeta> metaCache; // url => ItemMeta
+    QHash<QString, QString> metaIdx; // DIDL-lite id => id
     QHash<QUrl, StreamData> streams; // id => StreamData
     QMutex metaCacheMutex;
     QString pulseStreamName;
@@ -242,6 +245,7 @@ private:
                                       const QString& album = QString(),
                                       const QString& comment = QString());
     ContentServer(QObject *parent = nullptr);
+    bool getContentMetaItem(const QString &id, const QUrl &url, QString &meta, const ItemMeta* item);
     bool getContentMeta(const QString &id, const QUrl &url, QString &meta, const ItemMeta* item);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url);

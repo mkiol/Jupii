@@ -13,6 +13,7 @@
 #include <QDataStream>
 #include <QUrlQuery>
 #include <QTimer>
+#include <QTextStream>
 #include <utility>
 
 #include "playlistmodel.h"
@@ -231,6 +232,40 @@ PlaylistModel::PlaylistModel(QObject *parent) :
 
     if (s->getRememberPlaylist())
         load();
+}
+
+std::pair<int, QString> PlaylistModel::getDidlList(int max, const QString& didlId)
+{
+    std::pair<int, QString> ret;
+
+    QTextStream m(&ret.second);
+    m << "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" ";
+    m << "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ";
+    m << "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" ";
+    m << "xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\">";
+
+    auto cs = ContentServer::instance();
+
+    if (didlId.isEmpty()) {
+        int count = 0;
+        for (auto li : m_list) {
+            if (max > 0 && count > max) {
+                break;
+            }
+            auto fi = dynamic_cast<PlaylistItem*>(li);
+            if (cs->getContentMetaItem(fi->id(), ret.second)) {
+                ++count;
+            }
+        }
+        ret.first = count;
+    } else {
+        cs->getContentMetaItemByDidlId(didlId, ret.second);
+        ret.first = 1;
+    }
+
+    m << "</DIDL-Lite>";
+
+    return ret;
 }
 
 void PlaylistModel::onSupportedChanged()

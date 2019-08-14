@@ -54,6 +54,7 @@
 #include "icecastmodel.h"
 #include "dirmodel.h"
 #include "recmodel.h"
+#include "device.h"
 #ifdef LOGTOFILE
 #include "log.h"
 #endif
@@ -131,6 +132,7 @@ int main(int argc, char *argv[])
     auto cserver = ContentServer::instance();
     auto services = Services::instance();
     auto playlist = PlaylistModel::instance();
+    auto msdev = MediaServerDevice::instance();
     DbusProxy dbusProxy;
 
 #ifdef SAILFISH
@@ -141,6 +143,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("rc", services->renderingControl.get());
     context->setContextProperty("av", services->avTransport.get());
     context->setContextProperty("playlist", playlist);
+    context->setContextProperty("msdev", msdev);
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
 

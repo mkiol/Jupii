@@ -45,6 +45,8 @@ class Settings:
     Q_PROPERTY (int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType NOTIFY albumQueryTypeChanged)
     Q_PROPERTY (int albumRecType READ getRecQueryType WRITE setRecQueryType NOTIFY recQueryTypeChanged)
     Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY (bool contentDirSupported READ getContentDirSupported WRITE setContentDirSupported NOTIFY contentDirSupportedChanged)
+
 public:
     static Settings* instance();
 
@@ -127,6 +129,11 @@ public:
     void setRemoteContentMode(int value);
     int getRemoteContentMode();
 
+    void setContentDirSupported(bool value);
+    bool getContentDirSupported();
+
+    QString mediaServerDevUuid();
+
 signals:
     void portChanged();
     void favDevicesChanged();
@@ -152,6 +159,7 @@ signals:
     void albumQueryTypeChanged();
     void recQueryTypeChanged();
     void playModeChanged();
+    void contentDirSupportedChanged();
 
 private:
     QSettings settings;

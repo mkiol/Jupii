@@ -1,5 +1,15 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/jupii-64.png</file>
+        <file>images/jupii.png</file>
+        <file>images/upnp-32.png</file>
+        <file>images/upnp-48.png</file>
+        <file>images/upnp-120.png</file>
+        <file>images/upnp-256.png</file>
+        <file>images/upnp-16.jpg</file>
+        <file>images/upnp-16.png</file>
+        <file>images/upnp-32.jpg</file>
+        <file>images/upnp-48.jpg</file>
+        <file>images/upnp-120.jpg</file>
+        <file>images/upnp-256.jpg</file>
     </qresource>
 </RCC>

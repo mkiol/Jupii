@@ -79,6 +79,15 @@ Page {
                 }
             }
 
+            TextSwitch {
+                automaticCheck: false
+                checked: msdev.running
+                text: qsTr("Share playlist items via UPnP")
+                onClicked: {
+                    settings.contentDirSupported = !msdev.running
+                }
+            }
+
             SectionHeader {
                 text: qsTr("Experiments")
             }

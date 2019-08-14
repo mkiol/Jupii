@@ -34,6 +34,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="contentDirCheckBox">
+        <property name="text">
+         <string>Share playlist items via UPnP</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="netInfsLayout">
         <item>
          <widget class="QLabel" name="label">

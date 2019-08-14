@@ -11,6 +11,7 @@
 #include <QTime>
 #include <QDir>
 #include <QFileInfo>
+#include <QUuid>
 
 #include "settings.h"
 #include "directory.h"
@@ -513,4 +514,25 @@ void Settings::setPlayMode(int value)
 int Settings::getPlayMode()
 {
     return settings.value("playmode", 0).toInt();
+}
+
+QString Settings::mediaServerDevUuid()
+{
+    auto defaultUUID = QUuid::createUuid().toString().mid(1,36);
+    if (!settings.contains("mediaserverdevuuid"))
+        settings.setValue("mediaserverdevuuid", defaultUUID);
+    return settings.value("mediaserverdevuuid", defaultUUID).toString();
+}
+
+void Settings::setContentDirSupported(bool value)
+{
+    if (getContentDirSupported() != value) {
+        settings.setValue("contentdirsupported", value);
+        emit contentDirSupportedChanged();
+    }
+}
+
+bool Settings::getContentDirSupported()
+{
+    return settings.value("contentdirsupported", true).toBool();
 }

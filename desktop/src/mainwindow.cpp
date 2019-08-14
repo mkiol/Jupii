@@ -494,7 +494,7 @@ void MainWindow::on_actionAbout_triggered()
     msgBox->setText(translatedTextAboutCaption);
     msgBox->setInformativeText(translatedTextAboutText);
 
-    QPixmap pm(QLatin1String(":/images/jupii-64.png"));
+    QPixmap pm(QLatin1String(":/images/jupii.png"));
     if (!pm.isNull())
         msgBox->setIconPixmap(pm);
 

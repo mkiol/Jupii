@@ -498,6 +498,8 @@ int timespec_diffms(const struct timespec& old, const struct timespec& recent)
 // This is normally run by the main thread.
 void UpnpDevice::eventloop()
 {
+    m->needExit = false;
+
     if (!m->start()) {
         LOGERR("Device would not start" << endl);
         return;
@@ -590,6 +592,11 @@ void UpnpDevice::eventloop()
             if (!serv->noevents())
                 m->notifyEvent(it, names, values);
         }
+    }
+
+    // exiting loop
+    if (!m->description.empty()) {
+        UpnpUnRegisterRootDevice(m->dvh);
     }
 }
 

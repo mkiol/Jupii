@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2019 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,7 +18,11 @@
 
 #include "iconprovider.h"
 
+#ifdef SAILFISH
 IconProvider::IconProvider() : QQuickImageProvider(QQuickImageProvider::Pixmap)
+#else
+IconProvider::IconProvider()
+#endif
 {
     this->themeDir = IconProvider::themeDirPath();
 }
@@ -65,6 +69,16 @@ QString IconProvider::pathToId(const QString &id)
     }
 
     return filepath;
+}
+
+QUrl IconProvider::urlToImg(const QString &filename)
+{
+#ifdef SAILFISH
+    QDir dir(SailfishApp::pathTo("images").toString(QUrl::RemoveScheme));
+    return QUrl::fromLocalFile(dir.absoluteFilePath(filename));
+#else
+    return QUrl("qrc:///images/" + filename);
+#endif
 }
 
 QPixmap IconProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)

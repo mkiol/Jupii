@@ -33,6 +33,7 @@ int SettingsDialog::exec()
     ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
     ui->recCheckBox->setCheckState(s->getRec() ? Qt::Checked : Qt::Unchecked);
     ui->audioCaptureModeComboBox->setCurrentIndex(s->getAudioCaptureMode());
+    ui->contentDirCheckBox->setCheckState(s->getContentDirSupported() ? Qt::Checked : Qt::Unchecked);
 
     bool screenEnabled = s->getScreenSupported();
     ui->screenFramerateComboBox->setEnabled(screenEnabled);
@@ -127,4 +128,10 @@ void SettingsDialog::on_screenAudioCheckBox_toggled(bool checked)
 {
     auto s = Settings::instance();
     s->setScreenAudio(checked);
+}
+
+void SettingsDialog::on_contentDirCheckBox_toggled(bool checked)
+{
+    auto s = Settings::instance();
+    s->setContentDirSupported(checked);
 }
