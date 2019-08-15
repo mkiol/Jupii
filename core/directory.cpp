@@ -55,7 +55,7 @@ void Directory::init()
     }
 
 #ifdef QT_DEBUG
-    m_lib->setLogFileName("upnp.log", UPnPP::LibUPnP::LogLevelDebug);
+    m_lib->setLogFileName("", UPnPP::LibUPnP::LogLevelDebug);
 #else
     m_lib->setLogFileName("", UPnPP::LibUPnP::LogLevelError);
 #endif

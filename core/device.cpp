@@ -494,7 +494,7 @@ MediaServerDevice::MediaServerDevice(QObject *parent) :
     cd = std::unique_ptr<ContentDirectoryService>(
                 new ContentDirectoryService("urn:schemas-upnp-org:service:ContentDirectory:1",
                                 "urn:upnp-org:serviceId:ContentDirectory", this));
-    addActionMapping(cd.get(), "GetSearchCapabilitie", actionHandler);
+    addActionMapping(cd.get(), "GetSearchCapabilities", actionHandler);
     addActionMapping(cd.get(), "GetSortCapabilities", actionHandler);
     addActionMapping(cd.get(), "GetSystemUpdateID", actionHandler);
     addActionMapping(cd.get(), "Browse", actionHandler);
