@@ -29,6 +29,18 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.5.0 (beta)")
+            }
+
+            LogItem {
+                title: "Sharing playlist items via UPnP"
+                description: "Items on current playlist will be accessible for " +
+                             "other UPnP devices though content directory service. " +
+                             "If you don't like this feature, it can be disabled " +
+                             "in the Settings."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.4.1 (beta)")
             }
 
@@ -46,8 +58,6 @@ Page {
                 description: "Screen data is sent as a video stream to remote DLNA device. " +
                              "Be aware that due to buffering there is a delay " +
                              "between phone and the video displayed on the remote screen. " +
-                             "Screen capturing requires Jupii to run as a privileged app, " +
-                             "therefore this feature will be enabled only in OpenRepos package. " +
                              "The implementation is inspired and partially based on " +
                              "<a href=\"https://github.com/mer-qa/lipstick2vnc/\">lipstick2vnc</a> project."
             }

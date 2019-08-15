@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Thu Aug 15 2019 Michal Kosciesza <michal@mkiol.net> 2.5.0-1
+- Sharing playlist items via UPnP Content Directory service
+- Bug fixes
+
 * Mon Aug 05 2019 Michal Kosciesza <michal@mkiol.net> 2.4.1-1
 - Fix: Audio capture doesn't work on SFOS 3.1.0
 
