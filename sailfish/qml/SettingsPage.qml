@@ -30,6 +30,17 @@ Page {
 
             TextSwitch {
                 automaticCheck: false
+                checked: msdev.running
+                text: qsTr("Share playlist items via UPnP")
+                description: qsTr("Items on current playlist will be accessible for " +
+                                  "other UPnP devices though content directory service.")
+                onClicked: {
+                    settings.contentDirSupported = !msdev.running
+                }
+            }
+
+            TextSwitch {
+                automaticCheck: false
                 checked: settings.rememberPlaylist
                 text: qsTr("Start with last playlist")
                 description: qsTr("When Jupii starts, the last " +
@@ -79,15 +90,6 @@ Page {
                 }
             }
 
-            TextSwitch {
-                automaticCheck: false
-                checked: msdev.running
-                text: qsTr("Share playlist items via UPnP")
-                onClicked: {
-                    settings.contentDirSupported = !msdev.running
-                }
-            }
-
             SectionHeader {
                 text: qsTr("Experiments")
             }
@@ -102,6 +104,16 @@ Page {
                                   "it could cause some issues.").arg(APP_NAME)
                 onClicked: {
                     settings.imageSupported = !settings.imageSupported
+                }
+            }
+
+            TextSwitch {
+                automaticCheck: false
+                checked: settings.screenSupported
+                text: qsTr("Screen capture")
+                description: qsTr("To start capturing add Screen capture item to your current playlist.")
+                onClicked: {
+                    settings.screenSupported = !settings.screenSupported
                 }
             }
 

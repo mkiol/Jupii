@@ -305,13 +305,18 @@ bool Settings::getImageSupported()
 
 void Settings::setScreenSupported(bool value)
 {
-    Q_UNUSED(value)
+#ifdef SAILFISH
+    if (getScreenSupported() != value) {
+        settings.setValue("screensupported", value);
+        emit screenSupportedChanged();
+    }
+#endif
 }
 
 bool Settings::getScreenSupported()
 {
-#ifdef HARBOUR
-    return false;
+#ifdef SAILFISH
+    return settings.value("screensupported", false).toBool();
 #else
     return true;
 #endif

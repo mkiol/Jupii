@@ -19,11 +19,11 @@ desktop {
 sailfish {
     LIBS += -lpulse
     include($$PROJECTDIR/libs/taglib/taglib.pri)
-    include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
     include($$PROJECTDIR/libs/lame/lame.pri)
     include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
     include($$PROJECTDIR/libs/lame/lame.pri)
     include($$PROJECTDIR/libs/x264/x264.pri)
+    screencast: include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
 }
 
 HEADERS += \
@@ -60,7 +60,6 @@ HEADERS += \
     $$CORE_DIR/recmodel.h \
     $$CORE_DIR/log.h \
     $$CORE_DIR/audiocaster.h \
-    $$CORE_DIR/screencaster.h \
     $$CORE_DIR/miccaster.h \
     $$CORE_DIR/pulseaudiosource.h \
     $$CORE_DIR/device.h \
@@ -100,8 +99,15 @@ SOURCES += \
     $$CORE_DIR/recmodel.cpp \
     $$CORE_DIR/log.cpp \
     $$CORE_DIR/audiocaster.cpp \
-    $$CORE_DIR/screencaster.cpp \
     $$CORE_DIR/miccaster.cpp \
     $$CORE_DIR/pulseaudiosource.cpp \
     $$CORE_DIR/device.cpp \
     $$CORE_DIR/iconprovider.cpp
+
+screencast {
+    HEADERS += \
+        $$CORE_DIR/screencaster.h
+
+    SOURCES += \
+        $$CORE_DIR/screencaster.cpp
+}

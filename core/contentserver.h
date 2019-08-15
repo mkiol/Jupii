@@ -42,8 +42,10 @@ extern "C" {
 #include "taskexecutor.h"
 #include "pulseaudiosource.h"
 #include "audiocaster.h"
-#include "screencaster.h"
 #include "miccaster.h"
+#ifdef SCREENCAST
+#include "screencaster.h"
+#endif
 
 class ContentServerWorker;
 
@@ -271,7 +273,9 @@ class ContentServerWorker :
     friend MicCaster;
     friend PulseAudioSource;
     friend AudioCaster;
+#ifdef SCREENCAST
     friend ScreenCaster;
+#endif
 public:
     static ContentServerWorker* instance(QObject *parent = nullptr);
     QHttpServer* server;
@@ -303,8 +307,10 @@ private slots:
     //void stopMic();
     void responseForMicDone();
     void responseForAudioCaptureDone();
+#ifdef SCREENCAST
     void responseForScreenCaptureDone();
     void screenErrorHandler();
+#endif
     void responseForUrlDone();
     void seqWriteData(QFile* file, qint64 size, QHttpResponse *resp);
 
@@ -343,9 +349,11 @@ private:
     static ContentServerWorker* m_instance;
 
     std::unique_ptr<MicCaster> micCaster;
-    std::unique_ptr<ScreenCaster> screenCaster;
     std::unique_ptr<PulseAudioSource> pulseSource;
     std::unique_ptr<AudioCaster> audioCaster;
+#ifdef SCREENCAST
+    std::unique_ptr<ScreenCaster> screenCaster;
+#endif
 
     QHash<QNetworkReply*, ProxyItem> proxyItems;
     QHash<QHttpResponse*, QNetworkReply*> responseToReplyMap;

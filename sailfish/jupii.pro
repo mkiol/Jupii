@@ -13,8 +13,8 @@ PROJECTDIR = $$PWD/..
 
 INCLUDEPATH += /usr/include/c++/9
 
-CONFIG += sailfish
-DEFINES += SAILFISH
+CONFIG += sailfish screencast
+DEFINES += SAILFISH SCREENCAST
 
 include($$PROJECTDIR/core/jupii_core.pri)
 

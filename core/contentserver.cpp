@@ -391,6 +391,7 @@ void ContentServerWorker::responseForAudioCaptureDone()
     }
 }
 
+#ifdef SCREENCAST
 void ContentServerWorker::responseForScreenCaptureDone()
 {
     qDebug() << "Screen capture HTTP response done";
@@ -426,6 +427,7 @@ void ContentServerWorker::screenErrorHandler()
     screenCaptureItems.clear();
     screenCaster.reset(nullptr);
 }
+#endif
 
 void ContentServerWorker::requestForFileHandler(const QUrl &id,
                                                 const ContentServer::ItemMeta* meta,
@@ -640,7 +642,10 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
                                                 QHttpRequest *req, QHttpResponse *resp)
 {
     qDebug() << "Screen capture request handler";
-
+#ifndef SCREENCAST
+    qWarning() << "Screen capturing is disabled";
+    sendEmptyResponse(resp, 500);
+#else
     auto s = Settings::instance();
 
     if (!s->getScreenSupported()) {
@@ -648,6 +653,7 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
         sendEmptyResponse(resp, 500);
         return;
     }
+
 
     bool isHead = req->method() == QHttpRequest::HTTP_HEAD;
     if (isHead) {
@@ -710,6 +716,7 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
 
         PulseAudioSource::discoverStream();
     }
+#endif
 }
 
 void ContentServerWorker::seqWriteData(QFile *file, qint64 size, QHttpResponse *resp)
@@ -1293,11 +1300,13 @@ ContentServer::ContentServer(QObject *parent) :
     start(QThread::NormalPriority);
 
 #ifdef SAILFISH
+#ifdef SCREENCAST
     // screen on/off status
     auto bus = QDBusConnection::systemBus();
     bus.connect("com.nokia.mce", "/com/nokia/mce/signal",
                 "com.nokia.mce.signal", "display_status_ind",
                 this, SLOT(displayStatusChangeHandler(QString)));
+#endif
 #endif
 }
 
@@ -3109,8 +3118,12 @@ void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)
 void ContentServerWorker::dispatchPulseData(const void *data, int size)
 {
     bool audioCaptureEnabled = audioCaster && !audioCaptureItems.isEmpty();
+#ifdef SCREENCAST
     bool screenCaptureAudioEnabled = screenCaster &&
             screenCaster->audioEnabled() && !screenCaptureItems.isEmpty();
+#else
+    bool screenCaptureAudioEnabled = false;
+#endif
 
     if (audioCaptureEnabled || screenCaptureAudioEnabled) {
         QByteArray d;
@@ -3129,8 +3142,10 @@ void ContentServerWorker::dispatchPulseData(const void *data, int size)
         }
         if (audioCaptureEnabled)
             audioCaster->writeAudioData(d);
+#ifdef SCREENCAST
         if (screenCaptureAudioEnabled)
             screenCaster->writeAudioData(d);
+#endif
     } else {
         qDebug() << "No audio capture";
     }

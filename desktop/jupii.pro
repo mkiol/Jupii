@@ -7,8 +7,8 @@ QT += core gui widgets network dbus sql multimedia xml
 
 PROJECTDIR = $$PWD/..
 
-CONFIG += desktop
-DEFINES += DESKTOP
+CONFIG += desktop screencast
+DEFINES += DESKTOP SCREENCAST
 
 include($$PROJECTDIR/core/jupii_core.pri)
 
