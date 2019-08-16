@@ -437,8 +437,7 @@ void MediaServerDevice::updateDirectory()
 QString MediaServerDevice::desc()
 {
     qDebug() << "UUID:" << Settings::instance()->mediaServerDevUuid();
-
-    auto desc = descTemplate.arg(Jupii::APP_NAME,
+    auto desc = descTemplate.arg(Settings::instance()->prettyName(),
                      Jupii::PAGE,
                      Jupii::APP_VERSION,
                      Settings::instance()->mediaServerDevUuid());

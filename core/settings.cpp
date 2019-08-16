@@ -12,12 +12,16 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QUuid>
+#include <QSysInfo>
+#include <QFile>
 
 #include "settings.h"
 #include "directory.h"
 #include "utils.h"
+#include "info.h"
 
 #include <libupnpp/control/description.hxx>
+
 
 Settings* Settings::inst = nullptr;
 
@@ -26,7 +30,33 @@ Settings::Settings(QObject *parent) :
     TaskExecutor(parent, 1),
     settings(parent)
 {
+#ifdef SAILFISH
+    hwName = readHwInfo();
+#else
+    hwName = QSysInfo::machineHostName();
+#endif
+    qDebug() << "HW name:" << hwName;
 }
+
+#ifdef SAILFISH
+QString Settings::readHwInfo()
+{
+    QFile f(HW_RELEASE_FILE);
+    if (f.open(QIODevice::ReadOnly)) {
+        auto d = f.readAll();
+        f.close();
+        auto data = QString::fromUtf8(d);
+        QRegExp rx("\nNAME=\"([^\"]*)\"", Qt::CaseInsensitive);
+        if (rx.indexIn(data) != -1)
+            return rx.cap(1);
+    } else {
+        qWarning() << "Cannot open file" << f.fileName() <<
+                      "for reading (" + f.errorString() + ")";
+    }
+
+    return QString();
+}
+#endif
 
 Settings* Settings::instance()
 {
@@ -35,6 +65,12 @@ Settings* Settings::instance()
     }
 
     return Settings::inst;
+}
+
+QString Settings::prettyName()
+{
+    return hwName.isEmpty() ? QString(Jupii::APP_NAME) : QString("%1 (%2)")
+                              .arg(Jupii::APP_NAME, hwName);
 }
 
 void Settings::setPort(int value)

@@ -48,6 +48,9 @@ class Settings:
     Q_PROPERTY (bool contentDirSupported READ getContentDirSupported WRITE setContentDirSupported NOTIFY contentDirSupportedChanged)
 
 public:
+#ifdef SAILFISH
+    static constexpr char* HW_RELEASE_FILE = "/etc/hw-release";
+#endif
     static Settings* instance();
 
     void setPort(int value);
@@ -133,6 +136,7 @@ public:
     bool getContentDirSupported();
 
     QString mediaServerDevUuid();
+    QString prettyName();
 
 signals:
     void portChanged();
@@ -164,9 +168,13 @@ signals:
 private:
     QSettings settings;
     static Settings* inst;
+    QString hwName;
 
     explicit Settings(QObject* parent = nullptr);
     bool writeDeviceXML(const QString& id, QString &url);
+#ifdef SAILFISH
+    QString readHwInfo();
+#endif
 };
 
 #endif // SETTINGS_H
