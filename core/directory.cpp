@@ -323,6 +323,7 @@ QUrl Directory::getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc)
         if (icon.mimeType == "image/jpeg" || icon.mimeType == "image/png") {
             int size = icon.width + icon.height;
             if (size > max_size) {
+                max_size = size;
                 max_url = icon.url;
             }
         }
