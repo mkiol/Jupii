@@ -845,12 +845,12 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="34"/>
         <source>Share playlist items via UPnP</source>
-        <translation type="unfinished"></translation>
+        <translation>Dela spelningslistans objekt via UPnP</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="35"/>
         <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
-        <translation type="unfinished"></translation>
+        <translation>Objekt i den aktuella spelningslistan kommer att bli tillgängliga för andra UPnP-enheter genom Content Directory Service.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
@@ -865,12 +865,12 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="113"/>
         <source>Screen capture</source>
-        <translation type="unfinished">Skärminspelning</translation>
+        <translation>Skärminspelning</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="114"/>
         <source>To start capturing add Screen capture item to your current playlist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till skärminspelningsobjekt till aktuell spelningslista, för att starta inspelning.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="124"/>
