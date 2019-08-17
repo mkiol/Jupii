@@ -15,6 +15,7 @@
 #include <QStandardPaths>
 
 #include "gpoddermodel.h"
+#include "iconprovider.h"
 
 QString Gpodder::conName = "qt_sql_jupii_connection";
 QSqlDatabase Gpodder::m_db = QSqlDatabase();
@@ -118,6 +119,8 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
                 icon = QUrl::fromLocalFile(dir.absoluteFilePath("folder.png"));
             else if (dir.exists("folder.gif"))
                 icon = QUrl::fromLocalFile(dir.absoluteFilePath("folder.gif"));
+            else
+                icon = QUrl::fromLocalFile(IconProvider::pathToNoResId("icon-gpodder"));
 #else
             dir.cd("Downloads");
             dir.cd(folder);

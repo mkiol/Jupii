@@ -25,6 +25,7 @@ class IconProvider
 {
 public:
     static QString pathToId(const QString &id);
+    static QString pathToNoResId(const QString &id);
     static QUrl urlToImg(const QString &filename);
     static QString themeDirPath();
 

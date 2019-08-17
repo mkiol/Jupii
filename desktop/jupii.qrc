@@ -11,5 +11,8 @@
         <file>images/upnp-48.jpg</file>
         <file>images/upnp-120.jpg</file>
         <file>images/upnp-256.jpg</file>
+        <file>images/icon-gpodder.png</file>
+        <file>images/icon-icecast.png</file>
+        <file>images/icon-somafm.png</file>
     </qresource>
 </RCC>

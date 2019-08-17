@@ -22,6 +22,7 @@
 
 #include "somafmmodel.h"
 #include "utils.h"
+#include "iconprovider.h"
 
 const QString SomafmModel::m_dirUrl = "https://somafm.com/channels.xml";
 const QString SomafmModel::m_dirFilename = "somafm.xml";
@@ -242,8 +243,10 @@ QList<ListItem*> SomafmModel::makeItems()
                     desc.contains(filter, Qt::CaseInsensitive) ||
                     genre.contains(filter, Qt::CaseInsensitive) ||
                     dj.contains(filter, Qt::CaseInsensitive)) {
-                    //auto icon = bestImage(entry);
-                    auto icon = QUrl::fromLocalFile(Utils::pathToCacheFile(m_imageFilename + id));
+                    auto imgpath = Utils::pathToCacheFile(m_imageFilename + id);
+                    if (!QFileInfo::exists(imgpath))
+                        imgpath = IconProvider::pathToNoResId("icon-somafm");
+                    auto icon = QUrl::fromLocalFile(imgpath);
                     items << new SomafmItem(
                                     id, // id
                                     name, // name

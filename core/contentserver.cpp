@@ -2447,7 +2447,7 @@ ContentServer::makeMicItemMeta(const QUrl &url)
     meta.title = tr("Microphone");
 
 #ifdef SAILFISH
-    meta.albumArt = IconProvider::pathToId("icon-x-mic-cover");
+    meta.albumArt = IconProvider::pathToNoResId("icon-mic");
 #endif
 
     return metaCache.insert(url, meta);
@@ -2471,7 +2471,7 @@ ContentServer::makeAudioCaptureItemMeta(const QUrl &url)
     meta.seekSupported = false;
     meta.title = tr("Audio capture");
 #ifdef SAILFISH
-    meta.albumArt = IconProvider::pathToId("icon-x-pulse-cover");
+    meta.albumArt = IconProvider::pathToNoResId("icon-pulse");
 #endif
 
     return metaCache.insert(url, meta);
@@ -2490,7 +2490,7 @@ ContentServer::makeScreenCaptureItemMeta(const QUrl &url)
     meta.seekSupported = false;
     meta.title = tr("Screen capture");
 #ifdef SAILFISH
-    meta.albumArt = IconProvider::pathToId("icon-x-screen-cover");
+    meta.albumArt = IconProvider::pathToNoResId("icon-screen");
 #endif
 
     return metaCache.insert(url, meta);

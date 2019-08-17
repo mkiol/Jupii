@@ -22,6 +22,7 @@
 
 #include "icecastmodel.h"
 #include "utils.h"
+#include "iconprovider.h"
 
 const QString IcecastModel::m_dirUrl = "http://dir.xiph.org/yp.xml";
 const QString IcecastModel::m_dirFilename = "icecast.xml";
@@ -124,6 +125,8 @@ QVariantList IcecastModel::selectedItems()
             QVariantMap map;
             map.insert("url", QVariant(station->url()));
             map.insert("name", QVariant(station->name()));
+            map.insert("icon", QVariant(
+                           QUrl::fromLocalFile(IconProvider::pathToNoResId("icon-icecast"))));
             map.insert("author", QVariant("Icecast"));
             list << map;
         }

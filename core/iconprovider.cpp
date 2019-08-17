@@ -71,6 +71,16 @@ QString IconProvider::pathToId(const QString &id)
     return filepath;
 }
 
+QString IconProvider::pathToNoResId(const QString &id)
+{
+#ifdef SAILFISH
+    QDir dir(SailfishApp::pathTo("images").toString(QUrl::RemoveScheme));
+    return dir.absoluteFilePath(id + ".png");
+#else
+    return "qrc:///images/" + id + ".png";
+#endif
+}
+
 QUrl IconProvider::urlToImg(const QString &filename)
 {
 #ifdef SAILFISH
