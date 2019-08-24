@@ -88,15 +88,15 @@ for svg in glob.glob("*.svg"):
                     os.system("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
                               .format(svg, png, size1, size2))
                     
-        if icon_id in icons_nores.keys():
-                for d in sizes.keys():
-                    for size_id in icons_nores[icon_id]:
-                        png = "{}/icon-{}.png".format(dir_name, icon_id)
-                        if not os.path.isfile(png):
-                            size1 = sizes_nores[size_id]
-                            size2 = size1
-                            print "File name: %s, size: %dx%d" % (png, size1, size2)
-                            print ("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
-                                    .format(svg, png, size1, size2))
-                            os.system("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
-                                    .format(svg, png, size1, size2))
+    if icon_id in icons_nores.keys():
+            for d in sizes.keys():
+                for size_id in icons_nores[icon_id]:
+                    png = "{}/icon-{}.png".format(dir_name, icon_id)
+                    if not os.path.isfile(png):
+                        size1 = sizes_nores[size_id]
+                        size2 = size1
+                        print "File name: %s, size: %dx%d" % (png, size1, size2)
+                        print ("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
+                                .format(svg, png, size1, size2))
+                        os.system("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
+                                .format(svg, png, size1, size2))
