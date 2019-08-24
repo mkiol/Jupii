@@ -104,7 +104,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="142"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Захват экрана</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
@@ -170,17 +170,17 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="80"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать по: %1</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Album</source>
-        <translation type="unfinished">Альбом</translation>
+        <translation>Альбом</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Artist</source>
-        <translation type="unfinished">Исполнитель</translation>
+        <translation>Исполнитель</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
@@ -280,7 +280,7 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="2491"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Захват экрана</translation>
     </message>
 </context>
 <context>
@@ -404,24 +404,14 @@
         <location filename="../qml/DevicesPage.qml" line="131"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройства не найдены.
+Для поиска устройств в сети вытяните меню и выберите команду &quot;Найти устройства&quot;.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="133"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No devices found.
-Pull down to find more devices in your network.</source>
-        <translation type="vanished">Устройства не найдены.
-Для поиска устройств в сети вытяните меню и выберите команду &quot;Найти устройства&quot;.</translation>
-    </message>
-    <message>
-        <source>Not connected.
-Pull down to connect to the local network.</source>
-        <translation type="vanished">Нет подключения.
+        <translation>Нет подключения.
 Для входа в локальную сеть вытяните меню и выберите команду &quot;Подключить&quot;.</translation>
     </message>
 </context>
@@ -522,10 +512,6 @@ Pull down to connect to the local network.</source>
         <translation>Название</translation>
     </message>
     <message>
-        <source>Captured application</source>
-        <translation type="vanished">Приложение-источник звука</translation>
-    </message>
-    <message>
         <location filename="../qml/MediaInfoPage.qml" line="147"/>
         <source>Stream title</source>
         <translation>Название потока</translation>
@@ -533,7 +519,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="147"/>
         <source>Audio source</source>
-        <translation type="unfinished"></translation>
+        <translation>Источник звука</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="149"/>
@@ -748,22 +734,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/RecPage.qml" line="95"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать по: %1</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="96"/>
         <source>Recording time</source>
-        <translation type="unfinished"></translation>
+        <translation>Время записи</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Station name</source>
-        <translation type="unfinished"></translation>
+        <translation>Станция</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Title</source>
-        <translation type="unfinished">Название</translation>
+        <translation>Название</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="124"/>
@@ -832,11 +818,6 @@ Pull down to connect to the local network.</source>
         <translation>Настройка</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="35"/>
-        <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="45"/>
         <source>Start with last playlist</source>
         <translation>Помнить последний список</translation>
@@ -850,11 +831,6 @@ Pull down to connect to the local network.</source>
         <location filename="../qml/SettingsPage.qml" line="61"/>
         <source>Forward/backward time-step interval</source>
         <translation>Шаг перехода вперёд/назад</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="34"/>
-        <source>Share playlist items via UPnP</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="94"/>
@@ -872,6 +848,16 @@ Pull down to connect to the local network.</source>
         <translation>Шаг изменения громкости</translation>
     </message>
     <message>
+        <location filename="../qml/SettingsPage.qml" line="34"/>
+        <source>Share playlist items via UPnP</source>
+        <translation>Публиковать список воспроизведения через UPnP</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="35"/>
+        <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
+        <translation>Содержимое вашего списка будет доступно другим устройствам UPnP через службу каталога медиаресурсов.</translation>
+    </message>
+    <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
         <source>Image content</source>
         <translation>Вывод изображений</translation>
@@ -882,48 +868,24 @@ Pull down to connect to the local network.</source>
         <translation>Заставляет %1 передавать изображения несмотря на то, что эта функция может вызывать ошибки.</translation>
     </message>
     <message>
-        <source>Audio capture format</source>
-        <translation type="vanished">Формат записи звука</translation>
-    </message>
-    <message>
-        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation type="vanished">Формат звуковых данных когда %1 захватывает звук другого приложения. Несжатый поток (PCM) обеспечивает наименьшую задержку, но больший объём передаваемых данных в этом режиме будет быстрее разряжать аккумулятор.</translation>
-    </message>
-    <message>
-        <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="vanished">MP3 44100 Гц, 128 кб/сек (стандартно)</translation>
-    </message>
-    <message>
-        <source>MP3 44100Hz 96 kbps</source>
-        <translation type="vanished">MP3 44100 Гц, 96 кб/сек</translation>
-    </message>
-    <message>
-        <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="vanished">PCM 44100 Гц, 1411 кб/сек</translation>
-    </message>
-    <message>
-        <source>PCM 22050Hz 706 kbps</source>
-        <translation type="vanished">PCM 22050 Гц, 706 кб/сек</translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="113"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Захват экрана</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="114"/>
         <source>To start capturing add Screen capture item to your current playlist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Для передачи изображения с экрана добавьте Захват экрана в текущий список воспроизведения.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="124"/>
         <source>Screen capture with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Захват экрана со звуком</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="125"/>
         <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="unfinished"></translation>
+        <translation>Захватывать звук вместе с изображением. Функция передачи видео со звуком пока находится в разработке. Возможно ухудшение качества потока и увеличение запаздывания.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="185"/>
@@ -953,22 +915,22 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="249"/>
         <source>Internet streaming mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Интернет вещание</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="250"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Воспроизведение медиапотоков из Интернета на устройствах стандарта UPnP возможно в двух режимах. В режиме Прокси %1 передает все пакеты, получаемые от сервера потока на  UPnP-устройство в домашней сети. В режиме Перенаправления медиаданные передаются напрямую между сервером и устройством UPnP, а %1 можно закрыть или отключить телефон от сети. Недостатком этого режима является то, что не все  UPnP-устройства поддерживают перенаправление. На некоторых устройствах это не работает. Обнаружение метаданных SHOUTcast и запись потока в режиме Перенаправления недоступны.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="265"/>
         <source>Proxy (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Прокси (по умолчанию)</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="266"/>
         <source>Redirection</source>
-        <translation type="unfinished"></translation>
+        <translation>Перенаправление</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="276"/>
