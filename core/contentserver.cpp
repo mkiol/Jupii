@@ -2458,17 +2458,12 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeMicItemMeta(const QUrl &url)
 {
-    // modes:
-    // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
-    // 1 - MPEG TS MP3 16-bit 44100 Hz stereo 128 kbps
-    auto mode = Settings::instance()->getAudioCaptureMode();
-
     ContentServer::ItemMeta meta;
     meta.valid = true;
     meta.url = url;
     meta.channels = MicCaster::channelCount;
     meta.sampleRate = MicCaster::sampleRate;
-    meta.mime = m_musicExtMap.value(mode > 0 ? "tsa" : "mp3");
+    meta.mime = m_musicExtMap.value("mp3");
     meta.type = ContentServer::TypeMusic;
     meta.size = 0;
     meta.local = true;
@@ -2485,15 +2480,10 @@ ContentServer::makeMicItemMeta(const QUrl &url)
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeAudioCaptureItemMeta(const QUrl &url)
 {
-    // modes:
-    // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
-    // 1 - MPEG TS MP3 16-bit 44100 Hz stereo 128 kbps
-    auto mode = Settings::instance()->getAudioCaptureMode();
-
     ContentServer::ItemMeta meta;
     meta.valid = true;
     meta.url = url;
-    meta.mime = m_musicExtMap.value(mode > 0 ? "tsa" : "mp3");
+    meta.mime = m_musicExtMap.value("mp3");
     meta.type = ContentServer::TypeMusic;
     meta.size = 0;
     meta.local = true;

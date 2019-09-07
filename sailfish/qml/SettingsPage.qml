@@ -162,22 +162,6 @@ Page {
                 }
             }
 
-            /*ComboBox {
-                // modes:
-                // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
-                // 1 - MPEG2-TS MP3 44100Hz 128 kbps
-                label: qsTr("Audio capture format")
-                currentIndex: settings.audioCaptureMode
-                menu: ContextMenu {
-                    MenuItem { text: qsTr("MP3 44100Hz 128 kbps (default)") }
-                    MenuItem { text: qsTr("MPEG2-TS MP3 44100Hz 128 kbps") }
-                }
-
-                onCurrentIndexChanged: {
-                    settings.audioCaptureMode = currentIndex
-                }
-            }*/
-
             TextSwitch {
                 automaticCheck: false
                 visible:  settings.remoteContentMode == 0

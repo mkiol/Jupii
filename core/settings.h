@@ -33,7 +33,6 @@ class Settings:
     Q_PROPERTY (bool useHWVolume READ getUseHWVolume WRITE setUseHWVolume NOTIFY useHWVolumeChanged)
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
     Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
-    Q_PROPERTY (int audioCaptureMode READ getAudioCaptureMode WRITE setAudioCaptureMode NOTIFY audioCaptureModeChanged)
     Q_PROPERTY (QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
     Q_PROPERTY (bool rec READ getRec WRITE setRec NOTIFY recChanged)
     Q_PROPERTY (int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
@@ -73,9 +72,6 @@ public:
 
     void setScreenSupported(bool value);
     bool getScreenSupported();
-
-    void setAudioCaptureMode(int value);
-    int getAudioCaptureMode();
 
     void setScreenFramerate(int value);
     int getScreenFramerate();
@@ -149,7 +145,6 @@ signals:
     void forwardTimeChanged();
     void imageSupportedChanged();
     void pulseSupportedChanged();
-    void audioCaptureModeChanged();
     void rememberPlaylistChanged();
     void useHWVolumeChanged();
     void prefNetInfChanged();

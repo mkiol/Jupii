@@ -393,22 +393,6 @@ bool Settings::getScreenAudio()
     return settings.value("screenaudio", false).toBool();
 }
 
-void Settings::setAudioCaptureMode(int value)
-{
-    if (getAudioCaptureMode() != value) {
-        settings.setValue("audiocapturemode", value);
-        emit audioCaptureModeChanged();
-    }
-}
-
-int Settings::getAudioCaptureMode()
-{
-    // modes:
-    // 0 - MP3 16-bit 44100 Hz stereo 128 kbps (default)
-    // 1 - MPEG TS MP3 16-bit 44100 Hz stereo 128 kbps
-    return settings.value("audiocapturemode", 0).toInt();
-}
-
 void Settings::setScreenFramerate(int value)
 {
     if (getScreenFramerate() != value) {
