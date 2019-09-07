@@ -293,22 +293,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1803"/>
+        <location filename="../../core/contentserver.cpp" line="1832"/>
         <source>Unknown</source>
         <translation>Nieznany</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2447"/>
+        <location filename="../../core/contentserver.cpp" line="2471"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2472"/>
+        <location filename="../../core/contentserver.cpp" line="2491"/>
         <source>Audio capture</source>
         <translation>Przechwytywanie dźwięku</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2491"/>
+        <location filename="../../core/contentserver.cpp" line="2510"/>
         <source>Screen capture</source>
         <translation>Przechwytywanie ekranu</translation>
     </message>
@@ -860,7 +860,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="35"/>
         <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
-        <translation type="unfinished"></translation>
+        <translation>Elementy aktualnej playlisty będą widoczne dla innych urządzeń UPnP w sieci lokalnej.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="45"/>
@@ -875,7 +875,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="34"/>
         <source>Share playlist items via UPnP</source>
-        <translation type="unfinished"></translation>
+        <translation>Udostępniaj elementy playlisty poprzez UPnP</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="94"/>
@@ -919,12 +919,12 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="113"/>
         <source>Screen capture</source>
-        <translation type="unfinished">Przechwytywanie ekranu</translation>
+        <translation>Przechwytywanie ekranu</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="114"/>
         <source>To start capturing add Screen capture item to your current playlist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aby rozpocząć przechwytywanie ekranu dodaj element &quot;Przechwytywanie ekranu&quot; do aktualnej playlisty.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="124"/>
@@ -937,32 +937,52 @@ Pull down to connect to the local network.</source>
         <translation>Razem z ekranem także dźwięk będzie przechwytywany. Funkcjonalność jest jeszcze w fazie beta tak więc włączenie tej opcji może obniżyć jakość i spowodować większe opóźnienie.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="185"/>
+        <location filename="../qml/SettingsPage.qml" line="135"/>
+        <source>Screen capture framerate</source>
+        <translation>Liczba klatek na sekundę podczas przechwytywania ekranu</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="146"/>
+        <source>5 fps (default)</source>
+        <translation>5 klatek/s (domyślnie)</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="147"/>
+        <source>15 fps</source>
+        <translation>15 klatek/s</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="148"/>
+        <source>30 fps</source>
+        <translation>30 klatek/s</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="169"/>
         <source>Stream recorder</source>
         <translation>Nagrywanie</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="186"/>
+        <location filename="../qml/SettingsPage.qml" line="170"/>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
         <translation>Umożliwia nagrywanie utworów ze strumieni SHOUTcast. Jeśli strumień zawiera informacje o odtwarzanym utworze to można ten utwór zapisać do pliku. Aby włączyć nagrywanie użyj przycisku &quot;Nagraj&quot; znajdującego się obok przycisku &quot;Przewiń&quot; na dolnym panelu. Przycisk ten jest widoczny tylko wtedy gdy nagrywanie jest możliwe. Gdy przycisk &quot;Nagraj&quot; zostanie aktywowany to cały obecnie odtwarzany utwór będzie zapisany w postaci pliku (od początku do końca). Strumienie AAC nie mogą być nagrywane.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="231"/>
+        <location filename="../qml/SettingsPage.qml" line="215"/>
         <source>Change</source>
         <translation>Zmień</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="240"/>
+        <location filename="../qml/SettingsPage.qml" line="224"/>
         <source>Set default</source>
         <translation>Ustaw domyślny</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="265"/>
+        <location filename="../qml/SettingsPage.qml" line="249"/>
         <source>Proxy (default)</source>
         <translation>Proxy (domyślny)</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="277"/>
+        <location filename="../qml/SettingsPage.qml" line="261"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
         <translation>%1 obsługuje tylko urządzenia typu Media Renderer. Jeśli ta opcja jest włączona, wszystkie urządzenia UPnP będą widoczne, czyli także te które nie są obsługiwane np. domowy ruter lub Media Server. Dla nieobsługiwanych urządzeń, %1 jest wstanie pokazać tylko podstawowe informacje konfiguracyjne.</translation>
     </message>
@@ -975,7 +995,7 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Jeśli %1 nie będzie wstanie automatycznie wykryć urządzenia (np. z powodu tego, że jest w innej sieci LAN), możesz dodać takie urządzenie podając jego adres IP. Jeśli ta opcja jest włączona, górne menu zawiera dodatkowy element - Ręcznie dodaj urządzenie. Upewnij się, że twoje urządzenie nie jest blokowane przez firewall lub NAT.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="249"/>
+        <location filename="../qml/SettingsPage.qml" line="233"/>
         <source>Internet streaming mode</source>
         <translation>Tryb strumieniowania z Internetu</translation>
     </message>
@@ -988,7 +1008,7 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Proxy</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="266"/>
+        <location filename="../qml/SettingsPage.qml" line="250"/>
         <source>Redirection</source>
         <translation>Przekierowanie</translation>
     </message>
@@ -1021,17 +1041,17 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Format audio, który jest używany gdy %1 przechwytuje dźwięk innej aplikacji. Nieskompresowany strumień (PCM) skutkuje niższym opóźnieniem ale także szybszym wyczerpaniem baterii.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="218"/>
+        <location filename="../qml/SettingsPage.qml" line="202"/>
         <source>Directory for recordings</source>
         <translation>Katalog z nagraniami</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="250"/>
+        <location filename="../qml/SettingsPage.qml" line="234"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
         <translation>Strumieniowanie z Internetu do urządzeń UPnP może być obsługiwane w dwóch trybach. W trybie Proxy, %1 zawsze pośredniczy w wymianie danych z serwera strumieniującego. W trybie Przekierowanie, strumień danych kierowany jest bezpośrednio z Internetu do urządzenia UPnP. W tym trybie %1 nie musi być uruchomiony cały czas. Wadą trybu Przekierowanie jest to, że nie wszystkie urządzenia UPnP obsługują go, w związku z tym ten tryb nie będzie działał zawsze. Wykrywanie metadanych SHOUTcast oraz Nagrywanie nie jest także dostępne w tym trybie.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="276"/>
+        <location filename="../qml/SettingsPage.qml" line="260"/>
         <source>All devices visible</source>
         <translation>Wszystkie urządzenia widoczne</translation>
     </message>
