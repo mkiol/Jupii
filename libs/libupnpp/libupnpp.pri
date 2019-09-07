@@ -47,7 +47,7 @@ libupnpp_HEADERS += \
   $$libupnpp_BASE/libupnpp/conf_post.h \
   $$libupnpp_BASE/libupnpp/config.h
 
-HEADERS += $$libupnpp_HEADERS
+#HEADERS += $$libupnpp_HEADERS
 
 SOURCES += \
   $$libupnpp_BASE/libupnpp/control/avlastchg.cxx \

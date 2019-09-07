@@ -2,14 +2,6 @@ FFMPEG_ROOT = $$PROJECTDIR/libs/ffmpeg
 
 INCLUDEPATH += $$FFMPEG_ROOT/src
 
-HEADERS += $$FFMPEG_ROOT/src/libswscale/*.h \
-           $$FFMPEG_ROOT/src/libswresample/*.h \
-           $$FFMPEG_ROOT/src/libavformat/*.h \
-           $$FFMPEG_ROOT/src/libavfilter/*.h \
-           $$FFMPEG_ROOT/src/libavdevice/*.h \
-           $$FFMPEG_ROOT/src/libavcodec/*.h \
-           $$FFMPEG_ROOT/src/libavutil/*.h
-
 desktop {
     static_ffmpeg {
         LIBS += -lz -lxcb -lxcb-shm -lxcb-xfixes -lxcb-shape -lmp3lame -lbz2

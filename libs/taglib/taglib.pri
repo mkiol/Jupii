@@ -39,30 +39,3 @@ arm: libtaglib.files = $$PROJECTDIR/libs/taglib/build/armv7hl/*
 libtaglib.path = /usr/share/$${TARGET}/lib
 INSTALLS += libtaglib
 
-HEADERS += \
-    $$TAGLIB_HEADERS_ROOT/*.h \
-    $$TAGLIB_HEADERS_ROOT/toolkit/*.h \
-    $$TAGLIB_HEADERS_ROOT/mpeg/*.h \
-    $$TAGLIB_HEADERS_ROOT/mpeg/id3v1/*.h \
-    $$TAGLIB_HEADERS_ROOT/mpeg/id3v2/*.h \
-    $$TAGLIB_HEADERS_ROOT/mpeg/id3v2/frames/*.h \
-    $$TAGLIB_HEADERS_ROOT/ogg/*.h \
-    $$TAGLIB_HEADERS_ROOT/ogg/vorbis/*.h \
-    $$TAGLIB_HEADERS_ROOT/ogg/flac/*.h \
-    $$TAGLIB_HEADERS_ROOT/ogg/speex/*.h \
-    $$TAGLIB_HEADERS_ROOT/ogg/opus/*.h \
-    $$TAGLIB_HEADERS_ROOT/flac/*.h \
-    $$TAGLIB_HEADERS_ROOT/ape/*.h \
-    $$TAGLIB_HEADERS_ROOT/mpc/*.h \
-    $$TAGLIB_HEADERS_ROOT/wavpack/*.h \
-    $$TAGLIB_HEADERS_ROOT/trueaudio/*.h \
-    $$TAGLIB_HEADERS_ROOT/riff/*.h \
-    $$TAGLIB_HEADERS_ROOT/riff/aiff/*.h \
-    $$TAGLIB_HEADERS_ROOT/riff/wav/*.h \
-    $$TAGLIB_HEADERS_ROOT/asf/*.h \
-    $$TAGLIB_HEADERS_ROOT/mp4/*.h \
-    $$TAGLIB_HEADERS_ROOT/mod/*.h \
-    $$TAGLIB_HEADERS_ROOT/it/*.h \
-    $$TAGLIB_HEADERS_ROOT/s3m/*.h \
-    $$TAGLIB_HEADERS_ROOT/xm/*.h
-

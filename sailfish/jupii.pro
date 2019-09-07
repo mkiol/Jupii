@@ -15,6 +15,7 @@ INCLUDEPATH += /usr/include/c++/9
 
 CONFIG += sailfish screencast
 DEFINES += SAILFISH SCREENCAST
+#DEFINES += SAILFISH SCREENCAST LOGTOFILE
 
 include($$PROJECTDIR/core/jupii_core.pri)
 
