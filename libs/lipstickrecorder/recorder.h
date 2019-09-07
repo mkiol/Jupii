@@ -77,6 +77,7 @@ private:
     QScreen *m_screen;
     QList<Buffer *> m_buffers;
     QMutex m_mutex;
+    bool m_ready = false;
 
     int m_amountOfBuffers;
 };

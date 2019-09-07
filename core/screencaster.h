@@ -36,13 +36,13 @@ public:
     bool init();
     void start();
     bool audioEnabled();
-    bool writeAudioData(const QByteArray& data);
+    void writeAudioData(const QByteArray& data);
 
 signals:
 #ifdef DESKTOP
     void readNextVideoFrame();
 #endif
-    void frameError();
+    void error();
 
 private slots:
 #ifdef DESKTOP
@@ -59,13 +59,18 @@ private:
     QTimer repaintTimer;
     std::unique_ptr<Recorder> recorder;
     QImage bgImg;
-    QImage currImg;
-    uint32_t currImgTimestamp;
-    void saveCurrImg(QEvent *e);
+    Buffer* currImgBuff = nullptr;
+    int currImgTransform = 0;
+    int64_t currImgTimestamp = 0;
+    QImage makeCurrImg();
+    bool havePrevVideoPkt = false;
     bool event(QEvent *e);
+    bool writeAudioData2();
+    bool writeAudioData3();
+    bool writeVideoData2();
 #endif
-    AVPacket in_pkt;
-    AVPacket out_pkt;
+    AVPacket video_out_pkt;
+    AVPacket audio_out_pkt;
     AVFormatContext* in_video_format_ctx = nullptr;
     AVCodecContext* in_video_codec_ctx = nullptr;
     AVCodecContext* out_video_codec_ctx = nullptr;
@@ -79,10 +84,17 @@ private:
     int audio_frame_size = 0; // 0 => audio disabled for screen casting
     int video_framerate = 0;
     QSize video_size;
+    int64_t video_pkt_time = 0;
+    int64_t video_pkt_start_time = 0;
+    int64_t video_pkt_duration = 0;
+    int64_t audio_pkt_time = 0;
+    int64_t audio_pkt_duration = 0;
+    int video_audio_ratio = 0;
     AVCodecContext* in_audio_codec_ctx = nullptr;
     AVCodecContext* out_audio_codec_ctx = nullptr;
     SwrContext* audio_swr_ctx = nullptr;
     QByteArray audio_outbuf; // pulse audio data buf
+    void errorHandler();
 };
 
 #endif // SCREENCASTER_H

@@ -94,6 +94,7 @@ void Recorder::start()
             qFatal("Failed to create a buffer.");
         m_buffers << buffer;
     }
+    m_ready = true;
     recordFrame();
     emit ready();
 }
@@ -121,7 +122,8 @@ void Recorder::recordFrame()
 
 void Recorder::repaint()
 {
-    lipstick_recorder_repaint(m_lipstickRecorder);
+    if (m_ready && m_lipstickRecorder)
+        lipstick_recorder_repaint(m_lipstickRecorder);
 }
 
 void Recorder::frame(void *data, lipstick_recorder *recorder, wl_buffer *buffer, uint32_t timestamp, int transform)

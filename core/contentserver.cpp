@@ -673,8 +673,6 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
         bool startNeeded = false;
         if (!screenCaster) {
             screenCaster = std::unique_ptr<ScreenCaster>(new ScreenCaster());
-            connect(screenCaster.get(), &ScreenCaster::frameError,
-                    this, &ContentServerWorker::screenErrorHandler);
             if (!screenCaster->init()) {
                 qWarning() << "Cannot init screen capture";
                 screenCaster.reset(nullptr);
@@ -1290,7 +1288,7 @@ ContentServer::ContentServer(QObject *parent) :
     av_log_set_level(AV_LOG_ERROR);
 #endif
 #ifdef LOGTOFILE
-    av_log_set_callback(ffmpegLog);
+    //av_log_set_callback(ffmpegLog);
 #endif
     av_register_all();
     avcodec_register_all();
@@ -1298,7 +1296,7 @@ ContentServer::ContentServer(QObject *parent) :
 
     // starting worker
     start(QThread::NormalPriority);
-
+/*
 #ifdef SAILFISH
 #ifdef SCREENCAST
     // screen on/off status
@@ -1308,6 +1306,7 @@ ContentServer::ContentServer(QObject *parent) :
                 this, SLOT(displayStatusChangeHandler(QString)));
 #endif
 #endif
+*/
 }
 
 ContentServer* ContentServer::instance(QObject *parent)
