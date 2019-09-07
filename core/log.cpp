@@ -14,6 +14,7 @@
 #include <libavutil/log.h>
 
 FILE * logFile = nullptr;
+FILE * ffmpegLogFile = nullptr;
 
 void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -26,41 +27,45 @@ void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg
     QByteArray localMsg = msg.toLocal8Bit();
     const char *file = context.file ? context.file : "";
     const char *function = context.function ? context.function : "";
+
+    char t = '-';
     switch (type) {
-    /*case QtDebugMsg:
-        fprintf(logFile, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+    case QtDebugMsg:
+        t = 'D';
         break;
     case QtInfoMsg:
-        fprintf(logFile, "Info: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
-        break;*/
+        t = 'I';
+        break;
     case QtWarningMsg:
-        fprintf(logFile, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        t = 'W';
         break;
     case QtCriticalMsg:
-        fprintf(logFile, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        t = 'C';
         break;
     case QtFatalMsg:
-        fprintf(logFile, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        t = 'F';
         break;
     }
+
+    fprintf(logFile, "[%c] %s:%u - %s\n", t, function, context.line, localMsg.constData());
 }
 
 void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs)
 {
-    if (!logFile) {
+    if (!ffmpegLogFile) {
         QDir home(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-        auto file = home.filePath("jupii.log").toLatin1();
-        logFile = fopen(file.data(), "w");
+        auto file = home.filePath(FFMPEG_LOG_FILE).toLatin1();
+        ffmpegLogFile = fopen(file.data(), "w");
     }
 
-    fprintf(logFile, "FFMPEG %s: ",
-            level == AV_LOG_TRACE ? "Trace" :
-            level == AV_LOG_DEBUG ? "Debug" :
-            level == AV_LOG_VERBOSE ? "Verbose" :
-            level == AV_LOG_INFO ? "Info" :
-            level == AV_LOG_WARNING ? "Warning" :
-            level == AV_LOG_ERROR ? "Error" :
-            level == AV_LOG_FATAL ? "Fatal" :
-            level == AV_LOG_PANIC ? "Panic" : "Unknown");
-    vfprintf(logFile, fmt, vargs);
+    fprintf(logFile, "FFMPEG [%s] - ",
+            level == AV_LOG_TRACE ? "T" :
+            level == AV_LOG_DEBUG ? "D" :
+            level == AV_LOG_VERBOSE ? "V" :
+            level == AV_LOG_INFO ? "I" :
+            level == AV_LOG_WARNING ? "W" :
+            level == AV_LOG_ERROR ? "E" :
+            level == AV_LOG_FATAL ? "F" :
+            level == AV_LOG_PANIC ? "P" : "-");
+    vfprintf(ffmpegLogFile, fmt, vargs);
 }

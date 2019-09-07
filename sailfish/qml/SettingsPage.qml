@@ -130,8 +130,8 @@ Page {
                 }
             }
 
-            /*ComboBox {
-                visible: settings.screenSupported
+            ComboBox {
+                visible: settings.isDebug() && settings.screenSupported
                 label: qsTr("Screen capture framerate")
                 currentIndex: {
                     if (settings.screenFramerate < 15) {
@@ -160,7 +160,7 @@ Page {
                         settings.screenFramerate = 5;
                     }
                 }
-            }*/
+            }
 
             /*ComboBox {
                 // modes:

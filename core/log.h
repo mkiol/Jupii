@@ -13,6 +13,7 @@
 #include <cstdio>
 
 #define LOG_FILE "jupii.log"
+#define FFMPEG_LOG_FILE "jupii_ffmpeg.log"
 
 extern FILE * logFile;
 void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg);

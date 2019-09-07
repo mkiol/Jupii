@@ -38,6 +38,15 @@ Settings::Settings(QObject *parent) :
     qDebug() << "HW name:" << hwName;
 }
 
+bool Settings::isDebug()
+{
+#ifdef QT_DEBUG
+    return true;
+#else
+    return false;
+#endif
+}
+
 #ifdef SAILFISH
 QString Settings::readHwInfo()
 {
