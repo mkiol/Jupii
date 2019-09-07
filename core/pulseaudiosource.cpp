@@ -15,10 +15,9 @@
 
 const char* PulseAudioSource::nullSink = "sink.null";
 const char* PulseAudioSource::nullSinkMonitor = "sink.null.monitor";
-int PulseAudioSource::nullDataSize = 0;
 bool PulseAudioSource::started = false;
 bool PulseAudioSource::shutdown = false;
-const int PulseAudioSource::timerDelta = 1000/25; // msec, must be divided by 4
+const int PulseAudioSource::timerDelta = 1000/10;
 bool PulseAudioSource::timerActive = false;
 bool PulseAudioSource::muted = false;
 pa_sample_spec PulseAudioSource::sampleSpec = {PA_SAMPLE_S16LE, 44100u, 2};
@@ -36,8 +35,8 @@ PulseAudioSource::PulseAudioSource(QObject *parent) : QObject(parent)
 {
     iterationTimer.setInterval(PulseAudioSource::timerDelta);
     iterationTimer.setSingleShot(true);
-    connect(&iterationTimer, &QTimer::timeout,
-            this, &PulseAudioSource::doPulseIteration, Qt::QueuedConnection);
+    iterationTimer.setTimerType(Qt::PreciseTimer);
+    connect(&iterationTimer, &QTimer::timeout, this, &PulseAudioSource::doPulseIteration, Qt::DirectConnection);
 }
 
 PulseAudioSource::~PulseAudioSource()
@@ -514,13 +513,8 @@ void PulseAudioSource::deinit()
 bool PulseAudioSource::init()
 {
     shutdown = false;
-    nullDataSize = int(double(timerDelta)/1000 * 2 * sampleSpec.rate * sampleSpec.channels);
-    qDebug() << "null data size:" << nullDataSize;
-
     ml = pa_mainloop_new();
-
     mla = pa_mainloop_get_api(ml);
-
     ctx = pa_context_new(mla, Jupii::APP_NAME);
     if (!ctx) {
         qWarning() << "New pulse-audio context failed";
@@ -549,7 +543,9 @@ bool PulseAudioSource::init()
 
 void PulseAudioSource::doPulseIteration()
 {
-    //qDebug() << "doPulseIteration";
+    startTime2 = startTime1;
+    startTime1 = QTime::currentTime();
+
     auto worker = ContentServerWorker::instance();
     if (worker->screenCaptureItems.isEmpty() &&
             worker->audioCaptureItems.isEmpty()) {
@@ -563,9 +559,14 @@ void PulseAudioSource::doPulseIteration()
         continue;
     if (ret == 0 && !shutdown) {
         if (!stream) {
+            int startTimerDelta = startTime2.msecsTo(QTime::currentTime());
             // sending null data (silence) to all connected devices
             // because there is no valid source of audio (no valid sink input)
-            //qDebug() << "sending null data:" << nullDataSize;
+            // must be divided by 4
+            int nullDataSize = int(double(startTimerDelta)/1000 * 2 * sampleSpec.rate * sampleSpec.channels);
+            nullDataSize = nullDataSize - nullDataSize%4;
+            qDebug() << "timerDelta:" << timerDelta << startTimerDelta;
+            qDebug() << "null data size:" << nullDataSize;
             worker->dispatchPulseData(nullptr, nullDataSize);
         }
         iterationTimer.start();
@@ -602,6 +603,7 @@ bool PulseAudioSource::start()
     //discoverStream();
 
     if (!iterationTimer.isActive()) {
+        startTime1 = QTime::currentTime();
         iterationTimer.start();
     } else {
         qDebug() << "Pluse-audio loop already started";

@@ -13,6 +13,7 @@
 #include <QString>
 #include <QList>
 #include <QTimer>
+#include <QTime>
 #include <QAudioInput>
 
 extern "C" {
@@ -64,7 +65,8 @@ private:
     static const int timerDelta; // msec
     static bool shutdown;
     QTimer iterationTimer;
-    static int nullDataSize;
+    QTime startTime1;
+    QTime startTime2;
     static bool started;
     static bool timerActive;
     static bool muted;
