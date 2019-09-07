@@ -33,7 +33,10 @@ public:
     ~MicCaster();
     bool init();
     void start();
-    bool writeAudioData(const QByteArray& data);
+    void writeAudioData(const QByteArray& data);
+
+signals:
+    void error();
 
 protected:
     qint64 readData(char *data, qint64 maxSize);
@@ -42,17 +45,21 @@ protected:
 private:
     std::unique_ptr<QAudioInput> input;
     bool active = false;
-    int audio_frame_size = 0;
     float volume = 1.0f;
-    AVPacket in_pkt;
-    AVPacket out_pkt;
+    AVPacket audio_out_pkt;
     AVFormatContext* out_format_ctx = nullptr;
     AVFrame* in_frame = nullptr;
+    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
+    int audio_frame_size = 0;
     AVCodecContext* in_audio_codec_ctx = nullptr;
     AVCodecContext* out_audio_codec_ctx = nullptr;
     SwrContext* audio_swr_ctx = nullptr;
     QByteArray audio_outbuf; // audio data buf
-    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
+    int64_t audio_pkt_time = 0;
+    int64_t audio_pkt_duration = 0;
+    bool writeAudioData2();
+    bool writeAudioData3();
+    void errorHandler();
 };
 
 #endif // MICCASTER_H

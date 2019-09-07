@@ -25,14 +25,13 @@ public:
     AudioCaster(QObject *parent = nullptr);
     ~AudioCaster();
     bool init();
-    bool writeAudioData(const QByteArray& data);
+    void writeAudioData(const QByteArray& data);
 
 signals:
-    void frameError();
+    void error();
 
 private:
-    AVPacket in_pkt;
-    AVPacket out_pkt;
+    AVPacket audio_out_pkt;
     AVCodecContext* out_video_codec_ctx = nullptr;
     AVFormatContext* out_format_ctx = nullptr;
     AVFrame* in_frame = nullptr;
@@ -42,6 +41,11 @@ private:
     AVCodecContext* out_audio_codec_ctx = nullptr;
     SwrContext* audio_swr_ctx = nullptr;
     QByteArray audio_outbuf; // pulse audio data buf
+    int64_t audio_pkt_time = 0;
+    int64_t audio_pkt_duration = 0;
+    bool writeAudioData2();
+    bool writeAudioData3();
+    void errorHandler();
 };
 
 #endif // AUDIOCASTER_H

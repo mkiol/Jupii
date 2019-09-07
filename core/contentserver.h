@@ -311,6 +311,8 @@ private slots:
     void responseForScreenCaptureDone();
     void screenErrorHandler();
 #endif
+    void audioErrorHandler();
+    void micErrorHandler();
     void responseForUrlDone();
     void seqWriteData(QFile* file, qint64 size, QHttpResponse *resp);
 

@@ -429,6 +429,36 @@ void ContentServerWorker::screenErrorHandler()
 }
 #endif
 
+void ContentServerWorker::audioErrorHandler()
+{
+    qWarning() << "Error in audio casting, "
+                  "so disconnecting clients and ending casting";
+    for (auto& item : audioCaptureItems) {
+        item.resp->end();
+    }
+    for (auto& item : audioCaptureItems) {
+        emit itemRemoved(item.id);
+    }
+
+    audioCaptureItems.clear();
+    audioCaster.reset(nullptr);
+}
+
+void ContentServerWorker::micErrorHandler()
+{
+    qWarning() << "Error in mic casting, "
+                  "so disconnecting clients and ending casting";
+    for (auto& item : micItems) {
+        item.resp->end();
+    }
+    for (auto& item : micItems) {
+        emit itemRemoved(item.id);
+    }
+
+    micItems.clear();
+    micCaster.reset(nullptr);
+}
+
 void ContentServerWorker::requestForFileHandler(const QUrl &id,
                                                 const ContentServer::ItemMeta* meta,
                                                 QHttpRequest *req, QHttpResponse *resp)
@@ -2413,7 +2443,7 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
         if (meta.mime == "audio/mpeg")
             fillCoverArt(meta);
 
-        // defauls
+        // defaults
         /*if (meta.title.isEmpty())
             meta.title = file.fileName();
         if (meta.artist.isEmpty())

@@ -565,8 +565,8 @@ void PulseAudioSource::doPulseIteration()
             // must be divided by 4
             int nullDataSize = int(double(startTimerDelta)/1000 * 2 * sampleSpec.rate * sampleSpec.channels);
             nullDataSize = nullDataSize - nullDataSize%4;
-            qDebug() << "timerDelta:" << timerDelta << startTimerDelta;
-            qDebug() << "null data size:" << nullDataSize;
+            //qDebug() << "timerDelta:" << timerDelta << startTimerDelta;
+            //qDebug() << "null data size:" << nullDataSize;
             worker->dispatchPulseData(nullptr, nullDataSize);
         }
         iterationTimer.start();
