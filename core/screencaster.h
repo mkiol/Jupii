@@ -40,16 +40,13 @@ public:
 
 signals:
 #ifdef DESKTOP
-    void readNextVideoFrame();
+    void readNextVideoData();
 #endif
     void error();
 
 private slots:
-#ifdef DESKTOP
-    void readVideoFrame();
-#endif
-#ifdef SAILFISH
     void writeVideoData();
+#ifdef SAILFISH
     void repaint();
 #endif
 
@@ -63,12 +60,9 @@ private:
     int currImgTransform = 0;
     int64_t currImgTimestamp = 0;
     QImage makeCurrImg();
-    bool havePrevVideoPkt = false;
     bool event(QEvent *e);
-    bool writeAudioData2();
-    bool writeAudioData3();
-    bool writeVideoData2();
 #endif
+    bool havePrevVideoPkt = false;
     AVPacket video_out_pkt;
     AVPacket audio_out_pkt;
     AVFormatContext* in_video_format_ctx = nullptr;
@@ -94,6 +88,9 @@ private:
     AVCodecContext* out_audio_codec_ctx = nullptr;
     SwrContext* audio_swr_ctx = nullptr;
     QByteArray audio_outbuf; // pulse audio data buf
+    bool writeAudioData2();
+    bool writeAudioData3();
+    bool writeVideoData2();
     void errorHandler();
 };
 
