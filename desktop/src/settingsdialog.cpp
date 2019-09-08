@@ -32,7 +32,6 @@ int SettingsDialog::exec()
     ui->allDevicesCheckBox->setCheckState(s->getShowAllDevices() ? Qt::Checked : Qt::Unchecked);
     ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
     ui->recCheckBox->setCheckState(s->getRec() ? Qt::Checked : Qt::Unchecked);
-    ui->audioCaptureModeComboBox->setCurrentIndex(s->getAudioCaptureMode());
     ui->contentDirCheckBox->setCheckState(s->getContentDirSupported() ? Qt::Checked : Qt::Unchecked);
 
     bool screenEnabled = s->getScreenSupported();
@@ -87,12 +86,6 @@ void SettingsDialog::on_netiInfsComboBox_activated(int index)
         qDebug() << "New prefered network interface:" << inf;
         s->setPrefNetInf(inf);
     }
-}
-
-void SettingsDialog::on_audioCaptureModeComboBox_activated(int index)
-{
-    auto s = Settings::instance();
-    s->setAudioCaptureMode(index);
 }
 
 void SettingsDialog::on_screenFramerateComboBox_activated(int index)

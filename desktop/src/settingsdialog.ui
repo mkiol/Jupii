@@ -127,31 +127,6 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <layout class="QHBoxLayout" name="audioCaptureModeLayout">
-           <item>
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>Audio capture format</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="audioCaptureModeComboBox">
-             <item>
-              <property name="text">
-               <string>MP3 44100Hz 128 kbps (default)</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>MPEG-TS MP3 44100Hz 128 kbps</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
           <widget class="QCheckBox" name="imageCheckBox">
            <property name="toolTip">
             <string/>

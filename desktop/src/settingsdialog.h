@@ -28,7 +28,6 @@ private slots:
     void on_imageCheckBox_toggled(bool checked);
     void on_allDevicesCheckBox_toggled(bool checked);
     void on_netiInfsComboBox_activated(int index);
-    void on_audioCaptureModeComboBox_activated(int index);
     void on_screenFramerateComboBox_activated(int index);
     void on_recCheckBox_toggled(bool checked);
     void on_cropCheckBox_toggled(bool checked);
