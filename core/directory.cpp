@@ -59,7 +59,7 @@ void Directory::init()
 #else
     m_lib->setLogFileName("", UPnPP::LibUPnP::LogLevelError);
 #endif
-    m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(4);
+    m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(5);
 
     if (m_directory == 0) {
         qWarning() << "Cannot initialize UPnPP directory";
