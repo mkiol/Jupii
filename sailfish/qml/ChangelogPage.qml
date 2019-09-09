@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2019 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,6 +26,24 @@ Page {
 
             PageHeader {
                 title: qsTr("Changelog")
+            }
+
+            SectionHeader {
+                text: qsTr("Version %1").arg("2.5.1 (beta)")
+            }
+
+            LogItem {
+                title: "Screen capture improvements"
+                description: "Screen casting was updated to provide more stable but low framerate streaming. " +
+                             "When audio capturing is disabled (default) video should reach 5 fps framerate. " +
+                             "Otherwise framerate is lower."
+            }
+
+            LogItem {
+                title: "Translations update"
+                description: "Following translations have been updated: " +
+                             "Russian, Polish and Swedish. " +
+                             "Many thanks to all contributors."
             }
 
             SectionHeader {
