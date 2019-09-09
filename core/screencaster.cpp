@@ -250,7 +250,7 @@ bool ScreenCaster::init()
         in_audio_codec_ctx->sample_rate = PulseAudioSource::sampleSpec.rate;
         in_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
         in_audio_codec_ctx->time_base.num = 1;
-        in_audio_codec_ctx->time_base.den = 1000000;
+        in_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
 
         ret = avcodec_open2(in_audio_codec_ctx, in_audio_codec, &options);
         if (ret < 0) {
@@ -407,10 +407,13 @@ bool ScreenCaster::init()
                                               in_audio_codec_ctx->channels,
                                               out_audio_codec_ctx->frame_size,
                                               in_audio_codec_ctx->sample_fmt, 0);
-        audio_pkt_duration = av_rescale_q(out_audio_codec_ctx->frame_size,
+        /*audio_pkt_duration = av_rescale_q(out_audio_codec_ctx->frame_size,
                                           AVRational{1, out_audio_codec_ctx->sample_rate},
-                                          AVRational{1, 1000000});
-        video_audio_ratio = video_pkt_duration/audio_pkt_duration;
+                                          AVRational{1, 1000000});*/
+        audio_pkt_duration = out_audio_codec_ctx->frame_size; // time_base is 1/rate, so duration of 1 sample is 1
+        video_audio_ratio = av_rescale_q(video_pkt_duration,
+                                         AVRational{1, 1000000},
+                                         AVRational{1, out_audio_codec_ctx->sample_rate})/audio_pkt_duration;
 
         qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;
         qDebug() << " codec_id:" << out_audio_codec_ctx->codec_id;
@@ -500,7 +503,10 @@ bool ScreenCaster::writeAudioData2()
         bool start = false;
         if (audio_pkt_time == 0) {
             qDebug() << "First audio samples";
-            audio_pkt_time = video_pkt_start_time - 3 * audio_pkt_duration;
+            audio_pkt_time = av_rescale_q(video_pkt_start_time,
+                                          AVRational{1, 1000000},
+                                          AVRational{1, out_audio_codec_ctx->sample_rate})
+                    - 3 * audio_pkt_duration;
             ndelay = 3;
             start = true;
         } /*else {
@@ -635,8 +641,6 @@ void ScreenCaster::repaint()
 
 void ScreenCaster::writeVideoData()
 {
-    qDebug() << "writeVideoData thread:" << QThread::currentThreadId();
-
     int64_t curr_time = av_gettime();
 
     if (video_pkt_time == 0) {
@@ -651,24 +655,27 @@ void ScreenCaster::writeVideoData()
     bool audio_delayed = false;
 
     if (audioEnabled() && audio_pkt_time != 0 && havePrevVideoPkt) {
-        //int audio_delay = (curr_time - audio_pkt_time)/audio_pkt_duration;
-        //int audio_video_delay = (video_pkt_time - audio_pkt_time)/audio_pkt_duration;
+        /*int64_t curr_time_a = av_rescale_q(curr_time, AVRational{1, 1000000},
+                                      AVRational{1, out_audio_codec_ctx->sample_rate});*/
+        int64_t video_pkt_time_a = av_rescale_q(video_pkt_time, AVRational{1, 1000000},
+                                      AVRational{1, out_audio_codec_ctx->sample_rate});
+        //int audio_delay = (curr_time_a - audio_pkt_time)/audio_pkt_duration;
+        int audio_video_delay = (video_pkt_time_a - audio_pkt_time)/audio_pkt_duration;
         int audio_buff_size = audio_outbuf.size() / audio_frame_size;
         audio_delayed = audio_buff_size > 0;
         /*qDebug() << "audio_delay:" << audio_delay;
         qDebug() << "audio_buff_size:" << audio_buff_size;
         qDebug() << "audio_video_delay:" << audio_video_delay;*/
+        if (audio_video_delay > 2 * video_audio_ratio) {
+            qDebug() << "Skipping video frame because audio is delayed";
+            return;
+        }
     }
 
     /*qDebug() << "video_delay:" << video_delay;
     qDebug() << "img_not_changed:" << img_not_changed;
     qDebug() << "audio_delayed:" << audio_delayed;
     qDebug() << "video_delayed:" << video_delayed;*/
-
-    /*if (video_delay < -2) {
-        qWarning() << "Video too early, so not sending video pkt";
-        return;
-    }*/
 
     if (!img_not_changed && !video_delayed && !audio_delayed) {
         //qDebug() << "Encoding new pkt";
@@ -811,14 +818,10 @@ void ScreenCaster::writeVideoData()
     bool audio_delayed = false;
 
     if (audioEnabled() && audio_pkt_time != 0 && havePrevVideoPkt) {
-        //int audio_delay = (curr_time - audio_pkt_time)/audio_pkt_duration;
-        int audio_video_delay = (video_pkt_time - audio_pkt_time)/audio_pkt_duration;
-        //int audio_buff_size = audio_outbuf.size() / audio_frame_size;
-        //qDebug() << "audio_buff_size:" << audio_buff_size;
+        int64_t video_pkt_time_a = av_rescale_q(video_pkt_time, AVRational{1, 1000000},
+                                      AVRational{1, out_audio_codec_ctx->sample_rate});
+        int audio_video_delay = (video_pkt_time_a - audio_pkt_time)/audio_pkt_duration;
         audio_delayed = audio_video_delay > 2;
-        //qDebug() << "audio_delay:" << audio_delay;
-        //qDebug() << "audio_buff_size:" << audio_buff_size;
-        //qDebug() << "audio_video_delay:" << audio_video_delay;
     }
 
     /*qDebug() << "video_delay:" << video_delay;
