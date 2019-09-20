@@ -14,9 +14,9 @@ PROJECTDIR = $$PWD/..
 INCLUDEPATH += /usr/include/c++/9
 
 CONFIG += sailfish screencast
-#DEFINES += SAILFISH SCREENCAST
+DEFINES += SAILFISH SCREENCAST
 #DEFINES += SAILFISH SCREENCAST LOGTOFILE
-DEFINES += SAILFISH SCREENCAST LOGTOSTDERR
+#DEFINES += SAILFISH SCREENCAST LOGTOSTDERR
 
 include($$PROJECTDIR/core/jupii_core.pri)
 
@@ -79,7 +79,8 @@ TRANSLATIONS += \
     translations/harbour-jupii-sv.ts \
     translations/harbour-jupii-es.ts \
     translations/harbour-jupii-zh_CN.ts \
-    translations/harbour-jupii-sl_SI.ts
+    translations/harbour-jupii-sl_SI.ts \
+    translations/harbour-jupii-it.ts
 include(sailfishapp_i18n.pri)
 
 images.files = images/*

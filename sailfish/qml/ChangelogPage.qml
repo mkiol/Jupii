@@ -109,6 +109,12 @@ Page {
                              "or addUrlOnceAndPlay is invoked."
             }
 
+            LogItem {
+                title: "Italian translation"
+                description: "Many thanks to Fra for " +
+                             "providing Italian translation."
+            }
+
             SectionHeader {
                 text: qsTr("Version %1").arg("2.2.2")
             }
