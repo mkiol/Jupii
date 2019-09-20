@@ -29,55 +29,35 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.5.1 (beta)")
-            }
-
-            LogItem {
-                title: "Screen capture improvements"
-                description: "Screen casting was updated to provide more stable but low framerate streaming. " +
-                             "When audio capturing is disabled (default) video should reach 5 fps framerate. " +
-                             "Otherwise framerate is lower."
-            }
-
-            LogItem {
-                title: "Translations update"
-                description: "Following translations have been updated: " +
-                             "Russian, Polish and Swedish. " +
-                             "Many thanks to all contributors."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.5.0 (beta)")
+                text: qsTr("Version %1").arg("2.5.2")
             }
 
             LogItem {
                 title: "Sharing playlist items via UPnP"
                 description: "Items on current playlist will be accessible for " +
                              "other UPnP devices though content directory service. " +
-                             "If you don't like this feature, it can be disabled " +
-                             "in the Settings."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.4.1 (beta)")
+                             "When this option is enabled, Jupii is visible in a UPnP local network."
             }
 
             LogItem {
-                title: "Fixes for latest Sailfish OS release"
-                description: "Audio capture was updated to support Sailfish OS 3.1"
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.4.0 (beta)")
-            }
-
-            LogItem {
-                title: "Screen capture"
-                description: "Screen data is sent as a video stream to remote DLNA device. " +
+                title: "Screen capture (Experiment)"
+                description: "Screen casting feature. It provides stable but low framerate streaming. " +
+                             "When audio capturing is disabled (default) video should reach 5 fps framerate. " +
+                             "Otherwise framerate is lower. " +
                              "Be aware that due to buffering there is a delay " +
                              "between phone and the video displayed on the remote screen. " +
                              "The implementation is inspired and partially based on " +
                              "<a href=\"https://github.com/mer-qa/lipstick2vnc/\">lipstick2vnc</a> project."
+            }
+
+            LogItem {
+                title: "Stream recorder (Experiment)"
+                description: "Enables recording of tracks from SHOUTcast stream. " +
+                             "When stream provides information " +
+                             "about the title of the currently played track, " +
+                             "you can save this track to a file. " +
+                             "Stream recording feature can be turn on in Experiments " +
+                             "section in the settings."
             }
 
             LogItem {
@@ -90,40 +70,8 @@ Page {
             }
 
             LogItem {
-                title: "Improved search on Album, Recordings and gPodder pages"
-                description: "Searching takes into account many different fields like: " +
-                             "album title, artist name, station name, podcast and episode title. " +
-                             "There is also an option to sort search results."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.3.1 (beta)")
-            }
-
-            LogItem {
                 title: "Landscape mode"
                 description: "Landscape orientation is now supported."
-            }
-
-            LogItem {
-                title: "Translations update"
-                description: "Following translations have been updated: " +
-                             "Slovenian, Chinese, Russian, Polish and Swedish. " +
-                             "Many thanks to all contributors."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.3.0 (beta)")
-            }
-
-            LogItem {
-                title: "Stream recorder"
-                description: "Enables recording of tracks from SHOUTcast stream. " +
-                             "When stream provides information " +
-                             "about the title of the currently played track, " +
-                             "you can save this track to a file. " +
-                             "Stream recording feature can be turn on in Experiments " +
-                             "section in the settings."
             }
 
             LogItem {
@@ -136,6 +84,20 @@ Page {
             }
 
             LogItem {
+                title: "Improved search on Album, Recordings and gPodder pages"
+                description: "Searching takes into account many different fields like: " +
+                             "album title, artist name, station name, podcast and episode title. " +
+                             "There is also an option to sort search results."
+            }
+
+            LogItem {
+                title: "SomaFM streaming improvements"
+                description: "Streaming of SomaFM has been improved to be more " +
+                             "compatible with various DLNA implementations. " +
+                             "Especially it applies to Samsung TV devices. "
+            }
+
+            LogItem {
                 title: "Initial Yamaha XC API support - Toggle power option"
                 description: "When remote device supports Yamaha XC API, " +
                              "option to toggle power is visible in the context menu."
@@ -145,13 +107,6 @@ Page {
                 title: "DBus API improvements"
                 description: "App is bring to foreground when addPathOnceAndPlay " +
                              "or addUrlOnceAndPlay is invoked."
-            }
-
-            LogItem {
-                title: "SomaFM streaming improvements"
-                description: "Streaming of SomaFM has been improved to be more " +
-                             "compatible with various DLNA implementations. " +
-                             "Especially it applies to Samsung TV devices. "
             }
 
             SectionHeader {
