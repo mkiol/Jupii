@@ -54,6 +54,13 @@ ScreenCaster::ScreenCaster(QObject *parent) : QObject(parent)
 
 ScreenCaster::~ScreenCaster()
 {
+    qDebug() << "ScreenCaster destructor start";
+
+#ifdef SAILFISH
+    frameTimer.stop();
+    repaintTimer.stop();
+#endif
+
     if (video_sws_ctx) {
         sws_freeContext(video_sws_ctx);
         video_sws_ctx = nullptr;
@@ -96,7 +103,10 @@ ScreenCaster::~ScreenCaster()
     }
 
     av_packet_unref(&video_out_pkt);
-    av_packet_unref(&audio_out_pkt);
+    if (audioEnabled())
+        av_packet_unref(&audio_out_pkt);
+
+    qDebug() << "ScreenCaster destructor end";
 }
 
 bool ScreenCaster::init()
