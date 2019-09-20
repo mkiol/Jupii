@@ -18,11 +18,15 @@ FILE * ffmpegLogFile = nullptr;
 
 void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+#ifdef LOGTOFILE
     if (!logFile) {
         QDir home(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
         auto file = home.filePath(LOG_FILE).toLatin1();
         logFile = fopen(file.data(), "w");
     }
+#elif LOGTOSTDERR
+    logFile = stderr;
+#endif
 
     QByteArray localMsg = msg.toLocal8Bit();
     const char *file = context.file ? context.file : "";
@@ -48,17 +52,22 @@ void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg
     }
 
     fprintf(logFile, "[%c] %s:%u - %s\n", t, function, context.line, localMsg.constData());
+    fflush(logFile);
 }
 
 void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs)
 {
+#ifdef LOGTOFILE
     if (!ffmpegLogFile) {
         QDir home(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
         auto file = home.filePath(FFMPEG_LOG_FILE).toLatin1();
         ffmpegLogFile = fopen(file.data(), "w");
     }
+#elif LOGTOSTDERR
+    ffmpegLogFile = stderr;
+#endif
 
-    fprintf(logFile, "FFMPEG [%s] - ",
+    fprintf(ffmpegLogFile, "FFMPEG [%s] - ",
             level == AV_LOG_TRACE ? "T" :
             level == AV_LOG_DEBUG ? "D" :
             level == AV_LOG_VERBOSE ? "V" :
@@ -68,4 +77,5 @@ void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs)
             level == AV_LOG_FATAL ? "F" :
             level == AV_LOG_PANIC ? "P" : "-");
     vfprintf(ffmpegLogFile, fmt, vargs);
+    fflush(logFile);
 }

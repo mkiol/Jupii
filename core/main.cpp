@@ -55,13 +55,13 @@
 #include "dirmodel.h"
 #include "recmodel.h"
 #include "device.h"
-#ifdef LOGTOFILE
+#if defined(LOGTOFILE) || defined(LOGTOSTDERR)
 #include "log.h"
 #endif
 
 int main(int argc, char *argv[])
 {
-#ifdef LOGTOFILE
+#if defined(LOGTOFILE) || defined(LOGTOSTDERR)
     qInstallMessageHandler(qtLog);
 #endif
 #ifdef SAILFISH
