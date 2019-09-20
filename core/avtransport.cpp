@@ -694,13 +694,15 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         }
 
         if (do_clearNext) {
-            qWarning() << "Clearing nextURI";
-            if (!handleError(srv->setNextAVTransportURI("", ""))) {
-                qWarning() << "Error response for setNextAVTransportURI()";
-                if (!getInited()) {
-                    m_updateMutex.unlock();
-                    qWarning() << "AVTransport service is not inited";
-                    return;
+            if (!m_nextURI.isEmpty()) {
+                qWarning() << "Clearing nextURI";
+                if (!handleError(srv->setNextAVTransportURI("", ""))) {
+                    qWarning() << "Error response for setNextAVTransportURI()";
+                    if (!getInited()) {
+                        m_updateMutex.unlock();
+                        qWarning() << "AVTransport service is not inited";
+                        return;
+                    }
                 }
             }
         }
