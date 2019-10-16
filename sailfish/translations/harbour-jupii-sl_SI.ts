@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sl_SI" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="sl_SI" sourcelanguage="en_US" version="2.1">
 <context>
     <name>AboutPage</name>
     <message>
@@ -185,12 +183,7 @@
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n skladba</numerusform>
-            <numerusform>%n skladbi</numerusform>
-            <numerusform>%n skladbe</numerusform>
-            <numerusform>%n skladb</numerusform>
-        </translation>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="98"/>
@@ -218,12 +211,7 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="80"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n skladba</numerusform>
-            <numerusform>%n skladbi</numerusform>
-            <numerusform>%n skladbe</numerusform>
-            <numerusform>%n skladb</numerusform>
-        </translation>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="88"/>
@@ -675,12 +663,7 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="83"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n skladba</numerusform>
-            <numerusform>%n skladbi</numerusform>
-            <numerusform>%n skladbe</numerusform>
-            <numerusform>%n skladb</numerusform>
-        </translation>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="92"/>
@@ -718,12 +701,7 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="75"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Brisanje izbrane</numerusform>
-            <numerusform>Brisanje izbranih</numerusform>
-            <numerusform>Brisanje izbranih</numerusform>
-            <numerusform>Brisanje izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Brisanje izbrane</numerusform><numerusform>Brisanje izbranih</numerusform><numerusform>Brisanje izbranih</numerusform><numerusform>Brisanje izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="84"/>
@@ -802,12 +780,7 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message numerus="yes">
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n izbran</numerusform>
-            <numerusform>%n izbrana</numerusform>
-            <numerusform>%n izbrani</numerusform>
-            <numerusform>%n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>%n izbran</numerusform><numerusform>%n izbrana</numerusform><numerusform>%n izbrani</numerusform><numerusform>%n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="49"/>
@@ -855,12 +828,12 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="34"/>
         <source>Share playlist items via UPnP</source>
-        <translation type="unfinished"></translation>
+        <translation>Deljenje vsebine senzama predvanjaja preko UPnP</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="35"/>
         <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vsebina trenutnega seznama predvajanja bo na voljo ostalim UPnP napravam</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
@@ -875,12 +848,12 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="113"/>
         <source>Screen capture</source>
-        <translation type="unfinished">Zajem zaslona</translation>
+        <translation>Posnetek zaslona</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="114"/>
         <source>To start capturing add Screen capture item to your current playlist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Za pričetek zajemanja vsebine dodajte Posnetek zaslona na vaš trenutni seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="124"/>
