@@ -1317,9 +1317,8 @@ ContentServer::ContentServer(QObject *parent) :
 #else
     av_log_set_level(AV_LOG_ERROR);
 #endif
-#ifdef LOGTOFILE
     //av_log_set_callback(ffmpegLog);
-#endif
+
     av_register_all();
     avcodec_register_all();
     avdevice_register_all();

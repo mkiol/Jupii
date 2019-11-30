@@ -19,9 +19,9 @@
 #include "directory.h"
 #include "utils.h"
 #include "info.h"
+#include "log.h"
 
 #include <libupnpp/control/description.hxx>
-
 
 Settings* Settings::inst = nullptr;
 
@@ -30,6 +30,9 @@ Settings::Settings(QObject *parent) :
     TaskExecutor(parent, 1),
     settings(parent)
 {
+    if (getLogToFile())
+        qInstallMessageHandler(qtLog);
+
 #ifdef SAILFISH
     hwName = readHwInfo();
 #else
@@ -82,6 +85,28 @@ QString Settings::prettyName()
 {
     return hwName.isEmpty() ? QString(Jupii::APP_NAME) : QString("%1 (%2)")
                               .arg(Jupii::APP_NAME, hwName);
+}
+
+void Settings::setLogToFile(bool value)
+{
+    if (getLogToFile() != value) {
+        settings.setValue("logtofile", value);
+        if (value) {
+            qDebug() << "Logging to file enabled";
+            qInstallMessageHandler(qtLog);
+            qDebug() << "Logging to file enabled";
+        } else {
+            qDebug() << "Logging to file disabled";
+            qInstallMessageHandler(0);
+            qDebug() << "Logging to file disabled";
+        }
+        emit logToFileChanged();
+    }
+}
+
+bool Settings::getLogToFile()
+{
+    return settings.value("logtofile", false).toBool();
 }
 
 void Settings::setPort(int value)

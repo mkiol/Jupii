@@ -122,7 +122,7 @@ void Directory::discover()
 
         auto traverseFun = [this, &found, &xcs](const UPnPClient::UPnPDeviceDesc &ddesc,
                 const UPnPClient::UPnPServiceDesc &sdesc) {
-            /*qDebug() << "==> Visitor";
+            qDebug() << "==> Visitor";
             qDebug() << " Device";
             qDebug() << "  friendlyName:" << QString::fromStdString(ddesc.friendlyName);
             qDebug() << "  deviceType:" << QString::fromStdString(ddesc.deviceType);
@@ -134,7 +134,7 @@ void Directory::discover()
             qDebug() << "  eventSubURL:" << QString::fromStdString(sdesc.eventSubURL);
             qDebug() << "  SCPDURL:" << QString::fromStdString(sdesc.SCPDURL);
             qDebug() << "  serviceId:" << QString::fromStdString(sdesc.serviceId);
-            qDebug() << "  serviceType:" << QString::fromStdString(sdesc.serviceType);*/
+            qDebug() << "  serviceType:" << QString::fromStdString(sdesc.serviceType);
             //qDebug() << "  ddesc.XMLText:" << QString::fromStdString(ddesc.XMLText);
 
             auto did = QString::fromStdString(ddesc.UDN);
@@ -147,6 +147,7 @@ void Directory::discover()
                 xcs[did] = true;
                 auto data = XCParser::parse(QString::fromStdString(ddesc.XMLText));
                 if (data.valid) {
+                    qDebug() << "XCS is valid for" << did;
                     auto xc = new YamahaXC(); xc->data = data;
                     this->m_xcs.insert(did, xc);
                 }
@@ -170,7 +171,7 @@ void Directory::discover()
                 break;
         }
 
-        //qDebug() << "traverse end";
+        qDebug() << "traverse end";
 
         emit discoveryReady();
 

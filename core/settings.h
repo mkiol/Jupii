@@ -45,6 +45,7 @@ class Settings:
     Q_PROPERTY (int albumRecType READ getRecQueryType WRITE setRecQueryType NOTIFY recQueryTypeChanged)
     Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
     Q_PROPERTY (bool contentDirSupported READ getContentDirSupported WRITE setContentDirSupported NOTIFY contentDirSupportedChanged)
+    Q_PROPERTY (bool logToFile READ getLogToFile WRITE setLogToFile NOTIFY logToFileChanged)
 
 public:
 #ifdef SAILFISH
@@ -87,6 +88,9 @@ public:
 
     void setUseHWVolume(bool value);
     bool getUseHWVolume();
+
+    void setLogToFile(bool value);
+    bool getLogToFile();
 
     void setAlbumQueryType(int value);
     int getAlbumQueryType();
@@ -160,6 +164,7 @@ signals:
     void recQueryTypeChanged();
     void playModeChanged();
     void contentDirSupportedChanged();
+    void logToFileChanged();
 
 private:
     QSettings settings;

@@ -269,6 +269,21 @@ Page {
                 }
             }
 
+            SectionHeader {
+                text: qsTr("Troubleshooting")
+            }
+
+            TextSwitch {
+                automaticCheck: false
+                checked: settings.logToFile
+                text: qsTr("Enable logging")
+                description: qsTr("Needed for diagnostic purposes. " +
+                                  "The log data is stored in /home/nemo/jupii.log file.")
+                onClicked: {
+                    settings.logToFile = !settings.logToFile
+                }
+            }
+
             Spacer {}
         }
     }

@@ -16,6 +16,7 @@
 #define FFMPEG_LOG_FILE "jupii_ffmpeg.log"
 
 extern FILE * logFile;
+
 void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs);
 

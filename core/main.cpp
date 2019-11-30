@@ -55,15 +55,11 @@
 #include "dirmodel.h"
 #include "recmodel.h"
 #include "device.h"
-#if defined(LOGTOFILE) || defined(LOGTOSTDERR)
-#include "log.h"
-#endif
 
 int main(int argc, char *argv[])
 {
-#if defined(LOGTOFILE) || defined(LOGTOSTDERR)
-    qInstallMessageHandler(qtLog);
-#endif
+    auto settings = Settings::instance();
+
 #ifdef SAILFISH
     auto app = SailfishApp::application(argc, argv);
     auto view = SailfishApp::createView();
@@ -127,7 +123,6 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     auto utils = Utils::instance();
-    auto settings = Settings::instance();
     auto dir = Directory::instance();
     auto cserver = ContentServer::instance();
     auto services = Services::instance();
