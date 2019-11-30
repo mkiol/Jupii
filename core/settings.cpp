@@ -54,10 +54,12 @@ QString Settings::readHwInfo()
     if (f.open(QIODevice::ReadOnly)) {
         auto d = f.readAll();
         f.close();
-        auto data = QString::fromUtf8(d);
-        QRegExp rx("\nNAME=\"([^\"]*)\"", Qt::CaseInsensitive);
-        if (rx.indexIn(data) != -1)
-            return rx.cap(1);
+        auto data = QString::fromUtf8(d).split(QRegExp("[\r\n]"), QString::SkipEmptyParts);
+        QRegExp rx("^NAME=\"?([^\"]*)\"?$", Qt::CaseInsensitive);
+        for (const auto& line: data) {
+            if (rx.indexIn(line) != -1)
+                return rx.cap(1);
+        }
     } else {
         qWarning() << "Cannot open file" << f.fileName() <<
                       "for reading (" + f.errorString() + ")";
