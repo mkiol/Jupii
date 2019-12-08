@@ -62,6 +62,8 @@ void DeviceModel::updateModel()
 
     clear();
 
+    QList<ListItem*> items;
+
     for (auto it = ddescs.begin(); it != ddescs.end(); ++it) {
         auto& ddesc = it.value();
         /*bool supported = ddesc.deviceType == "urn:schemas-upnp-org:device:MediaRenderer:1" ||
@@ -73,19 +75,19 @@ void DeviceModel::updateModel()
             QUrl iconUrl = d->getDeviceIconUrl(ddesc);
             bool active = av && av->getDeviceId() == id;
             bool xc = d->xcExists(it.key());
-            appendRow(new DeviceItem(id,
-                                     QString::fromStdString(ddesc.friendlyName),
-                                     QString::fromStdString(ddesc.deviceType),
-                                     QString::fromStdString(ddesc.modelName),
+            items << new DeviceItem(id,
+                             QString::fromStdString(ddesc.friendlyName),
+                             QString::fromStdString(ddesc.deviceType),
+                             QString::fromStdString(ddesc.modelName),
 #ifdef DESKTOP
-                                     QIcon(),
+                             QIcon(),
 #else
-                                     iconUrl,
+                             iconUrl,
 #endif
-                                     supported,
-                                     active,
-                                     xc
-                                     ));
+                             supported,
+                             active,
+                             xc
+                         );
 
 #ifdef DESKTOP
             if (!iconUrl.isEmpty()) {
@@ -111,6 +113,15 @@ void DeviceModel::updateModel()
 #endif
         }
     }
+
+    // Sorting
+    std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
+        auto aa = dynamic_cast<DeviceItem*>(a);
+        auto bb = dynamic_cast<DeviceItem*>(b);
+        return aa->title().compare(bb->title(), Qt::CaseInsensitive) < 0;
+    });
+
+    appendRows(items);
 }
 
 void DeviceModel::clear()
