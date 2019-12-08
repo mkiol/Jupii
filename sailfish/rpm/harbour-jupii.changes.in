@@ -8,6 +8,12 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun Dec 08 2019 Michal Kosciesza <michal@mkiol.net> 2.5.4-1
+- German translation update
+- Chinese translation update
+- Fix for issue with saving settings
+- Sorting for device list
+
 * Sat Nov 30 2019 Michal Kosciesza <michal@mkiol.net> 2.5.3-1
 - Slovenian translation update
 - Option to enable logging to file

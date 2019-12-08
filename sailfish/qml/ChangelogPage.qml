@@ -29,6 +29,21 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.5.4")
+            }
+
+            LogItem {
+                title: "Bug fixes and small improvements"
+                description: "Issue with settings saving has been resolved. " +
+                             "UPnP devices are now listed in alphabetical order."
+            }
+
+            LogItem {
+                title: "German and Chinese translations update"
+                description: "Many thanks to drosjesjaafoer and Rui Kon for providing updated translations."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.5.3")
             }
 
