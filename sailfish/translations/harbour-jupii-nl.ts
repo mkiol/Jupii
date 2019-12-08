@@ -790,15 +790,43 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Screen capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>To start capturing add Screen capture item to your current playlist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen capture framerate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>5 fps (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>15 fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>30 fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable logging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Items on current playlist will be accessible for other UPnP devices through content directory service.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

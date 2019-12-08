@@ -36,7 +36,7 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="89"/>
         <source>%1 is developed as an open source project under %2.</source>
-        <translation>&#xa0;%2 下 %1 被作为开源项目开发。</translation>
+        <translation> %2 下 %1 被作为开源项目开发。</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="95"/>
@@ -240,15 +240,16 @@
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
         <location filename="../qml/ChangelogPage.qml" line="47"/>
-        <location filename="../qml/ChangelogPage.qml" line="134"/>
-        <location filename="../qml/ChangelogPage.qml" line="189"/>
-        <location filename="../qml/ChangelogPage.qml" line="260"/>
-        <location filename="../qml/ChangelogPage.qml" line="270"/>
-        <location filename="../qml/ChangelogPage.qml" line="286"/>
+        <location filename="../qml/ChangelogPage.qml" line="62"/>
+        <location filename="../qml/ChangelogPage.qml" line="149"/>
+        <location filename="../qml/ChangelogPage.qml" line="204"/>
+        <location filename="../qml/ChangelogPage.qml" line="275"/>
+        <location filename="../qml/ChangelogPage.qml" line="285"/>
         <location filename="../qml/ChangelogPage.qml" line="301"/>
-        <location filename="../qml/ChangelogPage.qml" line="336"/>
-        <location filename="../qml/ChangelogPage.qml" line="347"/>
-        <location filename="../qml/ChangelogPage.qml" line="393"/>
+        <location filename="../qml/ChangelogPage.qml" line="316"/>
+        <location filename="../qml/ChangelogPage.qml" line="351"/>
+        <location filename="../qml/ChangelogPage.qml" line="362"/>
+        <location filename="../qml/ChangelogPage.qml" line="408"/>
         <source>Version %1</source>
         <translation>翻译 %1</translation>
     </message>
@@ -949,7 +950,7 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="261"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP&#xa0;设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1&#xa0;仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
+        <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP 设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1 仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="273"/>

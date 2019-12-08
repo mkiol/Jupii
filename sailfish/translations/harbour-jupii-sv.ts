@@ -241,19 +241,17 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="44"/>
-        <location filename="../qml/ChangelogPage.qml" line="53"/>
-        <location filename="../qml/ChangelogPage.qml" line="82"/>
-        <location filename="../qml/ChangelogPage.qml" line="98"/>
-        <location filename="../qml/ChangelogPage.qml" line="140"/>
-        <location filename="../qml/ChangelogPage.qml" line="195"/>
-        <location filename="../qml/ChangelogPage.qml" line="266"/>
-        <location filename="../qml/ChangelogPage.qml" line="276"/>
-        <location filename="../qml/ChangelogPage.qml" line="292"/>
-        <location filename="../qml/ChangelogPage.qml" line="307"/>
-        <location filename="../qml/ChangelogPage.qml" line="342"/>
-        <location filename="../qml/ChangelogPage.qml" line="353"/>
-        <location filename="../qml/ChangelogPage.qml" line="399"/>
+        <location filename="../qml/ChangelogPage.qml" line="47"/>
+        <location filename="../qml/ChangelogPage.qml" line="62"/>
+        <location filename="../qml/ChangelogPage.qml" line="149"/>
+        <location filename="../qml/ChangelogPage.qml" line="204"/>
+        <location filename="../qml/ChangelogPage.qml" line="275"/>
+        <location filename="../qml/ChangelogPage.qml" line="285"/>
+        <location filename="../qml/ChangelogPage.qml" line="301"/>
+        <location filename="../qml/ChangelogPage.qml" line="316"/>
+        <location filename="../qml/ChangelogPage.qml" line="351"/>
+        <location filename="../qml/ChangelogPage.qml" line="362"/>
+        <location filename="../qml/ChangelogPage.qml" line="408"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
@@ -261,22 +259,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1803"/>
+        <location filename="../../core/contentserver.cpp" line="1831"/>
         <source>Unknown</source>
         <translation>Okänd</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2447"/>
+        <location filename="../../core/contentserver.cpp" line="2470"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2472"/>
+        <location filename="../../core/contentserver.cpp" line="2490"/>
         <source>Audio capture</source>
         <translation>Ljudinspelning</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2491"/>
+        <location filename="../../core/contentserver.cpp" line="2509"/>
         <source>Screen capture</source>
         <translation>Skärminspelning</translation>
     </message>
@@ -813,6 +811,11 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
         <translation>Inställningar</translation>
     </message>
     <message>
+        <location filename="../qml/SettingsPage.qml" line="35"/>
+        <source>Items on current playlist will be accessible for other UPnP devices through content directory service.</source>
+        <translation>Objekt i den aktuella spelningslistan kommer att bli tillgängliga för andra UPnP-enheter genom Content Directory Service.</translation>
+    </message>
+    <message>
         <location filename="../qml/SettingsPage.qml" line="45"/>
         <source>Start with last playlist</source>
         <translation>Starta med senaste spellistan</translation>
@@ -848,9 +851,8 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
         <translation>Dela spelningslistans objekt via UPnP</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="35"/>
         <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
-        <translation>Objekt i den aktuella spelningslistan kommer att bli tillgängliga för andra UPnP-enheter genom Content Directory Service.</translation>
+        <translation type="vanished">Objekt i den aktuella spelningslistan kommer att bli tillgängliga för andra UPnP-enheter genom Content Directory Service.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
@@ -883,59 +885,94 @@ Dra neråt för att ansluta till det lokala nätverket.</translation>
         <translation>Under en skärminspelning, spelas även ljudet in. Videoinspelning med ljud är fortfarande i betastadiet, så det kan möjligen försämra strömningskvaliteten och orsaka viss fördröjning.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="185"/>
+        <location filename="../qml/SettingsPage.qml" line="135"/>
+        <source>Screen capture framerate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="146"/>
+        <source>5 fps (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="147"/>
+        <source>15 fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="148"/>
+        <source>30 fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="169"/>
         <source>Stream recorder</source>
         <translation>Ströminspelare</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="186"/>
+        <location filename="../qml/SettingsPage.qml" line="170"/>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
         <translation>Aktiverar inspelning av spår från SHOUTcast-ström. När strömmen ger information om titeln på det spår som för tillfället spelas upp, kan du spara spåret i en fil. För att aktivera inspelning använder du knappen &quot;Spela in&quot;, intill &quot;Framåt&quot; i bottenpanelen. Inspelningsknappen är synlig endast när inspelning är möjlig. Om inspelning startas innan ett spår är slut, kommer hela spåret (från början till slut) att sparas som en fil. För närvarande kan AAC-strömmar inte spelas in.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="218"/>
+        <location filename="../qml/SettingsPage.qml" line="202"/>
         <source>Directory for recordings</source>
         <translation>Mapp för inspelningar</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="231"/>
+        <location filename="../qml/SettingsPage.qml" line="215"/>
         <source>Change</source>
         <translation>Ändra</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="240"/>
+        <location filename="../qml/SettingsPage.qml" line="224"/>
         <source>Set default</source>
         <translation>Ange standard</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="249"/>
+        <location filename="../qml/SettingsPage.qml" line="233"/>
         <source>Internet streaming mode</source>
         <translation>Internetströmmningsläge</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="250"/>
+        <location filename="../qml/SettingsPage.qml" line="234"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
         <translation>Strömning från Internet till UPnP-enheter kan hanteras i två lägen. I proxyläget reläar %1 varje paket som tas emot från en strömmningsvärd. I omdirigeringsläget, går den faktiska strömmingen direkt mellan UPnP-enheten och en strömmningsserver, så %1 behöver inte vara aktivt hela tiden. Nackdelen med omdirigeringsläget är att inte varje UPnP-enhet stödjer omdirigering. Därför fungerar inte detta läge korrekt, på vissa enheter. SHOUTcast metadataidentifiering och Stream-inspelaren finns inte tillgängligt när omdirigeringsläget är aktivt.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="265"/>
+        <location filename="../qml/SettingsPage.qml" line="249"/>
         <source>Proxy (default)</source>
         <translation>Proxy (standard)</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="266"/>
+        <location filename="../qml/SettingsPage.qml" line="250"/>
         <source>Redirection</source>
         <translation>Omdirigering</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="276"/>
+        <location filename="../qml/SettingsPage.qml" line="260"/>
         <source>All devices visible</source>
         <translation>Alla enheter synliga</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="277"/>
+        <location filename="../qml/SettingsPage.qml" line="261"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
         <translation>%1 stödjer endast mediarenderingsenheter. Med detta alternativ aktiverat visas alla UPnP-enheter, inklusive enheter som inte stöds, såsom routrar eller mediaservrar. %1 kan bara visa basal information om enheter som inte stöds. Detta alternativ kan vara användbart för att granska UPnP-enheter i ditt lokala nät.</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="273"/>
+        <source>Advanced options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="280"/>
+        <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="279"/>
+        <source>Enable logging</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
