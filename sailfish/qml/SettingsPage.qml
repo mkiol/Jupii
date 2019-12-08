@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2019 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -270,15 +270,15 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Troubleshooting")
+                text: qsTr("Advanced options")
             }
 
             TextSwitch {
                 automaticCheck: false
                 checked: settings.logToFile
                 text: qsTr("Enable logging")
-                description: qsTr("Needed for diagnostic purposes. " +
-                                  "The log data is stored in /home/nemo/jupii.log file.")
+                description: qsTr("Needed for troubleshooting purposes. " +
+                                  "The log data is stored in %1 file.").arg("/home/nemo/jupii.log")
                 onClicked: {
                     settings.logToFile = !settings.logToFile
                 }
