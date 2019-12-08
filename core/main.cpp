@@ -58,8 +58,6 @@
 
 int main(int argc, char *argv[])
 {
-    auto settings = Settings::instance();
-
 #ifdef SAILFISH
     auto app = SailfishApp::application(argc, argv);
     auto view = SailfishApp::createView();
@@ -106,6 +104,8 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<Service::ErrorType>("ErrorType");
     qRegisterMetaType<QList<ListItem*>>("QListOfListItem");
+
+    auto settings = Settings::instance();
 
 #ifdef SAILFISH
     QTranslator translator;
