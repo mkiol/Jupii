@@ -36,7 +36,7 @@
     <message>
         <location filename="../qml/AboutPage.qml" line="89"/>
         <source>%1 is developed as an open source project under %2.</source>
-        <translation> %2 下 %1 被作为开源项目开发。</translation>
+        <translation>&#xa0;%2 下 %1 被作为开源项目开发。</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="95"/>
@@ -239,19 +239,16 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="44"/>
-        <location filename="../qml/ChangelogPage.qml" line="53"/>
-        <location filename="../qml/ChangelogPage.qml" line="82"/>
-        <location filename="../qml/ChangelogPage.qml" line="98"/>
-        <location filename="../qml/ChangelogPage.qml" line="140"/>
-        <location filename="../qml/ChangelogPage.qml" line="195"/>
-        <location filename="../qml/ChangelogPage.qml" line="266"/>
-        <location filename="../qml/ChangelogPage.qml" line="276"/>
-        <location filename="../qml/ChangelogPage.qml" line="292"/>
-        <location filename="../qml/ChangelogPage.qml" line="307"/>
-        <location filename="../qml/ChangelogPage.qml" line="342"/>
-        <location filename="../qml/ChangelogPage.qml" line="353"/>
-        <location filename="../qml/ChangelogPage.qml" line="399"/>
+        <location filename="../qml/ChangelogPage.qml" line="47"/>
+        <location filename="../qml/ChangelogPage.qml" line="134"/>
+        <location filename="../qml/ChangelogPage.qml" line="189"/>
+        <location filename="../qml/ChangelogPage.qml" line="260"/>
+        <location filename="../qml/ChangelogPage.qml" line="270"/>
+        <location filename="../qml/ChangelogPage.qml" line="286"/>
+        <location filename="../qml/ChangelogPage.qml" line="301"/>
+        <location filename="../qml/ChangelogPage.qml" line="336"/>
+        <location filename="../qml/ChangelogPage.qml" line="347"/>
+        <location filename="../qml/ChangelogPage.qml" line="393"/>
         <source>Version %1</source>
         <translation>翻译 %1</translation>
     </message>
@@ -259,22 +256,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1803"/>
+        <location filename="../../core/contentserver.cpp" line="1831"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2447"/>
+        <location filename="../../core/contentserver.cpp" line="2470"/>
         <source>Microphone</source>
         <translation>麦克风</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2472"/>
+        <location filename="../../core/contentserver.cpp" line="2490"/>
         <source>Audio capture</source>
         <translation>音频采集</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2491"/>
+        <location filename="../../core/contentserver.cpp" line="2509"/>
         <source>Screen capture</source>
         <translation>录屏</translation>
     </message>
@@ -806,6 +803,11 @@ Pull down to connect to the local network.</source>
         <translation>设置</translation>
     </message>
     <message>
+        <location filename="../qml/SettingsPage.qml" line="35"/>
+        <source>Items on current playlist will be accessible for other UPnP devices through content directory service.</source>
+        <translation>其它 UpnP 设备将能够通过内容目录服务访问当前播放列表项目</translation>
+    </message>
+    <message>
         <location filename="../qml/SettingsPage.qml" line="45"/>
         <source>Start with last playlist</source>
         <translation>以上次的播放列表打开</translation>
@@ -831,19 +833,18 @@ Pull down to connect to the local network.</source>
         <translation>用实体按键控制音量</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="34"/>
-        <source>Share playlist items via UPnP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="35"/>
-        <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="86"/>
         <source>Volume level step</source>
         <translation>音量调节步长</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="34"/>
+        <source>Share playlist items via UPnP</source>
+        <translation>通过 UpnP 分享播放列表项目</translation>
+    </message>
+    <message>
+        <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
+        <translation type="vanished">其它 UpnP 设备将能够通过内容目录服务访问当前播放列表项目</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
@@ -858,12 +859,12 @@ Pull down to connect to the local network.</source>
     <message>
         <location filename="../qml/SettingsPage.qml" line="113"/>
         <source>Screen capture</source>
-        <translation type="unfinished">录屏</translation>
+        <translation>录屏</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="114"/>
         <source>To start capturing add Screen capture item to your current playlist.</source>
-        <translation type="unfinished"></translation>
+        <translation>开始录屏并添加到当前播放列表</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="124"/>
@@ -876,59 +877,94 @@ Pull down to connect to the local network.</source>
         <translation>在录屏时，同时录制音频。该功能仍处于测试阶段，因此可能会降低流媒体质量并产生一些延迟。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="185"/>
+        <location filename="../qml/SettingsPage.qml" line="135"/>
+        <source>Screen capture framerate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="146"/>
+        <source>5 fps (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="147"/>
+        <source>15 fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="148"/>
+        <source>30 fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="169"/>
         <source>Stream recorder</source>
         <translation>流媒体录音机</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="186"/>
+        <location filename="../qml/SettingsPage.qml" line="170"/>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
         <translation>允许从SHOUTcast流中录制曲目。 当流提供有关当前播放曲目标题的信息时，你可以将此曲目保存到文件中。 要启用录制，请使用位于底栏上“前进”按钮旁边的“录制”按钮。 只有在可以录制时才能看到此按钮。 当在曲目结束之前激活“录制”按钮时，整个录制（从曲目的开始到结束）将被保存为文件。 暂时不支持记录AAC流。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="218"/>
+        <location filename="../qml/SettingsPage.qml" line="202"/>
         <source>Directory for recordings</source>
         <translation>录音目录</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="231"/>
+        <location filename="../qml/SettingsPage.qml" line="215"/>
         <source>Change</source>
         <translation>更改</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="240"/>
+        <location filename="../qml/SettingsPage.qml" line="224"/>
         <source>Set default</source>
         <translation>设为默认</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="249"/>
+        <location filename="../qml/SettingsPage.qml" line="233"/>
         <source>Internet streaming mode</source>
         <translation>网络流模式</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="250"/>
+        <location filename="../qml/SettingsPage.qml" line="234"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
         <translation>来自网络的流媒体传输到UPnP设备可以在两种模式下处理。在代理模式下，%1 中继从流主机接收到的每个数据包。在重定向模式中，实际的流直接在UPnP设备和流媒体服务器之间传输，因此不需要一直开启 %1 。重定向模式的缺点是并非每个UPnP设备都支持重定向，因此在某些设备上这种模式将不能正常工作。启用重定向模式时，SHOUTcast元数据检测和流记录器不可用。</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="265"/>
+        <location filename="../qml/SettingsPage.qml" line="249"/>
         <source>Proxy (default)</source>
         <translation>代理（默认）</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="266"/>
+        <location filename="../qml/SettingsPage.qml" line="250"/>
         <source>Redirection</source>
         <translation>重定向方向</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="276"/>
+        <location filename="../qml/SettingsPage.qml" line="260"/>
         <source>All devices visible</source>
         <translation>所有设备可见</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="277"/>
+        <location filename="../qml/SettingsPage.qml" line="261"/>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP 设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1 仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
+        <translation>%1只支持媒体渲染器。当激活此操作，所有的UPnP&#xa0;设备都将被显示，包括像家用路由器和媒体服务器这样的不被支持的设备。对于不被支持的设备%1&#xa0;仅能够显示基础的描述信息。此操作可用于在本地网络审核UPnP设备。</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="273"/>
+        <source>Advanced options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="279"/>
+        <source>Enable logging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="280"/>
+        <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
