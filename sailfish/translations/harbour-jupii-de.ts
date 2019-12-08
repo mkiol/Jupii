@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="de" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="de" sourcelanguage="en_US" version="2.1">
 <context>
     <name>AboutPage</name>
     <message>
@@ -104,7 +102,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="142"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildschirmaufnahme</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
@@ -170,25 +168,22 @@
     <message>
         <location filename="../qml/AlbumsPage.qml" line="80"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortiere nach: %1</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Album</source>
-        <translation type="unfinished">Album</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="81"/>
         <source>Artist</source>
-        <translation type="unfinished">Künstler</translation>
+        <translation>Künstler</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n Titel</numerusform>
-            <numerusform>%n Titel</numerusform>
-        </translation>
+        <translation><numerusform>%n Titel</numerusform><numerusform>%n Titel</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="98"/>
@@ -216,10 +211,7 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="80"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n Titel</numerusform>
-            <numerusform>%n Titel</numerusform>
-        </translation>
+        <translation><numerusform>%n Titel</numerusform><numerusform>%n Titel</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="88"/>
@@ -278,7 +270,7 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="2491"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildschirmaufnahme</translation>
     </message>
 </context>
 <context>
@@ -402,24 +394,14 @@
         <location filename="../qml/DevicesPage.qml" line="131"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Geräte gefunden.
+Mehr Geräte in deinem Netzwerk im Pull down-Menü finden.</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="133"/>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No devices found.
-Pull down to find more devices in your network.</source>
-        <translation type="vanished">Keine Geräte gefunden.
-Mehr Geräte in deinem Netzwerk im Pull down-Menü finden.</translation>
-    </message>
-    <message>
-        <source>Not connected.
-Pull down to connect to the local network.</source>
-        <translation type="vanished">Nicht verbunden.
+        <translation>Nicht verbunden.
 Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
     </message>
 </context>
@@ -520,10 +502,6 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         <translation>Titel</translation>
     </message>
     <message>
-        <source>Captured application</source>
-        <translation type="vanished">Aufgenommenes Programm</translation>
-    </message>
-    <message>
         <location filename="../qml/MediaInfoPage.qml" line="147"/>
         <source>Stream title</source>
         <translation>Streamtitel</translation>
@@ -531,7 +509,7 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="147"/>
         <source>Audio source</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioquelle</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="149"/>
@@ -685,10 +663,7 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="83"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n Titel</numerusform>
-            <numerusform>%n Titel</numerusform>
-        </translation>
+        <translation><numerusform>%n Titel</numerusform><numerusform>%n Titel</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="92"/>
@@ -726,10 +701,7 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="75"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Lösche einen Eintrag</numerusform>
-            <numerusform>Lösche %n Einträge</numerusform>
-        </translation>
+        <translation><numerusform>Lösche einen Eintrag</numerusform><numerusform>Lösche %n Einträge</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="84"/>
@@ -744,22 +716,22 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
     <message>
         <location filename="../qml/RecPage.qml" line="95"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortiere nach: %1</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="96"/>
         <source>Recording time</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahmezeit</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Station name</source>
-        <translation type="unfinished"></translation>
+        <translation>Sendername</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="97"/>
         <source>Title</source>
-        <translation type="unfinished">Titel</translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="124"/>
@@ -808,10 +780,7 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
     <message numerus="yes">
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n ausgewählt</numerusform>
-            <numerusform>%n ausgewählt</numerusform>
-        </translation>
+        <translation><numerusform>%n ausgewählt</numerusform><numerusform>%n ausgewählt</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="49"/>
@@ -825,11 +794,6 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         <location filename="../qml/SettingsPage.qml" line="28"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="35"/>
-        <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="45"/>
@@ -847,11 +811,6 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         <translation>Vorwärts/Rückwärts Zeitsprungintervall</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="34"/>
-        <source>Share playlist items via UPnP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="94"/>
         <source>Experiments</source>
         <translation>Experimente</translation>
@@ -867,6 +826,16 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         <translation>Lautstärkeschritt</translation>
     </message>
     <message>
+        <location filename="../qml/SettingsPage.qml" line="34"/>
+        <source>Share playlist items via UPnP</source>
+        <translation>Playlist-Element über UPnP teilen.</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="35"/>
+        <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
+        <translation>Elemente der aktuellen Playlist werden für andere UPnP-Geräte über den Inhaltsverzeichnisdienst verfügbar sein.</translation>
+    </message>
+    <message>
         <location filename="../qml/SettingsPage.qml" line="100"/>
         <source>Image content</source>
         <translation>Bildinhalt</translation>
@@ -877,48 +846,24 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
         <translation>Das Wiedergeben von Bildern auf UPnP- Geräten funktioniert noch nicht einwandfrei. Es gibt ein paar kleine Fehler, die noch nicht behoben wurden. Diese Option erzwingt %1 Bilder wiederzugeben, obwohl es einige Fehler hervorrufen kann.</translation>
     </message>
     <message>
-        <source>Audio capture format</source>
-        <translation type="vanished">Tonübertragungsformat</translation>
-    </message>
-    <message>
-        <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation type="vanished">Streamformat, dass genutzt wird, wenn %1 Audio eines anderen Programms aufnimmt. Unkomprimiert (PCM) führt zu kürzerer Verzögerung, aber die höhere Bitrate führt wahrscheinlich zu schnellerer Akkuentladung.</translation>
-    </message>
-    <message>
-        <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="vanished">MP3 44100Hz 128 kbps (Voreinstellung)</translation>
-    </message>
-    <message>
-        <source>MP3 44100Hz 96 kbps</source>
-        <translation type="vanished">MP3 44100Hz 96 kbps</translation>
-    </message>
-    <message>
-        <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="vanished">MP3 44100Hz 96 kbps</translation>
-    </message>
-    <message>
-        <source>PCM 22050Hz 706 kbps</source>
-        <translation type="vanished">PCM 22050Hz 706 kbps</translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="113"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildschirmaufnahme</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="114"/>
         <source>To start capturing add Screen capture item to your current playlist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Füge das Bildschirm Aufnahme-Element deiner Playlist hinzu, um die Aufnahme zu starten.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="124"/>
         <source>Screen capture with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildschirmaufnahme mit Ton</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="125"/>
         <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="unfinished"></translation>
+        <translation>Während einer Bildschirmaufnahme wird auf der Ton aufgenommen. Da die gleichzeitige Bildschirm- und Tonaufnahme sich noch in der Beta-Phase befindet, kann die Streaming-Qualität verringert und eine zusätzliche Verzögerung verursacht werden.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="185"/>
@@ -948,22 +893,22 @@ Im Pull down-Menü zum lokalen Netzwerk verbinden.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="249"/>
         <source>Internet streaming mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Internet Streaming-Modus</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="250"/>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Internet Streaming zu UPnP-Geräten kann auf zwei Arten geschehen. Im &quot;Proxy&quot;-Modus leitet %1 alle Pakete, die vom Streaming-Host empfangen werden weiter. Im &quot;Umleitungs&quot;-Modus wird direkt zum UPnP Gerät gestreamt, wodurch %1 beendet werden kann. Der Nachteil des &quot;Umleitungs&quot;-Modus ist, dass nicht alle UPnP-Geräte diese Umleitung unterstützen, so dass es zu Schwierigkeiten mit manchen Geräten kommen kann. Wenn der &quot;Umleitungs&quot;-Modus aktiviert ist, sind SHOUTcast Metadatenerkennung und Streamrekorder nicht verfügbar.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="265"/>
         <source>Proxy (default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy (Standard)</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="266"/>
         <source>Redirection</source>
-        <translation type="unfinished"></translation>
+        <translation>Umleitung</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="276"/>
