@@ -593,18 +593,19 @@ void PlaylistModel::setPlayMode(int value)
 
 void PlaylistModel::togglePlayMode()
 {
+    // PM_Normal has some bug therefore will be disabled
     switch(m_playMode) {
-    case PlaylistModel::PM_Normal:
+    /*case PlaylistModel::PM_Normal:
         setPlayMode(PlaylistModel::PM_RepeatAll);
-        break;
+        break;*/
     case PlaylistModel::PM_RepeatAll:
         setPlayMode(PlaylistModel::PM_RepeatOne);
         break;
-    case PlaylistModel::PM_RepeatOne:
+    /*case PlaylistModel::PM_RepeatOne:
         setPlayMode(PlaylistModel::PM_Normal);
-        break;
+        break;*/
     default:
-        setPlayMode(PlaylistModel::PM_Normal);
+        setPlayMode(PlaylistModel::PM_RepeatAll);
     }
 }
 

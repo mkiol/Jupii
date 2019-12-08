@@ -574,7 +574,11 @@ void Settings::setPlayMode(int value)
 
 int Settings::getPlayMode()
 {
-    return settings.value("playmode", 0).toInt();
+    /*PM_Normal = 0,
+    PM_RepeatAll = 1,
+    PM_RepeatOne = 2*/
+    int pm = settings.value("playmode", 1).toInt();
+    return pm == 2 ? pm : 1;
 }
 
 QString Settings::mediaServerDevUuid()
