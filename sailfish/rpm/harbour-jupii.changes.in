@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sat Nov 30 2019 Michal Kosciesza <michal@mkiol.net> 2.5.3-1
+- Slovenian translation update
+- Option to enable logging to file
+
 * Fri Sep 20 2019 Michal Kosciesza <michal@mkiol.net> 2.5.2-1
 - Screen casting bug fixes
 - Italian translation

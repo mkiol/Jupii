@@ -11,7 +11,7 @@
 namespace Jupii {
 static const char* APP_NAME = "Jupii";
 #ifdef SAILFISH
-static const char* APP_VERSION = "2.5.2";
+static const char* APP_VERSION = "2.5.3 (beta)";
 #elif DESKTOP
 static const char* APP_VERSION = "2.5.2 (beta)";
 #endif
