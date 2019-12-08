@@ -33,7 +33,7 @@ Page {
                 checked: msdev.running
                 text: qsTr("Share playlist items via UPnP")
                 description: qsTr("Items on current playlist will be accessible for " +
-                                  "other UPnP devices though content directory service.")
+                                  "other UPnP devices through content directory service.")
                 onClicked: {
                     settings.contentDirSupported = !msdev.running
                 }

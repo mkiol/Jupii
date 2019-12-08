@@ -29,13 +29,28 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.5.3")
+            }
+
+            LogItem {
+                title: "Slovenian translation update"
+                description: "Many thanks to Bostjan Strumbelj for providing updated translation."
+            }
+
+            LogItem {
+                title: "Option to turn on logging to file"
+                description: "Needed for diagnostic purposes only. " +
+                             "When enabled log data is stored in /home/nemo/jupii.log file."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.5.2")
             }
 
             LogItem {
                 title: "Sharing playlist items via UPnP"
                 description: "Items on current playlist will be accessible for " +
-                             "other UPnP devices though content directory service. " +
+                             "other UPnP devices through content directory service. " +
                              "When this option is enabled, Jupii is visible in a UPnP local network."
             }
 
