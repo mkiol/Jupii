@@ -92,6 +92,8 @@ private:
     bool writeAudioData3();
     bool writeVideoData2();
     void errorHandler();
+    int skipped_frames_max = 0;
+    int skipped_frames = 0;
 };
 
 #endif // SCREENCASTER_H

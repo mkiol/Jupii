@@ -36,8 +36,12 @@ extern "C" {
 
 ScreenCaster::ScreenCaster(QObject *parent) : QObject(parent)
 {
+    av_init_packet(&video_out_pkt);
+    av_init_packet(&audio_out_pkt);
+
     connect(this, &ScreenCaster::error,
             ContentServerWorker::instance(), &ContentServerWorker::screenErrorHandler);
+
 #ifdef SAILFISH
     auto s = Settings::instance();
     frameTimer.setTimerType(Qt::PreciseTimer);
@@ -102,8 +106,9 @@ ScreenCaster::~ScreenCaster()
         in_audio_codec_ctx = nullptr;
     }
 
-    av_packet_unref(&video_out_pkt);
-    if (audioEnabled())
+    if (video_out_pkt.buf)
+        av_packet_unref(&video_out_pkt);
+    if (audio_out_pkt.buf)
         av_packet_unref(&audio_out_pkt);
 
     qDebug() << "ScreenCaster destructor end";
@@ -134,17 +139,23 @@ bool ScreenCaster::init()
     if (s->getScreenCropTo169()) {
         qDebug() << "Cropping to 16:9 ratio";
         int h = int((9.0/16.0)*video_size.width());
-        h = h - h%2;
+        h -= h % 2;
         if (h <= video_size.height()) {
             yoff = (video_size.height() - h) / 2;
             video_size.setHeight(h);
         } else {
             int w = int((16.0/9.0)*video_size.height());
-            w = w - w%2;
+            w -= w % 2;
             xoff = (video_size.width() - w) / 2;
             video_size.setWidth(w);
         }
     }
+
+    skipped_frames = 0;
+    skipped_frames_max = s->getSkipFrames();
+    if (s->getScreenAudio())
+        skipped_frames_max += 5;
+    qDebug() << "Skip frames:" << skipped_frames_max;
 
     AVDictionary* options = nullptr;
 
@@ -287,7 +298,8 @@ bool ScreenCaster::init()
         return false;
     }
 
-    auto out_video_codec = avcodec_find_encoder(AV_CODEC_ID_H264);
+    //auto out_video_codec = avcodec_find_encoder(AV_CODEC_ID_H264);
+    auto out_video_codec = avcodec_find_encoder_by_name("h264_omx");
     if (!out_video_codec) {
         qWarning() << "Error in avcodec_find_encoder for H264";
         return false;
@@ -687,7 +699,7 @@ void ScreenCaster::writeVideoData()
     qDebug() << "audio_delayed:" << audio_delayed;
     qDebug() << "video_delayed:" << video_delayed;*/
 
-    if (!img_not_changed && !video_delayed && !audio_delayed) {
+    if (!img_not_changed && !video_delayed && !audio_delayed && skipped_frames == 0) {
         //qDebug() << "Encoding new pkt";
 
         auto img = makeCurrImg();
@@ -753,6 +765,13 @@ void ScreenCaster::writeVideoData()
 
         av_packet_unref(&video_in_pkt);
     } else {
+        if (skipped_frames_max > 0) {
+            skipped_frames++;
+            if (skipped_frames > skipped_frames_max) {
+                qDebug() << "Max skipped frames reached";
+                skipped_frames = 0;
+            }
+        }
         //qDebug() << "Sending previous pkt instead new";
         if (!writeVideoData2()) {
             errorHandler();

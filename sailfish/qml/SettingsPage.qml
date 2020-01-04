@@ -130,38 +130,6 @@ Page {
                 }
             }
 
-            ComboBox {
-                visible: settings.isDebug() && settings.screenSupported
-                label: qsTr("Screen capture framerate")
-                currentIndex: {
-                    if (settings.screenFramerate < 15) {
-                        return 0;
-                    } else if (settings.screenFramerate < 30) {
-                        return 1;
-                    } else {
-                        return 2;
-                    }
-                }
-                menu: ContextMenu {
-                    MenuItem { text: qsTr("5 fps (default)") }
-                    MenuItem { text: qsTr("15 fps") }
-                    MenuItem { text: qsTr("30 fps") }
-                }
-
-                onCurrentIndexChanged: {
-                    switch (currentIndex) {
-                    case 0:
-                        settings.screenFramerate = 5; break;
-                    case 1:
-                        settings.screenFramerate = 15; break;
-                    case 2:
-                        settings.screenFramerate = 30; break;
-                    default:
-                        settings.screenFramerate = 5;
-                    }
-                }
-            }
-
             TextSwitch {
                 automaticCheck: false
                 visible:  settings.remoteContentMode == 0
@@ -271,6 +239,54 @@ Page {
 
             SectionHeader {
                 text: qsTr("Advanced options")
+            }
+
+            ComboBox {
+                visible: settings.isDebug() && settings.screenSupported
+                label: qsTr("Screen capture framerate")
+                currentIndex: {
+                    if (settings.screenFramerate < 15) {
+                        return 0;
+                    } else if (settings.screenFramerate < 30) {
+                        return 1;
+                    } else {
+                        return 2;
+                    }
+                }
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("5 fps (default)") }
+                    MenuItem { text: qsTr("15 fps") }
+                    MenuItem { text: qsTr("30 fps") }
+                }
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0:
+                        settings.screenFramerate = 5; break;
+                    case 1:
+                        settings.screenFramerate = 15; break;
+                    case 2:
+                        settings.screenFramerate = 30; break;
+                    default:
+                        settings.screenFramerate = 5;
+                    }
+                }
+            }
+
+            Slider {
+                visible: settings.isDebug() && settings.screenSupported
+                width: parent.width
+                minimumValue: 0
+                maximumValue: 10
+                stepSize: 1
+                handleVisible: true
+                value: settings.skipFrames
+                valueText: value
+                label: qsTr("Screen capture skip frames count")
+
+                onValueChanged: {
+                    settings.skipFrames = value
+                }
             }
 
             TextSwitch {

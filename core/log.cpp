@@ -69,5 +69,5 @@ void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs)
             level == AV_LOG_FATAL ? "F" :
             level == AV_LOG_PANIC ? "P" : "-");
     vfprintf(ffmpegLogFile, fmt, vargs);
-    fflush(logFile);
+    fflush(ffmpegLogFile);
 }

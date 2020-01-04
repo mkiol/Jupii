@@ -160,6 +160,8 @@ void PulseAudioSource::streamRequestCallback(pa_stream *stream, size_t nbytes, v
     Q_ASSERT(stream);
     Q_UNUSED(userdata);
 
+    //qDebug() << "streamRequestCallback:" << nbytes;
+
     if (nbytes <= 0) {
         qWarning() << "Pulse-audio stream nbytes <= 0";
         return;

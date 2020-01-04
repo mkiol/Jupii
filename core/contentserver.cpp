@@ -54,9 +54,7 @@
 #include "iconprovider.h"
 #endif
 
-#ifdef LOGTOFILE
 #include "log.h"
-#endif
 
 ContentServer* ContentServer::m_instance = nullptr;
 ContentServerWorker* ContentServerWorker::m_instance = nullptr;
@@ -1311,14 +1309,15 @@ ContentServer::ContentServer(QObject *parent) :
     QThread(parent)
 {
     qDebug() << "Creating Content Server in thread:" << QThread::currentThreadId();
-    // Libav stuff
+
+    // FFMPEG stuff
 #ifdef QT_DEBUG
     av_log_set_level(AV_LOG_DEBUG);
 #else
     av_log_set_level(AV_LOG_ERROR);
 #endif
-    //av_log_set_callback(ffmpegLog);
-
+    if (Settings::instance()->getLogToFile())
+        av_log_set_callback(ffmpegLog);
     av_register_all();
     avcodec_register_all();
     avdevice_register_all();

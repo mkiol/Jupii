@@ -46,6 +46,7 @@ class Settings:
     Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
     Q_PROPERTY (bool contentDirSupported READ getContentDirSupported WRITE setContentDirSupported NOTIFY contentDirSupportedChanged)
     Q_PROPERTY (bool logToFile READ getLogToFile WRITE setLogToFile NOTIFY logToFileChanged)
+    Q_PROPERTY (int skipFrames READ getSkipFrames WRITE setSkipFrames NOTIFY skipFramesChanged)
 
 public:
 #ifdef SAILFISH
@@ -135,6 +136,9 @@ public:
     void setContentDirSupported(bool value);
     bool getContentDirSupported();
 
+    void setSkipFrames(int value);
+    int getSkipFrames();
+
     QString mediaServerDevUuid();
     QString prettyName();
     Q_INVOKABLE bool isDebug();
@@ -165,6 +169,7 @@ signals:
     void playModeChanged();
     void contentDirSupportedChanged();
     void logToFileChanged();
+    void skipFramesChanged();
 
 private:
     QSettings settings;

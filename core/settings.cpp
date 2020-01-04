@@ -601,3 +601,16 @@ bool Settings::getContentDirSupported()
 {
     return settings.value("contentdirsupported", true).toBool();
 }
+
+void Settings::setSkipFrames(int value)
+{
+    if (getSkipFrames() != value) {
+        settings.setValue("skipframes", value);
+        emit skipFramesChanged();
+    }
+}
+
+int Settings::getSkipFrames()
+{
+    return settings.value("skipframes", 0).toInt();
+}
