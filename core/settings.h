@@ -102,8 +102,8 @@ public:
     int getPlayMode();
 
     void setFavDevices(const QHash<QString,QVariant> &devs);
-    void addFavDevice(const QString &id);
-    void removeFavDevice(const QString &id);
+    Q_INVOKABLE void addFavDevice(const QString &id);
+    Q_INVOKABLE void removeFavDevice(const QString &id);
     Q_INVOKABLE void asyncAddFavDevice(const QString &id);
     Q_INVOKABLE void asyncRemoveFavDevice(const QString &id);
     bool readDeviceXML(const QString& id, QByteArray& xml);
@@ -146,6 +146,7 @@ public:
 signals:
     void portChanged();
     void favDevicesChanged();
+    void favDeviceChanged(const QString& id);
     void lastDirChanged();
     void recDirChanged();
     void lastPlaylistChanged();

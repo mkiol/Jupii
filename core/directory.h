@@ -48,13 +48,13 @@ public:
     QUrl getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc);
     Q_INVOKABLE void init();
     Q_INVOKABLE void discover();
-    Q_INVOKABLE void discoverFavs();
 
     // Extended control API
     Q_INVOKABLE void xcTogglePower(const QString& deviceId);
 
 signals:
     void discoveryReady();
+    void discoveryFavReady();
     void busyChanged();
     void initedChanged();
     void error(int code);

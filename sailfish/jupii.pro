@@ -59,7 +59,9 @@ OTHER_FILES += \
     qml/SearchDialogHeader.qml \
     qml/IcecastPage.qml \
     qml/DirPage.qml \
-    qml/RecPage.qml
+    qml/RecPage.qml \
+    qml/SimpleFavListItem.qml \
+    qml/SimpleListItem.qml
 
 #OTHER_FILES += $$files(rpm/*)
 

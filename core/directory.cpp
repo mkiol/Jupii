@@ -88,6 +88,8 @@ void Directory::clearLists()
 
 void Directory::discover()
 {
+    qDebug() << "discover";
+
     if (!m_inited) {
         qWarning() << "Directory not inited.";
         return;
@@ -117,9 +119,52 @@ void Directory::discover()
             return;
         }
 
-        bool found = false;
         QHash<QString,bool> xcs;
 
+        // favs
+
+        auto s = Settings::instance();
+        auto favs = s->getFavDevices();
+        qDebug() << "Adding fav devices:" << favs.size();
+
+        for (auto it = favs.begin(); it != favs.end(); ++it) {
+
+            qDebug() << it.key() << it.value().toString();
+
+            QString id = it.key();
+            QString url = it.value().toString();
+            QByteArray xml;
+
+            if (!s->readDeviceXML(id, xml))
+                return;
+
+            UPnPClient::UPnPDeviceDesc ddesc(url.toStdString(), xml.toStdString());
+
+            auto did = QString::fromStdString(ddesc.UDN);
+
+            for (auto& sdesc : ddesc.services) {
+                auto sid = QString::fromStdString(sdesc.serviceId);
+                this->m_servsdesc.insert(did + sid, sdesc);
+            }
+
+            this->m_devsdesc.insert(did, ddesc);
+
+            if (!xcs.contains(did)) {
+                xcs[did] = true;
+                auto data = XCParser::parse(xml);
+                if (data.valid) {
+                    qDebug() << "XCS is valid for" << did;
+                    auto xc = new YamahaXC(); xc->data = data;
+                    this->m_xcs.insert(did, xc);
+                }
+            }
+        }
+
+        emit discoveryFavReady();
+
+        // discovery
+
+        bool found = false;
         auto traverseFun = [this, &found, &xcs](const UPnPClient::UPnPDeviceDesc &ddesc,
                 const UPnPClient::UPnPServiceDesc &sdesc) {
             qDebug() << "==> Visitor";
@@ -176,59 +221,6 @@ void Directory::discover()
         emit discoveryReady();
 
         setBusy(false);
-    });
-}
-
-void Directory::discoverFavs()
-{
-    if (!m_inited) {
-        qWarning() << "Directory not inited.";
-        return;
-    }
-
-    setBusy(true);
-
-    startTask([this](){
-        auto s = Settings::instance();
-
-        clearLists();
-
-        auto favs = s->getFavDevices();
-        for (auto it = favs.begin(); it != favs.end(); ++it) {
-
-            qDebug() << it.key() << it.value().toString();
-
-            QString id = it.key();
-            QString url = it.value().toString();
-            QByteArray xml;
-
-            if (!s->readDeviceXML(id, xml))
-                return;
-
-            UPnPClient::UPnPDeviceDesc ddesc(url.toStdString(), xml.toStdString());
-
-            auto did = QString::fromStdString(ddesc.UDN);
-
-            for (auto& sdesc : ddesc.services) {
-                auto sid = QString::fromStdString(sdesc.serviceId);
-                this->m_servsdesc.insert(did + sid, sdesc);
-            }
-
-            this->m_devsdesc.insert(did, ddesc);
-        }
-
-        emit discoveryReady();
-
-        setBusy(false);
-
-        // Empty traverse to init directory
-        m_directory->traverse([this](const UPnPClient::UPnPDeviceDesc &ddesc,
-                                     const UPnPClient::UPnPServiceDesc &sdesc) {
-            Q_UNUSED(ddesc)
-            Q_UNUSED(sdesc)
-            return true;
-        });
-
     });
 }
 

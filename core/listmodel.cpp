@@ -89,6 +89,16 @@ void ListModel::handleItemChange()
     emit dataChanged(index, index);
 }
 
+void ListModel::handleItemChangeById(const QString &id)
+{
+  ListItem* item = find(id);
+  if (item) {
+      QModelIndex index = indexFromItem(item);
+      if(index.isValid())
+        emit dataChanged(index, index);
+  }
+}
+
 ListItem * ListModel::find(const QString &id) const
 {
   foreach(ListItem* item, m_list) {

@@ -51,6 +51,9 @@ public:
     int indexFromId(const QString& id) const;
     void clear();
 
+public slots:
+    void handleItemChangeById(const QString &id);
+
 private slots:
     void handleItemChange();
 

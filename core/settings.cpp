@@ -209,6 +209,7 @@ void Settings::addFavDevice(const QString &id)
     if (writeDeviceXML(id, url)) {
         list.insert(id, url);
         setFavDevices(list);
+        emit favDeviceChanged(id);
     }
 }
 
@@ -218,6 +219,7 @@ void Settings::removeFavDevice(const QString &id)
     if (list.contains(id)) {
         list.remove(id);
         setFavDevices(list);
+        emit favDeviceChanged(id);
     }
 }
 
@@ -230,7 +232,7 @@ bool Settings::writeDeviceXML(const QString &id, QString& url)
         QString _id(id);
         QString filename = "device-" + _id.replace(':','-') + ".xml";
 
-        if (Utils::writeToCacheFile(filename, QByteArray::fromStdString(ddesc.XMLText))) {
+        if (Utils::writeToCacheFile(filename, QByteArray::fromStdString(ddesc.XMLText)), true) {
             url = QString::fromStdString(ddesc.URLBase);
             return true;
         } else {

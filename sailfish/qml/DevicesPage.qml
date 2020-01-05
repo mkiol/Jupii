@@ -81,14 +81,22 @@ Page {
             }
         }
 
-        delegate: SimpleListItem {
+        delegate: SimpleFavListItem {
             title.text: model.title
             icon.source: model.icon
             active: model.active
+            fav: model.fav
             defaultIcon.source: "image://icons/icon-m-device?" +
                                 (highlighted || model.active ?
                                 Theme.highlightColor : Theme.primaryColor)
-            visible: !directory.busy && directory.inited
+            visible: directory.inited
+
+            onFavClicked: {
+                if (model.fav)
+                    settings.removeFavDevice(model.id)
+                else
+                    settings.addFavDevice(model.id)
+            }
 
             menu: ContextMenu {
                 MenuItem {
@@ -114,6 +122,16 @@ Page {
                         directory.xcTogglePower(model.id)
                     }
                 }
+
+                MenuItem {
+                    text: model.fav ? qsTr("Remove from favorites") : qsTr("Add to favorites")
+                    onClicked: {
+                        if (model.fav)
+                            settings.removeFavDevice(model.id)
+                        else
+                            settings.addFavDevice(model.id)
+                    }
+                }
             }
 
             onClicked: {
@@ -130,8 +148,7 @@ Page {
             text: directory.inited ?
                       qsTr("No devices found. \n" +
                            "Pull down to find more devices in your network.") :
-                      qsTr("Not connected. \n" +
-                           "Pull down to connect to the local network.")
+                      qsTr("Pull down to connect to the local network.")
         }
     }
 

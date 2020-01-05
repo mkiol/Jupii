@@ -32,10 +32,14 @@ DeviceModel::DeviceModel(QObject *parent) :
 {
     connect(Directory::instance(), &Directory::discoveryReady,
             this, &DeviceModel::updateModel);
+    connect(Directory::instance(), &Directory::discoveryFavReady,
+            this, &DeviceModel::updateModel);
     connect(Services::instance()->avTransport.get(), &Service::initedChanged,
             this, &DeviceModel::serviceInitedHandler);
     connect(Services::instance()->renderingControl.get(), &Service::initedChanged,
             this, &DeviceModel::serviceInitedHandler);
+    connect(Settings::instance(), &Settings::favDeviceChanged,
+            this, &ListModel::handleItemChangeById);
 }
 
 void DeviceModel::serviceInitedHandler()
@@ -118,6 +122,13 @@ void DeviceModel::updateModel()
     std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
         auto aa = dynamic_cast<DeviceItem*>(a);
         auto bb = dynamic_cast<DeviceItem*>(b);
+        if (aa->isFav()) {
+            if (!bb->isFav())
+                return true;
+        } else {
+            if (bb->isFav())
+                return false;
+        }
         return aa->title().compare(bb->title(), Qt::CaseInsensitive) < 0;
     });
 
@@ -152,9 +163,6 @@ DeviceItem::DeviceItem(const QString &id,
     m_supported(supported),
     m_xc(jxc)
 {
-
-    QObject::connect(Settings::instance(), &Settings::favDevicesChanged,
-                     [this](){ emit dataChanged(); });
 }
 
 QHash<int, QByteArray> DeviceItem::roleNames() const
