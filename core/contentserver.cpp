@@ -2835,6 +2835,15 @@ QString ContentServer::streamTitle(const QUrl &id) const
     return QString();
 }
 
+QStringList ContentServer::streamTitleHistory(const QUrl &id) const
+{
+    if (streams.contains(id)) {
+        return streams.value(id).titleHistory;
+    }
+
+    return QStringList();
+}
+
 bool ContentServer::isStreamToRecord(const QUrl &id)
 {
     auto worker = ContentServerWorker::instance();
@@ -2922,9 +2931,27 @@ void ContentServer::shoutcastMetadataHandler(const QUrl &id,
                                              const QByteArray &metadata)
 {
     qDebug() << "Shoutcast Metadata:" << metadata;
+
+    auto new_title = streamTitleFromShoutcastMetadata(metadata);
+
+    /*if (streams.contains(id)) {
+        auto &stream = streams[id];
+        auto &old_title = stream.title;
+        if (old_title != new_title) {
+            qDebug() << "Shoutcast stream titile changed";
+            stream.titleHistory.push_front(old_title);
+        }
+    }*/
+
     auto &stream = streams[id];
     stream.id = id;
-    stream.title = streamTitleFromShoutcastMetadata(metadata);
+    stream.title = new_title;
+    if (stream.titleHistory.isEmpty() || stream.titleHistory.first() != new_title)
+        stream.titleHistory.push_front(new_title);
+
+    if (stream.titleHistory.length() > 20) // max number of titiles in history list
+        stream.titleHistory.removeLast();
+
     emit streamTitleChanged(id, stream.title);
 }
 

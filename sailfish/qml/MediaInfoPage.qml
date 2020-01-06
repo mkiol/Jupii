@@ -30,8 +30,12 @@ Page {
         Image {
             id: imagel
             visible: root.isLandscape
-            x: root.width/2
-            width: root.width/2
+            width: {
+               if (root.width/2 > root.height)
+                   return root.height
+               return root.width/2
+            }
+            x: root.width - width
             height: {
                 if (status !== Image.Ready)
                     return 1
@@ -67,7 +71,7 @@ Page {
                 }
 
                 MenuItem {
-                    text: qsTr("Copy stream title")
+                    text: qsTr("Copy current title")
                     visible: app.streamTitle.length !== 0 &&
                              av.currentType !== AVTransport.T_Image
                     onClicked: Clipboard.text = app.streamTitle
@@ -138,13 +142,13 @@ Page {
                 }*/
 
                 DetailItem {
-                    label: qsTr("Title")
+                    label: app.streamTitle.length !== 0 ? qsTr("Station name") : qsTr("Title")
                     value: av.currentTitle
-                    visible: !isMic && !isPulse && value.length !== 0
+                    visible: !isMic && !isPulse && !isScreen && value.length !== 0
                 }
 
                 DetailItem {
-                    label: isPulse || isScreen ? qsTr("Audio source") : qsTr("Stream title")
+                    label: isPulse || isScreen ? qsTr("Audio source") : qsTr("Title")
                     value: app.streamTitle.length !== 0 ?
                                app.streamTitle : isPulse || isScreen ? qsTr("None") : ""
                     visible: !isMic && value.length !== 0 &&
@@ -180,7 +184,7 @@ Page {
             }
 
             Column {
-                width: root.isLandscape && root.imgOk ? root.width/2 : root.width
+                width: root.isLandscape && root.imgOk ? imagel.x : root.width
                 anchors.left: parent.left
 
                 SectionHeader {
@@ -221,6 +225,40 @@ Page {
 
                     onValueChanged: {
                         settings.micVolume = value
+                    }
+                }
+
+                SectionHeader {
+                    text: qsTr("Title history")
+                    visible: app.streamTitleHistory.length > 0
+                }
+
+                Repeater {
+                    id: _titles_repeater
+                    visible: app.streamTitleHistory.length > 0
+                    model: app.streamTitleHistory
+                    width: parent.width
+                    delegate: Row {
+                        layoutDirection: Qt.LeftToRight
+                        x: Theme.horizontalPageMargin
+                        height: Math.max(_note_label.height, _title_label.height)
+                        spacing: Theme.paddingSmall
+                        Label {
+                            id: _note_label
+                            color: modelData === app.streamTitle ? Theme.highlightColor : "transparent"
+                            font.pixelSize: Theme.fontSizeSmall
+                            text: "🎵"
+                        }
+                        Label {
+                            id: _title_label
+                            width: _titles_repeater.width - 2*Theme.horizontalPageMargin -
+                                   _note_label.width - Theme.paddingSmall
+                            color: Theme.highlightColor
+                            font.pixelSize: Theme.fontSizeSmall
+                            wrapMode: Text.NoWrap
+                            truncationMode: TruncationMode.Fade
+                            text: modelData
+                        }
                     }
                 }
             }

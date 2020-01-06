@@ -136,6 +136,7 @@ public:
     const ItemMeta* getMeta(const QUrl &url, bool createNew = true);
     const ItemMeta* getMetaForId(const QUrl &id, bool createNew = true);
     Q_INVOKABLE QString streamTitle(const QUrl &id) const;
+    Q_INVOKABLE QStringList streamTitleHistory(const QUrl &id) const;
     Q_INVOKABLE void setStreamToRecord(const QUrl &id, bool value);
     Q_INVOKABLE bool isStreamToRecord(const QUrl &id);
     Q_INVOKABLE bool isStreamRecordable(const QUrl &id);
@@ -192,7 +193,8 @@ private:
 
     struct StreamData {
         QUrl id;
-        QString title;
+        QString title; // current titile
+        QStringList titleHistory; // previous titles
         int count = 0;
     };
 
