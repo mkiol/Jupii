@@ -2933,19 +2933,10 @@ void ContentServer::shoutcastMetadataHandler(const QUrl &id,
     qDebug() << "Shoutcast Metadata:" << metadata;
 
     auto new_title = streamTitleFromShoutcastMetadata(metadata);
-
-    /*if (streams.contains(id)) {
-        auto &stream = streams[id];
-        auto &old_title = stream.title;
-        if (old_title != new_title) {
-            qDebug() << "Shoutcast stream titile changed";
-            stream.titleHistory.push_front(old_title);
-        }
-    }*/
-
     auto &stream = streams[id];
     stream.id = id;
     stream.title = new_title;
+
     if (stream.titleHistory.isEmpty() || stream.titleHistory.first() != new_title)
         stream.titleHistory.push_front(new_title);
 

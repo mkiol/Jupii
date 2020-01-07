@@ -193,8 +193,8 @@ private:
 
     struct StreamData {
         QUrl id;
-        QString title; // current titile
-        QStringList titleHistory; // previous titles
+        QString title; // current title
+        QStringList titleHistory; // current and previous titles
         int count = 0;
     };
 

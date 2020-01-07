@@ -28,7 +28,6 @@ ApplicationWindow {
     property bool streamRecordable: false
     property bool streamToRecord: false
     function updateStreamInfo() {
-        console.log(cserver.streamTitleHistory(av.currentId));
         streamTitle = cserver.streamTitle(av.currentId)
         streamTitleHistory = cserver.streamTitleHistory(av.currentId)
         streamRecordable = cserver.isStreamRecordable(av.currentId)
