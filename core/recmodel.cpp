@@ -16,6 +16,7 @@
 
 #include "recmodel.h"
 #include "settings.h"
+#include "contentserver.h"
 
 RecModel::RecModel(QObject *parent) :
     SelectableItemModel(new RecItem, parent),
@@ -68,25 +69,36 @@ QList<ListItem*> RecModel::makeItems()
     auto files = m_dir.entryInfoList(QStringList() << "*.jupii_rec.*", QDir::Files);
     for (const auto& file : files) {
         auto path = file.absoluteFilePath();
-        QString title, author;
-        TagLib::FileRef f(path.toUtf8().constData());
-        if(f.isNull() || !f.tag()) {
-            qWarning() << "Cannot extract meta data with TagLib:" << path;
-            title = file.baseName();
-        } else {
-            TagLib::Tag *tag = f.tag();
-            title = QString::fromWCharArray(tag->title().toCWString());
-            author = QString::fromWCharArray(tag->artist().toCWString());
+
+        QString title, author, album, comment, recStation, recUrl;
+        QDateTime recDate;
+
+        if (!ContentServer::readMetaUsingTaglib(path, title, author, album,
+                               comment, recStation, recUrl, recDate)) {
+            qWarning() << "Cannot read meta data from file";
         }
 
+        // fallbacks
+        if (title.isEmpty())
+            title = file.baseName();
+        if (author.isEmpty())
+            author = tr("Unknown");
+        if (album.isEmpty())
+            album = tr("Unknown");
+        if (recStation.isEmpty())
+            recStation = author;
+        if (recDate.isNull())
+            recDate = file.created();
+
         if (title.contains(filter, Qt::CaseInsensitive) ||
-            author.contains(filter, Qt::CaseInsensitive)) {
+            author.contains(filter, Qt::CaseInsensitive) ||
+            recStation.contains(filter, Qt::CaseInsensitive)) {
             items << new RecItem(
                          path,
                          path,
                          title,
                          author,
-                         file.created());
+                         recDate);
         }
     }
 

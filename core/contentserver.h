@@ -105,6 +105,11 @@ public:
 
     static const QString artCookie;
 
+    static const QString recStationTagName;
+    static const QString recDateTagName;
+    static const QString recUrlTagName;
+    static const QString recDateTagFormat;
+
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);
     static QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr,
@@ -120,6 +125,20 @@ public:
     static void resolveM3u(QByteArray &data, const QString context);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
     static bool makeUrl(const QString& id, QUrl& url);
+    static void writeMetaUsingTaglib(const QString& path, const QString& title,
+                                      const QString& artist = QString(),
+                                      const QString& album = QString(),
+                                      const QString& comment = QString(),
+                                      const QString& recStation = QString(),
+                                      const QString& recUrl = QString(),
+                                      const QDateTime& recDate = QDateTime());
+    static bool readMetaUsingTaglib(const QString& path, QString& title,
+                                      QString& artist,
+                                      QString& album,
+                                      QString& comment,
+                                      QString &recStation,
+                                      QString& recUrl,
+                                      QDateTime& recDate);
 
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
     Type getContentType(const QString &path);
@@ -244,10 +263,6 @@ private:
     static QString getExtensionFromAudioContentType(const QString &mime);
     static QString mimeFromDisposition(const QString &disposition);
     static bool hlsPlaylist(const QByteArray &data);
-    static void updateMetaUsingTaglib(const QString& path, const QString& title,
-                                      const QString& artist = QString(),
-                                      const QString& album = QString(),
-                                      const QString& comment = QString());
     ContentServer(QObject *parent = nullptr);
     bool getContentMetaItem(const QString &id, const QUrl &url, QString &meta, const ItemMeta* item);
     bool getContentMeta(const QString &id, const QUrl &url, QString &meta, const ItemMeta* item);

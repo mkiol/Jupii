@@ -158,6 +158,12 @@ const QString ContentServer::dlnaOrgOpFlagsSeekBytes = "DLNA.ORG_OP=01";
 const QString ContentServer::dlnaOrgOpFlagsNoSeek = "DLNA.ORG_OP=00";
 const QString ContentServer::dlnaOrgCiFlags = "DLNA.ORG_CI=0";
 
+// ID3v2 tags
+const QString ContentServer::recDateTagName = "Recording Date";
+const QString ContentServer::recUrlTagName = "Station URL";
+const QString ContentServer::recStationTagName = "Station Name";
+const QString ContentServer::recDateTagFormat = "yyyy-MM-dd HH:mm:ss";
+
 ContentServerWorker* ContentServerWorker::instance(QObject *parent)
 {
     if (ContentServerWorker::m_instance == nullptr) {
@@ -270,9 +276,16 @@ void ContentServerWorker::saveRecFile(ProxyItem &item)
                 if (item.recFile->exists() && item.recFile->size() > ContentServer::recMinSize) {
                     if (item.recFile->copy(recFilePath)) {
                         auto url = Utils::urlFromId(item.id).toString();
-                        QString comment = "Recorded by Jupii from " + url;
-                        ContentServer::updateMetaUsingTaglib(recFilePath,
-                                       title, item.title, "Recordings by Jupii", comment);
+                        ContentServer::writeMetaUsingTaglib(
+                            recFilePath, // path
+                            title, // title
+                            item.title, // author (radio station name)
+                            "Recordings by Jupii", // album
+                            tr("Recorded from %1").arg(item.title), // comment
+                            item.title, // radio station name
+                            url, // radio station URL
+                            QDateTime::currentDateTime() // time of recording
+                        );
                         emit streamRecorded(title, recFilePath);
                     } else {
                         qWarning() << "Cannot copy file:"
@@ -2381,11 +2394,56 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
     return metaCache.end();
 }
 
-void ContentServer::updateMetaUsingTaglib(const QString& path, const QString& title,
-                                          const QString& artist, const QString& album,
-                                          const QString &comment)
+bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
+                                          QString &artist, QString &album,
+                                          QString &comment, QString &recStation,
+                                          QString &recUrl, QDateTime &recDate)
 {
-    TagLib::FileRef f(path.toUtf8().constData(), false);
+    auto ff = TagLib::ID3v2::FrameFactory::instance();
+    TagLib::MPEG::File f(path.toUtf8().constData(), ff, false);
+    if (f.isValid()) {
+        auto tag = f.ID3v2Tag(false);
+        if (tag) {
+            title = QString::fromWCharArray(tag->title().toCWString());
+            artist = QString::fromWCharArray(tag->artist().toCWString());
+            album = QString::fromWCharArray(tag->album().toCWString());
+            comment = QString::fromWCharArray(tag->comment().toCWString());
+
+            // Jupii additional tags
+            auto props = tag->properties();
+            auto station_key = ContentServer::recStationTagName.toStdString();
+            if (props.contains(station_key)) {
+                recStation = QString::fromWCharArray(props[station_key].front().toCWString());
+            }
+            auto url_key = ContentServer::recUrlTagName.toStdString();
+            if (props.contains(url_key)) {
+                recUrl = QString::fromLatin1(props[url_key].front().toCString());
+            }
+            auto date_key = ContentServer::recDateTagName.toStdString();
+            if (props.contains(date_key)) {
+                auto date = QString::fromLatin1(props[date_key].front().toCString());
+                recDate = QDateTime::fromString(date, ContentServer::recDateTagFormat);
+            }
+        } else {
+            qWarning() << "Cannot read ID3v2:" << path;
+            return false;
+        }
+    } else {
+        qWarning() << "Cannot open file with TagLib:" << path;
+        return false;
+    }
+
+    return true;
+}
+
+void ContentServer::writeMetaUsingTaglib(const QString &path, const QString &title,
+                                          const QString &artist, const QString &album,
+                                          const QString &comment,
+                                          const QString &recStation,
+                                          const QString &recUrl,
+                                          const QDateTime &recDate)
+{
+    /*TagLib::FileRef f(path.toUtf8().constData(), false);
     if(f.isNull()) {
         qWarning() << "Cannot open file with TagLib:" << path;
     } else {
@@ -2394,6 +2452,44 @@ void ContentServer::updateMetaUsingTaglib(const QString& path, const QString& ti
         f.tag()->setAlbum(album.toStdWString());
         f.tag()->setComment(comment.toStdWString());
         f.save();
+    }*/
+
+    auto ff = TagLib::ID3v2::FrameFactory::instance();
+    TagLib::MPEG::File f(path.toUtf8().constData(), ff, false);
+    if (f.isValid()) {
+        auto tag = f.ID3v2Tag(true);
+        if (!title.isEmpty())
+            tag->setTitle(title.toStdWString());
+        if (!artist.isEmpty())
+            tag->setArtist(artist.toStdWString());
+        if (!album.isEmpty())
+            tag->setAlbum(album.toStdWString());
+        if (!comment.isEmpty())
+            tag->setComment(comment.toStdWString());
+
+        // Jupii additional tags
+        if (!recUrl.isEmpty()) {
+            auto frame = TagLib::ID3v2::Frame::createTextualFrame(
+                        ContentServer::recUrlTagName.toStdString(),
+                            {recUrl.toStdString()});
+            tag->addFrame(frame);
+        }
+        if (!recStation.isEmpty()) {
+            auto frame = TagLib::ID3v2::Frame::createTextualFrame(
+                        ContentServer::recStationTagName.toStdString(),
+                            {recStation.toStdString()});
+            tag->addFrame(frame);
+        }
+        if (!recDate.isNull()) {
+            auto frame = TagLib::ID3v2::Frame::createTextualFrame(
+                        ContentServer::recDateTagName.toStdString(),
+                        {recDate.toString(ContentServer::recDateTagFormat)
+                         .toStdString()});
+            tag->addFrame(frame);
+        }
+        f.save();
+    } else {
+        qWarning() << "Cannot open file with TagLib:" << path;
     }
 }
 
