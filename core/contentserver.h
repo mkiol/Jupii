@@ -95,6 +95,11 @@ public:
         // 0 - stream proxy (default)
         // 1 - playlist proxy (e.g. for HLS playlists)
         bool mode = 0;
+
+        // rec
+        QString recStation;
+        QString recUrl;
+        QDateTime recDate;
     };
 
     struct PlaylistItemMeta {
@@ -109,6 +114,7 @@ public:
     static const QString recDateTagName;
     static const QString recUrlTagName;
     static const QString recDateTagFormat;
+    static const QString recAlbumName;
 
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);

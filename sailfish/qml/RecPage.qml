@@ -109,7 +109,7 @@ Dialog {
                                          Theme.highlightColor : Theme.primaryColor
             highlighted: down || model.selected
             title.text: model.title
-            subtitle.text: model.author + " · " + model.date.toLocaleString(null, "yyyy-MM-dd hh:mm:ss")
+            subtitle.text: model.author + " · " + model.friendlyDate
             enabled: !itemModel.busy
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
 

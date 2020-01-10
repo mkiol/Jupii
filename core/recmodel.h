@@ -15,7 +15,8 @@ public:
         PathRole,
         AuthorRole,
         SelectedRole,
-        DateRole
+        DateRole,
+        FriendlyDateRole
     };
 
     RecItem(QObject* parent = nullptr) : SelectableItem(parent) {}
@@ -32,7 +33,7 @@ public:
     inline QString title() const { return m_title; }
     inline QString author() const { return m_author; }
     inline QDateTime date() const { return m_date; }
-
+    QString friendlyDate() const;
 private:
     QString m_id;
     QString m_path;

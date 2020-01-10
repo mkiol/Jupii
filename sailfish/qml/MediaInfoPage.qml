@@ -22,6 +22,9 @@ Page {
     property bool isPulse: utils.isIdPulse(av.currentURL)
     property bool isScreen: utils.isIdScreen(av.currentURL)
     property bool isOwn: av.currentURL.length !== 0
+    property bool isRec: utils.isIdRec(av.currentURL)
+    property bool isShout: app.streamTitle.length !== 0
+    property string recDate: utils.recDateFromId(av.currentURL)
 
     SilicaFlickable {
         anchors.fill: parent
@@ -72,8 +75,7 @@ Page {
 
                 MenuItem {
                     text: qsTr("Copy current title")
-                    visible: app.streamTitle.length !== 0 &&
-                             av.currentType !== AVTransport.T_Image
+                    visible: isShout
                     onClicked: Clipboard.text = app.streamTitle
                 }
             }
@@ -142,21 +144,21 @@ Page {
                 }*/
 
                 DetailItem {
-                    label: app.streamTitle.length !== 0 ? qsTr("Station name") : qsTr("Title")
+                    label: isShout ? qsTr("Station name") : qsTr("Title")
                     value: av.currentTitle
                     visible: !isMic && !isPulse && !isScreen && value.length !== 0
                 }
 
                 DetailItem {
-                    label: isPulse || isScreen ? qsTr("Audio source") : qsTr("Title")
-                    value: app.streamTitle.length !== 0 ?
+                    label: isPulse || isScreen ? qsTr("Audio source") : qsTr("Current title")
+                    value: isShout ?
                                app.streamTitle : isPulse || isScreen ? qsTr("None") : ""
                     visible: !isMic && value.length !== 0 &&
                              av.currentType !== AVTransport.T_Image
                 }
 
                 DetailItem {
-                    label: qsTr("Author")
+                    label: isRec ? qsTr("Station name") : qsTr("Author")
                     value: av.currentAuthor
                     visible: !isMic && !isPulse && !isScreen && av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
@@ -180,6 +182,12 @@ Page {
                     label: qsTr("Content type")
                     value: av.currentContentType
                     visible: !isMic && !isPulse && !isScreen && av.currentContentType.length !== 0
+                }
+
+                DetailItem {
+                    label: qsTr("Recording date")
+                    value: recDate
+                    visible: value.length !== 0
                 }
             }
 

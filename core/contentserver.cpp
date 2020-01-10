@@ -158,11 +158,12 @@ const QString ContentServer::dlnaOrgOpFlagsSeekBytes = "DLNA.ORG_OP=01";
 const QString ContentServer::dlnaOrgOpFlagsNoSeek = "DLNA.ORG_OP=00";
 const QString ContentServer::dlnaOrgCiFlags = "DLNA.ORG_CI=0";
 
-// ID3v2 tags
+// Rec
 const QString ContentServer::recDateTagName = "Recording Date";
 const QString ContentServer::recUrlTagName = "Station URL";
 const QString ContentServer::recStationTagName = "Station Name";
 const QString ContentServer::recDateTagFormat = "yyyy-MM-dd HH:mm:ss";
+const QString ContentServer::recAlbumName = "Recordings by Jupii";
 
 ContentServerWorker* ContentServerWorker::instance(QObject *parent)
 {
@@ -280,7 +281,7 @@ void ContentServerWorker::saveRecFile(ProxyItem &item)
                             recFilePath, // path
                             title, // title
                             item.title, // author (radio station name)
-                            "Recordings by Jupii", // album
+                            ContentServer::recAlbumName, // album
                             tr("Recorded from %1").arg(item.title), // comment
                             item.title, // radio station name
                             url, // radio station URL
@@ -2309,7 +2310,7 @@ ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew)
             return metaCache.end();
     }
 
-    qDebug() << "Meta data for" << url << "found in cache";
+    //qDebug() << "Meta data for" << url << "found in cache";
     return i;
 }
 
@@ -2379,6 +2380,14 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
             meta.local = true;
             meta.seekSupported = true;
 
+            // Recording meta
+            if (meta.album == ContentServer::recAlbumName) {
+                if (!ContentServer::readMetaUsingTaglib(path, meta.title, meta.artist, meta.album,
+                                       meta.comment, meta.recStation, meta.recUrl, meta.recDate)) {
+                    qWarning() << "Cannot read meta with TagLib";
+                }
+            }
+
             // defauls
             /*if (meta.title.isEmpty())
                 meta.title = file.fileName();
@@ -2409,20 +2418,22 @@ bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
             album = QString::fromWCharArray(tag->album().toCWString());
             comment = QString::fromWCharArray(tag->comment().toCWString());
 
-            // Jupii additional tags
-            auto props = tag->properties();
-            auto station_key = ContentServer::recStationTagName.toStdString();
-            if (props.contains(station_key)) {
-                recStation = QString::fromWCharArray(props[station_key].front().toCWString());
-            }
-            auto url_key = ContentServer::recUrlTagName.toStdString();
-            if (props.contains(url_key)) {
-                recUrl = QString::fromLatin1(props[url_key].front().toCString());
-            }
-            auto date_key = ContentServer::recDateTagName.toStdString();
-            if (props.contains(date_key)) {
-                auto date = QString::fromLatin1(props[date_key].front().toCString());
-                recDate = QDateTime::fromString(date, ContentServer::recDateTagFormat);
+            if (album == ContentServer::recAlbumName) {
+                // Rec additional tags
+                auto props = tag->properties();
+                auto station_key = ContentServer::recStationTagName.toStdString();
+                if (props.contains(station_key)) {
+                    recStation = QString::fromWCharArray(props[station_key].front().toCWString());
+                }
+                auto url_key = ContentServer::recUrlTagName.toStdString();
+                if (props.contains(url_key)) {
+                    recUrl = QString::fromLatin1(props[url_key].front().toCString());
+                }
+                auto date_key = ContentServer::recDateTagName.toStdString();
+                if (props.contains(date_key)) {
+                    auto date = QString::fromLatin1(props[date_key].front().toCString());
+                    recDate = QDateTime::fromString(date, ContentServer::recDateTagFormat);
+                }
             }
         } else {
             qWarning() << "Cannot read ID3v2:" << path;
@@ -2443,17 +2454,6 @@ void ContentServer::writeMetaUsingTaglib(const QString &path, const QString &tit
                                           const QString &recUrl,
                                           const QDateTime &recDate)
 {
-    /*TagLib::FileRef f(path.toUtf8().constData(), false);
-    if(f.isNull()) {
-        qWarning() << "Cannot open file with TagLib:" << path;
-    } else {
-        f.tag()->setTitle(title.toStdWString());
-        f.tag()->setArtist(artist.toStdWString());
-        f.tag()->setAlbum(album.toStdWString());
-        f.tag()->setComment(comment.toStdWString());
-        f.save();
-    }*/
-
     auto ff = TagLib::ID3v2::FrameFactory::instance();
     TagLib::MPEG::File f(path.toUtf8().constData(), ff, false);
     if (f.isValid()) {
@@ -2514,17 +2514,15 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
     } else {
         meta.seekSupported = true;
 
+        if (!ContentServer::readMetaUsingTaglib(path, meta.title, meta.artist, meta.album,
+                               meta.comment, meta.recStation, meta.recUrl, meta.recDate)) {
+            qWarning() << "Cannot read meta with TagLib";
+        }
+
         TagLib::FileRef f(path.toUtf8().constData());
         if(f.isNull()) {
-            qWarning() << "Cannot extract meta data with TagLib";
+            qWarning() << "Cannot read audio meta with TagLib";
         } else {
-            if(f.tag()) {
-                TagLib::Tag *tag = f.tag();
-                meta.title = QString::fromWCharArray(tag->title().toCWString());
-                meta.artist = QString::fromWCharArray(tag->artist().toCWString());
-                meta.album = QString::fromWCharArray(tag->album().toCWString());
-            }
-
             if(f.audioProperties()) {
                 TagLib::AudioProperties *properties = f.audioProperties();
                 meta.duration = properties->length();

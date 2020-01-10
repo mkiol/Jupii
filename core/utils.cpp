@@ -29,6 +29,7 @@
 #include "gpoddermodel.h"
 #include "services.h"
 #include "renderingcontrol.h"
+#include "contentserver.h"
 
 const QString Utils::typeKey = "jupii_type";
 const QString Utils::cookieKey = "jupii_cookie";
@@ -363,6 +364,52 @@ bool Utils::isIdPulse(const QUrl &id)
 bool Utils::isIdScreen(const QUrl &id)
 {
     return Utils::isUrlScreen(id);
+}
+
+bool Utils::isIdRec(const QUrl &id)
+{
+    auto meta = ContentServer::instance()->getMetaForId(id);
+    if (meta)
+        return meta->album == ContentServer::recAlbumName;
+    return false;
+}
+
+QString Utils::recUrlFromId(const QUrl &id)
+{
+    if (!id.isEmpty()) {
+        auto meta = ContentServer::instance()->getMetaForId(id);
+        if (meta) {
+            return meta->recUrl;
+        }
+    }
+    return QString();
+}
+
+QString Utils::recDateFromId(const QUrl &id)
+{
+    if (!id.isEmpty()) {
+        auto meta = ContentServer::instance()->getMetaForId(id);
+        if (meta && !meta->recDate.isNull())
+            return friendlyDate(meta->recDate);
+    }
+    return QString();
+}
+
+QString Utils::friendlyDate(const QDateTime &date)
+{
+    QString date_s;
+    auto cdate = QDate::currentDate();
+    if (date.date() == cdate)
+        date_s = tr("Today");
+    else if (date.date() == cdate.addDays(-1))
+        date_s = tr("Yesterday");
+
+    auto time_f = QLocale::system().timeFormat(QLocale::ShortFormat);
+    if (date_s.isEmpty()) {
+        return date.toString("d MMM yy, " + time_f);
+    } else {
+        return date_s + ", " + date.toString(time_f);
+    }
 }
 
 bool Utils::isUrlValid(const QUrl &url)

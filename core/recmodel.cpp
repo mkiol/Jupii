@@ -10,13 +10,10 @@
 #include <QUrl>
 #include <QStringList>
 
-// TagLib
-#include "fileref.h"
-#include "tag.h"
-
 #include "recmodel.h"
 #include "settings.h"
 #include "contentserver.h"
+#include "utils.h"
 
 RecModel::RecModel(QObject *parent) :
     SelectableItemModel(new RecItem, parent),
@@ -35,8 +32,8 @@ QVariantList RecModel::selectedItems()
         if (rec->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(QUrl::fromLocalFile(rec->path())));
-            map.insert("name", QVariant(rec->title()));
-            map.insert("author", QVariant(rec->author()));
+            //map.insert("name", QVariant(rec->title()));
+            //map.insert("author", QVariant(rec->author()));
             list << map;
         }
     }
@@ -75,7 +72,7 @@ QList<ListItem*> RecModel::makeItems()
 
         if (!ContentServer::readMetaUsingTaglib(path, title, author, album,
                                comment, recStation, recUrl, recDate)) {
-            qWarning() << "Cannot read meta data from file";
+            qWarning() << "Cannot read meta with TagLib";
         }
 
         // fallbacks
@@ -157,6 +154,11 @@ RecItem::RecItem(const QString &id,
 {
 }
 
+QString RecItem::friendlyDate() const
+{
+    return Utils::friendlyDate(m_date);
+}
+
 QHash<int, QByteArray> RecItem::roleNames() const
 {
     QHash<int, QByteArray> names;
@@ -166,6 +168,7 @@ QHash<int, QByteArray> RecItem::roleNames() const
     names[AuthorRole] = "author";
     names[SelectedRole] = "selected";
     names[DateRole] = "date";
+    names[FriendlyDateRole] = "friendlyDate";
     return names;
 }
 
@@ -184,6 +187,8 @@ QVariant RecItem::data(int role) const
         return selected();
     case DateRole:
         return date();
+    case FriendlyDateRole:
+        return friendlyDate();
     default:
         return QVariant();
     }

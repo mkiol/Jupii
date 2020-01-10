@@ -49,6 +49,9 @@ public:
     Q_INVOKABLE bool isIdMic(const QUrl &id);
     Q_INVOKABLE bool isIdPulse(const QUrl &id);
     Q_INVOKABLE bool isIdScreen(const QUrl &id);
+    Q_INVOKABLE bool isIdRec(const QUrl &id);
+    Q_INVOKABLE QString recUrlFromId(const QUrl &id);
+    Q_INVOKABLE QString recDateFromId(const QUrl &id);
     Q_INVOKABLE QString dirNameFromPath(const QString &path);
 
     QString hash(const QString &value);
@@ -92,6 +95,7 @@ public:
     static bool readFromCacheFile(const QString &filename, QByteArray &data);
     static QString pathToCacheFile(const QString &filename);
     static bool cacheFileExists(const QString &filename);
+    static QString friendlyDate(const QDateTime &date);
 
     bool createCacheDir();
     bool createPlaylistDir();
