@@ -243,7 +243,7 @@ Page {
 
             ComboBox {
                 visible: settings.isDebug() && settings.screenSupported
-                label: qsTr("Screen capture framerate")
+                label: "Screen capture framerate"
                 currentIndex: {
                     if (settings.screenFramerate < 15) {
                         return 0;
@@ -254,9 +254,9 @@ Page {
                     }
                 }
                 menu: ContextMenu {
-                    MenuItem { text: qsTr("5 fps (default)") }
-                    MenuItem { text: qsTr("15 fps") }
-                    MenuItem { text: qsTr("30 fps") }
+                    MenuItem { text: "5 fps (default)" }
+                    MenuItem { text: "15 fps" }
+                    MenuItem { text: "30 fps" }
                 }
 
                 onCurrentIndexChanged: {
@@ -282,7 +282,7 @@ Page {
                 handleVisible: true
                 value: settings.skipFrames
                 valueText: value
-                label: qsTr("Screen capture skip frames count")
+                label: "Screen capture skip frames count"
 
                 onValueChanged: {
                     settings.skipFrames = value
