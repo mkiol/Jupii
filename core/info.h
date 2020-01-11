@@ -11,12 +11,12 @@
 namespace Jupii {
 static const char* APP_NAME = "Jupii";
 #ifdef SAILFISH
-static const char* APP_VERSION = "2.5.4 (beta)";
+static const char* APP_VERSION = "2.6.0 (beta)";
 #elif DESKTOP
-static const char* APP_VERSION = "2.5.4 (beta)";
+static const char* APP_VERSION = "2.6.0 (beta)";
 #endif
 static const char* AUTHOR = "Michal Kosciesza";
-static const char* COPYRIGHT_YEAR = "2018-2019";
+static const char* COPYRIGHT_YEAR = "2018-2020";
 static const char* SUPPORT_EMAIL = "jupii@mkiol.net";
 static const char* PAGE = "https://github.com/mkiol/Jupii";
 static const char* LICENSE = "Mozilla Public License 2.0";

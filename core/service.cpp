@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -95,12 +95,16 @@ void Service::setInited(bool value)
 
 QString Service::getDeviceId() const
 {
-    return m_deviceId;
+    auto id = m_ser && m_inited ? QString::fromStdString(m_ser->getDeviceId()) : QString();
+    //qDebug() << "device id:" << id;
+    return id;
 }
 
 QString Service::getDeviceFriendlyName() const
 {
-    return m_deviceFriendlyName;
+    auto name = m_ser && m_inited ? QString::fromStdString(m_ser->getFriendlyName()) : QString();
+    //qDebug() << "device friendly name:" << name;
+    return name;
 }
 
 void Service::handleApplicationStateChanged(Qt::ApplicationState state)
@@ -115,8 +119,6 @@ void Service::deInit()
     setInited(false);
     m_initing = false;
     timer(false);
-    m_deviceId.clear();
-    m_deviceFriendlyName.clear();
     reset();
     setBusy(false);
 }
@@ -186,9 +188,6 @@ bool Service::init(const QString &deviceId)
         setBusy(false);
         qDebug() << "Initing task done";
     });
-
-    m_deviceId = deviceId;
-    m_deviceFriendlyName = QString::fromStdString(ddesc.friendlyName);
 
     return true;
 }

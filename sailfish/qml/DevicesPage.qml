@@ -15,10 +15,32 @@ Page {
 
     allowedOrientations: Orientation.All
 
-    property real preferredItemHeight: root && root.isLandscape ? Theme.itemSizeSmall : Theme.itemSizeLarge
+    property real preferredItemHeight: root && root.isLandscape ?
+                                     Theme.itemSizeSmall : Theme.itemSizeLarge
+
+    function connectDevice(deviceId) {
+        if (deviceId) {
+            rc.init(deviceId)
+            av.init(deviceId)
+        }
+        createPlaylistPage()
+        pageStack.navigateForward()
+    }
+
+    function createPlaylistPage() {
+        if (pageStack.currentPage === root && pageStack.depth === 1) {
+            pageStack.pushAttached(Qt.resolvedUrl("MediaRendererPage.qml"))
+        }
+    }
 
     Component.onCompleted: {
         directory.discover()
+    }
+
+    onStatusChanged: {
+        if (status === PageStatus.Active) {
+            createPlaylistPage()
+        }
     }
 
     Connections {
@@ -79,6 +101,14 @@ Page {
                         directory.init()
                 }
             }
+
+            /*MenuItem {
+                visible: !av.busy && !rc.busy
+                text: qsTr("Show playlist")
+                onClicked: {
+                    connectDevice()
+                }
+            }*/
         }
 
         delegate: SimpleFavListItem {
@@ -101,17 +131,18 @@ Page {
             menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Connect")
+                    enabled: !model.active
                     visible: model.supported
                     onClicked: {
-                        pageStack.push(Qt.resolvedUrl("MediaRendererPage.qml"),
-                                       {deviceId: model.id, deviceName: model.title})
+                        connectDevice(model.id)
                     }
                 }
 
                 MenuItem {
                     text: qsTr("Show description")
                     onClicked: {
-                        pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),{udn: model.id})
+                        pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),
+                                       {udn: model.id})
                     }
                 }
 
@@ -135,11 +166,12 @@ Page {
             }
 
             onClicked: {
-                if (model.supported)
-                    pageStack.push(Qt.resolvedUrl("MediaRendererPage.qml"),
-                                   {deviceId: model.id, deviceName: model.title})
-                else
-                    pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),{udn: model.id})
+                if (model.supported) {
+                    connectDevice(model.id)
+                } else {
+                    pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),
+                                   {udn: model.id})
+                }
             }
         }
 

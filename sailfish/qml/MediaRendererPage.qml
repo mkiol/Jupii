@@ -19,26 +19,20 @@ Page {
 
     allowedOrientations: Orientation.All
 
-    property string deviceId
-    property string deviceName
-
-    property bool busy: av.busy || rc.busy
+    property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
+    property bool busy: !devless && (av.busy || rc.busy)
     property bool inited: av.inited && rc.inited
     property bool isMic: utils.isIdMic(av.currentURL)
     property bool isPulse: utils.isIdPulse(av.currentURL)
 
     property bool _doPop: false
 
-    Component.onCompleted: {
-        rc.init(deviceId)
-        av.init(deviceId)
-
-        volumeSlider.updateValue(rc.volume)
-    }
-
     onStatusChanged: {
-        if (status === PageStatus.Active)
+        if (status === PageStatus.Active) {
             updateMediaInfoPage()
+            if (rc.inited)
+                volumeSlider.updateValue(rc.volume)
+        }
     }
 
     function togglePlay() {
@@ -106,11 +100,12 @@ Page {
     }
 
     function updateMediaInfoPage() {
-        if (av.controlable) {
-            if (pageStack.currentPage === root)
+        if (pageStack.currentPage === root) {
+            if (av.controlable) {
                 pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"))
-        } else {
-            pageStack.popAttached(root, PageStackAction.Immediate)
+            } else if (pageStack.depth === 3) {
+                pageStack.popAttached(root, PageStackAction.Immediate)
+            }
         }
     }
 
@@ -269,9 +264,12 @@ Page {
         onVolumeChanged: {
             volumeSlider.updateValue(rc.volume)
         }
-
         onError: {
             handleError(code)
+        }
+        onInitedChanged: {
+            if (rc.inited)
+                volumeSlider.updateValue(rc.volume)
         }
     }
 
@@ -291,11 +289,9 @@ Page {
 
             updateMediaInfoPage()
         }
-
         onError: {
             handleError(code)
         }
-
         onUpdated: {
             rc.asyncUpdate()
         }
@@ -345,19 +341,19 @@ Page {
         model: playlist
 
         header: PageHeader {
-            title: root.deviceName.length > 0 ? root.deviceName : qsTr("Playlist")
+            title: av.deviceFriendlyName.length > 0 ? av.deviceFriendlyName : qsTr("Playlist")
         }
 
         VerticalScrollDecorator {}
 
         ViewPlaceholder {
-            enabled: root.inited && !root.busy && listView.count == 0 && !playlist.busy
+            enabled: (root.devless || root.inited) && !root.busy && listView.count == 0 && !playlist.busy
             text: qsTr("Empty")
             verticalOffset: ppanel.open ? 0-ppanel.height/2 : 0
         }
 
         ViewPlaceholder {
-            enabled: !root.inited && !root.busy
+            enabled: !root.devless && !root.inited && !root.busy
             text: qsTr("Not connected")
             verticalOffset: ppanel.open ? 0-ppanel.height/2 : 0
         }
@@ -365,7 +361,7 @@ Page {
         PullDownMenu {
             id: menu
 
-            enabled: root.inited && !root.busy
+            enabled: (root.devless || root.inited) && !root.busy
 
             Item {
                 width: parent.width
@@ -418,7 +414,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Save playlist")
-                visible: av.inited && !playlist.busy && listView.count > 0
+                visible: (root.devless || root.inited) && !playlist.busy && listView.count > 0
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"), {
                                        playlist: playlist
@@ -428,7 +424,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Clear playlist")
-                visible: av.inited && !playlist.busy && listView.count > 0
+                visible: (root.devless || root.inited) && !playlist.busy && listView.count > 0
                 onClicked: remorse.execute("Clearing playlist", function() { playlist.clear() } )
             }
 
@@ -498,17 +494,21 @@ Page {
             subtitle.color: secondaryColor
 
             onClicked: {
-                if (model.active)
-                    root.togglePlay()
-                else
-                    root.playItem(model.id, model.index)
+                if (root.devless) {
+                    listItem.openMenu()
+                } else {
+                    if (model.active)
+                        root.togglePlay()
+                    else
+                        root.playItem(model.id, model.index)
+                }
             }
 
             menu: ContextMenu {
                 MenuItem {
                     text: listItem.isImage ? qsTr("Show") : qsTr("Play")
-                    visible: (av.transportState !== AVTransport.Playing &&
-                              !listItem.isImage) || !model.active
+                    visible: !root.devless && ((av.transportState !== AVTransport.Playing &&
+                              !listItem.isImage) || !model.active)
                     onClicked: {
                         if (!model.active) {
                             root.playItem(model.id, model.index)
@@ -520,7 +520,7 @@ Page {
 
                 MenuItem {
                     text: qsTr("Pause")
-                    visible: av.stopable && model.active && !listItem.isImage
+                    visible: !root.devless && (av.stopable && model.active && !listItem.isImage)
                     onClicked: {
                         root.togglePlay()
                     }
@@ -557,7 +557,7 @@ Page {
     PlayerPanel {
         id: ppanel
 
-        open: Qt.application.active &&
+        open: !root.devless && Qt.application.active &&
               !menu.active && av.controlable &&
               !root.busy && root.status === PageStatus.Active
 

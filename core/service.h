@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -28,7 +28,8 @@ class Service :
     Q_OBJECT
     Q_PROPERTY (bool inited READ getInited NOTIFY initedChanged)
     Q_PROPERTY (bool busy READ getBusy NOTIFY busyChanged)
-    Q_PROPERTY (QString deviceId READ getDeviceId NOTIFY deviceIdChanged)
+    Q_PROPERTY (QString deviceId READ getDeviceId NOTIFY initedChanged)
+    Q_PROPERTY (QString deviceFriendlyName READ getDeviceFriendlyName NOTIFY initedChanged)
 
 public:
     enum ErrorType {
@@ -55,7 +56,6 @@ public:
 signals:
     void initedChanged();
     void busyChanged();
-    void deviceIdChanged();
     void error(ErrorType code);
     void needTimer(bool start);
 
@@ -84,8 +84,6 @@ protected:
     bool handleError(int ret);
 
 private:
-    QString m_deviceId;
-    QString m_deviceFriendlyName;
     bool m_busy = false;
     bool m_inited = false;
     void changed(const char *nm, int value);
