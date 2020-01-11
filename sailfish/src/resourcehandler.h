@@ -23,9 +23,10 @@ public slots:
     void handleSettingsChange();
 
 private:
-    bool m_hwEnabled;
+    bool m_enabled;
     bool m_aquired = false;
     resource_set_t *m_resource = nullptr;
+    void connectHandlers();
 };
 
 #endif // RESOURCEHANDLER_H

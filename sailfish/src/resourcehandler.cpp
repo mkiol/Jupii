@@ -3,6 +3,8 @@
 #include <QDebug>
 
 #include "settings.h"
+#include "services.h"
+#include "renderingcontrol.h"
 
 void grant_callback(resource_set_t *, uint32_t, void *) {}
 
@@ -12,18 +14,51 @@ static int (*acquire_set)(resource_set_t*);
 static int (*release_set)(resource_set_t*);
 
 ResourceHandler::ResourceHandler(QObject *parent) :
-    QObject(parent), m_hwEnabled(Settings::instance()->getUseHWVolume())
+    QObject(parent), m_enabled(Settings::instance()->getUseHWVolume())
 {
-    create_set = (resource_set_t* (*)(const char*, uint32_t, uint32_t, uint32_t,
-                 resource_callback_t, void*)) dlsym(nullptr, "resource_set_create");
-    acquire_set = (int (*)(resource_set_t*))dlsym(nullptr, "resource_set_acquire");
-    release_set = (int (*)(resource_set_t*))dlsym(nullptr, "resource_set_release");
-    if (create_set && acquire_set && release_set) {
-        m_resource = create_set("player", RESOURCE_SCALE_BUTTON, 0, 0,
-                                grant_callback, nullptr);
-    } else {
-        qDebug() << "Cannot grant resources for HW keys";
+    // Copied from https://github.com/piggz/harbour-advanced-camera/blob/master/src/resourcehandler.cpp
+
+    auto handle = dlopen("/usr/lib/libresource-glib.so.0", RTLD_LAZY);
+    if (handle) {
+        create_set = (resource_set_t *(*)(const char *, uint32_t, uint32_t, uint32_t, resource_callback_t,
+                                          void *))dlsym(handle, "resource_set_create");
+        if (!create_set) {
+            qDebug() << dlerror();
+        }
+        acquire_set = (int (*)(resource_set_t *))dlsym(handle, "resource_set_acquire");
+        if (!acquire_set) {
+            qDebug() << dlerror();
+        }
+        release_set = (int (*)(resource_set_t *))dlsym(handle, "resource_set_release");
+        if (!release_set) {
+            qDebug() << dlerror();
+        }
+        if (create_set && acquire_set && release_set) {
+            m_resource = create_set("player", RESOURCE_SCALE_BUTTON, 0, 0,
+                                    &grant_callback, nullptr);
+            if (m_resource) {
+                connectHandlers();
+                handleSettingsChange();
+                return;
+            } else {
+                qDebug() << "Error in create_set";
+            }
+        } else {
+            qDebug() << "Error in dlsym to one of the functions";
+        }
     }
+
+    qWarning() << "Cannot grant resources for HW keys";
+}
+
+void ResourceHandler::connectHandlers()
+{
+    auto rc = Services::instance()->renderingControl.get();
+    auto s = Settings::instance();
+    connect(s, &Settings::useHWVolumeChanged,
+                     this, &ResourceHandler::handleSettingsChange);
+    connect(rc, &Service::initedChanged,
+                     this, &ResourceHandler::handleSettingsChange);
 }
 
 void ResourceHandler::acquire()
@@ -43,7 +78,7 @@ void ResourceHandler::handleFocusChange(QObject *focus)
     //qDebug() << "handleFocusChange" << focus;
     if (focus) {
         m_aquired = true;
-        if (m_hwEnabled)
+        if (m_enabled)
             acquire();
     } else {
         m_aquired = false;
@@ -53,9 +88,13 @@ void ResourceHandler::handleFocusChange(QObject *focus)
 
 void ResourceHandler::handleSettingsChange()
 {
-    m_hwEnabled = Settings::instance()->getUseHWVolume();
+    auto rc = Services::instance()->renderingControl.get();
+    auto s = Settings::instance();
 
-    if (m_hwEnabled) {
+    qDebug() << "rc->getInited:" << rc->getInited();
+    m_enabled = s->getUseHWVolume() && rc->getInited();
+
+    if (m_enabled) {
         if (m_aquired)
             acquire();
     } else {

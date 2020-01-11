@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -142,11 +142,9 @@ int main(int argc, char *argv[])
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
 
-    ResourceHandler handler; handler.acquire();
+    ResourceHandler handler;
     QObject::connect(view, &QQuickView::focusObjectChanged,
                      &handler, &ResourceHandler::handleFocusChange);
-    QObject::connect(settings, &Settings::useHWVolumeChanged,
-                     &handler, &ResourceHandler::handleSettingsChange);
 
     view->show();
     utils->setQmlRootItem(view->rootObject());
