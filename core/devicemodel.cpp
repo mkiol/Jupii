@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2019-2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,6 +26,17 @@
 #include "filedownloader.h"
 const int icon_size = 64;
 #endif
+
+DeviceModel* DeviceModel::m_instance = nullptr;
+
+DeviceModel* DeviceModel::instance(QObject *parent)
+{
+    if (DeviceModel::m_instance == nullptr) {
+        DeviceModel::m_instance = new DeviceModel(parent);
+    }
+
+    return DeviceModel::m_instance;
+}
 
 DeviceModel::DeviceModel(QObject *parent) :
     ListModel(new DeviceItem, parent)
@@ -140,6 +151,13 @@ void DeviceModel::clear()
     if(rowCount()>0) removeRows(0,rowCount());
 }
 
+void DeviceModel::updatePower(const QString &id, bool value)
+{
+    auto item = find(id);
+    if (item)
+        dynamic_cast<DeviceItem*>(item)->setPower(value);
+}
+
 DeviceItem::DeviceItem(const QString &id,
                    const QString &title,
                    const QString &type,
@@ -177,6 +195,7 @@ QHash<int, QByteArray> DeviceItem::roleNames() const
     names[SupportedRole] = "supported";
     names[ActiveRole] = "active";
     names[XcRole] = "xc";
+    names[PowerRole] = "power";
     return names;
 }
 
@@ -205,6 +224,8 @@ QVariant DeviceItem::data(int role) const
     case ForegroundRole:
         return foreground();
 #endif
+    case PowerRole:
+        return power();
     default:
         return QVariant();
     }
@@ -220,6 +241,14 @@ void DeviceItem::setActive(bool value)
 {
     if (m_active != value) {
         m_active = value;
+        emit dataChanged();
+    }
+}
+
+void DeviceItem::setPower(bool value)
+{
+    if (m_power != value) {
+        m_power = value;
         emit dataChanged();
     }
 }

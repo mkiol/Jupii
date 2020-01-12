@@ -55,6 +55,7 @@
 #include "dirmodel.h"
 #include "recmodel.h"
 #include "device.h"
+#include "devicemodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -64,7 +65,8 @@ int main(int argc, char *argv[])
     auto context = view->rootContext();
     auto engine = view->engine();
 
-    qmlRegisterType<DeviceModel>("harbour.jupii.DeviceModel", 1, 0, "DeviceModel");
+    qmlRegisterUncreatableType<DeviceModel>("harbour.jupii.DeviceModel", 1, 0,
+                                            "DeviceModel", "DeviceModel is a singleton");
     qmlRegisterType<RenderingControl>("harbour.jupii.RenderingControl", 1, 0,
                                       "RenderingControl");
     qmlRegisterType<AVTransport>("harbour.jupii.AVTransport", 1, 0, "AVTransport");
@@ -78,7 +80,8 @@ int main(int argc, char *argv[])
                                               "PlayListModel", "Playlist is a singleton");
     qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0, "SomafmModel");
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0, "IcecastModel");
-    qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1, 0, "GpodderEpisodeModel");
+    qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1, 0,
+                                         "GpodderEpisodeModel");
     qmlRegisterType<DirModel>("harbour.jupii.DirModel", 1, 0, "DirModel");
     qmlRegisterType<RecModel>("harbour.jupii.RecModel", 1, 0, "RecModel");
 
@@ -128,6 +131,7 @@ int main(int argc, char *argv[])
     auto services = Services::instance();
     auto playlist = PlaylistModel::instance();
     auto msdev = MediaServerDevice::instance();
+    auto devmodel = DeviceModel::instance();
     DbusProxy dbusProxy;
 
 #ifdef SAILFISH
@@ -139,6 +143,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("av", services->avTransport.get());
     context->setContextProperty("playlist", playlist);
     context->setContextProperty("msdev", msdev);
+    context->setContextProperty("devmodel", devmodel);
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
 

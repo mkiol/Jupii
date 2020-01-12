@@ -50,7 +50,8 @@ public:
     Q_INVOKABLE void discover();
 
     // Extended control API
-    Q_INVOKABLE void xcTogglePower(const QString& deviceId);
+    Q_INVOKABLE void xcTogglePower(const QString &deviceId);
+    Q_INVOKABLE void xcGetStatus(const QString& deviceId);
 
 signals:
     void discoveryReady();
@@ -58,6 +59,9 @@ signals:
     void busyChanged();
     void initedChanged();
     void error(int code);
+
+private slots:
+    void refreshXC();
 
 private:
     static Directory* m_instance;

@@ -39,7 +39,8 @@ public:
         ModelRole,
         FavRole,
         SupportedRole,
-        XcRole
+        XcRole,
+        PowerRole
     };
 
     DeviceItem(QObject *parent = nullptr): ListItem(parent) {}
@@ -70,8 +71,10 @@ public:
     inline bool supported() const { return m_supported; }
     inline bool active() const { return m_active; }
     inline bool xc() const { return m_xc; }
+    inline bool power() const { return m_power; }
     bool isFav() const;
     void setActive(bool value);
+    void setPower(bool value);
 #ifdef DESKTOP
     void setIcon(const QIcon &icon);
     QBrush foreground() const;
@@ -90,6 +93,7 @@ private:
     bool m_active = false;
     bool m_supported = false;
     bool m_xc = false;
+    bool m_power = false;
 };
 
 class DeviceModel : public ListModel
@@ -97,12 +101,18 @@ class DeviceModel : public ListModel
     Q_OBJECT
 
 public:
-    explicit DeviceModel(QObject *parent = nullptr);
+    static DeviceModel* instance(QObject *parent = nullptr);
     void clear();
+    void updatePower(const QString &id, bool value);
 
 public slots:
     void updateModel();
     void serviceInitedHandler();
+
+private:
+    static DeviceModel* m_instance;
+    explicit DeviceModel(QObject *parent = nullptr);
+
 };
 
 #endif // DEVICEMODEL_H

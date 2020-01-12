@@ -12,6 +12,7 @@
 #include <QStringList>
 #include <QByteArray>
 #include <QFile>
+#include <QCoreApplication>
 #include <string>
 
 #include <libupnpp/control/description.hxx>
@@ -28,6 +29,19 @@ Directory::Directory(QObject *parent) :
     nm(new QNetworkAccessManager())
 {
     init();
+    connect(this, &Directory::busyChanged, this, &Directory::refreshXC);
+}
+
+void Directory::refreshXC()
+{
+    if (!m_busy) {
+        qDebug() << "Refreshing status for XC devices";
+        QHash<QString,YamahaXC*>::iterator i = m_xcs.begin();
+        while (i != m_xcs.end()) {
+            i.value()->getStatus();
+            ++i;
+        }
+    }
 }
 
 void Directory::init()
@@ -151,11 +165,14 @@ void Directory::discover()
 
             if (!xcs.contains(did)) {
                 xcs[did] = true;
-                auto data = XCParser::parse(xml);
-                if (data.valid) {
+                auto xc = new YamahaXC(did, xml);
+                if (xc->valid()) {
                     qDebug() << "XCS is valid for" << did;
-                    auto xc = new YamahaXC(); xc->data = data;
+                    xc->moveToThread(QCoreApplication::instance()->thread());
                     this->m_xcs.insert(did, xc);
+                } else {
+                    //qWarning() << "XCS is invalid for" << did;
+                    delete xc;
                 }
             }
         }
@@ -190,11 +207,14 @@ void Directory::discover()
 
             if (!xcs.contains(did)) {
                 xcs[did] = true;
-                auto data = XCParser::parse(QString::fromStdString(ddesc.XMLText));
-                if (data.valid) {
+                auto xc = new YamahaXC(did, QString::fromStdString(ddesc.XMLText));
+                if (xc->valid()) {
                     qDebug() << "XCS is valid for" << did;
-                    auto xc = new YamahaXC(); xc->data = data;
+                    xc->moveToThread(QCoreApplication::instance()->thread());
                     this->m_xcs.insert(did, xc);
+                } else {
+                    //qWarning() << "XCS is invalid for" << did;
+                    delete xc;
                 }
             }
 
@@ -283,6 +303,17 @@ void Directory::xcTogglePower(const QString& deviceId)
         qWarning() << "Device doesn't have XC API";
     }
 }
+
+void Directory::xcGetStatus(const QString& deviceId)
+{
+    auto xc = deviceXC(deviceId);
+    if (xc) {
+        xc->getStatus();
+    } else {
+        qWarning() << "Device doesn't have XC API";
+    }
+}
+
 
 bool Directory::getInited()
 {

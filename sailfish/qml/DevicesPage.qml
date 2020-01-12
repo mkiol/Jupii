@@ -71,7 +71,7 @@ Page {
         height: root.height
         clip: true
 
-        model: DeviceModel {}
+        model: devmodel
 
         header: PageHeader {
             visible: directory.inited
@@ -128,6 +128,11 @@ Page {
                     settings.addFavDevice(model.id)
             }
 
+            onMenuOpenChanged: {
+                if (menuOpen)
+                    directory.xcGetStatus(model.id)
+            }
+
             menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Connect")
@@ -147,7 +152,7 @@ Page {
                 }
 
                 MenuItem {
-                    text: qsTr("Toggle power")
+                    text: model.power ? qsTr("Power Off") : qsTr("Power On")
                     visible: model.xc
                     onClicked: {
                         directory.xcTogglePower(model.id)
