@@ -50,6 +50,7 @@ public:
                      const std::vector<std::string>& names,
                      const std::vector<std::string>& values);
     bool start();
+    bool sendAdvertisement();
 
     std::unordered_map<std::string, UpnpService*>::const_iterator
     findService(const std::string& serviceid);
@@ -239,6 +240,12 @@ bool UpnpDevice::Internal::start()
         }
     }
 
+    return sendAdvertisement();
+}
+
+bool UpnpDevice::Internal::sendAdvertisement()
+{
+    int ret;
     if ((ret = UpnpSendAdvertisement(dvh, expiretime)) != 0) {
         LOGERR(lib->errAsString("UpnpDevice: UpnpSendAdvertisement", ret)
                << endl);
@@ -247,7 +254,6 @@ bool UpnpDevice::Internal::start()
     return true;
 }
 
-    
 // Main libupnp callback: use the device id and call the right device
 int UpnpDevice::InternalStatic::sCallBack(Upnp_EventType et, void* evp,
         void*)
@@ -515,6 +521,7 @@ void UpnpDevice::eventloop()
     // repeated few seconds later, with bad consequences on further
     // operations
     const int nloopstofull = 10;
+    const int nloopstoadv = 30;
     struct timespec wkuptime, earlytime;
     bool didearly = false;
 
@@ -564,6 +571,10 @@ void UpnpDevice::eventloop()
         count++;
         bool all = count && ((count % nloopstofull) == 0);
         //LOGDEB("UpnpDevice::eventloop count "<<count<<" all "<<all<<endl);
+
+        if (count && ((count % nloopstoadv) == 0)) {
+            m->sendAdvertisement();
+        }
 
         // We can't lock devlock around the loop because we don't want
         // to hold id when calling notifyEvent() (which calls
