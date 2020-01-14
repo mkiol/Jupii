@@ -114,6 +114,39 @@ ScreenCaster::~ScreenCaster()
     qDebug() << "ScreenCaster destructor end";
 }
 
+void ScreenCaster::initVideoSize()
+{
+    video_size = QGuiApplication::primaryScreen()->size();
+    qDebug() << "Screen video size:" << video_size;
+
+    if (video_size.width() < video_size.height()) {
+        qDebug() << "Portrait orientation detected, so transposing to landscape";
+        video_size.transpose();
+    }
+
+    xoff = 0;
+    yoff = 0;
+    trans_type = Settings::instance()->getScreenCropTo169();
+
+    if (trans_type > 0) {
+        bool crop = trans_type > 1;
+        qDebug() << "Transform to 16:9 ratio";
+        int h = int((9.0/16.0)*video_size.width());
+        h -= h % 2;
+        if (h <= video_size.height()) {
+            if (crop)
+                yoff = (video_size.height() - h) / 2;
+            video_size.setHeight(h);
+        } else {
+            int w = int((16.0/9.0)*video_size.height());
+            w -= w % 2;
+            if (crop)
+                xoff = (video_size.width() - w) / 2;
+            video_size.setWidth(w);
+        }
+    }
+}
+
 bool ScreenCaster::init()
 {
     qDebug() << "ScreenCaster init";
@@ -126,30 +159,12 @@ bool ScreenCaster::init()
     auto s = Settings::instance();
     auto video_framerate = s->getScreenFramerate();
     video_pkt_duration = av_rescale_q(1, AVRational{1, video_framerate}, AVRational{1, 1000000});
-    video_size = QGuiApplication::primaryScreen()->size();
-    qDebug() << "video_framerate:" << video_framerate;
-    qDebug() << "video_pkt_duration:" << video_pkt_duration;
 
-    if (video_size.width() < video_size.height()) {
-        qDebug() << "Portrait orientation detected, so transposing to landscape";
-        video_size.transpose();
-    }
+    initVideoSize();
 
-    int xoff = 0; int yoff = 0;
-    if (s->getScreenCropTo169()) {
-        qDebug() << "Cropping to 16:9 ratio";
-        int h = int((9.0/16.0)*video_size.width());
-        h -= h % 2;
-        if (h <= video_size.height()) {
-            yoff = (video_size.height() - h) / 2;
-            video_size.setHeight(h);
-        } else {
-            int w = int((16.0/9.0)*video_size.height());
-            w -= w % 2;
-            xoff = (video_size.width() - w) / 2;
-            video_size.setWidth(w);
-        }
-    }
+    qDebug() << "Stream video_framerate:" << video_framerate;
+    qDebug() << "Stream video_pkt_duration:" << video_pkt_duration;
+    qDebug() << "Stream video_size:" << video_size;
 
     skipped_frames = 0;
     skipped_frames_max = s->getSkipFrames();
@@ -160,6 +175,7 @@ bool ScreenCaster::init()
     AVDictionary* options = nullptr;
 
 #ifdef SAILFISH
+
     bgImg = QImage(video_size, QImage::Format_RGB32); bgImg.fill(Qt::black);
 
     auto in_video_codec = avcodec_find_decoder(AV_CODEC_ID_RAWVIDEO);
@@ -298,8 +314,8 @@ bool ScreenCaster::init()
         return false;
     }
 
-    //auto out_video_codec = avcodec_find_encoder(AV_CODEC_ID_H264);
-    auto out_video_codec = avcodec_find_encoder_by_name("h264_omx");
+    auto out_video_codec = avcodec_find_encoder(AV_CODEC_ID_H264);
+    //auto out_video_codec = avcodec_find_encoder_by_name("h264_omx");
     if (!out_video_codec) {
         qWarning() << "Error in avcodec_find_encoder for H264";
         return false;
@@ -768,7 +784,7 @@ void ScreenCaster::writeVideoData()
         if (skipped_frames_max > 0) {
             skipped_frames++;
             if (skipped_frames > skipped_frames_max) {
-                qDebug() << "Max skipped frames reached";
+                //qDebug() << "Max skipped frames reached";
                 skipped_frames = 0;
             }
         }
@@ -784,29 +800,46 @@ QImage ScreenCaster::makeCurrImg()
 {
     QImage img = currImgBuff ? currImgTransform == LIPSTICK_RECORDER_TRANSFORM_Y_INVERTED ?
                 currImgBuff->image.mirrored(false, true) : currImgBuff->image : bgImg;
-    if (img.width() < img.height()) {
-        auto orientation = QGuiApplication::primaryScreen()->orientation();
-        if (orientation == Qt::LandscapeOrientation) {
-            QTransform t; t.rotate(-90);
-            img = img.transformed(t);
-        } else if (orientation == Qt::InvertedLandscapeOrientation) {
-            QTransform t; t.rotate(-270);
-            img = img.transformed(t);
-        } else {
-            if (orientation == Qt::InvertedPortraitOrientation) {
-                QTransform t; t.rotate(-180);
-                img = img.transformed(t);
-            }
+
+
+    // rotation
+    auto orientation = QGuiApplication::primaryScreen()->orientation();
+    if (orientation == Qt::LandscapeOrientation) {
+        QTransform t; t.rotate(-90);
+        img = img.transformed(t);
+    } else if (orientation == Qt::InvertedLandscapeOrientation) {
+        QTransform t; t.rotate(-270);
+        img = img.transformed(t);
+    } else if (orientation == Qt::InvertedPortraitOrientation) {
+        QTransform t; t.rotate(-180);
+        img = img.transformed(t);
+    }
+
+    // scaling
+    if (img.width() < img.height()) { // portrait scaling
+        QImage target = bgImg;
+        QPainter p(&target);
+        p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+        img = img.scaledToHeight(target.height(), Qt::SmoothTransformation);
+        p.drawImage((target.width()-img.width())/2, 0, img);
+        p.end();
+        img = target;
+    } else if (img.width() != video_size.width()) { // landscape scaling only if needed
+        if (trans_type == 1) { // scaling to width
             QImage target = bgImg;
             QPainter p(&target);
             p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-            img = img.scaledToHeight(target.height(), Qt::SmoothTransformation);
-            p.drawImage((target.width()-img.width())/2, 0, img);
+            img = img.scaledToWidth(target.width(), Qt::SmoothTransformation);
+            p.drawImage(0, (target.height()-img.height())/2, img);
             p.end();
             img = target;
+        } else if (trans_type == 2) { // cropping to width
+            QRect rect(xoff, yoff, video_size.width(), video_size.height());
+            img = img.copy(rect);
         }
     }
 
+    // format conversion
     if (img.format() != QImage::Format_RGB32) {
         img = img.convertToFormat(QImage::Format_RGB32);
     }

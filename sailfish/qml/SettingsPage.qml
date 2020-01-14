@@ -130,6 +130,21 @@ Page {
                 }
             }
 
+            ComboBox {
+                visible: settings.screenSupported
+                label: qsTr("Force screen 16:9 aspect ratio")
+                currentIndex: settings.screenCropTo169
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("Disabled") }
+                    MenuItem { text: qsTr("Scale") }
+                    MenuItem { text: qsTr("Crop") }
+                }
+
+                onCurrentIndexChanged: {
+                    settings.screenCropTo169 = currentIndex
+                }
+            }
+
             TextSwitch {
                 automaticCheck: false
                 visible:  settings.remoteContentMode == 0

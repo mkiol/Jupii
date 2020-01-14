@@ -37,7 +37,7 @@ class Settings:
     Q_PROPERTY (bool rec READ getRec WRITE setRec NOTIFY recChanged)
     Q_PROPERTY (int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
     Q_PROPERTY (int screenFramerate READ getScreenFramerate WRITE setScreenFramerate NOTIFY screenFramerateChanged)
-    Q_PROPERTY (bool screenCropTo169 READ getScreenCropTo169 WRITE setScreenCropTo169 NOTIFY screenCropTo169Changed)
+    Q_PROPERTY (int screenCropTo169 READ getScreenCropTo169 WRITE setScreenCropTo169 NOTIFY screenCropTo169Changed)
     Q_PROPERTY (bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY screenAudioChanged)
     Q_PROPERTY (bool screenSupported READ getScreenSupported WRITE setScreenSupported NOTIFY screenSupportedChanged)
     Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
@@ -78,8 +78,8 @@ public:
     void setScreenFramerate(int value);
     int getScreenFramerate();
 
-    void setScreenCropTo169(bool value);
-    bool getScreenCropTo169();
+    void setScreenCropTo169(int value);
+    int getScreenCropTo169();
 
     void setScreenAudio(bool value);
     bool getScreenAudio();

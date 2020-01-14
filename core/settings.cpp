@@ -396,17 +396,23 @@ bool Settings::getScreenSupported()
 #endif
 }
 
-void Settings::setScreenCropTo169(bool value)
+void Settings::setScreenCropTo169(int value)
 {
+    // 0 - disabled
+    // 1 - scale
+    // 2 - crop
     if (getScreenCropTo169() != value) {
-        settings.setValue("screencorop169", value);
+        settings.setValue("screencrop169", value);
         emit screenCropTo169Changed();
     }
 }
 
-bool Settings::getScreenCropTo169()
+int Settings::getScreenCropTo169()
 {
-    return settings.value("screencorop169", false).toBool();
+    // 0 - disabled
+    // 1 - scale
+    // 2 - crop
+    return settings.value("screencrop169", 1).toInt();
 }
 
 void Settings::setScreenAudio(bool value)
@@ -614,5 +620,5 @@ void Settings::setSkipFrames(int value)
 
 int Settings::getSkipFrames()
 {
-    return settings.value("skipframes", 0).toInt();
+    return settings.value("skipframes", 5).toInt();
 }

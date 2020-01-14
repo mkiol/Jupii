@@ -73,11 +73,12 @@ private:
     AVFrame* in_frame_s = nullptr;
     SwsContext* video_sws_ctx = nullptr;
     uint8_t* video_outbuf = nullptr;
-    //static int read_packet_callback(void *opaque, uint8_t *buf, int buf_size);
-    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
     int audio_frame_size = 0; // 0 => audio disabled for screen casting
     int video_framerate = 0;
     QSize video_size;
+    int xoff;
+    int yoff;
+    int trans_type;
     int64_t video_pkt_time = 0;
     int64_t video_pkt_start_time = 0;
     int64_t video_pkt_duration = 0;
@@ -88,12 +89,16 @@ private:
     AVCodecContext* out_audio_codec_ctx = nullptr;
     SwrContext* audio_swr_ctx = nullptr;
     QByteArray audio_outbuf; // pulse audio data buf
+    int skipped_frames_max = 0;
+    int skipped_frames = 0;
+
+    //static int read_packet_callback(void *opaque, uint8_t *buf, int buf_size);
+    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
+    void initVideoSize();
     bool writeAudioData2();
     bool writeAudioData3();
     bool writeVideoData2();
     void errorHandler();
-    int skipped_frames_max = 0;
-    int skipped_frames = 0;
 };
 
 #endif // SCREENCASTER_H
