@@ -543,6 +543,11 @@ void MediaServerDevice::stop()
     shouldExit();
 }
 
+void MediaServerDevice::sendAdvertisement()
+{
+    shouldSendAdvertisement();
+}
+
 int MediaServerDevice::actionHandler(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
 {
     auto action = QString::fromStdString(in.getName());

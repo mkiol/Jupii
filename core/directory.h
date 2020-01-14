@@ -61,7 +61,7 @@ signals:
     void error(int code);
 
 private slots:
-    void refreshXC();
+    void handleBusyChanged();
 
 private:
     static Directory* m_instance;

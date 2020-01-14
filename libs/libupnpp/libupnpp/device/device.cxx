@@ -76,6 +76,7 @@ public:
     std::mutex devlock;
     std::condition_variable evloopcond;
     std::mutex evlooplock;
+    bool needAdvertisement;
 };
 
 class UpnpDevice::InternalStatic {
@@ -134,6 +135,7 @@ UpnpDevice::UpnpDevice(const string& deviceId,
     }
     m->deviceId = deviceId;
     m->needExit = false;
+    m->needAdvertisement = false;
     //LOGDEB("UpnpDevice::UpnpDevice(" << m->deviceId << ")" << endl);
 
     m->lib = LibUPnP::getLibUPnP(true);
@@ -505,6 +507,7 @@ int timespec_diffms(const struct timespec& old, const struct timespec& recent)
 void UpnpDevice::eventloop()
 {
     m->needExit = false;
+    m->needAdvertisement = false;
 
     if (!m->start()) {
         LOGERR("Device would not start" << endl);
@@ -572,8 +575,9 @@ void UpnpDevice::eventloop()
         bool all = count && ((count % nloopstofull) == 0);
         //LOGDEB("UpnpDevice::eventloop count "<<count<<" all "<<all<<endl);
 
-        if (count && ((count % nloopstoadv) == 0)) {
+        if (m->needAdvertisement || (count && ((count % nloopstoadv) == 0))) {
             m->sendAdvertisement();
+            m->needAdvertisement = false;
         }
 
         // We can't lock devlock around the loop because we don't want
@@ -630,6 +634,11 @@ void UpnpDevice::shouldExit()
     m->evloopcond.notify_all();
 }
 
+void UpnpDevice::shouldSendAdvertisement()
+{
+    m->needAdvertisement = true;
+    m->evloopcond.notify_all();
+}
 
 class UpnpService::Internal {
 public:

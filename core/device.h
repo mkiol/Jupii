@@ -48,6 +48,7 @@ public:
     static QString desc();
     static std::unordered_map<std::string, UPnPProvider::VDirContent> desc_files();
     bool getRunning();
+    void sendAdvertisement();
 
 signals:
     void runningChanged();

@@ -120,6 +120,8 @@ public:
     /** Check status */
     bool ok();
 
+    void shouldSendAdvertisement();
+
 private:
     class Internal;
     Internal *m;

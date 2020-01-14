@@ -20,6 +20,7 @@
 #include "settings.h"
 #include "utils.h"
 #include "directory.h"
+#include "device.h"
 
 Directory* Directory::m_instance = nullptr;
 
@@ -29,10 +30,10 @@ Directory::Directory(QObject *parent) :
     nm(new QNetworkAccessManager())
 {
     init();
-    connect(this, &Directory::busyChanged, this, &Directory::refreshXC);
+    connect(this, &Directory::busyChanged, this, &Directory::handleBusyChanged);
 }
 
-void Directory::refreshXC()
+void Directory::handleBusyChanged()
 {
     if (!m_busy) {
         qDebug() << "Refreshing status for XC devices";
@@ -41,6 +42,9 @@ void Directory::refreshXC()
             i.value()->getStatus();
             ++i;
         }
+
+        qDebug() << "Sending SSDP advertisement";
+        MediaServerDevice::instance()->sendAdvertisement();
     }
 }
 
