@@ -30,7 +30,7 @@ const QString TrackModel::queryByAlbumTemplate =
       "FILTER regex(nie:title(?song), \"%2\", \"i\") " \
       "} " \
       "ORDER BY nmm:trackNumber(?song) " \
-      "LIMIT 50";
+      "LIMIT 500";
 
 const QString TrackModel::queryByArtistTemplate =
       "SELECT ?song " \
@@ -47,7 +47,7 @@ const QString TrackModel::queryByArtistTemplate =
       "FILTER regex(nie:title(?song), \"%2\", \"i\") " \
       "} " \
       "ORDER BY nie:title(nmm:musicAlbum(?song)) nmm:trackNumber(?song) " \
-      "LIMIT 50";
+      "LIMIT 500";
 
 const QString TrackModel::queryByPlaylistTemplate =
         "SELECT nfo:hasMediaFileListEntry(?list) " \
@@ -60,7 +60,7 @@ const QString TrackModel::queryByEntriesTemplate =
         "SELECT nfo:entryUrl(?song) " \
         "WHERE { ?song a nfo:MediaFileListEntry . " \
         "FILTER ( ?song in ( %1 )) } " \
-        "LIMIT 50";
+        "LIMIT 500";
 
 TrackModel::TrackModel(QObject *parent) :
     SelectableItemModel(new TrackItem, parent)

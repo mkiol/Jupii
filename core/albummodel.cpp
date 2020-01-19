@@ -29,7 +29,7 @@ const QString AlbumModel::albumsQueryTemplate =
         "nmm:performer ?artist . " \
         "} GROUP BY ?album ?artist " \
         "ORDER BY nie:title(?album) " \
-        "LIMIT 100";
+        "LIMIT 500";
 
 AlbumModel::AlbumModel(QObject *parent) :
     SelectableItemModel(new AlbumItem, parent)
