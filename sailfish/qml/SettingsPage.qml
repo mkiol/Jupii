@@ -107,27 +107,34 @@ Page {
                 }
             }
 
-            TextSwitch {
-                automaticCheck: false
-                checked: settings.screenSupported
-                text: qsTr("Screen capture")
-                description: qsTr("To start capturing add Screen capture item to your current playlist.")
-                onClicked: {
-                    settings.screenSupported = !settings.screenSupported
-                }
-            }
+            ComboBox {
+                label: qsTr("Screen capture")
+                currentIndex: settings.screenSupported ?
+                                  settings.screenAudio ? 2 : 1 : 0
 
-            TextSwitch {
-                visible: settings.screenSupported
-                automaticCheck: false
-                checked: settings.screenAudio
-                text: qsTr("Screen capture with audio")
-                description: qsTr("During a screen capturing, audio is captured as well. " +
-                                  "Capturing video along with audio is still in beta state, so " +
-                                  "it may decrease a quality of the streaming and cause additional delay.")
-                onClicked: {
-                    settings.screenAudio = !settings.screenAudio
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("Disabled") }
+                    MenuItem { text: qsTr("Enabled") }
+                    MenuItem { text: qsTr("Enabled with audio") }
                 }
+
+                onCurrentIndexChanged: {
+                    if (currentIndex === 2) {
+                        settings.screenSupported = true;
+                        settings.screenAudio = true;
+                    } else if (currentIndex === 1) {
+                        settings.screenSupported = true;
+                        settings.screenAudio = false;
+                    } else {
+                        settings.screenSupported = false;
+                        settings.screenAudio = false;
+                    }
+                }
+
+                description: qsTr("Enables Screen casting feature. Capturing " +
+                                  "video along with audio is still in beta state, so " +
+                                  "it may decrease a quality of the streaming " +
+                                  "and cause additional delay.");
             }
 
             ComboBox {
