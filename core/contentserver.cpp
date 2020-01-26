@@ -167,7 +167,6 @@ const QString ContentServer::dlnaOrgCiFlags = "DLNA.ORG_CI=0";
 const QString ContentServer::recDateTagName = "Recording Date";
 const QString ContentServer::recUrlTagName = "Station URL";
 const QString ContentServer::recStationTagName = "Station Name";
-const QString ContentServer::recDateTagFormat = "yyyy-MM-dd HH:mm:ss";
 const QString ContentServer::recAlbumName = "Recordings by Jupii";
 
 ContentServerWorker* ContentServerWorker::instance(QObject *parent)
@@ -2473,7 +2472,7 @@ bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
                 auto date_key = ContentServer::recDateTagName.toStdString();
                 if (props.contains(date_key)) {
                     auto date = QString::fromLatin1(props[date_key].front().toCString());
-                    recDate = QDateTime::fromString(date, ContentServer::recDateTagFormat);
+                    recDate = QDateTime::fromString(date, Qt::ISODate);
                 }
             }
         } else {
@@ -2524,7 +2523,7 @@ void ContentServer::writeMetaUsingTaglib(const QString &path, const QString &tit
         if (!recDate.isNull()) {
             auto frame = TagLib::ID3v2::Frame::createTextualFrame(
                         ContentServer::recDateTagName.toStdString(),
-                        {recDate.toString(ContentServer::recDateTagFormat)
+                        {recDate.toString(Qt::ISODate)
                          .toStdString()});
             tag->addFrame(frame);
         }

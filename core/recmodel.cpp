@@ -84,8 +84,8 @@ QList<ListItem*> RecModel::makeItems()
             album = tr("Unknown");
         if (recStation.isEmpty())
             recStation = author;
-        if (recDate.isNull())
-            recDate = file.created();
+        /*if (recDate.isNull())
+            recDate = file.created();*/
 
         if (title.contains(filter, Qt::CaseInsensitive) ||
             author.contains(filter, Qt::CaseInsensitive) ||
@@ -104,6 +104,10 @@ QList<ListItem*> RecModel::makeItems()
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
             auto aa = dynamic_cast<RecItem*>(a);
             auto bb = dynamic_cast<RecItem*>(b);
+            if (aa->date().isNull() && !bb->date().isNull())
+                return false;
+            if (!aa->date().isNull() && bb->date().isNull())
+                return true;
             return aa->date() > bb->date();
         });
     } else if (m_queryType == 1) { // by title
@@ -119,6 +123,7 @@ QList<ListItem*> RecModel::makeItems()
             return aa->author().compare(bb->author(), Qt::CaseInsensitive) < 0;
         });
     }
+
 
     return items;
 }

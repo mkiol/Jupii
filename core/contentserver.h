@@ -130,7 +130,6 @@ public:
     static const QString recStationTagName;
     static const QString recDateTagName;
     static const QString recUrlTagName;
-    static const QString recDateTagFormat;
     static const QString recAlbumName;
 
     static ContentServer* instance(QObject *parent = nullptr);

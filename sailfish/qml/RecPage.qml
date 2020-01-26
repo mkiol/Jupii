@@ -109,7 +109,16 @@ Dialog {
                                          Theme.highlightColor : Theme.primaryColor
             highlighted: down || model.selected
             title.text: model.title
-            subtitle.text: model.author + " · " + model.friendlyDate
+            subtitle.text: {
+                var date = model.friendlyDate
+                var author = model.author
+                if (author.length > 0 && date.length > 0)
+                    return author + " · " + date
+                if (date.length > 0)
+                    return date
+                if (author.length > 0)
+                    return author
+            }
             enabled: !itemModel.busy
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
 

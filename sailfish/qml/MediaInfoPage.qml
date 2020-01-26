@@ -19,7 +19,6 @@ Page {
 
     property bool imgOk: imagep.status === Image.Ready || imagel.status === Image.Ready
     property int itemType: utils.itemTypeFromUrl(av.currentId)
-    property string recDate: utils.recDateFromId(av.currentURL)
     property bool isShout: app.streamTitle.length !== 0
     property bool isRec: itemType === ContentServer.ItemType_LocalFile &&
                          utils.isIdRec(av.currentURL)
@@ -229,7 +228,7 @@ Page {
 
                 DetailItem {
                     label: qsTr("Recording date")
-                    value: recDate
+                    value: utils.recDateFromId(av.currentURL)
                     visible: value.length !== 0
                 }
 

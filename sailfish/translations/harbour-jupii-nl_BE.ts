@@ -94,10 +94,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Playlist file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Microphone</source>
         <translation type="unfinished"></translation>
     </message>
@@ -112,6 +108,14 @@
     <message>
         <source>Screen capture</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UPnP Media Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playlist</source>
+        <translation type="unfinished">Afspeellijst</translation>
     </message>
 </context>
 <context>
@@ -216,6 +220,13 @@
     </message>
 </context>
 <context>
+    <name>CDirModel</name>
+    <message>
+        <source>Unknown</source>
+        <translation type="obsolete">Onbekend</translation>
+    </message>
+</context>
+<context>
     <name>ChangelogPage</name>
     <message>
         <source>Changelog</source>
@@ -242,6 +253,13 @@
     </message>
     <message>
         <source>Screen capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ContentServerWorker</name>
+    <message>
+        <source>Recorded from %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -345,7 +363,7 @@ Trekt omlaag voor meer apparaten in uw netwerk te vinden.</translation>
     <message>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation>Nie’ verbonden.
+        <translation type="vanished">Nie’ verbonden.
 Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
@@ -353,7 +371,27 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Toggle power</source>
+        <source>Remove from favorites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add to favorites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to connect to the local network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playlist</source>
+        <translation type="obsolete">Afspeellijst</translation>
+    </message>
+    <message>
+        <source>Power Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power On</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -453,15 +491,7 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stream title</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Copy URL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Copy stream title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -469,15 +499,71 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Audio source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Station name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy current title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recording date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Url</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen Capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio Capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tracks history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recording</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Microphone sensitivity</source>
+        <source>Sensitivity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Audio source</source>
+        <source>UPnP Media Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -485,44 +571,51 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     <name>MediaRendererPage</name>
     <message>
         <source>Playlist</source>
-        <translation>Afspeellijst</translation>
+        <translation type="vanished">Afspeellijst</translation>
     </message>
     <message>
         <source>Empty</source>
-        <translation>Leeg</translation>
+        <translation type="vanished">Leeg</translation>
     </message>
     <message>
         <source>Not connected</source>
-        <translation>Nie’ verbonden</translation>
+        <translation type="vanished">Nie’ verbonden</translation>
     </message>
     <message>
         <source>Save playlist</source>
-        <translation>Afspeellijst opslaan</translation>
+        <translation type="vanished">Afspeellijst opslaan</translation>
     </message>
     <message>
         <source>Clear playlist</source>
-        <translation>Afspeellijst wissen</translation>
+        <translation type="vanished">Afspeellijst wissen</translation>
     </message>
     <message>
         <source>Add item</source>
-        <translation>Item toevoegen</translation>
+        <translation type="vanished">Item toevoegen</translation>
     </message>
     <message>
         <source>Play</source>
-        <translation>Afspelen</translation>
+        <translation type="vanished">Afspelen</translation>
     </message>
     <message>
         <source>Show</source>
-        <translation>Tonen</translation>
+        <translation type="vanished">Tonen</translation>
     </message>
     <message>
         <source>Pause</source>
-        <translation>Pauzeren</translation>
+        <translation type="vanished">Pauzeren</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation>Verwijderen</translation>
+        <translation type="vanished">Verwijderen</translation>
     </message>
+    <message>
+        <source>Unknown</source>
+        <translation type="obsolete">Onbekend</translation>
+    </message>
+</context>
+<context>
+    <name>PlayQueuePage</name>
     <message>
         <source>Item is already added</source>
         <translation type="unfinished"></translation>
@@ -544,8 +637,48 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Play queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty</source>
+        <translation type="unfinished">Leeg</translation>
+    </message>
+    <message>
+        <source>Save playlist</source>
+        <translation type="obsolete">Afspeellijst opslaan</translation>
+    </message>
+    <message>
+        <source>Add item</source>
+        <translation type="unfinished">Item toevoegen</translation>
+    </message>
+    <message>
+        <source>Show</source>
+        <translation type="unfinished">Tonen</translation>
+    </message>
+    <message>
+        <source>Play</source>
+        <translation type="unfinished">Afspelen</translation>
+    </message>
+    <message>
+        <source>Pause</source>
+        <translation type="unfinished">Pauzeren</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished">Verwijderen</translation>
+    </message>
+    <message>
         <source>Unknown</source>
         <translation type="unfinished">Onbekend</translation>
+    </message>
+    <message>
+        <source>Save queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear queue</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -565,28 +698,35 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         </translation>
     </message>
     <message>
-        <source>Search playlist files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete playlist file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No playlist files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Playlist files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select tracks</source>
         <translation type="unfinished">Nummers selecteren</translation>
     </message>
     <message>
         <source>Deleting</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playlists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search playlists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete playlist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No playlists</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RecModel</name>
+    <message>
+        <source>Unknown</source>
+        <translation type="unfinished">Onbekend</translation>
     </message>
 </context>
 <context>
@@ -650,7 +790,7 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     <name>SavePlaylistPage</name>
     <message>
         <source>Playlist was saved</source>
-        <translation>Afspeellijst opgeslagen</translation>
+        <translation type="vanished">Afspeellijst opgeslagen</translation>
     </message>
     <message>
         <source>Save</source>
@@ -663,6 +803,10 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     <message>
         <source>Name</source>
         <translation>Naam</translation>
+    </message>
+    <message>
+        <source>Plylist was saved</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -762,10 +906,6 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Screen capture with audio</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Internet streaming mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -782,43 +922,11 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Share playlist items via UPnP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Screen capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>To start capturing add Screen capture item to your current playlist.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen capture framerate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>5 fps (default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>15 fps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>30 fps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable logging</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Items on current playlist will be accessible for other UPnP devices through content directory service.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -827,6 +935,42 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force screen 16:9 aspect ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Crop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabled with audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables Screen casting feature. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Share play queue items via UPnP Media Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Items on play queue will be accessible for other UPnP devices.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -880,6 +1024,143 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UpnpCDirDevicesPage</name>
+    <message>
+        <source>Cannot connect to the local network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An internal error occurred</source>
+        <translation type="unfinished">Der is een interne fout opgetreden</translation>
+    </message>
+    <message>
+        <source>Devices</source>
+        <translation type="obsolete">Apparaten</translation>
+    </message>
+    <message>
+        <source>Find devices</source>
+        <translation type="obsolete">Apparaten zoeken</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation type="unfinished">Verbinden</translation>
+    </message>
+    <message>
+        <source>Remove from favorites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add to favorites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No devices found. 
+Pull down to find more devices in your network.</source>
+        <translation type="obsolete">Geen apparaten gevonden.
+Trekt omlaag voor meer apparaten in uw netwerk te vinden.</translation>
+    </message>
+    <message>
+        <source>Pull down to connect to the local network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Media Servers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find Media Servers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Media Servers found. 
+Pull down to find more devices in your network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UpnpCDirPage</name>
+    <message>
+        <source>Search tracks</source>
+        <translation type="obsolete">Nummers zoeken</translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No tracks</source>
+        <translation type="unfinished">Geen nummers</translation>
+    </message>
+    <message>
+        <source>Track number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation type="unfinished">Titel</translation>
+    </message>
+    <message>
+        <source>Album</source>
+        <translation type="unfinished">Album</translation>
+    </message>
+    <message>
+        <source>Artist</source>
+        <translation type="unfinished">Artiest</translation>
+    </message>
+    <message>
+        <source>Sort by: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UpnpDirPage</name>
+    <message>
+        <source>An internal error occurred</source>
+        <translation type="obsolete">Der is een interne fout opgetreden</translation>
+    </message>
+    <message>
+        <source>Devices</source>
+        <translation type="obsolete">Apparaten</translation>
+    </message>
+    <message>
+        <source>Find devices</source>
+        <translation type="obsolete">Apparaten zoeken</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation type="obsolete">Verbinden</translation>
+    </message>
+    <message>
+        <source>No devices found. 
+Pull down to find more devices in your network.</source>
+        <translation type="obsolete">Geen apparaten gevonden.
+Trekt omlaag voor meer apparaten in uw netwerk te vinden.</translation>
+    </message>
+</context>
+<context>
+    <name>Utils</name>
+    <message>
+        <source>Today</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yesterday</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
