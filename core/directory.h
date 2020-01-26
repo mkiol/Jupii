@@ -42,6 +42,7 @@ public:
     bool getInited();
     bool getServiceDesc(const QString& deviceId, const QString& serviceId, UPnPClient::UPnPServiceDesc& sdesc);
     bool getDeviceDesc(const QString& deviceId, UPnPClient::UPnPDeviceDesc& ddesc);
+    QString deviceNameFromId(const QString& deviceId);
     YamahaXC* deviceXC(const QString& deviceId);
     bool xcExists(const QString& deviceId);
     const QHash<QString,UPnPClient::UPnPDeviceDesc>& getDeviceDescs();
@@ -56,6 +57,7 @@ public:
 signals:
     void discoveryReady();
     void discoveryFavReady();
+    void discoveryLastReady();
     void busyChanged();
     void initedChanged();
     void error(int code);
@@ -71,6 +73,7 @@ private:
     UPnPClient::UPnPDeviceDirectory* m_directory;
     QHash<QString,UPnPClient::UPnPServiceDesc> m_servsdesc;
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_devsdesc;
+    QHash<QString,UPnPClient::UPnPDeviceDesc> m_last_devsdesc;
     QHash<QString,YamahaXC*> m_xcs;
     explicit Directory(QObject *parent = nullptr);
     void setBusy(bool busy);

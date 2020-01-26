@@ -56,6 +56,8 @@
 #include "recmodel.h"
 #include "device.h"
 #include "devicemodel.h"
+#include "contentdirectory.h"
+#include "cdirmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -78,12 +80,15 @@ int main(int argc, char *argv[])
     qmlRegisterType<TrackModel>("harbour.jupii.TrackModel", 1, 0, "TrackModel");
     qmlRegisterUncreatableType<PlaylistModel>("harbour.jupii.PlayListModel", 1, 0,
                                               "PlayListModel", "Playlist is a singleton");
+    qmlRegisterUncreatableType<ContentServer>("harbour.jupii.ContentServer", 1, 0,
+                                              "ContentServer", "ContentServer is a singleton");
     qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0, "SomafmModel");
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0, "IcecastModel");
     qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1, 0,
                                          "GpodderEpisodeModel");
     qmlRegisterType<DirModel>("harbour.jupii.DirModel", 1, 0, "DirModel");
     qmlRegisterType<RecModel>("harbour.jupii.RecModel", 1, 0, "RecModel");
+    qmlRegisterType<CDirModel>("harbour.jupii.CDirModel", 1, 0, "CDirModel");
 
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 
@@ -141,6 +146,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("cserver", cserver);
     context->setContextProperty("rc", services->renderingControl.get());
     context->setContextProperty("av", services->avTransport.get());
+    context->setContextProperty("cdir", services->contentDir.get());
     context->setContextProperty("playlist", playlist);
     context->setContextProperty("msdev", msdev);
     context->setContextProperty("devmodel", devmodel);

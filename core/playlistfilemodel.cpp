@@ -46,7 +46,6 @@ bool PlaylistFileModel::deleteFile(const QString &playlistId)
     const auto item = dynamic_cast<PlaylistFileItem*>(find(playlistId));
     if (item) {
         const QString path = item->path();
-
         if (QFile::remove(path)) {
             updateModelEx(playlistId);
             return true;

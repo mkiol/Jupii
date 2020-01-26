@@ -17,6 +17,7 @@
 #include <QQuickItem>
 #include <notification.h>
 #endif
+#include "contentserver.h"
 
 class Utils : public QObject
 {
@@ -29,6 +30,7 @@ public:
     static const QString iconKey;
     static const QString descKey;
     static const QString playKey;
+    static const QString idKey;
 
     static Utils* instance(QObject *parent = nullptr);
 
@@ -49,7 +51,11 @@ public:
     Q_INVOKABLE bool isIdMic(const QUrl &id);
     Q_INVOKABLE bool isIdPulse(const QUrl &id);
     Q_INVOKABLE bool isIdScreen(const QUrl &id);
+    Q_INVOKABLE bool isIdUpnp(const QUrl &id);
     Q_INVOKABLE bool isIdRec(const QUrl &id);
+    Q_INVOKABLE int itemTypeFromUrl(const QUrl &url);
+    Q_INVOKABLE QString devNameFromUpnpId(const QUrl &id);
+
     Q_INVOKABLE QString recUrlFromId(const QUrl &id);
     Q_INVOKABLE QString recDateFromId(const QUrl &id);
     Q_INVOKABLE QString dirNameFromPath(const QString &path);
@@ -61,6 +67,7 @@ public:
     static bool isUrlMic(const QUrl &url);
     static bool isUrlPulse(const QUrl &url);
     static bool isUrlScreen(const QUrl &url);
+    static bool isUrlUpnp(const QUrl &url);
     static QUrl urlFromText(const QString &text, const QString &context = QString());
     static QString pathFromId(const QString &id);
     static QString pathFromId(const QUrl &id);
@@ -72,7 +79,6 @@ public:
     static QString nameFromId(const QUrl &id);
     static QString idFromUrl(const QUrl &url, const QString &cookie);
     static QUrl swapUrlInId(const QUrl &url, const QUrl &id);
-    static QString swapUrlInId(const QUrl &url, const QString &id);
     static QUrl urlFromId(const QUrl &id);
     static QUrl urlFromId(const QString &id);
     static QUrl urlWithTypeFromId(const QUrl &id);
@@ -96,12 +102,15 @@ public:
     static QString pathToCacheFile(const QString &filename);
     static bool cacheFileExists(const QString &filename);
     static QString friendlyDate(const QDateTime &date);
+    static QString parseArtist(const QString &artist);
+    static QDateTime parseDate(const QString &date);
 
     bool createCacheDir();
     bool createPlaylistDir();
 
 private:
     static Utils* m_instance;
+    static bool m_seedDone;
 #ifdef SAILFISH
     qint32 notifId = 0;
     //Notification notif;

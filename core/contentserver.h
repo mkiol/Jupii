@@ -24,6 +24,7 @@
 #include <qhttpserver.h>
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
+#include "libupnpp/control/cdirectory.hxx"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -71,6 +72,19 @@ public:
         PlaylistXSPF
     };
 
+    enum ItemType {
+        ItemType_Unknown = 0,
+        ItemType_LocalFile,
+        ItemType_QrcFile,
+        ItemType_Url,
+        ItemType_ShoutCast,
+        ItemType_AudioCapture,
+        ItemType_ScreenCapture,
+        ItemType_Mic,
+        ItemType_Upnp
+    };
+    Q_ENUM(ItemType)
+
     struct ItemMeta {
         bool valid = false;
         QString trackerId;
@@ -83,7 +97,10 @@ public:
         QString album;
         QString albumArt;
         QString artist;
+        QString didl;
+        QString upnpDevId;
         Type type = TypeUnknown;
+        ItemType itemType = ItemType_Unknown;
         bool local = true;
         bool seekSupported = true;
         int duration = 0;
@@ -99,7 +116,7 @@ public:
         // rec
         QString recStation;
         QString recUrl;
-        QDateTime recDate;
+        QDateTime recDate;  
     };
 
     struct PlaylistItemMeta {
@@ -118,6 +135,7 @@ public:
 
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);
+    static Type typeFromUpnpClass(const QString &upnpClass);
     static QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr,
                              bool* isFile = nullptr, bool *isArt = nullptr);
     static QString bestName(const ItemMeta &meta);
@@ -130,7 +148,7 @@ public:
     static QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString context = QString());
     static void resolveM3u(QByteArray &data, const QString context);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
-    static bool makeUrl(const QString& id, QUrl& url);
+    static bool makeUrl(const QString& id, QUrl& url, bool own = true);
     static void writeMetaUsingTaglib(const QString& path, const QString& title,
                                       const QString& artist = QString(),
                                       const QString& album = QString(),
@@ -145,6 +163,8 @@ public:
                                       QString &recStation,
                                       QString& recUrl,
                                       QDateTime& recDate);
+    static QString minResUrl(const UPnPClient::UPnPDirObject &item);
+    static ItemType itemTypeFromUrl(const QUrl &url);
 
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
     Type getContentType(const QString &path);
@@ -237,6 +257,9 @@ private:
     static const QString dlnaOrgOpFlagsSeekBytes;
     static const QString dlnaOrgOpFlagsNoSeek;
     static const QString dlnaOrgCiFlags;
+    static const QString genericAudioItemClass;
+    static const QString genericVideoItemClass;
+    static const QString genericImageItemClass;
     static const QString audioItemClass;
     static const QString videoItemClass;
     static const QString imageItemClass;
@@ -282,11 +305,13 @@ private:
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
             std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
             int counter = 0);
+    const QHash<QUrl, ItemMeta>::const_iterator makeUpnpItemMeta(const QUrl &url);
     ItemMeta *makeMetaUsingExtension(const QUrl &url);
     void fillCoverArt(ItemMeta& item);
     void run();
     static bool extractAudio(const QString& path, ContentServer::AvData& data);
     static bool fillAvDataFromCodec(const AVCodecParameters* codec, const QString &videoPath, AvData &data);
+    static QString extractItemFromDidl(const QString &didl);
 };
 
 class ContentServerWorker :

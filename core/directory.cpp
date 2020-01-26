@@ -87,6 +87,8 @@ void Directory::init()
     }
 
     setInited(true);
+
+    discover();
 }
 
 Directory* Directory::instance(QObject *parent)
@@ -124,49 +126,62 @@ void Directory::discover()
         return;
     }
 
+    if (m_directory == 0) {
+        qWarning() << "Directory not initialized";
+        setInited(false);
+        emit error(3);
+        return;
+    }
+
+    // last devices
+    auto s = Settings::instance();
+    auto last = s->getLastDevices();
+    qDebug() << "Adding last devices:" << last.size();
+
+    for (auto it = last.begin(); it != last.end(); ++it) {
+        qDebug() << it.key() << it.value().toString();
+        QString id = it.key();
+        QString url = it.value().toString();
+        QByteArray xml;
+        if (!Settings::readDeviceXML(id, xml))
+            continue;
+        UPnPClient::UPnPDeviceDesc ddesc(url.toStdString(), xml.toStdString());
+        auto did = QString::fromStdString(ddesc.UDN);
+        for (auto& sdesc : ddesc.services) {
+            auto sid = QString::fromStdString(sdesc.serviceId);
+            this->m_servsdesc.insert(did + sid, sdesc);
+        }
+        this->m_last_devsdesc.insert(did, ddesc);
+    }
+
+    emit discoveryLastReady();
+
     setBusy(true);
 
     startTask([this](){
-
         clearLists();
-
-        if (m_directory == 0) {
-            qWarning() << "Directory not initialized";
-            setInited(false);
-            emit error(3);
-            return;
-        }
-
         QHash<QString,bool> xcs;
+        auto s = Settings::instance();
 
         // favs
 
-        auto s = Settings::instance();
         auto favs = s->getFavDevices();
         qDebug() << "Adding fav devices:" << favs.size();
 
         for (auto it = favs.begin(); it != favs.end(); ++it) {
-
             qDebug() << it.key() << it.value().toString();
-
             QString id = it.key();
             QString url = it.value().toString();
             QByteArray xml;
-
-            if (!s->readDeviceXML(id, xml))
-                return;
-
+            if (!Settings::readDeviceXML(id, xml))
+                continue;
             UPnPClient::UPnPDeviceDesc ddesc(url.toStdString(), xml.toStdString());
-
             auto did = QString::fromStdString(ddesc.UDN);
-
             for (auto& sdesc : ddesc.services) {
                 auto sid = QString::fromStdString(sdesc.serviceId);
                 this->m_servsdesc.insert(did + sid, sdesc);
             }
-
             this->m_devsdesc.insert(did, ddesc);
-
             if (!xcs.contains(did)) {
                 xcs[did] = true;
                 auto xc = new YamahaXC(did, xml);
@@ -275,9 +290,33 @@ bool Directory::getDeviceDesc(const QString& deviceId, UPnPClient::UPnPDeviceDes
         return true;
     }
 
-    qWarning() << "Cannot find device" << deviceId;
+    const auto lit = m_last_devsdesc.find(deviceId);
+    if (lit != m_last_devsdesc.end()) {
+        ddesc = lit.value();
+        qDebug() << "Found last device:" << deviceId;
+        return true;
+    }
+
+    qWarning() << "Cannot find device:" << deviceId;
 
     return false;
+}
+
+QString Directory::deviceNameFromId(const QString& deviceId)
+{
+    const auto it = m_devsdesc.find(deviceId);
+    if (it != m_devsdesc.end()) {
+        return QString::fromStdString(it.value().friendlyName);
+    }
+
+    const auto lit = m_last_devsdesc.find(deviceId);
+    if (lit != m_last_devsdesc.end()) {
+        return QString::fromStdString(lit.value().friendlyName);
+    }
+
+    qWarning() << "Cannot find device name:" << deviceId;
+
+    return QString();
 }
 
 YamahaXC* Directory::deviceXC(const QString& deviceId)

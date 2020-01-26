@@ -58,6 +58,7 @@ protected slots:
 protected:
     std::unique_ptr<ItemWorker> m_worker;
     virtual QList<ListItem*> makeItems() = 0;
+    virtual void postMakeItems(const QList<ListItem*> &items);
     virtual void clear();
     void setBusy(bool busy);
 
@@ -75,7 +76,12 @@ class SelectableItem: public ListItem
 public:
     SelectableItem(QObject* parent = 0) : ListItem(parent) {}
     inline bool selected() const { return m_selected; }
+    inline bool selectable() const { return m_selectable; }
     void setSelected(bool value);
+
+protected:
+    bool m_selectable = true;
+
 private:
     bool m_selected = false;
 };
@@ -85,12 +91,15 @@ class SelectableItemModel : public ItemModel
     Q_OBJECT
     Q_PROPERTY (QString filter READ getFilter WRITE setFilter NOTIFY filterChanged)
     Q_PROPERTY (int selectedCount READ selectedCount NOTIFY selectedCountChanged)
+    Q_PROPERTY (int selectableCount READ selectableCount NOTIFY selectableCountChanged)
 
 public:
     explicit SelectableItemModel(SelectableItem *prototype, QObject *parent = nullptr);
     void setFilter(const QString& filter);
+    void setFilterNoUpdate(const QString& filter);
     QString getFilter();
     int selectedCount();
+    int selectableCount();
 
     Q_INVOKABLE void setSelected(int index, bool value);
     Q_INVOKABLE void setAllSelected(bool value);
@@ -102,6 +111,7 @@ public slots:
 signals:
     void filterChanged();
     void selectedCountChanged();
+    void selectableCountChanged();
 
 protected slots:
     virtual void workerDone();
@@ -109,7 +119,9 @@ protected slots:
 private:
     QString m_filter;
     int m_selectedCount = 0;
+    int m_selectableCount = 0;
     void clear();
+    void postMakeItems(const QList<ListItem*> &items);
 };
 
 #endif // ITEMMODEL_H

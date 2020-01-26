@@ -19,6 +19,7 @@ ItemWorker::ItemWorker(ItemModel *model, const QString &data) :
 void ItemWorker::run()
 {
     items = model->makeItems();
+    model->postMakeItems(items);
 }
 
 ItemModel::ItemModel(ListItem *prototype, QObject *parent) :
@@ -37,6 +38,11 @@ void ItemModel::updateModel(const QString &data)
     m_worker = std::unique_ptr<ItemWorker>(new ItemWorker(this, data));
     connect(m_worker.get(), &QThread::finished, this, &ItemModel::workerDone);
     m_worker->start(QThread::IdlePriority);
+}
+
+void ItemModel::postMakeItems(const QList<ListItem*> &items)
+{
+    Q_UNUSED(items);
 }
 
 void ItemModel::clear()
@@ -107,12 +113,32 @@ int SelectableItemModel::selectedCount()
     return m_selectedCount;
 }
 
+int SelectableItemModel::selectableCount()
+{
+    return m_selectableCount;
+}
+
 void SelectableItemModel::clear()
 {
     ItemModel::clear();
 
     m_selectedCount = 0;
     emit selectedCountChanged();
+}
+
+void SelectableItemModel::postMakeItems(const QList<ListItem*> &items)
+{
+    int count = 0;
+    for (const auto &item : items) {
+        auto sitem = dynamic_cast<SelectableItem*>(item);
+        if (sitem->selectable())
+            count++;
+    }
+
+    if (count != m_selectableCount) {
+        m_selectableCount = count;
+        emit selectableCountChanged();
+    }
 }
 
 void SelectableItemModel::setFilter(const QString &filter)
@@ -122,6 +148,14 @@ void SelectableItemModel::setFilter(const QString &filter)
         emit filterChanged();
 
         updateModel();
+    }
+}
+
+void SelectableItemModel::setFilterNoUpdate(const QString &filter)
+{
+    if (m_filter != filter) {
+        m_filter = filter;
+        emit filterChanged();
     }
 }
 
@@ -141,17 +175,19 @@ void SelectableItemModel::setSelected(int index, bool value)
 
     auto item = dynamic_cast<SelectableItem*>(m_list.at(index));
 
-    bool cvalue = item->selected();
+    if (item->selectable()) {
+        bool cvalue = item->selected();
 
-    if (cvalue != value) {
-        item->setSelected(value);
+        if (cvalue != value) {
+            item->setSelected(value);
 
-        if (value)
-            m_selectedCount++;
-        else
-            m_selectedCount--;
+            if (value)
+                m_selectedCount++;
+            else
+                m_selectedCount--;
 
-        emit selectedCountChanged();
+            emit selectedCountChanged();
+        }
     }
 }
 
@@ -164,16 +200,17 @@ void SelectableItemModel::setAllSelected(bool value)
 
     for (auto li : m_list) {
         auto item = dynamic_cast<SelectableItem*>(li);
+        if (item->selectable()) {
+            bool cvalue = item->selected();
 
-        bool cvalue = item->selected();
+            if (cvalue != value) {
+                item->setSelected(value);
 
-        if (cvalue != value) {
-            item->setSelected(value);
-
-            if (value)
-                m_selectedCount++;
-            else
-                m_selectedCount--;
+                if (value)
+                    m_selectedCount++;
+                else
+                    m_selectedCount--;
+            }
         }
     }
 
@@ -201,4 +238,5 @@ void SelectableItemModel::updateModel(const QString &data)
     Q_UNUSED(data)
     setAllSelected(false);
     ItemModel::updateModel(m_filter);
+
 }

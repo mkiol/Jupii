@@ -39,6 +39,10 @@
 #include "tracker.h"
 #include "trackercursor.h"
 #include "info.h"
+#include "services.h"
+#include "contentdirectory.h"
+#include "log.h"
+#include "libupnpp/control/cdirectory.hxx"
 
 // TagLib
 #include "fileref.h"
@@ -53,8 +57,6 @@
 #include <sailfishapp.h>
 #include "iconprovider.h"
 #endif
-
-#include "log.h"
 
 ContentServer* ContentServer::m_instance = nullptr;
 ContentServerWorker* ContentServerWorker::m_instance = nullptr;
@@ -137,6 +139,9 @@ const QStringList ContentServer::m_xspf_mimes {
     "application/xspf+xml"
 };
 
+const QString ContentServer::genericAudioItemClass = "object.item.audioItem";
+const QString ContentServer::genericVideoItemClass = "object.item.videoItem";
+const QString ContentServer::genericImageItemClass = "object.item.imageItem";
 const QString ContentServer::audioItemClass = "object.item.audioItem.musicTrack";
 const QString ContentServer::videoItemClass = "object.item.videoItem.movie";
 const QString ContentServer::imageItemClass = "object.item.imageItem.photo";
@@ -1522,6 +1527,19 @@ ContentServer::Type ContentServer::typeFromMime(const QString &mime)
     return ContentServer::TypeUnknown;
 }
 
+ContentServer::Type ContentServer::typeFromUpnpClass(const QString &upnpClass)
+{
+    if (upnpClass.startsWith(ContentServer::genericAudioItemClass, Qt::CaseInsensitive))
+        return ContentServer::TypeMusic;
+    if (upnpClass.startsWith(ContentServer::genericVideoItemClass, Qt::CaseInsensitive))
+        return ContentServer::TypeVideo;
+    if (upnpClass.startsWith(ContentServer::genericImageItemClass, Qt::CaseInsensitive))
+        return ContentServer::TypeImage;
+
+    // Default type
+    return ContentServer::TypeUnknown;
+}
+
 QStringList ContentServer::getExtensions(int type) const
 {
     QStringList exts;
@@ -1626,17 +1644,32 @@ void ContentServer::fillCoverArt(ItemMeta& item)
     item.albumArt.clear();
 }
 
+QString ContentServer::extractItemFromDidl(const QString &didl)
+{
+    QRegExp rx("<DIDL-Lite[^>]*>(.*)</DIDL-Lite>");
+    if (rx.indexIn(didl) != -1) {
+        return rx.cap(1);
+    }
+    return QString();
+}
+
 bool ContentServer::getContentMetaItem(const QString &id, QString &meta)
 {
-    QUrl url;
-    if (!makeUrl(id, url)) {
-        qWarning() << "Cannot make Url form id";
-        return false;
-    }
-
     const auto item = getMeta(Utils::urlFromId(id));
     if (!item) {
         qWarning() << "No meta item found";
+        return false;
+    }
+
+    if (item->itemType == ItemType_Upnp) {
+        qDebug() << "Item is upnp";
+        // currently didl item for upnp is not supported
+        return false;
+    }
+
+    QUrl url;
+    if (!makeUrl(id, url)) {
+        qWarning() << "Cannot make Url form id";
         return false;
     }
 
@@ -1649,7 +1682,6 @@ bool ContentServer::getContentMetaItemByDidlId(const QString &didlId, QString &m
         getContentMetaItem(metaIdx[didlId], meta);
         return true;
     }
-
     return false;
 }
 
@@ -1806,6 +1838,29 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         return false;
     }
 
+    const auto item = getMeta(Utils::urlFromId(id));
+    if (!item) {
+        qWarning() << "No meta item found";
+        return false;
+    }
+
+    if (item->itemType == ItemType_Upnp) {
+        qDebug() << "Item is upnp";
+        if (item->didl.isEmpty()) {
+            qWarning() << "Didl is empty";
+            return false;
+        }
+        url = item->url;
+        if (!makeUrl(id, url, false)) {
+            qWarning() << "Cannot make Url form id";
+            return false;
+        }
+        qDebug() << "Url for upnp item:" << id << url.toString();
+        meta = item->didl;
+        meta.replace("%URL%", url.toString());
+        return true;
+    }
+
     if (!makeUrl(id, url)) {
         qWarning() << "Cannot make Url form id";
         return false;
@@ -1814,12 +1869,6 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
     if (!cUrl.isEmpty() && cUrl == url.toString()) {
         // Optimization: Url is the same as current -> skipping getContentMeta
         return true;
-    }
-
-    const auto item = getMeta(Utils::urlFromId(id));
-    if (!item) {
-        qWarning() << "No meta item found";
-        return false;
     }
 
     if (!getContentMeta(id, url, meta, item)) {
@@ -1846,20 +1895,28 @@ QString ContentServer::bestName(const ContentServer::ItemMeta &meta)
     return name;
 }
 
-bool ContentServer::makeUrl(const QString& id, QUrl& url)
+bool ContentServer::makeUrl(const QString& id, QUrl& url, bool own)
 {
-    QString hash = QString::fromUtf8(encrypt(id.toUtf8()));
-
     QString ifname, addr;
     if (!Utils::instance()->getNetworkIf(ifname, addr)) {
         qWarning() << "Cannot find valid network interface";
         return false;
     }
 
-    url.setScheme("http");
-    url.setHost(addr);
-    url.setPort(Settings::instance()->getPort());
-    url.setPath("/" + hash);
+    QString hash = QString::fromUtf8(encrypt(id.toUtf8()));
+
+    if (own) {
+        url.setScheme("http");
+        url.setHost(addr);
+        url.setPort(Settings::instance()->getPort());
+        url.setPath("/" + hash);
+    } else {
+        QUrlQuery q(url);
+        if (q.hasQueryItem(Utils::idKey))
+            q.removeAllQueryItems(Utils::idKey);
+        q.addQueryItem(Utils::idKey, hash);
+        url.setQuery(q);
+    }
 
     return true;
 }
@@ -1900,39 +1957,39 @@ QString ContentServer::pathFromUrl(const QUrl &url) const
 {
     bool valid, isFile;
     auto id = idUrlFromUrl(url, &valid, &isFile);
-
     if (valid && isFile)
         return id.toLocalFile();
-
-    //qWarning() << "Cannot get path from URL:" << url.toString() << id.toString();
     return QString();
 }
 
 QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile,
                                  bool* isArt)
 {
-    QString hash = url.path();
-    hash = hash.right(hash.length()-1);
+    QUrlQuery q1(url);
+    QString hash;
+    if (q1.hasQueryItem(Utils::idKey)) {
+        hash = q1.queryItemValue(Utils::idKey);
+    } else {
+        hash = url.path();
+        hash = hash.right(hash.length()-1);
+    }
 
     auto id = QUrl(QString::fromUtf8(decrypt(hash.toUtf8())));
-
     if (!id.isValid()) {
-        //qWarning() << "Id is invalid" << id.toString();
         if (ok)
             *ok = false;
         return QUrl();
     }
 
-    QUrlQuery q(id);
-    if (!q.hasQueryItem(Utils::cookieKey) ||
-            q.queryItemValue(Utils::cookieKey).isEmpty()) {
-        //qWarning() << "Id has no cookie";
+    QUrlQuery q2(id);
+    if (!q2.hasQueryItem(Utils::cookieKey) ||
+            q2.queryItemValue(Utils::cookieKey).isEmpty()) {
         if (ok)
             *ok = false;
         return QUrl();
     } else {
         if (isArt)
-            *isArt = q.queryItemValue(Utils::cookieKey) == artCookie;
+            *isArt = q2.queryItemValue(Utils::cookieKey) == artCookie;
     }
 
     if (id.isLocalFile()) {
@@ -1951,7 +2008,7 @@ QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile,
             *ok = true;
         if (isFile)
             *isFile = true;
-        return id.toString();
+        return id;
     }
 
     if (ok)
@@ -1963,25 +2020,16 @@ QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile,
 
 QString ContentServer::idFromUrl(const QUrl &url) const
 {
-    bool valid, isFile;
-    auto id = idUrlFromUrl(url, &valid, &isFile);
-
-    if (valid)
-        return id.toString();
-
-    //qWarning() << "Cannot get id from URL:" << url.toString();
-    return QString();
+    bool valid;
+    auto id = idUrlFromUrl(url, &valid);
+    return valid ? id.toString() : QString();
 }
 
 QString ContentServer::urlFromUrl(const QUrl &url) const
 {
     bool valid;
     auto id = idUrlFromUrl(url, &valid);
-
-    if (valid)
-        return Utils::urlFromId(id).toString();
-
-    return QString();
+    return valid ? Utils::urlFromId(id).toString() : QString();
 }
 
 bool ContentServer::fillAvDataFromCodec(const AVCodecParameters *codec,
@@ -2379,6 +2427,7 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
             meta.size = file.size();
             meta.local = true;
             meta.seekSupported = true;
+            meta.itemType = ItemType_LocalFile;
 
             // Recording meta
             if (meta.album == ContentServer::recAlbumName) {
@@ -2387,14 +2436,6 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
                     qWarning() << "Cannot read meta with TagLib";
                 }
             }
-
-            // defauls
-            /*if (meta.title.isEmpty())
-                meta.title = file.fileName();
-            if (meta.artist.isEmpty())
-                meta.artist = tr("Unknown");
-            if (meta.album.isEmpty())
-                meta.album = tr("Unknown");*/
 
             return metaCache.find(url);
         }
@@ -2493,6 +2534,57 @@ void ContentServer::writeMetaUsingTaglib(const QString &path, const QString &tit
     }
 }
 
+QString ContentServer::minResUrl(const UPnPClient::UPnPDirObject &item)
+{
+    int min_i;
+    int min_width;
+    int l = item.m_resources.size();
+
+    for (int i = 0; i < l; ++i) {
+        std::string val; QSize();
+        if (item.m_resources[i].m_uri.empty())
+            continue;
+        if (item.getrprop(i, "resolution", val)) {
+            int pos = val.find('x');
+            if (pos == std::string::npos) {
+                pos = val.find('X');
+                if (pos == std::string::npos)
+                    continue;
+            }
+            if (pos < 1)
+                continue;
+            int width = std::stoi(val.substr(0,pos));
+            if (i == 0 || width < min_width) {
+                min_i = i;
+                min_width = width;
+            }
+        }
+    }
+
+    return QString::fromStdString(item.m_resources[min_i].m_uri);
+}
+
+ContentServer::ItemType ContentServer::itemTypeFromUrl(const QUrl &url)
+{
+    if (url.scheme() == "jupii") {
+        if (url.host() == "upnp")
+            return ItemType_Upnp;
+        if (url.host() == "screen")
+            return ItemType_ScreenCapture;
+        if (url.host() == "pulse")
+            return ItemType_AudioCapture;
+        if (url.host() == "mic")
+            return ItemType_Mic;
+    } else if (url.scheme() == "http" || url.scheme() == "https") {
+        return ItemType_Url;
+    } else if (url.isLocalFile()) {
+        return ItemType_LocalFile;
+    } else if (url.scheme() == "qrc" ) {
+        return ItemType_QrcFile;
+    }
+    return ItemType_Unknown;
+}
+
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
 {
@@ -2508,6 +2600,7 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
     meta.size = file.size();
     meta.filename = file.fileName();
     meta.local = true;
+    meta.itemType = ItemType_LocalFile;
 
     if (meta.type == ContentServer::TypeImage) {
         meta.seekSupported = false;
@@ -2548,6 +2641,99 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+ContentServer::makeUpnpItemMeta(const QUrl &url)
+{
+    qDebug() << "makeUpnpItemMeta:" << url;
+    auto spl = url.path(QUrl::FullyEncoded).split('/');
+    if (spl.size() < 3) {
+        qDebug() << "Path is too short";
+        return metaCache.end();
+    }
+
+    auto did = QUrl::fromPercentEncoding(spl.at(1).toLatin1()); // cdir dev id
+    auto id = QUrl::fromPercentEncoding(spl.at(2).toLatin1()); // cdir item id
+
+    qDebug() << "did:" << did;
+    qDebug() << "id:" << id;
+
+    auto cd = Services::instance()->contentDir;
+    if (!cd->init(did)) {
+        qWarning() << "Cannot init CDir service";
+        return metaCache.end();
+    }
+
+    if (!cd->getInited()) {
+        qDebug() << "CDir is not inited, so waiting for init";
+
+        QEventLoop loop;
+        connect(cd.get(), &Service::initedChanged, &loop, &QEventLoop::quit);
+        QTimer::singleShot(httpTimeout, &loop, &QEventLoop::quit); // timeout
+        loop.exec(); // waiting for init...
+
+        if (!cd->getInited()) {
+            qDebug() << "Cannot init CDir service";
+            return metaCache.end();
+        }
+    }
+
+    UPnPClient::UPnPDirContent content;
+    if (!cd->readItem(id, content)) {
+        qDebug() << "Cannot read from CDir service";
+        return metaCache.end();
+    }
+
+    if (content.m_items.empty()) {
+        qDebug() << "Item doesn't exist on CDir";
+        return metaCache.end();
+    }
+
+    UPnPClient::UPnPDirObject &item = content.m_items[0];
+
+    if (item.m_resources.empty()) {
+        qDebug() << "Item doesn't have resources";
+        return metaCache.end();
+    }
+
+    if (item.m_resources[0].m_uri.empty()) {
+        qDebug() << "Item uri is empty";
+        return metaCache.end();
+    }
+
+    QString surl = QString::fromStdString(item.m_resources[0].m_uri);
+
+    ContentServer::ItemMeta meta;
+    meta.valid = true;
+    meta.url = QUrl(surl);
+    meta.type = ContentServer::typeFromUpnpClass(QString::fromStdString(item.getprop("upnp:class")));
+    UPnPP::ProtocolinfoEntry proto;
+    if (item.m_resources[0].protoInfo(proto)) {
+        meta.mime = QString::fromStdString(proto.contentFormat);
+        qDebug() << "proto info mime:" << meta.mime;
+    } else {
+        qWarning() << "Cannot parse proto info";
+        meta.mime = "audio/mpeg";
+    }
+    meta.size = 0;
+    meta.local = false;
+    meta.album = QString::fromStdString(item.getprop("upnp:album"));
+    meta.artist = Utils::parseArtist(QString::fromStdString(item.getprop("upnp:artist")));
+    meta.didl = QString::fromStdString(item.getdidl());
+    meta.didl = meta.didl.replace(surl, "%URL%");
+    meta.albumArt = meta.type == TypeImage ? minResUrl(item) : QString::fromStdString(item.getprop("upnp:albumArtURI"));
+    meta.filename = url.fileName();
+    meta.seekSupported = false;
+    meta.title = QString::fromStdString(item.m_title);
+    if (meta.title.isEmpty())
+        meta.title = meta.filename;
+    meta.upnpDevId = did;
+    meta.itemType = ItemType_Upnp;
+
+    qDebug() << "DIDL:" << meta.didl;
+
+    return metaCache.insert(url, meta);
+}
+
+const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeMicItemMeta(const QUrl &url)
 {
     ContentServer::ItemMeta meta;
@@ -2561,6 +2747,7 @@ ContentServer::makeMicItemMeta(const QUrl &url)
     meta.local = true;
     meta.seekSupported = false;
     meta.title = tr("Microphone");
+    meta.itemType = ItemType_Mic;
 
 #ifdef SAILFISH
     meta.albumArt = IconProvider::pathToNoResId("icon-mic");
@@ -2581,6 +2768,7 @@ ContentServer::makeAudioCaptureItemMeta(const QUrl &url)
     meta.local = true;
     meta.seekSupported = false;
     meta.title = tr("Audio capture");
+    meta.itemType = ItemType_AudioCapture;
 #ifdef SAILFISH
     meta.albumArt = IconProvider::pathToNoResId("icon-pulse");
 #endif
@@ -2600,6 +2788,7 @@ ContentServer::makeScreenCaptureItemMeta(const QUrl &url)
     meta.local = true;
     meta.seekSupported = false;
     meta.title = tr("Screen capture");
+    meta.itemType = ItemType_ScreenCapture;
 #ifdef SAILFISH
     meta.albumArt = IconProvider::pathToNoResId("icon-screen");
 #endif
@@ -2762,6 +2951,7 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                 meta.local = false;
                 meta.seekSupported = false;
                 meta.mode = 2; // playlist proxy
+                meta.itemType = ItemType_Url;
                 reply->deleteLater();
                 return metaCache.insert(url, meta);
             } else {
@@ -2806,6 +2996,7 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     meta.filename = url.fileName();
     meta.local = false;
     meta.seekSupported = size > 0 ? ranges : false;
+    meta.itemType = ItemType_Url;
 
     if (reply->hasRawHeader(icy_name_h))
         meta.title = QString(reply->rawHeader(icy_name_h));
@@ -2829,8 +3020,10 @@ ContentServer::makeItemMetaUsingExtension(const QUrl &url)
 ContentServer::ItemMeta*
 ContentServer::makeMetaUsingExtension(const QUrl &url)
 {
-    bool isFile = url.isLocalFile();
-    bool isQrc = url.scheme() == "qrc";
+    auto itemType = itemTypeFromUrl(url);
+    bool isFile = itemType == ItemType_LocalFile;
+    bool isQrc = itemType == ItemType_QrcFile;
+
     auto item = new ContentServer::ItemMeta;
     item->valid = true;
     item->path = isFile ? url.toLocalFile() :
@@ -2842,7 +3035,8 @@ ContentServer::makeMetaUsingExtension(const QUrl &url)
     item->size = 0;
     item->filename = url.fileName();
     item->local = isFile || isQrc;
-    item->seekSupported = isFile || isQrc;
+    item->seekSupported = itemType == isFile || isQrc;
+    item->itemType = itemType;
     return item;
 }
 
@@ -2850,7 +3044,8 @@ const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMeta(const QUrl &url)
 {
     QHash<QUrl, ContentServer::ItemMeta>::const_iterator it;
-    if (url.isLocalFile()) {
+    auto itemType = itemTypeFromUrl(url);
+    if (itemType == ItemType_LocalFile) {
         if (QFile::exists(url.toLocalFile())) {
             it = makeItemMetaUsingTracker(url);
             if (it == metaCache.end()) {
@@ -2858,17 +3053,16 @@ ContentServer::makeItemMeta(const QUrl &url)
                 it = makeItemMetaUsingTaglib(url);
             }
         } else {
-            // File doesn't exist so no need to try Taglib
             qWarning() << "File doesn't exist, cannot create meta item";
             it = metaCache.end();
         }
-    } else if (Utils::isUrlMic(url)) {
+    } else if (itemType == ItemType_Mic) {
         qDebug() << "Mic URL detected";
         it = makeMicItemMeta(url);
-    } else if (Utils::isUrlPulse(url)) {
+    } else if (itemType == ItemType_AudioCapture) {
         qDebug() << "Pulse URL detected";
         it = makeAudioCaptureItemMeta(url);
-    } else if (Utils::isUrlScreen(url)) {
+    } else if (itemType == ItemType_ScreenCapture) {
         qDebug() << "Screen url detected";
         auto s = Settings::instance();
         if (s->getScreenSupported()) {
@@ -2877,17 +3071,19 @@ ContentServer::makeItemMeta(const QUrl &url)
             qWarning() << "Screen capturing is not supported";
             it = metaCache.end();
         }
+    } else if (itemType == ItemType_Upnp) {
+        qDebug() << "Upnp URL detected";
+        it = makeUpnpItemMeta(url);
+    } else if (itemType == ItemType_Url){
+        qDebug() << "Geting meta using HTTP request";
+        it = makeItemMetaUsingHTTPRequest(url);
     } else if (url.scheme() == "jupii") {
         qDebug() << "Unsupported Jupii URL detected";
         it = metaCache.end();
     } else {
-        qDebug() << "Geting meta using HTTP request";
-        it = makeItemMetaUsingHTTPRequest(url);
+        qDebug() << "Unsupported URL type";
+        it = metaCache.end();
     }
-    /*if (it == metaCache.end()) {
-        qWarning() << "Fallbacking to extension";
-        it = makeItemMetaUsingExtension(url);
-    }*/
 
     return it;
 }

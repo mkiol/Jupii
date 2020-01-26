@@ -61,7 +61,9 @@ OTHER_FILES += \
     qml/DirPage.qml \
     qml/RecPage.qml \
     qml/SimpleFavListItem.qml \
-    qml/SimpleListItem.qml
+    qml/SimpleListItem.qml \
+    qml/UpnpCDirDevicesPage.qml \
+    qml/UpnpCDirPage.qml
 
 #OTHER_FILES += $$files(rpm/*)
 
@@ -92,6 +94,7 @@ DEPENDPATH += $$INCLUDEPATH
 PKGCONFIG += \
     audioresource \
     nemonotifications-qt5
+
 LIBS += -ldl
 
 include(sailfishapp.pri)

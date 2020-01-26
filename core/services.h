@@ -7,6 +7,7 @@
 
 #include "renderingcontrol.h"
 #include "avtransport.h"
+#include "contentdirectory.h"
 
 class Services : public QObject
 {
@@ -16,6 +17,7 @@ public:
 
     std::shared_ptr<RenderingControl> renderingControl;
     std::shared_ptr<AVTransport> avTransport;
+    std::shared_ptr<ContentDirectory> contentDir;
 
 private:
     static Services* m_instance;

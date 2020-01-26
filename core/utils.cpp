@@ -29,7 +29,7 @@
 #include "gpoddermodel.h"
 #include "services.h"
 #include "renderingcontrol.h"
-#include "contentserver.h"
+#include "directory.h"
 
 const QString Utils::typeKey = "jupii_type";
 const QString Utils::cookieKey = "jupii_cookie";
@@ -38,7 +38,9 @@ const QString Utils::authorKey = "jupii_author";
 const QString Utils::iconKey = "jupii_icon";
 const QString Utils::descKey = "jupii_desc";
 const QString Utils::playKey = "jupii_play";
+const QString Utils::idKey = "jupii_id";
 
+bool Utils::m_seedDone = false;
 Utils* Utils::m_instance = nullptr;
 
 Utils::Utils(QObject *parent) : QObject(parent)
@@ -366,12 +368,30 @@ bool Utils::isIdScreen(const QUrl &id)
     return Utils::isUrlScreen(id);
 }
 
+bool Utils::isIdUpnp(const QUrl &id)
+{
+    return Utils::isUrlUpnp(id);
+}
+
 bool Utils::isIdRec(const QUrl &id)
 {
     auto meta = ContentServer::instance()->getMetaForId(id);
     if (meta)
         return meta->album == ContentServer::recAlbumName;
     return false;
+}
+
+QString Utils::devNameFromUpnpId(const QUrl &id)
+{
+    auto meta = ContentServer::instance()->getMetaForId(id, false);
+    if (meta && meta->itemType == ContentServer::ItemType_Upnp && !meta->upnpDevId.isEmpty())
+        return Directory::instance()->deviceNameFromId(meta->upnpDevId);
+    return QString();
+}
+
+int Utils::itemTypeFromUrl(const QUrl &url)
+{
+    return static_cast<int>(ContentServer::itemTypeFromUrl(url));
 }
 
 QString Utils::recUrlFromId(const QUrl &id)
@@ -410,6 +430,20 @@ QString Utils::friendlyDate(const QDateTime &date)
     } else {
         return date_s + ", " + date.toString(time_f);
     }
+}
+
+QString Utils::parseArtist(const QString &artist)
+{
+    QString artist_parsed = artist.split(',').first();
+    int pos = artist_parsed.indexOf('(');
+    if (pos < 2)
+        return artist_parsed;
+    return artist_parsed.left(pos-1).trimmed();
+}
+
+QDateTime Utils::parseDate(const QString &date)
+{
+    return QDateTime::fromString(date, Qt::ISODate);
 }
 
 bool Utils::isUrlValid(const QUrl &url)
@@ -457,6 +491,11 @@ bool Utils::isUrlPulse(const QUrl &url)
 bool Utils::isUrlScreen(const QUrl &url)
 {
     return url.scheme() == "jupii" && url.host() == "screen";
+}
+
+bool Utils::isUrlUpnp(const QUrl &url)
+{
+    return url.scheme() == "jupii" && url.host() == "upnp";
 }
 
 QUrl Utils::urlFromText(const QString &text, const QString &context)
@@ -667,20 +706,23 @@ QUrl Utils::urlFromId(const QString &id)
 
 QString Utils::randString(int len)
 {
-   // Seed init, needed for key generation
-   qsrand(QTime::currentTime().msec());
+    if (!m_seedDone) {
+       // Seed init, needed for key generation
+       qsrand(QTime::currentTime().msec());
+       m_seedDone = true;
+    }
 
-   const QString pc("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+    const QString pc("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
 
-   QString rs;
+    QString rs;
 
-   for(int i = 0; i < len; ++i) {
-       int in = qrand() % pc.length();
-       QChar nc = pc.at(in);
-       rs.append(nc);
-   }
+    for(int i = 0; i < len; ++i) {
+        int in = qrand() % pc.length();
+        QChar nc = pc.at(in);
+        rs.append(nc);
+    }
 
-   return rs;
+    return rs;
 }
 
 void Utils::removeFile(const QString &path)

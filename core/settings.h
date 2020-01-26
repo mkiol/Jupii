@@ -97,17 +97,24 @@ public:
     int getAlbumQueryType();
     void setRecQueryType(int value);
     int getRecQueryType();
+    void setCDirQueryType(int value);
+    int getCDirQueryType();
 
     void setPlayMode(int value);
     int getPlayMode();
 
     void setFavDevices(const QHash<QString,QVariant> &devs);
+    QHash<QString, QVariant> getFavDevices();
+    void setLastDevices(const QHash<QString,QVariant> &devs);
+    QHash<QString, QVariant> getLastDevices();
     Q_INVOKABLE void addFavDevice(const QString &id);
+    void addLastDevice(const QString &id);
+    void addLastDevices(const QStringList &ids);
     Q_INVOKABLE void removeFavDevice(const QString &id);
     Q_INVOKABLE void asyncAddFavDevice(const QString &id);
     Q_INVOKABLE void asyncRemoveFavDevice(const QString &id);
-    bool readDeviceXML(const QString& id, QByteArray& xml);
-    QHash<QString, QVariant> getFavDevices();
+    static bool readDeviceXML(const QString& id, QByteArray& xml);
+    static bool writeDeviceXML(const QString& id, QString &url);
 
     QString getLastDir();
     void setLastDir(const QString& value);
@@ -167,6 +174,7 @@ signals:
     void remoteContentModeChanged();
     void albumQueryTypeChanged();
     void recQueryTypeChanged();
+    void cdirQueryTypeChanged();
     void playModeChanged();
     void contentDirSupportedChanged();
     void logToFileChanged();
@@ -178,7 +186,6 @@ private:
     QString hwName;
 
     explicit Settings(QObject* parent = nullptr);
-    bool writeDeviceXML(const QString& id, QString &url);
 #ifdef SAILFISH
     QString readHwInfo();
 #endif

@@ -253,7 +253,8 @@ std::pair<int, QString> PlaylistModel::getDidlList(int max, const QString& didlI
                 break;
             }
             auto fi = dynamic_cast<PlaylistItem*>(li);
-            if (cs->getContentMetaItem(fi->id(), ret.second)) {
+            if (fi->itemType() != ContentServer::ItemType_Upnp &&
+                    cs->getContentMetaItem(fi->id(), ret.second)) {
                 ++count;
             }
         }
@@ -455,13 +456,24 @@ void PlaylistModel::onItemsRemoved()
 
 void PlaylistModel::save()
 {
-    QStringList ids;
+    qDebug() << "Saving current playlist";
+
+    QStringList p_ids;
+    QStringList d_ids;
 
     for (auto item : m_list) {
-        ids << item->id();
+        p_ids << item->id();
+
+        auto pitem = dynamic_cast<PlaylistItem*>(item);
+        if (pitem->itemType() == ContentServer::ItemType_Upnp &&
+                !pitem->devId().isEmpty()) {
+            d_ids << pitem->devId();
+        }
     }
 
-    Settings::instance()->setLastPlaylist(ids);
+    auto s = Settings::instance();
+    s->setLastPlaylist(p_ids);
+    s->addLastDevices(d_ids);
 }
 
 void PlaylistModel::update(bool play)
@@ -550,6 +562,12 @@ QByteArray PlaylistModel::makePlsData(const QString& name)
         auto pitem = dynamic_cast<PlaylistItem*>(m_list.at(i));
         auto url = Utils::urlWithTypeFromId(pitem->id()).toString();
         auto name = Utils::nameFromId(pitem->id());
+        if (name.isEmpty()) {
+            if (pitem->artist().isEmpty())
+                name = pitem->title();
+            else
+                name = pitem->artist() + " - " + pitem->title();
+        }
         sdata << "File" << i + 1 << "=" << url << endl;
         if (!name.isEmpty())
             sdata << "Title" << i + 1 << "=" << name << endl;
@@ -812,12 +830,6 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 {
     qDebug() << "makeItem:" << id;
 
-    /*if (find(id.toString())) {
-        qWarning() << "Id" << id << "already added";
-        emit error(E_FileExists);
-        return nullptr;
-    }*/
-
     int t = 0; QString name, cookie, author; QUrl ficon; bool play = false;
     if (!Utils::pathTypeNameCookieIconFromId(id, nullptr, &t,
                             &name, &cookie, &ficon, nullptr, &author, &play) ||
@@ -846,8 +858,8 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         name = ContentServer::bestName(*meta);
 
     QString iconUrl = ficon.isEmpty() ?
-                type == ContentServer::TypeImage ? meta->url.toString() : meta->albumArt
-                                                 : ficon.toString();
+                meta->albumArt.isEmpty() ? type == ContentServer::TypeImage ?
+                meta->url.toString() : "" : meta->albumArt : ficon.toString();
 #ifndef SAILFISH
     QIcon icon;
     if (iconUrl.isEmpty()) {
@@ -873,10 +885,10 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         icon = QIcon(iconUrl);
     }
 #endif
-
-    auto item = new PlaylistItem(meta->url == url ?
-                                   Utils::cleanId(id) :
-                                     Utils::swapUrlInId(meta->url, id), // id
+    auto finalId = meta->itemType == ContentServer::ItemType_Upnp ||
+            meta->url == url ? Utils::cleanId(id) : Utils::swapUrlInId(meta->url, id);
+    qDebug() << "final id:" << finalId;
+    auto item = new PlaylistItem(finalId, // id
                                name, // name
                                meta->url, // url
                                url, // orig url
@@ -894,7 +906,9 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 #endif
                                false, // active
                                false, // to be active
-                               play // play
+                               play, // play
+                               meta->itemType,
+                               meta->upnpDevId
                                );
 
     return item;
@@ -946,6 +960,41 @@ void PlaylistModel::setActiveId(const QString &id)
         setActiveItemIndex(-1);
 }
 
+void PlaylistModel::setActiveCookie(const QString &cookie)
+{
+    /*qDebug() << "setActiveCookie";
+    qDebug() << "cookie:" << cookie;
+    qDebug() << "current active cookie:" << activeCookie();*/
+
+    if (cookie == activeCookie())
+        return;
+
+    if (cookie.isEmpty())
+        setActiveItemIndex(-1);
+
+    const int len = m_list.length();
+    bool active_found = false;
+    for (int i = 0; i < len; ++i) {
+        auto fi = dynamic_cast<PlaylistItem*>(m_list.at(i));
+        bool new_active = fi->cookie() == cookie;
+
+        if (new_active)
+            active_found = true;
+
+        if (fi->active() != new_active) {
+            fi->setActive(new_active);
+            if(new_active)
+                setActiveItemIndex(i);
+            emit activeItemChanged();
+        }
+
+        fi->setToBeActive(false);
+    }
+
+    if (!active_found)
+        setActiveItemIndex(-1);
+}
+
 void PlaylistModel::resetToBeActive()
 {
     const int len = m_list.length();
@@ -979,6 +1028,7 @@ void PlaylistModel::setActiveUrl(const QUrl &url)
         setActiveId(QString());
     } else {
         auto cs = ContentServer::instance();
+        //setActiveCookie(cs->cookieFromUrl(url));
         setActiveId(cs->idFromUrl(url));
     }
 }
@@ -1013,6 +1063,16 @@ QString PlaylistModel::activeId() const
     if (m_activeItemIndex > -1) {
         auto fi = m_list.at(m_activeItemIndex);
         return fi->id();
+    }
+
+    return QString();
+}
+
+QString PlaylistModel::activeCookie() const
+{
+    if (m_activeItemIndex > -1) {
+        auto fi = dynamic_cast<PlaylistItem*>(m_list.at(m_activeItemIndex));
+        return fi->cookie();
     }
 
     return QString();
@@ -1201,6 +1261,8 @@ PlaylistItem::PlaylistItem(const QUrl &id,
                            bool active,
                            bool toBeActive,
                            bool play,
+                           ContentServer::ItemType itemType,
+                           const QString &devId,
                            QObject *parent) :
     ListItem(parent),
     m_id(id),
@@ -1216,8 +1278,11 @@ PlaylistItem::PlaylistItem(const QUrl &id,
     m_size(size),
     m_icon(icon),
     m_active(active),
-    m_play(play)
-{}
+    m_play(play),
+    m_item_type(itemType),
+    m_devid(devId)
+{
+}
 
 QHash<int, QByteArray> PlaylistItem::roleNames() const
 {
@@ -1235,6 +1300,8 @@ QHash<int, QByteArray> PlaylistItem::roleNames() const
     names[IconRole] = "icon";
     names[ActiveRole] = "active";
     names[ToBeActiveRole] = "toBeActive";
+    names[ItemTypeRole] = "itemType";
+    names[DevIdRole] = "devid";
     return names;
 }
 
@@ -1274,6 +1341,10 @@ QVariant PlaylistItem::data(int role) const
         return active();
     case ToBeActiveRole:
         return toBeActive();
+    case ItemTypeRole:
+        return itemType();
+    case DevIdRole:
+        return devId();
 #ifdef DESKTOP
     case ForegroundRole:
         return foreground();

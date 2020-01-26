@@ -20,7 +20,6 @@ Page {
     allowedOrientations: Orientation.All
 
     property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
-    property bool busy: !devless && (av.busy || rc.busy)
     property bool inited: av.inited && rc.inited
     property bool isMic: utils.isIdMic(av.currentURL)
     property bool isPulse: utils.isIdPulse(av.currentURL)
@@ -246,6 +245,15 @@ Page {
         }
     }
 
+    Component {
+        id: upnpPickerPage
+        UpnpCDirDevicesPage {
+            onAccepted: {
+                playlist.addItemUrls(items)
+            }
+        }
+    }
+
     // ----
 
     Connections {
@@ -334,7 +342,6 @@ Page {
 
         clip: true
 
-        opacity: root.busy ? 0.0 : 1.0
         visible: opacity > 0.0
         Behavior on opacity { FadeAnimation {} }
 
@@ -347,21 +354,14 @@ Page {
         VerticalScrollDecorator {}
 
         ViewPlaceholder {
-            enabled: (root.devless || root.inited) && !root.busy && listView.count == 0 && !playlist.busy
+            enabled: listView.count == 0 && !playlist.busy
             text: qsTr("Empty")
-            verticalOffset: ppanel.open ? 0-ppanel.height/2 : 0
-        }
-
-        ViewPlaceholder {
-            enabled: !root.devless && !root.inited && !root.busy
-            text: qsTr("Not connected")
             verticalOffset: ppanel.open ? 0-ppanel.height/2 : 0
         }
 
         PullDownMenu {
             id: menu
-
-            enabled: (root.devless || root.inited) && !root.busy
+            enabled: !playlist.busy
 
             Item {
                 width: parent.width
@@ -414,7 +414,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Save playlist")
-                visible: (root.devless || root.inited) && !playlist.busy && listView.count > 0
+                visible: !playlist.busy && listView.count > 0
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"), {
                                        playlist: playlist
@@ -424,7 +424,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Clear playlist")
-                visible: (root.devless || root.inited) && !playlist.busy && listView.count > 0
+                visible: !playlist.busy && listView.count > 0
                 onClicked: remorse.execute("Clearing playlist", function() { playlist.clear() } )
             }
 
@@ -445,7 +445,8 @@ Page {
                                        somafmPickerPage: somafmPickerPage,
                                        icecastPickerPage: icecastPickerPage,
                                        gpodderPickerPage: gpodderPickerPage,
-                                       recPickerPage: recPickerPage
+                                       recPickerPage: recPickerPage,
+                                       upnpPickerPage: upnpPickerPage
                                    })
                 }
             }
@@ -550,16 +551,15 @@ Page {
 
     BusyIndicator {
         anchors.centerIn: parent
-        running: root.busy || playlist.busy
+        running: playlist.busy
         size: BusyIndicatorSize.Large
     }
 
     PlayerPanel {
         id: ppanel
 
-        open: !root.devless && Qt.application.active &&
-              !menu.active && av.controlable &&
-              !root.busy && root.status === PageStatus.Active
+        open: !root.devless && Qt.application.active && !menu.active &&
+              av.controlable && root.status === PageStatus.Active
 
         title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
         subtitle: app.streamTitle.length === 0 ?

@@ -53,6 +53,20 @@ DeviceModel::DeviceModel(QObject *parent) :
             this, &ListModel::handleItemChangeById);
 }
 
+DeviceModel::DeviceType DeviceModel::getDeviceType()
+{
+    return m_deviceType;
+}
+
+void DeviceModel::setDeviceType(DeviceModel::DeviceType value)
+{
+    if (m_deviceType != value) {
+        m_deviceType = value;
+        emit deviceTypeChanged();
+        updateModel();
+    }
+}
+
 void DeviceModel::serviceInitedHandler()
 {
     auto service = dynamic_cast<Service*>(sender());
@@ -73,7 +87,13 @@ void DeviceModel::updateModel()
     auto av = Services::instance()->avTransport;
 
     auto& ddescs = d->getDeviceDescs();
-    bool showAll = s->getShowAllDevices();
+
+    bool showAll = m_deviceType == MediaRendererType && s->getShowAllDevices();
+
+    QString typeStr = showAll || m_deviceType == MediaRendererType ?
+                "urn:schemas-upnp-org:device:MediaRenderer:1" :
+                "urn:schemas-upnp-org:device:MediaServer:1";
+    QString ownMediaServerId = "uuid:" + s->mediaServerDevUuid();
 
     clear();
 
@@ -81,18 +101,17 @@ void DeviceModel::updateModel()
 
     for (auto it = ddescs.begin(); it != ddescs.end(); ++it) {
         auto& ddesc = it.value();
-        /*bool supported = ddesc.deviceType == "urn:schemas-upnp-org:device:MediaRenderer:1" ||
-                         ddesc.deviceType == "urn:schemas-upnp-org:device:MediaServer:1";*/
-        bool supported = ddesc.deviceType == "urn:schemas-upnp-org:device:MediaRenderer:1";
-
-        if (supported || showAll) {
+        auto type = QString::fromStdString(ddesc.deviceType);
+        auto devid = QString::fromStdString(ddesc.UDN);
+        bool supported = type.contains(typeStr, Qt::CaseInsensitive);
+        if ((supported && devid != ownMediaServerId) || showAll) {
             QString id = QString::fromStdString(ddesc.UDN);
             QUrl iconUrl = d->getDeviceIconUrl(ddesc);
             bool active = av && av->getDeviceId() == id;
             bool xc = d->xcExists(it.key());
             items << new DeviceItem(id,
                              QString::fromStdString(ddesc.friendlyName),
-                             QString::fromStdString(ddesc.deviceType),
+                             type,
                              QString::fromStdString(ddesc.modelName),
 #ifdef DESKTOP
                              QIcon(),

@@ -39,7 +39,6 @@ QUrl AVTransport::getCurrentId()
 {
     auto cs = ContentServer::instance();
     return QUrl(cs->idFromUrl(m_currentURI));
-
 }
 
 void AVTransport::changed(const QString& name, const QVariant& _value)
@@ -450,6 +449,9 @@ QUrl AVTransport::getCurrentAlbumArtURI()
     }
     if (m_currentMeta && !m_currentMeta->albumArt.isEmpty()) {
         qDebug() << "Optimization => using local album art from Meta:" << m_currentMeta->albumArt;
+        auto url = QUrl(m_currentMeta->albumArt);
+        if (url.isValid())
+            return url;
         return QUrl::fromLocalFile(m_currentMeta->albumArt);
     }
     // ---
@@ -662,6 +664,9 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         m_updateMutex.lock();
 
         auto srv = s();
+
+        qDebug() << "cmeta:" << cmeta;
+        qDebug() << "s_cURI" << s_cURI;
 
         if (!getInited() || !srv) {
             m_updateMutex.unlock();
@@ -1520,8 +1525,8 @@ void AVTransport::updateMeta()
 {
     qDebug() << "Updating meta";
     if (!m_currentURI.isEmpty()) {
-        bool valid, isFile;
-        auto id = ContentServer::idUrlFromUrl(QUrl(m_currentURI), &valid, &isFile);
+        bool valid;
+        auto id = ContentServer::idUrlFromUrl(QUrl(m_currentURI), &valid);
         if (valid) {
             auto newMeta = ContentServer::instance()->getMetaForId(id, false);
             if (newMeta) {

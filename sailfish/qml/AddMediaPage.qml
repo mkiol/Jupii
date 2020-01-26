@@ -26,6 +26,7 @@ Page {
     property var icecastPickerPage
     property var gpodderPickerPage
     property var recPickerPage
+    property var upnpPickerPage
 
     SilicaFlickable {
         id: flick
@@ -123,6 +124,15 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.replace(urlPickerPage)
+                }
+            }
+
+            SimpleListItem {
+                title.text: qsTr("UPnP Media Server")
+                icon.source: "image://icons/icon-m-device?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+                onClicked: {
+                    pageStack.replace(upnpPickerPage)
                 }
             }
 

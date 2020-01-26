@@ -63,7 +63,9 @@ HEADERS += \
     $$CORE_DIR/miccaster.h \
     $$CORE_DIR/pulseaudiosource.h \
     $$CORE_DIR/device.h \
-    $$CORE_DIR/iconprovider.h
+    $$CORE_DIR/iconprovider.h \
+    $$CORE_DIR/contentdirectory.h \
+    $$CORE_DIR/cdirmodel.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -102,7 +104,9 @@ SOURCES += \
     $$CORE_DIR/miccaster.cpp \
     $$CORE_DIR/pulseaudiosource.cpp \
     $$CORE_DIR/device.cpp \
-    $$CORE_DIR/iconprovider.cpp
+    $$CORE_DIR/iconprovider.cpp \
+    $$CORE_DIR/contentdirectory.cpp \
+    $$CORE_DIR/cdirmodel.cpp
 
 screencast {
     HEADERS += \

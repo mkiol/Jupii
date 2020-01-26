@@ -32,6 +32,7 @@
 #include "contentserver.h"
 #include "listmodel.h"
 
+class PlaylistItem;
 class PlaylistModel;
 
 struct UrlItem {
@@ -41,102 +42,6 @@ struct UrlItem {
     QUrl icon;
     QString desc;
     bool play = false;
-};
-
-class PlaylistItem :
-        public ListItem
-{
-    Q_OBJECT
-public:
-    enum Roles {
-        NameRole = Qt::DisplayRole,
-        ForegroundRole = Qt::ForegroundRole,
-        IconRole = Qt::DecorationRole,
-        IdRole = Qt::UserRole,
-        ActiveRole,
-        UrlRole,
-        DateRole,
-        TypeRole,
-        SizeRole,
-        DurationRole,
-        TitleRole,
-        ArtistRole,
-        AlbumRole,
-        ToBeActiveRole
-    };
-
-public:
-    PlaylistItem(QObject *parent = nullptr): ListItem(parent) {}
-    explicit PlaylistItem(const QUrl &id,
-                      const QString &name,
-                      const QUrl &url,
-                      const QUrl &origUrl,
-                      ContentServer::Type type,
-                      const QString &title,
-                      const QString &artist,
-                      const QString &album,
-                      const QString &date,
-                      const int duration,
-                      const qint64 size,
-#ifdef SAILFISH
-                      const QUrl &icon,
-#else
-                      const QIcon &icon,
-#endif
-                      bool active,
-                      bool toBeActive,
-                      bool play, // auto play after adding
-                      QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    QString path() const;
-    inline QString id() const { return m_id.toString(); }
-    //inline QUrl idUrl() const { return m_id; }
-    inline QString name() const { return m_name; }
-    inline QUrl url() const { return m_url; }
-    inline QUrl origUrl() const { return m_origUrl; }
-    inline ContentServer::Type type() const { return m_type; }
-    inline QString title() const { return m_title; }
-    inline QString artist() const { return m_artist; }
-    inline QString album() const { return m_album; }
-    inline QString date() const { return m_date; }
-    inline int duration() const { return m_duration; }
-    inline qint64 size() const { return m_size; }
-#ifdef SAILFISH
-    inline QUrl icon() const { return m_icon; }
-#else
-    inline QIcon icon() const { return m_icon; }
-#endif
-    inline bool active() const { return m_active; }
-    inline bool toBeActive() const { return m_tobeactive; }
-    inline bool play() const { return m_play; }
-    void setActive(bool value);
-    void setToBeActive(bool value);
-    void setPlay(bool value);
-#ifdef DESKTOP
-    QBrush foreground() const;
-#endif
-
-private:
-    QUrl m_id;
-    QString m_name;
-    QUrl m_url;
-    QUrl m_origUrl;
-    ContentServer::Type m_type;
-    QString m_title;
-    QString m_artist;
-    QString m_album;
-    QString m_date;
-    int m_duration = 0;
-    qint64 m_size = 0;
-#ifdef SAILFISH
-    QUrl m_icon;
-#else
-    QIcon m_icon;
-#endif
-    bool m_active = false;
-    bool m_tobeactive = false;
-    bool m_play = false;
 };
 
 class PlaylistWorker :
@@ -196,6 +101,7 @@ public:
     Q_INVOKABLE bool remove(const QString &id);
     Q_INVOKABLE bool removeIndex(int index);
     Q_INVOKABLE QString activeId() const;
+    Q_INVOKABLE QString activeCookie() const;
     Q_INVOKABLE QString nextActiveId() const;
     Q_INVOKABLE QString prevActiveId() const;
     Q_INVOKABLE QString nextId(const QString &id) const;
@@ -204,6 +110,7 @@ public:
     Q_INVOKABLE void update(bool autoPlay = false);
     Q_INVOKABLE void next();
     Q_INVOKABLE void prev();
+
     int getActiveItemIndex() const;
     int getPlayMode() const;
     void setPlayMode(int value);
@@ -242,6 +149,7 @@ public slots:
                     bool autoPlay = false);
     void addItemPathsAsAudio(const QStringList& paths);
     void setActiveId(const QString &id);
+    void setActiveCookie(const QString &id);
     void setActiveUrl(const QUrl &url);
     void setToBeActiveIndex(int index);
     void setToBeActiveId(const QString& id);
@@ -284,6 +192,112 @@ private:
     void updateNextSupported();
     void updatePrevSupported();
     void autoPlay();
+};
+
+class PlaylistItem :
+        public ListItem
+{
+    Q_OBJECT
+public:
+    enum Roles {
+        NameRole = Qt::DisplayRole,
+        ForegroundRole = Qt::ForegroundRole,
+        IconRole = Qt::DecorationRole,
+        IdRole = Qt::UserRole,
+        ActiveRole,
+        UrlRole,
+        DateRole,
+        TypeRole,
+        SizeRole,
+        DurationRole,
+        TitleRole,
+        ArtistRole,
+        AlbumRole,
+        ToBeActiveRole,
+        ItemTypeRole,
+        DevIdRole
+    };
+
+public:
+    PlaylistItem(QObject *parent = nullptr): ListItem(parent) {}
+    explicit PlaylistItem(const QUrl &id,
+                      const QString &name,
+                      const QUrl &url,
+                      const QUrl &origUrl,
+                      ContentServer::Type type,
+                      const QString &title,
+                      const QString &artist,
+                      const QString &album,
+                      const QString &date,
+                      const int duration,
+                      const qint64 size,
+#ifdef SAILFISH
+                      const QUrl &icon,
+#else
+                      const QIcon &icon,
+#endif
+                      bool active,
+                      bool toBeActive,
+                      bool play, // auto play after adding
+                      ContentServer::ItemType itemType,
+                      const QString &devId,
+                      QObject *parent = nullptr);
+    QVariant data(int role) const;
+    QHash<int, QByteArray> roleNames() const;
+    QString path() const;
+    inline QString id() const { return m_id.toString(); }
+    inline QString cookie() const { return m_cookie; }
+    //inline QUrl idUrl() const { return m_id; }
+    inline QString name() const { return m_name; }
+    inline QUrl url() const { return m_url; }
+    inline QUrl origUrl() const { return m_origUrl; }
+    inline ContentServer::Type type() const { return m_type; }
+    inline QString title() const { return m_title; }
+    inline QString artist() const { return m_artist; }
+    inline QString album() const { return m_album; }
+    inline QString date() const { return m_date; }
+    inline int duration() const { return m_duration; }
+    inline qint64 size() const { return m_size; }
+#ifdef SAILFISH
+    inline QUrl icon() const { return m_icon; }
+#else
+    inline QIcon icon() const { return m_icon; }
+#endif
+    inline bool active() const { return m_active; }
+    inline bool toBeActive() const { return m_tobeactive; }
+    inline bool play() const { return m_play; }
+    inline ContentServer::ItemType itemType() const { return m_item_type; }
+    inline QString devId() const { return m_devid; }
+    void setActive(bool value);
+    void setToBeActive(bool value);
+    void setPlay(bool value);
+#ifdef DESKTOP
+    QBrush foreground() const;
+#endif
+
+private:
+    QUrl m_id;
+    QString m_name;
+    QUrl m_url;
+    QUrl m_origUrl;
+    ContentServer::Type m_type;
+    QString m_title;
+    QString m_artist;
+    QString m_album;
+    QString m_date;
+    QString m_cookie;
+    int m_duration = 0;
+    qint64 m_size = 0;
+#ifdef SAILFISH
+    QUrl m_icon;
+#else
+    QIcon m_icon;
+#endif
+    bool m_active = false;
+    bool m_tobeactive = false;
+    bool m_play = false;
+    ContentServer::ItemType m_item_type = ContentServer::ItemType_Unknown;
+    QString m_devid;
 };
 
 #endif // PLAYLISTMODEL_H

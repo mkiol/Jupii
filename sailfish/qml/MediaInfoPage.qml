@@ -10,6 +10,7 @@ import Sailfish.Silica 1.0
 
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
+import harbour.jupii.ContentServer 1.0
 
 Page {
     id: root
@@ -17,14 +18,11 @@ Page {
     allowedOrientations: Orientation.All
 
     property bool imgOk: imagep.status === Image.Ready || imagel.status === Image.Ready
-    property bool showPath: av.currentPath.length > 0
-    property bool isMic: utils.isIdMic(av.currentURL)
-    property bool isPulse: utils.isIdPulse(av.currentURL)
-    property bool isScreen: utils.isIdScreen(av.currentURL)
-    property bool isOwn: av.currentURL.length !== 0
-    property bool isRec: utils.isIdRec(av.currentURL)
-    property bool isShout: app.streamTitle.length !== 0
+    property int itemType: utils.itemTypeFromUrl(av.currentId)
     property string recDate: utils.recDateFromId(av.currentURL)
+    property bool isShout: app.streamTitle.length !== 0
+    property bool isRec: itemType === ContentServer.ItemType_LocalFile &&
+                         utils.isIdRec(av.currentURL)
 
     SilicaFlickable {
         anchors.fill: parent
@@ -66,16 +64,20 @@ Page {
             width: root.width
 
             PullDownMenu {
-                visible: !isMic && !isPulse && !isScreen && isOwn
+                visible: itemType === ContentServer.ItemType_LocalFile ||
+                         itemType === ContentServer.ItemType_Url
 
                 MenuItem {
-                    text: av.currentPath.length !== 0 ? qsTr("Copy path") : qsTr("Copy URL")
-                    onClicked: Clipboard.text = av.currentPath.length !== 0 ? av.currentPath : av.currentURL
+                    text: itemType === ContentServer.ItemType_LocalFile ? qsTr("Copy path") :
+                                                                          qsTr("Copy URL")
+                    onClicked: Clipboard.text =
+                               itemType === ContentServer.ItemType_LocalFile ? av.currentPath :
+                                                                               av.currentURL
                 }
 
                 MenuItem {
                     text: qsTr("Copy current title")
-                    visible: isShout
+                    visible: itemType === ContentServer.ItemType_Url && isShout
                     onClicked: Clipboard.text = app.streamTitle
                 }
             }
@@ -127,6 +129,29 @@ Page {
                 anchors.left: parent.left
                 spacing: Theme.paddingMedium
 
+                DetailItem {
+                    visible: value.length > 0
+                    label: qsTr("Item type")
+                    value: {
+                        switch(itemType) {
+                        case ContentServer.ItemType_LocalFile:
+                            return isRec ? qsTr("Recording") : qsTr("Local file")
+                        case ContentServer.ItemType_Url:
+                            return isShout ? "Internet radio" : qsTr("Url")
+                        case ContentServer.ItemType_Upnp:
+                            return qsTr("UPnP Media Server")
+                        case ContentServer.ItemType_ScreenCapture:
+                            return qsTr("Screen Capture")
+                        case ContentServer.ItemType_AudioCapture:
+                            return qsTr("Audio Capture")
+                        case ContentServer.ItemType_Mic:
+                            return qsTr("Microphone")
+                        default:
+                            return ""
+                        }
+                    }
+                }
+
                 /*DetailItem {
                     label: qsTr("Category")
                     value: {
@@ -146,28 +171,43 @@ Page {
                 DetailItem {
                     label: isShout ? qsTr("Station name") : qsTr("Title")
                     value: av.currentTitle
-                    visible: !isMic && !isPulse && !isScreen && value.length !== 0
+                    visible: value.length !== 0 &&
+                             itemType !== ContentServer.ItemType_Mic &&
+                             itemType !== ContentServer.ItemType_AudioCapture &&
+                             itemType !== ContentServer.ItemType_ScreenCapture
                 }
 
                 DetailItem {
-                    label: isPulse || isScreen ? qsTr("Audio source") : qsTr("Current title")
-                    value: isShout ?
-                               app.streamTitle : isPulse || isScreen ? qsTr("None") : ""
-                    visible: !isMic && value.length !== 0 &&
-                             av.currentType !== AVTransport.T_Image
+                    label: itemType === ContentServer.ItemType_AudioCapture ||
+                           itemType === ContentServer.ItemType_ScreenCapture ?
+                               qsTr("Audio source") : qsTr("Current title")
+                    value: app.streamTitle.length === 0 &&
+                           (itemType === ContentServer.ItemType_AudioCapture ||
+                            itemType === ContentServer.ItemType_ScreenCapture) ?
+                               qsTr("None") : app.streamTitle
+                    visible: (itemType === ContentServer.ItemType_AudioCapture ||
+                             itemType === ContentServer.ItemType_ScreenCapture ||
+                             itemType === ContentServer.ItemType_Url) &&
+                             value.length !== 0 && av.currentType !== AVTransport.T_Image
                 }
 
                 DetailItem {
                     label: isRec ? qsTr("Station name") : qsTr("Author")
                     value: av.currentAuthor
-                    visible: !isMic && !isPulse && !isScreen && av.currentType !== AVTransport.T_Image &&
+                    visible: itemType !== ContentServer.ItemType_Mic &&
+                             itemType !== ContentServer.ItemType_AudioCapture &&
+                             itemType !== ContentServer.ItemType_ScreenCapture &&
+                             av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
                 }
 
                 DetailItem {
                     label: qsTr("Album")
                     value: av.currentAlbum
-                    visible: !isMic && !isPulse && !isScreen && av.currentType !== AVTransport.T_Image &&
+                    visible: itemType !== ContentServer.ItemType_Mic &&
+                             itemType !== ContentServer.ItemType_AudioCapture &&
+                             itemType !== ContentServer.ItemType_ScreenCapture &&
+                             av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
                 }
 
@@ -181,13 +221,23 @@ Page {
                 DetailItem {
                     label: qsTr("Content type")
                     value: av.currentContentType
-                    visible: !isMic && !isPulse && !isScreen && av.currentContentType.length !== 0
+                    visible: itemType !== ContentServer.ItemType_Mic &&
+                             itemType !== ContentServer.ItemType_AudioCapture &&
+                             itemType !== ContentServer.ItemType_ScreenCapture &&
+                             av.currentContentType.length !== 0
                 }
 
                 DetailItem {
                     label: qsTr("Recording date")
                     value: recDate
                     visible: value.length !== 0
+                }
+
+                DetailItem {
+                    label: qsTr("Server name")
+                    value: utils.devNameFromUpnpId(av.currentId)
+                    visible: itemType === ContentServer.ItemType_Upnp &&
+                             value.length !== 0
                 }
             }
 
@@ -197,7 +247,10 @@ Page {
 
                 SectionHeader {
                     text: qsTr("Description")
-                    visible: !isMic && !isPulse && !isScreen && av.currentDescription.length !== 0
+                    visible: itemType !== ContentServer.ItemType_Mic &&
+                             itemType !== ContentServer.ItemType_AudioCapture &&
+                             itemType !== ContentServer.ItemType_ScreenCapture &&
+                             av.currentDescription.length !== 0
                 }
 
                 Label {
@@ -212,16 +265,18 @@ Page {
 
                 SectionHeader {
                     text: av.currentPath.length !== 0 ? qsTr("Path") : qsTr("URL")
-                    visible: !isMic && !isPulse && !isScreen && isOwn
+                    visible: itemType === ContentServer.ItemType_LocalFile ||
+                             itemType === ContentServer.ItemType_Url
                 }
 
                 PaddedLabel {
                     text: av.currentPath.length !== 0 ? av.currentPath : av.currentURL
-                    visible: !isMic && !isPulse && !isScreen && isOwn
+                    visible: itemType === ContentServer.ItemType_LocalFile ||
+                             itemType === ContentServer.ItemType_Url
                 }
 
                 Slider {
-                    visible: isMic
+                    visible: itemType === ContentServer.ItemType_Mic
                     width: parent.width
                     minimumValue: 0
                     maximumValue: 100
@@ -229,7 +284,7 @@ Page {
                     handleVisible: true
                     value: settings.micVolume
                     valueText: value
-                    label: qsTr("Microphone sensitivity")
+                    label: qsTr("Sensitivity")
 
                     onValueChanged: {
                         settings.micVolume = value
@@ -237,7 +292,7 @@ Page {
                 }
 
                 SectionHeader {
-                    text: qsTr("Title history")
+                    text: qsTr("Tracks history")
                     visible: app.streamTitleHistory.length > 0
                 }
 

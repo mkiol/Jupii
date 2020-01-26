@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,33 +16,37 @@ Page {
     allowedOrientations: Orientation.All
 
     property real preferredItemHeight: root && root.isLandscape ?
-                                     Theme.itemSizeSmall : Theme.itemSizeLarge
+                                           Theme.itemSizeSmall :
+                                           Theme.itemSizeLarge
 
-    function connectDevice(deviceId) {
-        if (deviceId) {
-            rc.init(deviceId)
-            av.init(deviceId)
-        }
-        createPlaylistPage()
-        pageStack.navigateForward()
+    property bool _doPop: false
+
+    signal accepted(var items);
+
+    function doPop() {
+        if (pageStack.busy)
+            _doPop = true
+        else
+            pageStack.pop(pageStack.previousPage(root))
     }
 
-    function createPlaylistPage() {
-        if (pageStack.currentPage === root && pageStack.depth === 1) {
-            pageStack.pushAttached(Qt.resolvedUrl("MediaRendererPage.qml"))
+    Connections {
+        target: pageStack
+        onBusyChanged: {
+            if (!pageStack.busy && root._doPop) {
+                root._doPop = false
+                pageStack.pop()
+            }
         }
     }
 
     Component.onCompleted: {
-        devmodel.deviceType = DeviceModel.MediaRendererType
-        //directory.discover()
+        devmodel.deviceType = DeviceModel.MediaServerType
+        directory.discover()
     }
 
-    onStatusChanged: {
-        if (status === PageStatus.Active) {
-            devmodel.deviceType = DeviceModel.MediaRendererType
-            createPlaylistPage()
-        }
+    Component.onDestruction: {
+        devmodel.deviceType = DeviceModel.MediaRendererType
     }
 
     Connections {
@@ -61,8 +65,6 @@ Page {
         onInitedChanged: {
             if (directory.inited) {
                 directory.discover()
-            } else {
-                pageStack.pop(root)
             }
         }
     }
@@ -77,24 +79,14 @@ Page {
 
         header: PageHeader {
             visible: directory.inited
-            title: qsTr("Devices")
+            title: qsTr("Media Servers")
         }
 
         PullDownMenu {
             id: menu
 
             MenuItem {
-                text: qsTr("About")
-                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
-            }
-
-            MenuItem {
-                text: qsTr("Settings")
-                onClicked: pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
-            }
-
-            MenuItem {
-                text: directory.inited ? qsTr("Find devices") : qsTr("Connect")
+                text: directory.inited ? qsTr("Find Media Servers") : qsTr("Connect")
                 enabled: !directory.busy
                 onClicked: {
                     if (directory.inited)
@@ -103,14 +95,6 @@ Page {
                         directory.init()
                 }
             }
-
-            /*MenuItem {
-                visible: !av.busy && !rc.busy
-                text: qsTr("Show playlist")
-                onClicked: {
-                    connectDevice()
-                }
-            }*/
         }
 
         delegate: SimpleFavListItem {
@@ -130,37 +114,16 @@ Page {
                     settings.addFavDevice(model.id)
             }
 
-            onMenuOpenChanged: {
-                if (menuOpen)
-                    directory.xcGetStatus(model.id)
+            onClicked: {
+                cdir.init(model.id)
+                var dialog = pageStack.push(Qt.resolvedUrl("UpnpCDirPage.qml"))
+                dialog.accepted.connect(function() {
+                    root.accepted(dialog.selectedItems)
+                    root.doPop()
+                })
             }
 
             menu: ContextMenu {
-                MenuItem {
-                    text: qsTr("Connect")
-                    enabled: !model.active
-                    visible: model.supported
-                    onClicked: {
-                        connectDevice(model.id)
-                    }
-                }
-
-                MenuItem {
-                    text: qsTr("Show description")
-                    onClicked: {
-                        pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),
-                                       {udn: model.id})
-                    }
-                }
-
-                MenuItem {
-                    text: model.power ? qsTr("Power Off") : qsTr("Power On")
-                    visible: model.xc
-                    onClicked: {
-                        directory.xcTogglePower(model.id)
-                    }
-                }
-
                 MenuItem {
                     text: model.fav ? qsTr("Remove from favorites") : qsTr("Add to favorites")
                     onClicked: {
@@ -171,21 +134,12 @@ Page {
                     }
                 }
             }
-
-            onClicked: {
-                if (model.supported) {
-                    connectDevice(model.id)
-                } else {
-                    pageStack.push(Qt.resolvedUrl("DeviceInfoPage.qml"),
-                                   {udn: model.id})
-                }
-            }
         }
 
         ViewPlaceholder {
             enabled: !directory.busy && (listView.count == 0 || !directory.inited)
             text: directory.inited ?
-                      qsTr("No devices found. \n" +
+                      qsTr("No Media Servers found. \n" +
                            "Pull down to find more devices in your network.") :
                       qsTr("Pull down to connect to the local network.")
         }

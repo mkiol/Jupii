@@ -158,6 +158,16 @@ void Settings::setFavDevices(const QHash<QString,QVariant> &devs)
     emit favDevicesChanged();
 }
 
+void Settings::setLastDevices(const QHash<QString,QVariant> &devs)
+{
+    settings.setValue("lastdevices", devs);
+}
+
+QHash<QString,QVariant> Settings::getLastDevices()
+{
+    return settings.value("lastdevices",QHash<QString,QVariant>()).toHash();
+}
+
 QString Settings::getCacheDir()
 {
    return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
@@ -211,6 +221,32 @@ void Settings::addFavDevice(const QString &id)
         setFavDevices(list);
         emit favDeviceChanged(id);
     }
+}
+
+void Settings::addLastDevice(const QString &id)
+{
+    auto list = getLastDevices();
+    if (list.contains(id))
+        return;
+
+    QString url;
+    if (writeDeviceXML(id, url)) {
+        list.insert(id, url);
+        setLastDevices(list);
+    }
+}
+
+void Settings::addLastDevices(const QStringList &ids)
+{
+    QHash<QString,QVariant> list;
+
+    for (const auto& id : ids) {
+        QString url;
+        if (writeDeviceXML(id, url))
+            list.insert(id, url);
+    }
+
+    setLastDevices(list);
 }
 
 void Settings::removeFavDevice(const QString &id)
@@ -521,8 +557,6 @@ QByteArray Settings::getKey()
 
 void Settings::setRemoteContentMode(int value)
 {
-    // 0 - proxy
-    // 1 - redirection
     if (getRemoteContentMode() != value) {
         settings.setValue("remotecontentmode", value);
         emit remoteContentModeChanged();
@@ -538,8 +572,6 @@ int Settings::getRemoteContentMode()
 
 void Settings::setAlbumQueryType(int value)
 {
-    // 0 - by album title
-    // 1 - by artist
     if (getAlbumQueryType() != value) {
         settings.setValue("albumquerytype", value);
         emit albumQueryTypeChanged();
@@ -555,9 +587,6 @@ int Settings::getAlbumQueryType()
 
 void Settings::setRecQueryType(int value)
 {
-    // 0 - by rec date
-    // 1 - by title
-    // 2 - by station name
     if (getRecQueryType() != value) {
         settings.setValue("recquerytype", value);
         emit recQueryTypeChanged();
@@ -570,6 +599,24 @@ int Settings::getRecQueryType()
     // 1 - by title
     // 2 - by station name
     return settings.value("recquerytype", 0).toInt();
+}
+
+void Settings::setCDirQueryType(int value)
+{
+    if (getCDirQueryType() != value) {
+        settings.setValue("cdirquerytype", value);
+        emit cdirQueryTypeChanged();
+    }
+}
+
+int Settings::getCDirQueryType()
+{
+    // 0 - by title
+    // 1 - by album
+    // 2 - by artist
+    // 3 - by track number
+    // 4 - by date
+    return settings.value("cdirquerytype", 0).toInt();
 }
 
 void Settings::setPlayMode(int value)

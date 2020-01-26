@@ -99,11 +99,23 @@ private:
 class DeviceModel : public ListModel
 {
     Q_OBJECT
-
+    Q_PROPERTY (DeviceType deviceType READ getDeviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
 public:
+    enum DeviceType {
+        AnyType,
+        MediaRendererType,
+        MediaServerType
+    };
+    Q_ENUM(DeviceType)
+
     static DeviceModel* instance(QObject *parent = nullptr);
     void clear();
     void updatePower(const QString &id, bool value);
+    DeviceType getDeviceType();
+    void setDeviceType(DeviceType value);
+
+signals:
+    void deviceTypeChanged();
 
 public slots:
     void updateModel();
@@ -111,6 +123,7 @@ public slots:
 
 private:
     static DeviceModel* m_instance;
+    DeviceType m_deviceType = AnyType;
     explicit DeviceModel(QObject *parent = nullptr);
 
 };
