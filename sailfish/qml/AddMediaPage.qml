@@ -73,7 +73,7 @@ Page {
             }
 
             SimpleListItem {
-                title.text: qsTr("Playlist file")
+                title.text: qsTr("Playlist")
                 icon.source: "image://theme/icon-m-media-playlists?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {

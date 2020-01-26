@@ -40,7 +40,6 @@ OTHER_FILES += \
     qml/PaddedLabel.qml \
     qml/ChangelogPage.qml \
     qml/LogItem.qml \
-    qml/MediaRendererPage.qml \
     qml/PlayerPanel.qml \
     qml/MediaInfoPage.qml \
     qml/AddMediaPage.qml \
@@ -63,7 +62,8 @@ OTHER_FILES += \
     qml/SimpleFavListItem.qml \
     qml/SimpleListItem.qml \
     qml/UpnpCDirDevicesPage.qml \
-    qml/UpnpCDirPage.qml
+    qml/UpnpCDirPage.qml \
+    qml/PlayQueuePage.qml
 
 #OTHER_FILES += $$files(rpm/*)
 

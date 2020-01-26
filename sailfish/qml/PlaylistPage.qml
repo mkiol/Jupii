@@ -69,8 +69,8 @@ Page {
 
         header: SearchPageHeader {
             implicitWidth: root.width
-            title: qsTr("Playlist files")
-            searchPlaceholderText: qsTr("Search playlist files")
+            title: qsTr("Playlists")
+            searchPlaceholderText: qsTr("Search playlists")
             model: itemModel
             view: listView
         }
@@ -94,7 +94,7 @@ Page {
                 }
 
                 MenuItem {
-                    text: qsTr("Delete playlist file")
+                    text: qsTr("Delete playlist")
                     onClicked: remove()
                 }
             }
@@ -118,7 +118,7 @@ Page {
 
         ViewPlaceholder {
             enabled: listView.count === 0 && !itemModel.busy
-            text: qsTr("No playlist files")
+            text: qsTr("No playlists")
         }
     }
 

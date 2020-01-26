@@ -29,7 +29,7 @@ Page {
 
     function createPlaylistPage() {
         if (pageStack.currentPage === root && pageStack.depth === 1) {
-            pageStack.pushAttached(Qt.resolvedUrl("MediaRendererPage.qml"))
+            pageStack.pushAttached(Qt.resolvedUrl("PlayQueuePage.qml"))
         }
     }
 

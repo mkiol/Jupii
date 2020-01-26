@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,7 +19,7 @@ Dialog {
 
     onAccepted: {
         if (playlist.saveToFile(textField.text.trim()))
-            notification.show(qsTr("Playlist was saved"))
+            notification.show(qsTr("Plylist was saved"))
     }
 
     SilicaFlickable {

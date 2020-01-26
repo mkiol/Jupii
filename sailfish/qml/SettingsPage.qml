@@ -31,8 +31,8 @@ Page {
             TextSwitch {
                 automaticCheck: false
                 checked: msdev.running
-                text: qsTr("Share playlist items via UPnP Media Server")
-                description: qsTr("Items on current playlist will be accessible for " +
+                text: qsTr("Share play queue items via UPnP Media Server")
+                description: qsTr("Items on play queue will be accessible for " +
                                   "other UPnP devices.")
                 onClicked: {
                     settings.contentDirSupported = !msdev.running

@@ -348,7 +348,7 @@ Page {
         model: playlist
 
         header: PageHeader {
-            title: av.deviceFriendlyName.length > 0 ? av.deviceFriendlyName : qsTr("Playlist")
+            title: av.deviceFriendlyName.length > 0 ? av.deviceFriendlyName : qsTr("Play queue")
         }
 
         VerticalScrollDecorator {}
@@ -362,6 +362,7 @@ Page {
         PullDownMenu {
             id: menu
             enabled: !playlist.busy
+            busy: !enabled && !av.busy && !rc.busy
 
             Item {
                 width: parent.width
@@ -413,7 +414,7 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("Save playlist")
+                text: qsTr("Save queue")
                 visible: !playlist.busy && listView.count > 0
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"), {
@@ -423,9 +424,9 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("Clear playlist")
+                text: qsTr("Clear queue")
                 visible: !playlist.busy && listView.count > 0
-                onClicked: remorse.execute("Clearing playlist", function() { playlist.clear() } )
+                onClicked: remorse.execute("Clearing play queue", function() { playlist.clear() } )
             }
 
             MenuItem {
