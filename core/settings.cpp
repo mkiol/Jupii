@@ -515,19 +515,6 @@ float Settings::getMicVolume()
 #endif
 }
 
-void Settings::setRememberPlaylist(bool value)
-{
-    if (getRememberPlaylist() != value) {
-        settings.setValue("rememberplaylist", value);
-        emit rememberPlaylistChanged();
-    }
-}
-
-bool Settings::getRememberPlaylist()
-{
-    return settings.value("rememberplaylist", true).toBool();
-}
-
 QByteArray Settings::resetKey()
 {
     QByteArray key;

@@ -91,8 +91,9 @@ void DeviceModel::updateModel()
     bool showAll = m_deviceType == MediaRendererType && s->getShowAllDevices();
 
     QString typeStr = showAll || m_deviceType == MediaRendererType ?
-                "urn:schemas-upnp-org:device:MediaRenderer:1" :
-                "urn:schemas-upnp-org:device:MediaServer:1";
+                "urn:schemas-upnp-org:device:MediaRenderer" :
+                "urn:schemas-upnp-org:device:MediaServer";
+
     QString ownMediaServerId = "uuid:" + s->mediaServerDevUuid();
 
     clear();

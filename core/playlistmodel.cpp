@@ -230,8 +230,8 @@ PlaylistModel::PlaylistModel(QObject *parent) :
     connect(this, &PlaylistModel::itemsRemoved,
             this, &PlaylistModel::onItemsRemoved);
 
-    if (s->getRememberPlaylist())
-        load();
+    // load last play queue
+    load();
 }
 
 std::pair<int, QString> PlaylistModel::getDidlList(int max, const QString& didlId)
@@ -811,8 +811,9 @@ void PlaylistModel::workerDone()
                 emit itemsAdded();
             else
                 emit itemsLoaded();
-            if (Settings::instance()->getRememberPlaylist())
-                save();
+
+            // saving last play queue
+            save();
 
             // auto playing
             autoPlay();
@@ -1049,8 +1050,8 @@ void PlaylistModel::clear()
 
     setActiveItemIndex(-1);
 
-    if (Settings::instance()->getRememberPlaylist())
-        save();
+    // saving last play queue
+    save();
 
     if(active_removed)
         emit activeItemChanged();
@@ -1152,8 +1153,8 @@ bool PlaylistModel::removeIndex(int index)
                 setActiveItemIndex(m_activeItemIndex - 1);
         }
 
-        if (Settings::instance()->getRememberPlaylist())
-            save();
+        // saving last play queue
+        save();
 
         emit itemsRemoved();
 

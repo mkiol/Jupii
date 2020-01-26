@@ -39,17 +39,6 @@ Page {
                 }
             }
 
-            TextSwitch {
-                automaticCheck: false
-                checked: settings.rememberPlaylist
-                text: qsTr("Start with last playlist")
-                description: qsTr("When Jupii starts, the last " +
-                                  "playlist will be automatically loaded.")
-                onClicked: {
-                    settings.rememberPlaylist = !settings.rememberPlaylist
-                }
-            }
-
             Slider {
                 width: parent.width
                 minimumValue: 1

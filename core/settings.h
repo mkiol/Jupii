@@ -28,7 +28,6 @@ class Settings:
     Q_PROPERTY (bool showAllDevices READ getShowAllDevices WRITE setShowAllDevices NOTIFY showAllDevicesChanged)
     Q_PROPERTY (int forwardTime READ getForwardTime WRITE setForwardTime NOTIFY forwardTimeChanged)
     Q_PROPERTY (bool imageSupported READ getImageSupported WRITE setImageSupported NOTIFY imageSupportedChanged)
-    Q_PROPERTY (bool rememberPlaylist READ getRememberPlaylist WRITE setRememberPlaylist NOTIFY rememberPlaylistChanged)
     Q_PROPERTY (QStringList lastPlaylist READ getLastPlaylist WRITE setLastPlaylist NOTIFY lastPlaylistChanged)
     Q_PROPERTY (bool useHWVolume READ getUseHWVolume WRITE setUseHWVolume NOTIFY useHWVolumeChanged)
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
@@ -83,9 +82,6 @@ public:
 
     void setScreenAudio(bool value);
     bool getScreenAudio();
-
-    void setRememberPlaylist(bool value);
-    bool getRememberPlaylist();
 
     void setUseHWVolume(bool value);
     bool getUseHWVolume();
@@ -161,7 +157,6 @@ signals:
     void forwardTimeChanged();
     void imageSupportedChanged();
     void pulseSupportedChanged();
-    void rememberPlaylistChanged();
     void useHWVolumeChanged();
     void prefNetInfChanged();
     void micVolumeChanged();
