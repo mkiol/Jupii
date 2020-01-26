@@ -39,7 +39,7 @@ Page {
                 }
             }
 
-            Slider {
+            /*Slider {
                 width: parent.width
                 minimumValue: 1
                 maximumValue: 60
@@ -52,7 +52,7 @@ Page {
                 onValueChanged: {
                     settings.forwardTime = value
                 }
-            }
+            }*/
 
             TextSwitch {
                 automaticCheck: false
@@ -81,19 +81,6 @@ Page {
 
             SectionHeader {
                 text: qsTr("Experiments")
-            }
-
-            TextSwitch {
-                automaticCheck: false
-                checked: settings.imageSupported
-                text: qsTr("Image content")
-                description: qsTr("Playing images on UPnP devices doesn't work well right now. " +
-                                  "There are few minor issues that have not been resolved yet. " +
-                                  "This option forces %1 to play images despite the fact " +
-                                  "it could cause some issues.").arg(APP_NAME)
-                onClicked: {
-                    settings.imageSupported = !settings.imageSupported
-                }
             }
 
             ComboBox {

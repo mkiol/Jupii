@@ -114,7 +114,7 @@ Page {
         id: filePickerPage
         FilePickerPage {
             allowedOrientations: Orientation.All
-            nameFilters: cserver.getExtensions(settings.imageSupported ? 263 : 262)
+            nameFilters: cserver.getExtensions(263)
             onSelectedContentPropertiesChanged: {
                 playlist.addItemPath(selectedContentProperties.filePath)
             }

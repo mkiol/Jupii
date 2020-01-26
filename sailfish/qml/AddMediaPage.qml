@@ -103,7 +103,6 @@ Page {
                 title.text: qsTr("Image")
                 icon.source: "image://theme/icon-m-file-image?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
-                visible: settings.imageSupported
                 onClicked: {
                     pageStack.replace(imagePickerDialog)
                 }

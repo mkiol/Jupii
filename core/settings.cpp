@@ -137,19 +137,21 @@ int Settings::getVolStep()
 
 void Settings::setForwardTime(int value)
 {
-    if (value < 1 || value > 60)
+    // disabled option
+    /*if (value < 1 || value > 60)
         return; // incorrect value
 
     if (getForwardTime() != value) {
         settings.setValue("forwardtime", value);
         emit forwardTimeChanged();
-    }
+    }*/
 }
 
 int Settings::getForwardTime()
 {
-    // Default value is 10 s
-    return settings.value("forwardtime", 10).toInt();
+    // disabled option
+    //return settings.value("forwardtime", 10).toInt();
+    return 10;
 }
 
 void Settings::setFavDevices(const QHash<QString,QVariant> &devs)
@@ -398,19 +400,6 @@ void Settings::setRec(bool value)
 bool Settings::getRec()
 {
     return settings.value("rec", false).toBool();
-}
-
-void Settings::setImageSupported(bool value)
-{
-    if (getImageSupported() != value) {
-        settings.setValue("imagesupported", value);
-        emit imageSupportedChanged();
-    }
-}
-
-bool Settings::getImageSupported()
-{
-    return settings.value("imagesupported", false).toBool();
 }
 
 void Settings::setScreenSupported(bool value)
