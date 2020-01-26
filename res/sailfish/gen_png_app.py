@@ -29,8 +29,8 @@ for name in sizes.keys():
     
     if not os.path.isfile(png):
         size = sizes[name]
-        print "File name: %s, size: %d" % (png, size)
-        print ("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
+        print("File name: %s, size: %d" % (png, size))
+        print("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
                   .format(svg, png, size, size))
         os.system("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
                   .format(svg, png, size, size))

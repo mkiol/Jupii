@@ -82,8 +82,8 @@ for svg in glob.glob("*.svg"):
                     else:
                         size1 = sizes[d][size_id]
                         size2 = size1
-                    print "File name: %s, size: %dx%d" % (png, size1, size2)
-                    print ("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
+                    print("File name: %s, size: %dx%d" % (png, size1, size2))
+                    print("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
                               .format(svg, png, size1, size2))
                     os.system("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
                               .format(svg, png, size1, size2))
@@ -95,8 +95,8 @@ for svg in glob.glob("*.svg"):
                     if not os.path.isfile(png):
                         size1 = sizes_nores[size_id]
                         size2 = size1
-                        print "File name: %s, size: %dx%d" % (png, size1, size2)
-                        print ("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
+                        print("File name: %s, size: %dx%d" % (png, size1, size2))
+                        print("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
                                 .format(svg, png, size1, size2))
                         os.system("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
                                 .format(svg, png, size1, size2))
