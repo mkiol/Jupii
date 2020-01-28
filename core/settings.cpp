@@ -534,16 +534,19 @@ QByteArray Settings::getKey()
 void Settings::setRemoteContentMode(int value)
 {
     if (getRemoteContentMode() != value) {
-        settings.setValue("remotecontentmode", value);
+        settings.setValue("remotecontentmode2", value);
         emit remoteContentModeChanged();
     }
 }
 
 int Settings::getRemoteContentMode()
 {
-    // 0 - proxy
-    // 1 - redirection
-    return settings.value("remotecontentmode", 0).toInt();
+    // 0 - proxy for all
+    // 1 - redirection for all
+    // 2 - none for all
+    // 3 - proxy for shoutcast, redirection for others
+    // 4 - proxy for shoutcast, none for others
+    return settings.value("remotecontentmode2", 0).toInt();
 }
 
 void Settings::setAlbumQueryType(int value)

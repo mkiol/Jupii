@@ -136,7 +136,7 @@ Page {
                         case ContentServer.ItemType_LocalFile:
                             return isRec ? qsTr("Recording") : qsTr("Local file")
                         case ContentServer.ItemType_Url:
-                            return isShout ? "Internet radio" : qsTr("Url")
+                            return isShout ? "Internet radio" : qsTr("URL")
                         case ContentServer.ItemType_Upnp:
                             return qsTr("UPnP Media Server")
                         case ContentServer.ItemType_ScreenCapture:
@@ -233,7 +233,7 @@ Page {
                 }
 
                 DetailItem {
-                    label: qsTr("Server name")
+                    label: qsTr("Media Server")
                     value: utils.devNameFromUpnpId(av.currentId)
                     visible: itemType === ContentServer.ItemType_Upnp &&
                              value.length !== 0

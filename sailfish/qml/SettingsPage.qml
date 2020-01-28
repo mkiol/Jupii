@@ -118,7 +118,7 @@ Page {
                 label: qsTr("Force screen 16:9 aspect ratio")
                 currentIndex: settings.screenCropTo169
                 menu: ContextMenu {
-                    MenuItem { text: qsTr("Disabled") }
+                    MenuItem { text: qsTr("Don't force") }
                     MenuItem { text: qsTr("Scale") }
                     MenuItem { text: qsTr("Crop") }
                 }
@@ -196,27 +196,40 @@ Page {
             }
 
             ComboBox {
-                label: qsTr("Internet streaming mode")
-                description: qsTr("Streaming from the Internet to UPnP devices can " +
-                                  "be handled in two modes. " +
-                                  "In Proxy mode, %1 relays every packet received " +
-                                  "from a streaming host. In Redirection mode, " +
-                                  "the actual streaming goes directly between " +
-                                  "UPnP device and a streaming server, " +
-                                  "so %1 in not required to be enabled all the time. " +
-                                  "The downside of Redirection mode is that not " +
-                                  "every UPnP device supports redirection, " +
-                                  "therefore on some devices this mode will " +
-                                  "not work properly. SHOUTcast metadata detection " +
-                                  "and Stream recorder are not available when " +
-                                  "Redirection mode is enabled.").arg(APP_NAME)
-                currentIndex: settings.remoteContentMode
+                label: qsTr("Stream relaying")
+                description: qsTr("Internet streams are relayed to UPnP device through %1. " +
+                                  "Recommended option is 'Always' because it provides best " +
+                                  "compatibility. When relaying is disabled ('Never' option), " +
+                                  "SHOUTcast titles detection and Stream recorder " +
+                                  "are not available.").arg(APP_NAME)
+                currentIndex: {
+                    // 0 - proxy for all
+                    // 1 - redirection for all
+                    // 2 - none for all
+                    // 3 - proxy for shoutcast, redirection for others
+                    // 4 - proxy for shoutcast, none for others
+                    if (settings.remoteContentMode == 0)
+                        return 0
+                    if (settings.remoteContentMode == 1 || settings.remoteContentMode == 2)
+                        return 2
+                    if (settings.remoteContentMode == 3 || settings.remoteContentMode == 4)
+                        return 1
+                    return 0
+                }
+
+
                 menu: ContextMenu {
-                    MenuItem { text: qsTr("Proxy (default)") }
-                    MenuItem { text: qsTr("Redirection") }
+                    MenuItem { text: qsTr("Always") }
+                    MenuItem { text: qsTr("Only SHOUTcast") }
+                    MenuItem { text: qsTr("Never") }
                 }
                 onCurrentIndexChanged: {
-                    settings.remoteContentMode = currentIndex
+                    if (currentIndex == 0)
+                        settings.remoteContentMode = 0
+                    else if (currentIndex == 1)
+                        settings.remoteContentMode = 4
+                    else if (currentIndex == 2)
+                        settings.remoteContentMode = 2
                 }
             }
 
@@ -224,12 +237,12 @@ Page {
                 automaticCheck: false
                 checked: settings.showAllDevices
                 text: qsTr("All devices visible")
-                description: qsTr("%1 supports only Media Renderer devices. With this option enabled, " +
-                                  "all UPnP devices will be shown, including unsupported devices like " +
-                                  "home routers or Media Servers. For unsupported devices %1 is able " +
-                                  "to show only basic description information. " +
-                                  "This option could be useful for auditing UPnP devices " +
-                                  "in your local network.").arg(APP_NAME)
+                description: qsTr("All types of UPnP devices are detected " +
+                                  "and shown, including unsupported devices like " +
+                                  "home routers. For unsupported devices only " +
+                                  "basic description information is available. " +
+                                  "This option might be useful for auditing UPnP devices " +
+                                  "in your local network.")
                 onClicked: {
                     settings.showAllDevices = !settings.showAllDevices
                 }

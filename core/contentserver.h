@@ -77,7 +77,6 @@ public:
         ItemType_LocalFile,
         ItemType_QrcFile,
         ItemType_Url,
-        ItemType_ShoutCast,
         ItemType_AudioCapture,
         ItemType_ScreenCapture,
         ItemType_Mic,
@@ -101,6 +100,7 @@ public:
         QString upnpDevId;
         Type type = TypeUnknown;
         ItemType itemType = ItemType_Unknown;
+        bool shoutCast  = false;
         bool local = true;
         bool seekSupported = true;
         int duration = 0;
@@ -147,7 +147,7 @@ public:
     static QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString context = QString());
     static void resolveM3u(QByteArray &data, const QString context);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
-    static bool makeUrl(const QString& id, QUrl& url, bool own = true);
+    static bool makeUrl(const QString& id, QUrl& url, bool relay = true);
     static void writeMetaUsingTaglib(const QString& path, const QString& title,
                                       const QString& artist = QString(),
                                       const QString& album = QString(),

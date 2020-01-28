@@ -340,9 +340,8 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
         return;
     }
 
-    bool valid, isFile, isArt;
-    auto id = ContentServer::idUrlFromUrl(req->url(), &valid,
-                                          &isFile, &isArt);
+    bool valid, isArt;
+    auto id = ContentServer::idUrlFromUrl(req->url(), &valid, nullptr, &isArt);
 
     qDebug() << "Id:" << id.toString();
 
@@ -371,18 +370,20 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
         }
     }
 
-    if (isFile) {
+    if (meta->itemType == ContentServer::ItemType_LocalFile) {
         requestForFileHandler(id, meta, req, resp);
+    } else if (meta->itemType == ContentServer::ItemType_ScreenCapture) {
+        requestForScreenCaptureHandler(id, meta, req, resp);
+    } else if (meta->itemType == ContentServer::ItemType_Mic) {
+        requestForMicHandler(id, meta, req, resp);
+    } else if (meta->itemType == ContentServer::ItemType_AudioCapture) {
+        requestForAudioCaptureHandler(id, meta, req, resp);
+    } else if (meta->itemType == ContentServer::ItemType_Url) {
+        requestForUrlHandler(id, meta, req, resp);
     } else {
-        if (Utils::isUrlScreen(id)) {
-            requestForScreenCaptureHandler(id, meta, req, resp);
-        } else if (Utils::isUrlMic(id)) {
-            requestForMicHandler(id, meta, req, resp);
-        } else if (Utils::isUrlPulse(id)) {
-            requestForAudioCaptureHandler(id, meta, req, resp);
-        } else {
-            requestForUrlHandler(id, meta, req, resp);
-        }
+        qWarning() << "Unknown item type";
+        sendEmptyResponse(resp, 404);
+        return;
     }
 }
 
@@ -507,11 +508,22 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
                                                 QHttpRequest *req, QHttpResponse *resp)
 {
     auto url = Utils::urlFromId(id);
+    auto s = Settings::instance();
+    // 0 - proxy for all
+    // 1 - redirection for all
+    // 2 - none for all
+    // 3 - proxy for shoutcast, redirection for others
+    // 4 - proxy for shoutcast, none for others
+    int relay = s->getRemoteContentMode();
 
-    if (Settings::instance()->getRemoteContentMode() == 1) {
+    if (relay == 1 || relay == 3) {
         // Redirection mode
         qDebug() << "Redirection mode enabled => sending HTTP redirection";
         sendRedirection(resp, url.toString());
+    } else if (relay == 2) {
+        // None
+        qWarning() << "Relaying is disabled";
+        sendEmptyResponse(resp, 500);
     } else {
         // Proxy mode
         qDebug() << "Proxy mode enabled => creating proxy";
@@ -1660,16 +1672,25 @@ bool ContentServer::getContentMetaItem(const QString &id, QString &meta)
         return false;
     }
 
-    if (item->itemType == ItemType_Upnp) {
-        qDebug() << "Item is upnp";
-        // currently didl item for upnp is not supported
-        return false;
-    }
-
+    auto s = Settings::instance();
+    int relay = s->getRemoteContentMode();
     QUrl url;
-    if (!makeUrl(id, url)) {
-        qWarning() << "Cannot make Url form id";
+
+    if (item->itemType == ItemType_Upnp) {
+        qDebug() << "Item is upnp and didl item for upnp is not supported";
         return false;
+    } else if (item->itemType == ItemType_Url &&
+                   (relay == 2 || (relay == 4 && !item->shoutCast))) {
+        url = item->url;
+        if (!makeUrl(id, url, false)) {
+            qWarning() << "Cannot make Url from id";
+            return false;
+        }
+    } else {
+        if (!makeUrl(id, url)) {
+            qWarning() << "Cannot make Url from id";
+            return false;
+        }
     }
 
     return getContentMetaItem(id, url, meta, item);
@@ -1843,26 +1864,39 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         return false;
     }
 
+    auto s = Settings::instance();
+    int relay = s->getRemoteContentMode();
+
     if (item->itemType == ItemType_Upnp) {
-        qDebug() << "Item is upnp";
+        qDebug() << "Item is upnp and relaying is disabled";
         if (item->didl.isEmpty()) {
             qWarning() << "Didl is empty";
             return false;
         }
         url = item->url;
-        if (!makeUrl(id, url, false)) {
-            qWarning() << "Cannot make Url form id";
+        if (!makeUrl(id, url, false)) { // do not relay for upnp
+            qWarning() << "Cannot make Url from id";
             return false;
         }
         qDebug() << "Url for upnp item:" << id << url.toString();
+
+        // no need to generate new DIDL, copying DIDL received from Media Server
         meta = item->didl;
         meta.replace("%URL%", url.toString());
         return true;
-    }
-
-    if (!makeUrl(id, url)) {
-        qWarning() << "Cannot make Url form id";
-        return false;
+    } else if (item->itemType == ItemType_Url &&
+               (relay == 2 || (relay == 4 && !item->shoutCast))) {
+        qDebug() << "Item is url and relaying is disabled";
+        url = item->url;
+        if (!makeUrl(id, url, false)) {
+            qWarning() << "Cannot make Url from id";
+            return false;
+        }
+    } else {
+        if (!makeUrl(id, url)) {
+            qWarning() << "Cannot make Url from id";
+            return false;
+        }
     }
 
     if (!cUrl.isEmpty() && cUrl == url.toString()) {
@@ -1894,7 +1928,7 @@ QString ContentServer::bestName(const ContentServer::ItemMeta &meta)
     return name;
 }
 
-bool ContentServer::makeUrl(const QString& id, QUrl& url, bool own)
+bool ContentServer::makeUrl(const QString& id, QUrl& url, bool relay)
 {
     QString ifname, addr;
     if (!Utils::instance()->getNetworkIf(ifname, addr)) {
@@ -1904,7 +1938,7 @@ bool ContentServer::makeUrl(const QString& id, QUrl& url, bool own)
 
     QString hash = QString::fromUtf8(encrypt(id.toUtf8()));
 
-    if (own) {
+    if (relay) {
         url.setScheme("http");
         url.setHost(addr);
         url.setPort(Settings::instance()->getPort());
@@ -2576,10 +2610,8 @@ ContentServer::ItemType ContentServer::itemTypeFromUrl(const QUrl &url)
             return ItemType_Mic;
     } else if (url.scheme() == "http" || url.scheme() == "https") {
         return ItemType_Url;
-    } else if (url.isLocalFile()) {
+    } else if (url.isLocalFile() || url.scheme() == "qrc") {
         return ItemType_LocalFile;
-    } else if (url.scheme() == "qrc" ) {
-        return ItemType_QrcFile;
     }
     return ItemType_Unknown;
 }
@@ -2836,18 +2868,12 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     qDebug() << "Sending HTTP request for url:" << url;
     QNetworkRequest request;
     request.setUrl(url);
+    request.setRawHeader("Icy-MetaData", "1"); // needed for SHOUTcast streams discovery
     request.setRawHeader("User-Agent", userAgent);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 
     if (!nam) {
         nam = std::shared_ptr<QNetworkAccessManager>(new QNetworkAccessManager());
-        /*connect(nam.get(), &QNetworkAccessManager::sslErrors,
-                [](QNetworkReply *reply, const QList<QSslError> &errors){
-            Q_UNUSED(reply)
-            for (auto& err : errors) {
-                qWarning() << "SSL error:" << err.error() << err.errorString();
-            }
-        });*/
     }
 
     auto reply = nam->get(request);
@@ -2997,6 +3023,14 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     meta.seekSupported = size > 0 ? ranges : false;
     meta.itemType = ItemType_Url;
 
+    if (reply->hasRawHeader("icy-metaint")) {
+        int metaint = reply->rawHeader("icy-metaint").toInt();
+        if (metaint > 0) {
+            qDebug() << "Shoutcast stream detected";
+            meta.shoutCast = true;
+        }
+    }
+
     if (reply->hasRawHeader(icy_name_h))
         meta.title = QString(reply->rawHeader(icy_name_h));
     else
@@ -3010,18 +3044,11 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     return metaCache.insert(url, meta);
 }
 
-/*const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
-ContentServer::makeItemMetaUsingExtension(const QUrl &url)
-{
-    return metaCache.insert(url, makeItemMetaUsingExtension2(url));
-}*/
-
 ContentServer::ItemMeta*
 ContentServer::makeMetaUsingExtension(const QUrl &url)
 {
-    auto itemType = itemTypeFromUrl(url);
-    bool isFile = itemType == ItemType_LocalFile;
-    bool isQrc = itemType == ItemType_QrcFile;
+    bool isFile = url.isLocalFile();
+    bool isQrc = url.scheme() == "qrc";
 
     auto item = new ContentServer::ItemMeta;
     item->valid = true;
@@ -3034,8 +3061,8 @@ ContentServer::makeMetaUsingExtension(const QUrl &url)
     item->size = 0;
     item->filename = url.fileName();
     item->local = isFile || isQrc;
-    item->seekSupported = itemType == isFile || isQrc;
-    item->itemType = itemType;
+    item->seekSupported = isFile || isQrc;
+    item->itemType = itemTypeFromUrl(url);
     return item;
 }
 
