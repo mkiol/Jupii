@@ -151,22 +151,6 @@ Page {
                     }
                 }
 
-                /*DetailItem {
-                    label: qsTr("Category")
-                    value: {
-                        switch(av.currentType) {
-                        case AVTransport.T_Audio:
-                            return qsTr("Audio")
-                        case AVTransport.T_Video:
-                            return qsTr("Video")
-                        case AVTransport.T_Image:
-                            return qsTr("Image")
-                        default:
-                            return qsTr("Unknown")
-                        }
-                    }
-                }*/
-
                 DetailItem {
                     label: isShout ? qsTr("Station name") : qsTr("Title")
                     value: av.currentTitle
@@ -218,15 +202,6 @@ Page {
                 }
 
                 DetailItem {
-                    label: qsTr("Content type")
-                    value: av.currentContentType
-                    visible: itemType !== ContentServer.ItemType_Mic &&
-                             itemType !== ContentServer.ItemType_AudioCapture &&
-                             itemType !== ContentServer.ItemType_ScreenCapture &&
-                             av.currentContentType.length !== 0
-                }
-
-                DetailItem {
                     label: qsTr("Recording date")
                     value: utils.recDateFromId(av.currentURL)
                     visible: value.length !== 0
@@ -238,6 +213,31 @@ Page {
                     visible: itemType === ContentServer.ItemType_Upnp &&
                              value.length !== 0
                 }
+
+                DetailItem {
+                    label: qsTr("Content type")
+                    value: av.currentContentType
+                    visible: itemType !== ContentServer.ItemType_Mic &&
+                             itemType !== ContentServer.ItemType_AudioCapture &&
+                             itemType !== ContentServer.ItemType_ScreenCapture &&
+                             av.currentContentType.length !== 0
+                }
+
+                /*DetailItem {
+                    label: qsTr("Category")
+                    value: {
+                        switch(av.currentType) {
+                        case AVTransport.T_Audio:
+                            return qsTr("Audio")
+                        case AVTransport.T_Video:
+                            return qsTr("Video")
+                        case AVTransport.T_Image:
+                            return qsTr("Image")
+                        default:
+                            return qsTr("Unknown")
+                        }
+                    }
+                }*/
             }
 
             Column {

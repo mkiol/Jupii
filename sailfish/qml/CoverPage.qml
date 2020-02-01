@@ -19,6 +19,8 @@ CoverBackground {
     property string author: app.streamTitle.length === 0 ? av.currentAuthor : app.streamTitle
 
     function togglePlay() {
+        if (!directory.inited)
+            return;
         if (av.transportState !== AVTransport.Playing) {
             av.speed = 1
             av.play()

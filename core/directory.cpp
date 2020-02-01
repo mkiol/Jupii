@@ -13,6 +13,8 @@
 #include <QByteArray>
 #include <QFile>
 #include <QCoreApplication>
+#include <QNetworkConfiguration>
+#include <QNetworkInterface>
 #include <string>
 
 #include <libupnpp/control/description.hxx>
@@ -27,10 +29,88 @@ Directory* Directory::m_instance = nullptr;
 Directory::Directory(QObject *parent) :
     QObject(parent),
     TaskExecutor(parent),
-    nm(new QNetworkAccessManager())
+    nm(new QNetworkAccessManager()),
+    ncm(new QNetworkConfigurationManager())
 {
-    init();
+    connect(ncm, &QNetworkConfigurationManager::configurationAdded,
+            this, &Directory::handleNetworkConfChanged);
+    connect(ncm, &QNetworkConfigurationManager::configurationRemoved,
+            this, &Directory::handleNetworkConfChanged);
+    connect(ncm, &QNetworkConfigurationManager::configurationChanged,
+            this, &Directory::handleNetworkConfChanged);
+
     connect(this, &Directory::busyChanged, this, &Directory::handleBusyChanged);
+    connect(this, &Directory::networkStateChanged, this, &Directory::init);
+    connect(this, &Directory::initedChanged, this, &Directory::handleInitedChanged, Qt::QueuedConnection);
+
+    updateNetworkConf();
+}
+
+void Directory::handleNetworkConfChanged(const QNetworkConfiguration &conf)
+{
+    if (conf.state() & QNetworkConfiguration::Defined &&
+        (conf.bearerType() == QNetworkConfiguration::BearerWLAN ||
+        conf.bearerType() == QNetworkConfiguration::BearerEthernet)) {
+        updateNetworkConf();
+    }
+}
+
+void Directory::updateNetworkConf()
+{
+    QString new_ifname;
+    QList<QNetworkConfiguration> configs = ncm->allConfigurations(QNetworkConfiguration::Active);
+    for (auto &conf : configs) {
+        if (conf.bearerType() == QNetworkConfiguration::BearerWLAN ||
+            conf.bearerType() == QNetworkConfiguration::BearerEthernet) {
+            QNetworkSession session(conf);
+            if (session.state() == QNetworkSession::Connected) {
+                new_ifname = session.interface().name();
+                auto type = session.configuration().bearerType();
+                if (type == QNetworkConfiguration::BearerWLAN)
+                    break;
+            }
+        }
+    }
+
+    if (m_ifname != new_ifname) {
+        qDebug() << "Connected network interface changed:" << new_ifname;
+        m_ifname = new_ifname;
+        emit networkStateChanged();
+    }
+}
+
+bool Directory::isNetworkConnected()
+{
+    return !m_ifname.isEmpty();
+}
+
+bool Directory::getNetworkIf(QString &ifname, QString &address)
+{
+    if (isNetworkConnected()) {
+        auto interface = QNetworkInterface::interfaceFromName(m_ifname);
+
+        if (interface.isValid() &&
+            interface.flags().testFlag(QNetworkInterface::IsUp) &&
+            interface.flags().testFlag(QNetworkInterface::IsRunning)) {
+
+            ifname = m_ifname;
+
+            auto addra = interface.addressEntries();
+            for (const auto &a : addra) {
+                auto ha = a.ip();
+                if (ha.protocol() == QAbstractSocket::IPv4Protocol ||
+                    ha.protocol() == QAbstractSocket::IPv6Protocol) {
+                    address = ha.toString();
+                    qDebug() << "Net interface:" << ifname << address;
+                    return true;
+                }
+            }
+
+            qWarning() << "Cannot find valid ip addr for interface:" << m_ifname;
+        }
+    }
+
+    return false;
 }
 
 void Directory::handleBusyChanged()
@@ -44,17 +124,27 @@ void Directory::handleBusyChanged()
         }
 
         qDebug() << "Sending SSDP advertisement";
-        MediaServerDevice::instance()->sendAdvertisement();
+        if (msdev)
+            msdev->sendAdvertisement();
+    }
+}
+
+void Directory::handleInitedChanged()
+{
+    if (m_inited) {
+        msdev = std::unique_ptr<MediaServerDevice>(new MediaServerDevice());
+    } else {
+        clearLists(true);
+        msdev.reset(nullptr);
     }
 }
 
 void Directory::init()
 {
-    auto u = Utils::instance();
+    qDebug() << "Directory init";
 
     QString ifname, addr;
-
-    if (!u->getNetworkIf(ifname, addr)) {
+    if (!getNetworkIf(ifname, addr)) {
         qWarning() << "Cannot find valid network interface";
         setInited(false);
         emit error(1);
@@ -66,7 +156,14 @@ void Directory::init()
     );
 
     if (m_lib == 0) {
-        qWarning() << "Cannot initialize UPnPP lib";
+        qWarning() << "Cannot initialize UPnPP lib (lib == 0)";
+        setInited(false);
+        emit error(2);
+        return;
+    }
+
+    if (!m_lib->ok()) {
+        qWarning() << "Cannot initialize UPnPP lib (lib != ok)";
         setInited(false);
         emit error(2);
         return;
@@ -80,9 +177,17 @@ void Directory::init()
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(5);
 
     if (m_directory == 0) {
-        qWarning() << "Cannot initialize UPnPP directory";
+        qWarning() << "Cannot initialize UPnPP directory (dir == 0)";
         setInited(false);
         emit error(3);
+        return;
+    }
+
+    if (!m_directory->ok()) {
+        qWarning() << "Cannot initialize UPnPP directory (dir != ok)";
+        setInited(false);
+        m_directory = nullptr;
+        emit error(2);
         return;
     }
 
@@ -100,10 +205,12 @@ Directory* Directory::instance(QObject *parent)
     return Directory::m_instance;
 }
 
-void Directory::clearLists()
+void Directory::clearLists(bool all)
 {
-    this->m_devsdesc.clear();
-    this->m_servsdesc.clear();
+    m_devsdesc.clear();
+    m_servsdesc.clear();
+    if (all)
+        m_last_devsdesc.clear();
 }
 
 void Directory::discover()
@@ -115,7 +222,7 @@ void Directory::discover()
         return;
     }
 
-    if (!Utils::instance()->checkNetworkIf()) {
+    if (!isNetworkConnected()) {
         qWarning() << "Cannot find valid network interface";
         setInited(false);
         return;
@@ -132,6 +239,8 @@ void Directory::discover()
         emit error(3);
         return;
     }
+
+    setBusy(true);
 
     // last devices
     auto s = Settings::instance();
@@ -156,10 +265,8 @@ void Directory::discover()
 
     emit discoveryLastReady();
 
-    setBusy(true);
-
     startTask([this](){
-        clearLists();
+        clearLists(false);
         QHash<QString,bool> xcs;
         auto s = Settings::instance();
 
@@ -375,6 +482,7 @@ void Directory::setInited(bool inited)
 {
     if (inited != m_inited) {
         m_inited = inited;
+        qDebug() << "Directory inited:" << m_inited;
         emit initedChanged();
     }
 }

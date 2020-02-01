@@ -15,6 +15,8 @@
 #include <QString>
 #include <QUrl>
 #include <QNetworkAccessManager>
+#include <QNetworkConfigurationManager>
+#include <QNetworkSession>
 #include <memory>
 #include <functional>
 
@@ -24,6 +26,7 @@
 
 #include "taskexecutor.h"
 #include "yamahaextendedcontrol.h"
+#include "device.h"
 
 class Directory :
         public QObject,
@@ -32,9 +35,13 @@ class Directory :
     Q_OBJECT
     Q_PROPERTY (bool busy READ getBusy NOTIFY busyChanged)
     Q_PROPERTY (bool inited READ getInited NOTIFY initedChanged)
+    Q_PROPERTY (bool networkConnected READ isNetworkConnected NOTIFY networkStateChanged)
 
 public:
-    std::unique_ptr<QNetworkAccessManager> nm;
+    QNetworkAccessManager* nm;
+    QNetworkConfigurationManager* ncm;
+    QNetworkSession* nsession;
+    std::unique_ptr<MediaServerDevice> msdev;
 
     static Directory* instance(QObject *parent = nullptr);
 
@@ -47,8 +54,9 @@ public:
     bool xcExists(const QString& deviceId);
     const QHash<QString,UPnPClient::UPnPDeviceDesc>& getDeviceDescs();
     QUrl getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc);
-    Q_INVOKABLE void init();
     Q_INVOKABLE void discover();
+    bool isNetworkConnected();
+    bool getNetworkIf(QString &ifname, QString &address);
 
     // Extended control API
     Q_INVOKABLE void xcTogglePower(const QString &deviceId);
@@ -60,10 +68,16 @@ signals:
     void discoveryLastReady();
     void busyChanged();
     void initedChanged();
+    void networkStateChanged();
     void error(int code);
+
+public slots:
+    void init();
 
 private slots:
     void handleBusyChanged();
+    void handleInitedChanged();
+    void handleNetworkConfChanged(const QNetworkConfiguration &conf);
 
 private:
     static Directory* m_instance;
@@ -75,11 +89,13 @@ private:
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_devsdesc;
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_last_devsdesc;
     QHash<QString,YamahaXC*> m_xcs;
+    QString m_ifname;
     explicit Directory(QObject *parent = nullptr);
     void setBusy(bool busy);
     void setInited(bool inited);
     bool handleError(int ret);
-    void clearLists();
+    void clearLists(bool all);
+    void updateNetworkConf();
 };
 
 #endif // DIRECTORY_H

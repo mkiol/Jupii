@@ -14,6 +14,7 @@
 #include <string>
 
 #include "device.h"
+#include "directory.h"
 #include "settings.h"
 #include "info.h"
 #include "utils.h"
@@ -415,17 +416,6 @@ const QString MediaServerDevice::cmTemplate = R"(<?xml version="1.0"?>
     </serviceStateTable>
 </scpd>)";
 
-MediaServerDevice* MediaServerDevice::inst = nullptr;
-
-MediaServerDevice* MediaServerDevice::instance(QObject *parent)
-{
-    if (MediaServerDevice::inst == nullptr) {
-        MediaServerDevice::inst = new MediaServerDevice(parent);
-    }
-
-    return MediaServerDevice::inst;
-}
-
 void MediaServerDevice::updateDirectory()
 {
     qDebug() << "updateDirectory";
@@ -443,7 +433,7 @@ QString MediaServerDevice::desc()
                      Settings::instance()->mediaServerDevUuid());
     // -- icons --
     QString ifname, addr;
-    if (!Utils::instance()->getNetworkIf(ifname, addr)) {
+    if (!Directory::instance()->getNetworkIf(ifname, addr)) {
         qWarning() << "Cannot find valid network interface";
         return desc;
     }
@@ -517,6 +507,13 @@ MediaServerDevice::MediaServerDevice(QObject *parent) :
     restart();
 }
 
+MediaServerDevice::~MediaServerDevice()
+{
+    stop();
+    if (!wait(1000))
+        qWarning() << "Timeout on stop";
+}
+
 void MediaServerDevice::run()
 {
     qDebug() << "UPnP Media Server device starting";
@@ -528,7 +525,9 @@ void MediaServerDevice::run()
 
 void MediaServerDevice::restart()
 {
-    bool supported = Settings::instance()->getContentDirSupported();
+    auto s = Settings::instance();
+    bool supported = s->getContentDirSupported();
+
     if (isRunning()) {
         if (!supported)
             stop();
@@ -550,25 +549,32 @@ void MediaServerDevice::sendAdvertisement()
 
 int MediaServerDevice::actionHandler(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
 {
-    auto action = QString::fromStdString(in.getName());
+    auto dir = Directory::instance();
+    if (dir->msdev) {
+        return dir->msdev->actionHandler2(in, out);
+    } else {
+        qWarning() << "Msdev is not created inited";
+    }
+}
+
+int MediaServerDevice::actionHandler2(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
+{    auto action = QString::fromStdString(in.getName());
     qDebug() << "actionHandler:" << action;
 
-    auto dev = MediaServerDevice::instance();
-
     if (action == "GetSortCapabilities") {
-        return dev->getSortCapabilities(in, out);
+        return getSortCapabilities(in, out);
     } else if (action == "Browse") {
-        return dev->browse(in, out);
+        return browse(in, out);
     } else if (action == "GetSearchCapabilities") {
-        return dev->getSearchCapabilities(in, out);
+        return getSearchCapabilities(in, out);
     } else if (action == "GetSystemUpdateID") {
-        return dev->getSystemUpdateID(in, out);
+        return getSystemUpdateID(in, out);
     } else if (action == "GetProtocolInfo") {
-        return dev->getProtocolInfo(in, out);
+        return getProtocolInfo(in, out);
     } else if (action == "GetCurrentConnectionIDs") {
-        return dev->getCurrentConnectionIDs(in, out);
+        return getCurrentConnectionIDs(in, out);
     } else if (action == "GetCurrentConnectionInfo") {
-        return dev->getCurrentConnectionInfo(in, out);
+        return getCurrentConnectionInfo(in, out);
     }
 
     return UPNP_E_BAD_REQUEST;

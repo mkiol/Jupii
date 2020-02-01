@@ -35,6 +35,8 @@ Page {
     }
 
     function togglePlay() {
+        if (!directory.inited)
+            return;
         if (av.transportState !== AVTransport.Playing) {
             av.speed = 1
             av.play()
@@ -76,6 +78,8 @@ Page {
     }
 
     function playItem(id, index) {
+        if (!directory.inited)
+            return;
         var count = listView.count
 
         if (count > 0) {
@@ -353,16 +357,10 @@ Page {
 
         VerticalScrollDecorator {}
 
-        ViewPlaceholder {
-            enabled: listView.count == 0 && !playlist.busy
-            text: qsTr("Empty")
-            verticalOffset: ppanel.open ? 0-ppanel.height/2 : 0
-        }
-
         PullDownMenu {
             id: menu
-            enabled: !playlist.busy
-            busy: !enabled && !av.busy && !rc.busy
+            enabled: !playlist.busy && !av.busy && !rc.busy
+            busy: !enabled
 
             Item {
                 width: parent.width
@@ -431,7 +429,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Add item")
-                enabled: !playlist.busy
+                enabled: !playlist.busy && directory.inited
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
                                        musicPickerDialog: musicPickerDialog,
@@ -465,7 +463,8 @@ Page {
             property bool isPulse: utils.isIdPulse(model.id)
             property bool isScreen: utils.isIdScreen(model.id)
 
-            opacity: playlist.busy ? 0.0 : 1.0
+            enabled: !playlist.busy && !av.busy && !rc.busy
+            opacity: !enabled ? 0.0 : 1.0
             visible: opacity > 0.0
             Behavior on opacity { FadeAnimation {} }
 
@@ -496,6 +495,8 @@ Page {
             subtitle.color: secondaryColor
 
             onClicked: {
+                if (!directory.inited)
+                    return;
                 if (root.devless) {
                     listItem.openMenu()
                 } else {
@@ -509,7 +510,8 @@ Page {
             menu: ContextMenu {
                 MenuItem {
                     text: listItem.isImage ? qsTr("Show") : qsTr("Play")
-                    visible: !root.devless && ((av.transportState !== AVTransport.Playing &&
+                    visible: directory.inited && !root.devless &&
+                             ((av.transportState !== AVTransport.Playing &&
                               !listItem.isImage) || !model.active)
                     onClicked: {
                         if (!model.active) {
@@ -522,7 +524,8 @@ Page {
 
                 MenuItem {
                     text: qsTr("Pause")
-                    visible: !root.devless && (av.stopable && model.active && !listItem.isImage)
+                    visible: directory.inited && !root.devless &&
+                             (av.stopable && model.active && !listItem.isImage)
                     onClicked: {
                         root.togglePlay()
                     }
@@ -530,6 +533,7 @@ Page {
 
                 MenuItem {
                     text: qsTr("Remove")
+                    visible: directory.inited
                     onClicked: {
                         playlist.remove(model.id)
                     }
@@ -548,11 +552,18 @@ Page {
         RemorsePopup {
             id: remorse
         }
+
+        ViewPlaceholder {
+            enabled: listView.count == 0 && !playlist.busy
+            text: qsTr("No items")
+            hintText: qsTr("Pull down to add new item")
+            verticalOffset: ppanel.open ? 0-ppanel.height/2 : 0
+        }
     }
 
     BusyIndicator {
         anchors.centerIn: parent
-        running: playlist.busy
+        running: playlist.busy || av.busy || rc.busy
         size: BusyIndicatorSize.Large
     }
 

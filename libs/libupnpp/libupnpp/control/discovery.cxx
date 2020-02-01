@@ -397,10 +397,20 @@ bool UPnPDeviceDirectory::search()
 
 UPnPDeviceDirectory *UPnPDeviceDirectory::getTheDir(time_t search_window)
 {
+    if (theDevDir && !theDevDir->ok()) {
+        delete theDevDir;
+        theDevDir = 0;
+    }
+
     if (theDevDir == 0)
         theDevDir = new UPnPDeviceDirectory(search_window);
-    if (theDevDir && !theDevDir->ok())
+
+    if (theDevDir && !theDevDir->ok()) {
+        delete theDevDir;
+        theDevDir = 0;
         return 0;
+    }
+
     return theDevDir;
 }
 

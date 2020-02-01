@@ -54,7 +54,6 @@
 #include "icecastmodel.h"
 #include "dirmodel.h"
 #include "recmodel.h"
-#include "device.h"
 #include "devicemodel.h"
 #include "contentdirectory.h"
 #include "cdirmodel.h"
@@ -135,7 +134,6 @@ int main(int argc, char *argv[])
     auto cserver = ContentServer::instance();
     auto services = Services::instance();
     auto playlist = PlaylistModel::instance();
-    auto msdev = MediaServerDevice::instance();
     auto devmodel = DeviceModel::instance();
     DbusProxy dbusProxy;
 
@@ -148,7 +146,6 @@ int main(int argc, char *argv[])
     context->setContextProperty("av", services->avTransport.get());
     context->setContextProperty("cdir", services->contentDir.get());
     context->setContextProperty("playlist", playlist);
-    context->setContextProperty("msdev", msdev);
     context->setContextProperty("devmodel", devmodel);
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));

@@ -21,6 +21,7 @@
 #include "filemetadata.h"
 #include "settings.h"
 #include "services.h"
+#include "directory.h"
 
 #ifdef DESKTOP
 //#include <QPixmap>
@@ -194,8 +195,8 @@ PlaylistModel::PlaylistModel(QObject *parent) :
 {
     auto s = Settings::instance();
     auto services = Services::instance();
-    auto rc = services->renderingControl;
     auto av = services->avTransport;
+    auto dir = Directory::instance();
 
     m_playMode = s->getPlayMode();
 
@@ -229,8 +230,8 @@ PlaylistModel::PlaylistModel(QObject *parent) :
             this, &PlaylistModel::onItemsLoaded);
     connect(this, &PlaylistModel::itemsRemoved,
             this, &PlaylistModel::onItemsRemoved);
-
-    // load last play queue
+    connect(dir, &Directory::initedChanged, this,
+            &PlaylistModel::load, Qt::QueuedConnection);
     load();
 }
 
@@ -578,6 +579,15 @@ QByteArray PlaylistModel::makePlsData(const QString& name)
 
 void PlaylistModel::load()
 {
+    qDebug() << "Playlist load";
+
+    auto dir = Directory::instance();
+    if (!dir->getInited()) {
+        qWarning() << "Unloading playlist because directory is not inited";
+        clear(false);
+        return;
+    }
+
     setBusy(true);
 
     auto ids = Settings::instance()->getLastPlaylist();
@@ -1034,7 +1044,7 @@ void PlaylistModel::setActiveUrl(const QUrl &url)
     }
 }
 
-void PlaylistModel::clear()
+void PlaylistModel::clear(bool save)
 {
     bool active_removed = false;
     if (m_activeItemIndex > -1) {
@@ -1050,8 +1060,8 @@ void PlaylistModel::clear()
 
     setActiveItemIndex(-1);
 
-    // saving last play queue
-    save();
+    if (save) // saving last play queue
+        this->save();
 
     if(active_removed)
         emit activeItemChanged();

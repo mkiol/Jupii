@@ -596,7 +596,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         return;
     }
 
-    if (!Utils::instance()->checkNetworkIf()) {
+    if (!Directory::instance()->isNetworkConnected()) {
         qWarning() << "Cannot find valid network interface";
         emit error(E_LostConnection);
         return;

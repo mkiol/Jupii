@@ -95,7 +95,7 @@ public:
 
     static PlaylistModel* instance(QObject *parent = nullptr);
 
-    Q_INVOKABLE void clear();
+    Q_INVOKABLE void clear(bool save = true);
     Q_INVOKABLE QString firstId() const;
     Q_INVOKABLE QString secondId() const;
     Q_INVOKABLE bool remove(const QString &id);
@@ -105,7 +105,6 @@ public:
     Q_INVOKABLE QString nextActiveId() const;
     Q_INVOKABLE QString prevActiveId() const;
     Q_INVOKABLE QString nextId(const QString &id) const;
-    Q_INVOKABLE void load();
     Q_INVOKABLE bool saveToFile(const QString& title);
     Q_INVOKABLE void update(bool autoPlay = false);
     Q_INVOKABLE void next();
@@ -135,6 +134,7 @@ signals:
     void prevSupportedChanged();
 
 public slots:
+    void load();
     void addItemPaths(const QStringList& paths);
     void addItemPath(const QString& path,
                      const QString &name = QString(),

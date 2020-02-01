@@ -34,8 +34,8 @@ public:
 
     static Utils* instance(QObject *parent = nullptr);
 
-    bool getNetworkIf(QString &ifname, QString &address);
-    bool checkNetworkIf();
+    //bool getNetworkIf(QString &ifname, QString &address);
+    //bool checkNetworkIf();
     QStringList getNetworkIfs(bool onlyUp = true);
 #ifdef SAILFISH
     void setQmlRootItem(QQuickItem* rootItem);

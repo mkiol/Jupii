@@ -55,7 +55,7 @@ Page {
         onError: {
             switch(code) {
             case 1:
-                notification.show(qsTr("Cannot connect to the local network"))
+                notification.show(qsTr("Cannot connect to a local network"))
                 break
             default:
                 notification.show(qsTr("An internal error occurred"))
@@ -86,13 +86,10 @@ Page {
             id: menu
 
             MenuItem {
-                text: directory.inited ? qsTr("Find Media Servers") : qsTr("Connect")
-                enabled: !directory.busy
+                text: qsTr("Find Media Servers")
+                enabled: directory.inited && !directory.busy
                 onClicked: {
-                    if (directory.inited)
-                        directory.discover()
-                    else
-                        directory.init()
+                    directory.discover()
                 }
             }
         }
@@ -139,9 +136,10 @@ Page {
         ViewPlaceholder {
             enabled: !directory.busy && (listView.count == 0 || !directory.inited)
             text: directory.inited ?
-                      qsTr("No Media Servers found. \n" +
-                           "Pull down to find more devices in your network.") :
-                      qsTr("Pull down to connect to the local network.")
+                      qsTr("No Media Server found") : qsTr("Disconnected")
+            hintText: directory.inited ?
+                          qsTr("Pull down to find more devices in your network") :
+                          qsTr("Connect WLAN to find devices in your network")
         }
     }
 

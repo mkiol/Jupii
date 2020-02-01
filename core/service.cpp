@@ -27,6 +27,9 @@ Service::Service(QObject *parent) :
     QObject::connect(app, &QGuiApplication::applicationStateChanged,
                      this, &Service::handleApplicationStateChanged);
 #endif
+
+    auto dir = Directory::instance();
+    connect(dir, &Directory::initedChanged, this, &Service::deInit);
 }
 
 Service::~Service()

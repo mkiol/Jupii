@@ -41,12 +41,13 @@ class MediaServerDevice : public QThread, public UPnPProvider::UpnpDevice
     Q_OBJECT
     Q_PROPERTY (bool running READ isRunning NOTIFY runningChanged)
 public:
-    static MediaServerDevice* instance(QObject *parent = nullptr);
     static const QString descTemplate;
     static const QString csTemplate;
     static const QString cmTemplate;
     static QString desc();
     static std::unordered_map<std::string, UPnPProvider::VDirContent> desc_files();
+    MediaServerDevice(QObject *parent = nullptr);
+    ~MediaServerDevice();
     bool getRunning();
     void sendAdvertisement();
 
@@ -59,12 +60,11 @@ public slots:
     void stop();
 
 private:
-    static MediaServerDevice* inst;
     std::unique_ptr<ContentDirectoryService> cd;
     std::unique_ptr<ConnectionManagerService> cm;
     void run();
     static int actionHandler(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out);
-    MediaServerDevice(QObject *parent = nullptr);
+    int actionHandler2(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out);
 
     // cd actions
     int getSearchCapabilities(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out);

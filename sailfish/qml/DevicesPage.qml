@@ -28,14 +28,21 @@ Page {
     }
 
     function createPlaylistPage() {
-        if (pageStack.currentPage === root && pageStack.depth === 1) {
-            pageStack.pushAttached(Qt.resolvedUrl("PlayQueuePage.qml"))
+        //console.log("createPlaylistPage: " + directory.inited + " " + pageStack.currentPage)
+        if (directory.inited) {
+            if (pageStack.currentPage === root && pageStack.depth === 1) {
+                pageStack.pushAttached(Qt.resolvedUrl("PlayQueuePage.qml"))
+            }
+        } else if (pageStack.currentPage === root) {
+            pageStack.pop(root, PageStackAction.Immediate)
+            pageStack.popAttached(root, PageStackAction.Immediate)
+        } else {
+            pageStack.pop(root, PageStackAction.Immediate)
         }
     }
 
     Component.onCompleted: {
         devmodel.deviceType = DeviceModel.MediaRendererType
-        //directory.discover()
     }
 
     onStatusChanged: {
@@ -51,7 +58,7 @@ Page {
         onError: {
             switch(code) {
             case 1:
-                notification.show(qsTr("Cannot connect to the local network"))
+                notification.show(qsTr("Cannot connect to a local network"))
                 break
             default:
                 notification.show(qsTr("An internal error occurred"))
@@ -59,11 +66,7 @@ Page {
         }
 
         onInitedChanged: {
-            if (directory.inited) {
-                directory.discover()
-            } else {
-                pageStack.pop(root)
-            }
+            createPlaylistPage()
         }
     }
 
@@ -94,23 +97,12 @@ Page {
             }
 
             MenuItem {
-                text: directory.inited ? qsTr("Find devices") : qsTr("Connect")
-                enabled: !directory.busy
+                text: qsTr("Find devices")
+                enabled: directory.inited && !directory.busy
                 onClicked: {
-                    if (directory.inited)
-                        directory.discover()
-                    else
-                        directory.init()
+                    directory.discover()
                 }
             }
-
-            /*MenuItem {
-                visible: !av.busy && !rc.busy
-                text: qsTr("Show playlist")
-                onClicked: {
-                    connectDevice()
-                }
-            }*/
         }
 
         delegate: SimpleFavListItem {
@@ -185,9 +177,10 @@ Page {
         ViewPlaceholder {
             enabled: !directory.busy && (listView.count == 0 || !directory.inited)
             text: directory.inited ?
-                      qsTr("No devices found. \n" +
-                           "Pull down to find more devices in your network.") :
-                      qsTr("Pull down to connect to the local network.")
+                      qsTr("No devices found") : qsTr("Disconnected")
+            hintText: directory.inited ?
+                          qsTr("Pull down to find more devices in your network") :
+                          qsTr("Connect WLAN to find devices in your network")
         }
     }
 

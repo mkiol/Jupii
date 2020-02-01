@@ -93,12 +93,6 @@ QString Utils::secToStr(int value)
     return str;
 }
 
-bool Utils::checkNetworkIf()
-{
-    QString ifname, address;
-    return getNetworkIf(ifname, address);
-}
-
 QStringList Utils::getNetworkIfs(bool onlyUp)
 {
     auto ifList = QNetworkInterface::allInterfaces();
@@ -116,12 +110,12 @@ QStringList Utils::getNetworkIfs(bool onlyUp)
     return infs;
 }
 
-bool Utils::getNetworkIf(QString& ifname, QString& address)
+/*bool Utils::getNetworkIf(QString& ifname, QString& address)
 {
     auto ifList = QNetworkInterface::allInterfaces();
 
     // -- debug --
-    /*qDebug() << "Net interfaces:";
+    qDebug() << "Net interfaces:";
     for (const auto &interface : ifList) {
         qDebug() << "interface:" << interface.index();
         qDebug() << "  name:" << interface.name();
@@ -131,7 +125,7 @@ bool Utils::getNetworkIf(QString& ifname, QString& address)
         qDebug() << "  loopback:" << interface.flags().testFlag(QNetworkInterface::IsLoopBack);
         qDebug() << "  up:" << interface.flags().testFlag(QNetworkInterface::IsUp);
         qDebug() << "  running:" << interface.flags().testFlag(QNetworkInterface::IsRunning);
-    }*/
+    }
     // -- debug --
 
     auto prefNetInf = Settings::instance()->getPrefNetInf();
@@ -192,7 +186,7 @@ bool Utils::getNetworkIf(QString& ifname, QString& address)
     }
 
     return false;
-}
+}*/
 
 bool Utils::writeToCacheFile(const QString &filename, const QByteArray &data, bool del)
 {

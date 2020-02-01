@@ -42,6 +42,7 @@
 #include "services.h"
 #include "contentdirectory.h"
 #include "log.h"
+#include "directory.h"
 #include "libupnpp/control/cdirectory.hxx"
 
 // TagLib
@@ -1931,7 +1932,7 @@ QString ContentServer::bestName(const ContentServer::ItemMeta &meta)
 bool ContentServer::makeUrl(const QString& id, QUrl& url, bool relay)
 {
     QString ifname, addr;
-    if (!Utils::instance()->getNetworkIf(ifname, addr)) {
+    if (!Directory::instance()->getNetworkIf(ifname, addr)) {
         qWarning() << "Cannot find valid network interface";
         return false;
     }

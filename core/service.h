@@ -46,7 +46,6 @@ public:
     ~Service();
 
     Q_INVOKABLE bool init(const QString &deviceId);
-    Q_INVOKABLE void deInit();
     bool getInited();
     bool isInitedOrIniting();
     bool getBusy();
@@ -58,6 +57,9 @@ signals:
     void busyChanged();
     void error(ErrorType code);
     void needTimer(bool start);
+
+public slots:
+    void deInit();
 
 protected slots:
     virtual void timerEvent();
