@@ -84,7 +84,6 @@ Page {
             enabled: !itemModel.busy
             icon.source: model.icon
             defaultIcon.source: "image://theme/icon-m-media-playlists?" + primaryColor
-
             ListView.onRemove: animateRemoval(listItem)
 
             menu: ContextMenu {

@@ -11,6 +11,7 @@ import Sailfish.Silica 1.0
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
 import harbour.jupii.PlayListModel 1.0
+import harbour.jupii.ContentServer 1.0
 
 DockedPanel_ {
     id: root
@@ -27,6 +28,7 @@ DockedPanel_ {
     property bool recordActive: false
     property bool isPortrait: pageStack.currentPage.isPortrait
     property bool isLandscape: pageStack.currentPage.isLandscape
+    property int itemType
 
     property string title: ""
     property string subtitle: ""
@@ -154,6 +156,17 @@ DockedPanel_ {
                     sourceSize.height: lbi.imgSize
                     fillMode: Image.PreserveAspectCrop
                     source: av.currentAlbumArtURI
+                }
+
+                Image {
+                    anchors {
+                        right: _image.right
+                        bottom: _image.bottom
+                    }
+                    source: itemType === ContentServer.ItemType_Url ?
+                                ("image://icons/icon-s-browser?" + Theme.primaryColor) :
+                            itemType === ContentServer.ItemType_Upnp ?
+                                ("image://icons/icon-s-device?" + Theme.primaryColor) : ""
                 }
 
                 Column {

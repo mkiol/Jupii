@@ -13,6 +13,7 @@ import Nemo.DBus 2.0
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
 import harbour.jupii.PlayListModel 1.0
+import harbour.jupii.ContentServer 1.0
 
 Page {
     id: root
@@ -20,10 +21,8 @@ Page {
     allowedOrientations: Orientation.All
 
     property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
+    property int itemType: utils.itemTypeFromUrl(av.currentId)
     property bool inited: av.inited && rc.inited
-    property bool isMic: utils.isIdMic(av.currentURL)
-    property bool isPulse: utils.isIdPulse(av.currentURL)
-
     property bool _doPop: false
 
     onStatusChanged: {
@@ -459,21 +458,17 @@ Page {
             property color secondaryColor: highlighted || model.active ?
                                          Theme.secondaryHighlightColor : Theme.secondaryColor
             property bool isImage: model.type === AVTransport.T_Image
-            property bool isMic: utils.isIdMic(model.id)
-            property bool isPulse: utils.isIdPulse(model.id)
-            property bool isScreen: utils.isIdScreen(model.id)
-
             enabled: !playlist.busy && !av.busy && !rc.busy
             opacity: !enabled ? 0.0 : 1.0
             visible: opacity > 0.0
             Behavior on opacity { FadeAnimation {} }
 
             defaultIcon.source: {
-                if (isMic)
+                if (model.itemType === ContentServer.ItemType_Mic)
                     return "image://theme/icon-m-mic?" + primaryColor
-                else if (isPulse)
+                else if (model.itemType === ContentServer.ItemType_AudioCapture)
                     return "image://theme/icon-m-speaker?" + primaryColor
-                else if (isScreen)
+                else if (model.itemType === ContentServer.ItemType_ScreenCapture)
                     return "image://theme/icon-m-display?" + primaryColor
                 else
                     switch (model.type) {
@@ -487,7 +482,18 @@ Page {
                         return "image://theme/icon-m-file-other?" + primaryColor
                     }
             }
-            icon.source: isMic || isPulse || isScreen ? "" : model.icon
+            attachedIcon.source: model.itemType === ContentServer.ItemType_Url ?
+                                     ("image://icons/icon-s-browser?" + primaryColor) :
+                                 model.itemType === ContentServer.ItemType_Upnp ?
+                                     ("image://icons/icon-s-device?" + primaryColor) : ""
+            icon.source: {
+                if (model.itemType === ContentServer.ItemType_Mic ||
+                    model.itemType === ContentServer.ItemType_AudioCapture ||
+                    model.itemType === ContentServer.ItemType_ScreenCapture) {
+                    return ""
+                }
+                return model.icon
+            }
             icon.visible: !model.toBeActive
             title.text: model.name
             title.color: primaryColor
@@ -575,7 +581,11 @@ Page {
 
         title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
         subtitle: app.streamTitle.length === 0 ?
-                      (!root.isMic && !root.isPulse ? av.currentAuthor : "") : app.streamTitle
+                      (root.itemType !== ContentServer.ItemType_Mic &&
+                       root.itemType !== ContentServer.ItemType_AudioCapture &&
+                       root.itemType !== ContentServer.ItemType_ScreenCapture ?
+                           av.currentAuthor : "") : app.streamTitle
+        itemType: root.itemType
 
         prevEnabled: playlist.prevSupported
         nextEnabled: playlist.nextSupported

@@ -15,6 +15,7 @@ ListItem {
     property alias subtitle: _subtitle
     property alias icon: _icon
     property alias defaultIcon: _dicon
+    property alias attachedIcon: _aicon
 
     opacity: enabled ? 1.0 : 0.0
     visible: opacity > 0.0
@@ -45,6 +46,12 @@ ListItem {
             id: _dicon
             anchors.fill: parent
             visible: icon.status !== Image.Ready
+        }
+
+        Image {
+            id: _aicon
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
         }
     }
 
