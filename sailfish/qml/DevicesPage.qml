@@ -29,15 +29,8 @@ Page {
 
     function createPlaylistPage() {
         //console.log("createPlaylistPage: " + directory.inited + " " + pageStack.currentPage)
-        if (directory.inited) {
-            if (pageStack.currentPage === root && pageStack.depth === 1) {
-                pageStack.pushAttached(Qt.resolvedUrl("PlayQueuePage.qml"))
-            }
-        } else if (pageStack.currentPage === root) {
-            pageStack.pop(root, PageStackAction.Immediate)
-            pageStack.popAttached(root, PageStackAction.Immediate)
-        } else {
-            pageStack.pop(root, PageStackAction.Immediate)
+        if (directory.inited && pageStack.currentPage === root && pageStack.depth === 1) {
+            pageStack.pushAttached(Qt.resolvedUrl("PlayQueuePage.qml"))
         }
     }
 
@@ -64,10 +57,7 @@ Page {
                 notification.show(qsTr("An internal error occurred"))
             }
         }
-
-        onInitedChanged: {
-            createPlaylistPage()
-        }
+        onInitedChanged: createPlaylistPage()
     }
 
     SilicaListView {

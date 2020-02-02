@@ -78,7 +78,6 @@ Page {
         model: devmodel
 
         header: PageHeader {
-            visible: directory.inited
             title: qsTr("Media Servers")
         }
 
@@ -136,10 +135,10 @@ Page {
         ViewPlaceholder {
             enabled: !directory.busy && (listView.count == 0 || !directory.inited)
             text: directory.inited ?
-                      qsTr("No Media Server found") : qsTr("Disconnected")
+                      qsTr("No Media Servers found") : qsTr("Disconnected")
             hintText: directory.inited ?
-                          qsTr("Pull down to find more devices in your network") :
-                          qsTr("Connect WLAN to find devices in your network")
+                          qsTr("Pull down to find Media Servers in your network") :
+                          qsTr("Connect WLAN to find Media Servers in your network")
         }
     }
 

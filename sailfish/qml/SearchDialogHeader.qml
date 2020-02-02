@@ -45,6 +45,7 @@ FocusScope {
             width: parent.width
             visible: model.filter.length !== 0 ||
                      model.count > root.noSearchCount
+            text: model.filter
 
             placeholderText: qsTr("Search episodes")
 

@@ -14,7 +14,10 @@ ApplicationWindow {
     cover: Qt.resolvedUrl("CoverPage.qml")
     allowedOrientations: Orientation.All
 
-    initialPage: Component {
+    initialPage: devPage
+
+    Component {
+        id: devPage
         DevicesPage {}
     }
 
@@ -45,6 +48,28 @@ ApplicationWindow {
         onStreamToRecordChanged: updateStreamInfo()
         onStreamRecorded: {
             notification.show(qsTr("Track \"%1\" saved").arg(title))
+        }
+    }
+
+    Connections {
+        target: directory
+
+        onError: {
+            switch(code) {
+            case 1:
+                notification.show(qsTr("Cannot connect to a local network"))
+                break
+            default:
+                notification.show(qsTr("An internal error occurred"))
+            }
+        }
+
+        onInitedChanged: {
+            if (!directory.inited) {
+                pageStack.clear()
+                pageStack.completeAnimation()
+                pageStack.push(devPage, {}, PageStackAction.Immediate)
+            }
         }
     }
 }

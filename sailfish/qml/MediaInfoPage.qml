@@ -134,9 +134,9 @@ Page {
                     value: {
                         switch(itemType) {
                         case ContentServer.ItemType_LocalFile:
-                            return isRec ? qsTr("Recording") : qsTr("Local file")
+                            return qsTr("Local file")
                         case ContentServer.ItemType_Url:
-                            return isShout ? "Internet radio" : qsTr("URL")
+                            return isShout ? qsTr("SHOUTcast URL") : qsTr("URL")
                         case ContentServer.ItemType_Upnp:
                             return qsTr("UPnP Media Server")
                         case ContentServer.ItemType_ScreenCapture:

@@ -428,7 +428,7 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("Add item")
+                text: qsTr("Add items")
                 enabled: !playlist.busy && directory.inited
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
@@ -556,7 +556,7 @@ Page {
         ViewPlaceholder {
             enabled: listView.count == 0 && !playlist.busy
             text: qsTr("No items")
-            hintText: qsTr("Pull down to add new item")
+            hintText: qsTr("Pull down to add new items")
             verticalOffset: ppanel.open ? 0-ppanel.height/2 : 0
         }
     }
