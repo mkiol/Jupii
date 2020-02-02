@@ -423,7 +423,7 @@ Page {
             MenuItem {
                 text: qsTr("Clear queue")
                 visible: !playlist.busy && listView.count > 0
-                onClicked: remorse.execute("Clearing play queue", function() { playlist.clear() } )
+                onClicked: remorse.execute(qsTr("Clearing play queue"), function() { playlist.clear() } )
             }
 
             MenuItem {

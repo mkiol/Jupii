@@ -133,18 +133,10 @@ Page {
                 visible:  settings.remoteContentMode == 0
                 checked: settings.rec
                 text: qsTr("Stream recorder")
-                description: qsTr("Enables recording of tracks from SHOUTcast stream. " +
-                                  "When stream provides information " +
-                                  "about the title of the currently played track, " +
-                                  "you can save this track to a file. To enable " +
-                                  "recording use \"Record\" button located next to " +
-                                  "\"Forward\" button on the bottom bar. " +
-                                  "This button is visible only when recording is possible. " +
-                                  "When the \"Record\" button is activated before " +
-                                  "the end of the track, the whole recording " +
-                                  "(from the begining to the end of the track) " +
-                                  "will be saved as a file. " +
-                                  "Currently AAC streams cannot be recorded.")
+                description: qsTr("Enables recording of tracks from SHOUTcast streams. " +
+                                  "To enable recording use 'Record' button located on the bottom bar. " +
+                                  "When the 'Record' button is activated before " +
+                                  "the end of currently played track, the whole track is saved as a file.")
                 onClicked: {
                     settings.rec = !settings.rec
                 }
@@ -193,6 +185,10 @@ Page {
                         }
                     }
                 }
+            }
+
+            SectionHeader {
+                text: qsTr("Advanced options")
             }
 
             ComboBox {
@@ -246,10 +242,6 @@ Page {
                 onClicked: {
                     settings.showAllDevices = !settings.showAllDevices
                 }
-            }
-
-            SectionHeader {
-                text: qsTr("Advanced options")
             }
 
             ComboBox {
