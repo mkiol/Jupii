@@ -101,7 +101,6 @@ public:
     Q_INVOKABLE bool remove(const QString &id);
     Q_INVOKABLE bool removeIndex(int index);
     Q_INVOKABLE QString activeId() const;
-    Q_INVOKABLE QString activeCookie() const;
     Q_INVOKABLE QString nextActiveId() const;
     Q_INVOKABLE QString prevActiveId() const;
     Q_INVOKABLE QString nextId(const QString &id) const;
@@ -149,7 +148,6 @@ public slots:
                     bool autoPlay = false);
     void addItemPathsAsAudio(const QStringList& paths);
     void setActiveId(const QString &id);
-    void setActiveCookie(const QString &id);
     void setActiveUrl(const QUrl &url);
     void setToBeActiveIndex(int index);
     void setToBeActiveId(const QString& id);

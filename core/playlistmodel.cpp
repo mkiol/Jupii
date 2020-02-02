@@ -971,41 +971,6 @@ void PlaylistModel::setActiveId(const QString &id)
         setActiveItemIndex(-1);
 }
 
-void PlaylistModel::setActiveCookie(const QString &cookie)
-{
-    /*qDebug() << "setActiveCookie";
-    qDebug() << "cookie:" << cookie;
-    qDebug() << "current active cookie:" << activeCookie();*/
-
-    if (cookie == activeCookie())
-        return;
-
-    if (cookie.isEmpty())
-        setActiveItemIndex(-1);
-
-    const int len = m_list.length();
-    bool active_found = false;
-    for (int i = 0; i < len; ++i) {
-        auto fi = dynamic_cast<PlaylistItem*>(m_list.at(i));
-        bool new_active = fi->cookie() == cookie;
-
-        if (new_active)
-            active_found = true;
-
-        if (fi->active() != new_active) {
-            fi->setActive(new_active);
-            if(new_active)
-                setActiveItemIndex(i);
-            emit activeItemChanged();
-        }
-
-        fi->setToBeActive(false);
-    }
-
-    if (!active_found)
-        setActiveItemIndex(-1);
-}
-
 void PlaylistModel::resetToBeActive()
 {
     const int len = m_list.length();
@@ -1074,16 +1039,6 @@ QString PlaylistModel::activeId() const
     if (m_activeItemIndex > -1) {
         auto fi = m_list.at(m_activeItemIndex);
         return fi->id();
-    }
-
-    return QString();
-}
-
-QString PlaylistModel::activeCookie() const
-{
-    if (m_activeItemIndex > -1) {
-        auto fi = dynamic_cast<PlaylistItem*>(m_list.at(m_activeItemIndex));
-        return fi->cookie();
     }
 
     return QString();
