@@ -56,7 +56,8 @@ AudioCaster::~AudioCaster()
         in_audio_codec_ctx = nullptr;
     }
 
-    av_packet_unref(&audio_out_pkt);
+    /*if (audio_out_pkt.buf)
+        av_packet_unref(&audio_out_pkt);*/
 }
 
 bool AudioCaster::init()
