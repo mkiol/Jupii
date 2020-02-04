@@ -71,6 +71,7 @@ Dialog {
 
         PullDownMenu {
             id: menu
+            busy: itemModel.refreshing
 
             MenuItem {
                 text: qsTr("Refresh station list")

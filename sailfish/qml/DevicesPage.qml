@@ -75,6 +75,7 @@ Page {
 
         PullDownMenu {
             id: menu
+            busy: directory.busy
 
             MenuItem {
                 text: qsTr("About")

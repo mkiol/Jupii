@@ -68,6 +68,7 @@ Dialog {
             id: menu
 
             enabled: itemModel.count !== 0
+            busy: itemModel.busy
 
             MenuItem {
                 text: itemModel.count === itemModel.selectedCount ?

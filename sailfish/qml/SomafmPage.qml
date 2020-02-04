@@ -70,6 +70,7 @@ Dialog {
 
         PullDownMenu {
             id: menu
+            busy: itemModel.refreshing
 
             MenuItem {
                 text: qsTr("Refresh channel list")
