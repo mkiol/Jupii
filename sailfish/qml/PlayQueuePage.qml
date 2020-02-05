@@ -359,7 +359,7 @@ Page {
         PullDownMenu {
             id: menu
             enabled: !playlist.busy && !av.busy && !rc.busy
-            busy: !enabled
+            busy: !enabled || directory.busy
 
             Item {
                 width: parent.width

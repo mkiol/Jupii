@@ -108,9 +108,8 @@ Page {
                 }
 
                 description: qsTr("Enables Screen casting feature. Capturing " +
-                                  "video along with audio is still in beta state, so " +
-                                  "it may decrease a quality of the streaming " +
-                                  "and cause additional delay.");
+                                  "video is still in beta stage, so " +
+                                  "the quality may be not of the best.");
             }
 
             ComboBox {
@@ -136,7 +135,7 @@ Page {
                 description: qsTr("Enables recording of tracks from SHOUTcast streams. " +
                                   "To enable recording use 'Record' button located on the bottom bar. " +
                                   "When the 'Record' button is activated before " +
-                                  "the end of currently played track, the whole track is saved as a file.")
+                                  "the end of currently played track, the whole track is saved to a file.")
                 onClicked: {
                     settings.rec = !settings.rec
                 }
@@ -196,7 +195,7 @@ Page {
                 description: qsTr("Internet streams are relayed to UPnP device through %1. " +
                                   "Recommended option is 'Always' because it provides best " +
                                   "compatibility. When relaying is disabled ('Never' option), " +
-                                  "SHOUTcast titles detection and Stream recorder " +
+                                  "SHOUTcast titles and Stream recorder " +
                                   "are not available.").arg(APP_NAME)
                 currentIndex: {
                     // 0 - proxy for all
