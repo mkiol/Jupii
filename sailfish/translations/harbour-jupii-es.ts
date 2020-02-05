@@ -102,42 +102,42 @@
         <translation>Imagen</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="113"/>
+        <location filename="../qml/AddMediaPage.qml" line="112"/>
         <source>File</source>
         <translation>Archivo</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="131"/>
+        <location filename="../qml/AddMediaPage.qml" line="130"/>
         <source>UPnP Media Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="140"/>
+        <location filename="../qml/AddMediaPage.qml" line="139"/>
         <source>Audio capture</source>
         <translation>Capturar audio</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="152"/>
+        <location filename="../qml/AddMediaPage.qml" line="151"/>
         <source>Screen capture</source>
         <translation>Captura de pantalla</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="163"/>
+        <location filename="../qml/AddMediaPage.qml" line="162"/>
         <source>Microphone</source>
         <translation>Micrófono</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="175"/>
+        <location filename="../qml/AddMediaPage.qml" line="174"/>
         <source>Recordings</source>
         <translation>Grabando</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="184"/>
+        <location filename="../qml/AddMediaPage.qml" line="183"/>
         <source>Apps &amp; services</source>
         <translation>Apls &amp; servicios</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="122"/>
+        <location filename="../qml/AddMediaPage.qml" line="121"/>
         <source>URL</source>
         <translation>LUR</translation>
     </message>
@@ -304,22 +304,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1892"/>
+        <location filename="../../core/contentserver.cpp" line="1927"/>
         <source>Unknown</source>
         <translation>Desconocido</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2748"/>
+        <location filename="../../core/contentserver.cpp" line="2781"/>
         <source>Microphone</source>
         <translation>Micrófono</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2769"/>
+        <location filename="../../core/contentserver.cpp" line="2802"/>
         <source>Audio capture</source>
         <translation>Capturar audio</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2789"/>
+        <location filename="../../core/contentserver.cpp" line="2822"/>
         <source>Screen capture</source>
         <translation>Captura de pantalla</translation>
     </message>
@@ -327,7 +327,7 @@
 <context>
     <name>ContentServerWorker</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="289"/>
+        <location filename="../../core/contentserver.cpp" line="290"/>
         <source>Recorded from %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -404,9 +404,13 @@
 <context>
     <name>DevicesPage</name>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="54"/>
         <source>Cannot connect to the local network</source>
-        <translation>No se puede conectar a la red local</translation>
+        <translation type="vanished">No se puede conectar a la red local</translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="54"/>
+        <source>Cannot connect to a local network</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="57"/>
@@ -414,28 +418,48 @@
         <translation>Ah ocurrido un error interno</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="80"/>
+        <location filename="../qml/DevicesPage.qml" line="73"/>
         <source>Devices</source>
         <translation>Dispositivos</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="87"/>
+        <location filename="../qml/DevicesPage.qml" line="81"/>
         <source>About</source>
         <translation>Acerca de</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="92"/>
+        <location filename="../qml/DevicesPage.qml" line="86"/>
         <source>Settings</source>
         <translation>Ajustes</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="157"/>
+        <location filename="../qml/DevicesPage.qml" line="140"/>
         <source>Power Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="157"/>
+        <location filename="../qml/DevicesPage.qml" line="140"/>
         <source>Power On</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="171"/>
+        <source>Disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="171"/>
+        <source>No devices found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="173"/>
+        <source>Pull down to find more devices in your network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="174"/>
+        <source>Connect WLAN to find devices in your network</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -443,13 +467,12 @@
         <translation type="vanished">Agregar manual</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="97"/>
+        <location filename="../qml/DevicesPage.qml" line="91"/>
         <source>Find devices</source>
         <translation>Buscar</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="97"/>
-        <location filename="../qml/DevicesPage.qml" line="140"/>
+        <location filename="../qml/DevicesPage.qml" line="123"/>
         <source>Connect</source>
         <translation>conectar</translation>
     </message>
@@ -458,7 +481,7 @@
         <translation type="obsolete">reproducciones</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="149"/>
+        <location filename="../qml/DevicesPage.qml" line="132"/>
         <source>Show description</source>
         <translation>Mostrar descripción</translation>
     </message>
@@ -467,26 +490,20 @@
         <translation type="vanished">Potencia de palanca</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="165"/>
+        <location filename="../qml/DevicesPage.qml" line="148"/>
         <source>Remove from favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="165"/>
+        <location filename="../qml/DevicesPage.qml" line="148"/>
         <source>Add to favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="188"/>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation>No se encontraron dispositivos.
+        <translation type="vanished">No se encontraron dispositivos.
 Halar hacia abajo para la lista de opciones y encontrar más dispositivos en la red.</translation>
-    </message>
-    <message>
-        <location filename="../qml/DevicesPage.qml" line="190"/>
-        <source>Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Not connected. 
@@ -521,17 +538,17 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation>Buscar episodios</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="74"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="75"/>
         <source>Unselect all</source>
         <translation>Deseleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="75"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="76"/>
         <source>Select all</source>
         <translation>Seleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/GpodderEpisodesPage.qml" line="115"/>
+        <location filename="../qml/GpodderEpisodesPage.qml" line="116"/>
         <source>No episodes</source>
         <translation>No hay episodios</translation>
     </message>
@@ -549,22 +566,22 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation>Buscar estaciones</translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="76"/>
+        <location filename="../qml/IcecastPage.qml" line="77"/>
         <source>Refresh station list</source>
         <translation>Refrescar lista de  estación</translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="84"/>
+        <location filename="../qml/IcecastPage.qml" line="85"/>
         <source>Unselect all</source>
         <translation>Deseleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="85"/>
+        <location filename="../qml/IcecastPage.qml" line="86"/>
         <source>Select all</source>
         <translation>Seleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/IcecastPage.qml" line="123"/>
+        <location filename="../qml/IcecastPage.qml" line="124"/>
         <source>No stations</source>
         <translation>No estaciones</translation>
     </message>
@@ -572,7 +589,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
 <context>
     <name>MediaInfoPage</name>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="171"/>
+        <location filename="../qml/MediaInfoPage.qml" line="155"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
@@ -614,16 +631,6 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="137"/>
-        <source>Recording</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="139"/>
-        <source>Url</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../qml/MediaInfoPage.qml" line="143"/>
         <source>Screen Capture</source>
         <translation type="unfinished"></translation>
@@ -639,24 +646,19 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="unfinished">Micrófono</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="171"/>
-        <location filename="../qml/MediaInfoPage.qml" line="194"/>
+        <location filename="../qml/MediaInfoPage.qml" line="155"/>
+        <location filename="../qml/MediaInfoPage.qml" line="178"/>
         <source>Station name</source>
         <translation type="unfinished">Nombre de estación</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="182"/>
+        <location filename="../qml/MediaInfoPage.qml" line="166"/>
         <source>Audio source</source>
         <translation>Fuente de audio</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="182"/>
+        <location filename="../qml/MediaInfoPage.qml" line="166"/>
         <source>Current title</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="236"/>
-        <source>Server name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -670,9 +672,14 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="186"/>
+        <location filename="../qml/MediaInfoPage.qml" line="170"/>
         <source>None</source>
         <translation>Ninguno</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="139"/>
+        <source>SHOUTcast URL</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="141"/>
@@ -680,28 +687,33 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="194"/>
+        <location filename="../qml/MediaInfoPage.qml" line="178"/>
         <source>Author</source>
         <translation>Autor</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="204"/>
+        <location filename="../qml/MediaInfoPage.qml" line="188"/>
         <source>Album</source>
         <translation>Álbum</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="214"/>
+        <location filename="../qml/MediaInfoPage.qml" line="198"/>
         <source>Duration</source>
         <translation>Duración</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="221"/>
+        <location filename="../qml/MediaInfoPage.qml" line="218"/>
         <source>Content type</source>
         <translation>Tipo de contenido</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="230"/>
+        <location filename="../qml/MediaInfoPage.qml" line="205"/>
         <source>Recording date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="211"/>
+        <source>Media Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -715,6 +727,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation>Ruta</translation>
     </message>
     <message>
+        <location filename="../qml/MediaInfoPage.qml" line="139"/>
         <location filename="../qml/MediaInfoPage.qml" line="266"/>
         <source>URL</source>
         <translation>LUR</translation>
@@ -798,47 +811,61 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
 <context>
     <name>PlayQueuePage</name>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="321"/>
+        <location filename="../qml/PlayQueuePage.qml" line="324"/>
         <source>Item is already added</source>
         <translation type="unfinished">El elemento ya está añadido</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="323"/>
+        <location filename="../qml/PlayQueuePage.qml" line="326"/>
         <source>Item cannot be added</source>
         <translation type="unfinished">El elemento no puede ser añadido</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="325"/>
+        <location filename="../qml/PlayQueuePage.qml" line="328"/>
         <source>Some items cannot be added</source>
         <translation type="unfinished">Algunos elementos no pueden ser añadidos</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="327"/>
+        <location filename="../qml/PlayQueuePage.qml" line="330"/>
         <source>Items cannot be added</source>
         <translation type="unfinished">El elemento no pude ser añadido</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="329"/>
+        <location filename="../qml/PlayQueuePage.qml" line="332"/>
         <source>Unknown error</source>
         <translation type="unfinished">Error desconocido</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="351"/>
+        <location filename="../qml/PlayQueuePage.qml" line="354"/>
         <source>Play queue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="358"/>
-        <source>Empty</source>
-        <translation type="unfinished">Vacío</translation>
+        <location filename="../qml/PlayQueuePage.qml" line="426"/>
+        <source>Clearing play queue</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="417"/>
+        <location filename="../qml/PlayQueuePage.qml" line="430"/>
+        <source>Add items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="565"/>
+        <source>Pull down to add new items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty</source>
+        <translation type="obsolete">Vacío</translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <source>Save queue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="427"/>
+        <location filename="../qml/PlayQueuePage.qml" line="424"/>
         <source>Clear queue</source>
         <translation type="unfinished"></translation>
     </message>
@@ -847,32 +874,32 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="obsolete">Guardar reproducción</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="433"/>
-        <source>Add item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/PlayQueuePage.qml" line="511"/>
+        <location filename="../qml/PlayQueuePage.qml" line="518"/>
         <source>Show</source>
         <translation type="unfinished">Mostrar</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="511"/>
+        <location filename="../qml/PlayQueuePage.qml" line="518"/>
         <source>Play</source>
         <translation type="unfinished">Reproducir</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="524"/>
+        <location filename="../qml/PlayQueuePage.qml" line="532"/>
         <source>Pause</source>
         <translation type="unfinished">Pausar</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="532"/>
+        <location filename="../qml/PlayQueuePage.qml" line="541"/>
         <source>Remove</source>
         <translation type="unfinished">Borrar</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="565"/>
+        <location filename="../qml/PlayQueuePage.qml" line="564"/>
+        <source>No items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="582"/>
         <source>Unknown</source>
         <translation type="unfinished">Desconocido</translation>
     </message>
@@ -880,7 +907,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../../core/playlistmodel.cpp" line="533"/>
+        <location filename="../../core/playlistmodel.cpp" line="534"/>
         <source>Playlist</source>
         <translation>reproducciones</translation>
     </message>
@@ -914,17 +941,17 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         </translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="92"/>
+        <location filename="../qml/PlaylistPage.qml" line="91"/>
         <source>Select tracks</source>
         <translation>Elegir pistas</translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="97"/>
+        <location filename="../qml/PlaylistPage.qml" line="96"/>
         <source>Delete playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="121"/>
+        <location filename="../qml/PlaylistPage.qml" line="120"/>
         <source>No playlists</source>
         <translation type="unfinished"></translation>
     </message>
@@ -933,7 +960,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="vanished">Borrar archivo de reproducción</translation>
     </message>
     <message>
-        <location filename="../qml/PlaylistPage.qml" line="113"/>
+        <location filename="../qml/PlaylistPage.qml" line="112"/>
         <source>Deleting</source>
         <translation>Borrando</translation>
     </message>
@@ -959,12 +986,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation>Buscar grabados</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="72"/>
+        <location filename="../qml/RecPage.qml" line="73"/>
         <source>Delete selected</source>
         <translation>Borrar seleccionado</translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/RecPage.qml" line="75"/>
+        <location filename="../qml/RecPage.qml" line="76"/>
         <source>Deleting %n item(s)</source>
         <translation>
             <numerusform>Borrando %n artículo</numerusform>
@@ -972,37 +999,37 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         </translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="84"/>
+        <location filename="../qml/RecPage.qml" line="85"/>
         <source>Unselect all</source>
         <translation>Deseleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="85"/>
+        <location filename="../qml/RecPage.qml" line="86"/>
         <source>Select all</source>
         <translation>Seleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="95"/>
+        <location filename="../qml/RecPage.qml" line="96"/>
         <source>Sort by: %1</source>
         <translation>Ordenar por: %1</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="96"/>
+        <location filename="../qml/RecPage.qml" line="97"/>
         <source>Recording time</source>
         <translation>Tiempo de grabación</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="97"/>
+        <location filename="../qml/RecPage.qml" line="98"/>
         <source>Station name</source>
         <translation>Nombre de estación</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="97"/>
+        <location filename="../qml/RecPage.qml" line="98"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="133"/>
+        <location filename="../qml/RecPage.qml" line="134"/>
         <source>No recordings</source>
         <translation>No hay grabados</translation>
     </message>
@@ -1023,13 +1050,9 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
 <context>
     <name>SavePlaylistPage</name>
     <message>
-        <source>Playlist was saved</source>
-        <translation type="vanished">La reproducción fue guardada</translation>
-    </message>
-    <message>
         <location filename="../qml/SavePlaylistPage.qml" line="22"/>
-        <source>Plylist was saved</source>
-        <translation type="unfinished"></translation>
+        <source>Playlist was saved</source>
+        <translation>La reproducción fue guardada</translation>
     </message>
     <message>
         <location filename="../qml/SavePlaylistPage.qml" line="37"/>
@@ -1058,7 +1081,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         </translation>
     </message>
     <message>
-        <location filename="../qml/SearchDialogHeader.qml" line="49"/>
+        <location filename="../qml/SearchDialogHeader.qml" line="50"/>
         <source>Search episodes</source>
         <translation>Buscar episodios</translation>
     </message>
@@ -1081,22 +1104,20 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="45"/>
         <source>Start with last playlist</source>
-        <translation>Iniciar con la última reproducción</translation>
+        <translation type="vanished">Iniciar con la última reproducción</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="46"/>
         <source>When Jupii starts, the last playlist will be automatically loaded.</source>
-        <translation>Cuando Jupii se inicia, la última lista de reproducción se autocargará.</translation>
+        <translation type="vanished">Cuando Jupii se inicia, la última lista de reproducción se autocargará.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="94"/>
+        <location filename="../qml/SettingsPage.qml" line="83"/>
         <source>Experiments</source>
         <translation>Experimental</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="71"/>
+        <location filename="../qml/SettingsPage.qml" line="60"/>
         <source>Volume control with hardware keys</source>
         <translation>Volumen tangible</translation>
     </message>
@@ -1105,9 +1126,8 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="vanished">Cambia el nivel de volumen usando las teclas de volumen del teléfono físico, el nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="101"/>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation>Reproduce imágenes en dispositivos UPnP que no funcionan bien en este momento, hay algunos problemas menores que aún no se han resuelto. Esta opción forza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
+        <translation type="vanished">Reproduce imágenes en dispositivos UPnP que no funcionan bien en este momento, hay algunos problemas menores que aún no se han resuelto. Esta opción forza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
     </message>
     <message>
         <source>Audio capture format</source>
@@ -1130,7 +1150,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="vanished">PCM 22050Hz 706 kbps</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="111"/>
+        <location filename="../qml/SettingsPage.qml" line="87"/>
         <source>Screen capture</source>
         <translation type="unfinished">Captura de pantalla</translation>
     </message>
@@ -1143,83 +1163,123 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="vanished">Durante una captura de pantalla, el audio también se captura. La captura de video junto con el audio aún se encuentra en estado beta, por lo que puede disminuir la calidad de la transmisión y causar un retraso adicional.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="142"/>
+        <location filename="../qml/SettingsPage.qml" line="117"/>
         <source>Force screen 16:9 aspect ratio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="116"/>
-        <location filename="../qml/SettingsPage.qml" line="145"/>
+        <location filename="../qml/SettingsPage.qml" line="92"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="117"/>
+        <location filename="../qml/SettingsPage.qml" line="93"/>
         <source>Enabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="118"/>
+        <location filename="../qml/SettingsPage.qml" line="94"/>
         <source>Enabled with audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="134"/>
-        <source>Enables Screen casting feature. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
+        <location filename="../qml/SettingsPage.qml" line="110"/>
+        <source>Enables Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="146"/>
+        <location filename="../qml/SettingsPage.qml" line="120"/>
+        <source>Don&apos;t force</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="121"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="147"/>
+        <location filename="../qml/SettingsPage.qml" line="122"/>
         <source>Crop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="159"/>
+        <location filename="../qml/SettingsPage.qml" line="134"/>
         <source>Stream recorder</source>
         <translation>Grabar retransmisión</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="160"/>
-        <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
-        <translation>Permite la grabación de canciones de SHOUTcast. Cuando la retransmisión proporciona información sobre el título de la canción actualmente reproducida, puede guardar esta canción en un archivo. Para habilitar la grabación, use &quot;Grabar&quot; botón situado junto a &quot;Adelante&quot; Botón en la barra inferior. Este botón es visible solo cuando la grabación es posible. Cuando el &quot;Grabar&quot; El botón se activa antes del final de la canción, toda la grabación (desde el principio hasta el final de la canción) se guardará como un archivo. Actualmente las secuencias AAC no se pueden grabar.</translation>
+        <location filename="../qml/SettingsPage.qml" line="135"/>
+        <source>Enables recording of tracks from SHOUTcast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="205"/>
+        <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
+        <translation type="vanished">Permite la grabación de canciones de SHOUTcast. Cuando la retransmisión proporciona información sobre el título de la canción actualmente reproducida, puede guardar esta canción en un archivo. Para habilitar la grabación, use &quot;Grabar&quot; botón situado junto a &quot;Adelante&quot; Botón en la barra inferior. Este botón es visible solo cuando la grabación es posible. Cuando el &quot;Grabar&quot; El botón se activa antes del final de la canción, toda la grabación (desde el principio hasta el final de la canción) se guardará como un archivo. Actualmente las secuencias AAC no se pueden grabar.</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="172"/>
         <source>Change</source>
         <translation>Cambiar</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="214"/>
+        <location filename="../qml/SettingsPage.qml" line="181"/>
         <source>Set default</source>
         <translation>Fijar predeterminado</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="239"/>
+        <location filename="../qml/SettingsPage.qml" line="194"/>
+        <source>Stream relaying</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="217"/>
+        <source>Always</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="218"/>
+        <source>Only SHOUTcast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="219"/>
+        <source>Never</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="235"/>
+        <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Proxy (default)</source>
-        <translation>Proxy (por defecto)</translation>
+        <translation type="vanished">Proxy (por defecto)</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="251"/>
+        <source>None</source>
+        <translation type="obsolete">Ninguno</translation>
+    </message>
+    <message>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluyendo los no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en la red local.</translation>
+        <translation type="vanished">%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluyendo los no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en la red local.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="263"/>
+        <location filename="../qml/SettingsPage.qml" line="190"/>
         <source>Advanced options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="318"/>
+        <location filename="../qml/SettingsPage.qml" line="195"/>
+        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), SHOUTcast titles and Stream recorder are not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="298"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="317"/>
+        <location filename="../qml/SettingsPage.qml" line="297"/>
         <source>Enable logging</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1232,9 +1292,8 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="vanished">Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="223"/>
         <source>Internet streaming mode</source>
-        <translation>Modo transmisión por internet</translation>
+        <translation type="vanished">Modo transmisión por internet</translation>
     </message>
     <message>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
@@ -1245,9 +1304,8 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="vanished">Proxy</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="240"/>
         <source>Redirection</source>
-        <translation>Redirección</translation>
+        <translation type="vanished">Redirección</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
@@ -1255,36 +1313,29 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="61"/>
         <source>Forward/backward time-step interval</source>
-        <translation>Intervalo de paso de tiempo adelante/atrás</translation>
+        <translation type="vanished">Intervalo de paso de tiempo adelante/atrás</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="86"/>
+        <location filename="../qml/SettingsPage.qml" line="75"/>
         <source>Volume level step</source>
         <translation>Paso de nivel de volumen</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="100"/>
         <source>Image content</source>
-        <translation>Contenido de imagen</translation>
+        <translation type="vanished">Contenido de imagen</translation>
     </message>
     <message>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
         <translation type="vanished">Formato de retransmisión utilizado cuando %1 captura la salida de audio de otra aplicación. La transmisión no comprimida (PCM) produce un retraso menor, pero la tasa de bits más alta probablemente causará un mayor desgaste de la batería</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="192"/>
+        <location filename="../qml/SettingsPage.qml" line="159"/>
         <source>Directory for recordings</source>
         <translation>Directorio para grabaciones</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="224"/>
-        <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="250"/>
+        <location filename="../qml/SettingsPage.qml" line="234"/>
         <source>All devices visible</source>
         <translation>Dispositivos visibles</translation>
     </message>
@@ -1302,22 +1353,22 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation>Buscar canales</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="75"/>
+        <location filename="../qml/SomafmPage.qml" line="76"/>
         <source>Refresh channel list</source>
         <translation>Actualizar lista de canales</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="83"/>
+        <location filename="../qml/SomafmPage.qml" line="84"/>
         <source>Unselect all</source>
         <translation>Deseleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="84"/>
+        <location filename="../qml/SomafmPage.qml" line="85"/>
         <source>Select all</source>
         <translation>Seleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/SomafmPage.qml" line="112"/>
+        <location filename="../qml/SomafmPage.qml" line="113"/>
         <source>No channels</source>
         <translation>No hay canales</translation>
     </message>
@@ -1356,9 +1407,13 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
 <context>
     <name>UpnpCDirDevicesPage</name>
     <message>
-        <location filename="../qml/UpnpCDirDevicesPage.qml" line="58"/>
         <source>Cannot connect to the local network</source>
-        <translation type="unfinished">No se puede conectar a la red local</translation>
+        <translation type="obsolete">No se puede conectar a la red local</translation>
+    </message>
+    <message>
+        <location filename="../qml/UpnpCDirDevicesPage.qml" line="58"/>
+        <source>Cannot connect to a local network</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="61"/>
@@ -1366,7 +1421,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="unfinished">Ah ocurrido un error interno</translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirDevicesPage.qml" line="82"/>
+        <location filename="../qml/UpnpCDirDevicesPage.qml" line="81"/>
         <source>Media Servers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1376,9 +1431,23 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/UpnpCDirDevicesPage.qml" line="139"/>
+        <source>No Media Servers found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/UpnpCDirDevicesPage.qml" line="141"/>
+        <source>Pull down to find Media Servers in your network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="142"/>
-        <source>No Media Servers found. 
-Pull down to find more devices in your network.</source>
+        <source>Connect WLAN to find Media Servers in your network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/UpnpCDirDevicesPage.qml" line="139"/>
+        <source>Disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1390,17 +1459,16 @@ Pull down to find more devices in your network.</source>
         <translation type="obsolete">Buscar</translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirDevicesPage.qml" line="89"/>
         <source>Connect</source>
-        <translation type="unfinished">conectar</translation>
+        <translation type="obsolete">conectar</translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirDevicesPage.qml" line="128"/>
+        <location filename="../qml/UpnpCDirDevicesPage.qml" line="125"/>
         <source>Remove from favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirDevicesPage.qml" line="128"/>
+        <location filename="../qml/UpnpCDirDevicesPage.qml" line="125"/>
         <source>Add to favorites</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1410,11 +1478,6 @@ Pull down to find more devices in your network.</source>
         <translation type="obsolete">No se encontraron dispositivos.
 Halar hacia abajo para la lista de opciones y encontrar más dispositivos en la red.</translation>
     </message>
-    <message>
-        <location filename="../qml/UpnpCDirDevicesPage.qml" line="144"/>
-        <source>Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>UpnpCDirPage</name>
@@ -1423,22 +1486,22 @@ Halar hacia abajo para la lista de opciones y encontrar más dispositivos en la 
         <translation type="obsolete">Buscar pistas</translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirPage.qml" line="63"/>
+        <location filename="../qml/UpnpCDirPage.qml" line="64"/>
         <source>Unselect all</source>
         <translation type="unfinished">Deseleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirPage.qml" line="64"/>
+        <location filename="../qml/UpnpCDirPage.qml" line="65"/>
         <source>Select all</source>
         <translation type="unfinished">Seleccionar todo</translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirPage.qml" line="84"/>
+        <location filename="../qml/UpnpCDirPage.qml" line="85"/>
         <source>Track number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirPage.qml" line="86"/>
+        <location filename="../qml/UpnpCDirPage.qml" line="87"/>
         <source>Title</source>
         <translation type="unfinished">Título</translation>
     </message>
@@ -1448,27 +1511,27 @@ Halar hacia abajo para la lista de opciones y encontrar más dispositivos en la 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirPage.qml" line="82"/>
+        <location filename="../qml/UpnpCDirPage.qml" line="83"/>
         <source>Album</source>
         <translation type="unfinished">Álbum</translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirPage.qml" line="85"/>
+        <location filename="../qml/UpnpCDirPage.qml" line="86"/>
         <source>Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirPage.qml" line="83"/>
+        <location filename="../qml/UpnpCDirPage.qml" line="84"/>
         <source>Artist</source>
         <translation type="unfinished">Artista</translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirPage.qml" line="88"/>
+        <location filename="../qml/UpnpCDirPage.qml" line="89"/>
         <source>Sort by: %1</source>
         <translation type="unfinished">Ordenar por: %1</translation>
     </message>
     <message>
-        <location filename="../qml/UpnpCDirPage.qml" line="156"/>
+        <location filename="../qml/UpnpCDirPage.qml" line="157"/>
         <source>No tracks</source>
         <translation type="unfinished">No hay pistas</translation>
     </message>
@@ -1505,12 +1568,12 @@ Halar hacia abajo para la lista de opciones y encontrar más dispositivos en la 
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../../core/utils.cpp" line="423"/>
+        <location filename="../../core/utils.cpp" line="417"/>
         <source>Today</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../core/utils.cpp" line="425"/>
+        <location filename="../../core/utils.cpp" line="419"/>
         <source>Yesterday</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1518,9 +1581,19 @@ Halar hacia abajo para la lista de opciones y encontrar más dispositivos en la 
 <context>
     <name>main</name>
     <message>
-        <location filename="../qml/main.qml" line="47"/>
+        <location filename="../qml/main.qml" line="50"/>
         <source>Track &quot;%1&quot; saved</source>
         <translation>Canción &quot;%1&quot; guardada</translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="60"/>
+        <source>Cannot connect to a local network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="63"/>
+        <source>An internal error occurred</source>
+        <translation type="unfinished">Ah ocurrido un error interno</translation>
     </message>
 </context>
 </TS>

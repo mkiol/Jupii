@@ -357,7 +357,7 @@
     <message>
         <source>No devices found. 
 Pull down to find more devices in your network.</source>
-        <translation>Geen apparaten gevonden.
+        <translation type="vanished">Geen apparaten gevonden.
 Trek omlaag om meer apparaten in je netwerk te vinden.</translation>
     </message>
     <message>
@@ -367,19 +367,11 @@ Pull down to connect to the local network.</source>
 Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
-        <source>Cannot connect to the local network</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Remove from favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Add to favorites</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pull down to connect to the local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -392,6 +384,26 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Power On</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot connect to a local network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No devices found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to find more devices in your network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect WLAN to find devices in your network</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -527,10 +539,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Url</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Screen Capture</source>
         <translation type="unfinished"></translation>
     </message>
@@ -547,10 +555,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Recording</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
@@ -563,7 +567,11 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Server name</source>
+        <source>Media Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SHOUTcast URL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -642,7 +650,7 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Empty</source>
-        <translation type="unfinished">Leeg</translation>
+        <translation type="obsolete">Leeg</translation>
     </message>
     <message>
         <source>Save playlist</source>
@@ -650,7 +658,7 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Add item</source>
-        <translation type="unfinished">Item toevoegen</translation>
+        <translation type="obsolete">Item toevoegen</translation>
     </message>
     <message>
         <source>Show</source>
@@ -678,6 +686,22 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Clear queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to add new items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clearing play queue</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -790,7 +814,7 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     <name>SavePlaylistPage</name>
     <message>
         <source>Playlist was saved</source>
-        <translation type="vanished">Afspeellijst opgeslagen</translation>
+        <translation>Afspeellijst opgeslagen</translation>
     </message>
     <message>
         <source>Save</source>
@@ -803,10 +827,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     <message>
         <source>Name</source>
         <translation>Naam</translation>
-    </message>
-    <message>
-        <source>Plylist was saved</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -831,7 +851,7 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Start with last playlist</source>
-        <translation>Beginnen met laatste afspeellijst</translation>
+        <translation type="vanished">Beginnen met laatste afspeellijst</translation>
     </message>
     <message>
         <source>Volume control with hardware keys</source>
@@ -843,11 +863,11 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation>Afbeeldingen afspelen op UPnP-apparaten werkt momenteel niet zo goed. Er zijn enkele kleine probleempjes die nog niet opgelost zijn. Deze optie dwingt %1 om afbeeldingen toch af te spelen.</translation>
+        <translation type="vanished">Afbeeldingen afspelen op UPnP-apparaten werkt momenteel niet zo goed. Er zijn enkele kleine probleempjes die nog niet opgelost zijn. Deze optie dwingt %1 om afbeeldingen toch af te spelen.</translation>
     </message>
     <message>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation>%1 ondersteunt enkel Media Renderer-apparaten. Met deze optie ingeschakeld worden alle UPnP-apparaten getoond, inclusief niet-ondersteunde apparaten zoals thuisrouters of Media Servers. Van niet-ondersteunde apparaten kan %1 enkel basisbeschrijvingen tonen. Deze optie kan nuttig zijn om UPnP-apparaten in je lokale netwerk te controleren.</translation>
+        <translation type="vanished">%1 ondersteunt enkel Media Renderer-apparaten. Met deze optie ingeschakeld worden alle UPnP-apparaten getoond, inclusief niet-ondersteunde apparaten zoals thuisrouters of Media Servers. Van niet-ondersteunde apparaten kan %1 enkel basisbeschrijvingen tonen. Deze optie kan nuttig zijn om UPnP-apparaten in je lokale netwerk te controleren.</translation>
     </message>
     <message>
         <source>Adding devices manually</source>
@@ -859,11 +879,11 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Forward/backward time-step interval</source>
-        <translation>Stapinterval voor door-/terugspoelen</translation>
+        <translation type="vanished">Stapinterval voor door-/terugspoelen</translation>
     </message>
     <message>
         <source>Image content</source>
-        <translation>Afbeeldingsinhoud</translation>
+        <translation type="vanished">Afbeeldingsinhoud</translation>
     </message>
     <message>
         <source>All devices visible</source>
@@ -875,10 +895,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Experiments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When Jupii starts, the last playlist will be automatically loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -899,26 +915,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Volume level step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Internet streaming mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Proxy (default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Redirection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -962,15 +958,47 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enables Screen casting feature. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Share play queue items via UPnP Media Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Items on play queue will be accessible for other UPnP devices.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Don&apos;t force</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stream relaying</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only SHOUTcast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables recording of tracks from SHOUTcast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), SHOUTcast titles and Stream recorder are not available.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1030,10 +1058,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
 <context>
     <name>UpnpCDirDevicesPage</name>
     <message>
-        <source>Cannot connect to the local network</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>An internal error occurred</source>
         <translation type="unfinished">Er trad een interne fout op</translation>
     </message>
@@ -1047,7 +1071,7 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Connect</source>
-        <translation type="unfinished">Verbinden</translation>
+        <translation type="obsolete">Verbinden</translation>
     </message>
     <message>
         <source>Remove from favorites</source>
@@ -1064,10 +1088,6 @@ Pull down to find more devices in your network.</source>
 Trek omlaag om meer apparaten in je netwerk te vinden.</translation>
     </message>
     <message>
-        <source>Pull down to connect to the local network.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Media Servers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1076,8 +1096,23 @@ Trek omlaag om meer apparaten in je netwerk te vinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No Media Servers found. 
-Pull down to find more devices in your network.</source>
+        <source>Cannot connect to a local network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Media Servers found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to find Media Servers in your network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect WLAN to find Media Servers in your network</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1169,6 +1204,14 @@ Trek omlaag om meer apparaten in je netwerk te vinden.</translation>
     <message>
         <source>Track &quot;%1&quot; saved</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot connect to a local network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An internal error occurred</source>
+        <translation type="unfinished">Er trad een interne fout op</translation>
     </message>
 </context>
 </TS>
