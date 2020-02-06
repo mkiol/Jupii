@@ -48,10 +48,18 @@ ListItem {
             visible: icon.status !== Image.Ready
         }
 
-        Image {
-            id: _aicon
+        Rectangle {
+            visible: _aicon.status === Image.Ready
             anchors.right: parent.right
             anchors.bottom: parent.bottom
+            width: Theme.iconSizeSmall
+            height: Theme.iconSizeSmall
+            color: Theme.rgba((Theme.colorScheme === Theme.LightOnDark ?
+                      Theme.darkPrimaryColor : Theme.lightPrimaryColor), 0.5)
+            Image {
+                id: _aicon
+                anchors.fill: parent
+            }
         }
     }
 

@@ -158,6 +158,24 @@ DockedPanel_ {
                     source: av.currentAlbumArtURI
                 }
 
+                Rectangle {
+                    visible: _aicon.status === Image.Ready
+                    anchors.right: _image.right
+                    anchors.bottom: _image.bottom
+                    width: Theme.iconSizeSmall
+                    height: Theme.iconSizeSmall
+                    color: Theme.rgba((Theme.colorScheme === Theme.LightOnDark ?
+                             Theme.darkPrimaryColor : Theme.lightPrimaryColor), 0.5)
+                    Image {
+                        id: _aicon
+                        anchors.fill: parent
+                        source: itemType === ContentServer.ItemType_Url ?
+                                    ("image://icons/icon-s-browser?" + Theme.primaryColor) :
+                                itemType === ContentServer.ItemType_Upnp ?
+                                    ("image://icons/icon-s-device?" + Theme.primaryColor) : ""
+                    }
+                }
+
                 Image {
                     anchors {
                         right: _image.right
