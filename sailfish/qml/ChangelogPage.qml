@@ -29,12 +29,54 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.6.0")
+            }
+
+            LogItem {
+                title: "Items from UPnP Media Servers on play queue"
+                description: "Support for content located on UPnP Media Servers is added. " +
+                             "You can browse and add new type of items by using 'Add Items' menu."
+            }
+
+            LogItem {
+                title: "Favorite devices option"
+                description: "Devices discovery takes few seconds. If you mark " +
+                             "a device as favorite, it will be treated as always available " +
+                             "and therefore you will be able to connect without wait."
+            }
+
+            LogItem {
+                title: "Play queue usability enhancement"
+                description: "Navigation on the play queue is improved. You can access " +
+                             "play queue without being connected to any device. "
+            }
+
+            LogItem {
+                title: "Tracks history for Icecast items"
+                description: "The history of played tracks in Icecast stream is " +
+                             "presented on media info page"
+            }
+
+            LogItem {
+                title: "Force 16:9 aspect ratio option for Screen capture"
+                description: "When screen aspect ratio is not 16:9 (e.g. Xperia 10), " +
+                             "you can crop/scale screen to 16:9."
+            }
+
+            LogItem {
+                title: "Bug fixes and many small improvements"
+                description: "Issues releated to volume control with HW keys, " +
+                             "sorting on devices list, WLAN on/off handling, " +
+                             "occasional crashes and many more are resolved."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.5.4")
             }
 
             LogItem {
                 title: "Bug fixes and small improvements"
-                description: "Issue with settings saving has been resolved. " +
+                description: "Issue with settings saving is resolved. " +
                              "UPnP devices are now listed in alphabetical order."
             }
 
@@ -82,7 +124,7 @@ Page {
 
             LogItem {
                 title: "Stream recorder (Experiment)"
-                description: "Enables recording of tracks from SHOUTcast stream. " +
+                description: "Enables recording of tracks from Icecast stream. " +
                              "When stream provides information " +
                              "about the title of the currently played track, " +
                              "you can save this track to a file. " +
@@ -255,10 +297,10 @@ Page {
             }
 
             LogItem {
-                title: "SHOUTcast meta data support"
-                description: "Many internet radio services use SHOUTcast streaming. " +
+                title: "Icecast meta data support"
+                description: "Many internet radio services use Icecast streaming. " +
                              "Jupii is able to display stream title retrieved from meta data. " +
-                             "It also removes in-stream meta data if DLNA device doesn't support SHOUTcast protocol."
+                             "It also removes in-stream meta data if DLNA device doesn't support Icecast protocol."
             }
 
             LogItem {
