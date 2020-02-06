@@ -571,7 +571,7 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>SHOUTcast URL</source>
+        <source>Icecast URL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -978,10 +978,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Only SHOUTcast</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Never</source>
         <translation type="unfinished"></translation>
     </message>
@@ -994,11 +990,15 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enables recording of tracks from SHOUTcast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
+        <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), SHOUTcast titles and Stream recorder are not available.</source>
+        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only Icecast</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

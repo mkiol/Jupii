@@ -257,17 +257,18 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="47"/>
-        <location filename="../qml/ChangelogPage.qml" line="62"/>
-        <location filename="../qml/ChangelogPage.qml" line="149"/>
-        <location filename="../qml/ChangelogPage.qml" line="204"/>
-        <location filename="../qml/ChangelogPage.qml" line="275"/>
-        <location filename="../qml/ChangelogPage.qml" line="285"/>
-        <location filename="../qml/ChangelogPage.qml" line="301"/>
-        <location filename="../qml/ChangelogPage.qml" line="316"/>
-        <location filename="../qml/ChangelogPage.qml" line="351"/>
-        <location filename="../qml/ChangelogPage.qml" line="362"/>
-        <location filename="../qml/ChangelogPage.qml" line="408"/>
+        <location filename="../qml/ChangelogPage.qml" line="74"/>
+        <location filename="../qml/ChangelogPage.qml" line="89"/>
+        <location filename="../qml/ChangelogPage.qml" line="104"/>
+        <location filename="../qml/ChangelogPage.qml" line="191"/>
+        <location filename="../qml/ChangelogPage.qml" line="246"/>
+        <location filename="../qml/ChangelogPage.qml" line="317"/>
+        <location filename="../qml/ChangelogPage.qml" line="327"/>
+        <location filename="../qml/ChangelogPage.qml" line="343"/>
+        <location filename="../qml/ChangelogPage.qml" line="358"/>
+        <location filename="../qml/ChangelogPage.qml" line="393"/>
+        <location filename="../qml/ChangelogPage.qml" line="404"/>
+        <location filename="../qml/ChangelogPage.qml" line="450"/>
         <source>Version %1</source>
         <translation>Versione %1</translation>
     </message>
@@ -600,6 +601,11 @@ Trascina in basso per connetterti alla rete locale.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/MediaInfoPage.qml" line="139"/>
+        <source>Icecast URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/MediaInfoPage.qml" line="143"/>
         <source>Screen Capture</source>
         <translation type="unfinished"></translation>
@@ -638,11 +644,6 @@ Trascina in basso per connetterti alla rete locale.</translation>
         <location filename="../qml/MediaInfoPage.qml" line="170"/>
         <source>None</source>
         <translation>Nessuna</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="139"/>
-        <source>SHOUTcast URL</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="141"/>
@@ -1103,11 +1104,6 @@ Trascina in basso per connetterti alla rete locale.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="135"/>
-        <source>Enables recording of tracks from SHOUTcast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Share playlist items via UPnP</source>
         <translation type="vanished">Condividi elementi via UPnP</translation>
     </message>
@@ -1181,6 +1177,16 @@ Trascina in basso per connetterti alla rete locale.</translation>
         <translation>Registrazione streaming</translation>
     </message>
     <message>
+        <location filename="../qml/SettingsPage.qml" line="135"/>
+        <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="218"/>
+        <source>Only Icecast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
         <translation type="vanished">Abilita la registrazione di brani dallo streaming SHOUTcast. Quando lo streaming include informazioni sul brano corrente, puoi salvarle. Per abilitare la registrazione usa il pulsante &quot;Registra&quot; posto vicino al pulsante &quot;Avanti&quot; nella barra inferiore. Questo pulsante è visibile solo quanto la registrazionen è possibile. Quando il pulsante &quot;Registra&quot; è attivo, l&apos;intera registrazione (dall&apos;inizio alla fine del brano) sarà salvata in un file. Al momento gli stream in AAC non possono essere registrati.</translation>
     </message>
@@ -1205,13 +1211,13 @@ Trascina in basso per connetterti alla rete locale.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="217"/>
-        <source>Always</source>
+        <location filename="../qml/SettingsPage.qml" line="195"/>
+        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="218"/>
-        <source>Only SHOUTcast</source>
+        <location filename="../qml/SettingsPage.qml" line="217"/>
+        <source>Always</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1256,11 +1262,6 @@ Trascina in basso per connetterti alla rete locale.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="190"/>
         <source>Advanced options</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="195"/>
-        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), SHOUTcast titles and Stream recorder are not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

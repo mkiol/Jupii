@@ -286,17 +286,18 @@
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="47"/>
-        <location filename="../qml/ChangelogPage.qml" line="62"/>
-        <location filename="../qml/ChangelogPage.qml" line="149"/>
-        <location filename="../qml/ChangelogPage.qml" line="204"/>
-        <location filename="../qml/ChangelogPage.qml" line="275"/>
-        <location filename="../qml/ChangelogPage.qml" line="285"/>
-        <location filename="../qml/ChangelogPage.qml" line="301"/>
-        <location filename="../qml/ChangelogPage.qml" line="316"/>
-        <location filename="../qml/ChangelogPage.qml" line="351"/>
-        <location filename="../qml/ChangelogPage.qml" line="362"/>
-        <location filename="../qml/ChangelogPage.qml" line="408"/>
+        <location filename="../qml/ChangelogPage.qml" line="74"/>
+        <location filename="../qml/ChangelogPage.qml" line="89"/>
+        <location filename="../qml/ChangelogPage.qml" line="104"/>
+        <location filename="../qml/ChangelogPage.qml" line="191"/>
+        <location filename="../qml/ChangelogPage.qml" line="246"/>
+        <location filename="../qml/ChangelogPage.qml" line="317"/>
+        <location filename="../qml/ChangelogPage.qml" line="327"/>
+        <location filename="../qml/ChangelogPage.qml" line="343"/>
+        <location filename="../qml/ChangelogPage.qml" line="358"/>
+        <location filename="../qml/ChangelogPage.qml" line="393"/>
+        <location filename="../qml/ChangelogPage.qml" line="404"/>
+        <location filename="../qml/ChangelogPage.qml" line="450"/>
         <source>Version %1</source>
         <translation>Versión %1</translation>
     </message>
@@ -631,6 +632,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/MediaInfoPage.qml" line="139"/>
+        <source>Icecast URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/MediaInfoPage.qml" line="143"/>
         <source>Screen Capture</source>
         <translation type="unfinished"></translation>
@@ -675,11 +681,6 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <location filename="../qml/MediaInfoPage.qml" line="170"/>
         <source>None</source>
         <translation>Ninguno</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="139"/>
-        <source>SHOUTcast URL</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="141"/>
@@ -1209,7 +1210,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="135"/>
-        <source>Enables recording of tracks from SHOUTcast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
+        <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1232,13 +1233,13 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="217"/>
-        <source>Always</source>
+        <location filename="../qml/SettingsPage.qml" line="195"/>
+        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="218"/>
-        <source>Only SHOUTcast</source>
+        <location filename="../qml/SettingsPage.qml" line="217"/>
+        <source>Always</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1266,11 +1267,6 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="190"/>
         <source>Advanced options</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="195"/>
-        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), SHOUTcast titles and Stream recorder are not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1333,6 +1329,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <location filename="../qml/SettingsPage.qml" line="159"/>
         <source>Directory for recordings</source>
         <translation>Directorio para grabaciones</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="218"/>
+        <source>Only Icecast</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="234"/>
