@@ -132,7 +132,7 @@ Page {
                 visible:  settings.remoteContentMode == 0
                 checked: settings.rec
                 text: qsTr("Stream recorder")
-                description: qsTr("Enables recording of tracks from SHOUTcast streams. " +
+                description: qsTr("Enables recording of tracks from Icecast streams. " +
                                   "To enable recording use 'Record' button located on the bottom bar. " +
                                   "When the 'Record' button is activated before " +
                                   "the end of currently played track, the whole track is saved to a file.")
@@ -195,7 +195,7 @@ Page {
                 description: qsTr("Internet streams are relayed to UPnP device through %1. " +
                                   "Recommended option is 'Always' because it provides best " +
                                   "compatibility. When relaying is disabled ('Never' option), " +
-                                  "SHOUTcast titles and Stream recorder " +
+                                  "Icecast titles and Stream recorder " +
                                   "are not available.").arg(APP_NAME)
                 currentIndex: {
                     // 0 - proxy for all
@@ -215,7 +215,7 @@ Page {
 
                 menu: ContextMenu {
                     MenuItem { text: qsTr("Always") }
-                    MenuItem { text: qsTr("Only SHOUTcast") }
+                    MenuItem { text: qsTr("Only Icecast") }
                     MenuItem { text: qsTr("Never") }
                 }
                 onCurrentIndexChanged: {

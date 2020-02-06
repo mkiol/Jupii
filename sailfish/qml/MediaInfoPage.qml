@@ -136,7 +136,7 @@ Page {
                         case ContentServer.ItemType_LocalFile:
                             return qsTr("Local file")
                         case ContentServer.ItemType_Url:
-                            return isShout ? qsTr("SHOUTcast URL") : qsTr("URL")
+                            return isShout ? qsTr("Icecast URL") : qsTr("URL")
                         case ContentServer.ItemType_Upnp:
                             return qsTr("UPnP Media Server")
                         case ContentServer.ItemType_ScreenCapture:
