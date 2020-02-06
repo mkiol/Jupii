@@ -8,6 +8,14 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Thu Feb 06 2020 Michal Kosciesza <michal@mkiol.net> 2.6.0-1
+- Items from UPnP Media Servers on play queue
+- Favorite devices option
+- Play queue usability enhancement
+- Tracks history for Icecast items
+- Force 16:9 aspect ratio option for Screen capture
+- Bug fixes and many small improvements
+
 * Sun Dec 08 2019 Michal Kosciesza <michal@mkiol.net> 2.5.4-1
 - German translation update
 - Chinese translation update
