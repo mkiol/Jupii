@@ -3254,11 +3254,14 @@ void ContentServer::shoutcastMetadataHandler(const QUrl &id,
     stream.id = id;
     stream.title = new_title;
 
-    if (stream.titleHistory.isEmpty() || stream.titleHistory.first() != new_title)
-        stream.titleHistory.push_front(new_title);
-
-    if (stream.titleHistory.length() > 20) // max number of titiles in history list
-        stream.titleHistory.removeLast();
+    if (new_title.isEmpty()) {
+        stream.titleHistory.clear();
+    } else if (stream.titleHistory.isEmpty() ||
+               stream.titleHistory.first() != new_title) {
+            stream.titleHistory.push_front(new_title);
+            if (stream.titleHistory.length() > 20) // max number of titiles in history list
+                stream.titleHistory.removeLast();
+    }
 
     emit streamTitleChanged(id, stream.title);
 }
