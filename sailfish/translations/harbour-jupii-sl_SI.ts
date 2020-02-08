@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sl_SI" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="sl_SI" sourcelanguage="en_US" version="2.1">
 <context>
     <name>AboutPage</name>
     <message>
@@ -67,13 +65,9 @@
         <translation>Izvajalec</translation>
     </message>
     <message>
-        <source>Playlist file</source>
-        <translation type="vanished">Seznam predvajanja</translation>
-    </message>
-    <message>
         <location filename="../qml/AddMediaPage.qml" line="76"/>
         <source>Playlist</source>
-        <translation type="unfinished">Seznam predvajanja</translation>
+        <translation>Seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="85"/>
@@ -103,7 +97,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="130"/>
         <source>UPnP Media Server</source>
-        <translation type="unfinished"></translation>
+        <translation>UPnP medijski server</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="139"/>
@@ -194,12 +188,7 @@
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n skladba</numerusform>
-            <numerusform>%n skladbi</numerusform>
-            <numerusform>%n skladbe</numerusform>
-            <numerusform>%n skladb</numerusform>
-        </translation>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="98"/>
@@ -227,12 +216,7 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="80"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n skladba</numerusform>
-            <numerusform>%n skladbi</numerusform>
-            <numerusform>%n skladbe</numerusform>
-            <numerusform>%n skladb</numerusform>
-        </translation>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="88"/>
@@ -243,13 +227,6 @@
         <location filename="../qml/ArtistPage.qml" line="106"/>
         <source>No artists</source>
         <translation>Ni izvajalcev</translation>
-    </message>
-</context>
-<context>
-    <name>CDirModel</name>
-    <message>
-        <source>Unknown</source>
-        <translation type="obsolete">Neznano</translation>
     </message>
 </context>
 <context>
@@ -305,7 +282,7 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="290"/>
         <source>Recorded from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Posneto iz %1</translation>
     </message>
 </context>
 <context>
@@ -380,13 +357,9 @@
 <context>
     <name>DevicesPage</name>
     <message>
-        <source>Cannot connect to the local network</source>
-        <translation type="vanished">Ne morem se povezati v lokalno omrežje</translation>
-    </message>
-    <message>
         <location filename="../qml/DevicesPage.qml" line="54"/>
         <source>Cannot connect to a local network</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne morem se povezati v lokalno omrežje</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="57"/>
@@ -419,69 +392,49 @@
         <translation>Poveži</translation>
     </message>
     <message>
-        <location filename="../qml/DevicesPage.qml" line="140"/>
-        <source>Power Off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/DevicesPage.qml" line="140"/>
-        <source>Power On</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/DevicesPage.qml" line="171"/>
-        <source>Disconnected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/DevicesPage.qml" line="171"/>
-        <source>No devices found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/DevicesPage.qml" line="173"/>
-        <source>Pull down to find more devices in your network</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/DevicesPage.qml" line="174"/>
-        <source>Connect WLAN to find devices in your network</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Playlist</source>
-        <translation type="obsolete">Seznam predvajanja</translation>
-    </message>
-    <message>
         <location filename="../qml/DevicesPage.qml" line="132"/>
         <source>Show description</source>
         <translation>Prikaži opis</translation>
     </message>
     <message>
-        <source>Toggle power</source>
-        <translation type="vanished">Vklop/izklop</translation>
+        <location filename="../qml/DevicesPage.qml" line="140"/>
+        <source>Power Off</source>
+        <translation>Izključi</translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="140"/>
+        <source>Power On</source>
+        <translation>Vključi</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="148"/>
         <source>Remove from favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstrani iz priljubljenih</translation>
     </message>
     <message>
         <location filename="../qml/DevicesPage.qml" line="148"/>
         <source>Add to favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj med priljubljene</translation>
     </message>
     <message>
-        <source>No devices found. 
-Pull down to find more devices in your network.</source>
-        <translation type="vanished">Ni najdenih naprav. 
-Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
+        <location filename="../qml/DevicesPage.qml" line="171"/>
+        <source>No devices found</source>
+        <translation>Ni najdenih naprav</translation>
     </message>
     <message>
-        <source>Not connected. 
-Pull down to connect to the local network.</source>
-        <translation type="vanished">Brez povezave. 
-Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
+        <location filename="../qml/DevicesPage.qml" line="173"/>
+        <source>Pull down to find more devices in your network</source>
+        <translation>Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="174"/>
+        <source>Connect WLAN to find devices in your network</source>
+        <translation>Za iskanje naprav se priključite v brezžično omrežje</translation>
+    </message>
+    <message>
+        <location filename="../qml/DevicesPage.qml" line="171"/>
+        <source>Disconnected</source>
+        <translation>Brez povezave</translation>
     </message>
 </context>
 <context>
@@ -571,8 +524,34 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <translation>Kopiraj URL</translation>
     </message>
     <message>
-        <source>Copy stream title</source>
-        <translation type="vanished">Kopiraj naslov pretoka</translation>
+        <location filename="../qml/MediaInfoPage.qml" line="133"/>
+        <source>Item type</source>
+        <translation>Tip vsebine</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="137"/>
+        <source>Local file</source>
+        <translation>Lokalna datoteka</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="139"/>
+        <source>Icecast URL</source>
+        <translation>Icecast URL</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="143"/>
+        <source>Screen Capture</source>
+        <translation>Posnetek zaslona</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="145"/>
+        <source>Audio Capture</source>
+        <translation>Zajem zvoka</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="147"/>
+        <source>Microphone</source>
+        <translation>Mikrofon</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="155"/>
@@ -583,46 +562,32 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <location filename="../qml/MediaInfoPage.qml" line="155"/>
         <location filename="../qml/MediaInfoPage.qml" line="178"/>
         <source>Station name</source>
-        <translation type="unfinished">Ime postaje</translation>
+        <translation>Ime postaje</translation>
     </message>
     <message>
-        <source>Stream title</source>
-        <translation type="vanished">Naslov pretoka</translation>
+        <location filename="../qml/MediaInfoPage.qml" line="170"/>
+        <source>None</source>
+        <translation>Nič</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="286"/>
+        <source>Sensitivity</source>
+        <translation>Občutljivost</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="294"/>
+        <source>Tracks history</source>
+        <translation>Zgodovina posnetka</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="78"/>
         <source>Copy current title</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiraj trenutni naslov</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="133"/>
-        <source>Item type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="137"/>
-        <source>Local file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="139"/>
-        <source>Icecast URL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="143"/>
-        <source>Screen Capture</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="145"/>
-        <source>Audio Capture</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="147"/>
-        <source>Microphone</source>
-        <translation type="unfinished">Mikrofon</translation>
+        <location filename="../qml/MediaInfoPage.qml" line="141"/>
+        <source>UPnP Media Server</source>
+        <translation>UPnP medijski server</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="166"/>
@@ -632,27 +597,7 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="166"/>
         <source>Current title</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="286"/>
-        <source>Sensitivity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="294"/>
-        <source>Tracks history</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="170"/>
-        <source>None</source>
-        <translation>Nič</translation>
-    </message>
-    <message>
-        <location filename="../qml/MediaInfoPage.qml" line="141"/>
-        <source>UPnP Media Server</source>
-        <translation type="unfinished"></translation>
+        <translation>Trenutni naslov</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="178"/>
@@ -677,12 +622,12 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="205"/>
         <source>Recording date</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum snemanja</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="211"/>
         <source>Media Server</source>
-        <translation type="unfinished"></translation>
+        <translation>Medijski server</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="248"/>
@@ -700,176 +645,93 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <source>URL</source>
         <translation>URL</translation>
     </message>
-    <message>
-        <source>Microphone sensitivity</source>
-        <translation type="vanished">Občutljivost mikrofona</translation>
-    </message>
-</context>
-<context>
-    <name>MediaRendererPage</name>
-    <message>
-        <source>Item is already added</source>
-        <translation type="vanished">Element je že dodan</translation>
-    </message>
-    <message>
-        <source>Item cannot be added</source>
-        <translation type="vanished">Elementa ni možno dodati</translation>
-    </message>
-    <message>
-        <source>Some items cannot be added</source>
-        <translation type="vanished">Nekaterih elementov ni možno dodati</translation>
-    </message>
-    <message>
-        <source>Items cannot be added</source>
-        <translation type="vanished">Elementov ni možno dodati</translation>
-    </message>
-    <message>
-        <source>Unknown error</source>
-        <translation type="vanished">Neznana napaka</translation>
-    </message>
-    <message>
-        <source>Playlist</source>
-        <translation type="vanished">Seznam predvajanja</translation>
-    </message>
-    <message>
-        <source>Empty</source>
-        <translation type="vanished">Prazno</translation>
-    </message>
-    <message>
-        <source>Not connected</source>
-        <translation type="vanished">Brez povezave</translation>
-    </message>
-    <message>
-        <source>Save playlist</source>
-        <translation type="vanished">Shrani seznam predvajanja</translation>
-    </message>
-    <message>
-        <source>Clear playlist</source>
-        <translation type="vanished">Počisti seznam predvajanja</translation>
-    </message>
-    <message>
-        <source>Add item</source>
-        <translation type="vanished">Dodaj element</translation>
-    </message>
-    <message>
-        <source>Show</source>
-        <translation type="vanished">Prikaži</translation>
-    </message>
-    <message>
-        <source>Play</source>
-        <translation type="vanished">Predvajaj</translation>
-    </message>
-    <message>
-        <source>Pause</source>
-        <translation type="vanished">Pavza</translation>
-    </message>
-    <message>
-        <source>Remove</source>
-        <translation type="vanished">Odstrani</translation>
-    </message>
-    <message>
-        <source>Unknown</source>
-        <translation type="vanished">Neznano</translation>
-    </message>
 </context>
 <context>
     <name>PlayQueuePage</name>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="324"/>
         <source>Item is already added</source>
-        <translation type="unfinished">Element je že dodan</translation>
+        <translation>Element je že dodan</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="326"/>
         <source>Item cannot be added</source>
-        <translation type="unfinished">Elementa ni možno dodati</translation>
+        <translation>Elementa ni možno dodati</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="328"/>
         <source>Some items cannot be added</source>
-        <translation type="unfinished">Nekaterih elementov ni možno dodati</translation>
+        <translation>Nekaterih elementov ni možno dodati</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="330"/>
         <source>Items cannot be added</source>
-        <translation type="unfinished">Elementov ni možno dodati</translation>
+        <translation>Elementov ni možno dodati</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="332"/>
         <source>Unknown error</source>
-        <translation type="unfinished">Neznana napaka</translation>
+        <translation>Neznana napaka</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="354"/>
         <source>Play queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/PlayQueuePage.qml" line="426"/>
-        <source>Clearing play queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/PlayQueuePage.qml" line="430"/>
-        <source>Add items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/PlayQueuePage.qml" line="565"/>
-        <source>Pull down to add new items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Empty</source>
-        <translation type="obsolete">Prazno</translation>
+        <translation>Seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <source>Save queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Shrani seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="424"/>
         <source>Clear queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Počisti seznam predvajanja</translation>
     </message>
     <message>
-        <source>Save playlist</source>
-        <translation type="obsolete">Shrani seznam predvajanja</translation>
+        <location filename="../qml/PlayQueuePage.qml" line="426"/>
+        <source>Clearing play queue</source>
+        <translation>Čiščenje seznama predvajanja</translation>
     </message>
     <message>
-        <source>Add item</source>
-        <translation type="obsolete">Dodaj element</translation>
+        <location filename="../qml/PlayQueuePage.qml" line="430"/>
+        <source>Add items</source>
+        <translation>Dodaj elemente</translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="565"/>
+        <source>Pull down to add new items</source>
+        <translation>Za dodajanje novih elementov potegni navzdol</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="518"/>
         <source>Show</source>
-        <translation type="unfinished">Prikaži</translation>
+        <translation>Prikaži</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="518"/>
         <source>Play</source>
-        <translation type="unfinished">Predvajaj</translation>
+        <translation>Predvajaj</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="532"/>
         <source>Pause</source>
-        <translation type="unfinished">Pavza</translation>
+        <translation>Pavza</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="541"/>
         <source>Remove</source>
-        <translation type="unfinished">Odstrani</translation>
+        <translation>Odstrani</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="564"/>
         <source>No items</source>
-        <translation type="unfinished"></translation>
+        <translation>Ni elementov</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="582"/>
         <source>Unknown</source>
-        <translation type="unfinished">Neznano</translation>
+        <translation>Neznano</translation>
     </message>
 </context>
 <context>
@@ -883,32 +745,19 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
 <context>
     <name>PlaylistPage</name>
     <message>
-        <source>Playlist files</source>
-        <translation type="vanished">Seznami predvajanja</translation>
-    </message>
-    <message>
-        <source>Search playlist files</source>
-        <translation type="vanished">Išči po seznamih predvajanja</translation>
-    </message>
-    <message>
         <location filename="../qml/PlaylistPage.qml" line="72"/>
         <source>Playlists</source>
-        <translation type="unfinished"></translation>
+        <translation>Seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="73"/>
         <source>Search playlists</source>
-        <translation type="unfinished"></translation>
+        <translation>Išči po seznamih predvajanja</translation>
     </message>
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="83"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n skladba</numerusform>
-            <numerusform>%n skladbi</numerusform>
-            <numerusform>%n skladbe</numerusform>
-            <numerusform>%n skladb</numerusform>
-        </translation>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="91"/>
@@ -918,25 +767,17 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="96"/>
         <source>Delete playlist</source>
-        <translation type="unfinished"></translation>
+        <translation>Izbriši seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="120"/>
         <source>No playlists</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete playlist file</source>
-        <translation type="vanished">Izbriši seznam predvajanja</translation>
+        <translation>Ni seznamov predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="112"/>
         <source>Deleting</source>
         <translation>Brisanje</translation>
-    </message>
-    <message>
-        <source>No playlist files</source>
-        <translation type="vanished">Ni seznamov predvajanja</translation>
     </message>
 </context>
 <context>
@@ -945,7 +786,7 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <location filename="../../core/recmodel.cpp" line="82"/>
         <location filename="../../core/recmodel.cpp" line="84"/>
         <source>Unknown</source>
-        <translation type="unfinished">Neznano</translation>
+        <translation>Neznano</translation>
     </message>
 </context>
 <context>
@@ -963,12 +804,7 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="76"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Brisanje izbrane</numerusform>
-            <numerusform>Brisanje izbranih</numerusform>
-            <numerusform>Brisanje izbranih</numerusform>
-            <numerusform>Brisanje izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Brisanje izbrane</numerusform><numerusform>Brisanje izbranih</numerusform><numerusform>Brisanje izbranih</numerusform><numerusform>Brisanje izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="85"/>
@@ -1047,12 +883,7 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message numerus="yes">
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n izbran</numerusform>
-            <numerusform>%n izbrana</numerusform>
-            <numerusform>%n izbrani</numerusform>
-            <numerusform>%n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>%n izbran</numerusform><numerusform>%n izbrana</numerusform><numerusform>%n izbrani</numerusform><numerusform>%n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="50"/>
@@ -1068,22 +899,6 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <translation>Nastavitve</translation>
     </message>
     <message>
-        <source>Items on current playlist will be accessible for other UPnP devices through content directory service.</source>
-        <translation type="vanished">Vsebina trenutnega seznama predvajanja bo na voljo ostalim UPnP napravam</translation>
-    </message>
-    <message>
-        <source>Start with last playlist</source>
-        <translation type="vanished">Začni z zadnjim seznamom predvajanja</translation>
-    </message>
-    <message>
-        <source>When Jupii starts, the last playlist will be automatically loaded.</source>
-        <translation type="vanished">Ob zagonu Jupii bo zadnji seznam predvajanja samodejno naložen</translation>
-    </message>
-    <message>
-        <source>Forward/backward time-step interval</source>
-        <translation type="vanished">Časovni interval naprej/nazaj</translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="83"/>
         <source>Experiments</source>
         <translation>Ekperimenti</translation>
@@ -1096,12 +911,12 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="34"/>
         <source>Share play queue items via UPnP Media Server</source>
-        <translation type="unfinished"></translation>
+        <translation>Deli vsebino seznama predvanjaja preko UPnP</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="35"/>
         <source>Items on play queue will be accessible for other UPnP devices.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vsebina trenutnega seznama predvajanja bo na voljo ostalim UPnP napravam</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="75"/>
@@ -1109,77 +924,49 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <translation>Nastavitev korakov glasnosti</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="110"/>
-        <source>Enables Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Share playlist items via UPnP</source>
-        <translation type="vanished">Deljenje vsebine senzama predvanjaja preko UPnP</translation>
-    </message>
-    <message>
-        <source>Items on current playlist will be accessible for other UPnP devices though content directory service.</source>
-        <translation type="vanished">Vsebina trenutnega seznama predvajanja bo na voljo ostalim UPnP napravam</translation>
-    </message>
-    <message>
-        <source>Image content</source>
-        <translation type="vanished">Slikovna vsebina</translation>
-    </message>
-    <message>
-        <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation type="vanished">Predvajnje slik na UPnP nprave trenutno ne deluje zadovoljivo. Ta možnost vsili %1, da kljub težavam skuša predvajati slike.</translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="87"/>
         <source>Screen capture</source>
         <translation>Posnetek zaslona</translation>
     </message>
     <message>
-        <source>To start capturing add Screen capture item to your current playlist.</source>
-        <translation type="vanished">Za pričetek zajemanja vsebine dodajte Posnetek zaslona na vaš trenutni seznam predvajanja</translation>
-    </message>
-    <message>
-        <source>Screen capture with audio</source>
-        <translation type="vanished">Zajem zaslona z zvokom</translation>
-    </message>
-    <message>
-        <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="vanished">Med zajemanjem zaslona se shrani tudi zvok. Funkcija je v beta fazi in lahko povzroči dodaten zamik in zmanjša kvaliteto posnetka.</translation>
+        <location filename="../qml/SettingsPage.qml" line="110"/>
+        <source>Enables Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
+        <translation>Omogoči ScreenCast. Zajem videa je v beta fazi in kvaliteta ni najboljša.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="117"/>
         <source>Force screen 16:9 aspect ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Vsili 16:9 razmerje zaslona</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="92"/>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Onemogočeno</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="93"/>
         <source>Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Omogočeno</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="94"/>
         <source>Enabled with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Omogočeno z zvokom</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="120"/>
         <source>Don&apos;t force</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne vsiljuj</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="121"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Povečaj</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="122"/>
         <source>Crop</source>
-        <translation type="unfinished"></translation>
+        <translation>Obreži</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="134"/>
@@ -1189,16 +976,7 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="135"/>
         <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/SettingsPage.qml" line="218"/>
-        <source>Only Icecast</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
-        <translation type="vanished">Omogoči snemanje posnetkov pretoka SHOUTcast. Ko pretok poda informacijo o naslovu trenutno predvajane skladbe, lahko to skladbo shranite v datoteko. Za pričetek snemanja uporabite gumb &quot;Snemaj&quot;, ki se nahaja poleg gumba &quot;Naprej&quot; na spodnji vrstici. Ta gumb je viden le, če je snemanje možno! Gumb &quot;Snemaj&quot; lahko aktivirate med predvajanjem skladbe in celoten posnetek (od začetka do konca skladbe) se shrani kot datoteka. Pretoki tipa AAC se trenutno ne morejo shranjevati.</translation>
+        <translation>Omogoči snemanje posnetkov iz Icecast pretoka. Za omogočanje snemanje uporabite gumb &apos;Snemaj&apos; na spodnji pasici. Gumb pritisnite kadarkoli pred koncem trenutno predvajanega posnetka in celoten posnetek se bo shranil v datoteko.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="159"/>
@@ -1218,47 +996,32 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
     <message>
         <location filename="../qml/SettingsPage.qml" line="194"/>
         <source>Stream relaying</source>
-        <translation type="unfinished"></translation>
+        <translation>Posredovanje pretoka</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="195"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
-        <translation type="unfinished"></translation>
+        <translation>Internetni pretoki so posredovani UPnP naprvi preko %1. Priporočena nastavitev je &apos;Vedno&apos;, ker nudi najboljšo združljivost. Kadar je posredovanje onemogočeno (možnost &apos;Nikoli&apos;), Icecast naslovi in Snemalnik pretoka nista na voljo.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="217"/>
         <source>Always</source>
-        <translation type="unfinished"></translation>
+        <translation>Vedno</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="218"/>
+        <source>Only Icecast</source>
+        <translation>Samo Icecast</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="219"/>
         <source>Never</source>
-        <translation type="unfinished"></translation>
+        <translation>Nikoli</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="235"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Internet streaming mode</source>
-        <translation type="vanished">Internetni pretok</translation>
-    </message>
-    <message>
-        <source>Streaming from the Internet to UPnP devices can be handled in two modes. In Proxy mode, %1 relays every packet received from a streaming host. In Redirection mode, the actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection, therefore on some devices this mode will not work properly. SHOUTcast metadata detection and Stream recorder are not available when Redirection mode is enabled.</source>
-        <translation type="vanished">Pretakanje iz interneta v naprave UPnP lahko poteka na dva načina: Proxy (privzeto) ali Preusmeritev. V načinu Proxy %1 usmeri vsak paket, ki ste ga prejeli od gostitelja pretakanja. V načinu Preusmeritev poteka pretakanje neposredno med napravo UPnP in strežnikom zato ni potrebno, da je %1 ves čas omogočen. Žal vse UPnP naprave ne podpirajo načina Preusmeritev, zato na nekaterih napravah ta način ne bo deloval pravilno. V načinu Preusmeritev ne deluje SHOUTcast prepoznavanje metapodatkov in snemalnik pretoka.</translation>
-    </message>
-    <message>
-        <source>Proxy (default)</source>
-        <translation type="vanished">Proxy (privzeto)</translation>
-    </message>
-    <message>
-        <source>Redirection</source>
-        <translation type="vanished">Preusmeritev</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation type="obsolete">Nič</translation>
+        <translation>Prikazane so vse UPnP naprave vključno z uradno nepodprtimi, kot so domači usmerjevalniki in serverji. Za nepodprte naprave so prikazane le najbolj osnovne informacije. Ta možnost je dobrodošla za primer, ko želite videti vse UPnP naprave v domačem omrežju.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="234"/>
@@ -1266,23 +1029,19 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
         <translation>Vse naprave so vidne</translation>
     </message>
     <message>
-        <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation type="vanished">%1 podpira le naprave tipa Media Renderer Devices. Ta možnost prikaže vse UPnP naprave, tudi uradno nepodprte, kot so domači usmerjevalniki in serverji. Za nepodprte naprave %1 prikaže le najbolj osnovne informacije. Možnost je dobrodošla za primer, ko želite videti vse UPnP naprave v domačem omrežju.</translation>
-    </message>
-    <message>
         <location filename="../qml/SettingsPage.qml" line="190"/>
         <source>Advanced options</source>
-        <translation type="unfinished"></translation>
+        <translation>Napredne možnosti</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="298"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Potrebno za odpravljanje težav. Vsebina je shranjena v datoteki %1.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="297"/>
         <source>Enable logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Omogoči beleženje</translation>
     </message>
 </context>
 <context>
@@ -1352,162 +1111,107 @@ Za povezavo z lokalnim omrežjem potegni navzdol.</translation>
 <context>
     <name>UpnpCDirDevicesPage</name>
     <message>
-        <source>Cannot connect to the local network</source>
-        <translation type="obsolete">Ne morem se povezati v lokalno omrežje</translation>
-    </message>
-    <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="58"/>
         <source>Cannot connect to a local network</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne morem se povezati v lokalno omrežje</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="61"/>
         <source>An internal error occurred</source>
-        <translation type="unfinished">Prišlo je do notranje napake</translation>
+        <translation>Prišlo je do notranje napake</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="81"/>
         <source>Media Servers</source>
-        <translation type="unfinished"></translation>
+        <translation>Medijski serverji</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="89"/>
         <source>Find Media Servers</source>
-        <translation type="unfinished"></translation>
+        <translation>Išči medijske serverje</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="139"/>
         <source>No Media Servers found</source>
-        <translation type="unfinished"></translation>
+        <translation>Ni najdenih medijskih serverjev</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="141"/>
         <source>Pull down to find Media Servers in your network</source>
-        <translation type="unfinished"></translation>
+        <translation>Za iskanje medijskih serverjev v omrežju potegni navzdol</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="142"/>
         <source>Connect WLAN to find Media Servers in your network</source>
-        <translation type="unfinished"></translation>
+        <translation>Za iskanje medijskih serverjev se priključite na brezžično omrežje</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="139"/>
         <source>Disconnected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Devices</source>
-        <translation type="obsolete">Naprave</translation>
-    </message>
-    <message>
-        <source>Find devices</source>
-        <translation type="obsolete">Iskanje naprav</translation>
-    </message>
-    <message>
-        <source>Connect</source>
-        <translation type="obsolete">Poveži</translation>
+        <translation>Brez povezave</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="125"/>
         <source>Remove from favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstrani iz priljubljenih</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="125"/>
         <source>Add to favorites</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No devices found. 
-Pull down to find more devices in your network.</source>
-        <translation type="obsolete">Ni najdenih naprav. 
-Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
+        <translation>Dodaj med priljubljene</translation>
     </message>
 </context>
 <context>
     <name>UpnpCDirPage</name>
     <message>
-        <source>Search tracks</source>
-        <translation type="obsolete">Išči skladbe</translation>
-    </message>
-    <message>
         <location filename="../qml/UpnpCDirPage.qml" line="64"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Počisti vse</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="65"/>
         <source>Select all</source>
-        <translation type="unfinished">Izberi vse</translation>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="85"/>
         <source>Track number</source>
-        <translation type="unfinished"></translation>
+        <translation>Številka posnetka</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="87"/>
         <source>Title</source>
-        <translation type="unfinished">Naslov</translation>
+        <translation>Naslov</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="46"/>
         <source>Search items</source>
-        <translation type="unfinished"></translation>
+        <translation>Išči elemente</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="83"/>
         <source>Album</source>
-        <translation type="unfinished">Album</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="86"/>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="84"/>
         <source>Artist</source>
-        <translation type="unfinished">Izvajalec</translation>
+        <translation>Izvajalec</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="89"/>
         <source>Sort by: %1</source>
-        <translation type="unfinished">Razvrsti po: %1</translation>
+        <translation>Razvrsti po: %1</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="157"/>
         <source>No tracks</source>
-        <translation type="unfinished">Ni skladb</translation>
-    </message>
-</context>
-<context>
-    <name>UpnpDirPage</name>
-    <message>
-        <source>Cannot connect to the local network</source>
-        <translation type="obsolete">Ne morem se povezati v lokalno omrežje</translation>
-    </message>
-    <message>
-        <source>An internal error occurred</source>
-        <translation type="obsolete">Prišlo je do notranje napake</translation>
-    </message>
-    <message>
-        <source>Devices</source>
-        <translation type="obsolete">Naprave</translation>
-    </message>
-    <message>
-        <source>Find devices</source>
-        <translation type="obsolete">Iskanje naprav</translation>
-    </message>
-    <message>
-        <source>Connect</source>
-        <translation type="obsolete">Poveži</translation>
-    </message>
-    <message>
-        <source>No devices found. 
-Pull down to find more devices in your network.</source>
-        <translation type="obsolete">Ni najdenih naprav. 
-Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
+        <translation>Ni skladb</translation>
     </message>
 </context>
 <context>
@@ -1515,12 +1219,12 @@ Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
     <message>
         <location filename="../../core/utils.cpp" line="417"/>
         <source>Today</source>
-        <translation type="unfinished"></translation>
+        <translation>Danes</translation>
     </message>
     <message>
         <location filename="../../core/utils.cpp" line="419"/>
         <source>Yesterday</source>
-        <translation type="unfinished"></translation>
+        <translation>Včeraj</translation>
     </message>
 </context>
 <context>
@@ -1533,12 +1237,12 @@ Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
     <message>
         <location filename="../qml/main.qml" line="60"/>
         <source>Cannot connect to a local network</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne morem se povezati v lokalno omrežje</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="63"/>
         <source>An internal error occurred</source>
-        <translation type="unfinished">Prišlo je do notranje napake</translation>
+        <translation>Prišlo je do notranje napake</translation>
     </message>
 </context>
 </TS>
