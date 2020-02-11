@@ -560,7 +560,7 @@ Page {
         }
 
         ViewPlaceholder {
-            enabled: listView.count == 0 && !playlist.busy
+            enabled: listView.count == 0 && !playlist.busy && !av.busy && !rc.busy
             text: qsTr("No items")
             hintText: qsTr("Pull down to add new items")
             verticalOffset: ppanel.open ? 0-ppanel.height/2 : 0
