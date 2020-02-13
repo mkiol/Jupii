@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Thu Feb 13 2020 Michal Kosciesza <michal@mkiol.net> 2.6.1-1
+- Chinese, German, Spanish, Slovenian and Swedish translations update
+
 * Thu Feb 06 2020 Michal Kosciesza <michal@mkiol.net> 2.6.0-1
 - Items from UPnP Media Servers on play queue
 - Favorite devices option

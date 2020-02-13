@@ -29,6 +29,15 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.6.1")
+            }
+
+            LogItem {
+                title: "Chinese, German, Spanish, Slovenian and Swedish translations update"
+                description: "Many thanks to Rui Kon, jgibbon, Carlos Gonzalez, Bostjan Strumbelj and Åke Engelbrektson for providing updated translations."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.6.0")
             }
 
