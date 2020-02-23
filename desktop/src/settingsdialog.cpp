@@ -28,10 +28,7 @@ SettingsDialog::~SettingsDialog()
 int SettingsDialog::exec()
 {
     auto s = Settings::instance();
-    ui->lastPlaylistCheckBox->setCheckState(s->getRememberPlaylist() ? Qt::Checked : Qt::Unchecked);
     ui->allDevicesCheckBox->setCheckState(s->getShowAllDevices() ? Qt::Checked : Qt::Unchecked);
-    ui->imageCheckBox->setCheckState(s->getImageSupported() ? Qt::Checked : Qt::Unchecked);
-    ui->recCheckBox->setCheckState(s->getRec() ? Qt::Checked : Qt::Unchecked);
     ui->contentDirCheckBox->setCheckState(s->getContentDirSupported() ? Qt::Checked : Qt::Unchecked);
 
     bool screenEnabled = s->getScreenSupported();
@@ -40,7 +37,7 @@ int SettingsDialog::exec()
     int index = framerate < 15 ? 0 : framerate < 30 ? 1 : 2;
     ui->screenFramerateComboBox->setCurrentIndex(index);
     ui->cropCheckBox->setEnabled(screenEnabled);
-    ui->cropCheckBox->setCheckState(s->getScreenCropTo169() ? Qt::Checked : Qt::Unchecked);
+    ui->cropCheckBox->setCheckState(s->getScreenCropTo169() > 0 ? Qt::Checked : Qt::Unchecked);
     ui->screenAudioCheckBox->setEnabled(screenEnabled);
     ui->screenAudioCheckBox->setCheckState(s->getScreenAudio() ? Qt::Checked : Qt::Unchecked);
 
@@ -56,18 +53,6 @@ int SettingsDialog::exec()
         ui->netiInfsComboBox->setCurrentText(prefInf);
 
     return QDialog::exec();
-}
-
-void SettingsDialog::on_lastPlaylistCheckBox_toggled(bool checked)
-{
-    auto s = Settings::instance();
-    s->setRememberPlaylist(checked);
-}
-
-void SettingsDialog::on_imageCheckBox_toggled(bool checked)
-{
-    auto s = Settings::instance();
-    s->setImageSupported(checked);
 }
 
 void SettingsDialog::on_allDevicesCheckBox_toggled(bool checked)
@@ -105,16 +90,10 @@ void SettingsDialog::on_screenFramerateComboBox_activated(int index)
     s->setScreenFramerate(framerate);
 }
 
-void SettingsDialog::on_recCheckBox_toggled(bool checked)
-{
-    auto s = Settings::instance();
-    s->setRec(checked);
-}
-
 void SettingsDialog::on_cropCheckBox_toggled(bool checked)
 {
     auto s = Settings::instance();
-    s->setScreenCropTo169(checked);
+    s->setScreenCropTo169(checked ? 1 : 0);
 }
 
 void SettingsDialog::on_screenAudioCheckBox_toggled(bool checked)

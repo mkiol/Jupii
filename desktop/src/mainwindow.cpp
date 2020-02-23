@@ -50,9 +50,9 @@ MainWindow::MainWindow(QWidget *parent) :
     auto rc = services->renderingControl;
     auto av = services->avTransport;
     auto playlist = PlaylistModel::instance();
+    auto devModel = DeviceModel::instance();
 
-    deviceModel = std::unique_ptr<DeviceModel>(new DeviceModel(this));
-    ui->deviceList->setModel(deviceModel.get());
+    ui->deviceList->setModel(devModel);
 
     on_directory_initedChanged();
     on_directory_busyChanged();
@@ -110,7 +110,8 @@ MainWindow::MainWindow(QWidget *parent) :
     on_playlistModel_playModeChanged();
     ui->playlistView->setModel(playlist);
 
-    directory->discover();
+    devModel->setDeviceType(DeviceModel::MediaRendererType);
+    //directory->discover();
 }
 
 MainWindow::~MainWindow()
@@ -188,6 +189,7 @@ void MainWindow::on_rc_volumeChanged()
 void MainWindow::on_connectButton_clicked()
 {
     auto directory = Directory::instance();
+    auto deviceModel = DeviceModel::instance();
     deviceModel->clear();
 
     if (directory->getInited())
@@ -204,6 +206,7 @@ void MainWindow::on_directory_busyChanged()
     if (busy) {
         notify(tr("Finding devices..."));
     } else {
+        auto deviceModel = DeviceModel::instance();
         int count = deviceModel->rowCount();
         notify(tr("Found %n device(s)", "", count));
     }
@@ -217,6 +220,7 @@ void MainWindow::on_directory_initedChanged()
 
 void MainWindow::on_deviceList_activated(const QModelIndex &index)
 {
+    auto deviceModel = DeviceModel::instance();
     auto item = dynamic_cast<DeviceItem*>(deviceModel->readRow(index.row()));
     auto av = Services::instance()->avTransport;
 
@@ -265,9 +269,6 @@ void MainWindow::on_service_initedChanged()
     if (!inited && !busy) {
         enablePlaylist(false);
         notify();
-        //deviceModel->updateModel();
-        //auto directory = Directory::instance();
-        //directory->discover();
     } else if (!inited && busy) {
         notify(tr("Connecting..."));
     } else if (inited && !busy) {
@@ -364,6 +365,8 @@ void MainWindow::on_av_albumArtChanged()
     auto av = Services::instance()->avTransport;
 
     auto album = av->getCurrentAlbumArtURI();
+
+    qDebug() << "album art:" << album;
 
     if (!album.isValid()) {
         qWarning() << "Album art is invalid";
@@ -604,30 +607,27 @@ void MainWindow::on_actionPauseItem_triggered()
 
 void MainWindow::on_deviceList_customContextMenuRequested(const QPoint &pos)
 {
-    if (deviceModel) {
-        int idx = ui->deviceList->indexAt(pos).row();
-        if (idx >= 0) {
-            auto item = dynamic_cast<DeviceItem*>(deviceModel->readRow(idx));
-            if (item) {
-                ui->actionConnect->setEnabled(!item->active());
-                QList<QAction*> actions;
-                actions << ui->actionConnect;
-                QMenu::exec(actions, ui->deviceList->mapToGlobal(pos),
-                            nullptr, ui->deviceList);
-            }
+    int idx = ui->deviceList->indexAt(pos).row();
+    if (idx >= 0) {
+        auto deviceModel = DeviceModel::instance();
+        auto item = dynamic_cast<DeviceItem*>(deviceModel->readRow(idx));
+        if (item) {
+            ui->actionConnect->setEnabled(!item->active());
+            QList<QAction*> actions;
+            actions << ui->actionConnect;
+            QMenu::exec(actions, ui->deviceList->mapToGlobal(pos),
+                        nullptr, ui->deviceList);
         }
     }
 }
 
 void MainWindow::on_actionConnect_triggered()
 {
-    if (deviceModel) {
-        auto indexes = ui->deviceList->selectionModel()->selectedIndexes();
-        if (indexes.length() > 0) {
-            on_deviceList_activated(indexes.first());
-        } else {
-            qWarning() << "No items selected";
-        }
+    auto indexes = ui->deviceList->selectionModel()->selectedIndexes();
+    if (indexes.length() > 0) {
+        on_deviceList_activated(indexes.first());
+    } else {
+        qWarning() << "No items selected";
     }
 }
 
@@ -639,9 +639,8 @@ void MainWindow::on_actionFiles_triggered()
             .arg(cserver->getExtensions(ContentServer::TypeMusic).join(" "),
                  cserver->getExtensions(ContentServer::TypeVideo).join(" "));
 
-    if (Settings::instance()->getImageSupported())
-        filters += QString(";;Images (%1)")
-                .arg(cserver->getExtensions(ContentServer::TypeImage).join(" "));
+    filters += QString(";;Images (%1)")
+            .arg(cserver->getExtensions(ContentServer::TypeImage).join(" "));
 
     filters += QString(";;Playlist files (%1)")
             .arg(cserver->getExtensions(ContentServer::TypePlaylist).join(" "));

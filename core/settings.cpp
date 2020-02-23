@@ -89,6 +89,7 @@ QString Settings::prettyName()
 
 void Settings::setLogToFile(bool value)
 {
+#ifdef SAILFISH
     if (getLogToFile() != value) {
         settings.setValue("logtofile", value);
         if (value) {
@@ -97,16 +98,23 @@ void Settings::setLogToFile(bool value)
             qDebug() << "Logging to file enabled";
         } else {
             qDebug() << "Logging to file disabled";
-            qInstallMessageHandler(0);
+            qInstallMessageHandler(nullptr);
             qDebug() << "Logging to file disabled";
         }
         emit logToFileChanged();
     }
+#else
+    Q_UNUSED(value)
+#endif
 }
 
 bool Settings::getLogToFile()
 {
+#ifdef SAILFISH
     return settings.value("logtofile", false).toBool();
+#else
+    return false;
+#endif
 }
 
 void Settings::setPort(int value)
@@ -145,6 +153,7 @@ void Settings::setForwardTime(int value)
         settings.setValue("forwardtime", value);
         emit forwardTimeChanged();
     }*/
+    Q_UNUSED(value)
 }
 
 int Settings::getForwardTime()
@@ -270,7 +279,7 @@ bool Settings::writeDeviceXML(const QString &id, QString& url)
         QString _id(id);
         QString filename = "device-" + _id.replace(':','-') + ".xml";
 
-        if (Utils::writeToCacheFile(filename, QByteArray::fromStdString(ddesc.XMLText)), true) {
+        if (Utils::writeToCacheFile(filename, QByteArray::fromStdString(ddesc.XMLText), true)) {
             url = QString::fromStdString(ddesc.URLBase);
             return true;
         } else {
@@ -391,15 +400,23 @@ bool Settings::getShowAllDevices()
 
 void Settings::setRec(bool value)
 {
+#ifdef SAILFISH
     if (getRec() != value) {
         settings.setValue("rec", value);
         emit recChanged();
     }
+#else
+    Q_UNUSED(value)
+#endif
 }
 
 bool Settings::getRec()
 {
+#ifdef SAILFISH
     return settings.value("rec", false).toBool();
+#else
+    return true;
+#endif
 }
 
 void Settings::setScreenSupported(bool value)
@@ -409,6 +426,8 @@ void Settings::setScreenSupported(bool value)
         settings.setValue("screensupported", value);
         emit screenSupportedChanged();
     }
+#else
+    Q_UNUSED(value)
 #endif
 }
 
@@ -474,22 +493,30 @@ int Settings::getScreenFramerate()
 
 void Settings::setUseHWVolume(bool value)
 {
+#ifdef SAILFISH
     if (getUseHWVolume() != value) {
         settings.setValue("usehwvolume", value);
         emit useHWVolumeChanged();
     }
+#else
+    Q_UNUSED(value)
+#endif
 }
 
 bool Settings::getUseHWVolume()
 {
+#ifdef SAILFISH
     return settings.value("usehwvolume", true).toBool();
+#else
+    return false;
+#endif
 }
 
 void Settings::setMicVolume(float value)
 {
     value = value < 0 ? 0 : value > 100 ? 100 : value;
 
-    if (getMicVolume() != value) {
+    if (getMicVolume() > value || getMicVolume() < value) {
         settings.setValue("micvolume", value);
         emit micVolumeChanged();
     }

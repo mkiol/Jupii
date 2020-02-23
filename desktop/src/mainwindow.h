@@ -81,7 +81,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    std::unique_ptr<DeviceModel> deviceModel;
     std::unique_ptr<FileDownloader> downloader;
     std::unique_ptr<SettingsDialog> settingsDialog;
 

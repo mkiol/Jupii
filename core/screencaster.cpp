@@ -508,7 +508,7 @@ bool ScreenCaster::audioEnabled()
 
 int ScreenCaster::write_packet_callback(void *opaque, uint8_t *buf, int buf_size)
 {
-    Q_UNUSED(opaque);
+    Q_UNUSED(opaque)
     auto worker = ContentServerWorker::instance();
     //qDebug() << "write_packet_callback:" << buf_size;
     worker->sendScreenCaptureData(static_cast<void*>(buf), buf_size);

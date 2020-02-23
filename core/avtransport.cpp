@@ -449,7 +449,7 @@ QUrl AVTransport::getCurrentAlbumArtURI()
     }
     if (m_currentMeta && !m_currentMeta->albumArt.isEmpty()) {
         qDebug() << "Optimization => using local album art from Meta:" << m_currentMeta->albumArt;
-        auto url = QUrl(m_currentMeta->albumArt);
+        auto url = QUrl::fromLocalFile(m_currentMeta->albumArt);
         if (url.isValid())
             return url;
         return QUrl::fromLocalFile(m_currentMeta->albumArt);
