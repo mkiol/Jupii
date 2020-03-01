@@ -85,8 +85,11 @@ SOURCES += \
 
 INCLUDEPATH += \
   $$libupnpp_BASE \
-  $$libupnpp_BASE/libupnpp \
+  $$libupnpp_BASE/libupnpp
+
+INCLUDEPATH += \
   $$pupnp_BASE \
   $$pupnp_BASE/upnp \
   $$pupnp_BASE/ixml \
   $$pupnp_BASE/threadutil
+

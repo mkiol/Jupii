@@ -6,8 +6,10 @@ include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
 include($$PROJECTDIR/libs/pupnp/pupnp.pri)
 include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
 
-system(qdbusxml2cpp $$PROJECTDIR/dbus/org.jupii.xml -a $$CORE_DIR/dbus_jupii_adaptor)
-system(qdbusxml2cpp $$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml -p $$CORE_DIR/dbus_tracker_inf)
+message(Qt is installed in $$[QT_INSTALL_PREFIX])
+QT_BIN_DIR = "$$[QT_INSTALL_PREFIX]/bin"
+system("$$QT_BIN_DIR/qdbusxml2cpp" "$$PROJECTDIR/dbus/org.jupii.xml" -a $$CORE_DIR/dbus_jupii_adaptor)
+system("$$QT_BIN_DIR/qdbusxml2cpp" "$$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml" -p $$CORE_DIR/dbus_tracker_inf)
 
 desktop {
     LIBS += -ltag -lpulse
