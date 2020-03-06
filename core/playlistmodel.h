@@ -29,6 +29,10 @@
 #include <QBrush>
 #endif
 
+#ifdef SAILFISH
+#include <keepalive/backgroundactivity.h>
+#endif
+
 #include "contentserver.h"
 #include "listmodel.h"
 
@@ -166,10 +170,15 @@ private slots:
     void onAvStateChanged();
     void onAvInitedChanged();
     void onSupportedChanged();
+#ifdef SAILFISH
+    void handleBackgroundActivityStateChange();
+#endif
 
 private:
     static PlaylistModel* m_instance;
-
+#ifdef SAILFISH
+    BackgroundActivity *m_backgroundActivity;
+#endif
     std::unique_ptr<PlaylistWorker> m_worker;
     bool m_busy = false;
     int m_activeItemIndex = -1;
@@ -181,7 +190,6 @@ private:
     void addItems(const QList<QUrl>& urls, bool asAudio);
     void addItems(const QList<UrlItem> &urls, bool asAudio);
     void setActiveItemIndex(int index);
-    //bool addId(const QString& id, ContentServer::Type type = ContentServer::TypeUnknown);
     bool addId(const QUrl& id);
     PlaylistItem* makeItem(const QUrl &id);
     void save();
@@ -190,6 +198,9 @@ private:
     void updateNextSupported();
     void updatePrevSupported();
     void autoPlay();
+#ifdef SAILFISH
+    void updateBackgroundActivity();
+#endif
 };
 
 class PlaylistItem :
@@ -245,7 +256,6 @@ public:
     QString path() const;
     inline QString id() const { return m_id.toString(); }
     inline QString cookie() const { return m_cookie; }
-    //inline QUrl idUrl() const { return m_id; }
     inline QString name() const { return m_name; }
     inline QUrl url() const { return m_url; }
     inline QUrl origUrl() const { return m_origUrl; }

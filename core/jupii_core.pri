@@ -19,7 +19,7 @@ desktop {
 }
 
 sailfish {
-    LIBS += -lpulse
+    LIBS += -lpulse -lkeepalive
     include($$PROJECTDIR/libs/taglib/taglib.pri)
     include($$PROJECTDIR/libs/lame/lame.pri)
     include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)

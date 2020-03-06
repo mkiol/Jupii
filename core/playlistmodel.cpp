@@ -232,8 +232,38 @@ PlaylistModel::PlaylistModel(QObject *parent) :
             this, &PlaylistModel::onItemsRemoved);
     connect(dir, &Directory::initedChanged, this,
             &PlaylistModel::load, Qt::QueuedConnection);
+
+#ifdef SAILFISH
+    m_backgroundActivity = new BackgroundActivity(this);
+    m_backgroundActivity->setWakeupFrequency(BackgroundActivity::ThirtySeconds);
+    connect(m_backgroundActivity, &BackgroundActivity::stateChanged, this,
+            &PlaylistModel::handleBackgroundActivityStateChange);
+#endif
     load();
 }
+
+#ifdef SAILFISH
+void PlaylistModel::handleBackgroundActivityStateChange()
+{
+    qDebug() << "Background activity state:" << m_backgroundActivity->state();
+}
+void PlaylistModel::updateBackgroundActivity()
+{
+    auto av = Services::instance()->avTransport;
+    bool playing = av->getInited() &&
+            av->getTransportState() == AVTransport::Playing;
+
+    qDebug() << "updateBackgroundActivity:" << playing;
+
+    if (playing) {
+        if (!m_backgroundActivity->isRunning())
+            m_backgroundActivity->run();
+    } else {
+        if (m_backgroundActivity->isRunning())
+            m_backgroundActivity->stop();
+    }
+}
+#endif
 
 std::pair<int, QString> PlaylistModel::getDidlList(int max, const QString& didlId)
 {
@@ -418,6 +448,9 @@ void PlaylistModel::onAvStateChanged()
 {
     qDebug() << "onAvStateChanged";
     update();
+#ifdef SAILFISH
+    updateBackgroundActivity();
+#endif
 }
 
 void PlaylistModel::onAvInitedChanged()
@@ -432,6 +465,10 @@ void PlaylistModel::onAvInitedChanged()
         setActiveUrl(av->getCurrentURI());
         update(false);
     }
+
+#ifdef SAILFISH
+    updateBackgroundActivity();
+#endif
 }
 
 void PlaylistModel::onItemsAdded()
