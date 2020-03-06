@@ -262,8 +262,8 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
 #ifdef SAILFISH
     /* Ugly hack for SFOS 3.1.0:
        mimicking "message-new-email" stream to trigger "event" policy group on
-       pulse-audio server. "event" group does not force pa source change to
-       "sink.primary.monitor" when calling pa_stream_connect_record()
+       pulse-audio server. "event" group does not force pa source change when
+       calling pa_stream_connect_record()
     */
     pa_proplist* p = pa_proplist_new();
     pa_proplist_sets(p, "event.id", "message-new-email");
@@ -278,14 +278,16 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
     muteConnectedSinkInput(si);
 
     const char* source = muted ? nullSinkMonitor : monitorSources.value(si.sinkIdx).constData();
+
     qDebug() << "New monitor source:" << source;
     int ret;
     if (ret = pa_stream_set_monitor_stream(stream, si.idx) < 0) {
         qCritical() << "Pulse-audio stream set monitor error:" << pa_strerror(ret);
-    } else if (ret = pa_stream_connect_record(stream, source, nullptr, PA_STREAM_NOFLAGS) < 0) {
+    } else if (ret = pa_stream_connect_record(stream, nullptr, nullptr, PA_STREAM_NOFLAGS) < 0) {
         qCritical() << "Pulse-audio stream connect record error:" << pa_strerror(ret);
     } else {
         qDebug() << "Sink input successfully connected";
+
         return true;
     }
 
