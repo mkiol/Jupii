@@ -65,8 +65,6 @@ OTHER_FILES += \
     qml/UpnpCDirPage.qml \
     qml/PlayQueuePage.qml
 
-#OTHER_FILES += $$files(rpm/*)
-
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 
 TRANSLATION_SOURCE_DIRS += $$PROJECTDIR/core

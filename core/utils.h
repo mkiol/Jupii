@@ -46,6 +46,7 @@ public:
     Q_INVOKABLE QString friendlyDeviceType(const QString &deviceType);
     Q_INVOKABLE QString friendlyServiceType(const QString &serviceType);
     Q_INVOKABLE QString secToStr(int value);
+    Q_INVOKABLE QString homeDirPath();
     Q_INVOKABLE bool isUrlOk(const QUrl &url);
     Q_INVOKABLE bool isGpodderAvailable();
     Q_INVOKABLE bool isIdMic(const QUrl &id);

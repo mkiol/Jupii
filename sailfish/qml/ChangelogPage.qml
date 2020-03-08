@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2019 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,20 +29,11 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.6.1")
+                text: qsTr("Version %1").arg("2.6.2")
             }
 
             LogItem {
-                title: "Chinese, German, Spanish, Slovenian and Swedish translations update"
-                description: "Many thanks to Rui Kon, jgibbon, Carlos Gonzalez, Bostjan Strumbelj and Åke Engelbrektson for providing updated translations."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.6.0")
-            }
-
-            LogItem {
-                title: "Items from UPnP Media Servers on play queue"
+                title: "Items from UPnP Media Servers on the play queue"
                 description: "Support for content located on UPnP Media Servers is added. " +
                              "You can browse and add new type of items by using 'Add Items' menu."
             }
@@ -63,7 +54,7 @@ Page {
             LogItem {
                 title: "Tracks history for Icecast items"
                 description: "The history of played tracks in Icecast stream is " +
-                             "presented on media info page"
+                             "visible on media info page"
             }
 
             LogItem {
@@ -79,34 +70,18 @@ Page {
                              "occasional crashes and many more are resolved."
             }
 
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.5.4")
-            }
-
-            LogItem {
-                title: "Bug fixes and small improvements"
-                description: "Issue with settings saving is resolved. " +
-                             "UPnP devices are now listed in alphabetical order."
-            }
-
-            LogItem {
-                title: "German and Chinese translations update"
-                description: "Many thanks to drosjesjaafoer and Rui Kon for providing updated translations."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.5.3")
-            }
-
-            LogItem {
-                title: "Slovenian translation update"
-                description: "Many thanks to Bostjan Strumbelj for providing updated translation."
-            }
-
             LogItem {
                 title: "Option to turn on logging to file"
                 description: "Needed for diagnostic purposes only. " +
-                             "When enabled log data is stored in /home/nemo/jupii.log file."
+                             "When enabled log data is stored in %1/jupii.log file."
+                .arg(utils.homeDirPath())
+            }
+
+            LogItem {
+                title: "Chinese, German, Russian, Spanish, Slovenian and Swedish translations update"
+                description: "Many thanks to Rui Kon, drosjesjaafoer, jgibbon, Petr Tsymbarovich, " +
+                             "Carlos Gonzalez, Bostjan Strumbelj and Åke Engelbrektson " +
+                             "for providing updated translations."
             }
 
             SectionHeader {
@@ -251,7 +226,7 @@ Page {
                              "providing Chinese and Slovenian translations."
             }
 
-            SectionHeader {
+            /*SectionHeader {
                 text: qsTr("Version %1").arg("2.0.0")
             }
 
@@ -462,7 +437,7 @@ Page {
             LogItem {
                 title: "Initial release"
                 description: "This is initial public release.";
-            }
+            }*/
 
             Spacer {}
         }

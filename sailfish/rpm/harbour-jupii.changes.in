@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun Mar 08 2020 Michal Kosciesza <michal@mkiol.net> 2.6.2-1
+- Prevent deep sleep
+- Russian translation update
+
 * Thu Feb 13 2020 Michal Kosciesza <michal@mkiol.net> 2.6.1-1
 - Chinese, German, Spanish, Slovenian and Swedish translations update
 

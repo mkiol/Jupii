@@ -15,7 +15,7 @@ Name:       harbour-jupii
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
-Version:    2.6.1
+Version:    2.6.2
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE

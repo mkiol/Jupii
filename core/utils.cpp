@@ -21,6 +21,7 @@
 #include <QDir>
 #include <QUrlQuery>
 #include <QTime>
+#include <QStandardPaths>
 #ifdef SAILFISH
 #include <QMetaObject>
 #endif
@@ -55,6 +56,11 @@ Utils* Utils::instance(QObject *parent)
     }
 
     return Utils::m_instance;
+}
+
+QString Utils::homeDirPath()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 }
 
 QString Utils::friendlyDeviceType(const QString &deviceType)
