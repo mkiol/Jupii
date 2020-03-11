@@ -34,6 +34,7 @@ icons = {
     "gpodder" : [1],
     "icecast" : [1],
     "somafm" : [1],
+    "fosdem" : [1],
     "cover" : [6],
     "record" : [1],
     "record-active" : [1]
@@ -46,6 +47,7 @@ icons_nores = {
     "pulse" : [1],
     "screen" : [1],
     "somafm" : [1],
+    "fosdem" : [1]
 }
 
 size_names = {

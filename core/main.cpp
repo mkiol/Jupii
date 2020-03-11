@@ -50,6 +50,7 @@
 #include "services.h"
 #include "info.h"
 #include "somafmmodel.h"
+#include "fosdemmodel.h"
 #include "gpoddermodel.h"
 #include "icecastmodel.h"
 #include "dirmodel.h"
@@ -82,6 +83,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<ContentServer>("harbour.jupii.ContentServer", 1, 0,
                                               "ContentServer", "ContentServer is a singleton");
     qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0, "SomafmModel");
+    qmlRegisterType<FosdemModel>("harbour.jupii.FosdemModel", 1, 0, "FosdemModel");
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0, "IcecastModel");
     qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1, 0,
                                          "GpodderEpisodeModel");

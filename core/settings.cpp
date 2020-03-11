@@ -456,7 +456,11 @@ int Settings::getScreenCropTo169()
     // 0 - disabled
     // 1 - scale
     // 2 - crop
+#ifdef SAILFISH
     return settings.value("screencrop169", 1).toInt();
+#else
+    return settings.value("screencrop169", 2).toInt();
+#endif
 }
 
 void Settings::setScreenAudio(bool value)

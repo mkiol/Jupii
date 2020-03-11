@@ -23,6 +23,7 @@ Page {
     property var filePickerPage
     property var urlPickerPage
     property var somafmPickerPage
+    property var fosdemPickerPage
     property var icecastPickerPage
     property var gpodderPickerPage
     property var recPickerPage
@@ -205,6 +206,14 @@ Page {
                 icon.source: "image://icons/icon-m-somafm"
                 onClicked: {
                     pageStack.replace(somafmPickerPage)
+                }
+            }
+
+            SimpleListItem {
+                title.text: "Fosdem"
+                icon.source: "image://icons/icon-m-fosdem"
+                onClicked: {
+                    pageStack.replace(fosdemPickerPage)
                 }
             }
         }

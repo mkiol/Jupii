@@ -53,6 +53,8 @@ OTHER_FILES += \
     qml/AddUrlPage.qml \
     qml/Tip.qml \
     qml/SomafmPage.qml \
+    qml/FosdemYearsPage.qml \
+    qml/FosdemPage.qml \
     qml/GpodderEpisodesPage.qml \
     qml/SearchPageHeader.qml \
     qml/SearchDialogHeader.qml \

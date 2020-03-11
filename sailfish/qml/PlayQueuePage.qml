@@ -222,6 +222,15 @@ Page {
     }
 
     Component {
+        id: fosdemPickerPage
+        FosdemYearsPage {
+            onAccepted: {
+                playlist.addItemUrls(items);
+            }
+        }
+    }
+
+    Component {
         id: icecastPickerPage
         IcecastPage {
             onAccepted: {
@@ -441,6 +450,7 @@ Page {
                                        filePickerPage: filePickerPage,
                                        urlPickerPage: urlPickerPage,
                                        somafmPickerPage: somafmPickerPage,
+                                       fosdemPickerPage: fosdemPickerPage,
                                        icecastPickerPage: icecastPickerPage,
                                        gpodderPickerPage: gpodderPickerPage,
                                        recPickerPage: recPickerPage,
