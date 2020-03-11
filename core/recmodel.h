@@ -57,6 +57,17 @@ signals:
     void queryTypeChanged();
 
 private:
+    struct Item {
+        QString path;
+        QString title;
+        QString author;
+        QString album;
+        QString comment;
+        QString recStation;
+        QString recUrl;
+        QDateTime recDate;
+    };
+    QList<Item> m_items;
     QDir m_dir;
     QList<ListItem*> makeItems();
     int m_queryType = 0;

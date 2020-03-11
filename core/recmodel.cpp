@@ -32,8 +32,6 @@ QVariantList RecModel::selectedItems()
         if (rec->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(QUrl::fromLocalFile(rec->path())));
-            //map.insert("name", QVariant(rec->title()));
-            //map.insert("author", QVariant(rec->author()));
             list << map;
         }
     }
@@ -59,43 +57,47 @@ void RecModel::deleteSelected()
 
 QList<ListItem*> RecModel::makeItems()
 {
-    QList<ListItem*> items;
+    if (m_items.isEmpty()) {
+        auto files = m_dir.entryInfoList(QStringList() << "*.jupii_rec.*", QDir::Files);
+        for (const auto& file : files) {
+            Item item;
+            item.path = file.absoluteFilePath();
+            if (!ContentServer::readMetaUsingTaglib(item.path, item.title,
+                                item.author, item.album, item.comment,
+                                item.recStation, item.recUrl, item.recDate)) {
+                qWarning() << "Cannot read meta with TagLib";
+                continue;
+            }
 
+            // fallbacks
+            if (item.title.isEmpty())
+                item.title = file.baseName();
+            if (item.author.isEmpty())
+                item.author = tr("Unknown");
+            if (item.album.isEmpty())
+                item.album = tr("Unknown");
+            if (item.recStation.isEmpty())
+                item.recStation = item.author;
+            /*if (item.recDate.isNull())
+                item.recDate = file.created();*/
+
+            m_items << item;
+        }
+    }
+
+    QList<ListItem*> items;
     auto filter = getFilter();
 
-    auto files = m_dir.entryInfoList(QStringList() << "*.jupii_rec.*", QDir::Files);
-    for (const auto& file : files) {
-        auto path = file.absoluteFilePath();
-
-        QString title, author, album, comment, recStation, recUrl;
-        QDateTime recDate;
-
-        if (!ContentServer::readMetaUsingTaglib(path, title, author, album,
-                               comment, recStation, recUrl, recDate)) {
-            qWarning() << "Cannot read meta with TagLib";
-        }
-
-        // fallbacks
-        if (title.isEmpty())
-            title = file.baseName();
-        if (author.isEmpty())
-            author = tr("Unknown");
-        if (album.isEmpty())
-            album = tr("Unknown");
-        if (recStation.isEmpty())
-            recStation = author;
-        /*if (recDate.isNull())
-            recDate = file.created();*/
-
-        if (title.contains(filter, Qt::CaseInsensitive) ||
-            author.contains(filter, Qt::CaseInsensitive) ||
-            recStation.contains(filter, Qt::CaseInsensitive)) {
+    for (const auto& item : m_items) {
+        if (item.title.contains(filter, Qt::CaseInsensitive) ||
+            item.author.contains(filter, Qt::CaseInsensitive) ||
+            item.recStation.contains(filter, Qt::CaseInsensitive)) {
             items << new RecItem(
-                         path,
-                         path,
-                         title,
-                         author,
-                         recDate);
+                         item.path,
+                         item.path,
+                         item.title,
+                         item.author,
+                         item.recDate);
         }
     }
 
