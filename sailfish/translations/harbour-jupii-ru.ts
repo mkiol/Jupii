@@ -282,7 +282,7 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="290"/>
         <source>Recorded from %1</source>
-        <translation type="unfinished"/>
+        <translation>Записано с %1</translation>
     </message>
 </context>
 <context>
@@ -526,7 +526,7 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="133"/>
         <source>Item type</source>
-        <translation type="unfinished"/>
+        <translation>Тип</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="137"/>
@@ -651,17 +651,17 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="324"/>
         <source>Item is already added</source>
-        <translation type="unfinished"/>
+        <translation>Уже добавлено в список</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="326"/>
         <source>Item cannot be added</source>
-        <translation type="unfinished"/>
+        <translation>Невозможно добавить</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="328"/>
         <source>Some items cannot be added</source>
-        <translation type="unfinished"/>
+        <translation>Некоторые медиа добавить невозможно</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="330"/>
@@ -701,7 +701,7 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="565"/>
         <source>Pull down to add new items</source>
-        <translation type="unfinished"/>
+        <translation>Потяните вниз, чтобы добавить медиа</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="518"/>
@@ -711,7 +711,7 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="518"/>
         <source>Play</source>
-        <translation type="unfinished"/>
+        <translation>Играть</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="532"/>
@@ -726,12 +726,12 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="564"/>
         <source>No items</source>
-        <translation type="unfinished"/>
+        <translation>Пусто</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="582"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Неизвестно</translation>
     </message>
 </context>
 <context>
@@ -786,7 +786,7 @@
         <location filename="../../core/recmodel.cpp" line="82"/>
         <location filename="../../core/recmodel.cpp" line="84"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Неизвестно</translation>
     </message>
 </context>
 <context>
@@ -931,12 +931,12 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="110"/>
         <source>Enables Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
-        <translation type="unfinished"/>
+        <translation>Позволяет передавать изображение с экрана. Функция захвата видео еще не полностью отлажена, поэтому качество может быть не самым лучшим. </translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="117"/>
         <source>Force screen 16:9 aspect ratio</source>
-        <translation type="unfinished"/>
+        <translation>Преобразование в 16:9</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="92"/>
@@ -956,17 +956,17 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="120"/>
         <source>Don&apos;t force</source>
-        <translation type="unfinished"/>
+        <translation>Не нужно</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="121"/>
         <source>Scale</source>
-        <translation type="unfinished"/>
+        <translation>Масштабировать</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="122"/>
         <source>Crop</source>
-        <translation type="unfinished"/>
+        <translation>Обрезать</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="134"/>
@@ -976,7 +976,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="135"/>
         <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"/>
+        <translation>Позволяет записывать дорожки из потоков Icecast. Чтобы начать запись используйте кнопку &apos;Запись&apos;  в нижней панели. Если нажать кнопку &apos;Запись&apos; до окончания прослушиваемой дорожки, то вся дорожка сохранится в файл целиком.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="159"/>
@@ -996,32 +996,32 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="194"/>
         <source>Stream relaying</source>
-        <translation type="unfinished"/>
+        <translation>Перенаправление потоков</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="195"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
-        <translation type="unfinished"/>
+        <translation>Получаемые из интернета потоковые данные будут пересылаться на  UPnP-устройство через %1. Рекомендуется использовать вариант &apos;Всегда&apos;, так как он даёт наилучшую совместимость. Если перенаправление отключить (вариант &apos;Никогда&apos;), то Icecast-станции и запись потоков бкдкт недоступны.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="217"/>
         <source>Always</source>
-        <translation type="unfinished"/>
+        <translation>Всегда</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="218"/>
         <source>Only Icecast</source>
-        <translation type="unfinished"/>
+        <translation>Только Icecast</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="219"/>
         <source>Never</source>
-        <translation type="unfinished"/>
+        <translation>Никогда</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="235"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
-        <translation type="unfinished"/>
+        <translation>Будут обнаружены и показаны все устройства UPnP, включая неподдерживаемые, например сетевые маршрутизаторы. Для неизвестных устройств доступно только краткое описание. Это поможет узнать, какие устройства UPnP есть в вашей сети.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="234"/>
@@ -1031,17 +1031,17 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="190"/>
         <source>Advanced options</source>
-        <translation type="unfinished"/>
+        <translation>Дополнительно</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="298"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
-        <translation type="unfinished"/>
+        <translation>Нужно для разрешения технических проблем. Журнал сохраняется в файле %1</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="297"/>
         <source>Enable logging</source>
-        <translation type="unfinished"/>
+        <translation>Включить журналирование</translation>
     </message>
 </context>
 <context>
@@ -1118,7 +1118,7 @@
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="61"/>
         <source>An internal error occurred</source>
-        <translation type="unfinished"/>
+        <translation>Внутренняя ошибка</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="81"/>
@@ -1148,7 +1148,7 @@
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="139"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>Нет соединения</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirDevicesPage.qml" line="125"/>
@@ -1186,7 +1186,7 @@
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="46"/>
         <source>Search items</source>
-        <translation type="unfinished"/>
+        <translation>Поиск медиа</translation>
     </message>
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="83"/>
@@ -1211,7 +1211,7 @@
     <message>
         <location filename="../qml/UpnpCDirPage.qml" line="157"/>
         <source>No tracks</source>
-        <translation type="unfinished"/>
+        <translation>Нет дорожек</translation>
     </message>
 </context>
 <context>
