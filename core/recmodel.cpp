@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QUrl>
 #include <QStringList>
+#include <algorithm>
 
 #include "recmodel.h"
 #include "settings.h"
@@ -59,7 +60,8 @@ QList<ListItem*> RecModel::makeItems()
 {
     if (m_items.isEmpty()) {
         auto files = m_dir.entryInfoList(QStringList() << "*.jupii_rec.*", QDir::Files);
-        for (const auto& file : files) {
+        for (int i = 0; i < std::min(files.size(), 1000); ++i) {
+            const auto& file = files.at(i);
             Item item;
             item.path = file.absoluteFilePath();
             if (!ContentServer::readMetaUsingTaglib(item.path, item.title,

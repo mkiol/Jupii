@@ -215,7 +215,7 @@ QList<ListItem*> SomafmModel::makeItems()
 
     auto filter = getFilter();
 
-    int l = filter.isEmpty() ? 500 : m_entries.length();
+    int l = filter.isEmpty() ? 1000 : m_entries.length();
 
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
@@ -262,7 +262,7 @@ QList<ListItem*> SomafmModel::makeItems()
             }
         }
 
-        if (items.length() > 499)
+        if (items.length() > 999)
             break;
     }
 

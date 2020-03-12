@@ -22,7 +22,7 @@ const QString PlaylistFileModel::playlistsQueryTemplate =
         "FILTER (regex(nie:title(?list), \"%1\", \"i\")) . " \
         "} " \
         "ORDER BY nie:title(?list) " \
-        "LIMIT 500";
+        "LIMIT 1000";
 
 const QString PlaylistFileModel::playlistsQueryTemplateEx =
         "SELECT ?list nie:title(?list) AS title " \
@@ -34,7 +34,7 @@ const QString PlaylistFileModel::playlistsQueryTemplateEx =
         "?list != <%2>) . " \
         "} " \
         "ORDER BY nie:title(?list) " \
-        "LIMIT 500";
+        "LIMIT 1000";
 
 PlaylistFileModel::PlaylistFileModel(QObject *parent) :
     SelectableItemModel(new PlaylistFileItem, parent)

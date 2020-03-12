@@ -141,7 +141,7 @@ QList<ListItem*> IcecastModel::makeItems()
 
     auto filter = getFilter();
 
-    int l = filter.isEmpty() ? 500 : m_entries.length();
+    int l = filter.isEmpty() ? 1000 : m_entries.length();
 
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
@@ -180,7 +180,7 @@ QList<ListItem*> IcecastModel::makeItems()
             }
         }
 
-        if (items.length() > 49)
+        if (items.length() > 999)
             break;
     }
 

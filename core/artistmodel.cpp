@@ -25,7 +25,7 @@ const QString ArtistModel::artistsQueryTemplate =
         "nmm:performer ?artist . } " \
         "GROUP BY ?artist " \
         "ORDER BY nmm:artistName(?artist) " \
-        "LIMIT 500";
+        "LIMIT 1000";
 
 ArtistModel::ArtistModel(QObject *parent) :
     SelectableItemModel(new ArtistItem, parent)

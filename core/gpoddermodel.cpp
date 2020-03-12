@@ -98,7 +98,7 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
                   "(PodcastEpisode.title LIKE ? OR "
                   "PodcastChannel.title LIKE ?) "
                   "ORDER BY PodcastEpisode.published DESC "
-                  "LIMIT 500");
+                  "LIMIT 1000");
     query.addBindValue("%" + getFilter() + "%");
     query.addBindValue("%" + getFilter() + "%");
 
