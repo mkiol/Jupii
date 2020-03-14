@@ -16,7 +16,6 @@
 #include <QUrl>
 #include <QPair>
 #include <QDir>
-#include <QNetworkAccessManager>
 #include <QDomNodeList>
 #include <QDomElement>
 #include <memory>
@@ -85,7 +84,6 @@ private:
     static const int httpTimeout = 100000;
 
     int m_year = 2020;
-    std::unique_ptr<QNetworkAccessManager> nam;
     QDomNodeList m_entries;
     bool m_refreshing = false;
 

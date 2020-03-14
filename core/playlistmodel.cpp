@@ -174,7 +174,8 @@ void PlaylistWorker::run()
     }
 
     auto pl = PlaylistModel::instance();
-    for (auto &id : ids) {
+    for (const auto &id : ids) {
+        qDebug() << "Calling makeItem:" << QThread::currentThreadId();
         auto item = pl->makeItem(id);
         if (item)
             items << item;
@@ -813,6 +814,7 @@ void PlaylistModel::addItemPathsAsAudio(const QStringList& paths)
 
 void PlaylistModel::addItems(const QList<UrlItem>& urls, bool asAudio)
 {
+    qDebug() << "addItems:" << QThread::currentThreadId();
     if (urls.isEmpty())
         return;
 
@@ -839,7 +841,7 @@ void PlaylistModel::addItems(const QList<QUrl>& urls, bool asAudio)
 
 void PlaylistModel::workerDone()
 {
-    qDebug() << "workerDone";
+    qDebug() << "workerDone:" << QThread::currentThreadId();
 
     if (m_worker) {
         if (m_worker->items.length() != m_worker->urls.length()) {
@@ -876,7 +878,7 @@ void PlaylistModel::workerDone()
 
 PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 {
-    qDebug() << "makeItem:" << id;
+    qDebug() << "makeItem:" << id << QThread::currentThreadId();
 
     int t = 0; QString name, cookie, author; QUrl ficon; bool play = false;
     if (!Utils::pathTypeNameCookieIconFromId(id, nullptr, &t,
@@ -892,7 +894,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     QUrl url = Utils::urlFromId(id);
 
     const ContentServer::ItemMeta *meta;
-    meta = ContentServer::instance()->getMeta(url);
+    meta = ContentServer::instance()->getMeta(url, true);
     if (!meta) {
         qWarning() << "No meta item found";
         return nullptr;
@@ -902,8 +904,18 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     auto type = forcedType == ContentServer::TypeUnknown ?
                 meta->type : forcedType;
 
-    if (name.isEmpty())
+    auto finalId = id;
+
+    if (name.isEmpty()) {
         name = ContentServer::bestName(*meta);
+        if (meta->ytdl) { // add discovered name to url for youtube-dl content
+            QUrlQuery q(finalId);
+            if (q.hasQueryItem(Utils::nameKey))
+                q.removeQueryItem(Utils::nameKey);
+            q.addQueryItem(Utils::nameKey, name);
+            finalId.setQuery(q);
+        }
+    }
 
     QString iconUrl = ficon.isEmpty() ?
                 meta->albumArt.isEmpty() ? type == ContentServer::TypeImage ?
@@ -933,8 +945,8 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         icon = QIcon(iconUrl);
     }
 #endif
-    auto finalId = meta->itemType == ContentServer::ItemType_Upnp ||
-            meta->url == url ? Utils::cleanId(id) : Utils::swapUrlInId(meta->url, id);
+    finalId = meta->itemType == ContentServer::ItemType_Upnp ||
+            meta->url == url ? Utils::cleanId(finalId) : Utils::swapUrlInId(meta->url, finalId);
     qDebug() << "final id:" << finalId;
     auto item = new PlaylistItem(finalId, // id
                                name, // name

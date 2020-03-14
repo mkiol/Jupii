@@ -93,7 +93,7 @@ void SettingsDialog::on_screenFramerateComboBox_activated(int index)
 void SettingsDialog::on_cropCheckBox_toggled(bool checked)
 {
     auto s = Settings::instance();
-    s->setScreenCropTo169(checked ? 1 : 0);
+    s->setScreenCropTo169(checked ? 2 : 0);
 }
 
 void SettingsDialog::on_screenAudioCheckBox_toggled(bool checked)

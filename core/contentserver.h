@@ -102,6 +102,7 @@ public:
         ItemType itemType = ItemType_Unknown;
         bool shoutCast  = false;
         bool local = true;
+        bool ytdl = false;
         bool seekSupported = true;
         int duration = 0;
         double bitrate = 0.0;
@@ -116,7 +117,7 @@ public:
         // rec
         QString recStation;
         QString recUrl;
-        QDateTime recDate;  
+        QDateTime recDate;
     };
 
     struct PlaylistItemMeta {
@@ -135,8 +136,6 @@ public:
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);
     static Type typeFromUpnpClass(const QString &upnpClass);
-    static QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr,
-                             bool* isFile = nullptr, bool *isArt = nullptr);
     static QString bestName(const ItemMeta &meta);
     static Type getContentTypeByExtension(const QString &path);
     static Type getContentTypeByExtension(const QUrl &url);
@@ -147,7 +146,6 @@ public:
     static QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString context = QString());
     static void resolveM3u(QByteArray &data, const QString context);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
-    static bool makeUrl(const QString& id, QUrl& url, bool relay = true);
     static void writeMetaUsingTaglib(const QString& path, const QString& title,
                                       const QString& artist = QString(),
                                       const QString& album = QString(),
@@ -166,10 +164,6 @@ public:
     static ItemType itemTypeFromUrl(const QUrl &url);
 
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
-    Type getContentType(const QString &path);
-    Type getContentType(const QUrl &url);
-    QString getContentMime(const QString &path);
-    QString getContentMime(const QUrl &url);
     Q_INVOKABLE QStringList getExtensions(int type) const;
     Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString pathFromUrl(const QUrl &url) const;
@@ -177,8 +171,8 @@ public:
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(const QUrl &url, bool createNew = true);
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(const QUrl &id, bool createNew = true);
     const QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
-    const ItemMeta* getMeta(const QUrl &url, bool createNew = true);
-    const ItemMeta* getMetaForId(const QUrl &id, bool createNew = true);
+    const ItemMeta* getMeta(const QUrl &url, bool createNew);
+    const ItemMeta* getMetaForId(const QUrl &id, bool createNew);
     Q_INVOKABLE QString streamTitle(const QUrl &id) const;
     Q_INVOKABLE QStringList streamTitleHistory(const QUrl &id) const;
     Q_INVOKABLE void setStreamToRecord(const QUrl &id, bool value);
@@ -186,6 +180,9 @@ public:
     Q_INVOKABLE bool isStreamRecordable(const QUrl &id);
     bool getContentMetaItem(const QString &id, QString &meta);
     bool getContentMetaItemByDidlId(const QString &didlId, QString &meta);
+    QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr,
+                             bool* isFile = nullptr, bool *isArt = nullptr) const;
+    bool makeUrl(const QString& id, QUrl& url, bool relay = true);
 
 signals:
     void streamRecordError(const QString& title);
@@ -276,6 +273,7 @@ private:
     QHash<QUrl, ItemMeta> metaCache; // url => ItemMeta
     QHash<QString, QString> metaIdx; // DIDL-lite id => id
     QHash<QUrl, StreamData> streams; // id => StreamData
+    QHash<QString, QString> fullHashes; // truncated hash => full hash
     QMutex metaCacheMutex;
     QString pulseStreamName;
 
@@ -301,7 +299,13 @@ private:
     const QHash<QUrl, ItemMeta>::const_iterator makeScreenCaptureItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(const QUrl &url);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
+    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url);
+    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest2(const QUrl &url,
+            ItemMeta &meta,
+            std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
+            int counter = 0);
+    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingYoutubeDl(const QUrl &url,
+            ItemMeta &meta,
             std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
             int counter = 0);
     const QHash<QUrl, ItemMeta>::const_iterator makeUpnpItemMeta(const QUrl &url);

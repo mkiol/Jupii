@@ -68,7 +68,8 @@ HEADERS += \
     $$CORE_DIR/device.h \
     $$CORE_DIR/iconprovider.h \
     $$CORE_DIR/contentdirectory.h \
-    $$CORE_DIR/cdirmodel.h
+    $$CORE_DIR/cdirmodel.h \
+    $$CORE_DIR/youtubedl.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -110,7 +111,8 @@ SOURCES += \
     $$CORE_DIR/device.cpp \
     $$CORE_DIR/iconprovider.cpp \
     $$CORE_DIR/contentdirectory.cpp \
-    $$CORE_DIR/cdirmodel.cpp
+    $$CORE_DIR/cdirmodel.cpp \
+    $$CORE_DIR/youtubedl.cpp
 
 screencast {
     HEADERS += \

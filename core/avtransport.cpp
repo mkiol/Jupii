@@ -1526,9 +1526,10 @@ void AVTransport::updateMeta()
     qDebug() << "Updating meta";
     if (!m_currentURI.isEmpty()) {
         bool valid;
-        auto id = ContentServer::idUrlFromUrl(QUrl(m_currentURI), &valid);
+        auto cs = ContentServer::instance();
+        auto id = cs->idUrlFromUrl(QUrl(m_currentURI), &valid);
         if (valid) {
-            auto newMeta = ContentServer::instance()->getMetaForId(id, false);
+            auto newMeta = cs->getMetaForId(id, false);
             if (newMeta) {
                 qDebug() << "Meta found";
                 if (m_currentMeta != newMeta) {

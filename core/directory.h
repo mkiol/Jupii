@@ -14,7 +14,6 @@
 #include <QList>
 #include <QString>
 #include <QUrl>
-#include <QNetworkAccessManager>
 #include <QNetworkConfigurationManager>
 #include <QNetworkSession>
 #include <memory>
@@ -38,7 +37,6 @@ class Directory :
     Q_PROPERTY (bool networkConnected READ isNetworkConnected NOTIFY networkStateChanged)
 
 public:
-    QNetworkAccessManager* nm;
     QNetworkConfigurationManager* ncm;
     QNetworkSession* nsession;
     std::unique_ptr<MediaServerDevice> msdev;

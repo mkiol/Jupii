@@ -70,9 +70,7 @@ void IcecastModel::refresh()
         QNetworkRequest request;
         request.setUrl(m_dirUrl);
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        if (!nam)
-            nam = std::unique_ptr<QNetworkAccessManager>(new QNetworkAccessManager(this));
-        auto reply = nam->get(request);
+        auto reply = Utils::instance()->nam->get(request);
         QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
         connect(reply, &QNetworkReply::finished, [this, reply]{
             auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();

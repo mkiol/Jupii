@@ -43,6 +43,7 @@
 #include "contentdirectory.h"
 #include "log.h"
 #include "directory.h"
+#include "youtubedl.h"
 #include "libupnpp/control/cdirectory.hxx"
 
 // TagLib
@@ -181,8 +182,8 @@ ContentServerWorker* ContentServerWorker::instance(QObject *parent)
 
 ContentServerWorker::ContentServerWorker(QObject *parent) :
     QObject(parent),
-    server(new QHttpServer(parent)),
-    nam(new QNetworkAccessManager(parent))
+    nam(new QNetworkAccessManager(parent)),
+    server(new QHttpServer(parent))
 {
     connect(server, &QHttpServer::newRequest,
                      this, &ContentServerWorker::requestHandler);
@@ -342,7 +343,10 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     }
 
     bool valid, isArt;
-    auto id = ContentServer::idUrlFromUrl(req->url(), &valid, nullptr, &isArt);
+
+    auto cs = ContentServer::instance();
+
+    auto id = cs->idUrlFromUrl(req->url(), &valid, nullptr, &isArt);
 
     qDebug() << "Id:" << id.toString();
 
@@ -351,8 +355,6 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
         sendEmptyResponse(resp, 404);
         return;
     }
-
-    auto cs = ContentServer::instance();
 
     const ContentServer::ItemMeta *meta;
 
@@ -363,7 +365,7 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
         delete meta;
         return;
     } else {
-        meta = cs->getMetaForId(id);
+        meta = cs->getMetaForId(id, false);
         if (!meta) {
             qWarning() << "No meta item found";
             sendEmptyResponse(resp, 404);
@@ -1479,22 +1481,6 @@ ContentServer::Type ContentServer::getContentTypeByExtension(const QUrl &url)
     return getContentTypeByExtension(url.fileName());
 }
 
-ContentServer::Type ContentServer::getContentType(const QString &path)
-{
-    return getContentType(QUrl::fromLocalFile(path));
-}
-
-ContentServer::Type ContentServer::getContentType(const QUrl &url)
-{
-    const auto meta = getMeta(url);
-    if (!meta) {
-        qWarning() << "No cache item found, so guessing based on file extension";
-        return getContentTypeByExtension(url);
-    }
-
-    return typeFromMime(meta->mime);
-}
-
 ContentServer::PlaylistType ContentServer::playlistTypeFromMime(const QString &mime)
 {
     if (m_pls_mimes.contains(mime))
@@ -1601,22 +1587,6 @@ QString ContentServer::getExtensionFromAudioContentType(const QString &mime)
    return m_musicMimeToExtMap.value(mime);
 }
 
-QString ContentServer::getContentMime(const QString &path)
-{
-    return getContentMime(QUrl::fromLocalFile(path));
-}
-
-QString ContentServer::getContentMime(const QUrl &url)
-{
-    const auto meta = getMeta(url);
-    if (!meta) {
-        qWarning() << "No cache item found, so guessing based on file extension";
-        return getContentMimeByExtension(url);
-    }
-
-    return meta->mime;
-}
-
 void ContentServer::fillCoverArt(ItemMeta& item)
 {
     item.albumArt = QString("%1/art-%2.jpg")
@@ -1667,7 +1637,7 @@ QString ContentServer::extractItemFromDidl(const QString &didl)
 
 bool ContentServer::getContentMetaItem(const QString &id, QString &meta)
 {
-    const auto item = getMeta(Utils::urlFromId(id));
+    const auto item = getMeta(Utils::urlFromId(id), false);
     if (!item) {
         qWarning() << "No meta item found";
         return false;
@@ -1859,7 +1829,7 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         return false;
     }
 
-    const auto item = getMeta(Utils::urlFromId(id));
+    const auto item = getMeta(Utils::urlFromId(id), false);
     if (!item) {
         qWarning() << "No meta item found";
         return false;
@@ -1937,7 +1907,15 @@ bool ContentServer::makeUrl(const QString& id, QUrl& url, bool relay)
         return false;
     }
 
-    QString hash = QString::fromUtf8(encrypt(id.toUtf8()));
+    auto hash = QString::fromUtf8(encrypt(id.toUtf8()));
+
+    const int safe_hash_size = 800;
+    if (hash.size() > safe_hash_size) {
+        qWarning() << "Hash size exceeds safe limit. Some clients might have problems.";
+        auto truncatedHash = hash.left(safe_hash_size);
+        fullHashes.insert(truncatedHash, hash);
+        hash = truncatedHash;
+    }
 
     if (relay) {
         url.setScheme("http");
@@ -1997,7 +1975,7 @@ QString ContentServer::pathFromUrl(const QUrl &url) const
 }
 
 QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile,
-                                 bool* isArt)
+                                 bool* isArt) const
 {
     QUrlQuery q1(url);
     QString hash;
@@ -2006,6 +1984,11 @@ QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile,
     } else {
         hash = url.path();
         hash = hash.right(hash.length()-1);
+    }
+
+    if (fullHashes.contains(hash)) {
+        qDebug() << "converting truncated hash to full hash";
+        hash = fullHashes.value(hash);
     }
 
     auto id = QUrl(QString::fromUtf8(decrypt(hash.toUtf8())));
@@ -2366,11 +2349,8 @@ bool ContentServer::extractAudio(const QString& path,
 
 const ContentServer::ItemMeta* ContentServer::getMeta(const QUrl &url, bool createNew)
 {
-    metaCacheMutex.lock();
     auto it = getMetaCacheIterator(url, createNew);
     auto meta = it == metaCache.end() ? nullptr : &it.value();
-    metaCacheMutex.unlock();
-
     return meta;
 }
 
@@ -2856,9 +2836,55 @@ bool ContentServer::hlsPlaylist(const QByteArray &data)
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
-ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
-                                            std::shared_ptr<QNetworkAccessManager> nam,
-                                            int counter)
+ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
+                                          std::shared_ptr<QNetworkAccessManager> nam,
+                                          int counter)
+{
+    qDebug() << "Trying to find url with youtube-dl:" << url;
+    auto ytd = YoutubeDl::instance();
+    QUrl newUrl;
+    QString newTitle;
+
+    QEventLoop loop;
+    connect(ytd, &YoutubeDl::newStream,
+            [&loop, &url, &newUrl, &newTitle](const QUrl &origUrl,
+            const QUrl &streamUrl, const QString &streamTitle) {
+        if (url == origUrl) {
+            newUrl = streamUrl;
+            newTitle = streamTitle;
+            loop.quit();
+        }
+    });
+    QTimer::singleShot(2*httpTimeout, &loop, &QEventLoop::quit); // timeout
+
+    if (ytd->findStream(url)) {
+        loop.exec(); // waiting for youtube-dl resp
+        ytd->terminate(url);
+    }
+
+    qDebug() << "New url found by youtube-dl:" << newUrl << newTitle;
+    if (newUrl.isEmpty()) {
+        qWarning() << "Youtube-dl returned empty url";
+        return metaCache.end();
+    }
+
+    meta.title = newTitle;
+    meta.ytdl = true;
+
+    return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
+}
+
+const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url)
+{
+    ItemMeta meta;
+    return makeItemMetaUsingHTTPRequest2(url, meta);
+}
+
+const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
+                                             std::shared_ptr<QNetworkAccessManager> nam,
+                                             int counter)
 {
     qDebug() << ">> makeItemMetaUsingHTTPRequest in thread:" << QThread::currentThreadId();
     if (counter >= maxRedirections) {
@@ -2873,10 +2899,8 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     request.setRawHeader("User-Agent", userAgent);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 
-    if (!nam) {
+    if (!nam)
         nam = std::shared_ptr<QNetworkAccessManager>(new QNetworkAccessManager());
-    }
-
     auto reply = nam->get(request);
 
     QEventLoop loop;
@@ -2939,7 +2963,7 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
             newUrl = url.resolved(newUrl);
         reply->deleteLater();
         if (newUrl.isValid())
-            return makeItemMetaUsingHTTPRequest(newUrl, nam, counter + 1);
+            return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
         else
             return metaCache.end();
     }
@@ -2958,7 +2982,7 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
     auto type = typeFromMime(mime);
 
-    if (type == ContentServer::TypePlaylist) {
+    if (!meta.ytdl && type == ContentServer::TypePlaylist) {
         qDebug() << "Content is a playlist";
 
         auto size = reply->bytesAvailable();
@@ -2968,7 +2992,6 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
 
             if (hlsPlaylist(data)) {
                 qDebug() <<  "HLS playlist";
-                ContentServer::ItemMeta meta;
                 meta.valid = true;
                 meta.url = url;
                 meta.mime = mime;
@@ -2990,7 +3013,7 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                     QUrl url = items.first().url;
                     qDebug() << "Trying get meta data for first item in the playlist:" << url;
                     reply->deleteLater();
-                    return makeItemMetaUsingHTTPRequest(url, nam, counter + 1);
+                    return makeItemMetaUsingHTTPRequest2(url, meta, nam, counter + 1);
                 }
             }
         }
@@ -3001,19 +3024,20 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     }
 
     if (type != TypeMusic && type != TypeVideo && type != TypeImage) {
-        qWarning() << "Unsupported type";
-        reply->deleteLater();
-        return metaCache.end();
+        if (YoutubeDl::instance()->enabled() && !meta.ytdl &&
+                mime.contains("text/html")) { // trying youtube-dl
+            reply->deleteLater();
+            return makeItemMetaUsingYoutubeDl(reply->url(), meta, nam, counter);
+        } else {
+            qWarning() << "Unsupported type:" << mime;
+            reply->deleteLater();
+            return metaCache.end();
+        }
     }
 
     auto ranges = QString(reply->rawHeader("Accept-Ranges")).toLower().contains("bytes");
     int size = reply->header(QNetworkRequest::ContentLengthHeader).toInt();
 
-    const QByteArray icy_name_h = "icy-name";
-    const QByteArray icy_br_h = "icy-br";
-    const QByteArray icy_sr_h = "icy-sr";
-
-    ContentServer::ItemMeta meta;
     meta.valid = true;
     meta.url = url;
     meta.mime = mime;
@@ -3032,14 +3056,12 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         }
     }
 
-    if (reply->hasRawHeader(icy_name_h))
-        meta.title = QString(reply->rawHeader(icy_name_h));
-    else
-        meta.title = url.fileName();
-    /*if (reply->hasRawHeader(icy_br_h))
-        meta.bitrate = reply->rawHeader(icy_br_h).toDouble();
-    if (reply->hasRawHeader(icy_sr_h))
-        meta.sampleRate = reply->rawHeader(icy_sr_h).toDouble();*/
+    if (meta.title.isEmpty()) {
+        if (reply->hasRawHeader("icy-name"))
+            meta.title = QString(reply->rawHeader("icy-name"));
+        else
+            meta.title = url.fileName();
+    }
 
     reply->deleteLater();
     return metaCache.insert(url, meta);
@@ -3070,6 +3092,8 @@ ContentServer::makeMetaUsingExtension(const QUrl &url)
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMeta(const QUrl &url)
 {
+    metaCacheMutex.lock();
+
     QHash<QUrl, ContentServer::ItemMeta>::const_iterator it;
     auto itemType = itemTypeFromUrl(url);
     if (itemType == ItemType_LocalFile) {
@@ -3112,6 +3136,7 @@ ContentServer::makeItemMeta(const QUrl &url)
         it = metaCache.end();
     }
 
+    metaCacheMutex.unlock();
     return it;
 }
 

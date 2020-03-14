@@ -58,6 +58,7 @@
 #include "devicemodel.h"
 #include "contentdirectory.h"
 #include "cdirmodel.h"
+#include "youtubedl.h"
 
 int main(int argc, char *argv[])
 {
@@ -137,6 +138,7 @@ int main(int argc, char *argv[])
     auto services = Services::instance();
     auto playlist = PlaylistModel::instance();
     auto devmodel = DeviceModel::instance();
+    auto ydl = YoutubeDl::instance();
     DbusProxy dbusProxy;
 
 #ifdef SAILFISH
@@ -149,6 +151,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("cdir", services->contentDir.get());
     context->setContextProperty("playlist", playlist);
     context->setContextProperty("devmodel", devmodel);
+    context->setContextProperty("ydl", ydl);
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
 

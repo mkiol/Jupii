@@ -15,7 +15,6 @@
 #include <QVariant>
 #include <QUrl>
 #include <QDir>
-#include <QNetworkAccessManager>
 #include <QDomNodeList>
 #include <memory>
 
@@ -81,7 +80,6 @@ private:
     static const QString m_dirFilename;
     static const int httpTimeout = 100000;
 
-    std::unique_ptr<QNetworkAccessManager> nam;
     QDomNodeList m_entries;
     bool m_refreshing = false;
 

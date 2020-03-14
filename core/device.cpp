@@ -448,10 +448,12 @@ QString MediaServerDevice::desc()
                       IconProvider::urlToImg("upnp-48.jpg"),
                       IconProvider::urlToImg("upnp-32.jpg"),
                       IconProvider::urlToImg("upnp-16.jpg")};
+
+    auto cs = ContentServer::instance();
     for (const auto& icon : icons) {
         auto id = Utils::idFromUrl(icon, ContentServer::artCookie);
         QUrl iconUrl;
-        if (ContentServer::makeUrl(id, iconUrl)) {
+        if (cs->makeUrl(id, iconUrl)) {
             desc = desc.arg(iconUrl.toString());
         } else {
             qWarning() << "Cannot make Url form icon url";

@@ -13,6 +13,8 @@
 #include <QObject>
 #include <QByteArray>
 #include <QStringList>
+#include <QNetworkAccessManager>
+#include <memory>
 #ifdef SAILFISH
 #include <QQuickItem>
 #include <notification.h>
@@ -33,6 +35,7 @@ public:
     static const QString idKey;
 
     static Utils* instance(QObject *parent = nullptr);
+    std::unique_ptr<QNetworkAccessManager> nam;
 
     //bool getNetworkIf(QString &ifname, QString &address);
     //bool checkNetworkIf();

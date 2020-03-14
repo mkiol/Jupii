@@ -16,10 +16,8 @@
 #include <QUrl>
 #include <QPair>
 #include <QDir>
-#include <QNetworkAccessManager>
 #include <QDomNodeList>
 #include <QDomElement>
-#include <memory>
 
 #ifdef DESKTOP
 #include <QIcon>
@@ -99,7 +97,6 @@ private:
     static const QString m_imageFilename;
     static const int httpTimeout = 100000;
 
-    std::unique_ptr<QNetworkAccessManager> nam;
     QDomNodeList m_entries;
     QList<QPair<QString,QString>> m_imagesToDownload;  // <id, image URL>
     bool m_refreshing = false;

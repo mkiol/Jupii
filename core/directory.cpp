@@ -29,7 +29,6 @@ Directory* Directory::m_instance = nullptr;
 Directory::Directory(QObject *parent) :
     QObject(parent),
     TaskExecutor(parent),
-    nm(new QNetworkAccessManager()),
     ncm(new QNetworkConfigurationManager())
 {
     connect(ncm, &QNetworkConfigurationManager::configurationAdded,

@@ -15,7 +15,6 @@
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
-
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <memory>
@@ -103,9 +102,7 @@ void SomafmModel::downloadImage()
         QNetworkRequest request;
         request.setUrl(image.second);
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        if (!nam)
-            nam = std::unique_ptr<QNetworkAccessManager>(new QNetworkAccessManager(this));
-        auto reply = nam->get(request);
+        auto reply = Utils::instance()->nam->get(request);
         QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
         connect(reply, &QNetworkReply::finished, [this, id, reply]{
             auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -146,9 +143,7 @@ void SomafmModel::refresh()
         QNetworkRequest request;
         request.setUrl(m_dirUrl);
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        if (!nam)
-            nam = std::unique_ptr<QNetworkAccessManager>(new QNetworkAccessManager(this));
-        auto reply = nam->get(request);
+        auto reply = Utils::instance()->nam->get(request);
         QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
         connect(reply, &QNetworkReply::finished, [this, reply]{
             auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();

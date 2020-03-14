@@ -19,6 +19,7 @@
 #include "yamahaextendedcontrol.h"
 #include "directory.h"
 #include "devicemodel.h"
+#include "utils.h"
 
 const QString YamahaXC::urlBase_tag = "yamaha:X_URLBase";
 const QString YamahaXC::controlUrl_tag = "yamaha:X_yxcControlURL";
@@ -76,7 +77,7 @@ void YamahaXC::apiCall(YamahaXC::Action action, const QString& method)
     QUrl url(data.urlBase + data.controlUrl + method);
     qDebug() << "YamahaXC API call:" << url.toString() << action;
     this->action = action;
-    reply = Directory::instance()->nm->get(QNetworkRequest(url));
+    reply = Utils::instance()->nam->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, &YamahaXC::handleFinished);
 }
 

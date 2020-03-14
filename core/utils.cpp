@@ -44,7 +44,8 @@ const QString Utils::idKey = "jupii_id";
 bool Utils::m_seedDone = false;
 Utils* Utils::m_instance = nullptr;
 
-Utils::Utils(QObject *parent) : QObject(parent)
+Utils::Utils(QObject *parent) : QObject(parent),
+    nam(new QNetworkAccessManager())
 {
     createCacheDir();
 }
@@ -375,7 +376,7 @@ bool Utils::isIdUpnp(const QUrl &id)
 
 bool Utils::isIdRec(const QUrl &id)
 {
-    auto meta = ContentServer::instance()->getMetaForId(id);
+    auto meta = ContentServer::instance()->getMetaForId(id, false);
     if (meta)
         return meta->album == ContentServer::recAlbumName;
     return false;
@@ -397,7 +398,7 @@ int Utils::itemTypeFromUrl(const QUrl &url)
 QString Utils::recUrlFromId(const QUrl &id)
 {
     if (!id.isEmpty()) {
-        auto meta = ContentServer::instance()->getMetaForId(id);
+        auto meta = ContentServer::instance()->getMetaForId(id, false);
         if (meta) {
             return meta->recUrl;
         }
@@ -408,7 +409,7 @@ QString Utils::recUrlFromId(const QUrl &id)
 QString Utils::recDateFromId(const QUrl &id)
 {
     if (!id.isEmpty()) {
-        auto meta = ContentServer::instance()->getMetaForId(id);
+        auto meta = ContentServer::instance()->getMetaForId(id, false);
         if (meta && !meta->recDate.isNull())
             return friendlyDate(meta->recDate);
     }
