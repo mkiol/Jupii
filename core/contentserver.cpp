@@ -2347,9 +2347,9 @@ bool ContentServer::extractAudio(const QString& path,
     return true;
 }
 
-const ContentServer::ItemMeta* ContentServer::getMeta(const QUrl &url, bool createNew)
+const ContentServer::ItemMeta* ContentServer::getMeta(const QUrl &url, bool createNew, const QUrl &origUrl)
 {
-    auto it = getMetaCacheIterator(url, createNew);
+    auto it = getMetaCacheIterator(url, createNew, origUrl);
     auto meta = it == metaCache.end() ? nullptr : &it.value();
     return meta;
 }
@@ -2361,13 +2361,14 @@ const ContentServer::ItemMeta* ContentServer::getMetaForId(const QUrl &id, bool 
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
-ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew)
+ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
+                                    const QUrl &origUrl)
 {    
     const auto i = metaCache.find(url);
     if (i == metaCache.end()) {
         qDebug() << "Meta data for" << url << "not cached";
         if (createNew)
-            return makeItemMeta(url);
+            return makeItemMeta(url, origUrl);
         else
             return metaCache.end();
     }
@@ -2875,9 +2876,16 @@ ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
-ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url)
+ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url, const QUrl &origUrl)
 {
     ItemMeta meta;
+    if (!origUrl.isEmpty() && origUrl != url) {
+        meta.origUrlProvided = true;
+        meta.origUrl = origUrl;
+    } else {
+        meta.origUrlProvided = false;
+        meta.origUrl = url;
+    }
     return makeItemMetaUsingHTTPRequest2(url, meta);
 }
 
@@ -2969,9 +2977,14 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     }
 
     if (code > 299) {
-        qWarning() << "Unsupported response code:" << reply->error() << code << reason;
         reply->deleteLater();
-        return metaCache.end();
+        if (counter == 0 && meta.origUrlProvided) {
+            qWarning() << "URL is invalid but origURL is provided => checking origURL instead";
+            return makeItemMetaUsingHTTPRequest2(meta.origUrl, meta, nam, counter + 1);
+        } else {
+            qWarning() << "Unsupported response code:" << reply->error() << code << reason;
+            return metaCache.end();
+        }
     }
 
     // Bug in Qt? "Content-Disposition" cannot be retrived with QNetworkRequest::ContentDispositionHeader
@@ -3090,7 +3103,7 @@ ContentServer::makeMetaUsingExtension(const QUrl &url)
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
-ContentServer::makeItemMeta(const QUrl &url)
+ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl)
 {
     metaCacheMutex.lock();
 
@@ -3127,7 +3140,7 @@ ContentServer::makeItemMeta(const QUrl &url)
         it = makeUpnpItemMeta(url);
     } else if (itemType == ItemType_Url){
         qDebug() << "Geting meta using HTTP request";
-        it = makeItemMetaUsingHTTPRequest(url);
+        it = makeItemMetaUsingHTTPRequest(url, origUrl);
     } else if (url.scheme() == "jupii") {
         qDebug() << "Unsupported Jupii URL detected";
         it = metaCache.end();

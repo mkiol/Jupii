@@ -29,6 +29,7 @@ public:
     static const QString cookieKey;
     static const QString nameKey;
     static const QString authorKey;
+    static const QString origUrlKey;
     static const QString iconKey;
     static const QString descKey;
     static const QString playKey;
@@ -97,6 +98,7 @@ public:
                                         QUrl *icon = nullptr,
                                         QString *desc = nullptr,
                                         QString *author = nullptr,
+                                        QUrl *origUrl = nullptr,
                                         bool *play = nullptr);
     static QString randString(int len = 5);
     static void removeFile(const QString &path);

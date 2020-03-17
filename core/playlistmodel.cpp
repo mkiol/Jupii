@@ -880,9 +880,9 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 {
     qDebug() << "makeItem:" << id << QThread::currentThreadId();
 
-    int t = 0; QString name, cookie, author; QUrl ficon; bool play = false;
+    int t = 0; QString name, cookie, author; QUrl ficon, origUrl; bool play = false;
     if (!Utils::pathTypeNameCookieIconFromId(id, nullptr, &t,
-                            &name, &cookie, &ficon, nullptr, &author, &play) ||
+                &name, &cookie, &ficon, nullptr, &author, &origUrl, &play) ||
             cookie.isEmpty()) {
         qWarning() << "Invalid Id";
         return nullptr;
@@ -894,7 +894,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     QUrl url = Utils::urlFromId(id);
 
     const ContentServer::ItemMeta *meta;
-    meta = ContentServer::instance()->getMeta(url, true);
+    meta = ContentServer::instance()->getMeta(url, true, origUrl);
     if (!meta) {
         qWarning() << "No meta item found";
         return nullptr;
@@ -915,6 +915,18 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
             q.addQueryItem(Utils::nameKey, name);
             finalId.setQuery(q);
         }
+    }
+
+    if (origUrl.isEmpty()) {
+        if (meta->origUrl != meta->url) {
+            QUrlQuery q(finalId);
+            if (q.hasQueryItem(Utils::origUrlKey))
+                q.removeQueryItem(Utils::origUrlKey);
+            q.addQueryItem(Utils::origUrlKey, meta->origUrl.toString());
+            finalId.setQuery(q);
+        }
+    } else {
+        url = origUrl;
     }
 
     QString iconUrl = ficon.isEmpty() ?
@@ -1305,6 +1317,7 @@ QHash<int, QByteArray> PlaylistItem::roleNames() const
     names[IdRole] = "id";
     names[NameRole] = "name";
     names[UrlRole] = "url";
+    names[OrigUrlRole] = "origUrl";
     names[TypeRole] = "type";
     names[TitleRole] = "title";
     names[ArtistRole] = "artist";
@@ -1336,6 +1349,8 @@ QVariant PlaylistItem::data(int role) const
         return name();
     case UrlRole:
         return url();
+    case OrigUrlRole:
+        return origUrl();
     case TypeRole:
         return type();
     case TitleRole:

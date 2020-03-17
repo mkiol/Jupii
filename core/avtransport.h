@@ -26,6 +26,7 @@ class AVTransport : public Service
     Q_OBJECT
     Q_PROPERTY (QString currentURI READ getCurrentURI NOTIFY currentURIChanged)
     Q_PROPERTY (QUrl currentId READ getCurrentId NOTIFY currentURIChanged)
+    Q_PROPERTY (QUrl currentOrigURL READ getCurrentOrigURL NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentPath READ getCurrentPath NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentURL READ getCurrentURL NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentContentType READ getContentType NOTIFY currentURIChanged)
@@ -138,6 +139,7 @@ public:
     QString getCurrentAlbum();
     QUrl getCurrentAlbumArtURI();
     QUrl getCurrentId();
+    QUrl getCurrentOrigURL();
 
     bool getNextSupported();
     bool getPauseSupported();

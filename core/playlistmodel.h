@@ -215,6 +215,7 @@ public:
         IdRole = Qt::UserRole,
         ActiveRole,
         UrlRole,
+        OrigUrlRole,
         DateRole,
         TypeRole,
         SizeRole,

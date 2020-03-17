@@ -41,6 +41,11 @@ QUrl AVTransport::getCurrentId()
     return QUrl(cs->idFromUrl(m_currentURI));
 }
 
+QUrl AVTransport::getCurrentOrigURL()
+{
+    return m_currentMeta ? m_currentMeta->origUrl : QUrl(getCurrentURL());
+}
+
 void AVTransport::changed(const QString& name, const QVariant& _value)
 {
     if (!getInited()) {

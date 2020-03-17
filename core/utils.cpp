@@ -36,6 +36,7 @@ const QString Utils::typeKey = "jupii_type";
 const QString Utils::cookieKey = "jupii_cookie";
 const QString Utils::nameKey = "jupii_name";
 const QString Utils::authorKey = "jupii_author";
+const QString Utils::origUrlKey = "jupii_origurl";
 const QString Utils::iconKey = "jupii_icon";
 const QString Utils::descKey = "jupii_desc";
 const QString Utils::playKey = "jupii_play";
@@ -304,6 +305,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
                                      QUrl* icon,
                                      QString* desc,
                                      QString* author,
+                                     QUrl* origUrl,
                                      bool* play)
 {
     if (!id.isValid()) {
@@ -318,7 +320,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             path->clear();
     }
 
-    if (type || cookie || name || desc || author || icon || play) {
+    if (type || cookie || name || desc || author || icon || origUrl || play) {
         QUrlQuery q(id);
         if (type && q.hasQueryItem(Utils::typeKey))
             *type = q.queryItemValue(Utils::typeKey).toInt();
@@ -332,6 +334,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             *desc = q.queryItemValue(Utils::descKey);
         if (author && q.hasQueryItem(Utils::authorKey))
             *author = q.queryItemValue(Utils::authorKey);
+        if (origUrl && q.hasQueryItem(Utils::origUrlKey))
+            *origUrl = q.queryItemValue(Utils::origUrlKey);
         if (play && q.hasQueryItem(Utils::playKey))
             *play = (q.queryItemValue(Utils::playKey) == "true");
     }
@@ -606,7 +610,7 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id)
     if (uq.hasQueryItem(Utils::typeKey))
         uq.removeAllQueryItems(Utils::typeKey);
 
-    QString cookie, type, name, icon, desc, author;
+    QString cookie, type, name, icon, desc, author, origUrl;
     QUrlQuery iq(id);
     if (iq.hasQueryItem(Utils::cookieKey))
         cookie = iq.queryItemValue(Utils::cookieKey);
@@ -620,6 +624,8 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id)
         desc = iq.queryItemValue(Utils::descKey);
     if (iq.hasQueryItem(Utils::authorKey))
         author = iq.queryItemValue(Utils::authorKey);
+    if (iq.hasQueryItem(Utils::origUrlKey))
+        origUrl = iq.queryItemValue(Utils::origUrlKey);
 
     uq.addQueryItem(Utils::cookieKey, cookie);
 
@@ -633,6 +639,8 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id)
         uq.addQueryItem(Utils::descKey, desc);
     if (!author.isEmpty())
         uq.addQueryItem(Utils::authorKey, author);
+    if (!origUrl.isEmpty())
+        uq.addQueryItem(Utils::origUrlKey, origUrl);
 
     QUrl newUrl(url);
     newUrl.setQuery(uq);
@@ -678,6 +686,8 @@ QUrl Utils::urlFromId(const QUrl &id)
         q.removeAllQueryItems(Utils::authorKey);
     if (q.hasQueryItem(Utils::playKey))
         q.removeAllQueryItems(Utils::playKey);
+    if (q.hasQueryItem(Utils::origUrlKey))
+        q.removeAllQueryItems(Utils::origUrlKey);
     QUrl url(id);
     url.setQuery(q);
     return url;

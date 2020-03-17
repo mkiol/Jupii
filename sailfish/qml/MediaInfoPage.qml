@@ -71,7 +71,7 @@ Page {
                                                                           qsTr("Copy URL")
                     onClicked: Clipboard.text =
                                itemType === ContentServer.ItemType_LocalFile ? av.currentPath :
-                                                                               av.currentURL
+                                                                               av.currentOrigURL
                 }
 
                 MenuItem {
@@ -269,7 +269,7 @@ Page {
                 }
 
                 PaddedLabel {
-                    text: av.currentPath.length !== 0 ? av.currentPath : av.currentURL
+                    text: av.currentPath.length !== 0 ? av.currentPath : av.currentOrigURL
                     visible: itemType === ContentServer.ItemType_LocalFile ||
                              itemType === ContentServer.ItemType_Url
                 }
