@@ -91,6 +91,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<DirModel>("harbour.jupii.DirModel", 1, 0, "DirModel");
     qmlRegisterType<RecModel>("harbour.jupii.RecModel", 1, 0, "RecModel");
     qmlRegisterType<CDirModel>("harbour.jupii.CDirModel", 1, 0, "CDirModel");
+    qmlRegisterUncreatableType<YoutubeDl>("harbour.jupii.YoutubeDl", 1, 0, "YoutubeDl",
+                                          "YoutubeDl is a singleton");
 
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 
@@ -138,7 +140,7 @@ int main(int argc, char *argv[])
     auto services = Services::instance();
     auto playlist = PlaylistModel::instance();
     auto devmodel = DeviceModel::instance();
-    auto ydl = YoutubeDl::instance();
+    auto ytdl = YoutubeDl::instance();
     DbusProxy dbusProxy;
 
 #ifdef SAILFISH
@@ -151,7 +153,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("cdir", services->contentDir.get());
     context->setContextProperty("playlist", playlist);
     context->setContextProperty("devmodel", devmodel);
-    context->setContextProperty("ydl", ydl);
+    context->setContextProperty("ytdl", ytdl);
 
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
 

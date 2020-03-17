@@ -7,6 +7,7 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import harbour.jupii.YoutubeDl 1.0
 
 ApplicationWindow {
     id: app
@@ -42,7 +43,6 @@ ApplicationWindow {
     }
     Connections {
         target: cserver
-
         onStreamTitleChanged: updateStreamInfo()
         onStreamRecordableChanged: updateStreamInfo()
         onStreamToRecordChanged: updateStreamInfo()
@@ -53,7 +53,6 @@ ApplicationWindow {
 
     Connections {
         target: directory
-
         onError: {
             switch(code) {
             case 1:
@@ -63,12 +62,28 @@ ApplicationWindow {
                 notification.show(qsTr("An internal error occurred"))
             }
         }
-
         onInitedChanged: {
             if (!directory.inited) {
                 pageStack.clear()
                 pageStack.completeAnimation()
                 pageStack.push(devPage, {}, PageStackAction.Immediate)
+            }
+        }
+    }
+
+    Connections {
+        target: ytdl
+        onError : {
+            switch(code) {
+            case YoutubeDl.DownloadBin_Error:
+                notification.show(qsTr("Cannot download youtube-dl"))
+                break
+            case YoutubeDl.UpdateBin_Error:
+                notification.show(qsTr("Cannot update youtube-dl"))
+                break
+            case YoutubeDl.FindBin_Error:
+                notification.show(qsTr("Cannot find URL with youtube-dl"))
+                break
             }
         }
     }

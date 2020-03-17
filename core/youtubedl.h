@@ -19,6 +19,14 @@ class YoutubeDl: public QObject
 {
     Q_OBJECT
 public:
+    enum Errors {
+        No_Error = 0,
+        FindStream_Error,
+        DownloadBin_Error,
+        UpdateBin_Error
+    };
+    Q_ENUM(Errors)
+
     static YoutubeDl* instance();
     bool enabled();
     void terminate(const QUrl &url);
@@ -29,6 +37,7 @@ public slots:
 
 signals:
     void newStream(QUrl url, QUrl streamUrl, QString title);
+    void error(Errors code);
 
 private:
     static YoutubeDl* m_instance;
@@ -51,6 +60,8 @@ private slots:
     void handleReadyRead();
 #ifdef SAILFISH
     void handleBinDownloaded();
+    void handleUpdateProcFinished(int exitCode);
+    void handleUpdateProcError(QProcess::ProcessError error);
 #endif
 };
 

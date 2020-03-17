@@ -98,6 +98,7 @@ void YoutubeDl::handleBinDownloaded()
             }
         } else {
             qWarning() << "Cannot download youtube-dl";
+            emit error(DownloadBin_Error);
         }
 
         reply->deleteLater();
@@ -113,8 +114,35 @@ void YoutubeDl::update()
 
     auto proc = new QProcess();
     proc->start(binPath + " --update", QIODevice::ReadOnly);
+    connect(proc, static_cast<void(QProcess::*)(int)>(&QProcess::finished),
+            this, &YoutubeDl::handleUpdateProcFinished);
+    connect(proc, &QProcess::errorOccurred, this, &YoutubeDl::handleUpdateProcError);
 
-    qDebug() << "update process started:" << proc;
+    qDebug() << "Youtube-dl update process started:" << proc;
+}
+
+void YoutubeDl::handleUpdateProcFinished(int exitCode)
+{
+    qDebug() << "Youtube-dl update process finished with exit code:" << exitCode;
+
+    auto proc = dynamic_cast<QProcess*>(sender());
+    if (proc) {
+        proc->deleteLater();
+        if (exitCode != 0) {
+            emit error(UpdateBin_Error);
+        }
+    }
+}
+
+void YoutubeDl::handleUpdateProcError(QProcess::ProcessError error)
+{
+    qWarning() << "Youtube-dl update process did not start";
+
+    auto proc = dynamic_cast<QProcess*>(sender());
+    if (proc) {
+        proc->deleteLater();
+        emit this->error(UpdateBin_Error);
+    }
 }
 
 void YoutubeDl::install()
@@ -144,9 +172,9 @@ void YoutubeDl::install()
 
 void YoutubeDl::handleProcFinished(int exitCode)
 {
-    auto proc = dynamic_cast<QProcess*>(sender());
-    qDebug() << "handleProcFinished:" << exitCode << proc;
+    qDebug() << "Youtube-dl process finished with exit code:" << exitCode;
 
+    auto proc = dynamic_cast<QProcess*>(sender());
     if (proc && procToUrl.contains(proc)) {
         auto url = procToUrl.value(proc);
         auto out = procToData[proc].split('\n');
@@ -168,27 +196,28 @@ void YoutubeDl::handleProcFinished(int exitCode)
         // error
         emit newStream(url, QUrl(), QString());
         proc->deleteLater();
+        emit error(FindStream_Error);
     }
 }
 
 void YoutubeDl::handleReadyRead()
 {
     auto proc = dynamic_cast<QProcess*>(sender());
-    qDebug() << "handleReadyRead:" << proc;
-    proc->setReadChannel(QProcess::StandardOutput);
-    procToData[proc].push_back(proc->readAll());
-    qDebug() << "data:" << procToData[proc];
-    if (procToData[proc].split('\n').size() > 1) {
-        qDebug() << "All data received";
-        proc->terminate();
+    if (proc) {
+        proc->setReadChannel(QProcess::StandardOutput);
+        procToData[proc].push_back(proc->readAll());
+        if (procToData[proc].split('\n').size() > 1) {
+            qDebug() << "All data received from youtube-dl process";
+            proc->terminate();
+        }
     }
 }
 
 void YoutubeDl::handleProcError(QProcess::ProcessError error)
 {
-    auto proc = dynamic_cast<QProcess*>(sender());
-    qWarning() << "Process did not start:" << error << proc;
+    qWarning() << "Youtube-dl process did not start";
 
+    auto proc = dynamic_cast<QProcess*>(sender());
     if (proc) {
         auto url = procToUrl.value(proc);
         procToUrl.remove(proc);
@@ -196,6 +225,7 @@ void YoutubeDl::handleProcError(QProcess::ProcessError error)
         urlToProc.remove(url);
         proc->deleteLater();
         emit newStream(url, QUrl(), QString());
+        emit this->error(FindStream_Error);
     }
 }
 
