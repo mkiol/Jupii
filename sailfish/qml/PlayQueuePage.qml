@@ -33,22 +33,6 @@ Page {
         }
     }
 
-    function togglePlay() {
-        if (!directory.inited)
-            return;
-        if (av.transportState !== AVTransport.Playing) {
-            av.speed = 1
-            av.play()
-            //var id = av.currentId;
-            //av.setLocalContent(id.toString(), "");
-        } else {
-            if (av.pauseSupported)
-                av.pause()
-            else
-                av.stop()
-        }
-    }
-
     function doPop() {
         if (pageStack.busy)
             _doPop = true;
@@ -73,20 +57,6 @@ Page {
             notification.show("Cannot play the file")
             playlist.resetToBeActive()
             break
-        }
-    }
-
-    function playItem(id, index) {
-        if (!directory.inited)
-            return;
-        var count = listView.count
-
-        if (count > 0) {
-            console.log("Play: index = " + index)
-            playlist.setToBeActiveIndex(index)
-
-            var nid = playlist.nextId(id)
-            av.setLocalContent(id,nid)
         }
     }
 
@@ -354,9 +324,6 @@ Page {
 
         clip: true
 
-        visible: opacity > 0.0
-        Behavior on opacity { FadeAnimation {} }
-
         model: playlist
 
         header: PageHeader {
@@ -368,7 +335,7 @@ Page {
         PullDownMenu {
             id: menu
             enabled: !playlist.busy && !av.busy && !rc.busy
-            busy: !enabled || directory.busy
+            busy: !enabled || directory.busy || playlist.refreshing
 
             Item {
                 width: parent.width
@@ -421,7 +388,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Save queue")
-                visible: !playlist.busy && listView.count > 0
+                visible: !playlist.refreshing && !playlist.busy && listView.count > 0
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"), {
                                        playlist: playlist
@@ -431,13 +398,24 @@ Page {
 
             MenuItem {
                 text: qsTr("Clear queue")
-                visible: !playlist.busy && listView.count > 0
+                visible: !playlist.refreshing && !playlist.busy && listView.count > 0
                 onClicked: remorse.execute(qsTr("Clearing play queue"), function() { playlist.clear() } )
             }
 
             MenuItem {
+                text: playlist.refreshing ? qsTr("Cancel refreshing") : qsTr("Refresh items")
+                visible: !playlist.busy && listView.count > 0
+                onClicked: {
+                    if (playlist.refreshing)
+                        playlist.cancelRefresh()
+                    else
+                        playlist.refresh()
+                }
+            }
+
+            MenuItem {
                 text: qsTr("Add items")
-                enabled: !playlist.busy && directory.inited
+                visible: !playlist.refreshing && !playlist.busy && directory.inited
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
                                        musicPickerDialog: musicPickerDialog,
@@ -464,14 +442,14 @@ Page {
             id: listItem
 
             property color primaryColor: highlighted || model.active ?
-                                         Theme.highlightColor : Theme.primaryColor
+                                         (enabled ? Theme.highlightColor : Theme.secondaryHighlightColor) :
+                                         (enabled ? Theme.primaryColor : Theme.secondaryColor)
             property color secondaryColor: highlighted || model.active ?
                                          Theme.secondaryHighlightColor : Theme.secondaryColor
             property bool isImage: model.type === AVTransport.T_Image
-            enabled: !playlist.busy && !av.busy && !rc.busy
-            opacity: !enabled ? 0.0 : 1.0
-            visible: opacity > 0.0
-            Behavior on opacity { FadeAnimation {} }
+
+            enabled: !playlist.busy && !av.busy && !rc.busy && !playlist.refreshing
+            opacity: enabled ? 1.0 : 0.8
 
             defaultIcon.source: {
                 if (model.itemType === ContentServer.ItemType_Mic)
@@ -511,44 +489,49 @@ Page {
             subtitle.color: secondaryColor
 
             onClicked: {
+                if (!listItem.enabled)
+                    return;
                 if (!directory.inited)
                     return;
                 if (root.devless) {
                     listItem.openMenu()
                 } else {
                     if (model.active)
-                        root.togglePlay()
+                        playlist.togglePlay()
                     else
-                        root.playItem(model.id, model.index)
+                        playlist.play(model.id)
                 }
             }
 
             menu: ContextMenu {
                 MenuItem {
                     text: listItem.isImage ? qsTr("Show") : qsTr("Play")
+                    enabled: model.active || listItem.enabled
                     visible: directory.inited && !root.devless &&
                              ((av.transportState !== AVTransport.Playing &&
                               !listItem.isImage) || !model.active)
                     onClicked: {
                         if (!model.active) {
-                            root.playItem(model.id, model.index)
+                            playlist.play(model.id)
                         } else if (av.transportState !== AVTransport.Playing) {
-                            root.togglePlay()
+                            playlist.togglePlay()
                         }
                     }
                 }
 
                 MenuItem {
                     text: qsTr("Pause")
+                    enabled: model.active || listItem.enabled
                     visible: directory.inited && !root.devless &&
                              (av.stopable && model.active && !listItem.isImage)
                     onClicked: {
-                        root.togglePlay()
+                        playlist.togglePlay()
                     }
                 }
 
                 MenuItem {
                     text: qsTr("Remove")
+                    enabled: model.active || listItem.enabled
                     visible: directory.inited
                     onClicked: {
                         playlist.remove(model.id)
@@ -560,7 +543,7 @@ Page {
                 anchors.centerIn: icon
                 color: primaryColor
                 running: model.toBeActive
-                visible: model.toBeActive
+                visible: running
                 size: BusyIndicatorSize.Medium
             }
         }
@@ -597,8 +580,10 @@ Page {
                            av.currentAuthor : "") : app.streamTitle
         itemType: root.itemType
 
-        prevEnabled: playlist.prevSupported
-        nextEnabled: playlist.nextSupported
+        prevEnabled: playlist.prevSupported &&
+                     !playlist.refreshing
+        nextEnabled: playlist.nextSupported &&
+                     !playlist.refreshing
 
         forwardEnabled: av.seekSupported &&
                         av.transportState === AVTransport.Playing &&
@@ -619,7 +604,7 @@ Page {
 
         onNextClicked: playlist.next()
         onPrevClicked: playlist.prev()
-        onTogglePlayClicked: root.togglePlay()
+        onTogglePlayClicked: playlist.togglePlay()
 
         onForwardClicked: {
             var pos = av.relativeTimePosition + settings.forwardTime

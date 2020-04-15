@@ -155,6 +155,8 @@ public:
 
     void setSpeed(int value);
 
+    bool updating();
+
 signals:
     void transportStateChanged();
     void transportStatusChanged();
@@ -214,7 +216,7 @@ private:
     bool m_blockEmitUriChanged = false;
     bool m_pendingControlableSignal = false;
     bool m_stopCalled = false;
-    const ContentServer::ItemMeta* m_currentMeta = nullptr;
+    ContentServer::ItemMeta m_currentMeta;
 
     QTimer m_seekTimer;
     int m_futureSeek = 0;

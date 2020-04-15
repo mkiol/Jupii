@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <QList>
 #include <QMap>
+#include <QMutex>
 #include <QHash>
 #include <QDebug>
 #include <QByteArray>
@@ -22,6 +23,7 @@
 #include <QThread>
 #include <QPair>
 #include <QVariantList>
+#include <QTimer>
 #include <memory>
 
 #ifdef DESKTOP
@@ -57,12 +59,17 @@ friend class PlaylistModel;
 
 public:
     QList<ListItem*> items;
-    PlaylistWorker(const QList<UrlItem> &&urls,
+    PlaylistWorker(const QList<UrlItem> &urls,
                    bool asAudio = false,
-                   bool urlIsId = false,
                    QObject *parent = nullptr);
+    PlaylistWorker(QList<UrlItem> &&urls,
+                   bool asAudio = false,
+                   QObject *parent = nullptr);
+    PlaylistWorker(QList<QUrl> &&ids, QObject *parent = nullptr);
+    ~PlaylistWorker();
 private:
     QList<UrlItem> urls;
+    QList<QUrl> ids;
     bool asAudio;
     bool urlIsId;
     void run();
@@ -75,6 +82,7 @@ class PlaylistModel :
     Q_PROPERTY (int activeItemIndex READ getActiveItemIndex NOTIFY activeItemIndexChanged)
     Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
     Q_PROPERTY (bool busy READ isBusy NOTIFY busyChanged)
+    Q_PROPERTY (bool refreshing READ isRefreshing NOTIFY refreshingChanged)
     Q_PROPERTY (bool nextSupported READ isNextSupported NOTIFY nextSupportedChanged)
     Q_PROPERTY (bool prevSupported READ isPrevSupported NOTIFY prevSupportedChanged)
 
@@ -99,19 +107,23 @@ public:
 
     static PlaylistModel* instance(QObject *parent = nullptr);
 
-    Q_INVOKABLE void clear(bool save = true);
+    Q_INVOKABLE void clear(bool save = true, bool deleteItems = true);
     Q_INVOKABLE QString firstId() const;
     Q_INVOKABLE QString secondId() const;
     Q_INVOKABLE bool remove(const QString &id);
     Q_INVOKABLE bool removeIndex(int index);
     Q_INVOKABLE QString activeId() const;
+    QString activeCookie() const;
     Q_INVOKABLE QString nextActiveId() const;
     Q_INVOKABLE QString prevActiveId() const;
     Q_INVOKABLE QString nextId(const QString &id) const;
     Q_INVOKABLE bool saveToFile(const QString& title);
-    Q_INVOKABLE void update(bool autoPlay = false);
     Q_INVOKABLE void next();
     Q_INVOKABLE void prev();
+    Q_INVOKABLE bool play(const QString &id);
+    Q_INVOKABLE void togglePlay();
+    Q_INVOKABLE void refresh();
+    Q_INVOKABLE void cancelRefresh();
 
     int getActiveItemIndex() const;
     int getPlayMode() const;
@@ -128,13 +140,16 @@ signals:
     void itemsRemoved();
     void itemsAdded();
     void itemsLoaded();
+    void itemsRefreshed();
     void error(ErrorType code);
     void activeItemChanged();
     void activeItemIndexChanged();
     void playModeChanged();
     void busyChanged();
+    void refreshingChanged();
     void nextSupportedChanged();
     void prevSupportedChanged();
+    void doRefreshIds();
 
 public slots:
     void load();
@@ -158,18 +173,23 @@ public slots:
     void resetToBeActive();
     void togglePlayMode();
     bool isBusy();
+    bool isRefreshing();
 
 private slots:
-    void workerDone();
+    void addWorkerDone();
     void onItemsAdded();
     void onItemsLoaded();
     void onItemsRemoved();
     void onAvCurrentURIChanged();
     void onAvNextURIChanged();
-    void onAvTrackEnded();
+    void onTrackEnded();
     void onAvStateChanged();
     void onAvInitedChanged();
     void onSupportedChanged();
+    void update();
+    void updateActiveId();
+    void doOnTrackEnded();
+    void refreshIds();
 #ifdef SAILFISH
     void handleBackgroundActivityStateChange();
 #endif
@@ -179,12 +199,18 @@ private:
 #ifdef SAILFISH
     BackgroundActivity *m_backgroundActivity;
 #endif
-    std::unique_ptr<PlaylistWorker> m_worker;
+    std::unique_ptr<PlaylistWorker> m_add_worker;
+    std::unique_ptr<PlaylistWorker> m_refresh_worker;
     bool m_busy = false;
     int m_activeItemIndex = -1;
     int m_playMode;
     bool m_prevSupported = false;
     bool m_nextSupported = false;
+    QTimer m_updateTimer;
+    QTimer m_updateActiveTimer;
+    QTimer m_trackEndedTimer;
+    QMutex m_refresh_mutex;
+    QStringList m_idsToRefresh;
 
     PlaylistModel(QObject *parent = nullptr);
     void addItems(const QList<QUrl>& urls, bool asAudio);
@@ -197,7 +223,11 @@ private:
     void setBusy(bool busy);
     void updateNextSupported();
     void updatePrevSupported();
-    void autoPlay();
+    bool autoPlay();
+    void refreshAndSetContent(const QString &id1, const QString &id2, bool toBeActive = false);
+    PlaylistItem* handleRefreshWorker(const QString &id);
+    void doUpdate();
+    void doUpdateActiveId();
 #ifdef SAILFISH
     void updateBackgroundActivity();
 #endif

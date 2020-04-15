@@ -45,7 +45,7 @@ class Settings:
     Q_PROPERTY (bool contentDirSupported READ getContentDirSupported WRITE setContentDirSupported NOTIFY contentDirSupportedChanged)
     Q_PROPERTY (bool logToFile READ getLogToFile WRITE setLogToFile NOTIFY logToFileChanged)
     Q_PROPERTY (int skipFrames READ getSkipFrames WRITE setSkipFrames NOTIFY skipFramesChanged)
-
+    Q_PROPERTY (int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY colorSchemeChanged)
 public:
 #ifdef SAILFISH
     static constexpr char* HW_RELEASE_FILE = "/etc/hw-release";
@@ -138,6 +138,9 @@ public:
     void setSkipFrames(int value);
     int getSkipFrames();
 
+    void setColorScheme(int value);
+    int getColorScheme();
+
     QString mediaServerDevUuid();
     QString prettyName();
     Q_INVOKABLE bool isDebug();
@@ -170,11 +173,13 @@ signals:
     void contentDirSupportedChanged();
     void logToFileChanged();
     void skipFramesChanged();
+    void colorSchemeChanged();
 
 private:
     QSettings settings;
     static Settings* inst;
     QString hwName;
+    int m_colorScheme = 0;
 
     explicit Settings(QObject* parent = nullptr);
 #ifdef SAILFISH

@@ -36,7 +36,7 @@ public slots:
     void terminateAll();
 
 signals:
-    void newStream(QUrl url, QUrl streamUrl, QString title);
+    void newStream(const QUrl &url, const QUrl &streamUrl, const QString &title);
     void error(Errors code);
 
 private:

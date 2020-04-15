@@ -498,9 +498,10 @@ MediaServerDevice::MediaServerDevice(QObject *parent) :
     addActionMapping(cm.get(), "GetCurrentConnectionInfo", actionHandler);
 
     auto pl = PlaylistModel::instance();
-    connect(pl, &PlaylistModel::itemsAdded, this, &MediaServerDevice::updateDirectory);
-    connect(pl, &PlaylistModel::itemsRemoved, this, &MediaServerDevice::updateDirectory);
-    connect(pl, &PlaylistModel::itemsLoaded, this, &MediaServerDevice::updateDirectory);
+    connect(pl, &PlaylistModel::itemsAdded, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
+    connect(pl, &PlaylistModel::itemsRemoved, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
+    connect(pl, &PlaylistModel::itemsLoaded, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
+    connect(pl, &PlaylistModel::itemsRefreshed, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
 
     auto s = Settings::instance();
     connect(s, &Settings::contentDirSupportedChanged, this, &MediaServerDevice::restart);
@@ -637,7 +638,6 @@ int MediaServerDevice::browse(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing
             std::string count = std::to_string(list.first);
             out.addarg("NumberReturned", count);
             out.addarg("TotalMatches", count);
-
         }
     } else {
         if (browseFlag == "BrowseMetadata") {

@@ -136,12 +136,16 @@ void YoutubeDl::handleUpdateProcFinished(int exitCode)
 
 void YoutubeDl::handleUpdateProcError(QProcess::ProcessError error)
 {
-    qWarning() << "Youtube-dl update process did not start";
+    qDebug() << "Youtube-dl update process error:" << error;
 
-    auto proc = dynamic_cast<QProcess*>(sender());
-    if (proc) {
-        proc->deleteLater();
-        emit this->error(UpdateBin_Error);
+    if (error == QProcess::FailedToStart) {
+        qWarning() << "Youtube-dl update process failed to start";
+
+        auto proc = dynamic_cast<QProcess*>(sender());
+        if (proc) {
+            proc->deleteLater();
+            emit this->error(UpdateBin_Error);
+        }
     }
 }
 
@@ -206,7 +210,7 @@ void YoutubeDl::handleReadyRead()
     if (proc) {
         proc->setReadChannel(QProcess::StandardOutput);
         procToData[proc].push_back(proc->readAll());
-        if (procToData[proc].split('\n').size() > 1) {
+        if (procToData[proc].split('\n').size() > 2) {
             qDebug() << "All data received from youtube-dl process";
             proc->terminate();
         }
@@ -215,17 +219,18 @@ void YoutubeDl::handleReadyRead()
 
 void YoutubeDl::handleProcError(QProcess::ProcessError error)
 {
-    qWarning() << "Youtube-dl process did not start";
-
-    auto proc = dynamic_cast<QProcess*>(sender());
-    if (proc) {
-        auto url = procToUrl.value(proc);
-        procToUrl.remove(proc);
-        procToData.remove(proc);
-        urlToProc.remove(url);
-        proc->deleteLater();
-        emit newStream(url, QUrl(), QString());
-        emit this->error(FindStream_Error);
+    if (error == QProcess::FailedToStart) {
+        qWarning() << "Youtube-dl process failed to start";
+        auto proc = dynamic_cast<QProcess*>(sender());
+        if (proc) {
+            auto url = procToUrl.value(proc);
+            procToUrl.remove(proc);
+            procToData.remove(proc);
+            urlToProc.remove(url);
+            proc->deleteLater();
+            emit newStream(url, QUrl(), QString());
+            emit this->error(FindStream_Error);
+        }
     }
 }
 
@@ -243,7 +248,7 @@ bool YoutubeDl::findStream(const QUrl &url)
     connect(proc, &QProcess::readyReadStandardOutput, this, &YoutubeDl::handleReadyRead);
     procToUrl.insert(proc, url);
     urlToProc.insert(url, proc);
-    proc->start(binPath + " --get-title --get-url --no-call-home \"" + url.toString() + "\"",
+    proc->start(binPath + " --get-title --get-url --no-call-home --format best \"" + url.toString() + "\"",
                 QIODevice::ReadOnly);
 
     qDebug() << "process started:" << proc;

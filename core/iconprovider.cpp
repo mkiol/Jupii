@@ -106,13 +106,16 @@ QPixmap IconProvider::requestPixmap(const QString &id, QSize *size, const QSize 
     if (size)
         *size  = sourcePixmap.size();
 
-    if (parts.length() > 1)
+    if (parts.length() > 1) {
         if (QColor::isValidColor(parts.at(1))) {
             QPainter painter(&sourcePixmap);
             painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
             painter.fillRect(sourcePixmap.rect(), parts.at(1));
             painter.end();
+        } else {
+            qWarning() << "Color is invalid:" << parts.at(1);
         }
+    }
 
     if (requestedSize.width() > 0 && requestedSize.height() > 0)
         return sourcePixmap.scaled(requestedSize.width(), requestedSize.height(), Qt::IgnoreAspectRatio);

@@ -51,6 +51,12 @@ ApplicationWindow {
         }
     }
 
+    Binding {
+        target: settings
+        property: "colorScheme"
+        value: Theme.colorScheme
+    }
+
     Connections {
         target: directory
         onError: {

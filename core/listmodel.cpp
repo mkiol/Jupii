@@ -146,6 +146,16 @@ bool ListModel::removeRows(int row, int count, const QModelIndex &parent)
   return true;
 }
 
+bool ListModel::removeRowsNoDeleteItems(int row, int count, const QModelIndex &parent)
+{
+  Q_UNUSED(parent);
+  if(row < 0 || (row+count) > m_list.size()) return false;
+  beginRemoveRows(QModelIndex(), row, row+count-1);
+  m_list.clear();
+  endRemoveRows();
+  return true;
+}
+
 ListItem * ListModel::takeRow(int row)
 {
   beginRemoveRows(QModelIndex(), row, row);

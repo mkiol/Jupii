@@ -339,7 +339,7 @@ bool ScreenCaster::init()
     out_video_codec_ctx->time_base.den = video_framerate;
 
     auto passLogfile = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).filePath(
-                QString("passlogfile-%1.log").arg(Utils::randString())).toLatin1();
+                QString("passlogfile-%1.log").arg(Utils::instance()->randString())).toLatin1();
     av_dict_set(&options, "preset", "ultrafast", 0);
     av_dict_set(&options, "tune", "zerolatency", 0);
     av_dict_set(&options, "g", "0", 0);

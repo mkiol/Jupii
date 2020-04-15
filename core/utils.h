@@ -14,6 +14,8 @@
 #include <QByteArray>
 #include <QStringList>
 #include <QNetworkAccessManager>
+#include <QThread>
+//#include <QColor>
 #include <memory>
 #ifdef SAILFISH
 #include <QQuickItem>
@@ -34,6 +36,7 @@ public:
     static const QString descKey;
     static const QString playKey;
     static const QString idKey;
+    static const QString ytdlKey;
 
     static Utils* instance(QObject *parent = nullptr);
     std::unique_ptr<QNetworkAccessManager> nam;
@@ -60,6 +63,7 @@ public:
     Q_INVOKABLE bool isIdRec(const QUrl &id);
     Q_INVOKABLE int itemTypeFromUrl(const QUrl &url);
     Q_INVOKABLE QString devNameFromUpnpId(const QUrl &id);
+    //Q_INVOKABLE QString rgbName(const QColor &color);
 
     Q_INVOKABLE QString recUrlFromId(const QUrl &id);
     Q_INVOKABLE QString recDateFromId(const QUrl &id);
@@ -83,11 +87,13 @@ public:
     static QString nameFromId(const QString &id);
     static QString nameFromId(const QUrl &id);
     static QString idFromUrl(const QUrl &url, const QString &cookie);
-    static QUrl swapUrlInId(const QUrl &url, const QUrl &id);
+    static QUrl swapUrlInId(const QUrl &url, const QUrl &id,
+                            bool swapCookie = true, bool swapOrigUrl = true,
+                            bool swapYtdl = true);
+    static void fixUrl(QUrl &url);
     static QUrl urlFromId(const QUrl &id);
     static QUrl urlFromId(const QString &id);
-    static QUrl urlWithTypeFromId(const QUrl &id);
-    static QUrl urlWithTypeFromId(const QString &id);
+    static QUrl bestUrlFromId(const QUrl &id);
     static QUrl cleanId(const QUrl &id);
     static QUrl iconFromId(const QUrl &id);
     static bool pathTypeNameCookieIconFromId(const QUrl &id,
@@ -99,8 +105,9 @@ public:
                                         QString *desc = nullptr,
                                         QString *author = nullptr,
                                         QUrl *origUrl = nullptr,
+                                        bool *ytdl = nullptr,
                                         bool *play = nullptr);
-    static QString randString(int len = 5);
+    QString randString(int len = 5);
     static void removeFile(const QString &path);
     static bool writeToCacheFile(const QString &filename, const QByteArray &data, bool del = false);
     static bool writeToFile(const QString &path, const QByteArray &data, bool del = false);
@@ -116,7 +123,7 @@ public:
 
 private:
     static Utils* m_instance;
-    static bool m_seedDone;
+    QHash<QThread*,bool> seedDone;
 #ifdef SAILFISH
     qint32 notifId = 0;
     //Notification notif;

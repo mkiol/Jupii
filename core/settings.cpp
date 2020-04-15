@@ -679,3 +679,16 @@ int Settings::getSkipFrames()
 {
     return settings.value("skipframes", 5).toInt();
 }
+
+void Settings::setColorScheme(int value)
+{
+    if (m_colorScheme != value) {
+        m_colorScheme = value;
+        emit colorSchemeChanged();
+    }
+}
+
+int Settings::getColorScheme()
+{
+    return m_colorScheme;
+}

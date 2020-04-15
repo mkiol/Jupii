@@ -28,9 +28,12 @@
 #include <QLocale>
 #include <QTranslator>
 #include <QTextCodec>
+#include <QProcess>
 #include <iostream>
+
 #include <libupnpp/control/discovery.hxx>
 #include <libupnpp/control/description.hxx>
+
 #include "utils.h"
 #include "directory.h"
 #include "devicemodel.h"
@@ -116,6 +119,7 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<Service::ErrorType>("ErrorType");
     qRegisterMetaType<QList<ListItem*>>("QListOfListItem");
+    qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
 
     auto settings = Settings::instance();
 

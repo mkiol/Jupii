@@ -20,6 +20,8 @@
 #include <QNetworkRequest>
 #include <QFile>
 #include <QIODevice>
+#include <QTime>
+#include <QDateTime>
 #include <memory>
 #include <qhttpserver.h>
 #include <qhttprequest.h>
@@ -115,11 +117,25 @@ public:
         // 0 - stream proxy (default)
         // 1 - playlist proxy (e.g. for HLS playlists)
         bool mode = 0;
-
-        // rec
         QString recStation;
         QString recUrl;
         QDateTime recDate;
+        QTime metaUpdateTime = QTime::currentTime();
+
+        inline bool expired() const {
+            if (metaUpdateTime.isNull())
+                return true;
+            if (ytdl) // ytdl meta is expired after 60s
+                return metaUpdateTime.addSecs(60) < QTime::currentTime();
+            return metaUpdateTime.addSecs(180) < QTime::currentTime();
+        }
+
+        inline bool dummy() const {
+            return ytdl ? metaUpdateTime.isNull() : false;
+        }
+
+        ItemMeta(const ItemMeta *meta);
+        ItemMeta() {}
     };
 
     struct PlaylistItemMeta {
@@ -170,19 +186,24 @@ public:
     Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString pathFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString urlFromUrl(const QUrl &url) const;
-    const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(const QUrl &url, 
-                                                                     bool createNew = true, 
-                                                                     const QUrl &origUrl = QUrl());
-    const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(const QUrl &id, bool createNew = true);
+    const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(const QUrl &url,
+                                                                     bool createNew = true,
+                                                                     const QUrl &origUrl = QUrl(),
+                                                                     bool ytdl = false);
+    const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(const QUrl &id,
+                                                                          bool createNew = true);
     const QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
-    const ItemMeta* getMeta(const QUrl &url, bool createNew, const QUrl &origUrl = QUrl());
+    const ItemMeta* getMeta(const QUrl &url, bool createNew,
+                            const QUrl &origUrl = QUrl(),
+                            bool ytdl = false);
+    void removeMeta(const QUrl &url);
     const ItemMeta* getMetaForId(const QUrl &id, bool createNew);
     Q_INVOKABLE QString streamTitle(const QUrl &id) const;
     Q_INVOKABLE QStringList streamTitleHistory(const QUrl &id) const;
     Q_INVOKABLE void setStreamToRecord(const QUrl &id, bool value);
     Q_INVOKABLE bool isStreamToRecord(const QUrl &id);
     Q_INVOKABLE bool isStreamRecordable(const QUrl &id);
-    bool getContentMetaItem(const QString &id, QString &meta);
+    bool getContentMetaItem(const QString &id, QString &meta, bool includeDummy = true);
     bool getContentMetaItemByDidlId(const QString &didlId, QString &meta);
     QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr,
                              bool* isFile = nullptr, bool *isArt = nullptr) const;
@@ -196,6 +217,7 @@ signals:
     void streamToRecordChanged(const QUrl &id, bool value);
     void streamRecordableChanged(const QUrl &id, bool value);
     void displayStatusChanged(bool status);
+    void fullHashesUpdated();
 
 public slots:
     void displayStatusChangeHandler(QString state);
@@ -298,14 +320,16 @@ private:
     bool getContentMeta(const QString &id, const QUrl &url, QString &meta, const ItemMeta* item);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url,
-                                                             const QUrl &origUrl = QUrl());
+                                                             const QUrl &origUrl = QUrl(),
+                                                             bool ytdl = false);
     const QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeAudioCaptureItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeScreenCaptureItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
-                                                                             const QUrl &origUrl = QUrl());
+                                                                             const QUrl &origUrl = QUrl(),
+                                                                             bool ytdl = false);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest2(const QUrl &url,
             ItemMeta &meta,
             std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
@@ -396,6 +420,7 @@ private:
         QString title;
         QString recExt;
         bool finished = false;
+        QUrl origUrl;
         ~ProxyItem();
     };
 
@@ -429,6 +454,7 @@ private:
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     void requestForFileHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void requestForUrlHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
+    void requestForUrlHandlerFallback(const QUrl &id, const QUrl &origUrl, QHttpRequest *req, QHttpResponse *resp);
     void requestForMicHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void requestForAudioCaptureHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
     void requestForScreenCaptureHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);

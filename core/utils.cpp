@@ -41,8 +41,8 @@ const QString Utils::iconKey = "jupii_icon";
 const QString Utils::descKey = "jupii_desc";
 const QString Utils::playKey = "jupii_play";
 const QString Utils::idKey = "jupii_id";
+const QString Utils::ytdlKey = "jupii_ytdl";
 
-bool Utils::m_seedDone = false;
 Utils* Utils::m_instance = nullptr;
 
 Utils::Utils(QObject *parent) : QObject(parent),
@@ -306,6 +306,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
                                      QString* desc,
                                      QString* author,
                                      QUrl* origUrl,
+                                     bool* ytdl,
                                      bool* play)
 {
     if (!id.isValid()) {
@@ -320,7 +321,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             path->clear();
     }
 
-    if (type || cookie || name || desc || author || icon || origUrl || play) {
+    if (type || cookie || name || desc || author || icon || origUrl || play || ytdl) {
         QUrlQuery q(id);
         if (type && q.hasQueryItem(Utils::typeKey))
             *type = q.queryItemValue(Utils::typeKey).toInt();
@@ -338,6 +339,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             *origUrl = q.queryItemValue(Utils::origUrlKey);
         if (play && q.hasQueryItem(Utils::playKey))
             *play = (q.queryItemValue(Utils::playKey) == "true");
+        if (ytdl && q.hasQueryItem(Utils::ytdlKey))
+            *ytdl = (q.queryItemValue(Utils::ytdlKey) == "true");
     }
 
     return true;
@@ -393,6 +396,31 @@ QString Utils::devNameFromUpnpId(const QUrl &id)
         return Directory::instance()->deviceNameFromId(meta->upnpDevId);
     return QString();
 }
+
+/*QString Utils::rgbName(const QColor &color)
+{
+    qDebug() << "color:" << color << color.name(QColor::HexArgb);
+    auto alpha = color.alphaF();
+    if (alpha < 1) {
+        // convert alpha to rgb tone
+        QColor new_color;
+        if (Settings::instance()->getColorScheme() == 0) { // dark theme
+            new_color = QColor(color.red() * alpha, color.green() * alpha,
+                               color.blue() * alpha);
+        } else {
+            alpha = 255 * (1 - alpha);
+            new_color = QColor(color.red() + alpha,
+                               color.green() + alpha,
+                               color.blue() + alpha);
+        }
+
+        qDebug() << "new_color:" << new_color << new_color.name(QColor::HexArgb);
+        return new_color.name(QColor::HexRgb);
+    } else {
+        return color.name(QColor::HexRgb);
+    }
+    return color.name(QColor::HexArgb);
+}*/
 
 int Utils::itemTypeFromUrl(const QUrl &url)
 {
@@ -602,7 +630,14 @@ QString Utils::nameFromId(const QUrl &id)
     return name;
 }
 
-QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id)
+void Utils::fixUrl(QUrl &url)
+{
+    url.setQuery(QUrlQuery(url));
+}
+
+QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id,
+                        bool swapCookie,
+                        bool swapOrigUrl, bool swapYtdl)
 {
     QUrlQuery uq(url);
     if (uq.hasQueryItem(Utils::cookieKey))
@@ -610,9 +645,9 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id)
     if (uq.hasQueryItem(Utils::typeKey))
         uq.removeAllQueryItems(Utils::typeKey);
 
-    QString cookie, type, name, icon, desc, author, origUrl;
+    QString cookie, type, name, icon, desc, author, origUrl, ytdl;
     QUrlQuery iq(id);
-    if (iq.hasQueryItem(Utils::cookieKey))
+    if (swapCookie && iq.hasQueryItem(Utils::cookieKey))
         cookie = iq.queryItemValue(Utils::cookieKey);
     if (iq.hasQueryItem(Utils::typeKey))
         type = iq.queryItemValue(Utils::typeKey);
@@ -624,11 +659,13 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id)
         desc = iq.queryItemValue(Utils::descKey);
     if (iq.hasQueryItem(Utils::authorKey))
         author = iq.queryItemValue(Utils::authorKey);
-    if (iq.hasQueryItem(Utils::origUrlKey))
+    if (swapOrigUrl && iq.hasQueryItem(Utils::origUrlKey))
         origUrl = iq.queryItemValue(Utils::origUrlKey);
+    if (swapYtdl && iq.hasQueryItem(Utils::ytdlKey))
+        ytdl = iq.queryItemValue(Utils::ytdlKey);
 
-    uq.addQueryItem(Utils::cookieKey, cookie);
-
+    if (!cookie.isEmpty())
+        uq.addQueryItem(Utils::cookieKey, cookie);
     if (!type.isEmpty())
         uq.addQueryItem(Utils::typeKey, type);
     if (!name.isEmpty())
@@ -641,6 +678,8 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id)
         uq.addQueryItem(Utils::authorKey, author);
     if (!origUrl.isEmpty())
         uq.addQueryItem(Utils::origUrlKey, origUrl);
+    if (!ytdl.isEmpty())
+        uq.addQueryItem(Utils::ytdlKey, ytdl);
 
     QUrl newUrl(url);
     newUrl.setQuery(uq);
@@ -662,11 +701,13 @@ QString Utils::idFromUrl(const QUrl &url, const QString &cookie)
 QUrl Utils::cleanId(const QUrl &id)
 {
     QUrlQuery q(id);
-    if (q.hasQueryItem(Utils::playKey))
+    if (q.hasQueryItem(Utils::playKey)) {
         q.removeAllQueryItems(Utils::playKey);
-    QUrl url(id);
-    url.setQuery(q);
-    return url;
+        QUrl url(id);
+        url.setQuery(q);
+        return url;
+    }
+    return id;
 }
 
 QUrl Utils::urlFromId(const QUrl &id)
@@ -688,26 +729,33 @@ QUrl Utils::urlFromId(const QUrl &id)
         q.removeAllQueryItems(Utils::playKey);
     if (q.hasQueryItem(Utils::origUrlKey))
         q.removeAllQueryItems(Utils::origUrlKey);
+    if (q.hasQueryItem(Utils::ytdlKey))
+        q.removeAllQueryItems(Utils::ytdlKey);
     QUrl url(id);
     url.setQuery(q);
     return url;
 }
 
-QUrl Utils::urlWithTypeFromId(const QUrl &id)
+QUrl Utils::bestUrlFromId(const QUrl &id)
 {
+    QUrl url(id);
     QUrlQuery q(id);
+    /*if (q.hasQueryItem(Utils::origUrlKey)) {
+        auto origUrl = q.queryItemValue(Utils::origUrlKey);
+        if (origUrl.isEmpty()) {
+            q.removeAllQueryItems(Utils::origUrlKey);
+        } else {
+            return swapUrlInId(origUrl, id, false, false, false);
+        }
+    }*/
     if (q.hasQueryItem(Utils::cookieKey))
         q.removeAllQueryItems(Utils::cookieKey);
     if (q.hasQueryItem(Utils::playKey))
         q.removeAllQueryItems(Utils::playKey);
-    QUrl url(id);
+    /*if (q.hasQueryItem(Utils::ytdlKey))
+        q.removeAllQueryItems(Utils::ytdlKey);*/
     url.setQuery(q);
     return url;
-}
-
-QUrl Utils::urlWithTypeFromId(const QString &id)
-{
-    return urlWithTypeFromId(QUrl(id));
 }
 
 QUrl Utils::urlFromId(const QString &id)
@@ -717,10 +765,11 @@ QUrl Utils::urlFromId(const QString &id)
 
 QString Utils::randString(int len)
 {
-    if (!m_seedDone) {
+    auto t = QThread::currentThread();
+    if (!seedDone.contains(t)) {
        // Seed init, needed for key generation
        qsrand(QTime::currentTime().msec());
-       m_seedDone = true;
+       seedDone[t] = true;
     }
 
     const QString pc("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");

@@ -18,20 +18,6 @@ CoverBackground {
     property string title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
     property string author: app.streamTitle.length === 0 ? av.currentAuthor : app.streamTitle
 
-    function togglePlay() {
-        if (!directory.inited)
-            return;
-        if (av.transportState !== AVTransport.Playing) {
-            av.speed = 1
-            av.play()
-        } else {
-            if (av.pauseSupported)
-                av.pause()
-            else
-                av.stop()
-        }
-    }
-
     Image {
         id: bg
         anchors.fill: parent
@@ -93,7 +79,7 @@ CoverBackground {
         CoverAction {
             iconSource: av.playable ? "image://theme/icon-cover-play" :
                                        "image://theme/icon-cover-pause"
-            onTriggered: root.togglePlay();
+            onTriggered: playlist.togglePlay();
         }
     }
 }

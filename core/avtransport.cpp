@@ -10,6 +10,7 @@
 #include <QThread>
 #include <QGuiApplication>
 #include <QTime>
+#include <QFileInfo>
 
 #include "avtransport.h"
 #include "directory.h"
@@ -43,7 +44,7 @@ QUrl AVTransport::getCurrentId()
 
 QUrl AVTransport::getCurrentOrigURL()
 {
-    return m_currentMeta ? m_currentMeta->origUrl : QUrl(getCurrentURL());
+    return m_currentMeta.valid ? m_currentMeta.origUrl : QUrl(getCurrentURL());
 }
 
 void AVTransport::changed(const QString& name, const QVariant& _value)
@@ -395,7 +396,7 @@ QString AVTransport::getCurrentURL()
 
 QString AVTransport::getContentType()
 {
-    return m_currentMeta ? m_currentMeta->mime : QString();
+    return m_currentMeta.valid ? m_currentMeta.mime : QString();
 }
 
 QString AVTransport::getNextPath()
@@ -452,12 +453,11 @@ QUrl AVTransport::getCurrentAlbumArtURI()
         qDebug() << "Optimization => using local album art from Id:" << icon.toString();
         return icon;
     }
-    if (m_currentMeta && !m_currentMeta->albumArt.isEmpty()) {
-        qDebug() << "Optimization => using local album art from Meta:" << m_currentMeta->albumArt;
-        auto url = QUrl::fromLocalFile(m_currentMeta->albumArt);
-        if (url.isValid())
-            return url;
-        return QUrl::fromLocalFile(m_currentMeta->albumArt);
+    if (m_currentMeta.valid && !m_currentMeta.albumArt.isEmpty()) {
+        qDebug() << "Optimization => using local album art from Meta:" << m_currentMeta.albumArt;
+        return QFileInfo::exists(m_currentMeta.albumArt) ?
+                    QUrl::fromLocalFile(m_currentMeta.albumArt) :
+                    QUrl(m_currentMeta.albumArt);
     }
     // ---
 
@@ -1076,6 +1076,16 @@ void AVTransport::fakeUpdateRelativeTimePosition()
     }
 }
 
+bool AVTransport::updating()
+{
+    bool lock = m_updateMutex.tryLock();
+    if (lock) {
+        m_updateMutex.unlock();
+        return false;
+    }
+    return true;
+}
+
 void AVTransport::update(int initDelay, int postDelay)
 {
     if (!isInitedOrIniting()) {
@@ -1537,8 +1547,8 @@ void AVTransport::updateMeta()
             auto newMeta = cs->getMetaForId(id, false);
             if (newMeta) {
                 qDebug() << "Meta found";
-                if (m_currentMeta != newMeta) {
-                    m_currentMeta = newMeta;
+                if (m_currentMeta.url != newMeta->url) {
+                    m_currentMeta = *newMeta;
                     announceMetaChanged();
                     return;
                 }
@@ -1550,8 +1560,8 @@ void AVTransport::updateMeta()
         }
     }
 
-    if (m_currentMeta) {
-        m_currentMeta = nullptr;
+    if (m_currentMeta.valid) {
+        m_currentMeta.valid = false;
         announceMetaChanged();
     }
 }
