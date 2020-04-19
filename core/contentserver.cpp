@@ -3191,6 +3191,14 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     meta.local = false;
     meta.seekSupported = size > 0 ? ranges : false;
     meta.itemType = ItemType_Url;
+#ifdef SAILFISH
+    if (meta.origUrl.host().contains("bandcamp.com") || meta.url.host().contains("bcbits.com"))
+        meta.albumArt = IconProvider::pathToNoResId("icon-bandcamp");
+    else if (meta.origUrl.host().contains("youtube.") || meta.origUrl.host().contains("yout.be"))
+        meta.albumArt = IconProvider::pathToNoResId("icon-youtube");
+    else if (meta.origUrl.host().contains("soundcloud.com"))
+        meta.albumArt = IconProvider::pathToNoResId("icon-soundcloud");
+#endif
 
     if (reply->hasRawHeader("icy-metaint")) {
         int metaint = reply->rawHeader("icy-metaint").toInt();

@@ -47,7 +47,10 @@ icons_nores = {
     "pulse" : [1],
     "screen" : [1],
     "somafm" : [1],
-    "fosdem" : [1]
+    "fosdem" : [1],
+    "bandcamp" : [1],
+    "youtube" : [1],
+    "soundcloud" : [1]
 }
 
 size_names = {
