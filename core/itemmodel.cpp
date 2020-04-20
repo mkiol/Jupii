@@ -238,5 +238,4 @@ void SelectableItemModel::updateModel(const QString &data)
     Q_UNUSED(data)
     setAllSelected(false);
     ItemModel::updateModel(m_filter);
-
 }

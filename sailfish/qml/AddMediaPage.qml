@@ -24,6 +24,7 @@ Page {
     property var urlPickerPage
     property var somafmPickerPage
     property var fosdemPickerPage
+    property var bcPickerPage
     property var icecastPickerPage
     property var gpodderPickerPage
     property var recPickerPage
@@ -185,6 +186,22 @@ Page {
             }
 
             SimpleListItem {
+                title.text: "Bandcamp"
+                icon.source: "image://icons/icon-m-bandcamp"
+                onClicked: {
+                    pageStack.replace(bcPickerPage)
+                }
+            }
+
+            SimpleListItem {
+                title.text: "Fosdem"
+                icon.source: "image://icons/icon-m-fosdem"
+                onClicked: {
+                    pageStack.replace(fosdemPickerPage)
+                }
+            }
+
+            SimpleListItem {
                 visible: utils.isGpodderAvailable()
                 title.text: "gPodder"
                 icon.source: "image://icons/icon-m-gpodder"
@@ -206,14 +223,6 @@ Page {
                 icon.source: "image://icons/icon-m-somafm"
                 onClicked: {
                     pageStack.replace(somafmPickerPage)
-                }
-            }
-
-            SimpleListItem {
-                title.text: "Fosdem"
-                icon.source: "image://icons/icon-m-fosdem"
-                onClicked: {
-                    pageStack.replace(fosdemPickerPage)
                 }
             }
         }

@@ -35,6 +35,7 @@ icons = {
     "icecast" : [1],
     "somafm" : [1],
     "fosdem" : [1],
+    "bandcamp" : [1],
     "cover" : [6],
     "record" : [1],
     "record-active" : [1]

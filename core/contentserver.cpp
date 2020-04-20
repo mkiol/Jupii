@@ -92,7 +92,8 @@ const QHash<QString,QString> ContentServer::m_musicExtMap {
     {"ape", "audio/x-monkeys-audio"},
     {"ogg", "audio/ogg"}, {"oga", "audio/ogg"},
     {"wma", "audio/x-ms-wma"},
-    {"tsa", "audio/MP2T"}
+    {"tsa", "audio/MP2T"},
+    {"aiff", "audio/x-aiff"}
 };
 
 const QHash<QString,QString> ContentServer::m_musicMimeToExtMap {
@@ -342,11 +343,9 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
         return;
     }
 
-    bool valid, isArt;
-
+    bool valid;
     auto cs = ContentServer::instance();
-
-    auto id = cs->idUrlFromUrl(req->url(), &valid, nullptr, &isArt);
+    auto id = cs->idUrlFromUrl(req->url(), &valid);
 
     qDebug() << "Id:" << id.toString();
 
@@ -356,21 +355,11 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
         return;
     }
 
-    const ContentServer::ItemMeta *meta;
-
-    if (isArt) {
-        qWarning() << "Requested content is art";
-        meta = cs->makeMetaUsingExtension(id);
-        requestForFileHandler(id, meta, req, resp);
-        delete meta;
+    const auto meta = cs->getMetaForId(id, false);
+    if (!meta) {
+        qWarning() << "No meta item found";
+        sendEmptyResponse(resp, 404);
         return;
-    } else {
-        meta = cs->getMetaForId(id, false);
-        if (!meta) {
-            qWarning() << "No meta item found";
-            sendEmptyResponse(resp, 404);
-            return;
-        }
     }
 
     if (meta->itemType == ContentServer::ItemType_LocalFile) {
@@ -918,7 +907,8 @@ void ContentServerWorker::proxyMetaDataChanged()
     qDebug() << "Request:" << (head ? "HEAD" : "GET")
              << item.id;
     qDebug() << "Reply status:" << code << reason;
-    qDebug() << "Error code:" << error;
+    if (error != QNetworkReply::NoError)
+        qDebug() << "Error code:" << error;
     qDebug() << "Headers:";
     for (const auto &p : reply->rawHeaderPairs()) {
         qDebug() << p.first << p.second;
@@ -1034,11 +1024,12 @@ void ContentServerWorker::proxyFinished()
 
     if (!item.finished) {
         auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+        //auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
         auto error = reply->error();
         qDebug() << "Request:" << (item.req->method() == QHttpRequest::HTTP_GET ? "GET" : "HEAD")
                  << item.id;
-        qDebug() << "Error code:" << error;
+        if (error != QNetworkReply::NoError)
+            qDebug() << "Error code:" << error;
 
         if (item.state == 0) {
             /*if (!item.origUrl.isEmpty()) {
@@ -1688,10 +1679,11 @@ void ContentServer::fillCoverArt(ItemMeta& item)
             QImage img;
             img.loadFromData(reinterpret_cast<const uchar*>(frame->picture().data()),
                              static_cast<int>(frame->picture().size()));
-            if (img.save(item.albumArt))
+            if (img.save(item.albumArt)) {
                 return; // OK
-            else
+            } else {
                 qWarning() << "Unable to write album art image:" << item.albumArt;
+            }
         } else {
             qDebug() << "No cover art in" << item.path;
         }
@@ -1789,11 +1781,10 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
     case TypeMusic:
         m << "<upnp:class>" << audioItemClass << "</upnp:class>";
         if (!icon.isEmpty() || !item->albumArt.isEmpty()) {
-            auto id = Utils::idFromUrl(icon.isEmpty() ?
-                                           QUrl::fromLocalFile(item->albumArt) :
-                                           icon,
-                                       artCookie);
-            QUrl artUrl;
+            auto artUrl = QFileInfo::exists(item->albumArt) ?
+                                QUrl::fromLocalFile(item->albumArt) :
+                                QUrl(item->albumArt);
+            auto id = Utils::idFromUrl(icon.isEmpty() ? artUrl : icon, artCookie);
             if (makeUrl(id, artUrl))
                 m << "<upnp:albumArtURI>" << artUrl.toString() << "</upnp:albumArtURI>";
             else
@@ -2058,8 +2049,7 @@ QString ContentServer::pathFromUrl(const QUrl &url) const
     return QString();
 }
 
-QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile,
-                                 bool* isArt) const
+QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile) const
 {
     QUrlQuery q1(url);
     QString hash;
@@ -2088,9 +2078,6 @@ QUrl ContentServer::idUrlFromUrl(const QUrl &url, bool* ok, bool* isFile,
         if (ok)
             *ok = false;
         return QUrl();
-    } else {
-        if (isArt)
-            *isArt = q2.queryItemValue(Utils::cookieKey) == artCookie;
     }
 
     if (id.isLocalFile()) {
@@ -2436,12 +2423,20 @@ void ContentServer::removeMeta(const QUrl &url)
     metaCache.remove(url);
 }
 
+const ContentServer::ItemMeta* ContentServer::getMetaForImg(const QUrl &url,
+                                                      bool createNew)
+{
+    return getMeta(url, createNew, QUrl(), false, true);
+}
+
 const ContentServer::ItemMeta* ContentServer::getMeta(const QUrl &url,
                                                       bool createNew,
                                                       const QUrl &origUrl,
-                                                      bool ytdl)
+                                                      bool ytdl, bool img,
+                                                      bool refresh)
 {
-    auto it = getMetaCacheIterator(url, createNew, origUrl, ytdl);
+    qDebug() << "getMeta:" << url << createNew << ytdl << img << refresh;
+    auto it = getMetaCacheIterator(url, createNew, origUrl, ytdl, img, refresh);
     auto meta = it == metaCache.end() ? nullptr : &it.value();
     return meta;
 }
@@ -2454,13 +2449,22 @@ const ContentServer::ItemMeta* ContentServer::getMetaForId(const QUrl &id, bool 
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
-                                    const QUrl &origUrl, bool ytdl)
-{    
+                                    const QUrl &origUrl, bool ytdl, bool img,
+                                    bool refresh)
+{
+    if (url.isEmpty())
+        return metaCache.end();
+
+    if (refresh) {
+        removeMeta(url);
+    }
+
     const auto i = metaCache.find(url);
+
     if (i == metaCache.end()) {
         qDebug() << "Meta data for" << url << "not cached";
         if (createNew)
-            return makeItemMeta(url, origUrl, ytdl);
+            return makeItemMeta(url, origUrl, ytdl, img, refresh);
         else
             return metaCache.end();
     }
@@ -2946,26 +2950,36 @@ ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
         return metaCache.end();
     }
 
-    auto ytd = YoutubeDl::instance();
     QUrl newUrl;
     QString newTitle;
 
-    std::shared_ptr<QEventLoop> loop = std::shared_ptr<QEventLoop>(new QEventLoop());
-    QTimer::singleShot(3*httpTimeout, loop.get(), &QEventLoop::quit); // timeout
-    connect(ytd, &YoutubeDl::newStream, loop.get(),
-            [loop, &url, &newUrl, &newTitle](const QUrl &origUrl,
-            const QUrl &streamUrl, const QString &streamTitle) {
-        if (loop && url == origUrl) {
-            newUrl = streamUrl;
-            newTitle = streamTitle;
-            loop->exit(1);
-        }
-    }, Qt::QueuedConnection);
+    auto ytd = YoutubeDl::instance();
+
     if (ytd->findStream(url)) {
+        std::shared_ptr<QEventLoop> loop = std::shared_ptr<QEventLoop>(new QEventLoop());
+        QTimer::singleShot(3*httpTimeout, loop.get(), &QEventLoop::quit); // timeout
+
+        connect(ytd, &YoutubeDl::newStream, loop.get(),
+                [loop, &url, &newUrl, &newTitle](const QUrl &origUrl,
+                const QUrl &streamUrl, const QString &streamTitle) {
+            if (QThread::currentThread()->isInterruptionRequested()) {
+                qWarning() << "Thread interruption was requested";
+                loop->exit(1);
+                return;
+            }
+            if (url == origUrl) {
+                newUrl = streamUrl;
+                newTitle = streamTitle;
+                loop->exit(1);
+            }
+        }, Qt::QueuedConnection);
+
         if (!loop->exec()) { // waiting for youtube-dl resp
             qWarning() << "Youtube-dl timeouted";
             ytd->terminate(url);
         }
+
+        disconnect(ytd, 0, loop.get(), 0);
     }
 
     qDebug() << "New url found by youtube-dl:" << newUrl << newTitle;
@@ -2985,10 +2999,11 @@ ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                                             const QUrl &origUrl,
-                                            bool ytdl)
+                                            bool ytdl, bool refresh)
 {
     ItemMeta meta;
     meta.ytdl = ytdl;
+    meta.refresh = refresh; // meta refreshing
 
     QUrl fixed_url(url);
     QUrl fixed_origUrl(origUrl);
@@ -3064,6 +3079,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         qWarning() << "Timeout occured";
         reply->abort();
         reply->deleteLater();
+        disconnect(reply, 0, &loop, 0);
         return metaCache.end();
     }
 
@@ -3103,7 +3119,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     bool ytdl_broken = false;
 
     if (code > 299) {
-        if (meta.ytdl) { // youtube-dl content
+        if (!meta.refresh && meta.ytdl) { // youtube-dl content
             qDebug() << "Youtube-dl broken URL";
             ytdl_broken = true;
             meta.metaUpdateTime = QTime(); // null time to set meta as dummy
@@ -3198,6 +3214,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         meta.albumArt = IconProvider::pathToNoResId("icon-youtube");
     else if (meta.origUrl.host().contains("soundcloud.com"))
         meta.albumArt = IconProvider::pathToNoResId("icon-soundcloud");
+    else if (meta.origUrl.host().contains("somafm.com") || meta.url.host().contains("somafm.com"))
+        meta.albumArt = IconProvider::pathToNoResId("icon-somafm");
 #endif
 
     if (reply->hasRawHeader("icy-metaint")) {
@@ -3226,30 +3244,32 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     return metaCache.insert(url, meta);
 }
 
-ContentServer::ItemMeta*
+const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeMetaUsingExtension(const QUrl &url)
 {
     bool isFile = url.isLocalFile();
     bool isQrc = url.scheme() == "qrc";
 
-    auto item = new ContentServer::ItemMeta;
-    item->valid = true;
-    item->path = isFile ? url.toLocalFile() :
+    ItemMeta meta;
+    meta.valid = true;
+    meta.path = isFile ? url.toLocalFile() :
                           isQrc ? (":" + Utils::urlFromId(url).toString().mid(6)) :
                                   "";
-    item->url = url;
-    item->mime = getContentMimeByExtension(url);
-    item->type = getContentTypeByExtension(url);
-    item->size = 0;
-    item->filename = url.fileName();
-    item->local = isFile || isQrc;
-    item->seekSupported = isFile || isQrc;
-    item->itemType = itemTypeFromUrl(url);
-    return item;
+    meta.url = url;
+    meta.mime = getContentMimeByExtension(url);
+    meta.type = getContentTypeByExtension(url);
+    meta.size = 0;
+    meta.filename = url.fileName();
+    meta.local = isFile || isQrc;
+    meta.seekSupported = isFile || isQrc;
+    meta.itemType = itemTypeFromUrl(url);
+
+    return metaCache.insert(url, meta);
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
-ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl)
+ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl,
+                            bool img, bool refresh)
 {
     metaCacheMutex.lock();
 
@@ -3257,10 +3277,14 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl)
     auto itemType = itemTypeFromUrl(url);
     if (itemType == ItemType_LocalFile) {
         if (QFile::exists(url.toLocalFile())) {
-            it = makeItemMetaUsingTracker(url);
-            if (it == metaCache.end()) {
-                qWarning() << "Cannot get meta using Tacker, so fallbacking to Taglib";
-                it = makeItemMetaUsingTaglib(url);
+            if (img) {
+                it = makeMetaUsingExtension(url);
+            } else {
+                it = makeItemMetaUsingTracker(url);
+                if (it == metaCache.end()) {
+                    qWarning() << "Cannot get meta using Tacker, so fallbacking to Taglib";
+                    it = makeItemMetaUsingTaglib(url);
+                }
             }
         } else {
             qWarning() << "File doesn't exist, cannot create meta item";
@@ -3286,7 +3310,7 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl)
         it = makeUpnpItemMeta(url);
     } else if (itemType == ItemType_Url){
         qDebug() << "Geting meta using HTTP request";
-        it = makeItemMetaUsingHTTPRequest(url, origUrl, ytdl);
+        it = makeItemMetaUsingHTTPRequest(url, origUrl, ytdl, refresh);
     } else if (url.scheme() == "jupii") {
         qDebug() << "Unsupported Jupii URL detected";
         it = metaCache.end();

@@ -121,6 +121,7 @@ public:
         QString recUrl;
         QDateTime recDate;
         QTime metaUpdateTime = QTime::currentTime();
+        bool refresh = false;
 
         inline bool expired() const {
             if (metaUpdateTime.isNull())
@@ -189,13 +190,15 @@ public:
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(const QUrl &url,
                                                                      bool createNew = true,
                                                                      const QUrl &origUrl = QUrl(),
-                                                                     bool ytdl = false);
+                                                                     bool ytdl = false, bool img = false,
+                                                                     bool refresh = false);
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(const QUrl &id,
                                                                           bool createNew = true);
     const QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
     const ItemMeta* getMeta(const QUrl &url, bool createNew,
                             const QUrl &origUrl = QUrl(),
-                            bool ytdl = false);
+                            bool ytdl = false, bool img = false, bool refresh = false);
+    const ContentServer::ItemMeta* getMetaForImg(const QUrl &url, bool createNew);
     void removeMeta(const QUrl &url);
     const ItemMeta* getMetaForId(const QUrl &id, bool createNew);
     Q_INVOKABLE QString streamTitle(const QUrl &id) const;
@@ -206,7 +209,7 @@ public:
     bool getContentMetaItem(const QString &id, QString &meta, bool includeDummy = true);
     bool getContentMetaItemByDidlId(const QString &didlId, QString &meta);
     QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr,
-                             bool* isFile = nullptr, bool *isArt = nullptr) const;
+                             bool* isFile = nullptr) const;
     bool makeUrl(const QString& id, QUrl& url, bool relay = true);
 
 signals:
@@ -292,7 +295,7 @@ private:
     static const qint64 qlen = 100000;
     static const int threadWait = 1;
     static const int maxRedirections = 5;
-    static const int httpTimeout = 10000;
+    static const int httpTimeout = 20000;
     static const qint64 recMaxSize = 500000000;
     static const qint64 recMinSize = 100000;
 
@@ -321,7 +324,9 @@ private:
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url,
                                                              const QUrl &origUrl = QUrl(),
-                                                             bool ytdl = false);
+                                                             bool ytdl = false,
+                                                             bool img = false,
+                                                             bool refresh = false);
     const QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeAudioCaptureItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeScreenCaptureItemMeta(const QUrl &url);
@@ -329,7 +334,8 @@ private:
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
                                                                              const QUrl &origUrl = QUrl(),
-                                                                             bool ytdl = false);
+                                                                             bool ytdl = false,
+                                                                             bool refresh = false);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest2(const QUrl &url,
             ItemMeta &meta,
             std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
@@ -339,7 +345,7 @@ private:
             std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
             int counter = 0);
     const QHash<QUrl, ItemMeta>::const_iterator makeUpnpItemMeta(const QUrl &url);
-    ItemMeta *makeMetaUsingExtension(const QUrl &url);
+    const QHash<QUrl, ItemMeta>::const_iterator makeMetaUsingExtension(const QUrl &url);
     void fillCoverArt(ItemMeta& item);
     void run();
     static bool extractAudio(const QString& path, ContentServer::AvData& data);

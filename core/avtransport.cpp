@@ -18,22 +18,29 @@
 #include "utils.h"
 #include "taskexecutor.h"
 #include "contentserver.h"
+#include "playlistmodel.h"
 
 
 AVTransport::AVTransport(QObject *parent) :
     Service(parent),
     m_seekTimer(parent)
 {
-    QObject::connect(this, &AVTransport::transportStateChanged,
+    connect(this, &AVTransport::transportStateChanged,
                      this, &AVTransport::transportStateHandler);
-    QObject::connect(this, &AVTransport::currentURIChanged,
+    connect(this, &AVTransport::currentURIChanged,
                      this, &AVTransport::trackChangedHandler);
-    QObject::connect(this, &AVTransport::preControlableChanged,
+    connect(this, &AVTransport::preControlableChanged,
                      this, &AVTransport::controlableChangedHandler);
 
     m_seekTimer.setInterval(500);
     m_seekTimer.setSingleShot(true);
-    QObject::connect(&m_seekTimer, &QTimer::timeout, this, &AVTransport::seekTimeout);
+    connect(&m_seekTimer, &QTimer::timeout, this, &AVTransport::seekTimeout);
+}
+
+void AVTransport::registerExternalConnections()
+{
+    connect(PlaylistModel::instance(), &PlaylistModel::activeItemChanged,
+            this, &AVTransport::handleActiveItemChanged, Qt::QueuedConnection);
 }
 
 QUrl AVTransport::getCurrentId()
@@ -42,9 +49,10 @@ QUrl AVTransport::getCurrentId()
     return QUrl(cs->idFromUrl(m_currentURI));
 }
 
-QUrl AVTransport::getCurrentOrigURL()
+QUrl AVTransport::getCurrentOrigUrl()
 {
-    return m_currentMeta.valid ? m_currentMeta.origUrl : QUrl(getCurrentURL());
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->origUrl() : QUrl(getCurrentURL());
 }
 
 void AVTransport::changed(const QString& name, const QVariant& _value)
@@ -127,7 +135,6 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
                     if (m_emitCurrentUriChanged) {
                         m_emitCurrentUriChanged = false;
                         qDebug() << "emitting currentURI change";
-                        updateMeta();
                         emit currentURIChanged();
                         emit preControlableChanged();
                     }
@@ -208,7 +215,6 @@ void AVTransport::reset()
     m_futureSeek = 0;
     m_nextURISupported = true;
     m_stopCalled = false;
-    updateMeta();
 
     emit currentURIChanged();
     emit nextURIChanged();
@@ -269,9 +275,15 @@ void AVTransport::transportStateHandler()
 
     m_stopCalled = false;
 
-
     //qDebug() << "--> aUPDATE transportStateHandler";
     asyncUpdate();
+}
+
+void AVTransport::handleActiveItemChanged()
+{
+    qDebug() << "Active item changed";
+    emit currentMetaDataChanged();
+    emit currentAlbumArtChanged();
 }
 
 void AVTransport::handleApplicationStateChanged(Qt::ApplicationState state)
@@ -396,7 +408,14 @@ QString AVTransport::getCurrentURL()
 
 QString AVTransport::getContentType()
 {
-    return m_currentMeta.valid ? m_currentMeta.mime : QString();
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->ctype() : QString();
+}
+
+bool AVTransport::getCurrentYtdl()
+{
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->ytdl() : false;
 }
 
 QString AVTransport::getNextPath()
@@ -432,12 +451,14 @@ QString AVTransport::getCurrentClass()
 
 QString AVTransport::getCurrentTitle()
 {
-    return m_currentTitle;
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->name() : m_currentTitle;
 }
 
 QString AVTransport::getCurrentAuthor()
 {
-    return m_currentAuthor;
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->artist() : m_currentAuthor;
 }
 
 QString AVTransport::getCurrentDescription()
@@ -447,26 +468,14 @@ QString AVTransport::getCurrentDescription()
 
 QUrl AVTransport::getCurrentAlbumArtURI()
 {
-    // Optimization => external url only for not local content
-    auto icon = Utils::iconFromId(getCurrentId());
-    if (!icon.isEmpty()) {
-        qDebug() << "Optimization => using local album art from Id:" << icon.toString();
-        return icon;
-    }
-    if (m_currentMeta.valid && !m_currentMeta.albumArt.isEmpty()) {
-        qDebug() << "Optimization => using local album art from Meta:" << m_currentMeta.albumArt;
-        return QFileInfo::exists(m_currentMeta.albumArt) ?
-                    QUrl::fromLocalFile(m_currentMeta.albumArt) :
-                    QUrl(m_currentMeta.albumArt);
-    }
-    // ---
-
-    return m_currentAlbumArtURI;
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->icon() : m_currentAlbumArtURI;
 }
 
 QString AVTransport::getCurrentAlbum()
 {
-    return m_currentAlbum;
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->album() : m_currentAlbum;
 }
 
 bool AVTransport::getNextSupported()
@@ -1380,7 +1389,6 @@ void AVTransport::updateMediaInfo()
 
         if (m_currentURI != cururi) {
             m_currentURI = cururi;
-            updateMeta();
             emit currentURIChanged();
             emit preControlableChanged();
         }
@@ -1417,7 +1425,6 @@ void AVTransport::updateMediaInfo()
         if (!m_currentURI.isEmpty() || !m_nextURI.isEmpty()) {
             m_currentURI.clear();
             m_nextURI.clear();
-            updateMeta();
             emit currentURIChanged();
             emit nextURIChanged();
             emit preControlableChanged();
@@ -1529,39 +1536,4 @@ void AVTransport::blockUriChanged(int time)
         m_blockEmitUriChanged = false;
         qDebug() << "URIChanged unblocked";
     });
-}
-
-void AVTransport::announceMetaChanged()
-{
-    emit currentAlbumArtChanged();
-}
-
-void AVTransport::updateMeta()
-{
-    qDebug() << "Updating meta";
-    if (!m_currentURI.isEmpty()) {
-        bool valid;
-        auto cs = ContentServer::instance();
-        auto id = cs->idUrlFromUrl(QUrl(m_currentURI), &valid);
-        if (valid) {
-            auto newMeta = cs->getMetaForId(id, false);
-            if (newMeta) {
-                qDebug() << "Meta found";
-                if (m_currentMeta.url != newMeta->url) {
-                    m_currentMeta = *newMeta;
-                    announceMetaChanged();
-                    return;
-                }
-            } else {
-                qDebug() << "Meta not found";
-            }
-        } else {
-            qDebug() << "Current meta invalid";
-        }
-    }
-
-    if (m_currentMeta.valid) {
-        m_currentMeta.valid = false;
-        announceMetaChanged();
-    }
 }

@@ -26,10 +26,11 @@ class AVTransport : public Service
     Q_OBJECT
     Q_PROPERTY (QString currentURI READ getCurrentURI NOTIFY currentURIChanged)
     Q_PROPERTY (QUrl currentId READ getCurrentId NOTIFY currentURIChanged)
-    Q_PROPERTY (QUrl currentOrigURL READ getCurrentOrigURL NOTIFY currentURIChanged)
+    Q_PROPERTY (QUrl currentOrigURL READ getCurrentOrigUrl NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentPath READ getCurrentPath NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentURL READ getCurrentURL NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentContentType READ getContentType NOTIFY currentURIChanged)
+    Q_PROPERTY (bool currentYtdl READ getCurrentYtdl NOTIFY currentURIChanged)
     Q_PROPERTY (QString nextURI READ getNextURI NOTIFY nextURIChanged)
     Q_PROPERTY (QString nextPath READ getNextPath NOTIFY nextURIChanged)
     Q_PROPERTY (bool nextURISupported READ getNextURISupported NOTIFY nextURISupportedChanged)
@@ -104,6 +105,7 @@ public:
     Q_ENUM(Type)
 
     explicit AVTransport(QObject *parent = nullptr);
+    void registerExternalConnections();
 
     Q_INVOKABLE void play();
     Q_INVOKABLE void stop();
@@ -114,7 +116,6 @@ public:
     Q_INVOKABLE void setLocalContent(const QString &cid, const QString &nid);
     Q_INVOKABLE void asyncUpdate(int initDelay = 0, int postDelay = 500);
     Q_INVOKABLE void setPlayMode(int value);
-
     int getTransportState();
     int getTransportStatus();
     int getPlayMode();
@@ -124,7 +125,6 @@ public:
     int getRelativeTimePosition();
     int getAbsoluteTimePosition();
     int getSpeed();
-
     Type getCurrentType();
     QString getCurrentURI();
     QString getNextURI();
@@ -139,8 +139,7 @@ public:
     QString getCurrentAlbum();
     QUrl getCurrentAlbumArtURI();
     QUrl getCurrentId();
-    QUrl getCurrentOrigURL();
-
+    QUrl getCurrentOrigUrl();
     bool getNextSupported();
     bool getPauseSupported();
     bool getPlaySupported();
@@ -148,13 +147,11 @@ public:
     bool getSeekSupported();
     bool getStopSupported();
     bool getNextURISupported();
-
     bool getPlayable();
     bool getStopable();
     bool getControlable();
-
+    bool getCurrentYtdl();
     void setSpeed(int value);
-
     bool updating();
 
 signals:
@@ -184,6 +181,7 @@ private slots:
     void trackChangedHandler();
     void seekTimeout();
     void handleApplicationStateChanged(Qt::ApplicationState state);
+    void handleActiveItemChanged();
 
 private:
     int m_transportState = Unknown;
@@ -216,7 +214,6 @@ private:
     bool m_blockEmitUriChanged = false;
     bool m_pendingControlableSignal = false;
     bool m_stopCalled = false;
-    ContentServer::ItemMeta m_currentMeta;
 
     QTimer m_seekTimer;
     int m_futureSeek = 0;
@@ -247,8 +244,6 @@ private:
     void controlableChangedHandler();
     void blockUriChanged(int time = 500);
     void setNextURISupported(bool value);
-    void updateMeta();
-    void announceMetaChanged();
     bool isIgnoreActions();
     std::string type() const;
 };

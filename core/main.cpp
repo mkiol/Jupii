@@ -62,6 +62,7 @@
 #include "contentdirectory.h"
 #include "cdirmodel.h"
 #include "youtubedl.h"
+#include "bcmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -88,6 +89,7 @@ int main(int argc, char *argv[])
                                               "ContentServer", "ContentServer is a singleton");
     qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0, "SomafmModel");
     qmlRegisterType<FosdemModel>("harbour.jupii.FosdemModel", 1, 0, "FosdemModel");
+    qmlRegisterType<BcModel>("harbour.jupii.BcModel", 1, 0, "BcModel");
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0, "IcecastModel");
     qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1, 0,
                                          "GpodderEpisodeModel");
@@ -145,7 +147,9 @@ int main(int argc, char *argv[])
     auto playlist = PlaylistModel::instance();
     auto devmodel = DeviceModel::instance();
     auto ytdl = YoutubeDl::instance();
-    DbusProxy dbusProxy;
+    new DbusProxy();
+
+    services->avTransport->registerExternalConnections();
 
 #ifdef SAILFISH
     context->setContextProperty("utils", utils);

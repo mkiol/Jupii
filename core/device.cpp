@@ -451,6 +451,7 @@ QString MediaServerDevice::desc()
 
     auto cs = ContentServer::instance();
     for (const auto& icon : icons) {
+        cs->getMetaForImg(icon, true); // create meta for icon
         auto id = Utils::idFromUrl(icon, ContentServer::artCookie);
         QUrl iconUrl;
         if (cs->makeUrl(id, iconUrl)) {

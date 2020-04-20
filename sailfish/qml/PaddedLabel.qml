@@ -11,7 +11,7 @@ import Sailfish.Silica 1.0
 Label {
     x: Theme.horizontalPageMargin
     width: parent.width - 2*x
-    wrapMode: Text.WordWrap
+    wrapMode: Text.Wrap
     color: Theme.highlightColor
     linkColor: Theme.primaryColor
     font.pixelSize: Theme.fontSizeSmall

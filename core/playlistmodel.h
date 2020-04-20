@@ -66,10 +66,17 @@ public:
                    bool asAudio = false,
                    QObject *parent = nullptr);
     PlaylistWorker(QList<QUrl> &&ids, QObject *parent = nullptr);
+    inline QString origId(ListItem* item) { return itemToOrigId.value(item).toString(); }
     ~PlaylistWorker();
+    void cancel();
+
+signals:
+    void progress(int value, int total);
+
 private:
     QList<UrlItem> urls;
     QList<QUrl> ids;
+    QHash<ListItem*, QUrl> itemToOrigId;
     bool asAudio;
     bool urlIsId;
     void run();
@@ -85,6 +92,9 @@ class PlaylistModel :
     Q_PROPERTY (bool refreshing READ isRefreshing NOTIFY refreshingChanged)
     Q_PROPERTY (bool nextSupported READ isNextSupported NOTIFY nextSupportedChanged)
     Q_PROPERTY (bool prevSupported READ isPrevSupported NOTIFY prevSupportedChanged)
+    Q_PROPERTY (int progressValue READ getProgressValue NOTIFY progressChanged)
+    Q_PROPERTY (int progressTotal READ getProgressTotal NOTIFY progressChanged)
+    Q_PROPERTY (bool refreshable READ isRefreshable NOTIFY refreshableChanged)
 
 friend class PlaylistWorker;
 
@@ -124,8 +134,10 @@ public:
     Q_INVOKABLE void togglePlay();
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void cancelRefresh();
+    Q_INVOKABLE void cancelAdd();
 
     int getActiveItemIndex() const;
+    const PlaylistItem* getActiveItem() const;
     int getPlayMode() const;
     void setPlayMode(int value);
     bool isNextSupported();
@@ -135,6 +147,9 @@ public:
     bool urlExists(const QUrl& url);
     bool playUrl(const QUrl& url);
     std::pair<int,QString> getDidlList(int max = 0, const QString &didlId = QString());
+    inline int getProgressValue() { return m_progressValue; }
+    inline int getProgressTotal() { return m_progressTotal; }
+    inline bool isRefreshable() { return m_refreshable_count > 0; }
 
 signals:
     void itemsRemoved();
@@ -149,7 +164,8 @@ signals:
     void refreshingChanged();
     void nextSupportedChanged();
     void prevSupportedChanged();
-    void doRefreshIds();
+    void progressChanged();
+    void refreshableChanged();
 
 public slots:
     void load();
@@ -177,6 +193,7 @@ public slots:
 
 private slots:
     void addWorkerDone();
+    void progressUpdate(int value, int total);
     void onItemsAdded();
     void onItemsLoaded();
     void onItemsRemoved();
@@ -189,7 +206,6 @@ private slots:
     void update();
     void updateActiveId();
     void doOnTrackEnded();
-    void refreshIds();
 #ifdef SAILFISH
     void handleBackgroundActivityStateChange();
 #endif
@@ -206,11 +222,14 @@ private:
     int m_playMode;
     bool m_prevSupported = false;
     bool m_nextSupported = false;
+    bool m_has_ytdl = false;
     QTimer m_updateTimer;
     QTimer m_updateActiveTimer;
     QTimer m_trackEndedTimer;
     QMutex m_refresh_mutex;
-    QStringList m_idsToRefresh;
+    int m_progressValue = 0;
+    int m_progressTotal = 0;
+    int m_refreshable_count = 0;
 
     PlaylistModel(QObject *parent = nullptr);
     void addItems(const QList<QUrl>& urls, bool asAudio);
@@ -225,7 +244,7 @@ private:
     void updatePrevSupported();
     bool autoPlay();
     void refreshAndSetContent(const QString &id1, const QString &id2, bool toBeActive = false);
-    PlaylistItem* handleRefreshWorker(const QString &id);
+    QList<ListItem*> handleRefreshWorker();
     void doUpdate();
     void doUpdateActiveId();
 #ifdef SAILFISH
@@ -250,12 +269,13 @@ public:
         TypeRole,
         SizeRole,
         DurationRole,
-        TitleRole,
+        ContentTypeRole,
         ArtistRole,
         AlbumRole,
         ToBeActiveRole,
         ItemTypeRole,
-        DevIdRole
+        DevIdRole,
+        YtdlRole
     };
 
 public:
@@ -265,7 +285,7 @@ public:
                       const QUrl &url,
                       const QUrl &origUrl,
                       ContentServer::Type type,
-                      const QString &title,
+                      const QString &ctype,
                       const QString &artist,
                       const QString &album,
                       const QString &date,
@@ -276,8 +296,7 @@ public:
 #else
                       const QIcon &icon,
 #endif
-                      bool active,
-                      bool toBeActive,
+                      bool ytdl,
                       bool play, // auto play after adding
                       ContentServer::ItemType itemType,
                       const QString &devId,
@@ -291,7 +310,7 @@ public:
     inline QUrl url() const { return m_url; }
     inline QUrl origUrl() const { return m_origUrl; }
     inline ContentServer::Type type() const { return m_type; }
-    inline QString title() const { return m_title; }
+    inline QString ctype() const { return m_ctype; }
     inline QString artist() const { return m_artist; }
     inline QString album() const { return m_album; }
     inline QString date() const { return m_date; }
@@ -302,6 +321,7 @@ public:
 #else
     inline QIcon icon() const { return m_icon; }
 #endif
+    inline bool ytdl() const { return m_ytdl; }
     inline bool active() const { return m_active; }
     inline bool toBeActive() const { return m_tobeactive; }
     inline bool play() const { return m_play; }
@@ -310,6 +330,7 @@ public:
     void setActive(bool value);
     void setToBeActive(bool value);
     void setPlay(bool value);
+    inline bool refreshable() const { return m_ytdl; }
 #ifdef DESKTOP
     QBrush foreground() const;
 #endif
@@ -320,7 +341,7 @@ private:
     QUrl m_url;
     QUrl m_origUrl;
     ContentServer::Type m_type;
-    QString m_title;
+    QString m_ctype;
     QString m_artist;
     QString m_album;
     QString m_date;
@@ -335,6 +356,7 @@ private:
     bool m_active = false;
     bool m_tobeactive = false;
     bool m_play = false;
+    bool m_ytdl = false;
     ContentServer::ItemType m_item_type = ContentServer::ItemType_Unknown;
     QString m_devid;
 };

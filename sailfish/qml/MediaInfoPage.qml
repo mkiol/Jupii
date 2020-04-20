@@ -67,6 +67,12 @@ Page {
                          itemType === ContentServer.ItemType_Url
 
                 MenuItem {
+                    visible: av.currentYtdl
+                    text: qsTr("Open URL in browser")
+                    onClicked: Qt.openUrlExternally(av.currentOrigURL)
+                }
+
+                MenuItem {
                     text: itemType === ContentServer.ItemType_LocalFile ? qsTr("Copy path") :
                                                                           qsTr("Copy URL")
                     onClicked: Clipboard.text =
@@ -136,7 +142,8 @@ Page {
                         case ContentServer.ItemType_LocalFile:
                             return qsTr("Local file")
                         case ContentServer.ItemType_Url:
-                            return isShout ? qsTr("Icecast URL") : qsTr("URL")
+                            return av.currentYtdl ? qsTr("Youtube-dl URL") :
+                                   isShout ? qsTr("Icecast URL") : qsTr("URL")
                         case ContentServer.ItemType_Upnp:
                             return qsTr("UPnP Media Server")
                         case ContentServer.ItemType_ScreenCapture:

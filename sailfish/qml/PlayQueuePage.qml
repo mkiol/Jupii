@@ -201,6 +201,15 @@ Page {
     }
 
     Component {
+        id: bcPickerPage
+        BcPage {
+            onAccepted: {
+                playlist.addItemUrls(selectedItems);
+            }
+        }
+    }
+
+    Component {
         id: icecastPickerPage
         IcecastPage {
             onAccepted: {
@@ -334,13 +343,12 @@ Page {
 
         PullDownMenu {
             id: menu
-            enabled: !playlist.busy && !av.busy && !rc.busy
-            busy: !enabled || directory.busy || playlist.refreshing
+            busy: playlist.busy || av.busy || rc.busy || directory.busy || playlist.refreshing
 
             Item {
                 width: parent.width
                 height: volumeSlider.height
-                visible: rc.inited
+                visible: rc.inited && !rc.busy
 
                 Slider {
                     id: volumeSlider
@@ -403,8 +411,8 @@ Page {
             }
 
             MenuItem {
-                text: playlist.refreshing ? qsTr("Cancel refreshing") : qsTr("Refresh items")
-                visible: !playlist.busy && listView.count > 0
+                text: playlist.refreshing ? qsTr("Cancel") : qsTr("Refresh items")
+                visible: playlist.refreshable && !playlist.busy && listView.count > 0
                 onClicked: {
                     if (playlist.refreshing)
                         playlist.cancelRefresh()
@@ -414,27 +422,43 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("Add items")
-                visible: !playlist.refreshing && !playlist.busy && directory.inited
+                text: playlist.busy ? qsTr("Cancel") : qsTr("Add items")
+                visible: !playlist.refreshing && directory.inited
                 onClicked: {
-                    pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
-                                       musicPickerDialog: musicPickerDialog,
-                                       videoPickerDialog: videoPickerDialog,
-                                       audioFromVideoPickerDialog: audioFromVideoPickerDialog,
-                                       imagePickerDialog: imagePickerDialog,
-                                       albumPickerPage: albumPickerPage,
-                                       artistPickerPage: artistPickerPage,
-                                       playlistPickerPage: playlistPickerPage,
-                                       filePickerPage: filePickerPage,
-                                       urlPickerPage: urlPickerPage,
-                                       somafmPickerPage: somafmPickerPage,
-                                       fosdemPickerPage: fosdemPickerPage,
-                                       icecastPickerPage: icecastPickerPage,
-                                       gpodderPickerPage: gpodderPickerPage,
-                                       recPickerPage: recPickerPage,
-                                       upnpPickerPage: upnpPickerPage
-                                   })
+                    if (playlist.busy) {
+                        playlist.cancelAdd()
+                    } else {
+                        pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
+                                           musicPickerDialog: musicPickerDialog,
+                                           videoPickerDialog: videoPickerDialog,
+                                           audioFromVideoPickerDialog: audioFromVideoPickerDialog,
+                                           imagePickerDialog: imagePickerDialog,
+                                           albumPickerPage: albumPickerPage,
+                                           artistPickerPage: artistPickerPage,
+                                           playlistPickerPage: playlistPickerPage,
+                                           filePickerPage: filePickerPage,
+                                           urlPickerPage: urlPickerPage,
+                                           somafmPickerPage: somafmPickerPage,
+                                           fosdemPickerPage: fosdemPickerPage,
+                                           bcPickerPage: bcPickerPage,
+                                           icecastPickerPage: icecastPickerPage,
+                                           gpodderPickerPage: gpodderPickerPage,
+                                           recPickerPage: recPickerPage,
+                                           upnpPickerPage: upnpPickerPage
+                                       })
+                    }
                 }
+            }
+
+            MenuLabel {
+                visible: (playlist.busy || playlist.refreshing)
+                text: playlist.refreshing ?
+                          playlist.progressTotal > 1 ?
+                              qsTr("Refreshing item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
+                              qsTr("Refreshing item...") :
+                          playlist.progressTotal > 1 ?
+                              qsTr("Adding item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
+                              qsTr("Adding item...")
             }
         }
 

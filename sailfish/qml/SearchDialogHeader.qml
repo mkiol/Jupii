@@ -55,7 +55,7 @@ FocusScope {
             }
 
             onTextChanged: {
-                model.filter = text.toLowerCase().trim()
+                model.filter = text.trim()
             }
         }
     }
