@@ -152,22 +152,13 @@ void YoutubeDl::handleUpdateProcError(QProcess::ProcessError error)
 void YoutubeDl::install()
 {
     binPath.clear();
-    auto genDataDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
-    QFile bin;
-    bin.setFileName(genDataDir + "/harbour-ytplayer/harbour-ytplayer/youtube-dl");
+
+    QFile bin(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/youtube-dl");
     if (!bin.exists()) {
-        bin.setFileName(genDataDir + "/harbour-videoPlayer/harbour-videoPlayer/youtube-dl");
-        if (!bin.exists()) {
-            bin.setFileName(genDataDir + "/harbour-webcat/harbour-webcat/youtube-dl");
-            if (!bin.exists()) {
-                bin.setFileName(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/youtube-dl");
-                if (!bin.exists()) {
-                    downloadBin();
-                    return;
-                }
-            }
-        }
+        downloadBin();
+        return;
     }
+
     binPath = bin.fileName();
     qDebug() << "Using youtube-dl bin:" << binPath;
     update();
