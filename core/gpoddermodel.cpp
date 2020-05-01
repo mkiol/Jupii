@@ -27,13 +27,8 @@ bool Gpodder::enabled()
 
 QDir Gpodder::dataDir()
 {
-#ifdef SAILFISH
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation));
     dir.cd("harbour-org.gpodder.sailfish");
-#else
-    QDir dir(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-    dir.cd("gPodder");
-#endif
     return dir;
 }
 
@@ -43,11 +38,7 @@ QSqlDatabase Gpodder::db()
         return m_db;
 
     auto dir = dataDir();
-#ifdef SAILFISH
     auto file = dir.filePath("Database.minidb");
-#else
-    auto file = dir.filePath("Database");
-#endif
 
     if (QFile::exists(file)) {
         m_db = QSqlDatabase::addDatabase("QSQLITE", conName);
@@ -89,7 +80,8 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
                   "PodcastEpisode.subtitle, PodcastEpisode.published, "
                   "PodcastEpisode.download_filename, PodcastEpisode.total_time, "
                   "PodcastEpisode.current_position, PodcastEpisode.mime_type, "
-                  "PodcastChannel.title, PodcastChannel.download_folder "
+                  "PodcastChannel.title, PodcastChannel.download_folder, "
+                  "PodcastChannel.cover_url "
                   "FROM PodcastEpisode JOIN PodcastChannel "
                   "ON PodcastEpisode.podcast_id = PodcastChannel.id "
                   "WHERE PodcastEpisode.download_filename NOTNULL AND "
@@ -106,37 +98,19 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
         while(query.next()) {
             auto dir(m_dir);
             auto folder = query.value(9).toString();
-#ifdef SAILFISH
+            auto icon = query.value(10).toUrl();
+
             dir.cd(folder);
             if (!dir.exists()) {
                 qWarning() << "Dir" << m_dir.absolutePath() << "doesn't exist";
                 continue;
             }
-            QUrl icon;
-            if (dir.exists("folder.jpg"))
-                icon = QUrl::fromLocalFile(dir.absoluteFilePath("folder.jpg"));
-            else if (dir.exists("folder.png"))
-                icon = QUrl::fromLocalFile(dir.absoluteFilePath("folder.png"));
-            else if (dir.exists("folder.gif"))
-                icon = QUrl::fromLocalFile(dir.absoluteFilePath("folder.gif"));
-            else
+
+            if (icon.isEmpty())
                 icon = QUrl::fromLocalFile(IconProvider::pathToNoResId("icon-gpodder"));
-#else
-            dir.cd("Downloads");
-            dir.cd(folder);
-            dir.cd(folder);
-            if (!dir.exists()) {
-                qWarning() << "Dir" << dir.absolutePath() << "doesn't exist";
-                continue;
-            }
-            QIcon icon;
-            if (dir.exists("folder.jpg"))
-                icon = QIcon(dir.absoluteFilePath("folder.jpg"));
-            else if (dir.exists("folder.png"))
-                icon = QIcon(dir.absoluteFilePath("folder.png"));
-            else if (dir.exists("folder.gif"))
-                icon = QIcon(dir.absoluteFilePath("folder.gif"));
-#endif
+            else if (dir.exists(icon.fileName()))
+                icon = QUrl::fromLocalFile(dir.absoluteFilePath(icon.fileName()));
+
             auto filename = query.value(4).toString();
             if (dir.exists(filename)) {
                 auto type = ContentServer::typeFromMime(query.value(7).toString());
@@ -196,11 +170,7 @@ GpodderEpisodeItem::GpodderEpisodeItem(const QString &id,
                    int position,
                    ContentServer::Type type,
                    uint published,
-#ifdef SAILFISH
                    const QUrl &icon,
-#else
-                   const QIcon &icon,
-#endif
                    QObject *parent) :
     SelectableItem(parent),
     m_id(id),

@@ -17,10 +17,6 @@
 #include <QSqlQuery>
 #include <QList>
 
-#ifdef DESKTOP
-#include <QIcon>
-#endif
-
 #include "contentserver.h"
 #include "listmodel.h"
 #include "itemmodel.h"
@@ -66,11 +62,7 @@ public:
                       int position,
                       ContentServer::Type type,
                       uint published,
-#ifdef SAILFISH
                       const QUrl &icon,
-#else
-                      const QIcon &icon,
-#endif
                       QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
@@ -83,11 +75,7 @@ public:
     inline int position() const { return m_position; }
     inline ContentServer::Type type() const { return m_type; }
     inline uint published() const { return m_published; }
-#ifdef SAILFISH
     inline QUrl icon() const { return m_icon; }
-#else
-    inline QIcon icon() const { return m_icon; }
-#endif
 private:
     QString m_id;
     QString m_title;
@@ -98,11 +86,7 @@ private:
     int m_position;
     ContentServer::Type m_type = ContentServer::TypeUnknown;
     uint m_published;
-#ifdef SAILFISH
     QUrl m_icon;
-#else
-    QIcon m_icon;
-#endif
 };
 
 class GpodderEpisodeModel : public SelectableItemModel
@@ -115,11 +99,7 @@ public:
 
 private:
     QDir m_dir;
-#ifdef SAILFISH
     QUrl m_icon;
-#else
-    QIcon m_icon;
-#endif
 
 private:
     QList<ListItem*> makeItems();
