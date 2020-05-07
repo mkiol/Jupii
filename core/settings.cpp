@@ -607,7 +607,7 @@ int Settings::getRecQueryType()
 {
     // 0 - by rec date
     // 1 - by title
-    // 2 - by station name
+    // 2 - by author
     return settings.value("recquerytype", 0).toInt();
 }
 

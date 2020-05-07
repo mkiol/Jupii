@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
     new DbusProxy();
 
     services->avTransport->registerExternalConnections();
+    cserver->registerExternalConnections();
 
 #ifdef SAILFISH
     context->setContextProperty("utils", utils);

@@ -52,8 +52,10 @@ void RecModel::deleteSelected()
         }
     }
 
-    if (removed)
+    if (removed) {
+        m_items.clear();
         updateModel();
+    }
 }
 
 QList<ListItem*> RecModel::makeItems()
@@ -64,9 +66,10 @@ QList<ListItem*> RecModel::makeItems()
             const auto& file = files.at(i);
             Item item;
             item.path = file.absoluteFilePath();
+
             if (!ContentServer::readMetaUsingTaglib(item.path, item.title,
                                 item.author, item.album, item.comment,
-                                item.recStation, item.recUrl, item.recDate)) {
+                                item.recUrl, item.recDate)) {
                 qWarning() << "Cannot read meta with TagLib";
                 continue;
             }
@@ -78,8 +81,6 @@ QList<ListItem*> RecModel::makeItems()
                 item.author = tr("Unknown");
             if (item.album.isEmpty())
                 item.album = tr("Unknown");
-            if (item.recStation.isEmpty())
-                item.recStation = item.author;
             /*if (item.recDate.isNull())
                 item.recDate = file.created();*/
 
@@ -92,8 +93,7 @@ QList<ListItem*> RecModel::makeItems()
 
     for (const auto& item : m_items) {
         if (item.title.contains(filter, Qt::CaseInsensitive) ||
-            item.author.contains(filter, Qt::CaseInsensitive) ||
-            item.recStation.contains(filter, Qt::CaseInsensitive)) {
+            item.author.contains(filter, Qt::CaseInsensitive)) {
             items << new RecItem(
                          item.path,
                          item.path,
@@ -120,7 +120,7 @@ QList<ListItem*> RecModel::makeItems()
             auto bb = dynamic_cast<RecItem*>(b);
             return aa->title().compare(bb->title(), Qt::CaseInsensitive) < 0;
         });
-    } else { // by author (station name)
+    } else { // by author
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
             auto aa = dynamic_cast<RecItem*>(a);
             auto bb = dynamic_cast<RecItem*>(b);

@@ -275,7 +275,10 @@ public:
         ToBeActiveRole,
         ItemTypeRole,
         DevIdRole,
-        YtdlRole
+        YtdlRole,
+        RecDateRole,
+        RecUrlRole,
+        DescRole
     };
 
 public:
@@ -298,6 +301,9 @@ public:
 #endif
                       bool ytdl,
                       bool play, // auto play after adding
+                      const QString &desc,
+                      const QDateTime &recDate,
+                      const QString &recUrl,
                       ContentServer::ItemType itemType,
                       const QString &devId,
                       QObject *parent = nullptr);
@@ -325,12 +331,15 @@ public:
     inline bool active() const { return m_active; }
     inline bool toBeActive() const { return m_tobeactive; }
     inline bool play() const { return m_play; }
+    inline QString desc() const { return m_desc; }
+    inline QString recUrl() const { return m_recUrl; }
     inline ContentServer::ItemType itemType() const { return m_item_type; }
     inline QString devId() const { return m_devid; }
     void setActive(bool value);
     void setToBeActive(bool value);
     void setPlay(bool value);
     inline bool refreshable() const { return m_ytdl; }
+    QString friendlyRecDate() const;
 #ifdef DESKTOP
     QBrush foreground() const;
 #endif
@@ -357,6 +366,9 @@ private:
     bool m_tobeactive = false;
     bool m_play = false;
     bool m_ytdl = false;
+    QString m_desc;
+    QDateTime m_recDate;
+    QString m_recUrl;
     ContentServer::ItemType m_item_type = ContentServer::ItemType_Unknown;
     QString m_devid;
 };

@@ -63,7 +63,6 @@ private:
         QString author;
         QString album;
         QString comment;
-        QString recStation;
         QString recUrl;
         QDateTime recDate;
     };

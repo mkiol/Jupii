@@ -1133,6 +1133,9 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 #endif
                                ytdl, // ytdl
                                play, // play
+                               meta->comment,
+                               meta->recDate,
+                               meta->recUrl,
                                meta->itemType,
                                meta->upnpDevId
                                );
@@ -1621,6 +1624,12 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
 
     auto item1 = dynamic_cast<PlaylistItem*>(find(id1));
     if (item1) {
+        if (item1->itemType() == ContentServer::ItemType_LocalFile &&
+                !QFileInfo::exists(item1->path())) {
+            qWarning() << "File1 doesn't exist:" << item1->path();
+            m_refresh_mutex.unlock();
+            return;
+        }
         if (item1->refreshable())
             ids << QUrl(id1);
         if (toBeActive)
@@ -1634,6 +1643,11 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
     auto item2 = item1;
     if (id1 != id2) {
         item2 = dynamic_cast<PlaylistItem*>(find(id2));
+        if (item2 && item2->itemType() == ContentServer::ItemType_LocalFile &&
+                !QFileInfo::exists(item2->path())) {
+            qWarning() << "File2 doesn't exist:" << item2->path();
+            item2 = nullptr;
+        }
         if (item2 && item2->refreshable())
             ids << QUrl(id2);
     }
@@ -1669,7 +1683,9 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
                     if (newItems.size() == 2) { // both item refreshed
                         av->setLocalContent(newItems.at(0)->id(), newItems.at(1)->id());
                     } else if (newItems.size() == 1) {
-                        if (m_refresh_worker->origId(newItems.at(0)) == id1)
+                        if (id1 == id2)
+                            av->setLocalContent(newItems.at(0)->id(), newItems.at(0)->id());
+                        else if (m_refresh_worker->origId(newItems.at(0)) == id1)
                             av->setLocalContent(newItems.at(0)->id(), id2);
                         else if (m_refresh_worker->origId(newItems.at(0)) == id2)
                             av->setLocalContent(id1, newItems.at(0)->id());
@@ -1750,6 +1766,9 @@ PlaylistItem::PlaylistItem(const QUrl &id,
 #endif
                            bool ytdl,
                            bool play,
+                           const QString &desc,
+                           const QDateTime &recDate,
+                           const QString &recUrl,
                            ContentServer::ItemType itemType,
                            const QString &devId,
                            QObject *parent) :
@@ -1768,6 +1787,9 @@ PlaylistItem::PlaylistItem(const QUrl &id,
     m_icon(icon),
     m_ytdl(ytdl),
     m_play(play),
+    m_desc(desc),
+    m_recDate(recDate),
+    m_recUrl(recUrl),
     m_item_type(itemType),
     m_devid(devId),
     m_cookie(Utils::cookieFromId(id))
@@ -1794,6 +1816,9 @@ QHash<int, QByteArray> PlaylistItem::roleNames() const
     names[ItemTypeRole] = "itemType";
     names[DevIdRole] = "devid";
     names[YtdlRole] = "ytdl";
+    names[DescRole] = "desc";
+    names[RecDateRole] = "recDate";
+    names[RecUrlRole] = "recUrl";
     return names;
 }
 
@@ -1841,6 +1866,12 @@ QVariant PlaylistItem::data(int role) const
         return devId();
     case YtdlRole:
         return ytdl();
+    case RecDateRole:
+        return friendlyRecDate();
+    case RecUrlRole:
+        return recUrl();
+    case DescRole:
+        return desc();
 #ifdef DESKTOP
     case ForegroundRole:
         return foreground();
@@ -1848,6 +1879,11 @@ QVariant PlaylistItem::data(int role) const
     default:
         return QVariant();
     }
+}
+
+QString PlaylistItem::friendlyRecDate() const
+{
+    return Utils::friendlyDate(m_recDate);
 }
 
 void PlaylistItem::setActive(bool value)

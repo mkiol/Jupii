@@ -40,7 +40,9 @@ AVTransport::AVTransport(QObject *parent) :
 void AVTransport::registerExternalConnections()
 {
     connect(PlaylistModel::instance(), &PlaylistModel::activeItemChanged,
-            this, &AVTransport::handleActiveItemChanged, Qt::QueuedConnection);
+            this, &AVTransport::handleMetaChanged, Qt::QueuedConnection);
+    connect(this, &AVTransport::currentURIChanged,
+            this, &AVTransport::handleMetaChanged, Qt::QueuedConnection);
 }
 
 QUrl AVTransport::getCurrentId()
@@ -279,9 +281,9 @@ void AVTransport::transportStateHandler()
     asyncUpdate();
 }
 
-void AVTransport::handleActiveItemChanged()
+void AVTransport::handleMetaChanged()
 {
-    qDebug() << "Active item changed";
+    qDebug() << "Meta changed";
     emit currentMetaDataChanged();
     emit currentAlbumArtChanged();
 }
@@ -463,7 +465,8 @@ QString AVTransport::getCurrentAuthor()
 
 QString AVTransport::getCurrentDescription()
 {
-    return m_currentDescription;
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->desc() : m_currentDescription;
 }
 
 QUrl AVTransport::getCurrentAlbumArtURI()
@@ -476,6 +479,18 @@ QString AVTransport::getCurrentAlbum()
 {
     const auto ai = PlaylistModel::instance()->getActiveItem();
     return ai ? ai->album() : m_currentAlbum;
+}
+
+QString AVTransport::getCurrentRecDate()
+{
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->friendlyRecDate() : QString();
+}
+
+QString AVTransport::getCurrentRecUrl()
+{
+    const auto ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? ai->recUrl() : QString();
 }
 
 bool AVTransport::getNextSupported()

@@ -44,6 +44,7 @@
 #include "log.h"
 #include "directory.h"
 #include "youtubedl.h"
+#include "playlistmodel.h"
 #include "libupnpp/control/cdirectory.hxx"
 
 // TagLib
@@ -54,6 +55,14 @@
 #include "id3v2frame.h"
 #include "id3v2tag.h"
 #include "attachedpictureframe.h"
+#include "mp4file.h"
+#include "mp4tag.h"
+#include "mp4properties.h"
+#include "oggflacfile.h"
+#include "vorbisfile.h"
+#include "vorbisproperties.h"
+#include "flacfile.h"
+#include "flacproperties.h"
 
 #ifdef SAILFISH
 #include <sailfishapp.h>
@@ -103,7 +112,12 @@ const QHash<QString,QString> ContentServer::m_musicMimeToExtMap {
     //{"audio/aac", "aac"},
     //{"audio/aacp", "aac"},
     {"audio/ogg", "ogg"},
-    {"application/ogg", "ogg"}
+    {"audio/vorbis", "ogg"},
+    {"application/ogg", "ogg"},
+    {"audio/wav", "wav"},
+    {"audio/vnd.wav", "wav"},
+    {"audio/x-wav", "wav"},
+    {"audio/x-aiff", "aiff"}
 };
 
 const QHash<QString,QString> ContentServer::m_videoExtMap {
@@ -168,8 +182,8 @@ const QString ContentServer::dlnaOrgCiFlags = "DLNA.ORG_CI=0";
 
 // Rec
 const QString ContentServer::recDateTagName = "Recording Date";
-const QString ContentServer::recUrlTagName = "Station URL";
-const QString ContentServer::recStationTagName = "Station Name";
+const QString ContentServer::recUrlTagName = "Recording URL";
+const QString ContentServer::recUrlTagName2 = "Station URL";
 const QString ContentServer::recAlbumName = "Recordings by Jupii";
 
 ContentServerWorker* ContentServerWorker::instance(QObject *parent)
@@ -234,7 +248,7 @@ void ContentServerWorker::closeRecFile(ProxyItem &item)
         item.recFile->remove();
         item.saveRec = false;
         emit streamToRecordChanged(item.id, item.saveRec);
-        emit streamRecordableChanged(item.id, false);
+        emit streamRecordableChanged(item.id, false, QString());
     }
 }
 
@@ -263,18 +277,69 @@ void ContentServerWorker::openRecFile(ProxyItem &item)
         if (item.recFile->open(QIODevice::WriteOnly)) {
             item.saveRec = false;
             emit streamToRecordChanged(item.id, item.saveRec);
-            emit streamRecordableChanged(item.id, true);
+            emit streamRecordableChanged(item.id, true, QString());
         } else {
             qWarning() << "File for recording cannot be open";
         }
     }
 }
 
+void ContentServerWorker::endRecFile(ProxyItem &item)
+{
+    QString tmpFile;
+
+    if (item.recFile) {
+        auto title = item.metaint > 0 ?
+                    ContentServer::streamTitleFromShoutcastMetadata(item.metadata) :
+                    item.title;
+        if (!title.isEmpty()) {
+            qDebug() << "Saving tmp recorded file:" << title;
+            item.recFile->close();
+            if (item.recFile->exists() && item.recFile->size() > ContentServer::recMinSize) {
+                tmpFile = QString("%1.tmp.%2").arg(item.recFile->fileName()).arg(item.recExt);
+                qDebug() << "tmp file:" << tmpFile;
+                if (item.recFile->copy(tmpFile)) {
+                    auto url = item.origUrl.isEmpty() ?
+                                Utils::urlFromId(item.id).toString() :
+                                item.origUrl.toString();
+                    ContentServer::writeMetaUsingTaglib(
+                        tmpFile, // path
+                        title, // title
+                        item.metaint > 0 ? item.title : item.author, // author
+                        ContentServer::recAlbumName, // album
+                        //QString("Recorded by %1").arg(Jupii::APP_NAME),
+                        QString(), // comment
+                        url, // URL
+                        QDateTime::currentDateTime() // time of recording
+                    );
+                } else {
+                    qWarning() << "Cannot copy file:"
+                               << item.recFile->fileName() << tmpFile;
+                    tmpFile.clear();
+                }
+            } else {
+                qWarning() << "Recorded file doesn't exist or tiny size:"
+                           << item.recFile->fileName();
+            }
+        } else {
+            qWarning() << "Title is null so not saving recorded file";
+        }
+
+        item.recFile->remove();
+    }
+
+    item.saveRec = false;
+    emit streamToRecordChanged(item.id, item.saveRec);
+    emit streamRecordableChanged(item.id, false, tmpFile);
+}
+
 void ContentServerWorker::saveRecFile(ProxyItem &item)
 {
     if (item.recFile) {
         if (item.saveRec) {
-            auto title = ContentServer::streamTitleFromShoutcastMetadata(item.metadata);
+            auto title = item.metaint > 0 ?
+                        ContentServer::streamTitleFromShoutcastMetadata(item.metadata) :
+                        item.title;
             if (!title.isEmpty()) {
                 qDebug() << "Saving recorded file for title:" << title;
                 item.recFile->close();
@@ -283,15 +348,17 @@ void ContentServerWorker::saveRecFile(ProxyItem &item)
                                                        "jupii_rec", item.recExt));
                 if (item.recFile->exists() && item.recFile->size() > ContentServer::recMinSize) {
                     if (item.recFile->copy(recFilePath)) {
-                        auto url = Utils::urlFromId(item.id).toString();
+                        auto url = item.origUrl.isEmpty() ?
+                                    Utils::urlFromId(item.id).toString() :
+                                    item.origUrl.toString();
                         ContentServer::writeMetaUsingTaglib(
                             recFilePath, // path
                             title, // title
-                            item.title, // author (radio station name)
+                            item.metaint > 0 ? item.title : item.author, // author
                             ContentServer::recAlbumName, // album
-                            tr("Recorded from %1").arg(item.title), // comment
-                            item.title, // radio station name
-                            url, // radio station URL
+                            //QString("Recorded by %1").arg(Jupii::APP_NAME),
+                            QString(), // comment
+                            url, // URL
                             QDateTime::currentDateTime() // time of recording
                         );
                         emit streamRecorded(title, recFilePath);
@@ -312,14 +379,18 @@ void ContentServerWorker::saveRecFile(ProxyItem &item)
 
     item.saveRec = false;
     emit streamToRecordChanged(item.id, item.saveRec);
-    emit streamRecordableChanged(item.id, false);
+    emit streamRecordableChanged(item.id, false, QString());
 }
 
 ContentServerWorker::ProxyItem::~ProxyItem()
 {
     if (this->id.isValid()) {
         auto worker = ContentServerWorker::instance();
-        worker->saveRecFile(*this);
+        if (this->metaint > 0 || this->saveRec) {
+            worker->saveRecFile(*this);
+        } else {
+            worker->endRecFile(*this);
+        }
     }
 }
 
@@ -574,7 +645,8 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         item.origUrl = (url == meta->origUrl ? QUrl() : meta->origUrl);
 
         QString name;
-        Utils::pathTypeNameCookieIconFromId(item.id, nullptr, nullptr, &name);
+        Utils::pathTypeNameCookieIconFromId(item.id, nullptr, nullptr, &name,
+                                            nullptr, nullptr, nullptr, &item.author);
         item.title = name.isEmpty() ? ContentServer::bestName(*meta) : name;
 
         responseToReplyMap.insert(resp, reply);
@@ -980,15 +1052,21 @@ void ContentServerWorker::proxyMetaDataChanged()
             // stream proxy (0) => sending partial data every ready read signal (1)
             // playlist proxy (1) => sending all data when request finished (2)
             item.state = item.mode == 1 ? 2 : 1;
+            qDebug() << "item.state:" << item.state;
 
             // recording only when: stream proxy mode && shoutcast && valid audio extension
-            if (item.state == 1 && item.metaint > 0 &&
+            //if (item.state == 1 && item.metaint > 0 &&
+            if (item.state == 1 &&
                 Settings::instance()->getRec()) {
                 auto ext = ContentServer::getExtensionFromAudioContentType(mime);
                 if (!ext.isEmpty()) {
                     qDebug() << "Stream should be recorded";
                     item.recExt = ext;
-                    item.recFile = std::make_shared<QFile>();
+                    item.recFile = std::shared_ptr<QFile>(new QFile());
+
+                    if (item.metaint == 0) { // non-shoutcast stream
+                        openRecFile(item);
+                    }
                 }
             }
 
@@ -1251,8 +1329,15 @@ void ContentServerWorker::proxyReadyRead()
         }
 
         if (data.length() > 0) {
-            if (item.metaint > 0)
+            if (item.metaint > 0) {
                 processShoutcastMetadata(data, item);
+            } else {
+                // recording for non-shoutcast streams
+                if (item.recFile && item.recFile->isOpen()) {
+                    if (item.recFile->size() < ContentServer::recMaxSize)
+                        item.recFile->write(data);
+                }
+            }
 
             item.resp->write(data);
         }
@@ -1398,7 +1483,6 @@ ContentServer::ItemMeta::ItemMeta(const ItemMeta *meta) :
     channels(meta->channels),
     size(meta->size),
     mode(meta->mode),
-    recStation(meta->recStation),
     recUrl(meta->recUrl),
     recDate(meta->recDate),
     metaUpdateTime(meta->metaUpdateTime)
@@ -1890,6 +1974,12 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url,
         qWarning() << "Meta creation error";
         return false;
     }
+}
+
+void ContentServer::registerExternalConnections()
+{
+    connect(PlaylistModel::instance(), &PlaylistModel::activeItemChanged,
+            this, &ContentServer::cleanTmpRec, Qt::QueuedConnection);
 }
 
 bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
@@ -2543,7 +2633,7 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
             // Recording meta
             if (meta.album == ContentServer::recAlbumName) {
                 if (!ContentServer::readMetaUsingTaglib(path, meta.title, meta.artist, meta.album,
-                                       meta.comment, meta.recStation, meta.recUrl, meta.recDate)) {
+                                       meta.comment, meta.recUrl, meta.recDate)) {
                     qWarning() << "Cannot read meta with TagLib";
                 }
             }
@@ -2555,94 +2645,153 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
     return metaCache.end();
 }
 
+QString ContentServer::readTitleUsingTaglib(const QString &path)
+{
+    TagLib::FileRef f(path.toUtf8().constData(), false);
+
+    if (!f.isNull())  {
+        auto tag = f.tag();
+        if (tag) {
+            return QString::fromWCharArray(tag->title().toCWString());
+        }
+    }
+
+    return QString();
+}
+
 bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
                                           QString &artist, QString &album,
-                                          QString &comment, QString &recStation,
+                                          QString &comment,
                                           QString &recUrl, QDateTime &recDate)
 {
-    auto ff = TagLib::ID3v2::FrameFactory::instance();
-    TagLib::MPEG::File f(path.toUtf8().constData(), ff, false);
-    if (f.isValid()) {
-        auto tag = f.ID3v2Tag(false);
+    TagLib::FileRef f(path.toUtf8().constData(), false);
+    if (!f.isNull())  {
+        auto tag = f.tag();
         if (tag) {
             title = QString::fromWCharArray(tag->title().toCWString());
             artist = QString::fromWCharArray(tag->artist().toCWString());
             album = QString::fromWCharArray(tag->album().toCWString());
             comment = QString::fromWCharArray(tag->comment().toCWString());
 
-            if (album == ContentServer::recAlbumName) {
-                // Rec additional tags
-                auto props = tag->properties();
-                auto station_key = ContentServer::recStationTagName.toStdString();
-                if (props.contains(station_key)) {
-                    recStation = QString::fromWCharArray(props[station_key].front().toCWString());
-                }
-                auto url_key = ContentServer::recUrlTagName.toStdString();
-                if (props.contains(url_key)) {
-                    recUrl = QString::fromLatin1(props[url_key].front().toCString());
-                }
-                auto date_key = ContentServer::recDateTagName.toStdString();
-                if (props.contains(date_key)) {
-                    auto date = QString::fromLatin1(props[date_key].front().toCString());
-                    recDate = QDateTime::fromString(date, Qt::ISODate);
+            if (album == ContentServer::recAlbumName) { // Rec additional tags
+                auto tags = f.file()->properties();
+                auto it = tags.find(ContentServer::recDateTagName.toStdString());
+                if (it != tags.end())
+                    recDate = QDateTime::fromString(
+                                QString::fromWCharArray(it->second.toString()
+                                         .toCWString()), Qt::ISODate);
+                it = tags.find(ContentServer::recUrlTagName.toStdString());
+                if (it != tags.end()) {
+                    recUrl = QString::fromWCharArray(it->second.toString().toCWString());
+                } else { // old rec url tag
+                    it = tags.find(ContentServer::recUrlTagName2.toStdString());
+                    if (it != tags.end()) {
+                        recUrl = QString::fromWCharArray(it->second.toString().toCWString());
+                    }
                 }
             }
-        } else {
-            qWarning() << "Cannot read ID3v2:" << path;
-            return false;
+
+            /*qDebug() << "-- TAG (properties) --";
+            for(TagLib::PropertyMap::ConstIterator it = tags.begin(); it != tags.end(); ++it) {
+                qDebug() << QString::fromWCharArray(it->first.toCWString());
+            }*/
+
+            return true;
         }
-    } else {
-        qWarning() << "Cannot open file with TagLib:" << path;
-        return false;
     }
 
-    return true;
+    return false;
 }
 
-void ContentServer::writeMetaUsingTaglib(const QString &path, const QString &title,
+bool ContentServer::writeMetaUsingTaglib(const QString &path, const QString &title,
                                           const QString &artist, const QString &album,
                                           const QString &comment,
-                                          const QString &recStation,
                                           const QString &recUrl,
                                           const QDateTime &recDate)
 {
-    auto ff = TagLib::ID3v2::FrameFactory::instance();
-    TagLib::MPEG::File f(path.toUtf8().constData(), ff, false);
-    if (f.isValid()) {
-        auto tag = f.ID3v2Tag(true);
-        if (!title.isEmpty())
-            tag->setTitle(title.toStdWString());
-        if (!artist.isEmpty())
-            tag->setArtist(artist.toStdWString());
-        if (!album.isEmpty())
-            tag->setAlbum(album.toStdWString());
-        if (!comment.isEmpty())
-            tag->setComment(comment.toStdWString());
+    TagLib::FileRef f(path.toUtf8().constData(), false);
+    if (!f.isNull())  {
+        auto mf = dynamic_cast<TagLib::MPEG::File*>(f.file());
+        if (mf) {
+            qDebug() << "MPEG tag";
+            mf->strip(); // remove old tags
+            mf->save();
 
-        // Jupii additional tags
-        if (!recUrl.isEmpty()) {
-            auto frame = TagLib::ID3v2::Frame::createTextualFrame(
-                        ContentServer::recUrlTagName.toStdString(),
-                            {recUrl.toStdString()});
-            tag->addFrame(frame);
+            auto tag = mf->ID3v2Tag(true);
+
+            if (!title.isEmpty())
+                tag->setTitle(title.toStdWString());
+            if (!artist.isEmpty())
+                tag->setArtist(artist.toStdWString());
+            if (!album.isEmpty())
+                tag->setAlbum(album.toStdWString());
+            if (!comment.isEmpty())
+                tag->setComment(comment.toStdWString());
+
+            // Rec additional tags
+            if (!recUrl.isEmpty()) {
+                auto frame = TagLib::ID3v2::Frame::createTextualFrame(
+                            ContentServer::recUrlTagName.toStdString(),
+                                {recUrl.toStdString()});
+                tag->addFrame(frame);
+            }
+            if (!recDate.isNull()) {
+                auto frame = TagLib::ID3v2::Frame::createTextualFrame(
+                            ContentServer::recDateTagName.toStdString(),
+                            {recDate.toString(Qt::ISODate)
+                             .toStdString()});
+                tag->addFrame(frame);
+            }
+
+            mf->save(TagLib::MPEG::File::ID3v2);
+
+            return true;
+        } else {
+            auto tag = f.tag();
+            if (tag) {
+                qDebug() << "Generic tag";
+                if (!title.isEmpty())
+                    tag->setTitle(title.toStdWString());
+                if (!artist.isEmpty())
+                    tag->setArtist(artist.toStdWString());
+                if (!album.isEmpty())
+                    tag->setAlbum(album.toStdWString());
+                if (!comment.isEmpty())
+                    tag->setComment(comment.toStdWString());
+
+                if (!recUrl.isEmpty() || !recDate.isNull()) { // Rec additional tags
+                    auto file = f.file();
+                    auto tags = file->properties();
+
+                    if (!recUrl.isEmpty()) {
+                        auto url_key = ContentServer::recUrlTagName.toStdString();
+                        auto url_val = TagLib::StringList(recUrl.toStdString());
+                        auto it = tags.find(url_key);
+                        if (it != tags.end())
+                            it->second = url_val;
+                        else
+                            tags.insert(url_key, url_val);
+                    }
+                    if (!recDate.isNull()) {
+                        auto date_key = ContentServer::recDateTagName.toStdString();
+                        auto date_val = TagLib::StringList(recDate.toString(Qt::ISODate).toStdString());
+                        auto it = tags.find(date_key);
+                        if (it != tags.end())
+                            it->second = date_val;
+                        else
+                            tags.insert(date_key, date_val);
+                    }
+
+                    file->setProperties(tags);
+                }
+
+                f.save();
+                return true;
+            }
         }
-        if (!recStation.isEmpty()) {
-            auto frame = TagLib::ID3v2::Frame::createTextualFrame(
-                        ContentServer::recStationTagName.toStdString(),
-                            {recStation.toStdString()});
-            tag->addFrame(frame);
-        }
-        if (!recDate.isNull()) {
-            auto frame = TagLib::ID3v2::Frame::createTextualFrame(
-                        ContentServer::recDateTagName.toStdString(),
-                        {recDate.toString(Qt::ISODate)
-                         .toStdString()});
-            tag->addFrame(frame);
-        }
-        f.save();
-    } else {
-        qWarning() << "Cannot open file with TagLib:" << path;
     }
+
+    return false;
 }
 
 QString ContentServer::minResUrl(const UPnPClient::UPnPDirObject &item)
@@ -2717,7 +2866,7 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
         meta.seekSupported = true;
 
         if (!ContentServer::readMetaUsingTaglib(path, meta.title, meta.artist, meta.album,
-                               meta.comment, meta.recStation, meta.recUrl, meta.recDate)) {
+                               meta.comment, meta.recUrl, meta.recDate)) {
             qWarning() << "Cannot read meta with TagLib";
         }
 
@@ -3061,6 +3210,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         if (mime.isEmpty())
             mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
         auto type = typeFromMime(mime);
+        qDebug() << "mime:" << mime;
 
         if (type == ContentServer::TypePlaylist) {
             qDebug() << "Content is a playlist";
@@ -3377,13 +3527,70 @@ bool ContentServer::isStreamToRecord(const QUrl &id)
 
 bool ContentServer::isStreamRecordable(const QUrl &id)
 {
-    auto worker = ContentServerWorker::instance();
-    return worker->isStreamRecordable(id);
+    if (tmpRecs.contains(id)) {
+        return true;
+    } else {
+        auto worker = ContentServerWorker::instance();
+        return worker->isStreamRecordable(id);
+    }
+}
+
+bool ContentServer::saveTmpRec(const QString &path)
+{
+    auto title = readTitleUsingTaglib(path);
+    auto ext = path.split('.').last();
+
+    qDebug() << title << ext;
+
+    if (!title.isEmpty() && !ext.isEmpty()) {
+        auto recFilePath = QDir(Settings::instance()->getRecDir()).filePath(
+                    QString("%1.%2.%3.%4").arg(title, Utils::instance()->randString(),
+                                               "jupii_rec", ext));
+        qDebug() << "Saving rec file:" << path << recFilePath;
+        if (QFile::copy(path, recFilePath)) {
+            QFile::remove(path);
+            emit streamRecorded(title, recFilePath);
+            return true;
+        } else {
+            qWarning() << "Cannot copy:" << path << recFilePath;
+        }
+    }
+
+    QFile::remove(path);
+    emit streamRecordError(title);
+    return false;
+}
+
+void ContentServer::cleanTmpRec()
+{
+    auto id = QUrl(PlaylistModel::instance()->activeId());
+
+    auto i = tmpRecs.begin();
+    while (i != tmpRecs.end()) {
+        if (i.key() != id) {
+            qDebug() << "Deleting tmp rec file:" << i.value();
+            QFile::remove(i.value());
+            i = tmpRecs.erase(i);
+        } else {
+            ++i;
+        }
+    }
 }
 
 void ContentServer::setStreamToRecord(const QUrl &id, bool value)
 {
-    emit requestStreamToRecord(id, value);
+    if (tmpRecs.contains(id)) {
+        qDebug() << "Stream already recorded:" << id << value;
+        if (value) {
+            saveTmpRec(tmpRecs.take(id));
+            emit streamRecordableChanged(id, false);
+        } else {
+            QFile::remove(tmpRecs.take(id));
+        }
+        emit streamRecordableChanged(id, false);
+    } else {
+        emit requestStreamToRecord(id, value);
+    }
 }
 
 void ContentServer::streamToRecordChangedHandler(const QUrl &id, bool value)
@@ -3391,9 +3598,22 @@ void ContentServer::streamToRecordChangedHandler(const QUrl &id, bool value)
     emit streamToRecordChanged(id, value);
 }
 
-void ContentServer::streamRecordableChangedHandler(const QUrl &id, bool value)
+void ContentServer::streamRecordableChangedHandler(const QUrl &id, bool value,
+                                                   const QString& tmpFile)
 {
-    emit streamRecordableChanged(id, value);
+    qDebug() << id << value << tmpFile;
+
+    if (tmpFile.isEmpty()) {
+        if (tmpRecs.contains(id))
+            QFile::remove(tmpRecs.value(id));
+        tmpRecs.remove(id);
+        emit streamRecordableChanged(id, value);
+    } else {
+        if (tmpRecs.contains(id))
+            QFile::remove(tmpRecs.value(id));
+        tmpRecs.insert(id, tmpFile);
+        emit streamRecordableChanged(id, true);
+    }
 }
 
 void ContentServer::streamRecordedHandler(const QString& title, const QString& path)

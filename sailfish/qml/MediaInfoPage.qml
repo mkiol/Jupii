@@ -20,8 +20,6 @@ Page {
     property bool imgOk: imagep.status === Image.Ready || imagel.status === Image.Ready
     property int itemType: utils.itemTypeFromUrl(av.currentId)
     property bool isShout: app.streamTitle.length !== 0
-    property bool isRec: itemType === ContentServer.ItemType_LocalFile &&
-                         utils.isIdRec(av.currentURL)
 
     SilicaFlickable {
         anchors.fill: parent
@@ -65,6 +63,18 @@ Page {
             PullDownMenu {
                 visible: itemType === ContentServer.ItemType_LocalFile ||
                          itemType === ContentServer.ItemType_Url
+
+                MenuItem {
+                    visible: av.currentRecUrl.length !== 0
+                    text: qsTr("Open recording URL in browser")
+                    onClicked: Qt.openUrlExternally(av.currentRecUrl)
+                }
+
+                MenuItem {
+                    visible: av.currentRecUrl.length !== 0
+                    text: qsTr("Copy recording URL")
+                    onClicked: Clipboard.text = av.currentRecUrl
+                }
 
                 MenuItem {
                     visible: av.currentYtdl
@@ -142,8 +152,7 @@ Page {
                         case ContentServer.ItemType_LocalFile:
                             return qsTr("Local file")
                         case ContentServer.ItemType_Url:
-                            return av.currentYtdl ? qsTr("Youtube-dl URL") :
-                                   isShout ? qsTr("Icecast URL") : qsTr("URL")
+                            return isShout ? qsTr("Icecast URL") : qsTr("URL")
                         case ContentServer.ItemType_Upnp:
                             return qsTr("UPnP Media Server")
                         case ContentServer.ItemType_ScreenCapture:
@@ -182,7 +191,7 @@ Page {
                 }
 
                 DetailItem {
-                    label: isRec ? qsTr("Station name") : qsTr("Author")
+                    label: qsTr("Author")
                     value: av.currentAuthor
                     visible: itemType !== ContentServer.ItemType_Mic &&
                              itemType !== ContentServer.ItemType_AudioCapture &&
@@ -210,7 +219,7 @@ Page {
 
                 DetailItem {
                     label: qsTr("Recording date")
-                    value: utils.recDateFromId(av.currentURL)
+                    value: av.currentRecDate
                     visible: value.length !== 0
                 }
 
@@ -227,7 +236,7 @@ Page {
                     visible: itemType !== ContentServer.ItemType_Mic &&
                              itemType !== ContentServer.ItemType_AudioCapture &&
                              itemType !== ContentServer.ItemType_ScreenCapture &&
-                             av.currentContentType.length !== 0
+                             value !== 0
                 }
 
                 /*DetailItem {
@@ -267,6 +276,16 @@ Page {
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     color: Theme.highlightColor
                     font.pixelSize: Theme.fontSizeSmall
+                }
+
+                SectionHeader {
+                    text: qsTr("Recording URL")
+                    visible: av.currentRecUrl.length !== 0
+                }
+
+                PaddedLabel {
+                    text: av.currentRecUrl
+                    visible: text.length !== 0
                 }
 
                 SectionHeader {

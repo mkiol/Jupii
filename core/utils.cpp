@@ -450,19 +450,23 @@ QString Utils::recDateFromId(const QUrl &id)
 
 QString Utils::friendlyDate(const QDateTime &date)
 {
-    QString date_s;
-    auto cdate = QDate::currentDate();
-    if (date.date() == cdate)
-        date_s = tr("Today");
-    else if (date.date() == cdate.addDays(-1))
-        date_s = tr("Yesterday");
+    if (date.isValid()) {
+        QString date_s;
+        auto cdate = QDate::currentDate();
+        if (date.date() == cdate)
+            date_s = tr("Today");
+        else if (date.date() == cdate.addDays(-1))
+            date_s = tr("Yesterday");
 
-    auto time_f = QLocale::system().timeFormat(QLocale::ShortFormat);
-    if (date_s.isEmpty()) {
-        return date.toString("d MMM yy, " + time_f);
-    } else {
-        return date_s + ", " + date.toString(time_f);
+        auto time_f = QLocale::system().timeFormat(QLocale::ShortFormat);
+        if (date_s.isEmpty()) {
+            return date.toString("d MMM yy, " + time_f);
+        } else {
+            return date_s + ", " + date.toString(time_f);
+        }
     }
+
+    return QString();
 }
 
 QString Utils::parseArtist(const QString &artist)

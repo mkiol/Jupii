@@ -117,7 +117,6 @@ public:
         // 0 - stream proxy (default)
         // 1 - playlist proxy (e.g. for HLS playlists)
         bool mode = 0;
-        QString recStation;
         QString recUrl;
         QDateTime recDate;
         QTime metaUpdateTime = QTime::currentTime();
@@ -147,9 +146,9 @@ public:
 
     static const QString artCookie;
 
-    static const QString recStationTagName;
     static const QString recDateTagName;
     static const QString recUrlTagName;
+    static const QString recUrlTagName2;
     static const QString recAlbumName;
 
     static ContentServer* instance(QObject *parent = nullptr);
@@ -165,23 +164,22 @@ public:
     static QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString context = QString());
     static void resolveM3u(QByteArray &data, const QString context);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
-    static void writeMetaUsingTaglib(const QString& path, const QString& title,
+    static bool writeMetaUsingTaglib(const QString& path, const QString& title,
                                       const QString& artist = QString(),
                                       const QString& album = QString(),
                                       const QString& comment = QString(),
-                                      const QString& recStation = QString(),
                                       const QString& recUrl = QString(),
                                       const QDateTime& recDate = QDateTime());
     static bool readMetaUsingTaglib(const QString& path, QString& title,
                                       QString& artist,
                                       QString& album,
                                       QString& comment,
-                                      QString &recStation,
                                       QString& recUrl,
                                       QDateTime& recDate);
     static QString minResUrl(const UPnPClient::UPnPDirObject &item);
     static ItemType itemTypeFromUrl(const QUrl &url);
 
+    void registerExternalConnections();
     bool getContentUrl(const QString &id, QUrl &url, QString &meta, QString cUrl = "");
     Q_INVOKABLE QStringList getExtensions(int type) const;
     Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
@@ -228,11 +226,12 @@ public slots:
 private slots:
     void streamRecordedHandler(const QString& title, const QString& path);
     void streamToRecordChangedHandler(const QUrl &id, bool value);
-    void streamRecordableChangedHandler(const QUrl &id, bool value);
+    void streamRecordableChangedHandler(const QUrl &id, bool value, const QString& tmpFile);
     void shoutcastMetadataHandler(const QUrl &id, const QByteArray &metadata);
     void pulseStreamNameHandler(const QUrl &id, const QString &name);
     void itemAddedHandler(const QUrl &id);
     void itemRemovedHandler(const QUrl &id);
+    void cleanTmpRec();
 
 private:
     enum DLNA_ORG_FLAGS {
@@ -303,6 +302,7 @@ private:
     QHash<QString, QString> metaIdx; // DIDL-lite id => id
     QHash<QUrl, StreamData> streams; // id => StreamData
     QHash<QString, QString> fullHashes; // truncated hash => full hash
+    QHash<QUrl, QString> tmpRecs; // id => tmp rec file
     QMutex metaCacheMutex;
     QString pulseStreamName;
 
@@ -351,6 +351,8 @@ private:
     static bool extractAudio(const QString& path, ContentServer::AvData& data);
     static bool fillAvDataFromCodec(const AVCodecParameters* codec, const QString &videoPath, AvData &data);
     static QString extractItemFromDidl(const QString &didl);
+    bool saveTmpRec(const QString &path);
+    static QString readTitleUsingTaglib(const QString &path);
 };
 
 class ContentServerWorker :
@@ -374,7 +376,7 @@ public:
 signals:
     void streamRecorded(const QString& title, const QString& path);
     void streamToRecordChanged(const QUrl &id, bool value);
-    void streamRecordableChanged(const QUrl &id, bool value);
+    void streamRecordableChanged(const QUrl &id, bool value, const QString& tmpFile);
     void shoutcastMetadataUpdated(const QUrl &id, const QByteArray &metadata);
     void pulseStreamUpdated(const QUrl &id, const QString& name);
     void itemAdded(const QUrl &id);
@@ -424,6 +426,7 @@ private:
         std::shared_ptr<QFile> recFile;
         bool saveRec = false;
         QString title;
+        QString author;
         QString recExt;
         bool finished = false;
         QUrl origUrl;
@@ -476,6 +479,7 @@ private:
     static void removePoints(const QList<QPair<int,int>> &rpoints, QByteArray &data);
     void openRecFile(ProxyItem &item);
     void saveRecFile(ProxyItem &item);
+    void endRecFile(ProxyItem &item);
     void closeRecFile(ProxyItem &item);
     static void cleanCacheFiles();
 };

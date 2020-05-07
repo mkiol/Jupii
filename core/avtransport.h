@@ -26,11 +26,8 @@ class AVTransport : public Service
     Q_OBJECT
     Q_PROPERTY (QString currentURI READ getCurrentURI NOTIFY currentURIChanged)
     Q_PROPERTY (QUrl currentId READ getCurrentId NOTIFY currentURIChanged)
-    Q_PROPERTY (QUrl currentOrigURL READ getCurrentOrigUrl NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentPath READ getCurrentPath NOTIFY currentURIChanged)
     Q_PROPERTY (QString currentURL READ getCurrentURL NOTIFY currentURIChanged)
-    Q_PROPERTY (QString currentContentType READ getContentType NOTIFY currentURIChanged)
-    Q_PROPERTY (bool currentYtdl READ getCurrentYtdl NOTIFY currentURIChanged)
     Q_PROPERTY (QString nextURI READ getNextURI NOTIFY nextURIChanged)
     Q_PROPERTY (QString nextPath READ getNextPath NOTIFY nextURIChanged)
     Q_PROPERTY (bool nextURISupported READ getNextURISupported NOTIFY nextURISupportedChanged)
@@ -52,6 +49,11 @@ class AVTransport : public Service
     Q_PROPERTY (QString currentDescription READ getCurrentDescription NOTIFY currentMetaDataChanged)
     Q_PROPERTY (QUrl currentAlbumArtURI READ getCurrentAlbumArtURI NOTIFY currentAlbumArtChanged)
     Q_PROPERTY (QString currentAlbum READ getCurrentAlbum NOTIFY currentMetaDataChanged)
+    Q_PROPERTY (QString currentRecDate READ getCurrentRecDate NOTIFY currentMetaDataChanged)
+    Q_PROPERTY (QString currentRecUrl READ getCurrentRecUrl NOTIFY currentMetaDataChanged)
+    Q_PROPERTY (QUrl currentOrigURL READ getCurrentOrigUrl NOTIFY currentMetaDataChanged)
+    Q_PROPERTY (QString currentContentType READ getContentType NOTIFY currentMetaDataChanged)
+    Q_PROPERTY (bool currentYtdl READ getCurrentYtdl NOTIFY currentMetaDataChanged)
 
     Q_PROPERTY (bool nextSupported READ getNextSupported NOTIFY transportActionsChanged)
     Q_PROPERTY (bool pauseSupported READ getPauseSupported NOTIFY transportActionsChanged)
@@ -137,6 +139,8 @@ public:
     QString getCurrentTitle();
     QString getCurrentDescription();
     QString getCurrentAlbum();
+    QString getCurrentRecDate();
+    QString getCurrentRecUrl();
     QUrl getCurrentAlbumArtURI();
     QUrl getCurrentId();
     QUrl getCurrentOrigUrl();
@@ -181,7 +185,7 @@ private slots:
     void trackChangedHandler();
     void seekTimeout();
     void handleApplicationStateChanged(Qt::ApplicationState state);
-    void handleActiveItemChanged();
+    void handleMetaChanged();
 
 private:
     int m_transportState = Unknown;
