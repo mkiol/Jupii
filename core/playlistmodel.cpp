@@ -1080,10 +1080,20 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         }
     }
 
-    QUrl iconUrl = ficon.isEmpty() ?
-                meta->albumArt.isEmpty() ? type == ContentServer::TypeImage ?
-                meta->url : QUrl() : QFileInfo::exists(meta->albumArt) ?
-                QUrl::fromLocalFile(meta->albumArt) : QUrl(meta->albumArt) : ficon;
+    QUrl iconUrl;
+    if (ficon.isEmpty()) {
+        if (meta->albumArt.isEmpty()) {
+            iconUrl = type == ContentServer::TypeImage ? meta->url : QUrl();
+        } else if (QFileInfo::exists(meta->albumArt)) {
+            iconUrl = QUrl::fromLocalFile(meta->albumArt);
+        } else {
+            iconUrl = QUrl(meta->albumArt);
+        }
+    } else {
+        iconUrl = ficon;
+    }
+
+
     ContentServer::instance()->getMetaForImg(iconUrl, true); // create meta for albumArt
 
 #ifndef SAILFISH

@@ -314,7 +314,7 @@ public:
     inline QString cookie() const { return m_cookie; }
     inline QString name() const { return m_name; }
     inline QUrl url() const { return m_url; }
-    inline QUrl origUrl() const { return m_origUrl; }
+    inline QUrl origUrl() const { return m_origUrl.isEmpty() ? m_url : m_origUrl; }
     inline ContentServer::Type type() const { return m_type; }
     inline QString ctype() const { return m_ctype; }
     inline QString artist() const { return m_artist; }

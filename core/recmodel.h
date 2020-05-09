@@ -2,8 +2,15 @@
 #define RECMODEL_H
 
 #include <QDir>
+#include <QUrl>
+#include <QString>
 #include <QDateTime>
+#include <QVariantList>
 #include "itemmodel.h"
+
+#ifdef DESKTOP
+#include <QIcon>
+#endif
 
 class RecItem: public SelectableItem
 {
@@ -16,7 +23,8 @@ public:
         AuthorRole,
         SelectedRole,
         DateRole,
-        FriendlyDateRole
+        FriendlyDateRole,
+        IconRole
     };
 
     RecItem(QObject* parent = nullptr) : SelectableItem(parent) {}
@@ -25,6 +33,11 @@ public:
                      const QString &title,
                      const QString &author,
                      const QDateTime &date,
+#ifdef SAILFISH
+                     const QUrl &icon,
+#else
+                     const QIcon &icon,
+#endif
                      QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
@@ -34,12 +47,22 @@ public:
     inline QString author() const { return m_author; }
     inline QDateTime date() const { return m_date; }
     QString friendlyDate() const;
+#ifdef SAILFISH
+    inline QUrl icon() const { return m_icon; }
+#else
+    inline QIcon icon() const { return m_icon; }
+#endif
 private:
     QString m_id;
     QString m_path;
     QString m_title;
     QString m_author;
     QDateTime m_date;
+#ifdef SAILFISH
+    QUrl m_icon;
+#else
+    QIcon m_icon;
+#endif
 };
 
 class RecModel : public SelectableItemModel
@@ -64,6 +87,7 @@ private:
         QString album;
         QString comment;
         QString recUrl;
+        QString iconPath;
         QDateTime recDate;
     };
     QList<Item> m_items;

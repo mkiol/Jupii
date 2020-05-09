@@ -62,7 +62,7 @@ public:
 #else
     inline QIcon icon() const { return m_icon; }
 #endif
-    void refresh();
+
 private:
     QString m_id;
     QString m_name;
@@ -106,7 +106,6 @@ private:
     void downloadImages();
     void downloadImage();
     QString bestImage(const QDomElement& entry);
-    void refreshItem(const QString &id);
 };
 
 #endif // SOMAFMMODEL_H

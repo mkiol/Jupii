@@ -15,6 +15,7 @@
 #include "settings.h"
 #include "contentserver.h"
 #include "utils.h"
+#include "tracker.h"
 
 RecModel::RecModel(QObject *parent) :
     SelectableItemModel(new RecItem, parent),
@@ -67,14 +68,16 @@ QList<ListItem*> RecModel::makeItems()
             Item item;
             item.path = file.absoluteFilePath();
 
-            if (!ContentServer::readMetaUsingTaglib(item.path, item.title,
-                                item.author, item.album, item.comment,
-                                item.recUrl, item.recDate)) {
+            if (!ContentServer::readMetaUsingTaglib(item.path,
+                                item.title, item.author, item.album, item.comment,
+                                item.recUrl, item.recDate, item.iconPath)) {
                 qWarning() << "Cannot read meta with TagLib";
                 continue;
             }
 
             // fallbacks
+            if (item.iconPath.isEmpty() && !item.author.isEmpty() && !item.album.isEmpty())
+                item.iconPath = Tracker::instance()->genAlbumArtFile(item.album, item.author);
             if (item.title.isEmpty())
                 item.title = file.baseName();
             if (item.author.isEmpty())
@@ -99,7 +102,12 @@ QList<ListItem*> RecModel::makeItems()
                          item.path,
                          item.title,
                          item.author,
-                         item.recDate);
+                         item.recDate,
+#ifdef SAILFISH
+                         QUrl::fromLocalFile(item.iconPath));
+#else
+                         QIcon(item.iconPath));
+#endif
         }
     }
 
@@ -153,13 +161,19 @@ RecItem::RecItem(const QString &id,
                  const QString &title,
                  const QString &author,
                  const QDateTime &date,
+#ifdef SAILFISH
+                 const QUrl &icon,
+#else
+                 const QIcon &icon,
+#endif
                  QObject *parent) :
     SelectableItem(parent),
     m_id(id),
     m_path(path),
     m_title(title),
     m_author(author),
-    m_date(date)
+    m_date(date),
+    m_icon(icon)
 {
 }
 
@@ -178,6 +192,7 @@ QHash<int, QByteArray> RecItem::roleNames() const
     names[SelectedRole] = "selected";
     names[DateRole] = "date";
     names[FriendlyDateRole] = "friendlyDate";
+    names[IconRole] = "icon";
     return names;
 }
 
@@ -198,6 +213,8 @@ QVariant RecItem::data(int role) const
         return date();
     case FriendlyDateRole:
         return friendlyDate();
+    case IconRole:
+        return icon();
     default:
         return QVariant();
     }

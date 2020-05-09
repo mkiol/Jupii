@@ -196,6 +196,17 @@ QStringList Utils::getNetworkIfs(bool onlyUp)
     return false;
 }*/
 
+void Utils::removeFromCacheDir(const QStringList &filter)
+{
+    QDir dir(Settings::instance()->getCacheDir());
+    dir.setNameFilters(filter);
+    dir.setFilter(QDir::Files);
+    for (const QString& f : dir.entryList()) {
+        qDebug() << "Removing file from cache:" << f;
+        dir.remove(f);
+    }
+}
+
 bool Utils::writeToCacheFile(const QString &filename, const QByteArray &data, bool del)
 {
     QDir dir(Settings::instance()->getCacheDir());

@@ -121,6 +121,7 @@ Dialog {
                     return author
             }
             enabled: !itemModel.busy
+            icon.source: model.icon
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
 
             onClicked: {

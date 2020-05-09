@@ -23,10 +23,10 @@ class Tracker :
 
 public:
     static Tracker* instance(QObject *parent = nullptr);
+    QString genAlbumArtFile(const QString& albumName,
+                                   const QString& artistName);
     bool query(const QString& query, bool emitSignal = true);
     std::pair<const QStringList&, const QByteArray&> getResult();
-    QString genAlbumArtFile(const QString& albumName,
-                            const QString& artistName);
 
 signals:
     void queryFinished(const QStringList& varNames, const QByteArray& data);
@@ -45,11 +45,8 @@ private:
     QStringList m_dbusReplyData;
 
     Tracker(QObject *parent = nullptr);
-
-    bool createTrackerInf();
-    QString stripInvalidEntities(const QString& text);
     QString genTrackerId(const QString& name);
-
+    bool createTrackerInf();
     bool createUnixPipe(int& readFd, int& writeFd);
 };
 

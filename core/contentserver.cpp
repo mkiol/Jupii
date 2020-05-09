@@ -120,6 +120,12 @@ const QHash<QString,QString> ContentServer::m_musicMimeToExtMap {
     {"audio/x-aiff", "aiff"}
 };
 
+const QHash<QString,QString> ContentServer::m_imgMimeToExtMap {
+    {"image/jpeg", "jpg"},
+    {"image/png", "png"},
+    {"image/gif", "gif"}
+};
+
 const QHash<QString,QString> ContentServer::m_videoExtMap {
     {"mkv", "video/x-matroska"},
     {"webm", "video/webm"},
@@ -254,14 +260,10 @@ void ContentServerWorker::closeRecFile(ProxyItem &item)
 
 void ContentServerWorker::cleanCacheFiles()
 {
-    auto recDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    QDir dir(recDir);
-    dir.setNameFilters(QStringList() << "rec-*.*" << "passlogfile-*.*");
-    dir.setFilter(QDir::Files);
-    for (const QString& f : dir.entryList()) {
-        qDebug() << "Removing old cache file:" << f;
-        dir.remove(f);
-    }
+    Utils::removeFromCacheDir(QStringList() << "rec-*.*"
+                              << "passlogfile-*.*"
+                              << "art-*.*"
+                              << "art_image_*.*");
 }
 
 void ContentServerWorker::openRecFile(ProxyItem &item)
@@ -310,7 +312,8 @@ void ContentServerWorker::endRecFile(ProxyItem &item)
                         //QString("Recorded by %1").arg(Jupii::APP_NAME),
                         QString(), // comment
                         url, // URL
-                        QDateTime::currentDateTime() // time of recording
+                        QDateTime::currentDateTime(), // time of recording
+                        item.artPath
                     );
                 } else {
                     qWarning() << "Cannot copy file:"
@@ -359,7 +362,8 @@ void ContentServerWorker::saveRecFile(ProxyItem &item)
                             //QString("Recorded by %1").arg(Jupii::APP_NAME),
                             QString(), // comment
                             url, // URL
-                            QDateTime::currentDateTime() // time of recording
+                            QDateTime::currentDateTime(), // time of recording
+                            item.artPath
                         );
                         emit streamRecorded(title, recFilePath);
                     } else {
@@ -442,7 +446,11 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     } else if (meta->itemType == ContentServer::ItemType_AudioCapture) {
         requestForAudioCaptureHandler(id, meta, req, resp);
     } else if (meta->itemType == ContentServer::ItemType_Url) {
-        requestForUrlHandler(id, meta, req, resp);
+        if (!meta->path.isEmpty()) {
+            requestForFileHandler(id, meta, req, resp);
+        } else {
+            requestForUrlHandler(id, meta, req, resp);
+        }
     } else {
         qWarning() << "Unknown item type";
         sendEmptyResponse(resp, 404);
@@ -645,9 +653,29 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         item.origUrl = (url == meta->origUrl ? QUrl() : meta->origUrl);
 
         QString name;
+        QUrl icon;
         Utils::pathTypeNameCookieIconFromId(item.id, nullptr, nullptr, &name,
-                                            nullptr, nullptr, nullptr, &item.author);
+                                            nullptr, &icon, nullptr, &item.author);
         item.title = name.isEmpty() ? ContentServer::bestName(*meta) : name;
+
+        auto cs = ContentServer::instance();
+        if (!icon.isEmpty()) {
+            auto artMeta = cs->getMeta(icon, false);
+            if (artMeta && !artMeta->path.isEmpty()) { // art icon cache found
+                item.artPath = artMeta->path;
+            } else if (QFileInfo::exists(icon.toLocalFile())) {
+                item.artPath = icon.toLocalFile();
+            }
+        } else if (!meta->albumArt.isEmpty()) {
+            if (QFileInfo::exists(meta->albumArt)) {
+                item.artPath = meta->albumArt;
+            } else {
+                auto artMeta = cs->getMeta(QUrl(meta->albumArt), false);
+                if (artMeta && !artMeta->path.isEmpty()) // art icon cache found
+                    item.artPath = artMeta->path;
+            }
+        }
+        qDebug() << "item.artPath:" << item.artPath;
 
         responseToReplyMap.insert(resp, reply);
 
@@ -1738,46 +1766,6 @@ QString ContentServer::getExtensionFromAudioContentType(const QString &mime)
    return m_musicMimeToExtMap.value(mime);
 }
 
-void ContentServer::fillCoverArt(ItemMeta& item)
-{
-    item.albumArt = QString("%1/art-%2.jpg")
-            .arg(Settings::instance()->getCacheDir(),
-                 Utils::instance()->hash(item.path));
-
-    if (QFileInfo::exists(item.albumArt)) {
-        qDebug() << "Cover Art exists";
-        return; // OK
-    }
-
-    // TODO: Support for extracting image from other than mp3 file formats
-    TagLib::MPEG::File af(item.path.toUtf8().constData());
-
-    if (af.isOpen()) {
-        TagLib::ID3v2::Tag *tag = af.ID3v2Tag(true);
-        TagLib::ID3v2::FrameList fl = tag->frameList("APIC");
-
-        if(!fl.isEmpty()) {
-            TagLib::ID3v2::AttachedPictureFrame *frame =
-                    static_cast<TagLib::ID3v2::AttachedPictureFrame*>(fl.front());
-
-            QImage img;
-            img.loadFromData(reinterpret_cast<const uchar*>(frame->picture().data()),
-                             static_cast<int>(frame->picture().size()));
-            if (img.save(item.albumArt)) {
-                return; // OK
-            } else {
-                qWarning() << "Unable to write album art image:" << item.albumArt;
-            }
-        } else {
-            qDebug() << "No cover art in" << item.path;
-        }
-    } else {
-        qWarning() << "Cannot open file" << item.path << "with TagLib";
-    }
-
-    item.albumArt.clear();
-}
-
 QString ContentServer::extractItemFromDidl(const QString &didl)
 {
     QRegExp rx("<DIDL-Lite[^>]*>(.*)</DIDL-Lite>");
@@ -2623,7 +2611,7 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
             meta.sampleRate = cursor.value(9).toDouble();
             meta.path = path;
             meta.filename = file.fileName();
-            meta.albumArt = tracker->genAlbumArtFile(meta.album, meta.artist);
+            meta.albumArt = Tracker::instance()->genAlbumArtFile(meta.album, meta.artist);
             meta.type = typeFromMime(meta.mime);
             meta.size = file.size();
             meta.local = true;
@@ -2632,8 +2620,10 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
 
             // Recording meta
             if (meta.album == ContentServer::recAlbumName) {
-                if (!ContentServer::readMetaUsingTaglib(path, meta.title, meta.artist, meta.album,
-                                       meta.comment, meta.recUrl, meta.recDate)) {
+                if (!ContentServer::readMetaUsingTaglib(path,
+                                       meta.title, meta.artist, meta.album,
+                                       meta.comment, meta.recUrl, meta.recDate,
+                                       meta.albumArt)) {
                     qWarning() << "Cannot read meta with TagLib";
                 }
             }
@@ -2659,13 +2649,23 @@ QString ContentServer::readTitleUsingTaglib(const QString &path)
     return QString();
 }
 
-bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
-                                          QString &artist, QString &album,
-                                          QString &comment,
-                                          QString &recUrl, QDateTime &recDate)
+bool ContentServer::readMetaUsingTaglib(const QString &path,
+                                        QString &title,
+                                        QString &artist,
+                                        QString &album,
+                                        QString &comment,
+                                        QString &recUrl,
+                                        QDateTime &recDate,
+                                        QString &artPath,
+                                        int *duration,
+                                        double *bitrate,
+                                        double *sampleRate,
+                                        int *channels)
 {
-    TagLib::FileRef f(path.toUtf8().constData(), false);
-    if (!f.isNull())  {
+    bool readAudioProperties = duration || bitrate || sampleRate || channels;
+
+    TagLib::FileRef f(path.toUtf8().constData(), readAudioProperties);
+    if (!f.isNull())  {        
         auto tag = f.tag();
         if (tag) {
             title = QString::fromWCharArray(tag->title().toCWString());
@@ -2691,6 +2691,54 @@ bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
                 }
             }
 
+            if (readAudioProperties) {
+                auto prop = f.audioProperties();
+                if (prop) {
+                    if (duration)
+                        *duration = prop->length();
+                    if (bitrate)
+                        *bitrate = prop->bitrate();
+                    if (sampleRate)
+                        *sampleRate = prop->sampleRate();
+                    if (channels)
+                        *channels = prop->channels();
+                }
+            }
+
+            auto albumArt = QString("%1/art_image_%2.")
+                    .arg(Settings::instance()->getCacheDir(),
+                         Utils::instance()->hash(path));
+            if (QFileInfo::exists(albumArt + "jpg")) {
+                artPath = albumArt + "jpg";
+            } else if (QFileInfo::exists(albumArt + "png")) {
+                artPath = albumArt + "png";
+            } else {
+                auto mf = dynamic_cast<TagLib::MPEG::File*>(f.file());
+                if (mf) {
+                    TagLib::ID3v2::Tag *tag = mf->ID3v2Tag(true);
+                    TagLib::ID3v2::FrameList fl = tag->frameList("APIC");
+
+                    if (!fl.isEmpty()) {
+                        TagLib::ID3v2::AttachedPictureFrame *frame =
+                                dynamic_cast<TagLib::ID3v2::AttachedPictureFrame*>(fl.front());
+                        if (frame) {
+                            auto ext = m_imgMimeToExtMap.value(QString::fromStdString(frame->mimeType().to8Bit()));
+                            if (!ext.isEmpty()) {
+                                if (Utils::writeToFile(albumArt + ext,
+                                       QByteArray::fromRawData(frame->picture().data(),
+                                            static_cast<int>(frame->picture().size())))) {
+                                    artPath = albumArt + ext;
+                                } else {
+                                    qWarning() <<  "Cannot write art file:" << (albumArt + ext);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    qWarning() << "Cannot extract art because file is not MPEG";
+                }
+            }
+
             /*qDebug() << "-- TAG (properties) --";
             for(TagLib::PropertyMap::ConstIterator it = tags.begin(); it != tags.end(); ++it) {
                 qDebug() << QString::fromWCharArray(it->first.toCWString());
@@ -2707,7 +2755,8 @@ bool ContentServer::writeMetaUsingTaglib(const QString &path, const QString &tit
                                           const QString &artist, const QString &album,
                                           const QString &comment,
                                           const QString &recUrl,
-                                          const QDateTime &recDate)
+                                          const QDateTime &recDate,
+                                          const QString &artPath)
 {
     TagLib::FileRef f(path.toUtf8().constData(), false);
     if (!f.isNull())  {
@@ -2743,8 +2792,26 @@ bool ContentServer::writeMetaUsingTaglib(const QString &path, const QString &tit
                 tag->addFrame(frame);
             }
 
-            mf->save(TagLib::MPEG::File::ID3v2);
+            if (!artPath.isEmpty()) {
+                auto mime = m_imgExtMap.value(artPath.split('.').last());
+                if (!mime.isEmpty()) {
+                    QFile art(artPath);
+                    if (art.open(QIODevice::ReadOnly)) {
+                        auto bytes = art.readAll();
+                        art.close();
+                        if (!bytes.isEmpty()) {
+                            auto apf = new TagLib::ID3v2::AttachedPictureFrame();
+                            apf->setPicture(TagLib::ByteVector(bytes.constData(), bytes.size()));
+                            apf->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
+                            apf->setMimeType(mime.toStdString());
+                            apf->setDescription("Cover");
+                            tag->addFrame(apf);
+                        }
+                    }
+                }
+            }
 
+            mf->save(TagLib::MPEG::File::ID3v2);
             return true;
         } else {
             auto tag = f.tag();
@@ -2865,26 +2932,13 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
     } else {
         meta.seekSupported = true;
 
-        if (!ContentServer::readMetaUsingTaglib(path, meta.title, meta.artist, meta.album,
-                               meta.comment, meta.recUrl, meta.recDate)) {
+        if (!ContentServer::readMetaUsingTaglib(path,
+                               meta.title, meta.artist, meta.album,
+                               meta.comment, meta.recUrl, meta.recDate,
+                               meta.albumArt, &meta.duration, &meta.bitrate,
+                               &meta.sampleRate, &meta.channels)) {
             qWarning() << "Cannot read meta with TagLib";
         }
-
-        TagLib::FileRef f(path.toUtf8().constData());
-        if(f.isNull()) {
-            qWarning() << "Cannot read audio meta with TagLib";
-        } else {
-            if(f.audioProperties()) {
-                TagLib::AudioProperties *properties = f.audioProperties();
-                meta.duration = properties->length();
-                meta.bitrate = properties->bitrate();
-                meta.sampleRate = properties->sampleRate();
-                meta.channels = properties->channels();
-            }
-        }
-
-        if (meta.mime == "audio/mpeg")
-            fillCoverArt(meta);
 
         // defaults
         /*if (meta.title.isEmpty())
@@ -3148,11 +3202,13 @@ ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                                             const QUrl &origUrl,
-                                            bool ytdl, bool refresh)
+                                            bool ytdl, bool refresh,
+                                            bool art)
 {
     ItemMeta meta;
     meta.ytdl = ytdl;
     meta.refresh = refresh; // meta refreshing
+    meta.art = art;
 
     QUrl fixed_url(url);
     QUrl fixed_origUrl(origUrl);
@@ -3197,8 +3253,9 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         nam = std::shared_ptr<QNetworkAccessManager>(new QNetworkAccessManager());
     auto reply = nam->get(request);
 
+    bool art = meta.art;
     QEventLoop loop;
-    connect(reply, &QNetworkReply::metaDataChanged, [reply]{
+    connect(reply, &QNetworkReply::metaDataChanged, [reply, art]{
         qDebug() << ">> metaDataChanged in thread:" << QThread::currentThreadId();
         qDebug() << "Received meta data of HTTP reply for url:" << reply->url();
 
@@ -3210,10 +3267,12 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         if (mime.isEmpty())
             mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
         auto type = typeFromMime(mime);
-        qDebug() << "mime:" << mime;
 
         if (type == ContentServer::TypePlaylist) {
             qDebug() << "Content is a playlist";
+            // Content is needed, so not aborting
+        } else if (type == ContentServer::TypeImage && art) {
+            qDebug() << "Content is album art";
             // Content is needed, so not aborting
         } else {
             // Content is no needed, so aborting
@@ -3357,37 +3416,51 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     meta.local = false;
     meta.seekSupported = size > 0 ? ranges : false;
     meta.itemType = ItemType_Url;
-#ifdef SAILFISH
-    if (meta.origUrl.host().contains("bandcamp.com") || meta.url.host().contains("bcbits.com"))
-        meta.albumArt = IconProvider::pathToNoResId("icon-bandcamp");
-    else if (meta.origUrl.host().contains("youtube.") || meta.origUrl.host().contains("yout.be"))
-        meta.albumArt = IconProvider::pathToNoResId("icon-youtube");
-    else if (meta.origUrl.host().contains("soundcloud.com"))
-        meta.albumArt = IconProvider::pathToNoResId("icon-soundcloud");
-    else if (meta.origUrl.host().contains("somafm.com") || meta.url.host().contains("somafm.com"))
-        meta.albumArt = IconProvider::pathToNoResId("icon-somafm");
-#endif
 
-    if (reply->hasRawHeader("icy-metaint")) {
-        int metaint = reply->rawHeader("icy-metaint").toInt();
-        if (metaint > 0) {
-            qDebug() << "Shoutcast stream detected";
-            meta.shoutCast = true;
+    if (type == ContentServer::TypeImage && meta.art) {
+        qDebug() << "Saving album art to file";
+        auto ext = m_imgMimeToExtMap.value(meta.mime);
+        auto data = reply->readAll();
+        if (!ext.isEmpty() && !data.isEmpty()) {
+            auto albumArt = QString("art_image_%1.%2")
+                    .arg(Utils::instance()->hash(meta.url.toString())).arg(ext);
+            Utils::writeToCacheFile(albumArt, data, true);
+            meta.path = QString("%1/%2").arg(Settings::instance()->getCacheDir()).arg(albumArt);
+        } else {
+            qWarning() << "Cannot save album art for:" << meta.url.toString();
         }
-    }
+    } else {
+#ifdef SAILFISH
+        if (meta.origUrl.host().contains("bandcamp.com") || meta.url.host().contains("bcbits.com"))
+            meta.albumArt = IconProvider::pathToNoResId("icon-bandcamp");
+        else if (meta.origUrl.host().contains("youtube.") || meta.origUrl.host().contains("yout.be"))
+            meta.albumArt = IconProvider::pathToNoResId("icon-youtube");
+        else if (meta.origUrl.host().contains("soundcloud.com"))
+            meta.albumArt = IconProvider::pathToNoResId("icon-soundcloud");
+        else if (meta.origUrl.host().contains("somafm.com") || meta.url.host().contains("somafm.com"))
+            meta.albumArt = IconProvider::pathToNoResId("icon-somafm");
+#endif
+        if (reply->hasRawHeader("icy-metaint")) {
+            int metaint = reply->rawHeader("icy-metaint").toInt();
+            if (metaint > 0) {
+                qDebug() << "Shoutcast stream detected";
+                meta.shoutCast = true;
+            }
+        }
 
-    if (meta.title.isEmpty()) {
-        if (reply->hasRawHeader("icy-name"))
-            meta.title = QString(reply->rawHeader("icy-name"));
-        else
-            meta.title = url.fileName();
-    }
+        if (meta.title.isEmpty()) {
+            if (reply->hasRawHeader("icy-name"))
+                meta.title = QString(reply->rawHeader("icy-name"));
+            else
+                meta.title = url.fileName();
+        }
 
-    if (reply->hasRawHeader("x-amz-meta-bitrate")) {
-        meta.bitrate = reply->rawHeader("x-amz-meta-bitrate").toInt() * 1000;
-    }
-    if (reply->hasRawHeader("x-amz-meta-duration")) {
-        meta.duration = reply->rawHeader("x-amz-meta-duration").toInt() / 1000;
+        if (reply->hasRawHeader("x-amz-meta-bitrate")) {
+            meta.bitrate = reply->rawHeader("x-amz-meta-bitrate").toInt() * 1000;
+        }
+        if (reply->hasRawHeader("x-amz-meta-duration")) {
+            meta.duration = reply->rawHeader("x-amz-meta-duration").toInt() / 1000;
+        }
     }
 
     reply->deleteLater();
@@ -3419,7 +3492,7 @@ ContentServer::makeMetaUsingExtension(const QUrl &url)
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl,
-                            bool img, bool refresh)
+                            bool art, bool refresh)
 {
     metaCacheMutex.lock();
 
@@ -3427,7 +3500,7 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl,
     auto itemType = itemTypeFromUrl(url);
     if (itemType == ItemType_LocalFile) {
         if (QFile::exists(url.toLocalFile())) {
-            if (img) {
+            if (art) {
                 it = makeMetaUsingExtension(url);
             } else {
                 it = makeItemMetaUsingTracker(url);
@@ -3460,7 +3533,7 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl,
         it = makeUpnpItemMeta(url);
     } else if (itemType == ItemType_Url){
         qDebug() << "Geting meta using HTTP request";
-        it = makeItemMetaUsingHTTPRequest(url, origUrl, ytdl, refresh);
+        it = makeItemMetaUsingHTTPRequest(url, origUrl, ytdl, refresh, art);
     } else if (url.scheme() == "jupii") {
         qDebug() << "Unsupported Jupii URL detected";
         it = metaCache.end();

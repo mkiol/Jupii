@@ -121,6 +121,7 @@ public:
         QDateTime recDate;
         QTime metaUpdateTime = QTime::currentTime();
         bool refresh = false;
+        bool art = false;
 
         inline bool expired() const {
             if (metaUpdateTime.isNull())
@@ -169,13 +170,20 @@ public:
                                       const QString& album = QString(),
                                       const QString& comment = QString(),
                                       const QString& recUrl = QString(),
-                                      const QDateTime& recDate = QDateTime());
-    static bool readMetaUsingTaglib(const QString& path, QString& title,
-                                      QString& artist,
-                                      QString& album,
-                                      QString& comment,
-                                      QString& recUrl,
-                                      QDateTime& recDate);
+                                      const QDateTime& recDate = QDateTime(),
+                                      const QString& artPath = QString());
+    static bool readMetaUsingTaglib(const QString& path,
+                                    QString& title,
+                                    QString& artist,
+                                    QString& album,
+                                    QString& comment,
+                                    QString& recUrl,
+                                    QDateTime& recDate,
+                                    QString& artPath,
+                                    int *duration = nullptr,
+                                    double *bitrate = nullptr,
+                                    double *sampleRate = nullptr,
+                                    int *channels = nullptr);
     static QString minResUrl(const UPnPClient::UPnPDirObject &item);
     static ItemType itemTypeFromUrl(const QUrl &url);
 
@@ -272,6 +280,7 @@ private:
     static const QHash<QString,QString> m_imgExtMap;
     static const QHash<QString,QString> m_musicExtMap;
     static const QHash<QString,QString> m_musicMimeToExtMap;
+    static const QHash<QString,QString> m_imgMimeToExtMap;
     static const QHash<QString,QString> m_videoExtMap;
     static const QHash<QString,QString> m_playlistExtMap;
     static const QStringList m_m3u_mimes;
@@ -325,7 +334,7 @@ private:
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url,
                                                              const QUrl &origUrl = QUrl(),
                                                              bool ytdl = false,
-                                                             bool img = false,
+                                                             bool art = false,
                                                              bool refresh = false);
     const QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeAudioCaptureItemMeta(const QUrl &url);
@@ -335,7 +344,8 @@ private:
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
                                                                              const QUrl &origUrl = QUrl(),
                                                                              bool ytdl = false,
-                                                                             bool refresh = false);
+                                                                             bool refresh = false,
+                                                                             bool art = false);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest2(const QUrl &url,
             ItemMeta &meta,
             std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
@@ -346,7 +356,6 @@ private:
             int counter = 0);
     const QHash<QUrl, ItemMeta>::const_iterator makeUpnpItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeMetaUsingExtension(const QUrl &url);
-    void fillCoverArt(ItemMeta& item);
     void run();
     static bool extractAudio(const QString& path, ContentServer::AvData& data);
     static bool fillAvDataFromCodec(const AVCodecParameters* codec, const QString &videoPath, AvData &data);
@@ -428,6 +437,7 @@ private:
         QString title;
         QString author;
         QString recExt;
+        QString artPath;
         bool finished = false;
         QUrl origUrl;
         ~ProxyItem();

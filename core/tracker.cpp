@@ -153,9 +153,7 @@ QString Tracker::genAlbumArtFile(const QString &albumName,
     QString filepath = m_cacheDir + "/media-art/" + "album-" +
             artistId + "-" + albumId + ".jpeg";
 
-    bool exists = QFileInfo(filepath).exists();
-
-    return exists ? filepath : QString();
+    return QFileInfo::exists(filepath) ? filepath : QString();
 }
 
 bool Tracker::createTrackerInf()

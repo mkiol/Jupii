@@ -24,7 +24,7 @@
 #include "iconprovider.h"
 
 const QString SomafmModel::m_dirUrl = "https://somafm.com/channels.xml";
-const QString SomafmModel::m_dirFilename = "somafm.xml";
+const QString SomafmModel::m_dirFilename = "somafm2.xml";
 const QString SomafmModel::m_imageFilename = "somafm_image_";
 
 SomafmModel::SomafmModel(QObject *parent) :
@@ -79,6 +79,9 @@ QString SomafmModel::bestImage(const QDomElement& entry)
 void SomafmModel::downloadImages()
 {
     m_imagesToDownload.clear();
+
+    Utils::removeFromCacheDir(QStringList() << (m_imageFilename + "*"));
+
     int l = m_entries.length();
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
@@ -95,7 +98,9 @@ void SomafmModel::downloadImages()
 
 void SomafmModel::downloadImage()
 {
-    if (!m_imagesToDownload.isEmpty()) {
+    if (m_imagesToDownload.isEmpty()) {
+        updateModel();
+    } else {
         auto image = m_imagesToDownload.takeFirst();  // <id, image URL>
         auto id = image.first;
 
@@ -122,12 +127,15 @@ void SomafmModel::downloadImage()
                     qWarning() << "No data received";
                 } else {
                     auto filename = m_imageFilename + id;
+                    auto ext = reply->url().fileName().split('.').last();
+                    if (!ext.isEmpty())
+                        filename = filename + "." + ext;
+                    qDebug() << "Downloaded image:" << filename;
                     Utils::writeToCacheFile(filename, data, true);
                 }
             }
 
             reply->deleteLater();
-            refreshItem(id);
             downloadImage();
         });
     }
@@ -238,9 +246,15 @@ QList<ListItem*> SomafmModel::makeItems()
                     desc.contains(filter, Qt::CaseInsensitive) ||
                     genre.contains(filter, Qt::CaseInsensitive) ||
                     dj.contains(filter, Qt::CaseInsensitive)) {
-                    auto imgpath = Utils::pathToCacheFile(m_imageFilename + id);
-                    if (!QFileInfo::exists(imgpath))
-                        imgpath = IconProvider::pathToNoResId("icon-somafm");
+
+                    auto filename = m_imageFilename + id;
+                    auto imgpath = Utils::pathToCacheFile(filename + ".jpg");
+                    if (!QFileInfo::exists(imgpath)) {
+                        imgpath = Utils::pathToCacheFile(filename + ".png");
+                        if (!QFileInfo::exists(imgpath))
+                            imgpath = IconProvider::pathToNoResId("icon-somafm");
+                    }
+
                     auto icon = QUrl::fromLocalFile(imgpath);
                     items << new SomafmItem(
                                     id, // id
@@ -269,13 +283,6 @@ QList<ListItem*> SomafmModel::makeItems()
     });
 
     return items;
-}
-
-void SomafmModel::refreshItem(const QString &id)
-{
-    auto item = dynamic_cast<SomafmItem*>(find(id));
-    if (item)
-        item->refresh();
 }
 
 SomafmItem::SomafmItem(const QString &id,
@@ -327,18 +334,4 @@ QVariant SomafmItem::data(int role) const
     default:
         return QVariant();
     }
-}
-
-void SomafmItem::refresh()
-{
-    // ugly hack to refresh icon
-    auto url = m_icon;
-#ifdef SAILFISH
-    m_icon.clear();
-#else
-    m_icon = QIcon();
-#endif
-    emit dataChanged();
-    m_icon = url;
-    emit dataChanged();
 }
