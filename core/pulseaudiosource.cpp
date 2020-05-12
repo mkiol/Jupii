@@ -443,7 +443,8 @@ void PulseAudioSource::correctClientName(Client &client)
 #ifdef SAILFISH
     if (client.name == "CubebUtils" && !client.binary.isEmpty()) {
         client.name = client.binary;
-    } else if (client.name == "aliendalvik_audio_glue") {
+    } else if (client.name == "aliendalvik_audio_glue" ||
+               client.name == "AlienAudioService") {
         client.name = "Android";
     }
 #else
