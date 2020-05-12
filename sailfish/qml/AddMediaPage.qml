@@ -194,7 +194,7 @@ Page {
             }
 
             SimpleListItem {
-                title.text: "Fosdem"
+                title.text: "FOSDEM"
                 icon.source: "image://icons/icon-m-fosdem"
                 onClicked: {
                     pageStack.replace(fosdemPickerPage)

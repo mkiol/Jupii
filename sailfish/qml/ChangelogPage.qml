@@ -29,6 +29,52 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.7.0")
+            }
+
+            LogItem {
+                title: "FOSDEM browser"
+                description: "FOSDEM is a conference centered on free and open-source " +
+                             "software development. It is well known for having excellent video recordings. " +
+                             "You can browse and add video content from FOSDEM conferences via 'Add Items' menu."
+            }
+
+            LogItem {
+                title: "URL resolution with Youtube-dl"
+                description: "If URL doesn't directly point to a media content, " +
+                             "Youtube-dl will be used to find a proper media URL. " +
+                             "Thank to this option, you can add " +
+                             "popular websites items and Jupii will try to extract media content from them. " +
+                             "Some URLs discovered with Youtube-dl have expiration time. " +
+                             "To check and update Youtube-dl URLs on the play queue use " +
+                             "'Refresh items' menu option."
+            }
+
+            LogItem {
+                title: "Bandcamp browser"
+                description: "Bandcamp is a music streaming and music purchasing online service. " +
+                             "You can search and add audio content from Bandcamp using simple browser. " +
+                             "Bandcamp browser uses Youtube-dl to discover media URLs. " +
+                             "New option is available via 'Add Items' menu."
+            }
+
+            LogItem {
+                title: "Recorder for every stream"
+                description: "Recorder is now able to record all kinds of audio streams. " +
+                             "It can be use to save Bandcamp, Icecast, SomaFM " +
+                             "and any other audio items added via 'Add Items -> URL' menu. " +
+                             "Following audio streams are supported: mp3, mp4, ogg, aiff, wav."
+            }
+
+            LogItem {
+                title: "Fix for Audio capture"
+                description: "On the recent SFOS version Audio capture worked very poorly. " +
+                             "Hopefully this issue is now fixed and Audio capture can be use to " +
+                             "send audio output of any application to remote DLNA " +
+                             "device without any problems."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.6.2")
             }
 

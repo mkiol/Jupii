@@ -47,35 +47,35 @@ Page {
         model: ListModel {
             id: conferencesModel
             ListElement {
-                title: "Fosdem 2020"
+                title: "FOSDEM 2020"
                 year: 2020
             }
             ListElement {
-                title: "Fosdem 2019"
+                title: "FOSDEM 2019"
                 year: 2019
             }
             ListElement {
-                title: "Fosdem 2018"
+                title: "FOSDEM 2018"
                 year: 2018
             }
             ListElement {
-                title: "Fosdem 2017"
+                title: "FOSDEM 2017"
                 year: 2017
             }
             ListElement {
-                title: "Fosdem 2016"
+                title: "FOSDEM 2016"
                 year: 2016
             }
             ListElement {
-                title: "Fosdem 2015"
+                title: "FOSDEM 2015"
                 year: 2015
             }
             ListElement {
-                title: "Fosdem 2014"
+                title: "FOSDEM 2014"
                 year: 2014
             }
             ListElement {
-                title: "Fosdem 2013"
+                title: "FOSDEM 2013"
                 year: 2013
             }
         }
