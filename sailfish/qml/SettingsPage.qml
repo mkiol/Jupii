@@ -132,7 +132,8 @@ Page {
                 visible:  settings.remoteContentMode == 0
                 checked: settings.rec
                 text: qsTr("Stream recorder")
-                description: qsTr("Enables recording of tracks from Icecast streams. " +
+                description: qsTr("Enables audio recording from URL items. " +
+                                  "If URL item is a Icecast stream, individual tracks from a stream will be recorded. " +
                                   "To enable recording use 'Record' button located on the bottom bar. " +
                                   "When the 'Record' button is activated before " +
                                   "the end of currently played track, the whole track is saved to a file.")

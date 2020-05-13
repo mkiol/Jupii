@@ -154,7 +154,7 @@ Page {
                         case ContentServer.ItemType_Url:
                             return isShout ? qsTr("Icecast URL") : qsTr("URL")
                         case ContentServer.ItemType_Upnp:
-                            return qsTr("UPnP Media Server")
+                            return qsTr("Media Server")
                         case ContentServer.ItemType_ScreenCapture:
                             return qsTr("Screen Capture")
                         case ContentServer.ItemType_AudioCapture:

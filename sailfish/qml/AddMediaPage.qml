@@ -129,7 +129,7 @@ Page {
             }
 
             SimpleListItem {
-                title.text: qsTr("UPnP Media Server")
+                title.text: qsTr("Media Server")
                 icon.source: "image://icons/icon-m-device?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {

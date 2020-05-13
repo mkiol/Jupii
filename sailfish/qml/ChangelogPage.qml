@@ -25,7 +25,7 @@ Page {
             spacing: Theme.paddingMedium
 
             PageHeader {
-                title: qsTr("Changelog")
+                title: qsTr("Changes")
             }
 
             SectionHeader {
@@ -44,34 +44,32 @@ Page {
                 description: "If URL doesn't directly point to a media content, " +
                              "Youtube-dl will be used to find a proper media URL. " +
                              "Thank to this option, you can add " +
-                             "popular websites items and Jupii will try to extract media content from them. " +
+                             "URLs to popular websites and Jupii will try to extract media content from them. " +
                              "Some URLs discovered with Youtube-dl have expiration time. " +
-                             "To check and update Youtube-dl URLs on the play queue use " +
+                             "To check and update Youtube-dl URLs that are in the play queue use " +
                              "'Refresh items' menu option."
             }
 
             LogItem {
                 title: "Bandcamp browser"
-                description: "Bandcamp is a music streaming and music purchasing online service. " +
+                description: "Bandcamp is a music streaming online service. " +
                              "You can search and add audio content from Bandcamp using simple browser. " +
                              "Bandcamp browser uses Youtube-dl to discover media URLs. " +
                              "New option is available via 'Add Items' menu."
             }
 
             LogItem {
-                title: "Recorder for every stream"
+                title: "Stream recorder enhancement (Experiment)"
                 description: "Recorder is now able to record all kinds of audio streams. " +
-                             "It can be use to save Bandcamp, Icecast, SomaFM " +
-                             "and any other audio items added via 'Add Items -> URL' menu. " +
-                             "Following audio streams are supported: mp3, mp4, ogg, aiff, wav."
+                             "It can be use to save audio file from any URL item. " +
+                             "Following audio formats are supported: mp3, mp4, ogg, aiff, wav."
             }
 
             LogItem {
                 title: "Fix for Audio capture"
-                description: "On the recent SFOS version Audio capture worked very poorly. " +
-                             "Hopefully this issue is now fixed and Audio capture can be use to " +
-                             "send audio output of any application to remote DLNA " +
-                             "device without any problems."
+                description: "In the recent SFOS version Audio capture worked very poorly. " +
+                             "Hopefully this issue is now resolved and Audio capture can be used to " +
+                             "stream audio playback of any application without a problem."
             }
 
             SectionHeader {
