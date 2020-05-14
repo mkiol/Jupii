@@ -495,6 +495,19 @@ int Settings::getScreenFramerate()
 #endif
 }
 
+void Settings::setScreenQuality(int value)
+{
+    if (getScreenQuality() != value) {
+        settings.setValue("screenquality", value);
+        emit screenQualityChanged();
+    }
+}
+
+int Settings::getScreenQuality()
+{
+    return settings.value("screenquality", 3).toInt();
+}
+
 void Settings::setUseHWVolume(bool value)
 {
 #ifdef SAILFISH
@@ -665,19 +678,6 @@ void Settings::setContentDirSupported(bool value)
 bool Settings::getContentDirSupported()
 {
     return settings.value("contentdirsupported", true).toBool();
-}
-
-void Settings::setSkipFrames(int value)
-{
-    if (getSkipFrames() != value) {
-        settings.setValue("skipframes", value);
-        emit skipFramesChanged();
-    }
-}
-
-int Settings::getSkipFrames()
-{
-    return settings.value("skipframes", 5).toInt();
 }
 
 void Settings::setColorScheme(int value)

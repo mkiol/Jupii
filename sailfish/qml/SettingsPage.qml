@@ -127,6 +127,22 @@ Page {
                 }
             }
 
+            Slider {
+                visible: settings.screenSupported
+                width: parent.width
+                minimumValue: 1
+                maximumValue: 5
+                stepSize: 1
+                handleVisible: true
+                value: settings.screenQuality
+                valueText: value
+                label: qsTr("Screen capture quality")
+
+                onValueChanged: {
+                    settings.screenQuality = value
+                }
+            }
+
             TextSwitch {
                 automaticCheck: false
                 visible:  settings.remoteContentMode == 0
@@ -244,7 +260,7 @@ Page {
                 }
             }
 
-            ComboBox {
+            /*ComboBox {
                 visible: settings.isDebug() && settings.screenSupported
                 label: "Screen capture framerate"
                 currentIndex: {
@@ -275,22 +291,7 @@ Page {
                     }
                 }
             }
-
-            Slider {
-                visible: settings.isDebug() && settings.screenSupported
-                width: parent.width
-                minimumValue: 0
-                maximumValue: 10
-                stepSize: 1
-                handleVisible: true
-                value: settings.skipFrames
-                valueText: value
-                label: "Screen capture skip frames count"
-
-                onValueChanged: {
-                    settings.skipFrames = value
-                }
-            }
+            */
 
             TextSwitch {
                 automaticCheck: false

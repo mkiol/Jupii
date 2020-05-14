@@ -38,13 +38,13 @@ class Settings:
     Q_PROPERTY (int screenCropTo169 READ getScreenCropTo169 WRITE setScreenCropTo169 NOTIFY screenCropTo169Changed)
     Q_PROPERTY (bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY screenAudioChanged)
     Q_PROPERTY (bool screenSupported READ getScreenSupported WRITE setScreenSupported NOTIFY screenSupportedChanged)
+    Q_PROPERTY (int screenQuality READ getScreenQuality WRITE setScreenQuality NOTIFY screenQualityChanged)
     Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY (int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType NOTIFY albumQueryTypeChanged)
     Q_PROPERTY (int albumRecQueryType READ getRecQueryType WRITE setRecQueryType NOTIFY recQueryTypeChanged)
     Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
     Q_PROPERTY (bool contentDirSupported READ getContentDirSupported WRITE setContentDirSupported NOTIFY contentDirSupportedChanged)
     Q_PROPERTY (bool logToFile READ getLogToFile WRITE setLogToFile NOTIFY logToFileChanged)
-    Q_PROPERTY (int skipFrames READ getSkipFrames WRITE setSkipFrames NOTIFY skipFramesChanged)
     Q_PROPERTY (int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY colorSchemeChanged)
 public:
 #ifdef SAILFISH
@@ -72,6 +72,9 @@ public:
 
     void setScreenFramerate(int value);
     int getScreenFramerate();
+
+    void setScreenQuality(int value);
+    int getScreenQuality();
 
     void setScreenCropTo169(int value);
     int getScreenCropTo169();
@@ -135,9 +138,6 @@ public:
     void setContentDirSupported(bool value);
     bool getContentDirSupported();
 
-    void setSkipFrames(int value);
-    int getSkipFrames();
-
     void setColorScheme(int value);
     int getColorScheme();
 
@@ -165,6 +165,7 @@ signals:
     void screenCropTo169Changed();
     void screenAudioChanged();
     void screenSupportedChanged();
+    void screenQualityChanged();
     void remoteContentModeChanged();
     void albumQueryTypeChanged();
     void recQueryTypeChanged();
@@ -172,7 +173,6 @@ signals:
     void playModeChanged();
     void contentDirSupportedChanged();
     void logToFileChanged();
-    void skipFramesChanged();
     void colorSchemeChanged();
 
 private:

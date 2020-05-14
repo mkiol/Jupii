@@ -145,6 +145,13 @@ void ScreenCaster::initVideoSize()
             video_size.setWidth(w);
         }
     }
+
+    if (res_div > 1) {
+        video_size.setHeight(video_size.height() / res_div);
+        video_size.setWidth(video_size.width() / res_div);
+        yoff = yoff / res_div;
+        xoff = xoff / res_div;
+    }
 }
 
 bool ScreenCaster::init()
@@ -160,17 +167,43 @@ bool ScreenCaster::init()
     auto video_framerate = s->getScreenFramerate();
     video_pkt_duration = av_rescale_q(1, AVRational{1, video_framerate}, AVRational{1, 1000000});
 
-    initVideoSize();
-
-    qDebug() << "Stream video_framerate:" << video_framerate;
-    qDebug() << "Stream video_pkt_duration:" << video_pkt_duration;
-    qDebug() << "Stream video_size:" << video_size;
-
     skipped_frames = 0;
-    skipped_frames_max = s->getSkipFrames();
+
+    quality = s->getScreenQuality();
+    if (quality < 2) {
+        res_div = 4;
+        trans_mode = Qt::FastTransformation;
+        skipped_frames_max = 10;
+    } else if (quality < 3) {
+        res_div = 4;
+        trans_mode = Qt::SmoothTransformation;
+        skipped_frames_max = 10;
+    } else if (quality < 4) {
+        res_div = 2;
+        trans_mode = Qt::SmoothTransformation;
+        skipped_frames_max = 10;
+    } else if (quality < 5) {
+        res_div = 1;
+        trans_mode = Qt::SmoothTransformation;
+        skipped_frames_max = 10;
+    } else {
+        res_div = 1;
+        trans_mode = Qt::SmoothTransformation;
+        skipped_frames_max = 5;
+    }
+
     if (s->getScreenAudio())
         skipped_frames_max += 5;
-    qDebug() << "Skip frames:" << skipped_frames_max;
+
+    initVideoSize();
+
+    qDebug() << "Screen quality:" << quality;
+    qDebug() << "Screen video_framerate:" << video_framerate;
+    qDebug() << "Screen video_pkt_duration:" << video_pkt_duration;
+    qDebug() << "Screen video_size:" << video_size;
+    qDebug() << "Screen skip frames:" << skipped_frames_max;
+    qDebug() << "Screen res_div:" << res_div;
+    qDebug() << "Screen trans_mode:" << trans_mode;
 
     AVDictionary* options = nullptr;
 
@@ -801,6 +834,9 @@ QImage ScreenCaster::makeCurrImg()
     QImage img = currImgBuff ? currImgTransform == LIPSTICK_RECORDER_TRANSFORM_Y_INVERTED ?
                 currImgBuff->image.mirrored(false, true) : currImgBuff->image : bgImg;
 
+    if (res_div > 1) {
+        img = img.scaledToHeight(img.height()/res_div, trans_mode);
+    }
 
     // rotation
     auto orientation = QGuiApplication::primaryScreen()->orientation();
@@ -820,7 +856,7 @@ QImage ScreenCaster::makeCurrImg()
         QImage target = bgImg;
         QPainter p(&target);
         p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-        img = img.scaledToHeight(target.height(), Qt::SmoothTransformation);
+        img = img.scaledToHeight(target.height(), trans_mode);
         p.drawImage((target.width()-img.width())/2, 0, img);
         p.end();
         img = target;
@@ -829,7 +865,7 @@ QImage ScreenCaster::makeCurrImg()
             QImage target = bgImg;
             QPainter p(&target);
             p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-            img = img.scaledToWidth(target.width(), Qt::SmoothTransformation);
+            img = img.scaledToWidth(target.width(), trans_mode);
             p.drawImage(0, (target.height()-img.height())/2, img);
             p.end();
             img = target;

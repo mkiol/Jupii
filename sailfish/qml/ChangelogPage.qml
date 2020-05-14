@@ -72,6 +72,22 @@ Page {
                              "stream audio playback of any application without a problem."
             }
 
+            LogItem {
+                title: "Option to set the quality of Screen capture (Experiment)"
+                description: "Due to software-based encoding, Screen capturing " +
+                             "is extremely resource hungry and therefore may provide " +
+                             "very unstable video stream. " +
+                             "New option allows you to change the quality of video to better tune " +
+                             "final user experience."
+            }
+
+            LogItem {
+                title: "Audio capture improvement"
+                description: "In the recent SFOS version Audio capture worked very poorly. " +
+                             "Hopefully this issue is now resolved and Audio capture can be used to " +
+                             "stream audio playback of any application without a problem."
+            }
+
             SectionHeader {
                 text: qsTr("Version %1").arg("2.6.2")
             }
