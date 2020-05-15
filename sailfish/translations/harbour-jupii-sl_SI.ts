@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="sl_SI" sourcelanguage="en_US" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="sl_SI" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -12,32 +14,36 @@
         <translation>Različica %1</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="53"/>
         <source>Changelog</source>
-        <translation>Spremembe</translation>
+        <translation type="vanished">Spremembe</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="59"/>
+        <location filename="../qml/AboutPage.qml" line="48"/>
+        <source>Changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AboutPage.qml" line="54"/>
         <source>Project website</source>
         <translation>Spletna stran projekta</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="65"/>
+        <location filename="../qml/AboutPage.qml" line="60"/>
         <source>Authors</source>
         <translation>Avtorji</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="78"/>
+        <location filename="../qml/AboutPage.qml" line="73"/>
         <source>Translations are provided by:</source>
         <translation>Prevode so prispevali:</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="89"/>
+        <location filename="../qml/AboutPage.qml" line="86"/>
         <source>%1 is developed as an open source project under %2.</source>
         <translation>%1 je razvit kod odprtokodni pojekt, skladen z licenco %2.</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="95"/>
+        <location filename="../qml/AboutPage.qml" line="92"/>
         <source>Libraries</source>
         <translation>Knjižnice</translation>
     </message>
@@ -45,82 +51,86 @@
 <context>
     <name>AddMediaPage</name>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="45"/>
+        <location filename="../qml/AddMediaPage.qml" line="47"/>
         <source>Add item</source>
         <translation>Dodaj element</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="49"/>
+        <location filename="../qml/AddMediaPage.qml" line="51"/>
         <source>Music</source>
         <translation>Glasba</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="58"/>
+        <location filename="../qml/AddMediaPage.qml" line="60"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="67"/>
+        <location filename="../qml/AddMediaPage.qml" line="69"/>
         <source>Artist</source>
         <translation>Izvajalec</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="76"/>
+        <location filename="../qml/AddMediaPage.qml" line="78"/>
         <source>Playlist</source>
         <translation>Seznam predvajanja</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="85"/>
+        <location filename="../qml/AddMediaPage.qml" line="87"/>
         <source>Audio from Video</source>
         <translation>Avdio iz Videa</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="94"/>
+        <location filename="../qml/AddMediaPage.qml" line="96"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="103"/>
+        <location filename="../qml/AddMediaPage.qml" line="105"/>
         <source>Image</source>
         <translation>Slika</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="112"/>
+        <location filename="../qml/AddMediaPage.qml" line="114"/>
         <source>File</source>
         <translation>Datoteka</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="121"/>
+        <location filename="../qml/AddMediaPage.qml" line="123"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="130"/>
-        <source>UPnP Media Server</source>
-        <translation>UPnP medijski server</translation>
+        <location filename="../qml/AddMediaPage.qml" line="132"/>
+        <source>Media Server</source>
+        <translation type="unfinished">Medijski server</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="139"/>
+        <source>UPnP Media Server</source>
+        <translation type="vanished">UPnP medijski server</translation>
+    </message>
+    <message>
+        <location filename="../qml/AddMediaPage.qml" line="141"/>
         <source>Audio capture</source>
         <translation>Zajem zvoka</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="151"/>
+        <location filename="../qml/AddMediaPage.qml" line="153"/>
         <source>Screen capture</source>
         <translation>Zajem zaslona</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="162"/>
+        <location filename="../qml/AddMediaPage.qml" line="164"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="174"/>
+        <location filename="../qml/AddMediaPage.qml" line="176"/>
         <source>Recordings</source>
         <translation>Posnetki</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="183"/>
+        <location filename="../qml/AddMediaPage.qml" line="185"/>
         <source>Apps &amp; services</source>
         <translation>Aplikacije &amp; servisi</translation>
     </message>
@@ -154,8 +164,12 @@
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="73"/>
+        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL. If Name is not provided, it will be discovered automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation>Podprti so le HTTP URL-ji. Če URL kaže na seznam predvajanja (datoteka/playlist), bo dodan prvi element iz seznama. V primeru, da ime ni podatno, se bo samodejno izluščilo iz medatpodatkov pretoka.</translation>
+        <translation type="vanished">Podprti so le HTTP URL-ji. Če URL kaže na seznam predvajanja (datoteka/playlist), bo dodan prvi element iz seznama. V primeru, da ime ni podatno, se bo samodejno izluščilo iz medatpodatkov pretoka.</translation>
     </message>
 </context>
 <context>
@@ -188,7 +202,12 @@
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
+        <translation>
+            <numerusform>%n skladba</numerusform>
+            <numerusform>%n skladbi</numerusform>
+            <numerusform>%n skladbe</numerusform>
+            <numerusform>%n skladb</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="98"/>
@@ -216,7 +235,12 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="80"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
+        <translation>
+            <numerusform>%n skladba</numerusform>
+            <numerusform>%n skladbi</numerusform>
+            <numerusform>%n skladbe</numerusform>
+            <numerusform>%n skladb</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="88"/>
@@ -230,26 +254,53 @@
     </message>
 </context>
 <context>
+    <name>BcPage</name>
+    <message>
+        <location filename="../qml/BcPage.qml" line="44"/>
+        <source>Error in getting data from bandcamp.com</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/BcPage.qml" line="60"/>
+        <source>Search tracks</source>
+        <translation type="unfinished">Išči skladbe</translation>
+    </message>
+    <message>
+        <location filename="../qml/BcPage.qml" line="79"/>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/BcPage.qml" line="80"/>
+        <source>Select all</source>
+        <translation type="unfinished">Izberi vse</translation>
+    </message>
+    <message>
+        <location filename="../qml/BcPage.qml" line="108"/>
+        <source>No tracks</source>
+        <translation type="unfinished">Ni skladb</translation>
+    </message>
+    <message>
+        <source>No items</source>
+        <translation type="obsolete">Ni elementov</translation>
+    </message>
+</context>
+<context>
     <name>ChangelogPage</name>
     <message>
-        <location filename="../qml/ChangelogPage.qml" line="28"/>
         <source>Changelog</source>
-        <translation>Spremembe</translation>
+        <translation type="vanished">Spremembe</translation>
+    </message>
+    <message>
+        <location filename="../qml/ChangelogPage.qml" line="28"/>
+        <source>Changes</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="74"/>
-        <location filename="../qml/ChangelogPage.qml" line="89"/>
-        <location filename="../qml/ChangelogPage.qml" line="104"/>
-        <location filename="../qml/ChangelogPage.qml" line="191"/>
-        <location filename="../qml/ChangelogPage.qml" line="246"/>
-        <location filename="../qml/ChangelogPage.qml" line="317"/>
-        <location filename="../qml/ChangelogPage.qml" line="327"/>
-        <location filename="../qml/ChangelogPage.qml" line="343"/>
-        <location filename="../qml/ChangelogPage.qml" line="358"/>
-        <location filename="../qml/ChangelogPage.qml" line="393"/>
-        <location filename="../qml/ChangelogPage.qml" line="404"/>
-        <location filename="../qml/ChangelogPage.qml" line="450"/>
+        <location filename="../qml/ChangelogPage.qml" line="85"/>
+        <location filename="../qml/ChangelogPage.qml" line="141"/>
+        <location filename="../qml/ChangelogPage.qml" line="228"/>
         <source>Version %1</source>
         <translation>Različica %1</translation>
     </message>
@@ -257,22 +308,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1927"/>
+        <location filename="../../core/contentserver.cpp" line="2045"/>
         <source>Unknown</source>
         <translation>Neznano</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2781"/>
+        <location filename="../../core/contentserver.cpp" line="3067"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2802"/>
+        <location filename="../../core/contentserver.cpp" line="3088"/>
         <source>Audio capture</source>
         <translation>Zajem zvoka</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2822"/>
+        <location filename="../../core/contentserver.cpp" line="3108"/>
         <source>Screen capture</source>
         <translation>Zajem zaslona</translation>
     </message>
@@ -280,9 +331,8 @@
 <context>
     <name>ContentServerWorker</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="290"/>
         <source>Recorded from %1</source>
-        <translation>Posneto iz %1</translation>
+        <translation type="vanished">Posneto iz %1</translation>
     </message>
 </context>
 <context>
@@ -456,6 +506,52 @@
     </message>
 </context>
 <context>
+    <name>FosdemPage</name>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="45"/>
+        <source>Cannot download or parse FOSDEM events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="60"/>
+        <source>Search events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="76"/>
+        <source>Refresh events list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="84"/>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="85"/>
+        <source>Select all</source>
+        <translation type="unfinished">Izberi vse</translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="112"/>
+        <source>No events</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FosdemYearsPage</name>
+    <message>
+        <location filename="../qml/FosdemYearsPage.qml" line="84"/>
+        <source>Conferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemYearsPage.qml" line="105"/>
+        <source>No conferences found</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GpodderEpisodesPage</name>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="57"/>
@@ -514,134 +610,153 @@
 <context>
     <name>MediaInfoPage</name>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="70"/>
+        <location filename="../qml/MediaInfoPage.qml" line="86"/>
         <source>Copy path</source>
         <translation>Kopiraj pot</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="71"/>
+        <location filename="../qml/MediaInfoPage.qml" line="87"/>
         <source>Copy URL</source>
         <translation>Kopiraj URL</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="133"/>
+        <location filename="../qml/MediaInfoPage.qml" line="149"/>
         <source>Item type</source>
         <translation>Tip vsebine</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="137"/>
+        <location filename="../qml/MediaInfoPage.qml" line="153"/>
         <source>Local file</source>
         <translation>Lokalna datoteka</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="139"/>
+        <location filename="../qml/MediaInfoPage.qml" line="155"/>
         <source>Icecast URL</source>
         <translation>Icecast URL</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="143"/>
+        <location filename="../qml/MediaInfoPage.qml" line="159"/>
         <source>Screen Capture</source>
         <translation>Posnetek zaslona</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="145"/>
+        <location filename="../qml/MediaInfoPage.qml" line="161"/>
         <source>Audio Capture</source>
         <translation>Zajem zvoka</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="147"/>
+        <location filename="../qml/MediaInfoPage.qml" line="163"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="155"/>
+        <location filename="../qml/MediaInfoPage.qml" line="171"/>
         <source>Title</source>
         <translation>Naslov</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="155"/>
-        <location filename="../qml/MediaInfoPage.qml" line="178"/>
+        <location filename="../qml/MediaInfoPage.qml" line="171"/>
         <source>Station name</source>
         <translation>Ime postaje</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="170"/>
+        <location filename="../qml/MediaInfoPage.qml" line="186"/>
         <source>None</source>
         <translation>Nič</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="286"/>
+        <location filename="../qml/MediaInfoPage.qml" line="282"/>
+        <source>Recording URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="312"/>
         <source>Sensitivity</source>
         <translation>Občutljivost</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="294"/>
+        <location filename="../qml/MediaInfoPage.qml" line="320"/>
         <source>Tracks history</source>
         <translation>Zgodovina posnetka</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="78"/>
+        <location filename="../qml/MediaInfoPage.qml" line="94"/>
         <source>Copy current title</source>
         <translation>Kopiraj trenutni naslov</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="141"/>
-        <source>UPnP Media Server</source>
-        <translation>UPnP medijski server</translation>
+        <location filename="../qml/MediaInfoPage.qml" line="69"/>
+        <source>Open recording URL in browser</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="166"/>
+        <location filename="../qml/MediaInfoPage.qml" line="75"/>
+        <source>Copy recording URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="81"/>
+        <source>Open URL in browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UPnP Media Server</source>
+        <translation type="vanished">UPnP medijski server</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="182"/>
         <source>Audio source</source>
         <translation>Zvočni vir</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="166"/>
+        <location filename="../qml/MediaInfoPage.qml" line="182"/>
         <source>Current title</source>
         <translation>Trenutni naslov</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="178"/>
+        <location filename="../qml/MediaInfoPage.qml" line="194"/>
         <source>Author</source>
         <translation>Avtor</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="188"/>
+        <location filename="../qml/MediaInfoPage.qml" line="204"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="198"/>
+        <location filename="../qml/MediaInfoPage.qml" line="214"/>
         <source>Duration</source>
         <translation>Trajanje</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="218"/>
+        <location filename="../qml/MediaInfoPage.qml" line="234"/>
         <source>Content type</source>
         <translation>Tip vsebine</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="205"/>
+        <location filename="../qml/MediaInfoPage.qml" line="221"/>
         <source>Recording date</source>
         <translation>Datum snemanja</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="211"/>
+        <location filename="../qml/MediaInfoPage.qml" line="157"/>
+        <location filename="../qml/MediaInfoPage.qml" line="227"/>
         <source>Media Server</source>
         <translation>Medijski server</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="248"/>
+        <location filename="../qml/MediaInfoPage.qml" line="264"/>
         <source>Description</source>
         <translation>Opis</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="266"/>
+        <location filename="../qml/MediaInfoPage.qml" line="292"/>
         <source>Path</source>
         <translation>Pot</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="139"/>
-        <location filename="../qml/MediaInfoPage.qml" line="266"/>
+        <location filename="../qml/MediaInfoPage.qml" line="155"/>
+        <location filename="../qml/MediaInfoPage.qml" line="292"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
@@ -649,87 +764,118 @@
 <context>
     <name>PlayQueuePage</name>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="324"/>
+        <location filename="../qml/PlayQueuePage.qml" line="312"/>
         <source>Item is already added</source>
         <translation>Element je že dodan</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="326"/>
+        <location filename="../qml/PlayQueuePage.qml" line="314"/>
         <source>Item cannot be added</source>
         <translation>Elementa ni možno dodati</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="328"/>
+        <location filename="../qml/PlayQueuePage.qml" line="316"/>
         <source>Some items cannot be added</source>
         <translation>Nekaterih elementov ni možno dodati</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="330"/>
+        <location filename="../qml/PlayQueuePage.qml" line="318"/>
         <source>Items cannot be added</source>
         <translation>Elementov ni možno dodati</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="332"/>
+        <location filename="../qml/PlayQueuePage.qml" line="320"/>
         <source>Unknown error</source>
         <translation>Neznana napaka</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="354"/>
+        <location filename="../qml/PlayQueuePage.qml" line="339"/>
         <source>Play queue</source>
         <translation>Seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
+        <source>Refresh items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="398"/>
         <source>Save queue</source>
         <translation>Shrani seznam predvajanja</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="424"/>
+        <location filename="../qml/PlayQueuePage.qml" line="408"/>
         <source>Clear queue</source>
         <translation>Počisti seznam predvajanja</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="426"/>
+        <location filename="../qml/PlayQueuePage.qml" line="410"/>
         <source>Clearing play queue</source>
         <translation>Čiščenje seznama predvajanja</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="430"/>
+        <location filename="../qml/PlayQueuePage.qml" line="414"/>
+        <location filename="../qml/PlayQueuePage.qml" line="425"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="425"/>
         <source>Add items</source>
         <translation>Dodaj elemente</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="565"/>
+        <location filename="../qml/PlayQueuePage.qml" line="582"/>
         <source>Pull down to add new items</source>
         <translation>Za dodajanje novih elementov potegni navzdol</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="518"/>
+        <location filename="../qml/PlayQueuePage.qml" line="532"/>
         <source>Show</source>
         <translation>Prikaži</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="518"/>
+        <location filename="../qml/PlayQueuePage.qml" line="457"/>
+        <source>Refreshing item %1 of %2...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="458"/>
+        <source>Refreshing item...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="460"/>
+        <source>Adding item %1 of %2...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="461"/>
+        <source>Adding item...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="532"/>
         <source>Play</source>
         <translation>Predvajaj</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="532"/>
+        <location filename="../qml/PlayQueuePage.qml" line="547"/>
         <source>Pause</source>
         <translation>Pavza</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="541"/>
+        <location filename="../qml/PlayQueuePage.qml" line="557"/>
         <source>Remove</source>
         <translation>Odstrani</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="564"/>
+        <location filename="../qml/PlayQueuePage.qml" line="581"/>
         <source>No items</source>
         <translation>Ni elementov</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="582"/>
+        <location filename="../qml/PlayQueuePage.qml" line="599"/>
         <source>Unknown</source>
         <translation>Neznano</translation>
     </message>
@@ -737,7 +883,7 @@
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../../core/playlistmodel.cpp" line="534"/>
+        <location filename="../../core/playlistmodel.cpp" line="655"/>
         <source>Playlist</source>
         <translation>Seznam predvajanja</translation>
     </message>
@@ -757,7 +903,12 @@
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="83"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
+        <translation>
+            <numerusform>%n skladba</numerusform>
+            <numerusform>%n skladbi</numerusform>
+            <numerusform>%n skladbe</numerusform>
+            <numerusform>%n skladb</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="91"/>
@@ -783,8 +934,8 @@
 <context>
     <name>RecModel</name>
     <message>
-        <location filename="../../core/recmodel.cpp" line="82"/>
         <location filename="../../core/recmodel.cpp" line="84"/>
+        <location filename="../../core/recmodel.cpp" line="86"/>
         <source>Unknown</source>
         <translation>Neznano</translation>
     </message>
@@ -804,7 +955,12 @@
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="76"/>
         <source>Deleting %n item(s)</source>
-        <translation><numerusform>Brisanje izbrane</numerusform><numerusform>Brisanje izbranih</numerusform><numerusform>Brisanje izbranih</numerusform><numerusform>Brisanje izbranih</numerusform></translation>
+        <translation>
+            <numerusform>Brisanje izbrane</numerusform>
+            <numerusform>Brisanje izbranih</numerusform>
+            <numerusform>Brisanje izbranih</numerusform>
+            <numerusform>Brisanje izbranih</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="85"/>
@@ -827,9 +983,8 @@
         <translation>Čas snamanja</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="98"/>
         <source>Station name</source>
-        <translation>Ime postaje</translation>
+        <translation type="vanished">Ime postaje</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="98"/>
@@ -837,7 +992,12 @@
         <translation>Naslov</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="134"/>
+        <location filename="../qml/RecPage.qml" line="98"/>
+        <source>Author</source>
+        <translation type="unfinished">Avtor</translation>
+    </message>
+    <message>
+        <location filename="../qml/RecPage.qml" line="135"/>
         <source>No recordings</source>
         <translation>Ni posnetkov</translation>
     </message>
@@ -883,7 +1043,12 @@
     <message numerus="yes">
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation><numerusform>%n izbran</numerusform><numerusform>%n izbrana</numerusform><numerusform>%n izbrani</numerusform><numerusform>%n izbranih</numerusform></translation>
+        <translation>
+            <numerusform>%n izbran</numerusform>
+            <numerusform>%n izbrana</numerusform>
+            <numerusform>%n izbrani</numerusform>
+            <numerusform>%n izbranih</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="50"/>
@@ -969,77 +1134,86 @@
         <translation>Obreži</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="134"/>
+        <location filename="../qml/SettingsPage.qml" line="139"/>
+        <source>Screen capture quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="150"/>
         <source>Stream recorder</source>
         <translation>Snemalnik pretoka</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="135"/>
         <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation>Omogoči snemanje posnetkov iz Icecast pretoka. Za omogočanje snemanje uporabite gumb &apos;Snemaj&apos; na spodnji pasici. Gumb pritisnite kadarkoli pred koncem trenutno predvajanega posnetka in celoten posnetek se bo shranil v datoteko.</translation>
+        <translation type="vanished">Omogoči snemanje posnetkov iz Icecast pretoka. Za omogočanje snemanje uporabite gumb &apos;Snemaj&apos; na spodnji pasici. Gumb pritisnite kadarkoli pred koncem trenutno predvajanega posnetka in celoten posnetek se bo shranil v datoteko.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="159"/>
+        <location filename="../qml/SettingsPage.qml" line="176"/>
         <source>Directory for recordings</source>
         <translation>Mapa za posnetke</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="172"/>
+        <location filename="../qml/SettingsPage.qml" line="189"/>
         <source>Change</source>
         <translation>Spremeni</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="181"/>
+        <location filename="../qml/SettingsPage.qml" line="198"/>
         <source>Set default</source>
         <translation>Nastavi privzeto</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="194"/>
+        <location filename="../qml/SettingsPage.qml" line="211"/>
         <source>Stream relaying</source>
         <translation>Posredovanje pretoka</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="195"/>
+        <location filename="../qml/SettingsPage.qml" line="212"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation>Internetni pretoki so posredovani UPnP naprvi preko %1. Priporočena nastavitev je &apos;Vedno&apos;, ker nudi najboljšo združljivost. Kadar je posredovanje onemogočeno (možnost &apos;Nikoli&apos;), Icecast naslovi in Snemalnik pretoka nista na voljo.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="217"/>
+        <location filename="../qml/SettingsPage.qml" line="234"/>
         <source>Always</source>
         <translation>Vedno</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="218"/>
+        <location filename="../qml/SettingsPage.qml" line="235"/>
         <source>Only Icecast</source>
         <translation>Samo Icecast</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="219"/>
+        <location filename="../qml/SettingsPage.qml" line="236"/>
         <source>Never</source>
         <translation>Nikoli</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="235"/>
+        <location filename="../qml/SettingsPage.qml" line="252"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>Prikazane so vse UPnP naprave vključno z uradno nepodprtimi, kot so domači usmerjevalniki in serverji. Za nepodprte naprave so prikazane le najbolj osnovne informacije. Ta možnost je dobrodošla za primer, ko želite videti vse UPnP naprave v domačem omrežju.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="234"/>
+        <location filename="../qml/SettingsPage.qml" line="251"/>
         <source>All devices visible</source>
         <translation>Vse naprave so vidne</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="190"/>
+        <location filename="../qml/SettingsPage.qml" line="151"/>
+        <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="207"/>
         <source>Advanced options</source>
         <translation>Napredne možnosti</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="298"/>
+        <location filename="../qml/SettingsPage.qml" line="300"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Potrebno za odpravljanje težav. Vsebina je shranjena v datoteki %1.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="297"/>
+        <location filename="../qml/SettingsPage.qml" line="299"/>
         <source>Enable logging</source>
         <translation>Omogoči beleženje</translation>
     </message>
@@ -1217,12 +1391,12 @@
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../../core/utils.cpp" line="417"/>
+        <location filename="../../core/utils.cpp" line="468"/>
         <source>Today</source>
         <translation>Danes</translation>
     </message>
     <message>
-        <location filename="../../core/utils.cpp" line="419"/>
+        <location filename="../../core/utils.cpp" line="470"/>
         <source>Yesterday</source>
         <translation>Včeraj</translation>
     </message>
@@ -1235,14 +1409,29 @@
         <translation>Posnetek &quot;%1&quot; je shranjen</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="60"/>
+        <location filename="../qml/main.qml" line="65"/>
         <source>Cannot connect to a local network</source>
         <translation>Ne morem se povezati v lokalno omrežje</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="63"/>
+        <location filename="../qml/main.qml" line="68"/>
         <source>An internal error occurred</source>
         <translation>Prišlo je do notranje napake</translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="85"/>
+        <source>Cannot download youtube-dl</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="88"/>
+        <source>Cannot update youtube-dl</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="91"/>
+        <source>Cannot find URL with youtube-dl</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

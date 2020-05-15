@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="de" sourcelanguage="en_US" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="de" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -12,32 +14,36 @@
         <translation>Version %1</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="53"/>
         <source>Changelog</source>
-        <translation>Änderungsprotokoll</translation>
+        <translation type="vanished">Änderungsprotokoll</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="59"/>
+        <location filename="../qml/AboutPage.qml" line="48"/>
+        <source>Changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/AboutPage.qml" line="54"/>
         <source>Project website</source>
         <translation>Webseite</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="65"/>
+        <location filename="../qml/AboutPage.qml" line="60"/>
         <source>Authors</source>
         <translation>Autoren</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="78"/>
+        <location filename="../qml/AboutPage.qml" line="73"/>
         <source>Translations are provided by:</source>
         <translation>Übersetzer</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="89"/>
+        <location filename="../qml/AboutPage.qml" line="86"/>
         <source>%1 is developed as an open source project under %2.</source>
         <translation>%1 ist als ein Open-Source Projekt unter den Bestimmungen der %2 entwickelt.</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPage.qml" line="95"/>
+        <location filename="../qml/AboutPage.qml" line="92"/>
         <source>Libraries</source>
         <translation>Bibliotheken</translation>
     </message>
@@ -45,82 +51,86 @@
 <context>
     <name>AddMediaPage</name>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="45"/>
+        <location filename="../qml/AddMediaPage.qml" line="47"/>
         <source>Add item</source>
         <translation>Element hinzufügen</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="49"/>
+        <location filename="../qml/AddMediaPage.qml" line="51"/>
         <source>Music</source>
         <translation>Musik</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="58"/>
+        <location filename="../qml/AddMediaPage.qml" line="60"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="67"/>
+        <location filename="../qml/AddMediaPage.qml" line="69"/>
         <source>Artist</source>
         <translation>Künstler</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="76"/>
+        <location filename="../qml/AddMediaPage.qml" line="78"/>
         <source>Playlist</source>
         <translation>Wiedergabeliste</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="85"/>
+        <location filename="../qml/AddMediaPage.qml" line="87"/>
         <source>Audio from Video</source>
         <translation>Tonspur aus Videos</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="94"/>
+        <location filename="../qml/AddMediaPage.qml" line="96"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="103"/>
+        <location filename="../qml/AddMediaPage.qml" line="105"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="112"/>
+        <location filename="../qml/AddMediaPage.qml" line="114"/>
         <source>File</source>
         <translation>Datei</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="121"/>
+        <location filename="../qml/AddMediaPage.qml" line="123"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="130"/>
-        <source>UPnP Media Server</source>
-        <translation>UPnP Medien-Server</translation>
+        <location filename="../qml/AddMediaPage.qml" line="132"/>
+        <source>Media Server</source>
+        <translation type="unfinished">Medien-Server</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="139"/>
+        <source>UPnP Media Server</source>
+        <translation type="vanished">UPnP Medien-Server</translation>
+    </message>
+    <message>
+        <location filename="../qml/AddMediaPage.qml" line="141"/>
         <source>Audio capture</source>
         <translation>Tonübertragung</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="151"/>
+        <location filename="../qml/AddMediaPage.qml" line="153"/>
         <source>Screen capture</source>
         <translation>Bildschirmaufnahme</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="162"/>
+        <location filename="../qml/AddMediaPage.qml" line="164"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="174"/>
+        <location filename="../qml/AddMediaPage.qml" line="176"/>
         <source>Recordings</source>
         <translation>Aufnahmen</translation>
     </message>
     <message>
-        <location filename="../qml/AddMediaPage.qml" line="183"/>
+        <location filename="../qml/AddMediaPage.qml" line="185"/>
         <source>Apps &amp; services</source>
         <translation>Apps &amp; Dienste</translation>
     </message>
@@ -154,8 +164,12 @@
     </message>
     <message>
         <location filename="../qml/AddUrlPage.qml" line="73"/>
+        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL. If Name is not provided, it will be discovered automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation>Nur HTTP-URLs werden unterstützt. Wenn URL zu einer Playliste zeigt, wird der erste Listeneintrag hinzugefügt. Wenn kein Name gesetzt wird, wird er automatisch aus den Metadaten des Streams erzeugt.</translation>
+        <translation type="vanished">Nur HTTP-URLs werden unterstützt. Wenn URL zu einer Playliste zeigt, wird der erste Listeneintrag hinzugefügt. Wenn kein Name gesetzt wird, wird er automatisch aus den Metadaten des Streams erzeugt.</translation>
     </message>
 </context>
 <context>
@@ -188,7 +202,10 @@
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n Titel</numerusform><numerusform>%n Titel</numerusform></translation>
+        <translation>
+            <numerusform>%n Titel</numerusform>
+            <numerusform>%n Titel</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="98"/>
@@ -216,7 +233,10 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="80"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n Titel</numerusform><numerusform>%n Titel</numerusform></translation>
+        <translation>
+            <numerusform>%n Titel</numerusform>
+            <numerusform>%n Titel</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="88"/>
@@ -230,26 +250,53 @@
     </message>
 </context>
 <context>
+    <name>BcPage</name>
+    <message>
+        <location filename="../qml/BcPage.qml" line="44"/>
+        <source>Error in getting data from bandcamp.com</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/BcPage.qml" line="60"/>
+        <source>Search tracks</source>
+        <translation type="unfinished">Suche Titel</translation>
+    </message>
+    <message>
+        <location filename="../qml/BcPage.qml" line="79"/>
+        <source>Unselect all</source>
+        <translation type="unfinished">Alle abwählen</translation>
+    </message>
+    <message>
+        <location filename="../qml/BcPage.qml" line="80"/>
+        <source>Select all</source>
+        <translation type="unfinished">Alle wählen</translation>
+    </message>
+    <message>
+        <location filename="../qml/BcPage.qml" line="108"/>
+        <source>No tracks</source>
+        <translation type="unfinished">Keine Titel</translation>
+    </message>
+    <message>
+        <source>No items</source>
+        <translation type="obsolete">Keine Titel</translation>
+    </message>
+</context>
+<context>
     <name>ChangelogPage</name>
     <message>
-        <location filename="../qml/ChangelogPage.qml" line="28"/>
         <source>Changelog</source>
-        <translation>Änderungsprotokoll</translation>
+        <translation type="vanished">Änderungsprotokoll</translation>
+    </message>
+    <message>
+        <location filename="../qml/ChangelogPage.qml" line="28"/>
+        <source>Changes</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
-        <location filename="../qml/ChangelogPage.qml" line="74"/>
-        <location filename="../qml/ChangelogPage.qml" line="89"/>
-        <location filename="../qml/ChangelogPage.qml" line="104"/>
-        <location filename="../qml/ChangelogPage.qml" line="191"/>
-        <location filename="../qml/ChangelogPage.qml" line="246"/>
-        <location filename="../qml/ChangelogPage.qml" line="317"/>
-        <location filename="../qml/ChangelogPage.qml" line="327"/>
-        <location filename="../qml/ChangelogPage.qml" line="343"/>
-        <location filename="../qml/ChangelogPage.qml" line="358"/>
-        <location filename="../qml/ChangelogPage.qml" line="393"/>
-        <location filename="../qml/ChangelogPage.qml" line="404"/>
-        <location filename="../qml/ChangelogPage.qml" line="450"/>
+        <location filename="../qml/ChangelogPage.qml" line="85"/>
+        <location filename="../qml/ChangelogPage.qml" line="141"/>
+        <location filename="../qml/ChangelogPage.qml" line="228"/>
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
@@ -257,22 +304,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="1927"/>
+        <location filename="../../core/contentserver.cpp" line="2045"/>
         <source>Unknown</source>
         <translation>Unbekannt</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2781"/>
+        <location filename="../../core/contentserver.cpp" line="3067"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2802"/>
+        <location filename="../../core/contentserver.cpp" line="3088"/>
         <source>Audio capture</source>
         <translation>Tonübertragung</translation>
     </message>
     <message>
-        <location filename="../../core/contentserver.cpp" line="2822"/>
+        <location filename="../../core/contentserver.cpp" line="3108"/>
         <source>Screen capture</source>
         <translation>Bildschirmaufnahme</translation>
     </message>
@@ -280,9 +327,8 @@
 <context>
     <name>ContentServerWorker</name>
     <message>
-        <location filename="../../core/contentserver.cpp" line="290"/>
         <source>Recorded from %1</source>
-        <translation>Aufgenomme mit %1</translation>
+        <translation type="vanished">Aufgenomme mit %1</translation>
     </message>
 </context>
 <context>
@@ -456,6 +502,52 @@
     </message>
 </context>
 <context>
+    <name>FosdemPage</name>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="45"/>
+        <source>Cannot download or parse FOSDEM events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="60"/>
+        <source>Search events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="76"/>
+        <source>Refresh events list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="84"/>
+        <source>Unselect all</source>
+        <translation type="unfinished">Alle abwählen</translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="85"/>
+        <source>Select all</source>
+        <translation type="unfinished">Alle wählen</translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemPage.qml" line="112"/>
+        <source>No events</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FosdemYearsPage</name>
+    <message>
+        <location filename="../qml/FosdemYearsPage.qml" line="84"/>
+        <source>Conferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/FosdemYearsPage.qml" line="105"/>
+        <source>No conferences found</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GpodderEpisodesPage</name>
     <message>
         <location filename="../qml/GpodderEpisodesPage.qml" line="57"/>
@@ -514,134 +606,153 @@
 <context>
     <name>MediaInfoPage</name>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="70"/>
+        <location filename="../qml/MediaInfoPage.qml" line="86"/>
         <source>Copy path</source>
         <translation>Pfad kopieren</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="71"/>
+        <location filename="../qml/MediaInfoPage.qml" line="87"/>
         <source>Copy URL</source>
         <translation>URL kopieren</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="133"/>
+        <location filename="../qml/MediaInfoPage.qml" line="149"/>
         <source>Item type</source>
         <translation>Elementtyp</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="137"/>
+        <location filename="../qml/MediaInfoPage.qml" line="153"/>
         <source>Local file</source>
         <translation>Lokale Datei</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="139"/>
+        <location filename="../qml/MediaInfoPage.qml" line="155"/>
         <source>Icecast URL</source>
         <translation>Icecast URL</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="143"/>
+        <location filename="../qml/MediaInfoPage.qml" line="159"/>
         <source>Screen Capture</source>
         <translation>Bildschirmaufnahme</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="145"/>
+        <location filename="../qml/MediaInfoPage.qml" line="161"/>
         <source>Audio Capture</source>
         <translation>Tonübertragung</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="147"/>
+        <location filename="../qml/MediaInfoPage.qml" line="163"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="155"/>
+        <location filename="../qml/MediaInfoPage.qml" line="171"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="155"/>
-        <location filename="../qml/MediaInfoPage.qml" line="178"/>
+        <location filename="../qml/MediaInfoPage.qml" line="171"/>
         <source>Station name</source>
         <translation>Sendername</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="170"/>
+        <location filename="../qml/MediaInfoPage.qml" line="186"/>
         <source>None</source>
         <translation>Keiner</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="286"/>
+        <location filename="../qml/MediaInfoPage.qml" line="282"/>
+        <source>Recording URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="312"/>
         <source>Sensitivity</source>
         <translation>Empfindlichkeit</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="294"/>
+        <location filename="../qml/MediaInfoPage.qml" line="320"/>
         <source>Tracks history</source>
         <translation>Wiedergabeverlauf</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="78"/>
+        <location filename="../qml/MediaInfoPage.qml" line="94"/>
         <source>Copy current title</source>
         <translation>Aktuellen Titel kopieren</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="141"/>
-        <source>UPnP Media Server</source>
-        <translation>UPnP Medien-Server</translation>
+        <location filename="../qml/MediaInfoPage.qml" line="69"/>
+        <source>Open recording URL in browser</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="166"/>
+        <location filename="../qml/MediaInfoPage.qml" line="75"/>
+        <source>Copy recording URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="81"/>
+        <source>Open URL in browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UPnP Media Server</source>
+        <translation type="vanished">UPnP Medien-Server</translation>
+    </message>
+    <message>
+        <location filename="../qml/MediaInfoPage.qml" line="182"/>
         <source>Audio source</source>
         <translation>Audioquelle</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="166"/>
+        <location filename="../qml/MediaInfoPage.qml" line="182"/>
         <source>Current title</source>
         <translation>Aktueller Titel</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="178"/>
+        <location filename="../qml/MediaInfoPage.qml" line="194"/>
         <source>Author</source>
         <translation>Autor</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="188"/>
+        <location filename="../qml/MediaInfoPage.qml" line="204"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="198"/>
+        <location filename="../qml/MediaInfoPage.qml" line="214"/>
         <source>Duration</source>
         <translation>Dauer</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="218"/>
+        <location filename="../qml/MediaInfoPage.qml" line="234"/>
         <source>Content type</source>
         <translation>Inhaltstyp</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="205"/>
+        <location filename="../qml/MediaInfoPage.qml" line="221"/>
         <source>Recording date</source>
         <translation>Aufnahmedatum</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="211"/>
+        <location filename="../qml/MediaInfoPage.qml" line="157"/>
+        <location filename="../qml/MediaInfoPage.qml" line="227"/>
         <source>Media Server</source>
         <translation>Medien-Server</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="248"/>
+        <location filename="../qml/MediaInfoPage.qml" line="264"/>
         <source>Description</source>
         <translation>Beschreibung</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="266"/>
+        <location filename="../qml/MediaInfoPage.qml" line="292"/>
         <source>Path</source>
         <translation>Pfad</translation>
     </message>
     <message>
-        <location filename="../qml/MediaInfoPage.qml" line="139"/>
-        <location filename="../qml/MediaInfoPage.qml" line="266"/>
+        <location filename="../qml/MediaInfoPage.qml" line="155"/>
+        <location filename="../qml/MediaInfoPage.qml" line="292"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
@@ -649,87 +760,118 @@
 <context>
     <name>PlayQueuePage</name>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="324"/>
+        <location filename="../qml/PlayQueuePage.qml" line="312"/>
         <source>Item is already added</source>
         <translation>Titel ist schon hinzugefügt</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="326"/>
+        <location filename="../qml/PlayQueuePage.qml" line="314"/>
         <source>Item cannot be added</source>
         <translation>Titel kann nicht hinzugefügt werden</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="328"/>
+        <location filename="../qml/PlayQueuePage.qml" line="316"/>
         <source>Some items cannot be added</source>
         <translation>Manche Titel können nicht hinzugefügt werden</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="330"/>
+        <location filename="../qml/PlayQueuePage.qml" line="318"/>
         <source>Items cannot be added</source>
         <translation>Titel kann nicht hinzugefügt werden</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="332"/>
+        <location filename="../qml/PlayQueuePage.qml" line="320"/>
         <source>Unknown error</source>
         <translation>Unbekannter Fehler</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="354"/>
+        <location filename="../qml/PlayQueuePage.qml" line="339"/>
         <source>Play queue</source>
         <translation>Warteschlange</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
+        <source>Refresh items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="398"/>
         <source>Save queue</source>
         <translation>Warteschlange Speichere</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="424"/>
+        <location filename="../qml/PlayQueuePage.qml" line="408"/>
         <source>Clear queue</source>
         <translation>Warteschlange leeren</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="426"/>
+        <location filename="../qml/PlayQueuePage.qml" line="410"/>
         <source>Clearing play queue</source>
         <translation>Warteschlange wird geleert</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="430"/>
+        <location filename="../qml/PlayQueuePage.qml" line="414"/>
+        <location filename="../qml/PlayQueuePage.qml" line="425"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="425"/>
         <source>Add items</source>
         <translation>Titel hinzufügen</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="565"/>
+        <location filename="../qml/PlayQueuePage.qml" line="582"/>
         <source>Pull down to add new items</source>
         <translation>Herunterziehen, um neue Titel hinzuzufügen</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="518"/>
+        <location filename="../qml/PlayQueuePage.qml" line="532"/>
         <source>Show</source>
         <translation>Zeige</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="518"/>
+        <location filename="../qml/PlayQueuePage.qml" line="457"/>
+        <source>Refreshing item %1 of %2...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="458"/>
+        <source>Refreshing item...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="460"/>
+        <source>Adding item %1 of %2...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="461"/>
+        <source>Adding item...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/PlayQueuePage.qml" line="532"/>
         <source>Play</source>
         <translation>Abspielen</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="532"/>
+        <location filename="../qml/PlayQueuePage.qml" line="547"/>
         <source>Pause</source>
         <translation>Pausieren</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="541"/>
+        <location filename="../qml/PlayQueuePage.qml" line="557"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="564"/>
+        <location filename="../qml/PlayQueuePage.qml" line="581"/>
         <source>No items</source>
         <translation>Keine Titel</translation>
     </message>
     <message>
-        <location filename="../qml/PlayQueuePage.qml" line="582"/>
+        <location filename="../qml/PlayQueuePage.qml" line="599"/>
         <source>Unknown</source>
         <translation>Unbekannt</translation>
     </message>
@@ -737,7 +879,7 @@
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../../core/playlistmodel.cpp" line="534"/>
+        <location filename="../../core/playlistmodel.cpp" line="655"/>
         <source>Playlist</source>
         <translation>Wiedergabeliste</translation>
     </message>
@@ -757,7 +899,10 @@
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="83"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n Titel</numerusform><numerusform>%n Titel</numerusform></translation>
+        <translation>
+            <numerusform>%n Titel</numerusform>
+            <numerusform>%n Titel</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="91"/>
@@ -783,8 +928,8 @@
 <context>
     <name>RecModel</name>
     <message>
-        <location filename="../../core/recmodel.cpp" line="82"/>
         <location filename="../../core/recmodel.cpp" line="84"/>
+        <location filename="../../core/recmodel.cpp" line="86"/>
         <source>Unknown</source>
         <translation>Unbekannt</translation>
     </message>
@@ -804,7 +949,10 @@
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="76"/>
         <source>Deleting %n item(s)</source>
-        <translation><numerusform>Lösche einen Eintrag</numerusform><numerusform>Lösche %n Einträge</numerusform></translation>
+        <translation>
+            <numerusform>Lösche einen Eintrag</numerusform>
+            <numerusform>Lösche %n Einträge</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="85"/>
@@ -827,9 +975,8 @@
         <translation>Aufnahmezeit</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="98"/>
         <source>Station name</source>
-        <translation>Sendername</translation>
+        <translation type="vanished">Sendername</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="98"/>
@@ -837,7 +984,12 @@
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../qml/RecPage.qml" line="134"/>
+        <location filename="../qml/RecPage.qml" line="98"/>
+        <source>Author</source>
+        <translation type="unfinished">Autor</translation>
+    </message>
+    <message>
+        <location filename="../qml/RecPage.qml" line="135"/>
         <source>No recordings</source>
         <translation>Keine Aufnahmen</translation>
     </message>
@@ -883,7 +1035,10 @@
     <message numerus="yes">
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation><numerusform>%n ausgewählt</numerusform><numerusform>%n ausgewählt</numerusform></translation>
+        <translation>
+            <numerusform>%n ausgewählt</numerusform>
+            <numerusform>%n ausgewählt</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="50"/>
@@ -969,77 +1124,86 @@
         <translation>Beschneiden</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="134"/>
+        <location filename="../qml/SettingsPage.qml" line="139"/>
+        <source>Screen capture quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="150"/>
         <source>Stream recorder</source>
         <translation>Streamaufnahme</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="135"/>
         <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation>Aktiviert die Aufnahme von Icecast-Stream-Titeln. Um die Aufnahme zu starten, drücke den &apos;Aufnehmen&apos;-Knopf auf der unteren Leiste. Wird der Knopf vor Ende des aktuellen Tracks gedrückt, wird der komplette Track gespeichert.</translation>
+        <translation type="vanished">Aktiviert die Aufnahme von Icecast-Stream-Titeln. Um die Aufnahme zu starten, drücke den &apos;Aufnehmen&apos;-Knopf auf der unteren Leiste. Wird der Knopf vor Ende des aktuellen Tracks gedrückt, wird der komplette Track gespeichert.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="159"/>
+        <location filename="../qml/SettingsPage.qml" line="176"/>
         <source>Directory for recordings</source>
         <translation>Verzeichnis für Aufnahmen</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="172"/>
+        <location filename="../qml/SettingsPage.qml" line="189"/>
         <source>Change</source>
         <translation>Ändern</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="181"/>
+        <location filename="../qml/SettingsPage.qml" line="198"/>
         <source>Set default</source>
         <translation>Voreinstellung setzen</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="194"/>
+        <location filename="../qml/SettingsPage.qml" line="211"/>
         <source>Stream relaying</source>
         <translation>Streamweiterleitung</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="195"/>
+        <location filename="../qml/SettingsPage.qml" line="212"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation>Internetstreams werden an das UPnP-Gerät über %1 weitergeleitet. Empfohlen ist &apos;Immer&apos;, weil dadurch die beste Kompatibilität gewährleistet wird. Falls deaktiviert (&apos;Niemals&apos;), sind Icecast-Titel und Streamaufnahme nicht verfügbar.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="217"/>
+        <location filename="../qml/SettingsPage.qml" line="234"/>
         <source>Always</source>
         <translation>Immer</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="218"/>
+        <location filename="../qml/SettingsPage.qml" line="235"/>
         <source>Only Icecast</source>
         <translation>Nur Icecast</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="219"/>
+        <location filename="../qml/SettingsPage.qml" line="236"/>
         <source>Never</source>
         <translation>Niemals</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="235"/>
+        <location filename="../qml/SettingsPage.qml" line="252"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>Alle Arten von UPnP-Geräten werden erkannt und gezeigt, einschließlich nicht unterstützter Geräte wie Router. Für nicht-unterstützte Geräte werden nur minimale Informationen ausgegeben. Diese Option könnte zur Prüfung von UPnP-Geräten im lokalen Netzwerk nützlich sein.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="234"/>
+        <location filename="../qml/SettingsPage.qml" line="251"/>
         <source>All devices visible</source>
         <translation>Alle Geräte sichtbar</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="190"/>
+        <location filename="../qml/SettingsPage.qml" line="151"/>
+        <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsPage.qml" line="207"/>
         <source>Advanced options</source>
         <translation>Erweiterte Optionen</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="298"/>
+        <location filename="../qml/SettingsPage.qml" line="300"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Gebraucht zur Fehlersuche. Die Logdaten werden in die Datei %1 geschrieben</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="297"/>
+        <location filename="../qml/SettingsPage.qml" line="299"/>
         <source>Enable logging</source>
         <translation>Logging aktivieren</translation>
     </message>
@@ -1217,12 +1381,12 @@
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../../core/utils.cpp" line="417"/>
+        <location filename="../../core/utils.cpp" line="468"/>
         <source>Today</source>
         <translation>Heute</translation>
     </message>
     <message>
-        <location filename="../../core/utils.cpp" line="419"/>
+        <location filename="../../core/utils.cpp" line="470"/>
         <source>Yesterday</source>
         <translation>Gestern</translation>
     </message>
@@ -1235,14 +1399,29 @@
         <translation>Titel &quot;%1&quot; gespeichert</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="60"/>
+        <location filename="../qml/main.qml" line="65"/>
         <source>Cannot connect to a local network</source>
         <translation>Kann nicht mit lokalem Netzwerk verbinden</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="63"/>
+        <location filename="../qml/main.qml" line="68"/>
         <source>An internal error occurred</source>
         <translation>Ein interner Fehler ist aufgetreten</translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="85"/>
+        <source>Cannot download youtube-dl</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="88"/>
+        <source>Cannot update youtube-dl</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="91"/>
+        <source>Cannot find URL with youtube-dl</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>Changelog</source>
-        <translation>Wijzigingslogboek</translation>
+        <translation type="vanished">Wijzigingslogboek</translation>
     </message>
     <message>
         <source>Project website</source>
@@ -33,6 +33,10 @@
     </message>
     <message>
         <source>Translations are provided by:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Changes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -110,12 +114,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>UPnP Media Server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Playlist</source>
         <translation type="unfinished">Afspeellijst</translation>
+    </message>
+    <message>
+        <source>Media Server</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -141,7 +145,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
+        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL. If Name is not provided, it will be discovered automatically.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -220,6 +224,29 @@
     </message>
 </context>
 <context>
+    <name>BcPage</name>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No tracks</source>
+        <translation type="unfinished">Geen nummers</translation>
+    </message>
+    <message>
+        <source>Error in getting data from bandcamp.com</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search tracks</source>
+        <translation type="unfinished">Nummers zoeken</translation>
+    </message>
+</context>
+<context>
     <name>CDirModel</name>
     <message>
         <source>Unknown</source>
@@ -230,11 +257,15 @@
     <name>ChangelogPage</name>
     <message>
         <source>Changelog</source>
-        <translation>Wijzigingslogboek</translation>
+        <translation type="vanished">Wijzigingslogboek</translation>
     </message>
     <message>
         <source>Version %1</source>
         <translation>Versie %1</translation>
+    </message>
+    <message>
+        <source>Changes</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -253,13 +284,6 @@
     </message>
     <message>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ContentServerWorker</name>
-    <message>
-        <source>Recorded from %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -423,6 +447,44 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
 </context>
 <context>
+    <name>FosdemPage</name>
+    <message>
+        <source>Search events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh events list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot download or parse FOSDEM events</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FosdemYearsPage</name>
+    <message>
+        <source>Conferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No conferences found</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GpodderEpisodesPage</name>
     <message>
         <source>Search episodes</source>
@@ -563,15 +625,27 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>UPnP Media Server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Media Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Icecast URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open URL in browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open recording URL in browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy recording URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recording URL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -704,6 +778,30 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <source>Clearing play queue</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Refresh items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refreshing item %1 of %2...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adding item %1 of %2...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refreshing item...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adding item...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PlaylistModel</name>
@@ -795,8 +893,8 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Station name</source>
-        <translation type="unfinished"></translation>
+        <source>Author</source>
+        <translation type="unfinished">Auteur</translation>
     </message>
 </context>
 <context>
@@ -990,15 +1088,19 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Only Icecast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen capture quality</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1212,6 +1314,18 @@ Trekt omlaag voor meer apparaten in uw netwerk te vinden.</translation>
     <message>
         <source>An internal error occurred</source>
         <translation type="unfinished">Der is een interne fout opgetreden</translation>
+    </message>
+    <message>
+        <source>Cannot download youtube-dl</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot update youtube-dl</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot find URL with youtube-dl</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
