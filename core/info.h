@@ -10,9 +10,9 @@
 
 namespace Jupii {
 static const char* APP_NAME = "Jupii";
-#ifdef SAILFISH
-static const char* APP_VERSION = "2.7.0";
-#elif DESKTOP
+#ifdef QT_DEBUG
+static const char* APP_VERSION = "2.7.0 (debug)";
+#else
 static const char* APP_VERSION = "2.7.0 (beta)";
 #endif
 static const char* AUTHOR = "Michal Kosciesza";

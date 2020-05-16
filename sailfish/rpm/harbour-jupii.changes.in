@@ -8,6 +8,14 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sat May 16 2020 Michal Kosciesza <michal@mkiol.net> 2.7.0-1
+- Fosdem browser
+- Youtube-dl to find direct media URL
+- Bandcamp browser
+- Recording of non-shoutcast URLs
+- Fix: Audio capture
+- Quality option for Screen capture
+
 * Sun Mar 08 2020 Michal Kosciesza <michal@mkiol.net> 2.6.2-1
 - Prevent deep sleep
 - Russian translation update
