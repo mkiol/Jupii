@@ -305,6 +305,15 @@ Page {
                 }
             }
 
+            Button {
+                visible: settings.isDebug()
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Reset settings"
+                onClicked: {
+                    settings.reset()
+                }
+            }
+
             Spacer {}
         }
     }

@@ -144,6 +144,7 @@ public:
     QString mediaServerDevUuid();
     QString prettyName();
     Q_INVOKABLE bool isDebug();
+    Q_INVOKABLE void reset();
 
 signals:
     void portChanged();

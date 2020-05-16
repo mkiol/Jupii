@@ -692,3 +692,12 @@ int Settings::getColorScheme()
 {
     return m_colorScheme;
 }
+
+void Settings::reset()
+{
+    qDebug() << "Resetting settings";
+
+    if (!QFile::remove(settings.fileName())) {
+        qWarning() << "Cannot remove file:" << settings.fileName();
+    }
+}
