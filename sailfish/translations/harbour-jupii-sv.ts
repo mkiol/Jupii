@@ -14,13 +14,9 @@
         <translation>Version %1</translation>
     </message>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">Ändringslogg</translation>
-    </message>
-    <message>
         <location filename="../qml/AboutPage.qml" line="48"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Ändringar</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="54"/>
@@ -103,11 +99,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="132"/>
         <source>Media Server</source>
-        <translation type="unfinished">Mediaserver</translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">UPnP mediaserver</translation>
+        <translation>Mediaserver</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="141"/>
@@ -165,11 +157,7 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="73"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL. If Name is not provided, it will be discovered automatically.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation type="vanished">Endast HTTP-formatet stöds. Om URL:en pekar mot en spelningslista, läggs första listobjektet till. Om namn inte anges, kommer det att hämtas automatiskt från strömmens metadata.</translation>
+        <translation>Endast HTTP-formatet stöds. Om URL:en pekar mot en spelningslista, läggs första listobjektet till. Om webbadressen inte pekar på något medieinnehåll används youtube-dl för att hitta en direkt medieadress. Om inget namn anges, kommer det att identifieras automatiskt.</translation>
     </message>
 </context>
 <context>
@@ -254,43 +242,35 @@
     <message>
         <location filename="../qml/BcPage.qml" line="44"/>
         <source>Error in getting data from bandcamp.com</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunde inte hämta data från bandcamp.com</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="60"/>
         <source>Search tracks</source>
-        <translation type="unfinished">Sök spår</translation>
+        <translation>Sök spår</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="79"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Avmarkera alla</translation>
+        <translation>Avmarkera alla</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="80"/>
         <source>Select all</source>
-        <translation type="unfinished">Markera alla</translation>
+        <translation>Markera alla</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="108"/>
         <source>No tracks</source>
-        <translation type="unfinished">Inga spår</translation>
-    </message>
-    <message>
-        <source>No items</source>
-        <translation type="obsolete">Inga objekt</translation>
+        <translation>Inga spår</translation>
     </message>
 </context>
 <context>
     <name>ChangelogPage</name>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">Ändringslogg</translation>
-    </message>
-    <message>
         <location filename="../qml/ChangelogPage.qml" line="28"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Ändringar</translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
@@ -322,13 +302,6 @@
         <location filename="../../core/contentserver.cpp" line="3108"/>
         <source>Screen capture</source>
         <translation>Skärminspelning</translation>
-    </message>
-</context>
-<context>
-    <name>ContentServerWorker</name>
-    <message>
-        <source>Recorded from %1</source>
-        <translation type="vanished">Inspelad från %1</translation>
     </message>
 </context>
 <context>
@@ -506,32 +479,32 @@
     <message>
         <location filename="../qml/FosdemPage.qml" line="45"/>
         <source>Cannot download or parse FOSDEM events</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte ladda ner eller tolka FOSDEM-händelser</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="60"/>
         <source>Search events</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök händelser</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="76"/>
         <source>Refresh events list</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdatera händelselistan</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="84"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Avmarkera alla</translation>
+        <translation>Avmarkera alla</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="85"/>
         <source>Select all</source>
-        <translation type="unfinished">Markera alla</translation>
+        <translation>Markera alla</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="112"/>
         <source>No events</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga händelser</translation>
     </message>
 </context>
 <context>
@@ -539,12 +512,12 @@
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="84"/>
         <source>Conferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Konferenser</translation>
     </message>
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="105"/>
         <source>No conferences found</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga konferenser hittades</translation>
     </message>
 </context>
 <context>
@@ -663,7 +636,7 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="282"/>
         <source>Recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Inspelnings-URL</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="312"/>
@@ -683,21 +656,17 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="69"/>
         <source>Open recording URL in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Öppna inspelnings-URL:en i webbläsaren</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="75"/>
         <source>Copy recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiera inspelnings-URL</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="81"/>
         <source>Open URL in browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">UPnP mediaserver</translation>
+        <translation>Öppna URL:en i webbläsaren</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="182"/>
@@ -792,7 +761,7 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <source>Refresh items</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdatera objekt</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="398"/>
@@ -813,7 +782,7 @@
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Avbryt</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
@@ -833,22 +802,22 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="457"/>
         <source>Refreshing item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdaterar objekt %1 av %2...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="458"/>
         <source>Refreshing item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdaterar objekt...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="460"/>
         <source>Adding item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägger till objekt %1 av %2...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="461"/>
         <source>Adding item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägger till objekt</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="532"/>
@@ -975,10 +944,6 @@
         <translation>Inspelningstid</translation>
     </message>
     <message>
-        <source>Station name</source>
-        <translation type="vanished">Stationsnamn</translation>
-    </message>
-    <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Title</source>
         <translation>Titel</translation>
@@ -986,7 +951,7 @@
     <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Author</source>
-        <translation type="unfinished">Upphovsman</translation>
+        <translation>Upphovsman</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="135"/>
@@ -1126,16 +1091,12 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="139"/>
         <source>Screen capture quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Skärminspelningskvalitet</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="150"/>
         <source>Stream recorder</source>
         <translation>Ströminspelare</translation>
-    </message>
-    <message>
-        <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="vanished">Möjliggör inspelning av spår från Icecast-strömmar. Använd knappen &quot;Spela in&quot;, i nedre fältet, för att starta inspelning. Om inspelning startas innan aktuellt spår spelat klart, kommer hela spåret att sparas till en fil.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="176"/>
@@ -1190,7 +1151,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="151"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Möjliggör inspelning från URL:er. Om URL-objektet är en Icecast-ström kommer enskilda spår från en ström att spelas in. Använd knappen &quot;Spela in&quot;, i nedre fältet, för att starta inspelning. Om inspelning startas innan aktuellt spår spelat klart, kommer hela spåret att sparas till en fil.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="207"/>
@@ -1411,17 +1372,17 @@
     <message>
         <location filename="../qml/main.qml" line="85"/>
         <source>Cannot download youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte ladda ner youtube-dl</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="88"/>
         <source>Cannot update youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte uppdatera youtube-dl</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="91"/>
         <source>Cannot find URL with youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte hitta URL:en med youtube-dl</translation>
     </message>
 </context>
 </TS>
