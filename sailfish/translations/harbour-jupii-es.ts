@@ -704,7 +704,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="149"/>
         <source>Item type</source>
-        <translation>Tipo de artículo</translation>
+        <translation>Tipo de elemento:</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="153"/>
@@ -739,7 +739,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="182"/>
         <source>Audio source</source>
-        <translation>Fuente de audio</translation>
+        <translation>Tipo de audio:</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="182"/>
@@ -1125,8 +1125,8 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <location filename="../qml/RecPage.qml" line="76"/>
         <source>Deleting %n item(s)</source>
         <translation>
-            <numerusform>Borrando %n artículo</numerusform>
-            <numerusform>Borrando %n artículos</numerusform>
+            <numerusform>Borrando %n elemento</numerusform>
+            <numerusform>Borrando %n elementos</numerusform>
         </translation>
     </message>
     <message>
@@ -1300,7 +1300,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="117"/>
         <source>Force screen 16:9 aspect ratio</source>
-        <translation>Forzar pantalla 16:9 relación de aspecto</translation>
+        <translation>Forzar relación de aspecto 16:9</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="92"/>
@@ -1330,7 +1330,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="121"/>
         <source>Scale</source>
-        <translation>Escala</translation>
+        <translation>Escalar</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="122"/>
@@ -1340,7 +1340,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="139"/>
         <source>Screen capture quality</source>
-        <translation>Calidad de captura de pantalla</translation>
+        <translation>Nivel de captura de pantalla</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="150"/>
@@ -1368,7 +1368,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="198"/>
         <source>Set default</source>
-        <translation>Fijar predeterminado</translation>
+        <translation>Predeterminado</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="211"/>
@@ -1393,7 +1393,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="252"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
-        <translation>Todos los tipos de dispositivos UPnP se detectan y se muestran, incluidos los dispositivos no compatibles, como los enrutadores domésticos. Para dispositivos no compatibles, solo está disponible la información de descripción básica. Esta opción puede ser útil para auditar dispositivos UPnP en su red local.</translation>
+        <translation>Todos los tipos de dispositivos UPnP se detectan y se muestran, incluidos los dispositivos no compatibles, como los enrutadores domésticos. Para dispositivos no compatibles, solo está disponible la información de descripción básica. Esta opción puede ser útil para auditar dispositivos UPnP en la red local.</translation>
     </message>
     <message>
         <source>Proxy (default)</source>
@@ -1458,7 +1458,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="75"/>
         <source>Volume level step</source>
-        <translation>Paso de nivel de volumen</translation>
+        <translation>Nivel de volumen</translation>
     </message>
     <message>
         <source>Image content</source>
@@ -1471,7 +1471,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../qml/SettingsPage.qml" line="176"/>
         <source>Directory for recordings</source>
-        <translation>Directorio para grabaciones</translation>
+        <translation>Directorio de grabaciones</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="235"/>
