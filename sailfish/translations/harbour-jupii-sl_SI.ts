@@ -14,13 +14,9 @@
         <translation>Različica %1</translation>
     </message>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">Spremembe</translation>
-    </message>
-    <message>
         <location filename="../qml/AboutPage.qml" line="48"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Spremembe</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="54"/>
@@ -103,11 +99,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="132"/>
         <source>Media Server</source>
-        <translation type="unfinished">Medijski server</translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">UPnP medijski server</translation>
+        <translation>Medijski server</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="141"/>
@@ -165,11 +157,7 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="73"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL. If Name is not provided, it will be discovered automatically.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation type="vanished">Podprti so le HTTP URL-ji. Če URL kaže na seznam predvajanja (datoteka/playlist), bo dodan prvi element iz seznama. V primeru, da ime ni podatno, se bo samodejno izluščilo iz medatpodatkov pretoka.</translation>
+        <translation>Podprti so le HTTP URL-ji. Če URL kaže na seznam predvajanja (datoteka/playlist), bo dodan prvi element iz seznama. V primeru, da URL ni podan bo uporabljen youtube-dl da najde neposredni naslov URL. Če ime ni podano, se bo izluščilo samodejno.</translation>
     </message>
 </context>
 <context>
@@ -258,43 +246,35 @@
     <message>
         <location filename="../qml/BcPage.qml" line="44"/>
         <source>Error in getting data from bandcamp.com</source>
-        <translation type="unfinished"></translation>
+        <translation>Napaka pri prejemu podatkov iz bandcamp.com</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="60"/>
         <source>Search tracks</source>
-        <translation type="unfinished">Išči skladbe</translation>
+        <translation>Išči skladbe</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="79"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Počisti vse</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="80"/>
         <source>Select all</source>
-        <translation type="unfinished">Izberi vse</translation>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="108"/>
         <source>No tracks</source>
-        <translation type="unfinished">Ni skladb</translation>
-    </message>
-    <message>
-        <source>No items</source>
-        <translation type="obsolete">Ni elementov</translation>
+        <translation>Ni skladb</translation>
     </message>
 </context>
 <context>
     <name>ChangelogPage</name>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">Spremembe</translation>
-    </message>
-    <message>
         <location filename="../qml/ChangelogPage.qml" line="28"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Spremembe</translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
@@ -326,13 +306,6 @@
         <location filename="../../core/contentserver.cpp" line="3108"/>
         <source>Screen capture</source>
         <translation>Zajem zaslona</translation>
-    </message>
-</context>
-<context>
-    <name>ContentServerWorker</name>
-    <message>
-        <source>Recorded from %1</source>
-        <translation type="vanished">Posneto iz %1</translation>
     </message>
 </context>
 <context>
@@ -510,32 +483,32 @@
     <message>
         <location filename="../qml/FosdemPage.qml" line="45"/>
         <source>Cannot download or parse FOSDEM events</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne morem prenesti ali prebrati FOSDEM dogodkov</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="60"/>
         <source>Search events</source>
-        <translation type="unfinished"></translation>
+        <translation>Išči po dogodkih</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="76"/>
         <source>Refresh events list</source>
-        <translation type="unfinished"></translation>
+        <translation>Osveži seznam dogodkov</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="84"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Počisti vse</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="85"/>
         <source>Select all</source>
-        <translation type="unfinished">Izberi vse</translation>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="112"/>
         <source>No events</source>
-        <translation type="unfinished"></translation>
+        <translation>Ni dogodkov</translation>
     </message>
 </context>
 <context>
@@ -543,12 +516,12 @@
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="84"/>
         <source>Conferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Konference</translation>
     </message>
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="105"/>
         <source>No conferences found</source>
-        <translation type="unfinished"></translation>
+        <translation>Ni najdenih konferenc</translation>
     </message>
 </context>
 <context>
@@ -667,7 +640,7 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="282"/>
         <source>Recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>URL za snemanje </translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="312"/>
@@ -687,21 +660,17 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="69"/>
         <source>Open recording URL in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Odpri URL za snemanje v brkalniku</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="75"/>
         <source>Copy recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiraj URL za snemanje </translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="81"/>
         <source>Open URL in browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">UPnP medijski server</translation>
+        <translation>Odpri URL v brkalniku</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="182"/>
@@ -796,7 +765,7 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <source>Refresh items</source>
-        <translation type="unfinished"></translation>
+        <translation>Osveži seznam elementov</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="398"/>
@@ -817,7 +786,7 @@
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Prekliči</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
@@ -837,22 +806,22 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="457"/>
         <source>Refreshing item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Osvežujem element %1 od %2 ...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="458"/>
         <source>Refreshing item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Osveževanje elementa ...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="460"/>
         <source>Adding item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodajanje elementa %1 od %2 ...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="461"/>
         <source>Adding item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodajanje elementa</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="532"/>
@@ -983,10 +952,6 @@
         <translation>Čas snamanja</translation>
     </message>
     <message>
-        <source>Station name</source>
-        <translation type="vanished">Ime postaje</translation>
-    </message>
-    <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Title</source>
         <translation>Naslov</translation>
@@ -994,7 +959,7 @@
     <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Author</source>
-        <translation type="unfinished">Avtor</translation>
+        <translation>Avtor</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="135"/>
@@ -1136,16 +1101,12 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="139"/>
         <source>Screen capture quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Kvaliteta zaslonskega posnetka</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="150"/>
         <source>Stream recorder</source>
         <translation>Snemalnik pretoka</translation>
-    </message>
-    <message>
-        <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="vanished">Omogoči snemanje posnetkov iz Icecast pretoka. Za omogočanje snemanje uporabite gumb &apos;Snemaj&apos; na spodnji pasici. Gumb pritisnite kadarkoli pred koncem trenutno predvajanega posnetka in celoten posnetek se bo shranil v datoteko.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="176"/>
@@ -1170,7 +1131,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="212"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
-        <translation>Internetni pretoki so posredovani UPnP naprvi preko %1. Priporočena nastavitev je &apos;Vedno&apos;, ker nudi najboljšo združljivost. Kadar je posredovanje onemogočeno (možnost &apos;Nikoli&apos;), Icecast naslovi in Snemalnik pretoka nista na voljo.</translation>
+        <translation>Internetni pretoki so posredovani UPnP napravi preko %1. Priporočena nastavitev je &apos;Vedno&apos;, ker nudi najboljšo združljivost. Kadar je posredovanje onemogočeno (možnost &apos;Nikoli&apos;), Icecast naslovi in Snemalnik pretoka nista na voljo.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="234"/>
@@ -1200,7 +1161,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="151"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Omogoči snemanje posnetkov iz URL. Če je podani URL IceCast pretok, bo posnet vsak posnetek posamezno. Za omogočanje snemanja uporabite gumb &apos;Snemaj&apos; na spodnji pasici. Gumb pritisnite kadarkoli pred koncem trenutno predvajanega posnetka in celoten posnetek se bo shranil v datoteko.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="207"/>
@@ -1421,17 +1382,17 @@
     <message>
         <location filename="../qml/main.qml" line="85"/>
         <source>Cannot download youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne morem prenesti youtube-dl</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="88"/>
         <source>Cannot update youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne morem posodobiti youtube-dl</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="91"/>
         <source>Cannot find URL with youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>youtube-dl ne najde URL</translation>
     </message>
 </context>
 </TS>
