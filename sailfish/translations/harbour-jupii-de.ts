@@ -14,13 +14,9 @@
         <translation>Version %1</translation>
     </message>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">Änderungsprotokoll</translation>
-    </message>
-    <message>
         <location filename="../qml/AboutPage.qml" line="48"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Änderungen</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="54"/>
@@ -53,7 +49,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="47"/>
         <source>Add item</source>
-        <translation>Element hinzufügen</translation>
+        <translation>Eintrag hinzufügen</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="51"/>
@@ -103,11 +99,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="132"/>
         <source>Media Server</source>
-        <translation type="unfinished">Medien-Server</translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">UPnP Medien-Server</translation>
+        <translation>Medienserver</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="141"/>
@@ -165,11 +157,7 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="73"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL. If Name is not provided, it will be discovered automatically.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation type="vanished">Nur HTTP-URLs werden unterstützt. Wenn URL zu einer Playliste zeigt, wird der erste Listeneintrag hinzugefügt. Wenn kein Name gesetzt wird, wird er automatisch aus den Metadaten des Streams erzeugt.</translation>
+        <translation>Ausschließlich HTTP-URLs werden unterstützt. Wenn die URL auf eine Playlist verweist wird das erste Element hinzugefügt. Wenn die URL nicht auf Medieninhalte verweist, wird die YouTube-dl genutzt um eine direkte Medien-URL zu finden. Wenn kein Name angegeben ist, wird er automatisch ermittelt.</translation>
     </message>
 </context>
 <context>
@@ -254,43 +242,35 @@
     <message>
         <location filename="../qml/BcPage.qml" line="44"/>
         <source>Error in getting data from bandcamp.com</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Abrufen von Daten von  bandcamp.com</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="60"/>
         <source>Search tracks</source>
-        <translation type="unfinished">Suche Titel</translation>
+        <translation>Suche Titel</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="79"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Alle abwählen</translation>
+        <translation>Alle abwählen</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="80"/>
         <source>Select all</source>
-        <translation type="unfinished">Alle wählen</translation>
+        <translation>Alle wählen</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="108"/>
         <source>No tracks</source>
-        <translation type="unfinished">Keine Titel</translation>
-    </message>
-    <message>
-        <source>No items</source>
-        <translation type="obsolete">Keine Titel</translation>
+        <translation>Keine Titel</translation>
     </message>
 </context>
 <context>
     <name>ChangelogPage</name>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">Änderungsprotokoll</translation>
-    </message>
-    <message>
         <location filename="../qml/ChangelogPage.qml" line="28"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Änderungen</translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
@@ -322,13 +302,6 @@
         <location filename="../../core/contentserver.cpp" line="3108"/>
         <source>Screen capture</source>
         <translation>Bildschirmaufnahme</translation>
-    </message>
-</context>
-<context>
-    <name>ContentServerWorker</name>
-    <message>
-        <source>Recorded from %1</source>
-        <translation type="vanished">Aufgenomme mit %1</translation>
     </message>
 </context>
 <context>
@@ -506,32 +479,32 @@
     <message>
         <location filename="../qml/FosdemPage.qml" line="45"/>
         <source>Cannot download or parse FOSDEM events</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann FOSDEM-Events nicht laden oder parsen</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="60"/>
         <source>Search events</source>
-        <translation type="unfinished"></translation>
+        <translation>Events suchen</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="76"/>
         <source>Refresh events list</source>
-        <translation type="unfinished"></translation>
+        <translation>Event-Liste neuladen</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="84"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Alle abwählen</translation>
+        <translation>Alle abwählen</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="85"/>
         <source>Select all</source>
-        <translation type="unfinished">Alle wählen</translation>
+        <translation>Alle wählen</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="112"/>
         <source>No events</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Events</translation>
     </message>
 </context>
 <context>
@@ -539,12 +512,12 @@
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="84"/>
         <source>Conferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Konferenzen</translation>
     </message>
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="105"/>
         <source>No conferences found</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Konferenzen gefunden</translation>
     </message>
 </context>
 <context>
@@ -663,7 +636,7 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="282"/>
         <source>Recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufzeichnungs-URL</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="312"/>
@@ -683,21 +656,17 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="69"/>
         <source>Open recording URL in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffne Aufzeichnungs-URL im Browser</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="75"/>
         <source>Copy recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiere Aufzeichnungs-URL</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="81"/>
         <source>Open URL in browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">UPnP Medien-Server</translation>
+        <translation>Öffne URL im Browser</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="182"/>
@@ -792,7 +761,7 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <source>Refresh items</source>
-        <translation type="unfinished"></translation>
+        <translation>Einträge neuladen</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="398"/>
@@ -813,7 +782,7 @@
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Abbrechen</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
@@ -833,22 +802,22 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="457"/>
         <source>Refreshing item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Laden Eintrag %1 von %2 neu...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="458"/>
         <source>Refreshing item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Eintrag neuladen...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="460"/>
         <source>Adding item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Füge Eintrag %1 von %2 hinzu...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="461"/>
         <source>Adding item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Eintrag hinzufügen...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="532"/>
@@ -975,10 +944,6 @@
         <translation>Aufnahmezeit</translation>
     </message>
     <message>
-        <source>Station name</source>
-        <translation type="vanished">Sendername</translation>
-    </message>
-    <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Title</source>
         <translation>Titel</translation>
@@ -986,7 +951,7 @@
     <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Author</source>
-        <translation type="unfinished">Autor</translation>
+        <translation>Autor</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="135"/>
@@ -1071,7 +1036,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="35"/>
         <source>Items on play queue will be accessible for other UPnP devices.</source>
-        <translation>Elemente der aktuellen Playlist werden für andere UPnP-Geräte verfügbar sein.</translation>
+        <translation>Einträge der aktuellen Playlist werden für andere UPnP-Geräte verfügbar sein.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="75"/>
@@ -1126,16 +1091,12 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="139"/>
         <source>Screen capture quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualität der Bildschirmaufnahme</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="150"/>
         <source>Stream recorder</source>
         <translation>Streamaufnahme</translation>
-    </message>
-    <message>
-        <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="vanished">Aktiviert die Aufnahme von Icecast-Stream-Titeln. Um die Aufnahme zu starten, drücke den &apos;Aufnehmen&apos;-Knopf auf der unteren Leiste. Wird der Knopf vor Ende des aktuellen Tracks gedrückt, wird der komplette Track gespeichert.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="176"/>
@@ -1190,7 +1151,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="151"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ermöglicht die Aufnahme von URL-Elementen. Wenn die URL ein Icecast-Stream ist, werden die einzelnen Tracks des Streams aufgenommen. Um die Aufnahme zu starten, drücke den &apos;Aufnehmen&apos;-Knopf auf der unteren Leiste. Wird der Knopf vor Ende des aktuellen Tracks gedrückt, wird der komplette Track in eine Datei gespeichert.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="207"/>
@@ -1411,17 +1372,17 @@
     <message>
         <location filename="../qml/main.qml" line="85"/>
         <source>Cannot download youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann YouTube-dl nicht herunterladen</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="88"/>
         <source>Cannot update youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann YouTube-dl nicht aktualisieren</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="91"/>
         <source>Cannot find URL with youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>URL kann mit YouTube-dl nicht gefunden werden</translation>
     </message>
 </context>
 </TS>
