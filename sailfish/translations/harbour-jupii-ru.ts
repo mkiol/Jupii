@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ru" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="ru" sourcelanguage="en_US" version="2.1">
 <context>
     <name>AboutPage</name>
     <message>
@@ -14,13 +12,9 @@
         <translation>Версия %1</translation>
     </message>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">История изменений</translation>
-    </message>
-    <message>
         <location filename="../qml/AboutPage.qml" line="48"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>История изменений</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="54"/>
@@ -103,11 +97,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="132"/>
         <source>Media Server</source>
-        <translation type="unfinished">Медиасервер</translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">Сервер UPnP</translation>
+        <translation>Медиасервер</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="141"/>
@@ -165,11 +155,7 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="73"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL. If Name is not provided, it will be discovered automatically.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation type="vanished">Поддерживаются только HTTP-адреса. Если дан URL файла со списком источников, то добавляется первый пункт этого списка. Если Название потока не указано, оно будет взято из метаданных потока.</translation>
+        <translation>Поддерживаются только HTTP URL. Если URL указывает на список, то будет добавлен первый элемент этого списка. Если URL не ведет ни к какому мультимедийному ресурсу прямо, то для получения прямой ссылки используется youtube-dl. Если Название не указано, то оно будет определено автоматически.</translation>
     </message>
 </context>
 <context>
@@ -202,11 +188,7 @@
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n дорожка</numerusform>
-            <numerusform>%n дорожки</numerusform>
-            <numerusform>%n дорожек</numerusform>
-        </translation>
+        <translation><numerusform>%n дорожка</numerusform><numerusform>%n дорожки</numerusform><numerusform>%n дорожек</numerusform><numerusform>%n дорожек</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="98"/>
@@ -234,11 +216,7 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="80"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n дорожка</numerusform>
-            <numerusform>%n дорожки</numerusform>
-            <numerusform>%n дорожек</numerusform>
-        </translation>
+        <translation><numerusform>%n дорожка</numerusform><numerusform>%n дорожки</numerusform><numerusform>%n дорожек</numerusform><numerusform>%n дорожек</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="88"/>
@@ -256,43 +234,35 @@
     <message>
         <location filename="../qml/BcPage.qml" line="44"/>
         <source>Error in getting data from bandcamp.com</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка при получении данных от bandcamp.com</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="60"/>
         <source>Search tracks</source>
-        <translation type="unfinished">Поиск дорожек</translation>
+        <translation>Поиск дорожек</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="79"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Отменить выбор</translation>
+        <translation>Снять выделение</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="80"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать все</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="108"/>
         <source>No tracks</source>
-        <translation type="unfinished">Нет дорожек</translation>
-    </message>
-    <message>
-        <source>No items</source>
-        <translation type="obsolete">Пусто</translation>
+        <translation>Нет дорожек</translation>
     </message>
 </context>
 <context>
     <name>ChangelogPage</name>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">История изменений</translation>
-    </message>
-    <message>
         <location filename="../qml/ChangelogPage.qml" line="28"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>История изменений</translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
@@ -324,13 +294,6 @@
         <location filename="../../core/contentserver.cpp" line="3108"/>
         <source>Screen capture</source>
         <translation>Захват экрана</translation>
-    </message>
-</context>
-<context>
-    <name>ContentServerWorker</name>
-    <message>
-        <source>Recorded from %1</source>
-        <translation type="vanished">Записано с %1</translation>
     </message>
 </context>
 <context>
@@ -508,32 +471,32 @@
     <message>
         <location filename="../qml/FosdemPage.qml" line="45"/>
         <source>Cannot download or parse FOSDEM events</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно загрузить или разобрать данные расписания FOSDEM</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="60"/>
         <source>Search events</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск событий</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="76"/>
         <source>Refresh events list</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновить список событий</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="84"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Отменить выбор</translation>
+        <translation>Снять выделение</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="85"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать все</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="112"/>
         <source>No events</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет событий</translation>
     </message>
 </context>
 <context>
@@ -541,12 +504,12 @@
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="84"/>
         <source>Conferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Конференции</translation>
     </message>
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="105"/>
         <source>No conferences found</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет конференций</translation>
     </message>
 </context>
 <context>
@@ -665,7 +628,7 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="282"/>
         <source>Recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>URL записи</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="312"/>
@@ -685,21 +648,17 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="69"/>
         <source>Open recording URL in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть URL записи в браузере</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="75"/>
         <source>Copy recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать URL записи</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="81"/>
         <source>Open URL in browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">Сервер UPnP</translation>
+        <translation>Открыть URL в браузере</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="182"/>
@@ -794,7 +753,7 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <source>Refresh items</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновить список</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="398"/>
@@ -815,7 +774,7 @@
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменить</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
@@ -835,22 +794,22 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="457"/>
         <source>Refreshing item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновление пункта %1 из %2...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="458"/>
         <source>Refreshing item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновление...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="460"/>
         <source>Adding item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавление пункта %1 из %2...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="461"/>
         <source>Adding item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавление...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="532"/>
@@ -901,11 +860,7 @@
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="83"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n дорожка</numerusform>
-            <numerusform>%n дорожки</numerusform>
-            <numerusform>%n дорожек</numerusform>
-        </translation>
+        <translation><numerusform>%n дорожка</numerusform><numerusform>%n дорожки</numerusform><numerusform>%n дорожек</numerusform><numerusform>%n дорожек</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="91"/>
@@ -952,11 +907,7 @@
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="76"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Удаляется %n запись</numerusform>
-            <numerusform>Удаляется %n записи</numerusform>
-            <numerusform>Удаляется %n записей</numerusform>
-        </translation>
+        <translation><numerusform>Удаляется %n запись</numerusform><numerusform>Удаляется %n записи</numerusform><numerusform>Удаляется %n записей</numerusform><numerusform>Удаляется %n записей</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="85"/>
@@ -979,10 +930,6 @@
         <translation>Время записи</translation>
     </message>
     <message>
-        <source>Station name</source>
-        <translation type="vanished">Станция</translation>
-    </message>
-    <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Title</source>
         <translation>Название</translation>
@@ -990,7 +937,7 @@
     <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Author</source>
-        <translation type="unfinished">Автор</translation>
+        <translation>Автор</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="135"/>
@@ -1039,11 +986,7 @@
     <message numerus="yes">
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n выбрана</numerusform>
-            <numerusform>%n выбрано</numerusform>
-            <numerusform>%n выбрано</numerusform>
-        </translation>
+        <translation><numerusform>%n выбрана</numerusform><numerusform>%n выбрано</numerusform><numerusform>%n выбрано</numerusform><numerusform>%n выбрано</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="50"/>
@@ -1131,16 +1074,12 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="139"/>
         <source>Screen capture quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Качество захвата экрана</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="150"/>
         <source>Stream recorder</source>
         <translation>Запись потоков</translation>
-    </message>
-    <message>
-        <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="vanished">Позволяет записывать дорожки из потоков Icecast. Чтобы начать запись используйте кнопку &apos;Запись&apos;  в нижней панели. Если нажать кнопку &apos;Запись&apos; до окончания прослушиваемой дорожки, то вся дорожка сохранится в файл целиком.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="176"/>
@@ -1195,7 +1134,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="151"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Позволяет записывать звук по ссылкам URL. Если URL указывает на поток Icecast, то будут записаны отдельные дорожки из потока. Чтобы начать запись, воспользуйтесь кнопкой &apos;Запись&apos; на панель снизу. Если кнопка записи нажата до окончания проигрываемой дорожки, то в файл запишется вся дорожка целиком. </translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="207"/>
@@ -1416,17 +1355,17 @@
     <message>
         <location filename="../qml/main.qml" line="85"/>
         <source>Cannot download youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно загрузить youtube-dl</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="88"/>
         <source>Cannot update youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно обновить youtube-dl</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="91"/>
         <source>Cannot find URL with youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>youtube-dl не может получить URL</translation>
     </message>
 </context>
 </TS>
