@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh_CN" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_CN" sourcelanguage="en_US" version="2.1">
 <context>
     <name>AboutPage</name>
     <message>
@@ -14,13 +12,9 @@
         <translation>版本 %1</translation>
     </message>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">更新日志</translation>
-    </message>
-    <message>
         <location filename="../qml/AboutPage.qml" line="48"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>修改</translation>
     </message>
     <message>
         <location filename="../qml/AboutPage.qml" line="54"/>
@@ -103,11 +97,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="132"/>
         <source>Media Server</source>
-        <translation type="unfinished">媒体服务器</translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">UPnP 媒体服务器</translation>
+        <translation>媒体服务器</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="141"/>
@@ -117,7 +107,7 @@
     <message>
         <location filename="../qml/AddMediaPage.qml" line="153"/>
         <source>Screen capture</source>
-        <translation>屏幕捕捉</translation>
+        <translation>屏幕捕获</translation>
     </message>
     <message>
         <location filename="../qml/AddMediaPage.qml" line="164"/>
@@ -165,11 +155,7 @@
     <message>
         <location filename="../qml/AddUrlPage.qml" line="73"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL. If Name is not provided, it will be discovered automatically.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation type="vanished">只支持 HTTP 网址， 如果网址指向一个播放列表文件, 首先会添加播放列表项目 。如果没有提供名称，将会基于流媒体元数据自动生成。</translation>
+        <translation>只支持 HTTP 链接。 如果链接指向某个播放列表文件，将会添加第一个播放列表项目。 如果链接没有指向任何媒体内容，将使用 youtube-dl 来查找直接的媒体链接。 如果没有提供名称，将自动找寻。</translation>
     </message>
 </context>
 <context>
@@ -202,9 +188,7 @@
     <message numerus="yes">
         <location filename="../qml/AlbumsPage.qml" line="90"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n 首歌曲</numerusform>
-        </translation>
+        <translation><numerusform>%n 首歌曲</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/AlbumsPage.qml" line="98"/>
@@ -232,9 +216,7 @@
     <message numerus="yes">
         <location filename="../qml/ArtistPage.qml" line="80"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n 首歌曲</numerusform>
-        </translation>
+        <translation><numerusform>%n 首歌曲</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/ArtistPage.qml" line="88"/>
@@ -252,43 +234,35 @@
     <message>
         <location filename="../qml/BcPage.qml" line="44"/>
         <source>Error in getting data from bandcamp.com</source>
-        <translation type="unfinished"></translation>
+        <translation>从 bandcamp.com 获取数据出错</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="60"/>
         <source>Search tracks</source>
-        <translation type="unfinished">搜索歌曲</translation>
+        <translation>搜索歌曲</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="79"/>
         <source>Unselect all</source>
-        <translation type="unfinished">取消全选</translation>
+        <translation>取消全选</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="80"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>全选</translation>
     </message>
     <message>
         <location filename="../qml/BcPage.qml" line="108"/>
         <source>No tracks</source>
-        <translation type="unfinished">暂无歌曲</translation>
-    </message>
-    <message>
-        <source>No items</source>
-        <translation type="obsolete">暂无项目</translation>
+        <translation>暂无音乐</translation>
     </message>
 </context>
 <context>
     <name>ChangelogPage</name>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">更新日志</translation>
-    </message>
-    <message>
         <location filename="../qml/ChangelogPage.qml" line="28"/>
         <source>Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>修改</translation>
     </message>
     <message>
         <location filename="../qml/ChangelogPage.qml" line="32"/>
@@ -319,14 +293,7 @@
     <message>
         <location filename="../../core/contentserver.cpp" line="3108"/>
         <source>Screen capture</source>
-        <translation>屏幕捕捉</translation>
-    </message>
-</context>
-<context>
-    <name>ContentServerWorker</name>
-    <message>
-        <source>Recorded from %1</source>
-        <translation type="vanished">来自 %1 录音</translation>
+        <translation>屏幕捕获</translation>
     </message>
 </context>
 <context>
@@ -504,32 +471,32 @@
     <message>
         <location filename="../qml/FosdemPage.qml" line="45"/>
         <source>Cannot download or parse FOSDEM events</source>
-        <translation type="unfinished"></translation>
+        <translation>无法下载或解析 FOSDEM 事件</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="60"/>
         <source>Search events</source>
-        <translation type="unfinished"></translation>
+        <translation>搜索事件</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="76"/>
         <source>Refresh events list</source>
-        <translation type="unfinished"></translation>
+        <translation>刷新事件列表</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="84"/>
         <source>Unselect all</source>
-        <translation type="unfinished">取消全选</translation>
+        <translation>取消全选</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="85"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>全选</translation>
     </message>
     <message>
         <location filename="../qml/FosdemPage.qml" line="112"/>
         <source>No events</source>
-        <translation type="unfinished"></translation>
+        <translation>暂无事件</translation>
     </message>
 </context>
 <context>
@@ -537,12 +504,12 @@
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="84"/>
         <source>Conferences</source>
-        <translation type="unfinished"></translation>
+        <translation>会议</translation>
     </message>
     <message>
         <location filename="../qml/FosdemYearsPage.qml" line="105"/>
         <source>No conferences found</source>
-        <translation type="unfinished"></translation>
+        <translation>没有找到会议</translation>
     </message>
 </context>
 <context>
@@ -631,7 +598,7 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="159"/>
         <source>Screen Capture</source>
-        <translation>屏幕捕捉</translation>
+        <translation>屏幕捕获</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="161"/>
@@ -661,7 +628,7 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="282"/>
         <source>Recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>录音链接</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="312"/>
@@ -681,21 +648,17 @@
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="69"/>
         <source>Open recording URL in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>在浏览器打开录音链接</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="75"/>
         <source>Copy recording URL</source>
-        <translation type="unfinished"></translation>
+        <translation>复制录音链接</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="81"/>
         <source>Open URL in browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>UPnP Media Server</source>
-        <translation type="vanished">UPnP 媒体服务器</translation>
+        <translation>在浏览器打开录音链接</translation>
     </message>
     <message>
         <location filename="../qml/MediaInfoPage.qml" line="182"/>
@@ -790,7 +753,7 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <source>Refresh items</source>
-        <translation type="unfinished"></translation>
+        <translation>刷新项目</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="398"/>
@@ -811,7 +774,7 @@
         <location filename="../qml/PlayQueuePage.qml" line="414"/>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>取消</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="425"/>
@@ -831,22 +794,22 @@
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="457"/>
         <source>Refreshing item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>刷新项目 %1 of %2...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="458"/>
         <source>Refreshing item...</source>
-        <translation type="unfinished"></translation>
+        <translation>刷新项目……</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="460"/>
         <source>Adding item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>添加项目 %1 of %2...</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="461"/>
         <source>Adding item...</source>
-        <translation type="unfinished"></translation>
+        <translation>添加项目……</translation>
     </message>
     <message>
         <location filename="../qml/PlayQueuePage.qml" line="532"/>
@@ -897,9 +860,7 @@
     <message numerus="yes">
         <location filename="../qml/PlaylistPage.qml" line="83"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n 首歌曲</numerusform>
-        </translation>
+        <translation><numerusform>%n 首歌曲</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/PlaylistPage.qml" line="91"/>
@@ -946,9 +907,7 @@
     <message numerus="yes">
         <location filename="../qml/RecPage.qml" line="76"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>正在删除 %n 个项目</numerusform>
-        </translation>
+        <translation><numerusform>正在删除 %n 个项目</numerusform></translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="85"/>
@@ -971,10 +930,6 @@
         <translation>录音时长</translation>
     </message>
     <message>
-        <source>Station name</source>
-        <translation type="vanished">站台名称</translation>
-    </message>
-    <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Title</source>
         <translation>字幕</translation>
@@ -982,7 +937,7 @@
     <message>
         <location filename="../qml/RecPage.qml" line="98"/>
         <source>Author</source>
-        <translation type="unfinished">作者</translation>
+        <translation>作者</translation>
     </message>
     <message>
         <location filename="../qml/RecPage.qml" line="135"/>
@@ -1031,9 +986,7 @@
     <message numerus="yes">
         <location filename="../qml/SearchDialogHeader.qml" line="39"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>已选择 %n </numerusform>
-        </translation>
+        <translation><numerusform>已选择 %n </numerusform></translation>
     </message>
     <message>
         <location filename="../qml/SearchDialogHeader.qml" line="50"/>
@@ -1076,7 +1029,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="87"/>
         <source>Screen capture</source>
-        <translation>屏幕捕捉</translation>
+        <translation>屏幕捕获</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="110"/>
@@ -1121,16 +1074,12 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="139"/>
         <source>Screen capture quality</source>
-        <translation type="unfinished"></translation>
+        <translation>屏幕捕获质量</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="150"/>
         <source>Stream recorder</source>
-        <translation>流媒体录制机</translation>
-    </message>
-    <message>
-        <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="vanished">开启录制 Icecast 流媒体内的音频。如果要开启录制，请使用位于底部栏上的“录制”按钮。当“录制”按钮在播完当前播放的歌曲前激活时，整首歌曲都将被保存到一个文件中。</translation>
+        <translation>串串流媒体录制机</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="176"/>
@@ -1150,12 +1099,12 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="211"/>
         <source>Stream relaying</source>
-        <translation>流媒体中继</translation>
+        <translation>串串流媒体中继</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="212"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
-        <translation>​互联网流媒体通过 %1 中继到 UPnP 设备。推荐的你使用“总是”选项，因为它提供了最好的兼容性。当中继被禁用时(“绝不”选项)， Icecast 标题及流媒体录制器不可用。</translation>
+        <translation>​互联网串串流媒体通过 %1 中继到 UPnP 设备。推荐的你使用“总是”选项，因为它提供了最好的兼容性。当中继被禁用时(“绝不”选项)， Icecast 标题及串串流媒体录制器不可用。</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="234"/>
@@ -1185,7 +1134,7 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="151"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"></translation>
+        <translation>从链接中加载录音。 如果链接项为 Icecast 串串流，则会录制串串流中的单独音乐。 要启用录制，请使用底栏上的 &quot;录音 &quot;按钮。 当 &quot;录音 &quot;按钮在当前音乐播完前激活时，整首歌都将被保存到一个文件中。</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="207"/>
@@ -1406,17 +1355,17 @@
     <message>
         <location filename="../qml/main.qml" line="85"/>
         <source>Cannot download youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>无法下载 youtube-dl</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="88"/>
         <source>Cannot update youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>无法更新 youtube-dl</translation>
     </message>
     <message>
         <location filename="../qml/main.qml" line="91"/>
         <source>Cannot find URL with youtube-dl</source>
-        <translation type="unfinished"></translation>
+        <translation>无法利用 youtube-dl 找到链接</translation>
     </message>
 </context>
 </TS>
