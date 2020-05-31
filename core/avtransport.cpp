@@ -769,6 +769,14 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         }
 
         if (do_play) {
+            if (!handleError(srv->setPlayMode(UPnPClient::AVTransport::PM_Normal))) {
+                qWarning() << "Error response for setPlayMode()";
+                if (!getInited()) {
+                    m_updateMutex.unlock();
+                    qWarning() << "AVTransport service is not inited";
+                    return;
+                }
+            }
             if (!handleError(srv->play())) {
                 qWarning() << "Error response for play()";
                 if (!getInited()) {
