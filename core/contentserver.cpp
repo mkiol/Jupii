@@ -1569,9 +1569,10 @@ QString ContentServer::dlnaOrgFlagsForFile()
     char flags[448];
     sprintf(flags, "%s=%.8x%.24x", "DLNA.ORG_FLAGS",
             DLNA_ORG_FLAG_BYTE_BASED_SEEK |
-            DLNA_ORG_FLAG_INTERACTIVE_TRANSFERT_MODE |
             DLNA_ORG_FLAG_STREAMING_TRANSFER_MODE |
-            DLNA_ORG_FLAG_BACKGROUND_TRANSFER_MODE, 0);
+            DLNA_ORG_FLAG_BACKGROUND_TRANSFER_MODE |
+            DLNA_ORG_FLAG_CONNECTION_STALL |
+            DLNA_ORG_FLAG_DLNA_V15, 0);
     QString f(flags);
     qDebug() << f;
     return f;
@@ -1583,8 +1584,9 @@ QString ContentServer::dlnaOrgFlagsForStreaming()
     sprintf(flags, "%s=%.8x%.24x", "DLNA.ORG_FLAGS",
             DLNA_ORG_FLAG_S0_INCREASE |
             DLNA_ORG_FLAG_SN_INCREASE |
+            DLNA_ORG_FLAG_STREAMING_TRANSFER_MODE |
             DLNA_ORG_FLAG_CONNECTION_STALL |
-            DLNA_ORG_FLAG_STREAMING_TRANSFER_MODE, 0);
+            DLNA_ORG_FLAG_DLNA_V15, 0);
     QString f(flags);
     qDebug() << f;
     return f;
@@ -1904,12 +1906,14 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
         // puting audio stream info instead video file
         if (data.size > 0)
             m << "size=\"" << QString::number(data.size) << "\" ";
-        m << "protocolInfo=\"http-get:*:" << data.mime << ":*\" ";
+        m << "protocolInfo=\"http-get:*:" << data.mime << ":"
+          << dlnaContentFeaturesHeader(data.mime, true, true)
+          << "\" ";
     } else {
         if (item->size > 0)
             m << "size=\"" << QString::number(item->size) << "\" ";
         m << "protocolInfo=\"http-get:*:" << item->mime << ":"
-          << dlnaContentFeaturesHeader(item->mime, item->seekSupported, false)
+          << dlnaContentFeaturesHeader(item->mime, item->seekSupported, true)
           << "\" ";
     }
 
