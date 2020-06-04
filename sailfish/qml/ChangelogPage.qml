@@ -29,18 +29,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.7.1")
-            }
-
-            LogItem {
-                title: "Spanish, Swedish, Slovenian, German, Russian and Chinese translations update"
-                description: "Many thanks to Carlos Gonzalez, Åke Engelbrektson, " +
-                             "Boštjan Štrumbelj, drosjesjaafoe, Вячеслав Диконов " +
-                             "and Rui Kon for providing updated translations."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.7.0")
+                text: qsTr("Version %1").arg("2.7.2")
             }
 
             LogItem {
@@ -90,6 +79,13 @@ Page {
                 description: "In the recent SFOS version Audio capture worked very poorly. " +
                              "Hopefully this issue is now resolved and Audio capture can be used to " +
                              "stream audio playback of any application without a problem."
+            }
+
+            LogItem {
+                title: "Spanish, Swedish, Slovenian, German, Russian and Chinese translations update"
+                description: "Many thanks to Carlos Gonzalez, Åke Engelbrektson, " +
+                             "Boštjan Štrumbelj, drosjesjaafoe, Вячеслав Диконов " +
+                             "and Rui Kon for providing updated translations."
             }
 
             SectionHeader {
