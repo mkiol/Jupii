@@ -12,6 +12,7 @@
 #include <QScreen>
 #include <QStandardPaths>
 #include <QDir>
+#include <QUrl>
 
 extern "C" {
 #include <libavutil/dict.h>
@@ -33,6 +34,9 @@ extern "C" {
 #include "utils.h"
 #include "contentserver.h"
 
+#ifdef DESKTOP
+#include <X11/Xlib.h>
+#endif
 
 ScreenCaster::ScreenCaster(QObject *parent) : QObject(parent)
 {
@@ -116,7 +120,12 @@ ScreenCaster::~ScreenCaster()
 
 void ScreenCaster::initVideoSize()
 {
+#ifdef DESKTOP
+    Screen* s = DefaultScreenOfDisplay(XOpenDisplay(nullptr));
+    video_size = QSize(s->width, s->height);
+#else
     video_size = QGuiApplication::primaryScreen()->size();
+#endif
     qDebug() << "Screen video size:" << video_size;
 
     if (video_size.width() < video_size.height()) {
@@ -146,12 +155,14 @@ void ScreenCaster::initVideoSize()
         }
     }
 
+#ifdef SAILFISH
     if (res_div > 1) {
         video_size.setHeight(video_size.height() / res_div);
         video_size.setWidth(video_size.width() / res_div);
         yoff = yoff / res_div;
         xoff = xoff / res_div;
     }
+#endif
 }
 
 bool ScreenCaster::init()
@@ -170,6 +181,7 @@ bool ScreenCaster::init()
     skipped_frames = 0;
 
     quality = s->getScreenQuality();
+#ifdef SAILFISH
     if (quality < 2) {
         res_div = 4;
         trans_mode = Qt::FastTransformation;
@@ -194,6 +206,15 @@ bool ScreenCaster::init()
 
     if (s->getScreenAudio())
         skipped_frames_max += 5;
+#else
+    if (quality < 2) {
+        res_div = 4;
+    } else if (quality < 3) {
+        res_div = 2;
+    } else {
+        res_div = 1;
+    }
+#endif
 
     initVideoSize();
 
@@ -208,7 +229,6 @@ bool ScreenCaster::init()
     AVDictionary* options = nullptr;
 
 #ifdef SAILFISH
-
     bgImg = QImage(video_size, QImage::Format_RGB32); bgImg.fill(Qt::black);
 
     auto in_video_codec = avcodec_find_decoder(AV_CODEC_ID_RAWVIDEO);
@@ -316,8 +336,8 @@ bool ScreenCaster::init()
         }
 
         in_audio_codec_ctx->channels = PulseAudioSource::sampleSpec.channels;
-        in_audio_codec_ctx->channel_layout = av_get_default_channel_layout(in_audio_codec_ctx->channels);
-        in_audio_codec_ctx->sample_rate = PulseAudioSource::sampleSpec.rate;
+        in_audio_codec_ctx->channel_layout = uint64_t(av_get_default_channel_layout(in_audio_codec_ctx->channels));
+        in_audio_codec_ctx->sample_rate = int(PulseAudioSource::sampleSpec.rate);
         in_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
         in_audio_codec_ctx->time_base.num = 1;
         in_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
@@ -362,8 +382,8 @@ bool ScreenCaster::init()
     out_video_stream->id = 0;
     out_video_codec_ctx = out_video_stream->codec;
     out_video_codec_ctx->pix_fmt  = AV_PIX_FMT_YUV420P;
-    out_video_codec_ctx->width = video_size.width();
-    out_video_codec_ctx->height = video_size.height();
+    out_video_codec_ctx->width = video_size.width()/res_div;
+    out_video_codec_ctx->height = video_size.height()/res_div;
     out_video_codec_ctx->flags = AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS;
     //out_video_codec_ctx->gop_size = 25;
     //out_video_codec_ctx->max_b_frames = 3;
@@ -394,7 +414,6 @@ bool ScreenCaster::init()
     qDebug() << " height:" << out_video_codec_ctx->height;
     qDebug() << " gop_size:" << out_video_codec_ctx->gop_size;
     qDebug() << " max_b_frames:" << out_video_codec_ctx->max_b_frames;
-    qDebug() << " b_frame_strategy:" << out_video_codec_ctx->b_frame_strategy;
     qDebug() << " time_base.num:" << out_video_codec_ctx->time_base.num;
     qDebug() << " time_base.den:" << out_video_codec_ctx->time_base.den;
 
@@ -402,7 +421,7 @@ bool ScreenCaster::init()
                                           out_video_codec_ctx->width,
                                           out_video_codec_ctx->height, 32);
 
-    video_outbuf = (uint8_t*)av_malloc(nbytes);
+    video_outbuf = new uint8_t[nbytes];
     if (!video_outbuf) {
         qWarning() << "Unable to allocate memory";
         return false;
@@ -425,7 +444,7 @@ bool ScreenCaster::init()
     video_sws_ctx = sws_getContext(in_video_codec_ctx->width, in_video_codec_ctx->height,
                         in_video_codec_ctx->pix_fmt, out_video_codec_ctx->width,
                         out_video_codec_ctx->height, out_video_codec_ctx->pix_fmt,
-                        SWS_BICUBIC, nullptr, nullptr, nullptr);
+                        SWS_LANCZOS, nullptr, nullptr, nullptr);
     if (!video_sws_ctx) {
         qWarning() << "Error in sws_getContext";
         return false;
@@ -911,20 +930,13 @@ void ScreenCaster::writeVideoData()
         video_pkt_start_time = curr_time;
     }
 
-    int video_delay = (curr_time - video_pkt_time)/video_pkt_duration;
-    bool video_delayed = havePrevVideoPkt ? video_delay > 0 : false;
     bool audio_delayed = false;
-
     if (audioEnabled() && audio_pkt_time != 0 && havePrevVideoPkt) {
         int64_t video_pkt_time_a = av_rescale_q(video_pkt_time, AVRational{1, 1000000},
                                       AVRational{1, out_audio_codec_ctx->sample_rate});
-        int audio_video_delay = (video_pkt_time_a - audio_pkt_time)/audio_pkt_duration;
+        int64_t audio_video_delay = (video_pkt_time_a - audio_pkt_time)/audio_pkt_duration;
         audio_delayed = audio_video_delay > 2;
     }
-
-    /*qDebug() << "video_delay:" << video_delay;
-    qDebug() << "audio_delayed:" << audio_delayed;
-    qDebug() << "video_delayed:" << video_delayed;*/
 
     if (audio_delayed) {
         emit readNextVideoData();
@@ -946,11 +958,8 @@ void ScreenCaster::writeVideoData()
                 if (ret == 0) {
                     //qDebug() << "Video frame decoded";
                     sws_scale(video_sws_ctx, in_frame->data, in_frame->linesize, 0,
-                              out_video_codec_ctx->height, in_frame_s->data,
+                              in_video_codec_ctx->height, in_frame_s->data,
                               in_frame_s->linesize);
-                    in_frame_s->width = in_frame->width;
-                    in_frame_s->height = in_frame->width;
-                    in_frame_s->format = in_frame->format;
                     av_frame_copy_props(in_frame_s, in_frame);
                     av_init_packet(&video_out_pkt);
                     ret = avcodec_send_frame(out_video_codec_ctx, in_frame_s);
@@ -1009,7 +1018,7 @@ void ScreenCaster::writeVideoData()
 
 bool ScreenCaster::writeVideoData2()
 {
-    int ndelay = (av_gettime() - video_pkt_time)/video_pkt_duration;
+    int64_t ndelay = (av_gettime() - video_pkt_time)/video_pkt_duration;
     //qDebug() << "video ndelay:" << ndelay;
     ndelay = ndelay < 0 ? 0 : ndelay;
 

@@ -40,6 +40,7 @@ int SettingsDialog::exec()
     ui->cropCheckBox->setCheckState(s->getScreenCropTo169() > 0 ? Qt::Checked : Qt::Unchecked);
     ui->screenAudioCheckBox->setEnabled(screenEnabled);
     ui->screenAudioCheckBox->setCheckState(s->getScreenAudio() ? Qt::Checked : Qt::Unchecked);
+    ui->screenQualitySlider->setValue(s->getScreenQuality());
 
     // Interfaces
     auto infs = Utils::instance()->getNetworkIfs();
@@ -106,4 +107,10 @@ void SettingsDialog::on_contentDirCheckBox_toggled(bool checked)
 {
     auto s = Settings::instance();
     s->setContentDirSupported(checked);
+}
+
+void SettingsDialog::on_screenQualitySlider_valueChanged(int value)
+{
+    auto s = Settings::instance();
+    s->setScreenQuality(value);
 }

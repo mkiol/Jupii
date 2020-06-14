@@ -1118,7 +1118,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
             }
         }
     } else {
-        icon = QIcon(iconUrl);
+        icon = QIcon(iconUrl.toLocalFile());
     }
 #endif
     finalId = meta->itemType == ContentServer::ItemType_Upnp ||

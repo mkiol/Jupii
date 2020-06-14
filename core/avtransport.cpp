@@ -471,8 +471,12 @@ QString AVTransport::getCurrentDescription()
 
 QUrl AVTransport::getCurrentAlbumArtURI()
 {
+#ifdef SAILFISH
     const auto ai = PlaylistModel::instance()->getActiveItem();
     return ai ? ai->icon() : m_currentAlbumArtURI;
+#else
+    return m_currentAlbumArtURI;
+#endif
 }
 
 QString AVTransport::getCurrentAlbum()

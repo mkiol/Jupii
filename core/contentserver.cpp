@@ -3503,19 +3503,18 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl,
     QHash<QUrl, ContentServer::ItemMeta>::const_iterator it;
     auto itemType = itemTypeFromUrl(url);
     if (itemType == ItemType_LocalFile) {
-        if (QFile::exists(url.toLocalFile())) {
-            if (art) {
-                it = makeMetaUsingExtension(url);
-            } else {
-                it = makeItemMetaUsingTracker(url);
-                if (it == metaCache.end()) {
-                    qWarning() << "Cannot get meta using Tacker, so fallbacking to Taglib";
-                    it = makeItemMetaUsingTaglib(url);
-                }
-            }
+        if (art) {
+            it = makeMetaUsingExtension(url);
         } else {
-            qWarning() << "File doesn't exist, cannot create meta item";
-            it = metaCache.end();
+#ifdef SAILFISH
+            it = makeItemMetaUsingTracker(url);
+            if (it == metaCache.end()) {
+                qWarning() << "Cannot get meta using Tacker, so fallbacking to Taglib";
+                it = makeItemMetaUsingTaglib(url);
+            }
+#else
+            it = makeItemMetaUsingTaglib(url);
+#endif
         }
     } else if (itemType == ItemType_Mic) {
         qDebug() << "Mic URL detected";

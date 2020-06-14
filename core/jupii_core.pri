@@ -12,7 +12,7 @@ system("$$QT_BIN_DIR/qdbusxml2cpp" "$$PROJECTDIR/dbus/org.jupii.xml" -a $$CORE_D
 system("$$QT_BIN_DIR/qdbusxml2cpp" "$$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml" -p $$CORE_DIR/dbus_tracker_inf)
 
 desktop {
-    LIBS += -ltag -lpulse
+    LIBS += -ltag -lpulse -lX11
     INCLUDEPATH += /usr/include/taglib
     include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
     include($$PROJECTDIR/libs/x264/x264.pri)
