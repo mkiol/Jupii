@@ -376,8 +376,8 @@ class ContentServerWorker :
 #endif
 public:
     static ContentServerWorker* instance(QObject *parent = nullptr);
-    QHttpServer* server;
     QNetworkAccessManager* nam;
+    QHttpServer* server;
     static void adjustVolume(QByteArray *data, float factor, bool le = true);
     bool isStreamToRecord(const QUrl &id);
     bool isStreamRecordable(const QUrl &id);

@@ -2224,7 +2224,7 @@ bool ContentServer::fillAvDataFromCodec(const AVCodecParameters *codec,
     }
 
     data.path = videoPath + ".audio-extracted." + data.extension;
-    data.bitrate = codec->bit_rate;
+    data.bitrate = int(codec->bit_rate);
     data.channels = codec->channels;
 
     return true;
@@ -2384,13 +2384,13 @@ bool ContentServer::extractAudio(const QString& path,
     if (oc->oformat->flags & AVFMT_GLOBALHEADER)
         ast->codec->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 
-    qDebug() << "ast->codec->sample_fmt:" << ast->codec->sample_fmt;
+    /*qDebug() << "ast->codec->sample_fmt:" << ast->codec->sample_fmt;
     qDebug() << "ast->codec->bit_rate:" << ast->codec->bit_rate;
     qDebug() << "ast->codec->sample_rate:" << ast->codec->sample_rate;
     qDebug() << "ast->codec->channels:" << ast->codec->channels;
     qDebug() << "ast->codecpar->codec_tag:" << ast->codecpar->codec_tag;
     qDebug() << "ic->streams[aidx]->codecpar->codec_id:" << ic->streams[aidx]->codecpar->codec_id;
-    qDebug() << "ast->codecpar->codec_id:" << ast->codecpar->codec_id;
+    qDebug() << "ast->codecpar->codec_id:" << ast->codecpar->codec_id;*/
 
     qDebug() << "Extracted audio file will be:" << data.path;
 
@@ -2805,7 +2805,7 @@ bool ContentServer::writeMetaUsingTaglib(const QString &path, const QString &tit
                         art.close();
                         if (!bytes.isEmpty()) {
                             auto apf = new TagLib::ID3v2::AttachedPictureFrame();
-                            apf->setPicture(TagLib::ByteVector(bytes.constData(), bytes.size()));
+                            apf->setPicture(TagLib::ByteVector(bytes.constData(), uint32_t(bytes.size())));
                             apf->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
                             apf->setMimeType(mime.toStdString());
                             apf->setDescription("Cover");
@@ -2867,16 +2867,21 @@ bool ContentServer::writeMetaUsingTaglib(const QString &path, const QString &tit
 
 QString ContentServer::minResUrl(const UPnPClient::UPnPDirObject &item)
 {
-    int min_i;
-    int min_width;
-    int l = item.m_resources.size();
+    uint64_t l = item.m_resources.size();
 
-    for (int i = 0; i < l; ++i) {
+    if (l == 0) {
+        return QString();
+    }
+
+    uint64_t min_i = 0;
+    int min_width = std::numeric_limits<int>::max();
+
+    for (uint64_t i = 0; i < l; ++i) {
         std::string val; QSize();
         if (item.m_resources[i].m_uri.empty())
             continue;
-        if (item.getrprop(i, "resolution", val)) {
-            int pos = val.find('x');
+        if (item.getrprop(uint32_t(i), "resolution", val)) {
+            uint64_t pos = val.find('x');
             if (pos == std::string::npos) {
                 pos = val.find('X');
                 if (pos == std::string::npos)
@@ -3186,7 +3191,7 @@ ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
             ytd->terminate(url);
         }
 
-        disconnect(ytd, 0, loop.get(), 0);
+        disconnect(ytd, nullptr, loop.get(), nullptr);
     }
 
     qDebug() << "New url found by youtube-dl:" << newUrl << newTitle;
@@ -3292,7 +3297,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         qWarning() << "Timeout occured";
         reply->abort();
         reply->deleteLater();
-        disconnect(reply, 0, &loop, 0);
+        disconnect(reply, nullptr, &loop, nullptr);
         return metaCache.end();
     }
 
@@ -3962,7 +3967,7 @@ void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)
 
     while (!sr.atEnd()) {
         sr >> sample;
-        int32_t s = factor * static_cast<int32_t>(sample);
+        int32_t s = int32_t(factor * int32_t(sample));
         if (s > std::numeric_limits<int16_t>::max()) {
             sample = std::numeric_limits<int16_t>::max();
         } else if (s < std::numeric_limits<int16_t>::min()) {
@@ -4005,8 +4010,6 @@ void ContentServerWorker::dispatchPulseData(const void *data, int size)
         if (screenCaptureAudioEnabled)
             screenCaster->writeAudioData(d);
 #endif
-    } else {
-        qDebug() << "No audio capture";
     }
 }
 

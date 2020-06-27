@@ -36,7 +36,7 @@ private:
     AVFormatContext* out_format_ctx = nullptr;
     AVFrame* in_frame = nullptr;
     static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
-    int audio_frame_size = 0;
+    uint64_t audio_frame_size = 0;
     AVCodecContext* in_audio_codec_ctx = nullptr;
     AVCodecContext* out_audio_codec_ctx = nullptr;
     SwrContext* audio_swr_ctx = nullptr;

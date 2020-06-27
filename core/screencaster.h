@@ -73,7 +73,7 @@ private:
     AVFrame* in_frame_s = nullptr;
     SwsContext* video_sws_ctx = nullptr;
     uint8_t* video_outbuf = nullptr;
-    int audio_frame_size = 0; // 0 => audio disabled for screen casting
+    uint64_t audio_frame_size = 0; // 0 => audio disabled for screen casting
     int video_framerate = 0;
     QSize video_size;
     int xoff;

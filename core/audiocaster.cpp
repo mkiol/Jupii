@@ -86,8 +86,8 @@ bool AudioCaster::init()
     }
 
     in_audio_codec_ctx->channels = PulseAudioSource::sampleSpec.channels;
-    in_audio_codec_ctx->channel_layout = av_get_default_channel_layout(in_audio_codec_ctx->channels);
-    in_audio_codec_ctx->sample_rate = PulseAudioSource::sampleSpec.rate;
+    in_audio_codec_ctx->channel_layout = uint64_t(av_get_default_channel_layout(in_audio_codec_ctx->channels));
+    in_audio_codec_ctx->sample_rate = int(PulseAudioSource::sampleSpec.rate);
     in_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
     in_audio_codec_ctx->time_base.num = 1;
     in_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
@@ -116,7 +116,7 @@ bool AudioCaster::init()
     }
 
     const size_t outbuf_size = 500000;
-    uint8_t *outbuf = (uint8_t*)av_malloc(outbuf_size);
+    auto outbuf = new uint8_t[outbuf_size];
     if (!outbuf) {
         qWarning() << "Unable to allocate memory";
         return false;
@@ -179,8 +179,8 @@ bool AudioCaster::init()
     qDebug() << " audio_pkt_duration:" << audio_pkt_duration;
 
     audio_swr_ctx = swr_alloc();
-    av_opt_set_int(audio_swr_ctx, "in_channel_layout", in_audio_codec_ctx->channel_layout, 0);
-    av_opt_set_int(audio_swr_ctx, "out_channel_layout", out_audio_codec_ctx->channel_layout,  0);
+    av_opt_set_int(audio_swr_ctx, "in_channel_layout", int64_t(in_audio_codec_ctx->channel_layout), 0);
+    av_opt_set_int(audio_swr_ctx, "out_channel_layout", int64_t(out_audio_codec_ctx->channel_layout), 0);
     av_opt_set_int(audio_swr_ctx, "in_sample_rate", in_audio_codec_ctx->sample_rate, 0);
     av_opt_set_int(audio_swr_ctx, "out_sample_rate", out_audio_codec_ctx->sample_rate, 0);
     av_opt_set_sample_fmt(audio_swr_ctx, "in_sample_fmt",  in_audio_codec_ctx->sample_fmt, 0);
@@ -199,7 +199,7 @@ bool AudioCaster::init()
 
 int AudioCaster::write_packet_callback(void *opaque, uint8_t *buf, int buf_size)
 {
-    Q_UNUSED(opaque);
+    Q_UNUSED(opaque)
     auto worker = ContentServerWorker::instance();
     worker->sendAudioCaptureData(static_cast<void*>(buf), buf_size);
     return buf_size;
@@ -221,12 +221,12 @@ void AudioCaster::writeAudioData(const QByteArray& data)
 
 bool AudioCaster::writeAudioData2()
 {
-    while (audio_outbuf.size() >= audio_frame_size) {
+    while (uint64_t(audio_outbuf.size()) >= audio_frame_size) {
         const char* d = audio_outbuf.data();
         int ret = -1;
 
         AVPacket audio_in_pkt;
-        if (av_new_packet(&audio_in_pkt, audio_frame_size) < 0) {
+        if (av_new_packet(&audio_in_pkt, int32_t(audio_frame_size)) < 0) {
             qDebug() << "Error in av_new_packet";
             return false;
         }
@@ -279,7 +279,7 @@ bool AudioCaster::writeAudioData2()
             return false;
         }
 
-        audio_outbuf.remove(0, audio_frame_size);
+        audio_outbuf.remove(0, int32_t(audio_frame_size));
         audio_pkt_time += audio_pkt_duration;
 
         av_packet_unref(&audio_in_pkt);

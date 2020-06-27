@@ -128,10 +128,12 @@ void ScreenCaster::initVideoSize()
 #endif
     qDebug() << "Screen video size:" << video_size;
 
+#ifdef SAILFISH
     if (video_size.width() < video_size.height()) {
         qDebug() << "Portrait orientation detected, so transposing to landscape";
         video_size.transpose();
     }
+#endif
 
     xoff = 0;
     yoff = 0;
@@ -141,18 +143,34 @@ void ScreenCaster::initVideoSize()
         bool crop = trans_type > 1;
         qDebug() << "Transform to 16:9 ratio";
         int h = int((9.0/16.0)*video_size.width());
-        h -= h % 2;
         if (h <= video_size.height()) {
             if (crop)
                 yoff = (video_size.height() - h) / 2;
-            video_size.setHeight(h);
+
+            int off = h % 2;
+            yoff += off;
+            video_size.setHeight(h-off);
+
+            xoff = video_size.width() % 2;
+            video_size.setWidth(video_size.width() - xoff);
         } else {
             int w = int((16.0/9.0)*video_size.height());
-            w -= w % 2;
+
             if (crop)
                 xoff = (video_size.width() - w) / 2;
-            video_size.setWidth(w);
+
+            int off = w % 2;
+            xoff += off;
+            video_size.setWidth(w - off);
+
+            yoff = video_size.height() % 2;
+            video_size.setHeight(video_size.height() - yoff);
         }
+    } else {
+        xoff = video_size.width() % 2;
+        video_size.setWidth(video_size.width() - xoff);
+        yoff = video_size.height() % 2;
+        video_size.setHeight(video_size.height() - yoff);
     }
 
 #ifdef SAILFISH
@@ -273,10 +291,16 @@ bool ScreenCaster::init()
     }
     av_dict_free(&options);
 
-    int in_video_stream_idx = 0;
-    if (in_video_format_ctx->streams[in_video_stream_idx]->
-            codecpar->codec_type != AVMEDIA_TYPE_VIDEO) {
-        qWarning() << "x11grab stream[0] is not video";
+    int in_video_stream_idx = -1;
+    qDebug() << "x11grab streams count:" << in_video_format_ctx->nb_streams;
+    for (int i = 0; i < int(in_video_format_ctx->nb_streams); ++i) {
+        if (in_video_format_ctx->streams[i]->codecpar &&
+            in_video_format_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            in_video_stream_idx = i;
+        }
+    }
+    if (in_video_stream_idx < 0) {
+        qWarning() << "No video stream in x11grab";
         return false;
     }
 
@@ -493,17 +517,19 @@ bool ScreenCaster::init()
         av_dict_free(&options);
 
         in_audio_codec_ctx->frame_size = out_audio_codec_ctx->frame_size;
-        audio_frame_size = av_samples_get_buffer_size(nullptr,
-                                              in_audio_codec_ctx->channels,
-                                              out_audio_codec_ctx->frame_size,
-                                              in_audio_codec_ctx->sample_fmt, 0);
-        /*audio_pkt_duration = av_rescale_q(out_audio_codec_ctx->frame_size,
-                                          AVRational{1, out_audio_codec_ctx->sample_rate},
-                                          AVRational{1, 1000000});*/
+        int buff_size = av_samples_get_buffer_size(nullptr,
+                                                   in_audio_codec_ctx->channels,
+                                                   out_audio_codec_ctx->frame_size,
+                                                   in_audio_codec_ctx->sample_fmt, 0);
+        if (buff_size <= 0) {
+            qWarning() << "Error in av_samples_get_buffer_size:" << buff_size;
+            return false;
+        }
+        audio_frame_size = uint64_t(buff_size);
         audio_pkt_duration = out_audio_codec_ctx->frame_size; // time_base is 1/rate, so duration of 1 sample is 1
-        video_audio_ratio = av_rescale_q(video_pkt_duration,
+        video_audio_ratio = int(av_rescale_q(video_pkt_duration,
                                          AVRational{1, 1000000},
-                                         AVRational{1, out_audio_codec_ctx->sample_rate})/audio_pkt_duration;
+                                         AVRational{1, out_audio_codec_ctx->sample_rate})/audio_pkt_duration);
 
         qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;
         qDebug() << " codec_id:" << out_audio_codec_ctx->codec_id;
@@ -521,8 +547,8 @@ bool ScreenCaster::init()
         qDebug() << " video_audio_ratio:" << video_audio_ratio;
 
         audio_swr_ctx = swr_alloc();
-        av_opt_set_int(audio_swr_ctx, "in_channel_layout", in_audio_codec_ctx->channel_layout, 0);
-        av_opt_set_int(audio_swr_ctx, "out_channel_layout", out_audio_codec_ctx->channel_layout,  0);
+        av_opt_set_int(audio_swr_ctx, "in_channel_layout", int(in_audio_codec_ctx->channel_layout), 0);
+        av_opt_set_int(audio_swr_ctx, "out_channel_layout", int(out_audio_codec_ctx->channel_layout), 0);
         av_opt_set_int(audio_swr_ctx, "in_sample_rate", in_audio_codec_ctx->sample_rate, 0);
         av_opt_set_int(audio_swr_ctx, "out_sample_rate", out_audio_codec_ctx->sample_rate, 0);
         av_opt_set_sample_fmt(audio_swr_ctx, "in_sample_fmt",  in_audio_codec_ctx->sample_fmt, 0);
@@ -585,7 +611,7 @@ bool ScreenCaster::writeAudioData2()
 {
     //qDebug() << "audio_outbuf.size:" << audio_outbuf.size();
 
-    while (audio_outbuf.size() >= audio_frame_size) {
+    while (uint64_t(audio_outbuf.size()) >= audio_frame_size) {
         const char* d = audio_outbuf.data();
         int ret = -1;
 
@@ -611,7 +637,7 @@ bool ScreenCaster::writeAudioData2()
         }*/
 
         AVPacket audio_in_pkt;
-        if (av_new_packet(&audio_in_pkt, audio_frame_size) < 0) {
+        if (av_new_packet(&audio_in_pkt, int(audio_frame_size)) < 0) {
             qDebug() << "Error in av_new_packet";
             return false;
         }
@@ -676,7 +702,7 @@ bool ScreenCaster::writeAudioData2()
             }
         }
 
-        int audio_to_remove = samples_to_remove * audio_frame_size;
+        int audio_to_remove = samples_to_remove * int(audio_frame_size);
         if (audio_to_remove >= audio_outbuf.size())
             audio_outbuf.clear();
         else
