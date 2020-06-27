@@ -1,0 +1,7 @@
+FROM opensuse/tumbleweed:latest
+
+RUN zypper --non-interactive ar --no-gpgcheck -cfp 90 http://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/ packman
+RUN zypper --non-interactive ref && zypper --non-interactive in -y --no-recommends libqt5-qtbase-devel libqt5-qtbase-common-devel libqt5-qtmultimedia-devel libexpat-devel libtag-devel libmp3lame-devel libx264-devel libcurl-devel libQt5DBus-devel libbz2-devel tar bzip2
+
+# use ffmpeg provided by distro
+#RUN zypper --non-interactive in -y --no-recommends ffmpeg-4-libavcodec-devel ffmpeg-4-libavdevice-devel ffmpeg-4-libavfilter-devel ffmpeg-4-libavformat-devel ffmpeg-4-libavresample-devel ffmpeg-4-libavutil-devel ffmpeg-4-libswresample-devel ffmpeg-4-libswscale-devel

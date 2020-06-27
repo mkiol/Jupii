@@ -1,0 +1,6 @@
+FROM ubuntu:bionic
+
+RUN apt-get update -qq && apt-get -y install qt5-default qtmultimedia5-dev libexpat1-dev libcurl4-openssl-dev libtag1-dev libmp3lame-dev libx264-dev libbz2-dev libxcb-shm0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+
+# use ffmpeg provided by distro
+#RUN apt-get -y install libavcodec-dev libavdevice-dev libavfilter-dev libavformat-dev libavcodec-dev libavresample-dev libavutil-dev libswresample-dev libswscale-dev
