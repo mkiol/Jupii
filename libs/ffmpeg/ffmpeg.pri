@@ -4,14 +4,14 @@ INCLUDEPATH += $$FFMPEG_ROOT/src
 
 desktop {
     static_ffmpeg {
-        LIBS += -lz -lxcb -lxcb-shm -lxcb-xfixes -lxcb-shape -lmp3lame -lbz2
-        LIBS += -L$$FFMPEG_ROOT/build/amd64/ \
-                -l:libavformat.a \
+        LIBS += -L$$FFMPEG_ROOT/build/amd64/
+        LIBS += -l:libavformat.a \
                 -l:libavcodec.a \
                 -l:libswscale.a \
                 -l:libswresample.a \
                 -l:libavdevice.a \
                 -l:libavutil.a
+        LIBS += -lz -lxcb -lxcb-shm -lxcb-xfixes -lxcb-shape -lmp3lame -lbz2
     } else {
         LIBS += -lmp3lame -lavdevice -lavutil -lavformat -lavcodec -lswscale -lswresample
     }
