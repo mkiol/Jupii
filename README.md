@@ -41,7 +41,7 @@ Jupii relies on following open source libraries:
 
 - Sailfish OS packages are available for download from
   [OpenRepos](https://openrepos.net/content/mkiol/jupii) and Jolla Store.
-- Experimental Linux desktop binary packages (RPM, DEB and package for Arch)
+- Experimental Linux Desktop x86_64 binary packages for OpenSUSE Tumbleweed and Ubuntu 18.04
   can be download [here](https://github.com/mkiol/Jupii/tree/master/desktop/packages).
 
 ## Translations
