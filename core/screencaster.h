@@ -81,6 +81,7 @@ private:
     int trans_type;
     int quality;
     int res_div = 1;
+    QString x11_dpy;
     Qt::TransformationMode trans_mode = Qt::FastTransformation;
     int64_t video_pkt_time = 0;
     int64_t video_pkt_start_time = 0;

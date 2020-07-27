@@ -121,8 +121,11 @@ ScreenCaster::~ScreenCaster()
 void ScreenCaster::initVideoSize()
 {
 #ifdef DESKTOP
-    Screen* s = DefaultScreenOfDisplay(XOpenDisplay(nullptr));
+    Display* dpy = XOpenDisplay(nullptr);
+    Screen* s = DefaultScreenOfDisplay(dpy);
     video_size = QSize(s->width, s->height);
+    x11_dpy = QString::fromLocal8Bit(DisplayString(dpy));
+    qDebug() << "X11 display:" << x11_dpy;
 #else
     video_size = QGuiApplication::primaryScreen()->size();
 #endif
@@ -261,7 +264,7 @@ bool ScreenCaster::init()
         return false;
     }
 #else
-    auto x11grabUrl = QString(":0.0+%1,%2").arg(xoff).arg(yoff).toLatin1();
+    auto x11grabUrl = QString("%1+%2,%3").arg(x11_dpy).arg(xoff).arg(yoff).toLatin1();
     auto video_ssize = QString("%1x%2").arg(video_size.width())
             .arg(video_size.height()).toLatin1();
     qDebug() << "video size:" << video_ssize;
@@ -392,7 +395,9 @@ bool ScreenCaster::init()
     }
 
     auto out_video_codec = avcodec_find_encoder(AV_CODEC_ID_H264);
+    //auto out_video_codec = avcodec_find_encoder_by_name("libx264");
     //auto out_video_codec = avcodec_find_encoder_by_name("h264_omx");
+
     if (!out_video_codec) {
         qWarning() << "Error in avcodec_find_encoder for H264";
         return false;
