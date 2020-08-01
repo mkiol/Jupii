@@ -1,0 +1,218 @@
+{
+    "app-id": "org.mkiol.Jupii",
+    "runtime": "org.kde.Platform",
+    "runtime-version": "5.12",
+    "sdk": "org.kde.Sdk",
+    "command": "jupii",
+    "rename-desktop-file": "jupii.desktop",
+    "rename-icon": "jupii",
+    "rename-appdata-file": "jupii.metainfo.xml",
+    "finish-args": [
+        "--device=all",
+        "--share=ipc",
+        "--share=network",
+        "--socket=x11",
+        "--socket=pulseaudio"
+    ],
+    "modules": [
+        {
+            "name": "taglib",
+            "buildsystem": "cmake-ninja",
+            "builddir": "true",
+            "config-opts": [
+                "-DCMAKE_BUILD_TYPE=Release"
+            ],
+            "cleanup": [
+                "/bin",
+                "*.a",
+                "/include",
+                "/lib/pkgconfig",
+                "/share"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/taglib/taglib/archive/v1.11.1.tar.gz",
+                    "sha256": "b6d1a5a610aae6ff39d93de5efd0fdc787aa9e9dc1e7026fa4c961b26563526b"
+                }
+            ]
+        },
+        {
+            "name": "libx264",
+            "config-opts": [
+                "--enable-pic",
+                "--enable-static",
+                "--extra-cflags=-fno-finite-math-only"
+            ],
+            "cleanup": [
+                "/bin",
+                "*.a",
+                "/include",
+                "/lib/pkgconfig",
+                "/share"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://code.videolan.org/videolan/x264.git",
+                    "branch": "master"
+                }
+            ]
+        },
+        {
+            "name": "lame",
+            "config-opts": [
+                "--with-pic",
+                "--enable-static",
+                "--disable-shared",
+                "--disable-frontend"
+            ],
+            "cleanup": [
+                "/bin",
+                "*.a",
+                "*.la",
+                "/include",
+                "/lib/pkgconfig",
+                "/share"
+            ],
+            "sources": [
+                {
+                    "type": "svn",
+                    "url": "https://svn.code.sf.net/p/lame/svn/trunk/lame"
+                },
+                {
+                    "type": "patch",
+                    "path": "lame.patch"
+                }
+            ]
+        },
+        {
+            "name": "ffmpeg",
+            "config-opts": [
+                "--disable-programs",
+                "--disable-doc",
+                "--disable-everything",
+                "--enable-pic",
+                "--enable-gpl",
+                "--enable-protocol=file",
+                "--enable-encoder=libx264",
+                "--enable-encoder=aac",
+                "--enable-decoder=rawvideo",
+                "--enable-muxer=mp4",
+                "--enable-parser=h264",
+                "--disable-x86asm",
+                "--enable-nonfree",
+                "--enable-encoder=libx264rgb",
+                "--enable-indev=xcbgrab",
+                "--enable-rpath",
+                "--enable-libx264",
+                "--enable-muxer=mpegts",
+                "--enable-demuxer=aac",
+                "--enable-demuxer=avi",
+                "--enable-demuxer=h264",
+                "--enable-demuxer=m4v",
+                "--enable-demuxer=mov",
+                "--enable-demuxer=ogg",
+                "--enable-demuxer=mpegvideo",
+                "--enable-demuxer=matroska",
+                "--enable-demuxer=wav",
+                "--enable-decoder=pcm_u8",
+                "--enable-decoder=pcm_u32le",
+                "--enable-decoder=pcm_u32be",
+                "--enable-decoder=pcm_u24le",
+                "--enable-decoder=pcm_u24be",
+                "--enable-decoder=pcm_u16le",
+                "--enable-decoder=pcm_u16be",
+                "--enable-decoder=pcm_s8",
+                "--enable-decoder=pcm_s32le",
+                "--enable-decoder=pcm_s32be",
+                "--enable-decoder=pcm_s24le",
+                "--enable-decoder=pcm_s24be",
+                "--enable-decoder=pcm_s16le",
+                "--enable-decoder=pcm_s16be",
+                "--enable-decoder=pcm_f64le",
+                "--enable-decoder=pcm_f64be",
+                "--enable-decoder=pcm_f32le",
+                "--enable-decoder=pcm_f32be",
+                "--enable-demuxer=pcm_u32be",
+                "--enable-demuxer=pcm_u32le",
+                "--enable-demuxer=pcm_u8",
+                "--enable-demuxer=pcm_alaw",
+                "--enable-demuxer=pcm_f32be",
+                "--enable-demuxer=pcm_f32le",
+                "--enable-demuxer=pcm_f64be",
+                "--enable-demuxer=pcm_f64le",
+                "--enable-demuxer=pcm_s16be",
+                "--enable-demuxer=pcm_s16le",
+                "--enable-demuxer=pcm_s24be",
+                "--enable-demuxer=pcm_s24le",
+                "--enable-demuxer=pcm_s32be",
+                "--enable-demuxer=pcm_s32le",
+                "--enable-demuxer=pcm_s8",
+                "--enable-demuxer=pcm_u16be",
+                "--enable-demuxer=pcm_u16le",
+                "--enable-demuxer=pcm_u24be",
+                "--enable-demuxer=pcm_u24le",
+                "--enable-libmp3lame",
+                "--enable-encoder=libmp3lame",
+                "--enable-muxer=mp3",
+                "--enable-static",
+                "--disable-shared",
+                "--disable-debug"
+            ],
+            "cleanup": [
+                "/bin",
+                "*.a",
+                "/include",
+                "/lib/pkgconfig",
+                "/share",
+                "/lib/cmake"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://ffmpeg.org/releases/ffmpeg-4.1.3.tar.bz2",
+                    "sha256": "29a679685bd7bc29158110f367edf67b31b451f2176f9d79d0f342b9e22d6a2a"
+                }
+            ]
+        },
+        {
+            "name": "pupnp",
+            "config-opts": [
+                "--enable-pic",
+                "--enable-static",
+                "--disable-shared",
+                "--disable-samples"
+            ],
+            "cleanup": [
+                "/bin",
+                "*.a",
+                "*.la",
+                "/include",
+                "/lib/pkgconfig",
+                "/share"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/pupnp/pupnp.git",
+                    "tag": "release-1.6.25"
+                }
+            ]
+        },
+        {
+            "name": "jupii",
+            "buildsystem": "simple",
+            "build-commands": [
+                "mkdir -p build/flatpak",
+                "cd build/flatpak && qmake PREFIX=$FLATPAK_DEST ../../desktop/jupii.pro && make && make install"
+            ],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "../"
+                }
+            ]
+        }
+    ]
+}
