@@ -48,7 +48,7 @@ class Settings:
     Q_PROPERTY (int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY colorSchemeChanged)
 public:
 #ifdef SAILFISH
-    static constexpr char* HW_RELEASE_FILE = "/etc/hw-release";
+    static constexpr const char* HW_RELEASE_FILE = "/etc/hw-release";
 #endif
     static Settings* instance();
 

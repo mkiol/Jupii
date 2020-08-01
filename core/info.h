@@ -9,18 +9,18 @@
 #define INFO_H
 
 namespace Jupii {
-static const char* APP_NAME = "Jupii";
+static constexpr const char* APP_NAME = "Jupii";
 #ifdef QT_DEBUG
-static const char* APP_VERSION = "2.7.2 (debug)";
+static constexpr const char* APP_VERSION = "2.7.2 (debug)";
 #else
-static const char* APP_VERSION = "2.7.2";
+static constexpr const char* APP_VERSION = "2.7.2";
 #endif
-static const char* AUTHOR = "Michal Kosciesza";
-static const char* COPYRIGHT_YEAR = "2018-2020";
-static const char* SUPPORT_EMAIL = "jupii@mkiol.net";
-static const char* PAGE = "https://github.com/mkiol/Jupii";
-static const char* LICENSE = "Mozilla Public License 2.0";
-static const char* LICENSE_URL = "http://mozilla.org/MPL/2.0/";
+static constexpr const char* AUTHOR = "Michal Kosciesza";
+static constexpr const char* COPYRIGHT_YEAR = "2018-2020";
+static constexpr const char* SUPPORT_EMAIL = "jupii@mkiol.net";
+static constexpr const char* PAGE = "https://github.com/mkiol/Jupii";
+static constexpr const char* LICENSE = "Mozilla Public License 2.0";
+static constexpr const char* LICENSE_URL = "http://mozilla.org/MPL/2.0/";
 }
 
 #endif // INFO_H
