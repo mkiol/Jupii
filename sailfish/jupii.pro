@@ -1,17 +1,16 @@
 TARGET = harbour-jupii
 
-CONFIG += c++11 json no_lflags_merge object_parallel_to_source
+CONFIG += json no_lflags_merge object_parallel_to_source link_pkgconfig
 
 QT += dbus sql multimedia xml network
-
-PKGCONFIG += mlite5
 
 linux-g++-32: CONFIG += x86
 linux-g++: CONFIG += arm
 
 PROJECTDIR = $$PWD/..
 
-INCLUDEPATH += /usr/include/c++/9
+INCLUDEPATH += /usr/include/c++/8.3.0
+arm: INCLUDEPATH += /usr/include/c++/8.3.0/armv7hl-meego-linux-gnueabi
 
 CONFIG += sailfish screencast
 DEFINES += SAILFISH SCREENCAST
@@ -94,7 +93,8 @@ DEPENDPATH += $$INCLUDEPATH
 
 PKGCONFIG += \
     audioresource \
-    nemonotifications-qt5
+    nemonotifications-qt5 \
+    mlite5
 
 LIBS += -ldl
 

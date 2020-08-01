@@ -32,7 +32,16 @@ BuildRequires:  pkgconfig(audioresource)
 BuildRequires:  pkgconfig(nemonotifications-qt5)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(keepalive)
+BuildRequires:  pkgconfig(zlib)
+BuildRequires:  pkgconfig(expat)
 BuildRequires:  bzip2-devel
+BuildRequires:  gcc-c++
+BuildRequires:  libstdc++-devel
+BuildRequires:  glibc-devel
+BuildRequires:  cmake
+BuildRequires:  meson
+BuildRequires:  ninja
 BuildRequires:  desktop-file-utils
 
 %description

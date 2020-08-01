@@ -1,95 +1,86 @@
-LIBS += -lpthread -lcurl -lexpat
+LIBUPNPP_ROOT = $$PROJECTDIR/libs/libupnpp
+
+PKGCONFIG += libcurl expat
+LIBS += -lpthread
 
 QMAKE_CXXFLAGS += -std=c++11 -D_FILE_OFFSET_BITS=64 -pthread
 
 QMAKE_LFLAGS += -Wl,-zdefs
 
-libupnpp_BASE = ../libs/libupnpp
-pupnp_BASE = ../libs/pupnp
-
 libupnpp_HEADERS += \
-  $$libupnpp_BASE/libupnpp/control/avlastchg.hxx \
-  $$libupnpp_BASE/libupnpp/control/avtransport.hxx \
-  $$libupnpp_BASE/libupnpp/control/cdircontent.hxx \
-  $$libupnpp_BASE/libupnpp/control/cdirectory.hxx \
-  $$libupnpp_BASE/libupnpp/control/description.hxx \
-  $$libupnpp_BASE/libupnpp/control/device.hxx \
-  $$libupnpp_BASE/libupnpp/control/discovery.hxx \
-  $$libupnpp_BASE/libupnpp/control/httpdownload.hxx \
-  $$libupnpp_BASE/libupnpp/control/linnsongcast.hxx \
-  $$libupnpp_BASE/libupnpp/control/mediarenderer.hxx \
-  $$libupnpp_BASE/libupnpp/control/mediaserver.hxx \
-  $$libupnpp_BASE/libupnpp/control/ohplaylist.hxx \
-  $$libupnpp_BASE/libupnpp/control/ohproduct.hxx \
-  $$libupnpp_BASE/libupnpp/control/ohradio.hxx \
-  $$libupnpp_BASE/libupnpp/control/ohinfo.hxx \
-  $$libupnpp_BASE/libupnpp/control/ohreceiver.hxx \
-  $$libupnpp_BASE/libupnpp/control/ohsender.hxx \
-  $$libupnpp_BASE/libupnpp/control/ohtime.hxx \
-  $$libupnpp_BASE/libupnpp/control/ohvolume.hxx \
-  $$libupnpp_BASE/libupnpp/control/renderingcontrol.hxx \
-  $$libupnpp_BASE/libupnpp/control/service.hxx \
-  $$libupnpp_BASE/libupnpp/device/device.hxx \
-  $$libupnpp_BASE/libupnpp/device/vdir.hxx \
-  $$libupnpp_BASE/libupnpp/base64.hxx \
-  $$libupnpp_BASE/libupnpp/expatmm.hxx \
-  $$libupnpp_BASE/libupnpp/getsyshwaddr.h \
-  $$libupnpp_BASE/libupnpp/ixmlwrap.hxx \
-  $$libupnpp_BASE/libupnpp/log.h \
-  $$libupnpp_BASE/libupnpp/log.hxx \
-  $$libupnpp_BASE/libupnpp/md5.hxx \
-  $$libupnpp_BASE/libupnpp/smallut.h \
-  $$libupnpp_BASE/libupnpp/soaphelp.hxx \
-  $$libupnpp_BASE/libupnpp/upnpavutils.hxx \
-  $$libupnpp_BASE/libupnpp/upnpp_p.hxx \
-  $$libupnpp_BASE/libupnpp/upnpplib.hxx \
-  $$libupnpp_BASE/libupnpp/workqueue.h \
-  $$libupnpp_BASE/libupnpp/conf_post.h \
-  $$libupnpp_BASE/libupnpp/config.h
-
-#HEADERS += $$libupnpp_HEADERS
+  $$LIBUPNPP_ROOT/libupnpp/control/avlastchg.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/avtransport.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/cdircontent.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/cdirectory.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/description.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/device.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/discovery.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/httpdownload.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/linnsongcast.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/mediarenderer.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/mediaserver.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohplaylist.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohproduct.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohradio.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohinfo.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohreceiver.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohsender.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohtime.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohvolume.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/renderingcontrol.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/service.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/device/device.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/device/vdir.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/base64.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/expatmm.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/getsyshwaddr.h \
+  $$LIBUPNPP_ROOT/libupnpp/ixmlwrap.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/log.h \
+  $$LIBUPNPP_ROOT/libupnpp/log.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/md5.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/smallut.h \
+  $$LIBUPNPP_ROOT/libupnpp/soaphelp.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/upnpavutils.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/upnpp_p.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/upnpplib.hxx \
+  $$LIBUPNPP_ROOT/libupnpp/workqueue.h \
+  $$LIBUPNPP_ROOT/libupnpp/conf_post.h \
+  $$LIBUPNPP_ROOT/libupnpp/config.h
 
 SOURCES += \
-  $$libupnpp_BASE/libupnpp/control/avlastchg.cxx \
-  $$libupnpp_BASE/libupnpp/control/avtransport.cxx \
-  $$libupnpp_BASE/libupnpp/control/cdircontent.cxx \
-  $$libupnpp_BASE/libupnpp/control/cdirectory.cxx \
-  $$libupnpp_BASE/libupnpp/control/description.cxx \
-  $$libupnpp_BASE/libupnpp/control/device.cxx \
-  $$libupnpp_BASE/libupnpp/control/discovery.cxx \
-  $$libupnpp_BASE/libupnpp/control/httpdownload.cxx \
-  $$libupnpp_BASE/libupnpp/control/linnsongcast.cxx \
-  $$libupnpp_BASE/libupnpp/control/mediarenderer.cxx \
-  $$libupnpp_BASE/libupnpp/control/mediaserver.cxx \
-  $$libupnpp_BASE/libupnpp/control/ohplaylist.cxx \
-  $$libupnpp_BASE/libupnpp/control/ohproduct.cxx \
-  $$libupnpp_BASE/libupnpp/control/ohradio.cxx \
-  $$libupnpp_BASE/libupnpp/control/ohinfo.cxx \
-  $$libupnpp_BASE/libupnpp/control/ohreceiver.cxx \
-  $$libupnpp_BASE/libupnpp/control/ohsender.cxx \
-  $$libupnpp_BASE/libupnpp/control/ohtime.cxx \
-  $$libupnpp_BASE/libupnpp/control/ohvolume.cxx \
-  $$libupnpp_BASE/libupnpp/control/renderingcontrol.cxx \
-  $$libupnpp_BASE/libupnpp/control/service.cxx \
-  $$libupnpp_BASE/libupnpp/device/device.cxx \
-  $$libupnpp_BASE/libupnpp/device/vdir.cxx \
-  $$libupnpp_BASE/libupnpp/base64.cxx \
-  $$libupnpp_BASE/libupnpp/getsyshwaddr.cpp \
-  $$libupnpp_BASE/libupnpp/ixmlwrap.cxx \
-  $$libupnpp_BASE/libupnpp/log.cpp \
-  $$libupnpp_BASE/libupnpp/md5.cxx \
-  $$libupnpp_BASE/libupnpp/smallut.cpp \
-  $$libupnpp_BASE/libupnpp/soaphelp.cxx \
-  $$libupnpp_BASE/libupnpp/upnpavutils.cxx \
-  $$libupnpp_BASE/libupnpp/upnpplib.cxx
+  $$LIBUPNPP_ROOT/libupnpp/control/avlastchg.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/avtransport.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/cdircontent.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/cdirectory.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/description.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/device.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/discovery.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/httpdownload.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/linnsongcast.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/mediarenderer.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/mediaserver.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohplaylist.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohproduct.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohradio.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohinfo.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohreceiver.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohsender.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohtime.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/ohvolume.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/renderingcontrol.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/control/service.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/device/device.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/device/vdir.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/base64.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/getsyshwaddr.cpp \
+  $$LIBUPNPP_ROOT/libupnpp/ixmlwrap.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/log.cpp \
+  $$LIBUPNPP_ROOT/libupnpp/md5.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/smallut.cpp \
+  $$LIBUPNPP_ROOT/libupnpp/soaphelp.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/upnpavutils.cxx \
+  $$LIBUPNPP_ROOT/libupnpp/upnpplib.cxx
 
 INCLUDEPATH += \
-  $$libupnpp_BASE \
-  $$libupnpp_BASE/libupnpp
-
-INCLUDEPATH += \
-  $$pupnp_BASE \
-  $$pupnp_BASE/upnp \
-  $$pupnp_BASE/ixml \
-  $$pupnp_BASE/threadutil
-
+  $$LIBUPNPP_ROOT \
+  $$LIBUPNPP_ROOT/libupnpp

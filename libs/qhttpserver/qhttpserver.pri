@@ -1,21 +1,21 @@
-QHTTPSERVER_BASE = ../libs/qhttpserver
+QHTTPSERVER_ROOT = $$PROJECTDIR/libs/qhttpserver
 
-INCLUDEPATH += $$QHTTPSERVER_BASE/http-parser $$QHTTPSERVER_BASE/src
+INCLUDEPATH += $$QHTTPSERVER_ROOT/http-parser $$QHTTPSERVER_ROOT/src
 
-PRIVATE_HEADERS += $$QHTTPSERVER_BASE/http-parser/http_parser.h \
-                   $$QHTTPSERVER_BASE/src/qhttpconnection.h
+PRIVATE_HEADERS += $$QHTTPSERVER_ROOT/http-parser/http_parser.h \
+                   $$QHTTPSERVER_ROOT/src/qhttpconnection.h
 
-PUBLIC_HEADERS += $$QHTTPSERVER_BASE/src/qhttpserver.h \
-                  $$QHTTPSERVER_BASE/src/qhttprequest.h \
-                  $$QHTTPSERVER_BASE/src/qhttpresponse.h \
-                  $$QHTTPSERVER_BASE/src/qhttpserverapi.h \
-                  $$QHTTPSERVER_BASE/src/qhttpserverfwd.h
+PUBLIC_HEADERS += $$QHTTPSERVER_ROOT/src/qhttpserver.h \
+                  $$QHTTPSERVER_ROOT/src/qhttprequest.h \
+                  $$QHTTPSERVER_ROOT/src/qhttpresponse.h \
+                  $$QHTTPSERVER_ROOT/src/qhttpserverapi.h \
+                  $$QHTTPSERVER_ROOT/src/qhttpserverfwd.h
 
 HEADERS = $$PRIVATE_HEADERS $$PUBLIC_HEADERS
 
 SOURCES += \
-    $$QHTTPSERVER_BASE/http-parser/http_parser.c \
-    $$QHTTPSERVER_BASE/src/qhttpconnection.cpp \
-    $$QHTTPSERVER_BASE/src/qhttprequest.cpp \
-    $$QHTTPSERVER_BASE/src/qhttpresponse.cpp \
-    $$QHTTPSERVER_BASE/src/qhttpserver.cpp
+    $$QHTTPSERVER_ROOT/http-parser/http_parser.c \
+    $$QHTTPSERVER_ROOT/src/qhttpconnection.cpp \
+    $$QHTTPSERVER_ROOT/src/qhttprequest.cpp \
+    $$QHTTPSERVER_ROOT/src/qhttpresponse.cpp \
+    $$QHTTPSERVER_ROOT/src/qhttpserver.cpp

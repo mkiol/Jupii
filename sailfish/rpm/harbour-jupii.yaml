@@ -30,10 +30,19 @@ PkgConfigBR:
   - nemonotifications-qt5
   - libpulse
   - wayland-client
+  - keepalive
+  - zlib
+  - expat
 
 # Build dependencies without a pkgconfig setup can be listed here
 PkgBR:
   - bzip2-devel
+  - gcc-c++
+  - libstdc++-devel
+  - glibc-devel
+  - cmake
+  - meson
+  - ninja
 
 # Runtime dependencies which are not automatically detected
 Requires:

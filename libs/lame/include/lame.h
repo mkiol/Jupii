@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/* $Id: lame.h,v 1.192 2017/08/31 14:14:46 robert Exp $ */
+/* $Id$ */
 
 #ifndef LAME_LAME_H
 #define LAME_LAME_H
@@ -1049,6 +1049,9 @@ typedef struct {
 
 /* required call to initialize decoder */
 hip_t CDECL hip_decode_init(void);
+/* With that you don't have to care about MP3 encoder/decoder delay
+   anymore. Only available with libmpg123 (returns NULL otherwise). */
+hip_t CDECL hip_decode_init_gapless(void);
 
 /* cleanup call to exit decoder  */
 int CDECL hip_decode_exit(hip_t gfp);

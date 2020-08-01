@@ -27,7 +27,8 @@
 #include <mach/mach.h>
 #endif
 
-#include <ixml.h>
+#include <upnp/upnp.h>
+#include <upnp/ixml.h>
 #include <upnp/upnptools.h>
 #include <upnp/upnpdebug.h>
 

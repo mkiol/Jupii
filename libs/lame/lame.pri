@@ -1,17 +1,25 @@
-INCLUDEPATH += $$PROJECTDIR/libs/lame/include
+LAME_ROOT = $$PROJECTDIR/libs/lame
 
-x86 {
-    LIBS += -L$$PROJECTDIR/libs/lame/build/i486/ -l:libmp3lame.so.0
-}
-arm {
-    LIBS += -L$$PROJECTDIR/libs/lame/build/armv7hl/ -l:libmp3lame.so.0
-}
+INCLUDEPATH += $$LAME_ROOT/include
 
 sailfish {
-    x86: liblame.files = $$PROJECTDIR/libs/lame/build/i486/*
-    arm: liblame.files = $$PROJECTDIR/libs/lame/build/armv7hl/*
+    HEADERS += $$LAME_ROOT/include/*.h
+
+    x86 {
+        LIBS += -L$$LAME_ROOT/build/i486/ -l:libmp3lame.so.0
+        liblame.files = $$LAME_ROOT/build/i486/*
+    }
+
+    arm {
+        LIBS += -L$$LAME_ROOT/build/armv7hl/ -l:libmp3lame.so.0
+        liblame.files = $$LAME_ROOT/build/armv7hl/*
+    }
+
     liblame.path = /usr/share/$${TARGET}/lib
     INSTALLS += liblame
 }
 
-HEADERS += $$PROJECTDIR/libs/lame/include/*.h
+desktop {
+    LIBS += -L$$LAME_ROOT/build/amd64 \
+            -l:libmp3lame.a
+}

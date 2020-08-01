@@ -3,7 +3,6 @@ CORE_DIR = ../core
 INCLUDEPATH += $$CORE_DIR
 
 include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
-include($$PROJECTDIR/libs/pupnp/pupnp.pri)
 include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
 
 message(Qt is installed in $$[QT_INSTALL_PREFIX])
@@ -19,20 +18,45 @@ system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.jupii.xml" -a $$CORE_DIR/dbus_jup
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml" -p $$CORE_DIR/dbus_tracker_inf)
 
 desktop {
-    LIBS += -ltag -lpulse -lX11
-    INCLUDEPATH += /usr/include/taglib
-    include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
-    include($$PROJECTDIR/libs/x264/x264.pri)
+    PKGCONFIG += libpulse x11
+
+    packagesExist(taglib) {
+        PKGCONFIG += taglib
+    } else {
+        message(Using static taglib)
+        include($$PROJECTDIR/libs/taglib/taglib.pri)
+    }
+
+    packagesExist(libupnp) {
+        PKGCONFIG += libupnp
+    } else {
+        message(Using static libupnp)
+        include($$PROJECTDIR/libs/pupnp/pupnp.pri)
+    }
+
+    packagesExist(libavformat libavcodec libswscale libswresample libavdevice libavutil x264) {
+        PKGCONFIG += x264 lame libavformat libavcodec libswscale \
+                     libswresample libavdevice libavutil
+    } else {
+        message(Using static ffmpeg x264 lame)
+        include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
+        include($$PROJECTDIR/libs/x264/x264.pri)
+        include($$PROJECTDIR/libs/lame/lame.pri)
+    }
 }
 
 sailfish {
-    LIBS += -lpulse -lkeepalive
+    PKGCONFIG += libpulse keepalive
+
+    include($$PROJECTDIR/libs/pupnp/pupnp.pri)
     include($$PROJECTDIR/libs/taglib/taglib.pri)
-    include($$PROJECTDIR/libs/lame/lame.pri)
     include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
-    include($$PROJECTDIR/libs/lame/lame.pri)
     include($$PROJECTDIR/libs/x264/x264.pri)
-    screencast: include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
+    include($$PROJECTDIR/libs/lame/lame.pri)
+
+    screencast {
+        include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
+    }
 }
 
 HEADERS += \
