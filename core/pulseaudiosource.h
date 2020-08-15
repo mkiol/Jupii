@@ -95,7 +95,7 @@ private:
     static bool checkIfShouldBeEnabled();
     static void muteConnectedSinkInput(const SinkInput &si);
     static void unmuteConnectedSinkInput();
-    static bool isBlacklisted(const char* name);
+    static bool blocked(const char* name);
     static void correctClientName(Client &client);
     static QString subscriptionEventToStr(pa_subscription_event_type_t t);
     static QList<PulseAudioSource::Client> activeClients();

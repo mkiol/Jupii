@@ -78,7 +78,7 @@ QString PulseAudioSource::subscriptionEventToStr(pa_subscription_event_type_t t)
 void PulseAudioSource::subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata)
 {
     Q_ASSERT(ctx);
-    Q_UNUSED(userdata);
+    Q_UNUSED(userdata)
 
     qDebug() << "Pulse-audio subscriptionCallback:" << subscriptionEventToStr(t) << idx;
 
@@ -110,7 +110,7 @@ void PulseAudioSource::subscriptionCallback(pa_context *ctx, pa_subscription_eve
 void PulseAudioSource::successSubscribeCallback(pa_context *ctx, int success, void *userdata)
 {
     Q_ASSERT(ctx);
-    Q_UNUSED(userdata);
+    Q_UNUSED(userdata)
 
     if (success) {
          pa_operation_unref(pa_context_get_sink_info_list(ctx, sinkInfoCallback, nullptr));
@@ -122,7 +122,7 @@ void PulseAudioSource::successSubscribeCallback(pa_context *ctx, int success, vo
 void PulseAudioSource::stateCallback(pa_context *ctx, void *userdata)
 {
     Q_ASSERT(ctx);
-    Q_UNUSED(userdata);
+    Q_UNUSED(userdata)
 
     switch (pa_context_get_state(ctx)) {
         case PA_CONTEXT_CONNECTING:
@@ -158,7 +158,7 @@ void PulseAudioSource::stateCallback(pa_context *ctx, void *userdata)
 void PulseAudioSource::streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata)
 {
     Q_ASSERT(stream);
-    Q_UNUSED(userdata);
+    Q_UNUSED(userdata)
 
     //qDebug() << "streamRequestCallback:" << nbytes;
 
@@ -196,8 +196,8 @@ void PulseAudioSource::stopRecordStream()
     if (stream) {
         unmuteConnectedSinkInput();
         qDebug() << "Disconnecting pulse-audio stream";
-        int ret;
-        if (ret = pa_stream_disconnect(stream) <  0) {
+        int ret = pa_stream_disconnect(stream);
+        if (ret < 0) {
             qWarning() << "Pulse-audio stream disconnect error:" << pa_strerror(ret);
         }
         pa_stream_unref(stream);
@@ -230,6 +230,8 @@ void PulseAudioSource::muteConnectedSinkInput(const SinkInput& si)
     } else {
         qDebug() << "Cannot mute";
     }
+#else
+    Q_UNUSED(si)
 #endif
 }
 
@@ -288,9 +290,9 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
 
     qDebug() << "New monitor source:" << source;
     int ret;
-    if (ret = pa_stream_set_monitor_stream(stream, si.idx) < 0) {
+    if ((ret = pa_stream_set_monitor_stream(stream, si.idx)) < 0) {
         qCritical() << "Pulse-audio stream set monitor error:" << pa_strerror(ret);
-    } else if (ret = pa_stream_connect_record(stream, nullptr, nullptr, PA_STREAM_NOFLAGS) < 0) {
+    } else if ((ret = pa_stream_connect_record(stream, nullptr, nullptr, PA_STREAM_NOFLAGS)) < 0) {
         qCritical() << "Pulse-audio stream connect record error:" << pa_strerror(ret);
     } else {
         qDebug() << "Sink input successfully connected";
@@ -299,7 +301,7 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
     }
 
     // something went wrong, so reseting stream
-    if (ret = pa_stream_disconnect(stream) < 0) {
+    if ((ret = pa_stream_disconnect(stream)) < 0) {
         qWarning() << "Pulse-audio stream disconnect error:" << pa_strerror(ret);
     }
     pa_stream_unref(stream);
@@ -313,7 +315,7 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
 void PulseAudioSource::sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, int eol, void *userdata)
 {
     Q_ASSERT(ctx);
-    Q_UNUSED(userdata);
+    Q_UNUSED(userdata)
 
     if (!eol) {
         qDebug() << "sinkInfoCallback:";
@@ -327,7 +329,7 @@ void PulseAudioSource::sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, 
 void PulseAudioSource::sinkInputInfoCallback(pa_context *ctx, const pa_sink_input_info *i, int eol, void *userdata)
 {
     Q_ASSERT(ctx);
-    Q_UNUSED(userdata);
+    Q_UNUSED(userdata)
 
     if (!eol) {
         qDebug() << "sinkInputInfoCallback:";
@@ -415,7 +417,7 @@ QList<PulseAudioSource::Client> PulseAudioSource::activeClients()
     return list;
 }
 
-bool PulseAudioSource::isBlacklisted(const char* name)
+bool PulseAudioSource::blocked(const char* name)
 {
 #ifdef SAILFISH
     if (!strcmp(name, "ngfd") ||
@@ -427,7 +429,7 @@ bool PulseAudioSource::isBlacklisted(const char* name)
         return true;
     }
 #else // SAILFISH
-    if (!strcmp(name, "speech-dispatcher-dummy")
+    if (!strncmp(name, "speech-dispatcher", 17)
 #ifdef QT_DEBUG
         || !strcmp(name, "Kodi")
 #endif
@@ -456,7 +458,7 @@ void PulseAudioSource::clientInfoCallback(pa_context *ctx, const pa_client_info 
                                           int eol, void *userdata)
 {
     Q_ASSERT(ctx);
-    Q_UNUSED(userdata);
+    Q_UNUSED(userdata)
 
     if (!eol) {
         qDebug() << "clientInfoCallback:";
@@ -466,7 +468,7 @@ void PulseAudioSource::clientInfoCallback(pa_context *ctx, const pa_client_info 
         qDebug() << "  props:\n" << props;
         pa_xfree(props);
 
-        if (!isBlacklisted(i->name)) {
+        if (!blocked(i->name)) {
             auto& client = clients[i->index];
             client.idx = i->index;
 
