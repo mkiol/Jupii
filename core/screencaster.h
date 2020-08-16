@@ -98,7 +98,9 @@ private:
 
     //static int read_packet_callback(void *opaque, uint8_t *buf, int buf_size);
     static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
+    void tuneQuality();
     void initVideoSize();
+    bool initEncoder(const char *name);
     bool writeAudioData2();
     bool writeAudioData3();
     bool writeVideoData2();

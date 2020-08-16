@@ -21,6 +21,7 @@ extern "C" {
 #include <libavutil/imgutils.h>
 #include <libavutil/timestamp.h>
 #include <libavutil/time.h>
+#include <libavutil/error.h>
 }
 
 #ifdef SAILFISH
@@ -186,18 +187,9 @@ void ScreenCaster::initVideoSize()
 #endif
 }
 
-bool ScreenCaster::init()
+void ScreenCaster::tuneQuality()
 {
-    qDebug() << "ScreenCaster init";
-
-    char errbuf[50];
-    int ret = 0;
-
-    // in video
-
     auto s = Settings::instance();
-    auto video_framerate = s->getScreenFramerate();
-    video_pkt_duration = av_rescale_q(1, AVRational{1, video_framerate}, AVRational{1, 1000000});
 
     skipped_frames = 0;
 
@@ -236,7 +228,87 @@ bool ScreenCaster::init()
         res_div = 1;
     }
 #endif
+}
 
+bool ScreenCaster::initEncoder(const char *name)
+{
+    qDebug() << "Trying encoder:" << name;
+
+    auto out_video_codec = avcodec_find_encoder_by_name(name);
+
+    if (!out_video_codec) {
+        qWarning() << "Error in avcodec_find_encoder";
+        return false;
+    }
+
+    AVStream *out_video_stream = avformat_new_stream(out_format_ctx, out_video_codec);
+    if (!out_video_stream) {
+        qWarning() << "Error in avformat_new_stream for video";
+        return false;
+    }
+
+    // options
+
+    AVDictionary* options = nullptr;
+
+    if (!strcmp(out_video_codec->name, "libx264")) {
+        auto passLogfile = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).filePath(
+                    QString("passlogfile-%1.log").arg(Utils::instance()->randString())).toLatin1();
+        av_dict_set(&options, "preset", "ultrafast", 0);
+        av_dict_set(&options, "tune", "zerolatency", 0);
+        av_dict_set(&options, "passlogfile", passLogfile.constData(), 0);
+#ifdef SAILFISH
+        av_dict_set(&options, "g", "0", 0);
+#endif
+        av_dict_set(&options, "profile", "high", 0);
+    } else if (!strcmp(out_video_codec->name, "h264_nvenc")) {
+        av_dict_set(&options, "preset", "llhp", 0);
+        av_dict_set(&options, "rc", "cbr", 0);
+        av_dict_set(&options, "b", "24M", 0);
+        av_dict_set(&options, "profile", "high", 0);
+    } else {
+        qWarning() << "Cannot find valid H.264 encoder";
+        return false;
+    }
+
+    out_video_stream->id = 0;
+    out_video_codec_ctx = out_video_stream->codec;
+    out_video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+    out_video_codec_ctx->width = video_size.width()/res_div;
+    out_video_codec_ctx->height = video_size.height()/res_div;
+    out_video_codec_ctx->flags = AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS;
+    out_video_codec_ctx->time_base.num = 1;
+    out_video_codec_ctx->time_base.den = video_framerate;
+
+    char errbuf[50];
+    int ret = avcodec_open2(out_video_codec_ctx, out_video_codec, &options);
+    if (ret < 0) {
+        qWarning() << "Error in avcodec_open2 for out_video_codec_ctx:" << av_make_error_string(errbuf, 50, ret);
+        av_dict_free(&options);
+        return false;
+    }
+
+    av_dict_free(&options);
+
+    qDebug() << "Using encoder:" << out_video_codec->name;
+
+    return true;
+}
+
+bool ScreenCaster::init()
+{
+    qDebug() << "ScreenCaster init";
+
+    char errbuf[50];
+    int ret = 0;
+
+    // in video
+
+    auto s = Settings::instance();
+    video_framerate = s->getScreenFramerate();
+    video_pkt_duration = av_rescale_q(1, AVRational{1, video_framerate}, AVRational{1, 1000000});
+
+    tuneQuality();
     initVideoSize();
 
     qDebug() << "Screen quality:" << quality;
@@ -277,9 +349,6 @@ bool ScreenCaster::init()
 
     if (av_dict_set_int(&options, "framerate", video_framerate, 0) < 0 ||
         av_dict_set(&options, "video_size", video_ssize.data(), 0) < 0 ||
-        //av_dict_set(&options, "show_region", "1", 0) < 0 ||
-        //av_dict_set(&options, "region_border", "1", 0) < 0 ||
-        //av_dict_set(&options, "follow_mouse", "centered", 0) < 0 ||
         av_dict_set(&options, "draw_mouse", "1", 0) < 0) {
         qWarning() << "Error in av_dict_set";
         return false;
@@ -307,12 +376,12 @@ bool ScreenCaster::init()
         return false;
     }
 
-    /*qDebug() << "x11grab video stream:";
+    qDebug() << "x11grab video stream:";
     qDebug() << " id:" << in_video_format_ctx->streams[in_video_stream_idx]->id;
     qDebug() << " height:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->height;
     qDebug() << " width:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->width;
     qDebug() << " codec_id:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->codec_id;
-    qDebug() << " codec_type:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->codec_type;*/
+    qDebug() << " codec_type:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->codec_type;
 
     auto in_video_codec = avcodec_find_decoder(in_video_format_ctx->
                                                streams[in_video_stream_idx]->
@@ -327,13 +396,15 @@ bool ScreenCaster::init()
         qWarning() << "Error: in_video_codec_ctx is null";
         return false;
     }
+
+    qDebug() << "x11grab video stream pixel format:" << in_video_codec_ctx->pix_fmt;
 #endif
 
     in_video_codec_ctx->width = video_size.width();
     in_video_codec_ctx->height = video_size.height();
     in_video_codec_ctx->time_base.num = 1;
     in_video_codec_ctx->time_base.den = 1000000;
-    in_video_codec_ctx->pix_fmt = AV_PIX_FMT_RGB32;
+    in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
 
     ret = avcodec_open2(in_video_codec_ctx, in_video_codec, &options);
     if (ret < 0) {
@@ -394,45 +465,12 @@ bool ScreenCaster::init()
         return false;
     }
 
-    auto out_video_codec = avcodec_find_encoder(AV_CODEC_ID_H264);
-    //auto out_video_codec = avcodec_find_encoder_by_name("libx264");
-    //auto out_video_codec = avcodec_find_encoder_by_name("h264_omx");
-
-    if (!out_video_codec) {
-        qWarning() << "Error in avcodec_find_encoder for H264";
-        return false;
+    if (!initEncoder("h264_nvenc")) {
+        if (!initEncoder("libx264")) {
+            qWarning() << "Cannot init encoder";
+            return false;
+        }
     }
-
-    AVStream *out_video_stream = avformat_new_stream(out_format_ctx, out_video_codec);
-    if (!out_video_stream) {
-        qWarning() << "Error in avformat_new_stream for video";
-        return false;
-    }
-    out_video_stream->id = 0;
-    out_video_codec_ctx = out_video_stream->codec;
-    out_video_codec_ctx->pix_fmt  = AV_PIX_FMT_YUV420P;
-    out_video_codec_ctx->width = video_size.width()/res_div;
-    out_video_codec_ctx->height = video_size.height()/res_div;
-    out_video_codec_ctx->flags = AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS;
-    //out_video_codec_ctx->gop_size = 25;
-    //out_video_codec_ctx->max_b_frames = 3;
-    //out_video_codec_ctx->b_frame_strategy = 1;
-    out_video_codec_ctx->time_base.num = 1;
-    out_video_codec_ctx->time_base.den = video_framerate;
-
-    auto passLogfile = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).filePath(
-                QString("passlogfile-%1.log").arg(Utils::instance()->randString())).toLatin1();
-    av_dict_set(&options, "preset", "ultrafast", 0);
-    av_dict_set(&options, "tune", "zerolatency", 0);
-    av_dict_set(&options, "g", "0", 0);
-    av_dict_set(&options, "passlogfile", passLogfile.constData(), 0);
-    ret = avcodec_open2(out_video_codec_ctx, out_video_codec, &options);
-    if (ret < 0) {
-        qWarning() << "Error in avcodec_open2 for out_video_codec_ctx:" << av_make_error_string(errbuf, 50, ret);
-        av_dict_free(&options);
-        return false;
-    }
-    av_dict_free(&options);
 
     qDebug() << "Out video codec params:" << out_video_codec_ctx->codec_id;
     qDebug() << " codec_id:" << out_video_codec_ctx->codec_id;
@@ -470,10 +508,11 @@ bool ScreenCaster::init()
         return false;
     }
 
+    //TODO: Use HW-based scaler
     video_sws_ctx = sws_getContext(in_video_codec_ctx->width, in_video_codec_ctx->height,
                         in_video_codec_ctx->pix_fmt, out_video_codec_ctx->width,
                         out_video_codec_ctx->height, out_video_codec_ctx->pix_fmt,
-                        SWS_LANCZOS, nullptr, nullptr, nullptr);
+                        SWS_POINT, nullptr, nullptr, nullptr);
     if (!video_sws_ctx) {
         qWarning() << "Error in sws_getContext";
         return false;
@@ -614,8 +653,6 @@ void ScreenCaster::writeAudioData(const QByteArray& data)
 
 bool ScreenCaster::writeAudioData2()
 {
-    //qDebug() << "audio_outbuf.size:" << audio_outbuf.size();
-
     while (uint64_t(audio_outbuf.size()) >= audio_frame_size) {
         const char* d = audio_outbuf.data();
         int ret = -1;
@@ -630,16 +667,7 @@ bool ScreenCaster::writeAudioData2()
                     - 3 * audio_pkt_duration;
             ndelay = 3;
             start = true;
-        } /*else {
-            int audio_delay = (av_gettime() - audio_pkt_time)/audio_pkt_duration;
-            int audio_buff_size = audio_outbuf.size() / audio_frame_size;
-            qDebug() << "audio_buff_size:" << audio_buff_size;
-            qDebug() << "audio_delay:" << audio_delay;
-            if (audio_delay < -2) {
-                qWarning() << "Audio too early, so not sending audio pkt";
-                break;
-            }
-        }*/
+        }
 
         AVPacket audio_in_pkt;
         if (av_new_packet(&audio_in_pkt, int(audio_frame_size)) < 0) {
@@ -649,15 +677,12 @@ bool ScreenCaster::writeAudioData2()
 
         int samples_to_remove = 1;
         for (int i = 0; i < ndelay + 1; ++i) {
-            /*qDebug() << "Encoding new audio data";
-            qDebug() << "i:" << i;
-            qDebug() << "audio_pkt_time:" << audio_pkt_time;*/
-
+            //qDebug() << "Encoding new audio data";
             audio_in_pkt.dts = audio_pkt_time;
             audio_in_pkt.pts = audio_pkt_time;
             audio_in_pkt.duration = audio_pkt_duration;
 
-            memcpy(audio_in_pkt.data, d, audio_frame_size);
+            memcpy(audio_in_pkt.data, d, size_t(audio_frame_size));
 
             ret = avcodec_send_packet(in_audio_codec_ctx, &audio_in_pkt);
             if (ret == 0) {
@@ -769,34 +794,22 @@ void ScreenCaster::writeVideoData()
         video_pkt_start_time = curr_time;
     }
 
-    int video_delay = (curr_time - video_pkt_time)/video_pkt_duration;
+    int64_t video_delay = (curr_time - video_pkt_time)/video_pkt_duration;
     bool img_not_changed = havePrevVideoPkt &&
             (!currImgBuff || (currImgBuff && !currImgBuff->busy));
     bool video_delayed = havePrevVideoPkt ? video_delay > 0 : false;
     bool audio_delayed = false;
 
     if (audioEnabled() && audio_pkt_time != 0 && havePrevVideoPkt) {
-        /*int64_t curr_time_a = av_rescale_q(curr_time, AVRational{1, 1000000},
-                                      AVRational{1, out_audio_codec_ctx->sample_rate});*/
         int64_t video_pkt_time_a = av_rescale_q(video_pkt_time, AVRational{1, 1000000},
                                       AVRational{1, out_audio_codec_ctx->sample_rate});
-        //int audio_delay = (curr_time_a - audio_pkt_time)/audio_pkt_duration;
-        int audio_video_delay = (video_pkt_time_a - audio_pkt_time)/audio_pkt_duration;
-        int audio_buff_size = audio_outbuf.size() / audio_frame_size;
-        audio_delayed = audio_buff_size > 0;
-        /*qDebug() << "audio_delay:" << audio_delay;
-        qDebug() << "audio_buff_size:" << audio_buff_size;
-        qDebug() << "audio_video_delay:" << audio_video_delay;*/
+        int64_t audio_video_delay = (video_pkt_time_a - audio_pkt_time)/audio_pkt_duration;
+        audio_delayed = audio_outbuf.size() / int(audio_frame_size) > 0;
         if (audio_video_delay > 2 * video_audio_ratio) {
             qDebug() << "Skipping video frame because audio is delayed";
             return;
         }
     }
-
-    /*qDebug() << "video_delay:" << video_delay;
-    qDebug() << "img_not_changed:" << img_not_changed;
-    qDebug() << "audio_delayed:" << audio_delayed;
-    qDebug() << "video_delayed:" << video_delayed;*/
 
     if (!img_not_changed && !video_delayed && !audio_delayed && skipped_frames == 0) {
         //qDebug() << "Encoding new pkt";
@@ -812,7 +825,7 @@ void ScreenCaster::writeVideoData()
             return;
         }
 
-        memcpy(video_in_pkt.data, data, size);
+        memcpy(video_in_pkt.data, data, size_t(size));
         int ret = avcodec_send_packet(in_video_codec_ctx, &video_in_pkt);
         if (ret != 0 && ret != AVERROR(EAGAIN)) {
             qWarning() << "Error in avcodec_send_packet for video";
@@ -823,15 +836,18 @@ void ScreenCaster::writeVideoData()
         ret = avcodec_receive_frame(in_video_codec_ctx, in_frame);
         if (ret == 0) {
             //qDebug() << "Video frame decoded";
+            //int64_t t = av_gettime();
             sws_scale(video_sws_ctx, in_frame->data, in_frame->linesize, 0,
-                      out_video_codec_ctx->height, in_frame_s->data,
+                      in_video_codec_ctx->height, in_frame_s->data,
                       in_frame_s->linesize);
-            in_frame_s->pict_type = AV_PICTURE_TYPE_NONE;
-            in_frame_s->width = in_frame->width;
-            in_frame_s->height = in_frame->width;
-            in_frame_s->format = in_frame->format;
+            //qDebug() << "sws_scale duration:" << av_gettime() - t;
             av_frame_copy_props(in_frame_s, in_frame);
             av_init_packet(&video_out_pkt);
+
+            in_frame_s->format = out_video_codec_ctx->pix_fmt;
+            in_frame_s->width = out_video_codec_ctx->width;
+            in_frame_s->height = out_video_codec_ctx->height;
+
             ret = avcodec_send_frame(out_video_codec_ctx, in_frame_s);
             if (ret == 0 || ret == AVERROR(EAGAIN)) {
                 ret = avcodec_receive_packet(out_video_codec_ctx, &video_out_pkt);
@@ -949,12 +965,47 @@ bool ScreenCaster::event(QEvent *e)
     }
     return true;
 }
+
+bool ScreenCaster::writeVideoData2()
+{
+    int64_t ndelay = (av_gettime() - video_pkt_time)/video_pkt_duration;
+    //qDebug() << "video ndelay:" << ndelay;
+    ndelay = ndelay < 0 ? 0 : ndelay;
+
+    auto in_tb  = in_video_codec_ctx->time_base;
+    auto out_tb = out_format_ctx->streams[0]->time_base;
+
+    for (int i = 0; i < ndelay + 1; ++i) {
+        video_out_pkt.stream_index = 0; // video output stream
+        video_out_pkt.pos = -1;
+        video_out_pkt.pts = av_rescale_q_rnd(video_pkt_time, in_tb, out_tb,
+                         static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+        video_out_pkt.dts = av_rescale_q_rnd(video_pkt_time, in_tb, out_tb,
+                         static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+        video_out_pkt.duration = av_rescale_q(video_out_pkt.duration, in_tb, out_tb);
+
+        AVPacket pkt; av_packet_ref(&pkt, &video_out_pkt);
+
+        //int ret = av_interleaved_write_frame(out_format_ctx, &video_out_pkt);
+        int ret = av_interleaved_write_frame(out_format_ctx, &pkt);
+        if (ret < 0) {
+            qWarning() << "Error in av_write_frame for video";
+            return false;
+        }
+
+        video_pkt_time += video_pkt_duration;
+    }
+
+    return true;
+}
 #else
 void ScreenCaster::writeVideoData()
 {
     //char errbuf[50];
 
     int64_t curr_time = av_gettime();
+
+    //qDebug() << "writeVideoData: " << curr_time;
 
     if (video_pkt_time == 0) {
         video_pkt_time = curr_time;
@@ -982,24 +1033,30 @@ void ScreenCaster::writeVideoData()
     if (av_read_frame(in_video_format_ctx, &video_in_pkt) >= 0) {
         if (video_in_pkt.stream_index == 0) { // video in stream
             int ret = avcodec_send_packet(in_video_codec_ctx, &video_in_pkt);
-            //qDebug() << "avcodec_send_packet:" << av_make_error_string(errbuf, 50, ret);
             if (ret == 0 || ret == AVERROR(EAGAIN)) {
                 ret = avcodec_receive_frame(in_video_codec_ctx, in_frame);
-                //qDebug() << "avcodec_receive_frame:" << av_make_error_string(errbuf, 50, ret);
                 if (ret == 0) {
-                    //qDebug() << "Video frame decoded";
+                    //qDebug() << "Video frame decoded:" << av_gettime() - curr_time;
+                    //int64_t t = av_gettime();
                     sws_scale(video_sws_ctx, in_frame->data, in_frame->linesize, 0,
                               in_video_codec_ctx->height, in_frame_s->data,
                               in_frame_s->linesize);
+                    //qDebug() << "sws_scale duration:" << av_gettime() - t;
                     av_frame_copy_props(in_frame_s, in_frame);
                     av_init_packet(&video_out_pkt);
+
+                    in_frame_s->format = out_video_codec_ctx->pix_fmt;
+                    in_frame_s->width = out_video_codec_ctx->width;
+                    in_frame_s->height = out_video_codec_ctx->height;
+
                     ret = avcodec_send_frame(out_video_codec_ctx, in_frame_s);
-                    //qDebug() << "avcodec_send_frame:" << av_make_error_string(errbuf, 50, ret);
+
+                    av_init_packet(&video_out_pkt);
+
                     if (ret == 0 || ret == AVERROR(EAGAIN)) {
                         ret = avcodec_receive_packet(out_video_codec_ctx, &video_out_pkt);
-                        //qDebug() << "avcodec_receive_packet:" << av_make_error_string(errbuf, 50, ret);
                         if (ret == 0) {
-                            //qDebug() << "Video packet encoded";
+                            //qDebug() << "Video packet encoded:" << av_gettime() - curr_time;
                             havePrevVideoPkt = true;
                             if (!writeVideoData2()) {
                                 errorHandler();
@@ -1007,7 +1064,7 @@ void ScreenCaster::writeVideoData()
                             }
                             emit readNextVideoData();
                         } else if (ret == AVERROR(EAGAIN)) {
-                            //qDebug() << "Packet not ready";
+                            //qDebug() << "Packet not ready"
                             emit readNextVideoData();
                         } else {
                             qWarning() << "Error in avcodec_receive_packet for video";
@@ -1020,7 +1077,7 @@ void ScreenCaster::writeVideoData()
                         return;
                     }
                 } else if (ret == AVERROR(EAGAIN)) {
-                    //qDebug() << "Video frame not ready";
+                    //qDebug() << "Video frame not ready"
                     emit readNextVideoData();
                 } else {
                     qWarning() << "Error in avcodec_receive_frame for video";
@@ -1045,44 +1102,29 @@ void ScreenCaster::writeVideoData()
 
     av_packet_unref(&video_in_pkt);
 }
-#endif
 
 bool ScreenCaster::writeVideoData2()
 {
-    int64_t ndelay = (av_gettime() - video_pkt_time)/video_pkt_duration;
-    //qDebug() << "video ndelay:" << ndelay;
-    ndelay = ndelay < 0 ? 0 : ndelay;
-
     auto in_tb  = in_video_codec_ctx->time_base;
     auto out_tb = out_format_ctx->streams[0]->time_base;
 
-    for (int i = 0; i < ndelay + 1; ++i) {
-        //qDebug() << "i:" << i;
-        //qDebug() << "video_pkt_time:" << video_pkt_time;
-        video_out_pkt.stream_index = 0; // video output stream
-        video_out_pkt.pos = -1;
-        video_out_pkt.pts = av_rescale_q_rnd(video_pkt_time, in_tb, out_tb,
-                         static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
-        video_out_pkt.dts = av_rescale_q_rnd(video_pkt_time, in_tb, out_tb,
-                         static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
-        video_out_pkt.duration = av_rescale_q(video_out_pkt.duration, in_tb, out_tb);
+    video_out_pkt.stream_index = 0; // video output stream
+    video_out_pkt.pos = -1;
+    video_out_pkt.pts = av_rescale_q_rnd(video_pkt_time, in_tb, out_tb,
+                     static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+    video_out_pkt.dts = av_rescale_q_rnd(video_pkt_time, in_tb, out_tb,
+                     static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+    video_out_pkt.duration = av_rescale_q(video_out_pkt.duration, in_tb, out_tb);
 
-        /*qDebug() << "video_out_pkt.flags AV_PKT_FLAG_KEY:" << (video_out_pkt.flags & AV_PKT_FLAG_KEY);
-        qDebug() << "video_out_pkt.flags AV_PKT_FLAG_DISCARD:" << (video_out_pkt.flags & AV_PKT_FLAG_DISCARD);
-        qDebug() << "video_out_pkt.flags AV_PKT_FLAG_CORRUPT:" << (video_out_pkt.flags & AV_PKT_FLAG_CORRUPT);
-        qDebug() << "video_out_pkt.pts:" << video_out_pkt.pts;
-        qDebug() << "video_out_pkt.dts:" << video_out_pkt.dts;*/
+    int ret = av_interleaved_write_frame(out_format_ctx, &video_out_pkt);
 
-        AVPacket pkt; av_packet_ref(&pkt, &video_out_pkt);
-
-        int ret = av_interleaved_write_frame(out_format_ctx, &pkt);
-        if (ret < 0) {
-            qWarning() << "Error in av_write_frame for video";
-            return false;
-        }
-
-        video_pkt_time += video_pkt_duration;
+    if (ret < 0) {
+        qWarning() << "Error in av_write_frame for video";
+        return false;
     }
+
+    video_pkt_time += video_pkt_duration;
 
     return true;
 }
+#endif

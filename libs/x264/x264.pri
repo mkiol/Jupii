@@ -1,9 +1,10 @@
 #
 # SFOS:
 #
-# git checkout https://code.videolan.org/videolan/x264.git
+# git clone https://code.videolan.org/videolan/x264.git
 # cd x264
-# sb2 -t SailfishOS-[target] ./configure --enable-pic --enable-shared --enable-static --enable-strip
+# chmod u+x ./configure
+# sb2 -t SailfishOS-[target] ./configure --enable-pic --enable-shared --enable-strip
 # sb2 -t SailfishOS-[target] make
 # cp -L libx264.so.157 [dest]
 #
@@ -16,12 +17,12 @@ LIBS += -ldl
 
 sailfish {
     x86 {
-        LIBS += -L$$X264_ROOT/build/i486/ -l:libx264.so.157
+        LIBS += -L$$X264_ROOT/build/i486 -l:libx264.so.157
         libx264.files = $$X264_ROOT/build/i486/*
     }
 
     arm {
-        LIBS += -L$$X264_ROOT/build/armv7hl/ -l:libx264.so.157
+        LIBS += -L$$X264_ROOT/build/armv7hl -l:libx264.so.157
         libx264.files = $$X264_ROOT/build/armv7hl/*
     }
 

@@ -87,6 +87,24 @@
             ]
         },
         {
+            "name": "nv-codec-headers",
+            "buildsystem": "simple",
+            "cleanup": [
+                "/bin",
+                "/include",
+                "/lib/pkgconfig",
+                "/share"
+            ],
+            "build-commands": ["make install PREFIX=$FLATPAK_DEST"],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/FFmpeg/nv-codec-headers.git",
+                    "branch": "master"
+                }
+            ]
+        },
+        {
             "name": "ffmpeg",
             "config-opts": [
                 "--disable-programs",
@@ -100,7 +118,6 @@
                 "--enable-decoder=rawvideo",
                 "--enable-muxer=mp4",
                 "--enable-parser=h264",
-                "--disable-x86asm",
                 "--enable-nonfree",
                 "--enable-encoder=libx264rgb",
                 "--enable-indev=xcbgrab",
@@ -158,7 +175,11 @@
                 "--enable-muxer=mp3",
                 "--enable-static",
                 "--disable-shared",
-                "--disable-debug"
+                "--disable-debug",
+                "--enable-cuda",
+                "--enable-nvenc",
+                "--enable-encoder=h264_nvenc",
+                "--enable-encoder=h264_vaapi"
             ],
             "cleanup": [
                 "/bin",
