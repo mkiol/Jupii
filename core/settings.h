@@ -39,6 +39,7 @@ class Settings:
     Q_PROPERTY (bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY screenAudioChanged)
     Q_PROPERTY (bool screenSupported READ getScreenSupported WRITE setScreenSupported NOTIFY screenSupportedChanged)
     Q_PROPERTY (int screenQuality READ getScreenQuality WRITE setScreenQuality NOTIFY screenQualityChanged)
+    Q_PROPERTY (QString screenEncoder READ getScreenEncoder WRITE setScreenEncoder NOTIFY screenEncoderChanged)
     Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY (int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType NOTIFY albumQueryTypeChanged)
     Q_PROPERTY (int albumRecQueryType READ getRecQueryType WRITE setRecQueryType NOTIFY recQueryTypeChanged)
@@ -81,6 +82,9 @@ public:
 
     void setScreenAudio(bool value);
     bool getScreenAudio();
+
+    void setScreenEncoder(const QString &value);
+    QString getScreenEncoder();
 
     void setUseHWVolume(bool value);
     bool getUseHWVolume();
@@ -167,6 +171,7 @@ signals:
     void screenAudioChanged();
     void screenSupportedChanged();
     void screenQualityChanged();
+    void screenEncoderChanged();
     void remoteContentModeChanged();
     void albumQueryTypeChanged();
     void recQueryTypeChanged();

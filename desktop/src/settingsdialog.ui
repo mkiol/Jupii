@@ -56,7 +56,45 @@
      <property name="title">
       <string>Screen capture</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="screenEncoderLayout">
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Encoder</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="screenEncoderComboBox">
+          <property name="currentText">
+           <string>Auto</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Auto</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>libx264</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>libx264rgb</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>h264_nvenc</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
       <item>
        <layout class="QHBoxLayout" name="screenQualityLayout">
         <item>

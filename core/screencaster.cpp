@@ -230,7 +230,69 @@ void ScreenCaster::tuneQuality()
 #endif
 }
 
-bool ScreenCaster::initEncoder(const char *name)
+bool ScreenCaster::initVideoEncoder()
+{
+    encoder = ENC_UNKNOWN;
+
+    auto enc_name = Settings::instance()->getScreenEncoder();
+    qDebug() << "Configured encoder name:" << enc_name;
+
+    if (enc_name.isEmpty()) { // auto
+        if (!initVideoEncoder("h264_nvenc")) {
+            initVideoEncoder("libx264");
+        }
+    } else { // manual
+        initVideoEncoder(enc_name.toLocal8Bit().data());
+    }
+
+    if (encoder == ENC_UNKNOWN) {
+        qWarning() << "Cannot init encoder";
+        return false;
+    }
+
+    return true;
+}
+
+void ScreenCaster::setPixFormats()
+{
+    switch (encoder) {
+    case ENC_H264_X264:
+        out_video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+        in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
+#ifdef SAILFISH
+        bgImg = QImage(video_size, QImage::Format_RGB32);
+        bgImg.fill(Qt::black);
+#endif
+        break;
+    case ENC_H264_X264_RGB:
+        out_video_codec_ctx->pix_fmt = AV_PIX_FMT_RGB24;
+#ifdef SAILFISH
+        in_video_codec_ctx->pix_fmt = AV_PIX_FMT_RGB24;
+        bgImg = QImage(video_size, QImage::Format_RGB888);
+        bgImg.fill(Qt::black);
+#else
+        in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
+#endif
+        break;
+    case ENC_H264_NVENC:
+        out_video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+        in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
+#ifdef SAILFISH
+        bgImg = QImage(video_size, QImage::Format_RGB32);
+        bgImg.fill(Qt::black);
+#endif
+        break;
+    default:
+        out_video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+        in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
+#ifdef SAILFISH
+        bgImg = QImage(video_size, QImage::Format_RGB32);
+        bgImg.fill(Qt::black);
+#endif
+    }
+}
+
+bool ScreenCaster::initVideoEncoder(const char *name)
 {
     qDebug() << "Trying encoder:" << name;
 
@@ -252,6 +314,7 @@ bool ScreenCaster::initEncoder(const char *name)
     AVDictionary* options = nullptr;
 
     if (!strcmp(out_video_codec->name, "libx264")) {
+        encoder = ENC_H264_X264;
         auto passLogfile = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).filePath(
                     QString("passlogfile-%1.log").arg(Utils::instance()->randString())).toLatin1();
         av_dict_set(&options, "preset", "ultrafast", 0);
@@ -261,24 +324,45 @@ bool ScreenCaster::initEncoder(const char *name)
         av_dict_set(&options, "g", "0", 0);
 #endif
         av_dict_set(&options, "profile", "high", 0);
+    } else if (!strcmp(out_video_codec->name, "libx264rgb")) {
+        encoder = ENC_H264_X264_RGB;
+        auto passLogfile = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).filePath(
+                    QString("passlogfile-%1.log").arg(Utils::instance()->randString())).toLatin1();
+        av_dict_set(&options, "preset", "ultrafast", 0);
+        av_dict_set(&options, "tune", "zerolatency", 0);
+        av_dict_set(&options, "passlogfile", passLogfile.constData(), 0);
+#ifdef SAILFISH
+        av_dict_set(&options, "g", "0", 0);
+#endif
+        av_dict_set(&options, "profile", "high444", 0);
     } else if (!strcmp(out_video_codec->name, "h264_nvenc")) {
+        encoder = ENC_H264_NVENC;
         av_dict_set(&options, "preset", "llhp", 0);
         av_dict_set(&options, "rc", "cbr", 0);
         av_dict_set(&options, "b", "24M", 0);
         av_dict_set(&options, "profile", "high", 0);
+    } else if (!strcmp(out_video_codec->name, "h264_omx")) {
+        encoder = ENC_H264_OMX;
+        //TODO: OMX options
     } else {
-        qWarning() << "Cannot find valid H.264 encoder";
+        qWarning() << "Cannot find valid encoder";
         return false;
     }
 
     out_video_stream->id = 0;
     out_video_codec_ctx = out_video_stream->codec;
-    out_video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+#ifdef SAILFISH
+    out_video_codec_ctx->width = video_size.width();
+    out_video_codec_ctx->height = video_size.height();
+#else
     out_video_codec_ctx->width = video_size.width()/res_div;
     out_video_codec_ctx->height = video_size.height()/res_div;
+#endif
     out_video_codec_ctx->flags = AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS;
     out_video_codec_ctx->time_base.num = 1;
     out_video_codec_ctx->time_base.den = video_framerate;
+
+    setPixFormats();
 
     char errbuf[50];
     int ret = avcodec_open2(out_video_codec_ctx, out_video_codec, &options);
@@ -287,10 +371,177 @@ bool ScreenCaster::initEncoder(const char *name)
         av_dict_free(&options);
         return false;
     }
-
     av_dict_free(&options);
 
-    qDebug() << "Using encoder:" << out_video_codec->name;
+    qDebug() << "Successfully inited encoder:" << out_video_codec->name;
+
+    return true;
+}
+
+bool ScreenCaster::initInAudio()
+{
+    char errbuf[50];
+    int ret = 0;
+
+    auto in_audio_codec = avcodec_find_decoder(AV_CODEC_ID_PCM_S16LE);
+    if (!in_audio_codec) {
+        qWarning() << "Error in avcodec_find_decoder for audio";
+        return false;
+    }
+
+    in_audio_codec_ctx = avcodec_alloc_context3(in_audio_codec);
+    if (!in_audio_codec_ctx) {
+        qWarning() << "Error: avcodec_alloc_context3 is null";
+        return false;
+    }
+
+    in_audio_codec_ctx->channels = PulseAudioSource::sampleSpec.channels;
+    in_audio_codec_ctx->channel_layout = uint64_t(av_get_default_channel_layout(in_audio_codec_ctx->channels));
+    in_audio_codec_ctx->sample_rate = int(PulseAudioSource::sampleSpec.rate);
+    in_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
+    in_audio_codec_ctx->time_base.num = 1;
+    in_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
+
+    AVDictionary* options = nullptr;
+
+    ret = avcodec_open2(in_audio_codec_ctx, in_audio_codec, &options);
+    if (ret < 0) {
+        qWarning() << "Error in avcodec_open2 for in_audio_codec_ctx:" << av_make_error_string(errbuf, 50, ret);
+        return false;
+    }
+    av_dict_free(&options);
+
+    /*qDebug() << "In audio codec params:";
+    qDebug() << " channels:" << in_audio_codec_ctx->channels;
+    qDebug() << " channel_layout:" << in_audio_codec_ctx->channel_layout;
+    qDebug() << " sample_rate:" << in_audio_codec_ctx->sample_rate;
+    qDebug() << " codec_id:" << in_audio_codec_ctx->codec_id;
+    qDebug() << " codec_type:" << in_audio_codec_ctx->codec_type;
+    qDebug() << " sample_fmt:" << in_audio_codec_ctx->sample_fmt;
+    qDebug() << " frame_size:" << in_audio_codec_ctx->frame_size;
+    qDebug() << " time_base.num:" << in_audio_codec_ctx->time_base.num;
+    qDebug() << " time_base.den:" << in_audio_codec_ctx->time_base.den;*/
+
+    return true;
+}
+
+bool ScreenCaster::initOutAudio()
+{
+    char errbuf[50];
+    int ret = 0;
+
+    //auto out_audio_codec = avcodec_find_encoder(AV_CODEC_ID_AAC);
+    auto out_audio_codec = avcodec_find_encoder(AV_CODEC_ID_MP3);
+    if (!out_audio_codec) {
+        qWarning() << "Error in avcodec_find_encoder";
+        return false;
+    }
+
+    AVStream *out_audio_stream = avformat_new_stream(out_format_ctx, out_audio_codec);
+    if (!out_audio_stream) {
+        qWarning() << "Error in avformat_new_stream for audio";
+        return false;
+    }
+    out_audio_stream->id = 1;
+    out_audio_codec_ctx = out_audio_stream->codec;
+    out_audio_codec_ctx->channels = in_audio_codec_ctx->channels;
+    out_audio_codec_ctx->sample_rate = in_audio_codec_ctx->sample_rate;
+    out_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_FLTP;
+    out_audio_codec_ctx->flags = AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS;
+    out_audio_codec_ctx->channel_layout = in_audio_codec_ctx->channel_layout;
+    out_audio_codec_ctx->time_base.num = 1;
+    out_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
+
+    AVDictionary* options = nullptr;
+
+    av_dict_set(&options, "b", "128k", 0);
+    av_dict_set(&options, "q", "9", 0);
+    ret = avcodec_open2(out_audio_codec_ctx, out_audio_codec, &options);
+    if (ret < 0) {
+        qWarning() << "Error in avcodec_open2 for out_audio_codec_ctx:" << av_make_error_string(errbuf, 50, ret);
+        av_dict_free(&options);
+        return false;
+    }
+    av_dict_free(&options);
+
+    in_audio_codec_ctx->frame_size = out_audio_codec_ctx->frame_size;
+    int buff_size = av_samples_get_buffer_size(nullptr,
+                                               in_audio_codec_ctx->channels,
+                                               out_audio_codec_ctx->frame_size,
+                                               in_audio_codec_ctx->sample_fmt, 0);
+    if (buff_size <= 0) {
+        qWarning() << "Error in av_samples_get_buffer_size:" << buff_size;
+        return false;
+    }
+    audio_frame_size = uint64_t(buff_size);
+    audio_pkt_duration = out_audio_codec_ctx->frame_size; // time_base is 1/rate, so duration of 1 sample is 1
+    video_audio_ratio = int(av_rescale_q(video_pkt_duration,
+                                     AVRational{1, 1000000},
+                                     AVRational{1, out_audio_codec_ctx->sample_rate})/audio_pkt_duration);
+
+    qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;
+    qDebug() << " codec_id:" << out_audio_codec_ctx->codec_id;
+    qDebug() << " codec_type:" << out_audio_codec_ctx->codec_type;
+    qDebug() << " bit_rate:" << out_audio_codec_ctx->bit_rate;
+    qDebug() << " channels:" << out_audio_codec_ctx->channels;
+    qDebug() << " channel_layout:" << out_audio_codec_ctx->channel_layout;
+    qDebug() << " sample_rate:" << out_audio_codec_ctx->sample_rate;
+    qDebug() << " sample_fmt:" << out_audio_codec_ctx->sample_fmt;
+    qDebug() << " time_base.num:" << out_audio_codec_ctx->time_base.num;
+    qDebug() << " time_base.den:" << out_audio_codec_ctx->time_base.den;
+    qDebug() << " frame_size:" << out_audio_codec_ctx->frame_size;
+    qDebug() << " audio_frame_size:" << audio_frame_size;
+    qDebug() << " audio_pkt_duration:" << audio_pkt_duration;
+    qDebug() << " video_audio_ratio:" << video_audio_ratio;
+
+    audio_swr_ctx = swr_alloc();
+    av_opt_set_int(audio_swr_ctx, "in_channel_layout", int(in_audio_codec_ctx->channel_layout), 0);
+    av_opt_set_int(audio_swr_ctx, "out_channel_layout", int(out_audio_codec_ctx->channel_layout), 0);
+    av_opt_set_int(audio_swr_ctx, "in_sample_rate", in_audio_codec_ctx->sample_rate, 0);
+    av_opt_set_int(audio_swr_ctx, "out_sample_rate", out_audio_codec_ctx->sample_rate, 0);
+    av_opt_set_sample_fmt(audio_swr_ctx, "in_sample_fmt",  in_audio_codec_ctx->sample_fmt, 0);
+    av_opt_set_sample_fmt(audio_swr_ctx, "out_sample_fmt", out_audio_codec_ctx->sample_fmt,  0);
+    swr_init(audio_swr_ctx);
+
+    return true;
+}
+
+bool ScreenCaster::initScaler()
+{
+    //TODO: Use HW-based scaler
+
+    int nbytes = av_image_get_buffer_size(out_video_codec_ctx->pix_fmt,
+                                          out_video_codec_ctx->width,
+                                          out_video_codec_ctx->height, 32);
+
+    video_outbuf = new uint8_t[nbytes];
+    if (!video_outbuf) {
+        qWarning() << "Unable to allocate memory";
+        return false;
+    }
+
+    in_frame_s = av_frame_alloc();
+    if(!in_frame_s) {
+        qWarning() << "Error in av_frame_alloc";
+        return false;
+    }
+
+    if (av_image_fill_arrays(in_frame_s->data, in_frame_s->linesize,
+                                 video_outbuf, out_video_codec_ctx->pix_fmt,
+                                 out_video_codec_ctx->width,
+                                 out_video_codec_ctx->height, 1) < 0) {
+        qWarning() << "Error in av_image_fill_arrays";
+        return false;
+    }
+
+    video_sws_ctx = sws_getContext(in_video_codec_ctx->width, in_video_codec_ctx->height,
+                        in_video_codec_ctx->pix_fmt, out_video_codec_ctx->width,
+                        out_video_codec_ctx->height, out_video_codec_ctx->pix_fmt,
+                        SWS_POINT, nullptr, nullptr, nullptr);
+    if (!video_sws_ctx) {
+        qWarning() << "Error in sws_getContext";
+        return false;
+    }
 
     return true;
 }
@@ -322,8 +573,6 @@ bool ScreenCaster::init()
     AVDictionary* options = nullptr;
 
 #ifdef SAILFISH
-    bgImg = QImage(video_size, QImage::Format_RGB32); bgImg.fill(Qt::black);
-
     auto in_video_codec = avcodec_find_decoder(AV_CODEC_ID_RAWVIDEO);
     if (!in_video_codec) {
         qWarning() << "Error in avcodec_find_decoder for video";
@@ -400,11 +649,20 @@ bool ScreenCaster::init()
     qDebug() << "x11grab video stream pixel format:" << in_video_codec_ctx->pix_fmt;
 #endif
 
+    if (avformat_alloc_output_context2(&out_format_ctx, nullptr, "mpegts", nullptr) < 0) {
+        qWarning() << "Error in avformat_alloc_output_context2";
+        return false;
+    }
+
+    if (!initVideoEncoder()) {
+        qWarning() << "Cannot init video encoder";
+        return false;
+    }
+
     in_video_codec_ctx->width = video_size.width();
     in_video_codec_ctx->height = video_size.height();
     in_video_codec_ctx->time_base.num = 1;
     in_video_codec_ctx->time_base.den = 1000000;
-    in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
 
     ret = avcodec_open2(in_video_codec_ctx, in_video_codec, &options);
     if (ret < 0) {
@@ -418,59 +676,14 @@ bool ScreenCaster::init()
         return false;
     }
 
-    // in audio
-
     if (s->getScreenAudio()) {
-        auto in_audio_codec = avcodec_find_decoder(AV_CODEC_ID_PCM_S16LE);
-        if (!in_audio_codec) {
-            qWarning() << "Error in avcodec_find_decoder for audio";
+        if (!initInAudio()) {
+            qWarning() << "Error in in-audio init";
             return false;
         }
-
-        in_audio_codec_ctx = avcodec_alloc_context3(in_audio_codec);
-        if (!in_audio_codec_ctx) {
-            qWarning() << "Error: avcodec_alloc_context3 is null";
-            return false;
-        }
-
-        in_audio_codec_ctx->channels = PulseAudioSource::sampleSpec.channels;
-        in_audio_codec_ctx->channel_layout = uint64_t(av_get_default_channel_layout(in_audio_codec_ctx->channels));
-        in_audio_codec_ctx->sample_rate = int(PulseAudioSource::sampleSpec.rate);
-        in_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
-        in_audio_codec_ctx->time_base.num = 1;
-        in_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
-
-        ret = avcodec_open2(in_audio_codec_ctx, in_audio_codec, &options);
-        if (ret < 0) {
-            qWarning() << "Error in avcodec_open2 for in_audio_codec_ctx:" << av_make_error_string(errbuf, 50, ret);
-            return false;
-        }
-
-        /*qDebug() << "In audio codec params:";
-        qDebug() << " channels:" << in_audio_codec_ctx->channels;
-        qDebug() << " channel_layout:" << in_audio_codec_ctx->channel_layout;
-        qDebug() << " sample_rate:" << in_audio_codec_ctx->sample_rate;
-        qDebug() << " codec_id:" << in_audio_codec_ctx->codec_id;
-        qDebug() << " codec_type:" << in_audio_codec_ctx->codec_type;
-        qDebug() << " sample_fmt:" << in_audio_codec_ctx->sample_fmt;
-        qDebug() << " frame_size:" << in_audio_codec_ctx->frame_size;
-        qDebug() << " time_base.num:" << in_audio_codec_ctx->time_base.num;
-        qDebug() << " time_base.den:" << in_audio_codec_ctx->time_base.den;*/
     }
 
     // out
-
-    if (avformat_alloc_output_context2(&out_format_ctx, nullptr, "mpegts", nullptr) < 0) {
-        qWarning() << "Error in avformat_alloc_output_context2";
-        return false;
-    }
-
-    if (!initEncoder("h264_nvenc")) {
-        if (!initEncoder("libx264")) {
-            qWarning() << "Cannot init encoder";
-            return false;
-        }
-    }
 
     qDebug() << "Out video codec params:" << out_video_codec_ctx->codec_id;
     qDebug() << " codec_id:" << out_video_codec_ctx->codec_id;
@@ -484,39 +697,7 @@ bool ScreenCaster::init()
     qDebug() << " time_base.num:" << out_video_codec_ctx->time_base.num;
     qDebug() << " time_base.den:" << out_video_codec_ctx->time_base.den;
 
-    int nbytes = av_image_get_buffer_size(out_video_codec_ctx->pix_fmt,
-                                          out_video_codec_ctx->width,
-                                          out_video_codec_ctx->height, 32);
-
-    video_outbuf = new uint8_t[nbytes];
-    if (!video_outbuf) {
-        qWarning() << "Unable to allocate memory";
-        return false;
-    }
-
-    in_frame_s = av_frame_alloc();
-    if(!in_frame_s) {
-        qWarning() << "Error in av_frame_alloc";
-        return false;
-    }
-
-    if (av_image_fill_arrays(in_frame_s->data, in_frame_s->linesize,
-                                 video_outbuf, out_video_codec_ctx->pix_fmt,
-                                 out_video_codec_ctx->width,
-                                 out_video_codec_ctx->height, 1) < 0) {
-        qWarning() << "Error in av_image_fill_arrays";
-        return false;
-    }
-
-    //TODO: Use HW-based scaler
-    video_sws_ctx = sws_getContext(in_video_codec_ctx->width, in_video_codec_ctx->height,
-                        in_video_codec_ctx->pix_fmt, out_video_codec_ctx->width,
-                        out_video_codec_ctx->height, out_video_codec_ctx->pix_fmt,
-                        SWS_POINT, nullptr, nullptr, nullptr);
-    if (!video_sws_ctx) {
-        qWarning() << "Error in sws_getContext";
-        return false;
-    }
+    initScaler(); //TODO: Skip if scaling is not needed
 
     const size_t outbuf_size = 500000;
     uint8_t *outbuf = static_cast<uint8_t*>(av_malloc(outbuf_size));
@@ -528,77 +709,13 @@ bool ScreenCaster::init()
     out_format_ctx->pb = avio_alloc_context(outbuf, outbuf_size, 1, nullptr, nullptr,
                                             write_packet_callback, nullptr);
     if (s->getScreenAudio()) {
-        //auto out_audio_codec = avcodec_find_encoder(AV_CODEC_ID_AAC);
-        auto out_audio_codec = avcodec_find_encoder(AV_CODEC_ID_MP3);
-        if (!out_audio_codec) {
-            qWarning() << "Error in avcodec_find_encoder";
+        if (!initOutAudio()) {
+            qWarning() << "Error in out-audio init";
             return false;
         }
-
-        AVStream *out_audio_stream = avformat_new_stream(out_format_ctx, out_audio_codec);
-        if (!out_audio_stream) {
-            qWarning() << "Error in avformat_new_stream for audio";
-            return false;
-        }
-        out_audio_stream->id = 1;
-        out_audio_codec_ctx = out_audio_stream->codec;
-        out_audio_codec_ctx->channels = in_audio_codec_ctx->channels;
-        out_audio_codec_ctx->sample_rate = in_audio_codec_ctx->sample_rate;
-        out_audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_FLTP;
-        out_audio_codec_ctx->flags = AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS;
-        out_audio_codec_ctx->channel_layout = in_audio_codec_ctx->channel_layout;
-        out_audio_codec_ctx->time_base.num = 1;
-        out_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
-
-        av_dict_set(&options, "b", "128k", 0);
-        av_dict_set(&options, "q", "9", 0);
-        ret = avcodec_open2(out_audio_codec_ctx, out_audio_codec, &options);
-        if (ret < 0) {
-            qWarning() << "Error in avcodec_open2 for out_audio_codec_ctx:" << av_make_error_string(errbuf, 50, ret);
-            av_dict_free(&options);
-            return false;
-        }
-        av_dict_free(&options);
-
-        in_audio_codec_ctx->frame_size = out_audio_codec_ctx->frame_size;
-        int buff_size = av_samples_get_buffer_size(nullptr,
-                                                   in_audio_codec_ctx->channels,
-                                                   out_audio_codec_ctx->frame_size,
-                                                   in_audio_codec_ctx->sample_fmt, 0);
-        if (buff_size <= 0) {
-            qWarning() << "Error in av_samples_get_buffer_size:" << buff_size;
-            return false;
-        }
-        audio_frame_size = uint64_t(buff_size);
-        audio_pkt_duration = out_audio_codec_ctx->frame_size; // time_base is 1/rate, so duration of 1 sample is 1
-        video_audio_ratio = int(av_rescale_q(video_pkt_duration,
-                                         AVRational{1, 1000000},
-                                         AVRational{1, out_audio_codec_ctx->sample_rate})/audio_pkt_duration);
-
-        qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;
-        qDebug() << " codec_id:" << out_audio_codec_ctx->codec_id;
-        qDebug() << " codec_type:" << out_audio_codec_ctx->codec_type;
-        qDebug() << " bit_rate:" << out_audio_codec_ctx->bit_rate;
-        qDebug() << " channels:" << out_audio_codec_ctx->channels;
-        qDebug() << " channel_layout:" << out_audio_codec_ctx->channel_layout;
-        qDebug() << " sample_rate:" << out_audio_codec_ctx->sample_rate;
-        qDebug() << " sample_fmt:" << out_audio_codec_ctx->sample_fmt;
-        qDebug() << " time_base.num:" << out_audio_codec_ctx->time_base.num;
-        qDebug() << " time_base.den:" << out_audio_codec_ctx->time_base.den;
-        qDebug() << " frame_size:" << out_audio_codec_ctx->frame_size;
-        qDebug() << " audio_frame_size:" << audio_frame_size;
-        qDebug() << " audio_pkt_duration:" << audio_pkt_duration;
-        qDebug() << " video_audio_ratio:" << video_audio_ratio;
-
-        audio_swr_ctx = swr_alloc();
-        av_opt_set_int(audio_swr_ctx, "in_channel_layout", int(in_audio_codec_ctx->channel_layout), 0);
-        av_opt_set_int(audio_swr_ctx, "out_channel_layout", int(out_audio_codec_ctx->channel_layout), 0);
-        av_opt_set_int(audio_swr_ctx, "in_sample_rate", in_audio_codec_ctx->sample_rate, 0);
-        av_opt_set_int(audio_swr_ctx, "out_sample_rate", out_audio_codec_ctx->sample_rate, 0);
-        av_opt_set_sample_fmt(audio_swr_ctx, "in_sample_fmt",  in_audio_codec_ctx->sample_fmt, 0);
-        av_opt_set_sample_fmt(audio_swr_ctx, "out_sample_fmt", out_audio_codec_ctx->sample_fmt,  0);
-        swr_init(audio_swr_ctx);
     }
+
+    // start stream
 
     ret = avformat_write_header(out_format_ctx, nullptr);
     if (ret != AVSTREAM_INIT_IN_WRITE_HEADER && ret != AVSTREAM_INIT_IN_INIT_OUTPUT) {
@@ -836,23 +953,29 @@ void ScreenCaster::writeVideoData()
         ret = avcodec_receive_frame(in_video_codec_ctx, in_frame);
         if (ret == 0) {
             //qDebug() << "Video frame decoded";
-            //int64_t t = av_gettime();
-            sws_scale(video_sws_ctx, in_frame->data, in_frame->linesize, 0,
-                      in_video_codec_ctx->height, in_frame_s->data,
-                      in_frame_s->linesize);
-            //qDebug() << "sws_scale duration:" << av_gettime() - t;
-            av_frame_copy_props(in_frame_s, in_frame);
-            av_init_packet(&video_out_pkt);
+            if (scalingNeeded()) {
+                //int64_t t1 = av_gettime();
+                sws_scale(video_sws_ctx, in_frame->data, in_frame->linesize, 0,
+                          in_video_codec_ctx->height, in_frame_s->data,
+                          in_frame_s->linesize);
+                //qDebug() << "sws_scale duration:" << av_gettime() - t1;
+                av_frame_copy_props(in_frame_s, in_frame);
+                av_init_packet(&video_out_pkt);
 
-            in_frame_s->format = out_video_codec_ctx->pix_fmt;
-            in_frame_s->width = out_video_codec_ctx->width;
-            in_frame_s->height = out_video_codec_ctx->height;
+                in_frame_s->format = out_video_codec_ctx->pix_fmt;
+                in_frame_s->width = out_video_codec_ctx->width;
+                in_frame_s->height = out_video_codec_ctx->height;
 
-            ret = avcodec_send_frame(out_video_codec_ctx, in_frame_s);
+                ret = avcodec_send_frame(out_video_codec_ctx, in_frame_s);
+            } else {
+                ret = avcodec_send_frame(out_video_codec_ctx, in_frame);
+            }
+
             if (ret == 0 || ret == AVERROR(EAGAIN)) {
                 ret = avcodec_receive_packet(out_video_codec_ctx, &video_out_pkt);
                 if (ret == 0) {
                     //qDebug() << "Video packet encoded";
+                    qDebug() << "Video packet encoded";
                     havePrevVideoPkt = true;
                     if (!writeVideoData2()) {
                         errorHandler();
@@ -895,8 +1018,17 @@ void ScreenCaster::writeVideoData()
     }
 }
 
+bool ScreenCaster::scalingNeeded()
+{
+    return out_video_codec_ctx->pix_fmt != in_video_codec_ctx->pix_fmt ||
+            out_video_codec_ctx->height != in_video_codec_ctx->height ||
+            out_video_codec_ctx->width != in_video_codec_ctx->width;
+}
+
 QImage ScreenCaster::makeCurrImg()
 {
+    //int64_t t = av_gettime();
+
     QImage img = currImgBuff ? currImgTransform == LIPSTICK_RECORDER_TRANSFORM_Y_INVERTED ?
                 currImgBuff->image.mirrored(false, true) : currImgBuff->image : bgImg;
 
@@ -941,10 +1073,11 @@ QImage ScreenCaster::makeCurrImg()
         }
     }
 
-    // format conversion
-    if (img.format() != QImage::Format_RGB32) {
-        img = img.convertToFormat(QImage::Format_RGB32);
+    if (bgImg.format() != img.format()) { // converting to pix format accepted by encoder
+        img = img.convertToFormat(bgImg.format());
     }
+
+    //qDebug() << "makeCurrImg:" << av_gettime() - t;
 
     if (currImgBuff) {
         currImgBuff->busy = false;

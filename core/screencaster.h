@@ -51,6 +51,13 @@ private slots:
 #endif
 
 private:
+    enum Encoder {
+        ENC_UNKNOWN,
+        ENC_H264_X264,
+        ENC_H264_X264_RGB,
+        ENC_H264_NVENC,
+        ENC_H264_OMX
+    };
 #ifdef SAILFISH
     QTimer frameTimer;
     QTimer repaintTimer;
@@ -95,16 +102,23 @@ private:
     QByteArray audio_outbuf; // pulse audio data buf
     int skipped_frames_max = 0;
     int skipped_frames = 0;
+    Encoder encoder;
 
     //static int read_packet_callback(void *opaque, uint8_t *buf, int buf_size);
     static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
     void tuneQuality();
     void initVideoSize();
-    bool initEncoder(const char *name);
+    bool initVideoEncoder(const char *name);
+    bool initVideoEncoder();
     bool writeAudioData2();
     bool writeAudioData3();
     bool writeVideoData2();
     void errorHandler();
+    void setPixFormats();
+    bool initInAudio();
+    bool initOutAudio();
+    bool initScaler();
+    bool scalingNeeded();
 };
 
 #endif // SCREENCASTER_H

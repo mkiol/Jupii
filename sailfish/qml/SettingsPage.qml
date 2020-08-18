@@ -143,6 +143,33 @@ Page {
                 }
             }
 
+            ComboBox {
+                visible: settings.screenSupported
+                label: qsTr("Screen encoder")
+                currentIndex: {
+                    var enc = settings.screenEncoder;
+                    if (enc === "libx264")
+                        return 1;
+                    if (enc === "libx264rgb")
+                        return 2;
+                    return 0;
+                }
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("Auto") }
+                    MenuItem { text: qsTr("libx264") }
+                    MenuItem { text: qsTr("libx264rgb") }
+                }
+
+                onCurrentIndexChanged: {
+                    if (currentIndex === 1)
+                        settings.screenEncoder = "libx264";
+                    else if (currentIndex === 2)
+                        settings.screenEncoder = "libx264rgb";
+                    else
+                        settings.screenEncoder = "";
+                }
+            }
+
             TextSwitch {
                 automaticCheck: false
                 visible:  settings.remoteContentMode == 0

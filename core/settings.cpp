@@ -476,6 +476,19 @@ bool Settings::getScreenAudio()
     return settings.value("screenaudio", false).toBool();
 }
 
+void Settings::setScreenEncoder(const QString &value)
+{
+    if (getScreenEncoder() != value) {
+        settings.setValue("screenencoder", value);
+        emit screenEncoderChanged();
+    }
+}
+
+QString Settings::getScreenEncoder()
+{
+    return settings.value("screenencoder").toString();
+}
+
 void Settings::setScreenFramerate(int value)
 {
     if (getScreenFramerate() != value) {
