@@ -2,46 +2,112 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
     <interface name="org.jupii.Player">
-        <!-- canControl: returns 'true' if Jupii is connected to UPnP device -->
+        <!--
+            canControl:
+
+            Indication that UPnP device is connected and can be controlled (play, stop etc).
+        -->
         <property name="canControl" type="b" access="read" />
+
+        <!--
+            CanControlPropertyChanged:
+            @canControl: new value of @canControl property
+
+            Emitted whenever @canControl property is changed.
+        -->
         <signal name="CanControlPropertyChanged">
           <arg type="b" name="canControl" direction="out" />
         </signal>
-        <!-- appendPath: deprecated, use 'addPath' instead -->
+
+        <!--
+            appendPath:
+            @path: Path of file (image, music, video).
+
+            Append a file to play queue. Deprecated, use @addPath instead.
+        -->
         <method name="appendPath">
             <arg name="path" type="s" direction="in" />
+            <annotation name="org.freedesktop.DBus.Deprecated" value="true"/>
         </method>
-        <!-- addPath: if 'path' is a valid media file, appends it to a playlist queue -->
+
+        <!--
+            addPath:
+            @path: Path of file (image, music, video).
+
+            Append a file to play queue.
+        -->
         <method name="addPath">
             <arg name="path" type="s" direction="in" />
             <arg name="name" type="s" direction="in" />
         </method>
-        <!-- addPathOnce: same as 'addPath', but appends only if 'path' doesn't exist in a playlist queue -->
+
+        <!--
+            addPathOnce:
+            @path: Path of file (image, music, video).
+
+            Append a file to play queue only if there is no any other item
+            with the same path.
+        -->
         <method name="addPathOnce">
             <arg name="path" type="s" direction="in" />
             <arg name="name" type="s" direction="in" />
         </method>
-        <!-- addPathOnceAndPlay: same as 'addPathOnce', but after adding path will be played -->
+
+        <!--
+            addPathOnceAndPlay:
+            @path: Path of file (image, music, video).
+
+            Append a file to play queue only if there is no any other item
+            with the same path. Item is play immediately after adding.
+        -->
         <method name="addPathOnceAndPlay">
             <arg name="path" type="s" direction="in" />
             <arg name="name" type="s" direction="in" />
         </method>
-        <!-- addUrl: if 'url' points to a valid media resource, appends it to a playlist queue -->
+
+        <!--
+            addUrl:
+            @url: URL to resource. If doesn't directly point to media resource,
+                youtube-dl is used to discover final URL.
+
+            Append URL to play queue.
+        -->
         <method name="addUrl">
             <arg name="url" type="s" direction="in" />
             <arg name="name" type="s" direction="in" />
         </method>
-        <!-- addUrlOnce: same as 'addUrl', but appends only if 'url' doesn't exist in a playlist queue -->
+
+        <!--
+            addUrlOnce:
+            @url: URL to resource. If doesn't directly point to media resource,
+                youtube-dl is used to discover final URL.
+
+            Append URL to play queue only if there is no any other item with
+            the same URL.
+        -->
         <method name="addUrlOnce">
             <arg name="url" type="s" direction="in" />
             <arg name="name" type="s" direction="in" />
         </method>
-        <!-- addUrlOnceAndPlay: same as 'addUrlOnce', but after adding url will be played -->
+
+        <!--
+            addUrlOnceAndPlay:
+            @url: URL to resource. If doesn't directly point to media resource,
+                youtube-dl is used to discover final URL.
+
+            Append URL to play queue only if there is no any other item with
+            the same URL. Item is play immediately after adding.
+        -->
         <method name="addUrlOnceAndPlay">
             <arg name="url" type="s" direction="in" />
             <arg name="name" type="s" direction="in" />
         </method>
-         <!-- clearPlaylist: removes all items from a playlist queue -->
+
+        <!--
+            clearPlaylist:
+
+            Remove all items from play queue.
+        -->
         <method name="clearPlaylist" />
     </interface>
 </node>
