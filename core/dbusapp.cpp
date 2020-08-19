@@ -155,6 +155,43 @@ void DbusProxy::addUrlOnceAndPlay(const QString& url, const QString& name)
 #endif
 }
 
+void DbusProxy::add(const QString &url,
+                    const QString &name,
+                    const QString &author,
+                    const QString &description,
+                    uint type,
+                    const QString &app,
+                    const QString &icon,
+                    bool once,
+                    bool play) {
+    Q_UNUSED(type)
+    Q_UNUSED(app)
+    qDebug() << "Dbus add, url:" << url << name;
+
+    auto pl = PlaylistModel::instance();
+
+    QUrl u(url);
+
+    if (once && pl->urlExists(u)) {
+        if (play) {
+            qDebug() << "Url already exists, so only playing it";
+            pl->playUrl(u);
+        } else {
+            qDebug() << "Url already exists";
+        }
+    } else {
+        pl->addItemUrl(u, name, author, icon, description, play);
+    }
+
+#ifdef SAILFISH
+    if (play) {
+        // bringing app to foreground
+        auto utils = Utils::instance();
+        utils->activateWindow();
+    }
+#endif
+}
+
 void DbusProxy::clearPlaylist()
 {
     qDebug() << "Dbus clearPlaylist";

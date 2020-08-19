@@ -38,6 +38,9 @@ public slots:
     void addPathOnceAndPlay(const QString& path, const QString& name);
     void addUrlOnce(const QString& url, const QString& name);
     void addUrlOnceAndPlay(const QString& url, const QString& name);
+    void add(const QString &url, const QString &name, const QString &author,
+             const QString &description, uint type, const QString &app,
+             const QString &icon, bool once, bool play);
     void clearPlaylist();
 
 private:
