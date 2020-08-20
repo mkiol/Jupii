@@ -11,9 +11,9 @@
 namespace Jupii {
 static constexpr const char* APP_NAME = "Jupii";
 #ifdef QT_DEBUG
-static constexpr const char* APP_VERSION = "2.7.2 (debug)";
+static constexpr const char* APP_VERSION = "2.7.3 (debug)";
 #else
-static constexpr const char* APP_VERSION = "2.7.2";
+static constexpr const char* APP_VERSION = "2.7.3";
 #endif
 static constexpr const char* AUTHOR = "Michal Kosciesza";
 static constexpr const char* COPYRIGHT_YEAR = "2018-2020";

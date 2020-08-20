@@ -159,11 +159,12 @@ void DbusProxy::add(const QString &url,
                     const QString &name,
                     const QString &author,
                     const QString &description,
-                    uint type,
+                    int type,
                     const QString &app,
                     const QString &icon,
                     bool once,
-                    bool play) {
+                    bool play,
+                    bool focus) {
     Q_UNUSED(type)
     Q_UNUSED(app)
     qDebug() << "Dbus add, url:" << url << name;
@@ -184,11 +185,13 @@ void DbusProxy::add(const QString &url,
     }
 
 #ifdef SAILFISH
-    if (play) {
+    if (focus) {
         // bringing app to foreground
         auto utils = Utils::instance();
         utils->activateWindow();
     }
+#else
+    Q_UNUSED(focus)
 #endif
 }
 
