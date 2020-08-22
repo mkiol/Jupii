@@ -1,7 +1,5 @@
 CORE_DIR = ../core
 
-INCLUDEPATH += $$CORE_DIR
-
 include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
 include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
 
@@ -16,6 +14,10 @@ exists("$$QT_BIN_DIR/qdbusxml2cpp-qt5") {
 }
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.jupii.xml" -a $$CORE_DIR/dbus_jupii_adaptor)
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml" -p $$CORE_DIR/dbus_tracker_inf)
+
+OTHER_FILES += \
+    $$PROJECTDIR/dbus/org.jupii.xml \
+    $$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml
 
 desktop {
     PKGCONFIG += libpulse x11
@@ -33,6 +35,8 @@ desktop {
         message(Using static libupnp)
         include($$PROJECTDIR/libs/pupnp/pupnp.pri)
     }
+
+    INCLUDEPATH += $$PROJECTDIR/libs/ffmpeg/include
 
     packagesExist(libavformat libavcodec libswscale libswresample libavdevice libavutil x264) {
         PKGCONFIG += x264 lame libavformat libavcodec libswscale \
@@ -53,11 +57,14 @@ sailfish {
     include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
     include($$PROJECTDIR/libs/x264/x264.pri)
     include($$PROJECTDIR/libs/lame/lame.pri)
+    #include($$PROJECTDIR/libs/omx/omx.pri)
 
     screencast {
         include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
     }
 }
+
+INCLUDEPATH += $$CORE_DIR
 
 HEADERS += \
     $$CORE_DIR/dbus_jupii_adaptor.h \

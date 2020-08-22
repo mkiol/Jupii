@@ -7,7 +7,7 @@ Name:       harbour-jupii
 
 # >> macros
 %define __provides_exclude_from ^%{_datadir}/.*$
-%define __requires_exclude ^libx264.*|libavdevice.|libavcodec.*|libavformat.*|libavutil.*|libswresample.*|libswscale.*|libmp3lame.*|libtag.*|libupnp.*|libixml.*|libthreadutil.*$
+%define __requires_exclude ^libomx*|libx264.*|libavdevice.|libavcodec.*|libavformat.*|libavutil.*|libswresample.*|libswscale.*|libmp3lame.*|libtag.*|libupnp.*|libixml.*|libthreadutil.*$
 # << macros
 
 %{!?qtc_qmake:%define qtc_qmake %qmake}
@@ -15,7 +15,7 @@ Name:       harbour-jupii
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
-Version:    2.7.2
+Version:    2.7.3
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE

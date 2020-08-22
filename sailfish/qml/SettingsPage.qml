@@ -144,7 +144,7 @@ Page {
             }
 
             ComboBox {
-                visible: settings.screenSupported
+                visible: settings.screenSupported && settings.isDebug()
                 label: qsTr("Screen encoder")
                 currentIndex: {
                     var enc = settings.screenEncoder;
@@ -152,12 +152,15 @@ Page {
                         return 1;
                     if (enc === "libx264rgb")
                         return 2;
+                    /*if (enc === "h264_omx")
+                        return 3;*/
                     return 0;
                 }
                 menu: ContextMenu {
                     MenuItem { text: qsTr("Auto") }
                     MenuItem { text: qsTr("libx264") }
                     MenuItem { text: qsTr("libx264rgb") }
+                    //MenuItem { text: qsTr("h264_omx") }
                 }
 
                 onCurrentIndexChanged: {
@@ -165,6 +168,8 @@ Page {
                         settings.screenEncoder = "libx264";
                     else if (currentIndex === 2)
                         settings.screenEncoder = "libx264rgb";
+                    /*else if (currentIndex === 3)
+                        settings.screenEncoder = "h264_omx";*/
                     else
                         settings.screenEncoder = "";
                 }

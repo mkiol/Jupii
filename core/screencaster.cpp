@@ -256,14 +256,6 @@ bool ScreenCaster::initVideoEncoder()
 void ScreenCaster::setPixFormats()
 {
     switch (encoder) {
-    case ENC_H264_X264:
-        out_video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
-        in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
-#ifdef SAILFISH
-        bgImg = QImage(video_size, QImage::Format_RGB32);
-        bgImg.fill(Qt::black);
-#endif
-        break;
     case ENC_H264_X264_RGB:
         out_video_codec_ctx->pix_fmt = AV_PIX_FMT_RGB24;
 #ifdef SAILFISH
@@ -275,13 +267,8 @@ void ScreenCaster::setPixFormats()
 #endif
         break;
     case ENC_H264_NVENC:
-        out_video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
-        in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
-#ifdef SAILFISH
-        bgImg = QImage(video_size, QImage::Format_RGB32);
-        bgImg.fill(Qt::black);
-#endif
-        break;
+    case ENC_H264_X264:
+    case ENC_H264_OMX:
     default:
         out_video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
         in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
@@ -341,9 +328,11 @@ bool ScreenCaster::initVideoEncoder(const char *name)
         av_dict_set(&options, "rc", "cbr", 0);
         av_dict_set(&options, "b", "24M", 0);
         av_dict_set(&options, "profile", "high", 0);
-    } else if (!strcmp(out_video_codec->name, "h264_omx")) {
+    /*} else if (!strcmp(out_video_codec->name, "h264_omx")) {
         encoder = ENC_H264_OMX;
-        //TODO: OMX options
+        av_dict_set(&options, "omx_libname", "/vendor/lib/libOmxCore.so", 0);
+        av_dict_set(&options, "omx_libprefix", "", 0);
+        av_dict_set(&options, "profile", "high", 0);*/
     } else {
         qWarning() << "Cannot find valid encoder";
         return false;

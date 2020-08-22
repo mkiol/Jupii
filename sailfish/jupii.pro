@@ -27,7 +27,6 @@ SOURCES += \
 
 OTHER_FILES += \
     translations/*.ts \
-    $$PROJECTDIR/dbus/org.jupii.xml \
     qml/main.qml \
     qml/DevicesPage.qml \
     qml/CoverPage.qml \
