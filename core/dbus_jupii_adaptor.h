@@ -33,8 +33,16 @@ class PlayerAdaptor: public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Introspection", ""
 "  <interface name=\"org.jupii.Player\">\n"
 "    <property access=\"read\" type=\"b\" name=\"canControl\"/>\n"
+"    <property access=\"read\" type=\"s\" name=\"deviceName\"/>\n"
+"    <property access=\"read\" type=\"b\" name=\"playing\"/>\n"
 "    <signal name=\"CanControlPropertyChanged\">\n"
 "      <arg direction=\"out\" type=\"b\" name=\"canControl\"/>\n"
+"    </signal>\n"
+"    <signal name=\"PlayingPropertyChanged\">\n"
+"      <arg direction=\"out\" type=\"b\" name=\"playing\"/>\n"
+"    </signal>\n"
+"    <signal name=\"DeviceNamePropertyChanged\">\n"
+"      <arg direction=\"out\" type=\"s\" name=\"deviceName\"/>\n"
 "    </signal>\n"
 "    <method name=\"appendPath\">\n"
 "      <arg direction=\"in\" type=\"s\" name=\"path\"/>\n"
@@ -77,6 +85,9 @@ class PlayerAdaptor: public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"b\" name=\"play\"/>\n"
 "    </method>\n"
 "    <method name=\"focus\"/>\n"
+"    <method name=\"pause\"/>\n"
+"    <method name=\"play\"/>\n"
+"    <method name=\"togglePlay\"/>\n"
 "    <method name=\"clearPlaylist\"/>\n"
 "  </interface>\n"
         "")
@@ -87,6 +98,12 @@ public:
 public: // PROPERTIES
     Q_PROPERTY(bool canControl READ canControl)
     bool canControl() const;
+
+    Q_PROPERTY(QString deviceName READ deviceName)
+    QString deviceName() const;
+
+    Q_PROPERTY(bool playing READ playing)
+    bool playing() const;
 
 public Q_SLOTS: // METHODS
     void add(const QString &url, const QString &orig_url, const QString &name, const QString &author, const QString &description, int type, const QString &app, const QString &icon, bool once, bool play);
@@ -99,8 +116,13 @@ public Q_SLOTS: // METHODS
     Q_DECL_DEPRECATED void appendPath(const QString &path);
     void clearPlaylist();
     void focus();
+    void pause();
+    void play();
+    void togglePlay();
 Q_SIGNALS: // SIGNALS
     void CanControlPropertyChanged(bool canControl);
+    void DeviceNamePropertyChanged(const QString &deviceName);
+    void PlayingPropertyChanged(bool playing);
 };
 
 #endif

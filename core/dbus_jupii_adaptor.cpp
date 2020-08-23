@@ -39,6 +39,18 @@ bool PlayerAdaptor::canControl() const
     return qvariant_cast< bool >(parent()->property("canControl"));
 }
 
+QString PlayerAdaptor::deviceName() const
+{
+    // get the value of property deviceName
+    return qvariant_cast< QString >(parent()->property("deviceName"));
+}
+
+bool PlayerAdaptor::playing() const
+{
+    // get the value of property playing
+    return qvariant_cast< bool >(parent()->property("playing"));
+}
+
 void PlayerAdaptor::add(const QString &url, const QString &orig_url, const QString &name, const QString &author, const QString &description, int type, const QString &app, const QString &icon, bool once, bool play)
 {
     // handle method call org.jupii.Player.add
@@ -97,5 +109,23 @@ void PlayerAdaptor::focus()
 {
     // handle method call org.jupii.Player.focus
     QMetaObject::invokeMethod(parent(), "focus");
+}
+
+void PlayerAdaptor::pause()
+{
+    // handle method call org.jupii.Player.pause
+    QMetaObject::invokeMethod(parent(), "pause");
+}
+
+void PlayerAdaptor::play()
+{
+    // handle method call org.jupii.Player.play
+    QMetaObject::invokeMethod(parent(), "play");
+}
+
+void PlayerAdaptor::togglePlay()
+{
+    // handle method call org.jupii.Player.togglePlay
+    QMetaObject::invokeMethod(parent(), "togglePlay");
 }
 

@@ -17,18 +17,27 @@ class DbusProxy :
 {
     Q_OBJECT
     Q_PROPERTY(bool canControl READ canControl WRITE setCanControl NOTIFY canControlChanged)
+    Q_PROPERTY(bool playing READ playing WRITE setPlaying NOTIFY playingChanged)
+    Q_PROPERTY(QString deviceName READ deviceName NOTIFY deviceNameChanged)
 
 public:
     explicit DbusProxy(QObject *parent = nullptr);
     ~DbusProxy();
     bool canControl();
     void setCanControl(bool value);
+    bool playing();
+    void setPlaying(bool value);
+    QString deviceName();
 
 signals:
     void canControlChanged();
+    void playingChanged();
+    void deviceNameChanged();
 
     // internal
     void CanControlPropertyChanged(bool canControl);
+    void PlayingPropertyChanged(bool playing);
+    void DeviceNamePropertyChanged(const QString &deviceName);
 
 public slots:
     void appendPath(const QString& path);
@@ -42,11 +51,17 @@ public slots:
              const QString &author, const QString &description,
              int type, const QString &app,
              const QString &icon, bool once, bool play);
+    void pause();
+    void play();
+    void togglePlay();
     void focus();
     void clearPlaylist();
+    void updatePlaying();
+    void updateCanControl();
 
 private:
     bool m_canControl = false;
+    bool m_playing = false;
 };
 
 #endif // DBUSAPP_H

@@ -5,9 +5,25 @@
         <!--
             canControl:
 
-            Indication that UPnP device is connected and can be controlled (play, stop etc).
+            Indication that UPnP device is connected and can be
+            controlled (play, stop etc).
         -->
         <property name="canControl" type="b" access="read" />
+
+        <!--
+            deviceName:
+
+            Friendly name of connected UPnP device. Empty if no device
+            is connected.
+        -->
+        <property name="deviceName" type="s" access="read" />
+
+        <!--
+            playing:
+
+            Indication if connected device is in playing state.
+        -->
+        <property name="playing" type="b" access="read" />
 
         <!--
             CanControlPropertyChanged:
@@ -17,6 +33,26 @@
         -->
         <signal name="CanControlPropertyChanged">
           <arg type="b" name="canControl" direction="out" />
+        </signal>
+
+        <!--
+            PlayingPropertyChanged:
+            @playing: new value of @playing property
+
+            Emitted whenever @playing property is changed.
+        -->
+        <signal name="PlayingPropertyChanged">
+          <arg type="b" name="playing" direction="out" />
+        </signal>
+
+        <!--
+            DeviceNamePropertyChanged:
+            @deviceName: new value of @deviceName property
+
+            Emitted whenever @deviceName property is changed.
+        -->
+        <signal name="DeviceNamePropertyChanged">
+          <arg type="s" name="deviceName" direction="out" />
         </signal>
 
         <!--
@@ -139,6 +175,30 @@
             Bring Jupii to foreground.
         -->
         <method name="focus" />
+
+        <!--
+            pause:
+
+            Pause playback of current track. This method works only
+            when @canControl is enabled.
+        -->
+        <method name="pause" />
+
+        <!--
+            play:
+
+            Start playback of current track. This method works only
+            when @canControl is enabled.
+        -->
+        <method name="play" />
+
+        <!--
+            togglePlay:
+
+            Start playback of current track if not playing and pause when
+            playing. This method works only when @canControl is enabled.
+        -->
+        <method name="togglePlay" />
 
         <!--
             clearPlaylist:

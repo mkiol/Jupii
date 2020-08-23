@@ -22,7 +22,7 @@ DbusProxy::DbusProxy(QObject *parent) :
 {
     new PlayerAdaptor(this);
 
-    QDBusConnection con = QDBusConnection::sessionBus();
+    auto con = QDBusConnection::sessionBus();
 
     if (!con.registerService("org.jupii")) {
         qWarning() << "D-bus service registration failed";
@@ -36,11 +36,10 @@ DbusProxy::DbusProxy(QObject *parent) :
 
     auto av = Services::instance()->avTransport;
     if (av) {
-        connect(av.get(), &Service::initedChanged, [this]{
-            auto av = Services::instance()->avTransport;
-            if (av)
-                setCanControl(av->getInited());
-        });
+        connect(av.get(), &Service::initedChanged, this,
+                &DbusProxy::updateCanControl, Qt::QueuedConnection);
+        connect(av.get(), &AVTransport::transportStateChanged, this,
+                &DbusProxy::updatePlaying, Qt::QueuedConnection);
     } else {
         qWarning() << "AVTransport doesn't exist so cannot connect to dbus proxy";
     }
@@ -49,6 +48,30 @@ DbusProxy::DbusProxy(QObject *parent) :
 DbusProxy::~DbusProxy()
 {
     setCanControl(false);
+    setPlaying(false);
+}
+
+void DbusProxy::updatePlaying()
+{
+    auto av = Services::instance()->avTransport;
+    if (av)
+        setPlaying(av->getTransportState() == AVTransport::Playing);
+}
+
+void DbusProxy::updateCanControl()
+{
+    auto av = Services::instance()->avTransport;
+    if (av) {
+        setCanControl(av->getInited());
+        emit deviceNameChanged();
+        emit DeviceNamePropertyChanged(av->getDeviceFriendlyName());
+    }
+}
+
+QString DbusProxy::deviceName()
+{
+    auto av = Services::instance()->avTransport;
+    return av ? av->getDeviceFriendlyName() : QString();
 }
 
 bool DbusProxy::canControl()
@@ -64,6 +87,22 @@ void DbusProxy::setCanControl(bool value)
         m_canControl = value;
         emit canControlChanged();
         emit CanControlPropertyChanged(m_canControl);
+    }
+}
+
+bool DbusProxy::playing()
+{
+    qDebug() << "Dbus playing, value:" << m_playing;
+
+    return m_playing;
+}
+
+void DbusProxy::setPlaying(bool value)
+{
+    if (m_playing != value) {
+        m_playing = value;
+        emit playingChanged();
+        emit PlayingPropertyChanged(m_playing);
     }
 }
 
@@ -174,6 +213,30 @@ void DbusProxy::add(const QString &url,
         }
     } else {
         pl->addItemUrl(u, name, ou, author, icon, description, app, play);
+    }
+}
+
+void DbusProxy::pause()
+{
+    if (m_canControl) {
+        auto pl = PlaylistModel::instance();
+        pl->pause();
+    }
+}
+
+void DbusProxy::play()
+{
+    if (m_canControl) {
+        auto pl = PlaylistModel::instance();
+        pl->play();
+    }
+}
+
+void DbusProxy::togglePlay()
+{
+    if (m_canControl) {
+        auto pl = PlaylistModel::instance();
+        pl->togglePlay();
     }
 }
 

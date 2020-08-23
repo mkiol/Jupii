@@ -1519,6 +1519,43 @@ void PlaylistModel::togglePlay() {
     }
 }
 
+void PlaylistModel::play() {
+    auto dir = Directory::instance();
+    auto av = Services::instance()->avTransport;
+
+    if (!dir->getInited() || !av->getInited()) {
+        qWarning() << "Cannot play";
+        return;
+    }
+
+    if (av->getTransportState() != AVTransport::Playing) {
+        auto aid = activeId();
+        if (aid.isEmpty() || av->getRelativeTimePosition() > 0) {
+            av->setSpeed(1);
+            av->play();
+        } else {
+            play(aid);
+        }
+    }
+}
+
+void PlaylistModel::pause() {
+    auto dir = Directory::instance();
+    auto av = Services::instance()->avTransport;
+
+    if (!dir->getInited() || !av->getInited()) {
+        qWarning() << "Cannot pause";
+        return;
+    }
+
+    if (av->getTransportState() == AVTransport::Playing) {
+        if (av->getPauseSupported())
+            av->pause();
+        else
+            av->stop();
+    }
+}
+
 QList<ListItem*> PlaylistModel::handleRefreshWorker()
 {
     QList<ListItem*> items;

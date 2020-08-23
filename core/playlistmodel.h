@@ -133,6 +133,8 @@ public:
     Q_INVOKABLE void next();
     Q_INVOKABLE void prev();
     Q_INVOKABLE bool play(const QString &id);
+    void play();
+    void pause();
     Q_INVOKABLE void togglePlay();
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void cancelRefresh();
