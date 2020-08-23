@@ -39,10 +39,10 @@ bool PlayerAdaptor::canControl() const
     return qvariant_cast< bool >(parent()->property("canControl"));
 }
 
-void PlayerAdaptor::add(const QString &url, const QString &name, const QString &author, const QString &description, int type, const QString &app, const QString &icon, bool once, bool play, bool focus)
+void PlayerAdaptor::add(const QString &url, const QString &orig_url, const QString &name, const QString &author, const QString &description, int type, const QString &app, const QString &icon, bool once, bool play)
 {
     // handle method call org.jupii.Player.add
-    QMetaObject::invokeMethod(parent(), "add", Q_ARG(QString, url), Q_ARG(QString, name), Q_ARG(QString, author), Q_ARG(QString, description), Q_ARG(int, type), Q_ARG(QString, app), Q_ARG(QString, icon), Q_ARG(bool, once), Q_ARG(bool, play), Q_ARG(bool, focus));
+    QMetaObject::invokeMethod(parent(), "add", Q_ARG(QString, url), Q_ARG(QString, orig_url), Q_ARG(QString, name), Q_ARG(QString, author), Q_ARG(QString, description), Q_ARG(int, type), Q_ARG(QString, app), Q_ARG(QString, icon), Q_ARG(bool, once), Q_ARG(bool, play));
 }
 
 void PlayerAdaptor::addPath(const QString &path, const QString &name)
@@ -91,5 +91,11 @@ void PlayerAdaptor::clearPlaylist()
 {
     // handle method call org.jupii.Player.clearPlaylist
     QMetaObject::invokeMethod(parent(), "clearPlaylist");
+}
+
+void PlayerAdaptor::focus()
+{
+    // handle method call org.jupii.Player.focus
+    QMetaObject::invokeMethod(parent(), "focus");
 }
 

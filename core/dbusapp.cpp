@@ -114,11 +114,7 @@ void DbusProxy::addPathOnceAndPlay(const QString& path, const QString& name)
         pl->addItemPath(path, name, true);
     }
 
-#ifdef SAILFISH
-    // bringing app to foreground
-    auto utils = Utils::instance();
-    utils->activateWindow();
-#endif
+    focus();
 }
 
 void DbusProxy::addUrlOnce(const QString& url, const QString& name)
@@ -145,17 +141,14 @@ void DbusProxy::addUrlOnceAndPlay(const QString& url, const QString& name)
     if (pl->playUrl(u)) {
         qDebug() << "Url already exists";
     } else {
-        pl->addItemUrl(u, name, {}, {}, {}, true);
+        pl->addItemUrl(u, name, {}, {}, {}, {}, {}, true);
     }
 
-#ifdef SAILFISH
-    // bringing app to foreground
-    auto utils = Utils::instance();
-    utils->activateWindow();
-#endif
+    focus();
 }
 
 void DbusProxy::add(const QString &url,
+                    const QString &origUrl,
                     const QString &name,
                     const QString &author,
                     const QString &description,
@@ -163,17 +156,16 @@ void DbusProxy::add(const QString &url,
                     const QString &app,
                     const QString &icon,
                     bool once,
-                    bool play,
-                    bool focus) {
+                    bool play) {
     Q_UNUSED(type)
-    Q_UNUSED(app)
     qDebug() << "Dbus add, url:" << url << name;
 
     auto pl = PlaylistModel::instance();
 
     QUrl u(url);
+    QUrl ou(origUrl);
 
-    if (once && pl->urlExists(u)) {
+    if (once && (pl->urlExists(u) || (!origUrl.isEmpty() && pl->urlExists(ou)))) {
         if (play) {
             qDebug() << "Url already exists, so only playing it";
             pl->playUrl(u);
@@ -181,17 +173,16 @@ void DbusProxy::add(const QString &url,
             qDebug() << "Url already exists";
         }
     } else {
-        pl->addItemUrl(u, name, author, icon, description, play);
+        pl->addItemUrl(u, name, ou, author, icon, description, app, play);
     }
+}
 
+void DbusProxy::focus()
+{
 #ifdef SAILFISH
-    if (focus) {
-        // bringing app to foreground
-        auto utils = Utils::instance();
-        utils->activateWindow();
-    }
-#else
-    Q_UNUSED(focus)
+    // bringing app to foreground
+    auto utils = Utils::instance();
+    utils->activateWindow();
 #endif
 }
 

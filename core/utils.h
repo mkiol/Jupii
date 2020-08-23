@@ -37,6 +37,7 @@ public:
     static const QString playKey;
     static const QString idKey;
     static const QString ytdlKey;
+    static const QString appKey;
 
     static Utils* instance(QObject *parent = nullptr);
     std::unique_ptr<QNetworkAccessManager> nam;

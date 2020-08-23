@@ -43,10 +43,12 @@ class PlaylistModel;
 
 struct UrlItem {
     QUrl url;
+    QUrl origUrl;
     QString name;
     QString author;
     QUrl icon;
     QString desc;
+    QString app;
     bool play = false;
 };
 
@@ -177,9 +179,11 @@ public slots:
     void addItemUrls(const QVariantList& urls);
     void addItemUrl(const QUrl& url,
                     const QString& name = QString(),
+                    const QUrl& origUrl = QString(),
                     const QString &author = QString(),
                     const QUrl& icon = QUrl(),
                     const QString& desc = QString(),
+                    const QString& app = QString(),
                     bool autoPlay = false);
     void addItemPathsAsAudio(const QStringList& paths);
     void setActiveId(const QString &id);

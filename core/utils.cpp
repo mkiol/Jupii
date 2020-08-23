@@ -42,6 +42,7 @@ const QString Utils::descKey = "jupii_desc";
 const QString Utils::playKey = "jupii_play";
 const QString Utils::idKey = "jupii_id";
 const QString Utils::ytdlKey = "jupii_ytdl";
+const QString Utils::appKey = "jupii_app";
 
 Utils* Utils::m_instance = nullptr;
 
@@ -746,6 +747,8 @@ QUrl Utils::urlFromId(const QUrl &id)
         q.removeAllQueryItems(Utils::origUrlKey);
     if (q.hasQueryItem(Utils::ytdlKey))
         q.removeAllQueryItems(Utils::ytdlKey);
+    if (q.hasQueryItem(Utils::appKey))
+        q.removeAllQueryItems(Utils::appKey);
     QUrl url(id);
     url.setQuery(q);
     return url;

@@ -137,10 +137,12 @@ void PlaylistWorker::run()
 
         for (const auto &purl : urls) {
             const auto &url = purl.url;
-            const auto &name = purl.name;
-            const auto &author = purl.author;
+            const auto &name = purl.name.trimmed();
+            const auto &author = purl.author.trimmed();
             const auto &icon = purl.icon;
-            const auto &desc = purl.desc;
+            const auto &desc = purl.desc.trimmed();
+            const auto &origUrl = purl.origUrl;
+            const auto &app = purl.app;
             bool play = purl.play;
 
             if (Utils::isUrlValid(url)) {
@@ -151,6 +153,14 @@ void PlaylistWorker::run()
                 if (q.hasQueryItem(Utils::cookieKey))
                     q.removeQueryItem(Utils::cookieKey);
                 q.addQueryItem(Utils::cookieKey, Utils::instance()->randString(10));
+
+                // origUrl
+                bool origUrlExists = !origUrl.isEmpty() && Utils::isUrlValid(origUrl);
+                if (origUrlExists) {
+                    if (q.hasQueryItem(Utils::origUrlKey))
+                        q.removeQueryItem(Utils::origUrlKey);
+                    q.addQueryItem(Utils::origUrlKey, origUrl.toString());
+                }
 
                 // name
                 if (!name.isEmpty()) {
@@ -185,6 +195,20 @@ void PlaylistWorker::run()
                     if (q.hasQueryItem(Utils::authorKey))
                         q.removeQueryItem(Utils::authorKey);
                     q.addQueryItem(Utils::authorKey, author);
+                }
+
+                // app
+                if (!app.isEmpty()) {
+                    if (q.hasQueryItem(Utils::appKey))
+                        q.removeQueryItem(Utils::appKey);
+                    q.addQueryItem(Utils::appKey, app);
+
+                    // refresh url with ytdl
+                    if (origUrlExists) {
+                        if (q.hasQueryItem(Utils::ytdlKey))
+                            q.removeQueryItem(Utils::ytdlKey);
+                        q.addQueryItem(Utils::ytdlKey, "true");
+                    }
                 }
 
                 // play
@@ -811,19 +835,23 @@ void PlaylistModel::addItemUrls(const QVariantList &urls)
 
 void PlaylistModel::addItemUrl(const QUrl& url,
                                const QString& name,
+                               const QUrl& origUrl,
                                const QString& author,
                                const QUrl &icon,
                                const QString& desc,
+                               const QString& app,
                                bool play)
 {
     QList<UrlItem> urls;
     UrlItem ui;
     ui.url = url;
     Utils::fixUrl(ui.url);
+    ui.origUrl = origUrl;
     ui.name = name;
     ui.author = author;
     ui.icon = icon;
     ui.desc = desc;
+    ui.app = app;
     ui.play = play;
     urls << ui;
     addItems(urls, false);
@@ -1792,17 +1820,17 @@ PlaylistItem::PlaylistItem(const QUrl &id,
     m_artist(artist),
     m_album(album),
     m_date(date),
+    m_cookie(Utils::cookieFromId(id)),
     m_duration(duration),
     m_size(size),
     m_icon(icon),
-    m_ytdl(ytdl),
     m_play(play),
+    m_ytdl(ytdl),
     m_desc(desc),
     m_recDate(recDate),
     m_recUrl(recUrl),
     m_item_type(itemType),
-    m_devid(devId),
-    m_cookie(Utils::cookieFromId(id))
+    m_devid(devId)
 {
 }
 

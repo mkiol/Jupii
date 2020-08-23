@@ -66,6 +66,7 @@ class PlayerAdaptor: public QDBusAbstractAdaptor
 "    </method>\n"
 "    <method name=\"add\">\n"
 "      <arg direction=\"in\" type=\"s\" name=\"url\"/>\n"
+"      <arg direction=\"in\" type=\"s\" name=\"orig_url\"/>\n"
 "      <arg direction=\"in\" type=\"s\" name=\"name\"/>\n"
 "      <arg direction=\"in\" type=\"s\" name=\"author\"/>\n"
 "      <arg direction=\"in\" type=\"s\" name=\"description\"/>\n"
@@ -74,8 +75,8 @@ class PlayerAdaptor: public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"s\" name=\"icon\"/>\n"
 "      <arg direction=\"in\" type=\"b\" name=\"once\"/>\n"
 "      <arg direction=\"in\" type=\"b\" name=\"play\"/>\n"
-"      <arg direction=\"in\" type=\"b\" name=\"focus\"/>\n"
 "    </method>\n"
+"    <method name=\"focus\"/>\n"
 "    <method name=\"clearPlaylist\"/>\n"
 "  </interface>\n"
         "")
@@ -88,7 +89,7 @@ public: // PROPERTIES
     bool canControl() const;
 
 public Q_SLOTS: // METHODS
-    void add(const QString &url, const QString &name, const QString &author, const QString &description, int type, const QString &app, const QString &icon, bool once, bool play, bool focus);
+    void add(const QString &url, const QString &orig_url, const QString &name, const QString &author, const QString &description, int type, const QString &app, const QString &icon, bool once, bool play);
     void addPath(const QString &path, const QString &name);
     void addPathOnce(const QString &path, const QString &name);
     void addPathOnceAndPlay(const QString &path, const QString &name);
@@ -97,6 +98,7 @@ public Q_SLOTS: // METHODS
     void addUrlOnceAndPlay(const QString &url, const QString &name);
     Q_DECL_DEPRECATED void appendPath(const QString &path);
     void clearPlaylist();
+    void focus();
 Q_SIGNALS: // SIGNALS
     void CanControlPropertyChanged(bool canControl);
 };

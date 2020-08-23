@@ -107,6 +107,7 @@
            add:
            @url: URL to resource. If doesn't directly point to media resource,
                youtube-dl is used to discover final URL.
+           @orig_url: Original URL to resource (e.g. URL to youtube web page).
            @name: Name of the item. If empty, value is discovered automatically.
            @author: Author/artist of the item. If empty, value is discovered automatically.
            @description: Description of the item.
@@ -116,12 +117,12 @@
            @once: Indication to append URL to play queue only if there is no
                 any other item with the same URL.
            @play: Indication to play item immediately after adding.
-           @focus: Indication to bring Jupii to foreground.
 
            Append URL to play queue together with additional meta data and parameters.
         -->
         <method name="add">
             <arg name="url" type="s" direction="in" />
+            <arg name="orig_url" type="s" direction="in" />
             <arg name="name" type="s" direction="in" />
             <arg name="author" type="s" direction="in" />
             <arg name="description" type="s" direction="in" />
@@ -130,8 +131,14 @@
             <arg name="icon" type="s" direction="in" />
             <arg name="once" type="b" direction="in" />
             <arg name="play" type="b" direction="in" />
-            <arg name="focus" type="b" direction="in" />
         </method>
+
+        <!--
+            focus:
+
+            Bring Jupii to foreground.
+        -->
+        <method name="focus" />
 
         <!--
             clearPlaylist:
