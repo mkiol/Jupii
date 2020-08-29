@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sat Aug 29 2020 Michal Kosciesza <michal@mkiol.net> 2.7.3-1
+- New methods in DBus API
+
 * Sun May 31 2020 Michal Kosciesza <michal@mkiol.net> 2.7.2-1
 - Minor fixes: Calling setPlaMode=NORMAL before play, Better DLNA.ORG_FLAGS
 

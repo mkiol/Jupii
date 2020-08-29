@@ -29,6 +29,16 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.7.3")
+            }
+
+            LogItem {
+                title: "DBus API update"
+                description: "DBus API has been updated to provide better " +
+                             "integration with other apps (e.g. Microtube)."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.7.2")
             }
 
