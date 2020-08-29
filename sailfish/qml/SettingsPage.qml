@@ -143,7 +143,7 @@ Page {
                 }
             }
 
-            ComboBox {
+            /*ComboBox {
                 visible: settings.screenSupported && settings.isDebug()
                 label: qsTr("Screen encoder")
                 currentIndex: {
@@ -152,8 +152,8 @@ Page {
                         return 1;
                     if (enc === "libx264rgb")
                         return 2;
-                    /*if (enc === "h264_omx")
-                        return 3;*/
+                    if (enc === "h264_omx")
+                        return 3;
                     return 0;
                 }
                 menu: ContextMenu {
@@ -168,12 +168,12 @@ Page {
                         settings.screenEncoder = "libx264";
                     else if (currentIndex === 2)
                         settings.screenEncoder = "libx264rgb";
-                    /*else if (currentIndex === 3)
-                        settings.screenEncoder = "h264_omx";*/
+                    else if (currentIndex === 3)
+                        settings.screenEncoder = "h264_omx";
                     else
                         settings.screenEncoder = "";
                 }
-            }
+            }*/
 
             TextSwitch {
                 automaticCheck: false
