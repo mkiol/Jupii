@@ -22,6 +22,8 @@
 #include <QUrlQuery>
 #include <QTime>
 #include <QStandardPaths>
+#include <QGuiApplication>
+#include <QClipboard>
 #ifdef SAILFISH
 #include <QMetaObject>
 #endif
@@ -119,84 +121,6 @@ QStringList Utils::getNetworkIfs(bool onlyUp)
     return infs;
 }
 
-/*bool Utils::getNetworkIf(QString& ifname, QString& address)
-{
-    auto ifList = QNetworkInterface::allInterfaces();
-
-    // -- debug --
-    qDebug() << "Net interfaces:";
-    for (const auto &interface : ifList) {
-        qDebug() << "interface:" << interface.index();
-        qDebug() << "  name:" << interface.name();
-        qDebug() << "  human name:" << interface.humanReadableName();
-        qDebug() << "  MAC:" << interface.hardwareAddress();
-        qDebug() << "  point-to-pont:" << interface.flags().testFlag(QNetworkInterface::IsPointToPoint);
-        qDebug() << "  loopback:" << interface.flags().testFlag(QNetworkInterface::IsLoopBack);
-        qDebug() << "  up:" << interface.flags().testFlag(QNetworkInterface::IsUp);
-        qDebug() << "  running:" << interface.flags().testFlag(QNetworkInterface::IsRunning);
-    }
-    // -- debug --
-
-    auto prefNetInf = Settings::instance()->getPrefNetInf();
-
-    if (!prefNetInf.isEmpty()) {
-        // Searching prefered network interface
-
-        for (const auto &interface : ifList) {
-            if (interface.isValid() &&
-                !interface.flags().testFlag(QNetworkInterface::IsLoopBack) &&
-                interface.flags().testFlag(QNetworkInterface::IsUp) &&
-                interface.flags().testFlag(QNetworkInterface::IsRunning) &&
-                interface.name() == prefNetInf) {
-
-                ifname = interface.name();
-
-                auto addra = interface.addressEntries();
-                for (auto a : addra) {
-                    auto ha = a.ip();
-                    if (ha.protocol() == QAbstractSocket::IPv4Protocol ||
-                        ha.protocol() == QAbstractSocket::IPv6Protocol) {
-                        address = ha.toString();
-                        qDebug() << "Net interface:" << ifname << address;
-                        return true;
-                    }
-                }
-            }
-        }
-
-        qWarning() << "Prefered net interface not found";
-    }
-
-    for (const auto &interface : ifList) {
-        if (interface.isValid() &&
-            !interface.flags().testFlag(QNetworkInterface::IsLoopBack) &&
-            interface.flags().testFlag(QNetworkInterface::IsUp) &&
-            interface.flags().testFlag(QNetworkInterface::IsRunning)
-#ifdef SAILFISH
-            && (interface.name() == "eth2" ||
-                interface.name() == "wlan0" ||
-                interface.name() == "tether")
-#endif
-            ) {
-
-            ifname = interface.name();
-
-            auto addra = interface.addressEntries();
-            for (const auto &a : addra) {
-                auto ha = a.ip();
-                if (ha.protocol() == QAbstractSocket::IPv4Protocol ||
-                    ha.protocol() == QAbstractSocket::IPv6Protocol) {
-                    address = ha.toString();
-                    qDebug() << "Net interface:" << ifname << address;
-                    return true;
-                }
-            }
-        }
-    }
-
-    return false;
-}*/
-
 void Utils::removeFromCacheDir(const QStringList &filter)
 {
     QDir dir(Settings::instance()->getCacheDir());
@@ -291,6 +215,28 @@ bool Utils::readFromCacheFile(const QString &filename, QByteArray &data)
     return false;
 }
 
+QString Utils::readLicenseFile()
+{
+    QByteArray data;
+
+    auto dirs = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+
+    for (const auto& dir : dirs) {
+        QFile file(QDir(dir).absoluteFilePath("LICENSE"));
+        if (file.exists()) {
+            if (file.open(QIODevice::ReadOnly)) {
+                data = file.readAll();
+                file.close();
+            } else {
+                qWarning() << "Cannot open license file" << file.fileName();
+            }
+            break;
+        }
+    }
+
+    return QString::fromUtf8(data);
+}
+
 bool Utils::cacheFileExists(const QString &filename)
 {
     QDir dir(Settings::instance()->getCacheDir());
@@ -348,7 +294,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
         if (author && q.hasQueryItem(Utils::authorKey))
             *author = q.queryItemValue(Utils::authorKey);
         if (origUrl && q.hasQueryItem(Utils::origUrlKey))
-            *origUrl = q.queryItemValue(Utils::origUrlKey);
+            *origUrl = QUrl(q.queryItemValue(Utils::origUrlKey));
         if (play && q.hasQueryItem(Utils::playKey))
             *play = (q.queryItemValue(Utils::playKey) == "true");
         if (ytdl && q.hasQueryItem(Utils::ytdlKey))
@@ -409,30 +355,20 @@ QString Utils::devNameFromUpnpId(const QUrl &id)
     return QString();
 }
 
-/*QString Utils::rgbName(const QColor &color)
+QString Utils::urlToPath(const QUrl &url)
 {
-    qDebug() << "color:" << color << color.name(QColor::HexArgb);
-    auto alpha = color.alphaF();
-    if (alpha < 1) {
-        // convert alpha to rgb tone
-        QColor new_color;
-        if (Settings::instance()->getColorScheme() == 0) { // dark theme
-            new_color = QColor(color.red() * alpha, color.green() * alpha,
-                               color.blue() * alpha);
-        } else {
-            alpha = 255 * (1 - alpha);
-            new_color = QColor(color.red() + alpha,
-                               color.green() + alpha,
-                               color.blue() + alpha);
-        }
+    return url.toLocalFile();
+}
 
-        qDebug() << "new_color:" << new_color << new_color.name(QColor::HexArgb);
-        return new_color.name(QColor::HexRgb);
-    } else {
-        return color.name(QColor::HexRgb);
-    }
-    return color.name(QColor::HexArgb);
-}*/
+QUrl Utils::pathToUrl(const QString &path)
+{
+    return QUrl::fromLocalFile(path);
+}
+
+void Utils::setClipboard(const QString &data)
+{
+    QGuiApplication::clipboard()->setText(data);
+}
 
 int Utils::itemTypeFromUrl(const QUrl &url)
 {

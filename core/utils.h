@@ -15,7 +15,6 @@
 #include <QStringList>
 #include <QNetworkAccessManager>
 #include <QThread>
-//#include <QColor>
 #include <memory>
 #ifdef SAILFISH
 #include <QQuickItem>
@@ -64,11 +63,13 @@ public:
     Q_INVOKABLE bool isIdRec(const QUrl &id);
     Q_INVOKABLE int itemTypeFromUrl(const QUrl &url);
     Q_INVOKABLE QString devNameFromUpnpId(const QUrl &id);
-    //Q_INVOKABLE QString rgbName(const QColor &color);
-
+    Q_INVOKABLE QString readLicenseFile();
     Q_INVOKABLE QString recUrlFromId(const QUrl &id);
     Q_INVOKABLE QString recDateFromId(const QUrl &id);
     Q_INVOKABLE QString dirNameFromPath(const QString &path);
+    Q_INVOKABLE QString urlToPath(const QUrl &url);
+    Q_INVOKABLE QUrl pathToUrl(const QString &path);
+    Q_INVOKABLE void setClipboard(const QString &data);
 
     QString hash(const QString &value);
     static bool isIdValid(const QString &id);
