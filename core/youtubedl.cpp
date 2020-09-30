@@ -23,11 +23,7 @@ YoutubeDl* YoutubeDl::m_instance = nullptr;
 
 YoutubeDl::YoutubeDl(QObject *parent) : QObject(parent)
 {
-#ifdef SAILFISH
     install();
-#else
-    binPath = "youtube-dl";
-#endif
     auto dir = Directory::instance();
     connect(dir, &Directory::networkStateChanged, this, &YoutubeDl::terminateAll);
 }
@@ -61,7 +57,6 @@ void YoutubeDl::terminate(const QUrl &url)
     }
 }
 
-#ifdef SAILFISH
 void YoutubeDl::downloadBin()
 {
     qDebug() << "Downloading youtube-dl";
@@ -163,7 +158,6 @@ void YoutubeDl::install()
     qDebug() << "Using youtube-dl bin:" << binPath;
     update();
 }
-#endif
 
 void YoutubeDl::handleProcFinished(int exitCode)
 {
@@ -176,6 +170,9 @@ void YoutubeDl::handleProcFinished(int exitCode)
         procToUrl.remove(proc);
         procToData.remove(proc);
         urlToProc.remove(url);
+
+        if (exitCode > 0)
+            qDebug() << "Youtube-dl std error:" << proc->readAllStandardError();
 
         if (out.size() < 2) {
             qWarning() << "Youtube-dl output is empty";
@@ -239,8 +236,10 @@ bool YoutubeDl::findStream(const QUrl &url)
     connect(proc, &QProcess::readyReadStandardOutput, this, &YoutubeDl::handleReadyRead);
     procToUrl.insert(proc, url);
     urlToProc.insert(url, proc);
-    proc->start(binPath + " --get-title --get-url --no-call-home --format best \"" + url.toString() + "\"",
-                QIODevice::ReadOnly);
+
+    auto command = binPath + " --get-title --get-url --no-call-home --format best \"" + url.toString() + "\"";
+    qDebug() << "youtube-dl command:" << command;
+    proc->start(command, QIODevice::ReadOnly);
 
     qDebug() << "process started:" << proc;
     return true;

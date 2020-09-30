@@ -48,21 +48,17 @@ private:
     QHash<QProcess*, QByteArray> procToData;
     QHash<QUrl, QProcess*> urlToProc;
     explicit YoutubeDl(QObject* parent = nullptr);
-#ifdef SAILFISH
     void install();
     void update();
     void downloadBin();
-#endif
 
 private slots:
     void handleProcFinished(int exitCode);
     void handleProcError(QProcess::ProcessError error);
     void handleReadyRead();
-#ifdef SAILFISH
     void handleBinDownloaded();
     void handleUpdateProcFinished(int exitCode);
     void handleUpdateProcError(QProcess::ProcessError error);
-#endif
 };
 
 #endif // YOUTUBEDL_H
