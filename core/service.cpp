@@ -174,18 +174,26 @@ bool Service::init(const QString &deviceId)
         qDebug() << "Initing task";
         m_initing = true;
 
-        if (m_ser)
+        if (m_ser) {
             m_ser->reInit(ddesc, sdesc);
-        else
+        } else {
             m_ser = createUpnpService(ddesc, sdesc);
+        }
 
-        if (!m_ser) {
+        if (!m_ser->isCallbackRegistered()) {
             qWarning() << "Unable to create UPnP service";
+            m_initing = false;
+            delete m_ser;
         } else {
             postInit();
+        }
+
+        if (m_initing) {
             m_ser->installReporter(this);
             setInited(true);
             m_initing = false;
+        } else {
+            qWarning() << "Cannot init service";
         }
 
         setBusy(false);

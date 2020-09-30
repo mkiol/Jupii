@@ -88,6 +88,9 @@ public:
 
     bool isSameService(const UPnPDeviceDesc& devdesc,
                        const UPnPServiceDesc& servdesc);
+    inline bool isCallbackRegistered() {
+        return callbackRegistered;
+    }
 
     const std::string& getFriendlyName() const;
     const std::string& getDeviceId() const;
@@ -134,6 +137,8 @@ private:
     Service(Service const&);
     Service& operator=(Service const&);
 
+
+    bool callbackRegistered = false;
     class Internal;
     Internal *m;
 

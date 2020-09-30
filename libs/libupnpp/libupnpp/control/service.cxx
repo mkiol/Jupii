@@ -421,8 +421,10 @@ bool Service::unSubscribe()
 
 void Service::registerCallback(evtCBFunc c)
 {
-    if (!subscribe())
+    callbackRegistered = subscribe();
+    if (!callbackRegistered) {
         return;
+    }
     std::unique_lock<std::mutex> lock(cblock);
     LOGDEB1("Service::registerCallback: " << m->SID << endl);
     o_calls[m->SID] = c;
