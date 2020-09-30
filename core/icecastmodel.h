@@ -16,7 +16,7 @@
 #include <QUrl>
 #include <QDir>
 #include <QDomNodeList>
-#include <memory>
+#include <QNetworkReply>
 
 #include "contentserver.h"
 #include "listmodel.h"
@@ -74,6 +74,9 @@ public slots:
 signals:
     void refreshingChanged();
     void error();
+
+private slots:
+    void handleDataDownloadFinished();
 
 private:
     static const QString m_dirUrl;

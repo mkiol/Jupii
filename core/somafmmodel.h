@@ -18,8 +18,9 @@
 #include <QDir>
 #include <QDomNodeList>
 #include <QDomElement>
+#include <QNetworkReply>
 
-#ifdef DESKTOP
+#ifdef WIDGETS
 #include <QIcon>
 #endif
 
@@ -45,10 +46,10 @@ public:
                       const QString &name,
                       const QString &description,
                       const QUrl &url,
-#ifdef SAILFISH
-                      const QUrl &icon,
-#else
+#ifdef WIDGETS
                       const QIcon &icon,
+#else
+                      const QUrl &icon,
 #endif
                       QObject *parent = nullptr);
     QVariant data(int role) const;
@@ -57,10 +58,10 @@ public:
     inline QString name() const { return m_name; }
     inline QString description() const { return m_description; }
     inline QUrl url() const { return m_url; }
-#ifdef SAILFISH
-    inline QUrl icon() const { return m_icon; }
-#else
+#ifdef WIDGETS
     inline QIcon icon() const { return m_icon; }
+#else
+    inline QUrl icon() const { return m_icon; }
 #endif
 
 private:
@@ -68,10 +69,10 @@ private:
     QString m_name;
     QString m_description;
     QUrl m_url;
-#ifdef SAILFISH
-    QUrl m_icon;
-#else
+#ifdef WIDGETS
     QIcon m_icon;
+#else
+    QUrl m_icon;
 #endif
 };
 
@@ -91,6 +92,10 @@ signals:
     void refreshingChanged();
     void error();
 
+private slots:
+    void handleDataDownloadFinished();
+    void handleIconDownloadFinished();
+
 private:
     static const QString m_dirUrl;
     static const QString m_dirFilename;
@@ -99,6 +104,7 @@ private:
 
     QDomNodeList m_entries;
     QList<QPair<QString,QString>> m_imagesToDownload;  // <id, image URL>
+    QHash<QNetworkReply*,QString> m_replyToId;
     bool m_refreshing = false;
 
     QList<ListItem*> makeItems();

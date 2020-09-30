@@ -16,8 +16,6 @@
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
-
-#include <QNetworkReply>
 #include <QNetworkRequest>
 #include <memory>
 
@@ -88,6 +86,44 @@ bool FosdemModel::isRefreshing()
     return m_refreshing;
 }
 
+void FosdemModel::handleDataDownloadFinished()
+{
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+    if (reply) {
+        auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+        auto err = reply->error();
+        //qDebug() << "Response code:" << code << reason << err;
+
+        if (err != QNetworkReply::NoError) {
+            qWarning() << "Error:" << err;
+            emit error();
+        } else if (code > 299 && code < 399) {
+            qWarning() << "Redirection received but unsupported";
+            emit error();
+        } else if (code > 299) {
+            qWarning() << "Unsupported response code:" << reply->error() << code << reason;
+            emit error();
+        } else {
+            auto data = reply->readAll();
+            if (data.isEmpty()) {
+                qWarning() << "No data received";
+                emit error();
+            } else {
+                Utils::writeToCacheFile(m_filename.arg(m_year), data, true);
+                if (!parseData()) {
+                    emit error();
+                }
+            }
+        }
+        reply->deleteLater();
+        m_refreshing = false;
+        emit refreshingChanged();
+        setBusy(false);
+        updateModel();
+    }
+}
+
 void FosdemModel::refresh()
 {
     if (!m_refreshing) {
@@ -100,39 +136,8 @@ void FosdemModel::refresh()
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         auto reply = Utils::instance()->nam->get(request);
         QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-        connect(reply, &QNetworkReply::finished, [this, reply]{
-            auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-            auto err = reply->error();
-            //qDebug() << "Response code:" << code << reason << err;
-
-            if (err != QNetworkReply::NoError) {
-                qWarning() << "Error:" << err;
-                emit error();
-            } else if (code > 299 && code < 399) {
-                qWarning() << "Redirection received but unsupported";
-                emit error();
-            } else if (code > 299) {
-                qWarning() << "Unsupported response code:" << reply->error() << code << reason;
-                emit error();
-            } else {
-                auto data = reply->readAll();
-                if (data.isEmpty()) {
-                    qWarning() << "No data received";
-                    emit error();
-                } else {
-                    Utils::writeToCacheFile(m_filename.arg(m_year), data, true);
-                    if (!parseData()) {
-                        emit error();
-                    }
-                }
-            }
-            reply->deleteLater();
-            m_refreshing = false;
-            emit refreshingChanged();
-            setBusy(false);
-            updateModel();
-        });
+        connect(reply, &QNetworkReply::finished, this,
+                &FosdemModel::handleDataDownloadFinished, Qt::QueuedConnection);
     } else {
         qWarning() << "Refreshing already active";
     }
@@ -148,8 +153,7 @@ QVariantList FosdemModel::selectedItems()
             QVariantMap map;
             map.insert("url", QVariant(event->url()));
             map.insert("name", QVariant(event->name()));
-            map.insert("icon", QVariant(
-                           QUrl::fromLocalFile(IconProvider::pathToNoResId("icon-fosdem"))));
+            map.insert("icon", QVariant(IconProvider::urlToNoResId("icon-fosdem")));
             map.insert("author", QVariant(QString("FOSDEM %1").arg(m_year)));
             list << map;
         }

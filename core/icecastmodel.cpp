@@ -15,8 +15,6 @@
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
-
-#include <QNetworkReply>
 #include <QNetworkRequest>
 #include <memory>
 
@@ -60,6 +58,47 @@ bool IcecastModel::isRefreshing()
     return m_refreshing;
 }
 
+void IcecastModel::handleDataDownloadFinished()
+{
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+    if (reply) {
+        auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+        auto err = reply->error();
+        //qDebug() << "Response code:" << code << reason << err;
+
+        if (err != QNetworkReply::NoError) {
+            qWarning() << "Error:" << err;
+            emit error();
+        } else if (code > 299 && code < 399) {
+            qWarning() << "Redirection received but unsupported";
+            emit error();
+        } else if (code > 299) {
+            qWarning() << "Unsupported response code:" << reply->error() << code << reason;
+            emit error();
+        } else {
+            auto data = reply->readAll();
+            if (data.isEmpty()) {
+                qWarning() << "No data received";
+                emit error();
+            } else {
+                Utils::writeToCacheFile(m_dirFilename, data, true);
+            }
+        }
+
+        reply->deleteLater();
+
+        m_refreshing = false;
+        emit refreshingChanged();
+        setBusy(false);
+
+        if (parseData())
+            updateModel();
+        else
+            emit error();
+    }
+}
+
 void IcecastModel::refresh()
 {
     if (!m_refreshing) {
@@ -68,46 +107,12 @@ void IcecastModel::refresh()
         emit refreshingChanged();
 
         QNetworkRequest request;
-        request.setUrl(m_dirUrl);
+        request.setUrl(QUrl(m_dirUrl));
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         auto reply = Utils::instance()->nam->get(request);
         QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-        connect(reply, &QNetworkReply::finished, [this, reply]{
-            auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-            auto err = reply->error();
-            //qDebug() << "Response code:" << code << reason << err;
-
-            if (err != QNetworkReply::NoError) {
-                qWarning() << "Error:" << err;
-                emit error();
-            } else if (code > 299 && code < 399) {
-                qWarning() << "Redirection received but unsupported";
-                emit error();
-            } else if (code > 299) {
-                qWarning() << "Unsupported response code:" << reply->error() << code << reason;
-                emit error();
-            } else {
-                auto data = reply->readAll();
-                if (data.isEmpty()) {
-                    qWarning() << "No data received";
-                    emit error();
-                } else {
-                    Utils::writeToCacheFile(m_dirFilename, data, true);
-                }
-            }
-
-            reply->deleteLater();
-
-            m_refreshing = false;
-            emit refreshingChanged();
-            setBusy(false);
-
-            if (parseData())
-                updateModel();
-            else
-                emit error();
-        });
+        connect(reply, &QNetworkReply::finished, this,
+                &IcecastModel::handleDataDownloadFinished, Qt::QueuedConnection);
     } else {
         qWarning() << "Refreshing already active";
     }
@@ -123,8 +128,7 @@ QVariantList IcecastModel::selectedItems()
             QVariantMap map;
             map.insert("url", QVariant(station->url()));
             map.insert("name", QVariant(station->name()));
-            map.insert("icon", QVariant(
-                           QUrl::fromLocalFile(IconProvider::pathToNoResId("icon-icecast"))));
+            map.insert("icon", QVariant(IconProvider::urlToNoResId("icon-icecast")));
             map.insert("author", QVariant("Icecast"));
             list << map;
         }
@@ -144,7 +148,7 @@ QList<ListItem*> IcecastModel::makeItems()
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
         if (!entry.isNull()) {
-            auto name = entry.elementsByTagName("server_name").at(0).toElement().text();
+            auto name = entry.elementsByTagName("server_name").at(0).toElement().text().trimmed();
             auto genre = entry.elementsByTagName("genre").at(0).toElement().text();
             auto url = entry.elementsByTagName("listen_url").at(0).toElement().text();
 

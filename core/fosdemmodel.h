@@ -18,7 +18,7 @@
 #include <QDir>
 #include <QDomNodeList>
 #include <QDomElement>
-#include <memory>
+#include <QNetworkReply>
 
 #include "listmodel.h"
 #include "itemmodel.h"
@@ -76,6 +76,9 @@ signals:
     void yearChanged();
     void refreshingChanged();
     void error();
+
+private slots:
+    void handleDataDownloadFinished();
 
 private:
     static const QString m_url;

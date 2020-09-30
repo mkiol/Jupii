@@ -15,7 +15,6 @@
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
-#include <QNetworkReply>
 #include <QNetworkRequest>
 #include <memory>
 
@@ -96,6 +95,43 @@ void SomafmModel::downloadImages()
     downloadImage();
 }
 
+void SomafmModel::handleIconDownloadFinished()
+{
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+    if (reply && m_replyToId.contains(reply)) {
+        auto id = m_replyToId.value(reply);
+        auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+        auto err = reply->error();
+        //qDebug() << "Image download response code:" << code << reason << err;
+
+        if (err != QNetworkReply::NoError) {
+            qWarning() << "Error:" << err;
+        } else if (code > 299 && code < 399) {
+            qWarning() << "Redirection received but unsupported";
+        } else if (code > 299) {
+            qWarning() << "Unsupported response code:" << reply->error() << code << reason;
+        } else {
+            auto data = reply->readAll();
+            if (data.isEmpty()) {
+                qWarning() << "No data received";
+            } else {
+                auto filename = m_imageFilename + id;
+                auto ext = reply->url().fileName().split('.').last();
+                if (!ext.isEmpty())
+                    filename = filename + "." + ext;
+                qDebug() << "Downloaded image:" << filename;
+                Utils::writeToCacheFile(filename, data, true);
+            }
+        }
+
+        m_replyToId.remove(reply);
+        reply->deleteLater();
+
+        downloadImage();
+    }
+}
+
 void SomafmModel::downloadImage()
 {
     if (m_imagesToDownload.isEmpty()) {
@@ -105,39 +141,54 @@ void SomafmModel::downloadImage()
         auto id = image.first;
 
         QNetworkRequest request;
-        request.setUrl(image.second);
+        request.setUrl(QUrl(image.second));
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         auto reply = Utils::instance()->nam->get(request);
         QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-        connect(reply, &QNetworkReply::finished, [this, id, reply]{
-            auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-            auto err = reply->error();
-            //qDebug() << "Image download response code:" << code << reason << err;
 
-            if (err != QNetworkReply::NoError) {
-                qWarning() << "Error:" << err;
-            } else if (code > 299 && code < 399) {
-                qWarning() << "Redirection received but unsupported";
-            } else if (code > 299) {
-                qWarning() << "Unsupported response code:" << reply->error() << code << reason;
+        m_replyToId.insert(reply, id);
+        connect(reply, &QNetworkReply::finished, this,
+                &SomafmModel::handleIconDownloadFinished, Qt::QueuedConnection);
+    }
+}
+
+void SomafmModel::handleDataDownloadFinished()
+{
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+    if (reply) {
+        auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+        auto err = reply->error();
+        //qDebug() << "Response code:" << code << reason << err;
+
+        if (err != QNetworkReply::NoError) {
+            qWarning() << "Error:" << err;
+            emit error();
+        } else if (code > 299 && code < 399) {
+            qWarning() << "Redirection received but unsupported";
+            emit error();
+        } else if (code > 299) {
+            qWarning() << "Unsupported response code:" << reply->error() << code << reason;
+            emit error();
+        } else {
+            auto data = reply->readAll();
+            if (data.isEmpty()) {
+                qWarning() << "No data received";
+                emit error();
             } else {
-                auto data = reply->readAll();
-                if (data.isEmpty()) {
-                    qWarning() << "No data received";
+                Utils::writeToCacheFile(m_dirFilename, data, true);
+                if (!parseData()) {
+                    emit error();
                 } else {
-                    auto filename = m_imageFilename + id;
-                    auto ext = reply->url().fileName().split('.').last();
-                    if (!ext.isEmpty())
-                        filename = filename + "." + ext;
-                    qDebug() << "Downloaded image:" << filename;
-                    Utils::writeToCacheFile(filename, data, true);
+                    downloadImages();
                 }
             }
-
-            reply->deleteLater();
-            downloadImage();
-        });
+        }
+        reply->deleteLater();
+        m_refreshing = false;
+        emit refreshingChanged();
+        setBusy(false);
+        updateModel();
     }
 }
 
@@ -149,45 +200,12 @@ void SomafmModel::refresh()
         emit refreshingChanged();
 
         QNetworkRequest request;
-        request.setUrl(m_dirUrl);
+        request.setUrl(QUrl(m_dirUrl));
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         auto reply = Utils::instance()->nam->get(request);
         QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-        connect(reply, &QNetworkReply::finished, [this, reply]{
-            auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-            auto err = reply->error();
-            //qDebug() << "Response code:" << code << reason << err;
-
-            if (err != QNetworkReply::NoError) {
-                qWarning() << "Error:" << err;
-                emit error();
-            } else if (code > 299 && code < 399) {
-                qWarning() << "Redirection received but unsupported";
-                emit error();
-            } else if (code > 299) {
-                qWarning() << "Unsupported response code:" << reply->error() << code << reason;
-                emit error();
-            } else {
-                auto data = reply->readAll();
-                if (data.isEmpty()) {
-                    qWarning() << "No data received";
-                    emit error();
-                } else {
-                    Utils::writeToCacheFile(m_dirFilename, data, true);
-                    if (!parseData()) {
-                        emit error();
-                    } else {
-                        downloadImages();
-                    }
-                }
-            }
-            reply->deleteLater();
-            m_refreshing = false;
-            emit refreshingChanged();
-            setBusy(false);
-            updateModel();
-        });
+        connect(reply, &QNetworkReply::finished, this,
+                &SomafmModel::handleDataDownloadFinished, Qt::QueuedConnection);
     } else {
         qWarning() << "Refreshing already active";
     }
@@ -247,24 +265,26 @@ QList<ListItem*> SomafmModel::makeItems()
                     genre.contains(filter, Qt::CaseInsensitive) ||
                     dj.contains(filter, Qt::CaseInsensitive)) {
 
+                    QUrl icon;
                     auto filename = m_imageFilename + id;
                     auto imgpath = Utils::pathToCacheFile(filename + ".jpg");
                     if (!QFileInfo::exists(imgpath)) {
                         imgpath = Utils::pathToCacheFile(filename + ".png");
                         if (!QFileInfo::exists(imgpath))
-                            imgpath = IconProvider::pathToNoResId("icon-somafm");
+                            icon = IconProvider::urlToNoResId("icon-somafm"); // default icon
                     }
+                    if (icon.isEmpty())
+                        icon = QUrl::fromLocalFile(imgpath);
 
-                    auto icon = QUrl::fromLocalFile(imgpath);
                     items << new SomafmItem(
                                     id, // id
                                     name, // name
                                     desc, // desc
                                     QUrl(url), // url
-#ifdef SAILFISH
-                                    icon
-#else
+#ifdef WIDGETS
                                     QIcon(icon.toLocalFile())
+#else
+                                    icon
 #endif
                                 );
                 }
@@ -289,10 +309,10 @@ SomafmItem::SomafmItem(const QString &id,
                    const QString &name,
                    const QString &description,
                    const QUrl &url,
-#ifdef SAILFISH
-                   const QUrl &icon,
-#else
+#ifdef WIDGETS
                    const QIcon &icon,
+#else
+                   const QUrl &icon,
 #endif
                    QObject *parent) :
     SelectableItem(parent),
