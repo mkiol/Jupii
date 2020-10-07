@@ -66,6 +66,9 @@
 
 #ifdef SAILFISH
 #include <sailfishapp.h>
+#endif
+
+#if defined(SAILFISH) || defined(KIRIGAMI)
 #include "iconprovider.h"
 #endif
 
@@ -204,12 +207,16 @@ ContentServerWorker* ContentServerWorker::instance(QObject *parent)
 ContentServerWorker::ContentServerWorker(QObject *parent) :
     QObject(parent),
     nam(new QNetworkAccessManager(parent)),
-    server(new QHttpServer(parent))
+    server(new QHttpServer(parent)),
+    volumeBoost(Settings::instance()->getAudioBoost())
 {
     connect(server, &QHttpServer::newRequest,
                      this, &ContentServerWorker::requestHandler);
     connect(this, &ContentServerWorker::contSeqWriteData,
                      this, &ContentServerWorker::seqWriteData,
+                     Qt::QueuedConnection);
+    connect(Settings::instance(), &Settings::audioBoostChanged,
+                     this, [this]{volumeBoost = Settings::instance()->getAudioBoost();},
                      Qt::QueuedConnection);
 
     if (!server->listen(static_cast<quint16>(Settings::instance()->getPort()))) {
@@ -1826,7 +1833,7 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
                                    QString &meta, const ItemMeta *item)
 {
     QString path, name, desc, author; int t = 0; QUrl icon;
-    if (!Utils::pathTypeNameCookieIconFromId(id, &path, &t, &name, nullptr,
+    if (!Utils::pathTypeNameCookieIconFromId(QUrl(id), &path, &t, &name, nullptr,
                                              &icon, &desc, &author))
         return false;
 
@@ -3076,7 +3083,7 @@ ContentServer::makeMicItemMeta(const QUrl &url)
     meta.title = tr("Microphone");
     meta.itemType = ItemType_Mic;
 
-#ifdef SAILFISH
+#if defined(SAILFISH) || defined(KIRIGAMI)
     meta.albumArt = IconProvider::pathToNoResId("icon-mic");
 #endif
 
@@ -3096,7 +3103,7 @@ ContentServer::makeAudioCaptureItemMeta(const QUrl &url)
     meta.seekSupported = false;
     meta.title = tr("Audio capture");
     meta.itemType = ItemType_AudioCapture;
-#ifdef SAILFISH
+#if defined(SAILFISH) || defined(KIRIGAMI)
     meta.albumArt = IconProvider::pathToNoResId("icon-pulse");
 #endif
 
@@ -3116,7 +3123,7 @@ ContentServer::makeScreenCaptureItemMeta(const QUrl &url)
     meta.seekSupported = false;
     meta.title = tr("Screen capture");
     meta.itemType = ItemType_ScreenCapture;
-#ifdef SAILFISH
+#if defined(SAILFISH) || defined(KIRIGAMI)
     meta.albumArt = IconProvider::pathToNoResId("icon-screen");
 #endif
 
@@ -3439,7 +3446,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
             qWarning() << "Cannot save album art for:" << meta.url.toString();
         }
     } else {
-#ifdef SAILFISH
+#if defined(SAILFISH) || defined(KIRIGAMI)
         if (meta.origUrl.host().contains("bandcamp.com") || meta.url.host().contains("bcbits.com"))
             meta.albumArt = IconProvider::pathToNoResId("icon-bandcamp");
         else if (meta.origUrl.host().contains("youtube.") || meta.origUrl.host().contains("yout.be"))
@@ -3992,13 +3999,12 @@ void ContentServerWorker::dispatchPulseData(const void *data, int size)
     if (audioCaptureEnabled || screenCaptureAudioEnabled) {
         QByteArray d;
         if (data) {
-#ifdef SAILFISH
-            // increasing volume level only in SFOS
-            d = QByteArray(static_cast<const char*>(data), size); // deep copy
-            adjustVolume(&d, 2.3f, true);
-#else
-            d = QByteArray::fromRawData(static_cast<const char*>(data), size);
-#endif
+            if (volumeBoost > 1.0f) { // increasing volume level
+                d = QByteArray(static_cast<const char*>(data), size); // deep copy
+                adjustVolume(&d, volumeBoost, true);
+            } else {
+                d = QByteArray::fromRawData(static_cast<const char*>(data), size);
+            }
         } else {
             // writing null data
             //qDebug() << "writing null data:" << size;

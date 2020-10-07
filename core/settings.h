@@ -31,6 +31,7 @@ class Settings:
     Q_PROPERTY (bool useHWVolume READ getUseHWVolume WRITE setUseHWVolume NOTIFY useHWVolumeChanged)
     Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
     Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
+    Q_PROPERTY (float audioBoost READ getAudioBoost WRITE setAudioBoost NOTIFY audioBoostChanged)
     Q_PROPERTY (QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
     Q_PROPERTY (bool rec READ getRec WRITE setRec NOTIFY recChanged)
     Q_PROPERTY (int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
@@ -124,6 +125,9 @@ public:
     void setMicVolume(float value);
     float getMicVolume();
 
+    void setAudioBoost(float value);
+    float getAudioBoost();
+
     QStringList getLastPlaylist();
     void setLastPlaylist(const QStringList& value);
 
@@ -180,6 +184,7 @@ signals:
     void contentDirSupportedChanged();
     void logToFileChanged();
     void colorSchemeChanged();
+    void audioBoostChanged();
 
 private:
     QSettings settings;

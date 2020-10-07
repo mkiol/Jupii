@@ -27,7 +27,7 @@ Settings* Settings::inst = nullptr;
 
 Settings::Settings(QObject *parent) :
     QObject(parent),
-    TaskExecutor(parent, 1),
+    TaskExecutor(parent),
     settings(parent)
 {
     if (getLogToFile())
@@ -89,7 +89,6 @@ QString Settings::prettyName()
 
 void Settings::setLogToFile(bool value)
 {
-#ifdef SAILFISH
     if (getLogToFile() != value) {
         settings.setValue("logtofile", value);
         if (value) {
@@ -103,18 +102,11 @@ void Settings::setLogToFile(bool value)
         }
         emit logToFileChanged();
     }
-#else
-    Q_UNUSED(value)
-#endif
 }
 
 bool Settings::getLogToFile()
 {
-#ifdef SAILFISH
     return settings.value("logtofile", false).toBool();
-#else
-    return false;
-#endif
 }
 
 void Settings::setPort(int value)
@@ -400,23 +392,15 @@ bool Settings::getShowAllDevices()
 
 void Settings::setRec(bool value)
 {
-#ifdef SAILFISH
     if (getRec() != value) {
         settings.setValue("rec", value);
         emit recChanged();
     }
-#else
-    Q_UNUSED(value)
-#endif
 }
 
 bool Settings::getRec()
 {
-#ifdef SAILFISH
     return settings.value("rec", false).toBool();
-#else
-    return true;
-#endif
 }
 
 void Settings::setScreenSupported(bool value)
@@ -555,7 +539,7 @@ bool Settings::getUseHWVolume()
 
 void Settings::setMicVolume(float value)
 {
-    value = value < 0 ? 0 : value > 100 ? 100 : value;
+    value = value < 1 ? 1 : value > 100 ? 100 : value;
 
     if (getMicVolume() > value || getMicVolume() < value) {
         settings.setValue("micvolume", value);
@@ -569,6 +553,30 @@ float Settings::getMicVolume()
     return settings.value("micvolume", 50.0).toFloat();
 #else
     return settings.value("micvolume", 1.0).toFloat();
+#endif
+}
+
+void Settings::setAudioBoost(float value)
+{
+#ifdef SAILFISH
+    return;
+#else
+    value = value < 1 ? 1 : value > 10 ? 10 : value;
+
+    if (getAudioBoost() > value || getAudioBoost() < value) {
+        settings.setValue("audioboost", value);
+        emit audioBoostChanged();
+    }
+#endif
+}
+
+float Settings::getAudioBoost()
+{
+#ifdef SAILFISH
+    //return settings.value("micvolume", 2.3f).toFloat();
+    return 2.3f;
+#else
+    return settings.value("audioboost", 1.0f).toFloat();
 #endif
 }
 

@@ -465,6 +465,7 @@ private:
     QList<ConnectionItem> screenCaptureItems;
     QMutex proxyItemsMutex;
     bool displayStatus = true;
+    float volumeBoost = 1.0f;
 
     ContentServerWorker(QObject *parent = nullptr);
     void streamFile(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);
