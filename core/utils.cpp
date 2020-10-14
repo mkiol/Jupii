@@ -243,6 +243,13 @@ bool Utils::cacheFileExists(const QString &filename)
     return QFileInfo::exists(dir.absoluteFilePath(filename));
 }
 
+QString Utils::cachePathForFile(const QString &filename)
+{
+    QDir dir(Settings::instance()->getCacheDir());
+    auto path = dir.absoluteFilePath(filename);
+    return QFileInfo::exists(path) ? path : QString();
+}
+
 QString Utils::hash(const QString &value)
 {
     return QString::number(qHash(value));
@@ -751,6 +758,19 @@ QString Utils::dirNameFromPath(const QString &path)
     QDir dir(path);
     dir.makeAbsolute();
     return dir.dirName();
+}
+
+
+QString Utils::deviceIconFileName(QString id, const QString& ext)
+{
+    return "device_image_" + id.replace(':', '-') + "." + ext;
+}
+
+QString Utils::deviceIconFilePath(const QString& id)
+{
+    auto jpgPath = cachePathForFile(deviceIconFileName(id, "jpg"));
+    return jpgPath.isEmpty() ?
+                Utils::cachePathForFile(deviceIconFileName(id, "png")) : jpgPath;
 }
 
 #ifdef SAILFISH

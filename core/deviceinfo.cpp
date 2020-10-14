@@ -60,7 +60,8 @@ QString DeviceInfo::getManufacturer() const
 
 QUrl DeviceInfo::getIcon() const
 {
-    return Directory::instance()->getDeviceIconUrl(m_ddesc);
+    auto iconPath = Utils::deviceIconFilePath(getUdn());
+    return iconPath.isEmpty() ? QUrl() : QUrl::fromLocalFile(iconPath);
 }
 
 QString DeviceInfo::getXML() const
@@ -71,7 +72,7 @@ QString DeviceInfo::getXML() const
 QStringList DeviceInfo::getServices() const
 {
     QStringList list;
-    for (auto service : m_ddesc.services) {
+    for (const auto &service : m_ddesc.services) {
         QString type = Utils::instance()->friendlyServiceType(
                     QString::fromStdString(service.serviceType));
         list.append(type);

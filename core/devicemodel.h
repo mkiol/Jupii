@@ -18,7 +18,7 @@
 #include <QModelIndex>
 #include <QUrl>
 
-#ifdef DESKTOP
+#ifdef WIDGETS
 #include <QIcon>
 #include <QBrush>
 #endif
@@ -48,7 +48,7 @@ public:
                       const QString &title,
                       const QString &type,
                       const QString &model,
-#ifdef DESKTOP
+#ifdef WIDGETS
                       const QIcon &icon,
 #else
                       const QUrl &icon,
@@ -63,7 +63,7 @@ public:
     inline QString title() const { return m_title; }
     inline QString type() const { return m_type; }
     inline QString model() const { return m_model; }
-#ifdef DESKTOP
+#ifdef WIDGETS
     inline QIcon icon() const { return m_icon; }
 #else
     inline QUrl icon() const { return m_icon; }
@@ -75,9 +75,11 @@ public:
     bool isFav() const;
     void setActive(bool value);
     void setPower(bool value);
-#ifdef DESKTOP
+#ifdef WIDGETS
     void setIcon(const QIcon &icon);
     QBrush foreground() const;
+#else
+    void setIcon(const QUrl &icon);
 #endif
 
 private:
@@ -85,7 +87,7 @@ private:
     QString m_title;
     QString m_type;
     QString m_model;
-#ifdef DESKTOP
+#ifdef WIDGETS
     QIcon m_icon;
 #else
     QUrl m_icon;
@@ -125,7 +127,6 @@ private:
     static DeviceModel* m_instance;
     DeviceType m_deviceType = AnyType;
     explicit DeviceModel(QObject *parent = nullptr);
-
 };
 
 #endif // DEVICEMODEL_H

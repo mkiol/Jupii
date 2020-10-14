@@ -117,9 +117,13 @@ public:
     static bool readFromCacheFile(const QString &filename, QByteArray &data);
     static QString pathToCacheFile(const QString &filename);
     static bool cacheFileExists(const QString &filename);
+    static QString cachePathForFile(const QString &filename);
     static QString friendlyDate(const QDateTime &date);
     static QString parseArtist(const QString &artist);
     static QDateTime parseDate(const QString &date);
+
+    static QString deviceIconFileName(QString id, const QString &ext);
+    static QString deviceIconFilePath(const QString& id);
 
     bool createCacheDir();
     bool createPlaylistDir();

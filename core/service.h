@@ -30,6 +30,7 @@ class Service :
     Q_PROPERTY (bool busy READ getBusy NOTIFY busyChanged)
     Q_PROPERTY (QString deviceId READ getDeviceId NOTIFY initedChanged)
     Q_PROPERTY (QString deviceFriendlyName READ getDeviceFriendlyName NOTIFY initedChanged)
+    Q_PROPERTY (QString deviceIconPath READ getDeviceIconPath NOTIFY initedChanged)
 
 public:
     enum ErrorType {
@@ -51,6 +52,7 @@ public:
     bool getBusy();
     QString getDeviceId() const;
     QString getDeviceFriendlyName() const;
+    QString getDeviceIconPath() const;
 
 signals:
     void initedChanged();

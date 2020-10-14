@@ -7,7 +7,6 @@
 
 #include <QDebug>
 #include <QHash>
-
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -17,13 +16,14 @@
 #include "utils.h"
 #include "settings.h"
 #include "services.h"
+#include "filedownloader.h"
+#include "contentserver.h"
 
-#ifdef DESKTOP
+#ifdef WIDGETS
 #include <QPixmap>
 #include <QImage>
 #include <QPalette>
 #include <QApplication>
-#include "filedownloader.h"
 const int icon_size = 64;
 #endif
 
@@ -48,6 +48,8 @@ DeviceModel::DeviceModel(QObject *parent) :
     connect(Services::instance()->avTransport.get(), &Service::initedChanged,
             this, &DeviceModel::serviceInitedHandler);
     connect(Services::instance()->renderingControl.get(), &Service::initedChanged,
+            this, &DeviceModel::serviceInitedHandler);
+    connect(Services::instance()->contentDir.get(), &Service::initedChanged,
             this, &DeviceModel::serviceInitedHandler);
     connect(Settings::instance(), &Settings::favDeviceChanged,
             this, &ListModel::handleItemChangeById);
@@ -106,46 +108,55 @@ void DeviceModel::updateModel()
         auto devid = QString::fromStdString(ddesc.UDN);
         bool supported = type.contains(typeStr, Qt::CaseInsensitive);
         if ((supported && devid != ownMediaServerId) || showAll) {
-            QString id = QString::fromStdString(ddesc.UDN);
-            QUrl iconUrl = d->getDeviceIconUrl(ddesc);
+            auto id = QString::fromStdString(ddesc.UDN);
+            auto iconUrl = d->getDeviceIconUrl(ddesc);
+            auto iconPath = Utils::deviceIconFilePath(id);
             bool active = av && av->getDeviceId() == id;
             bool xc = d->xcExists(it.key());
             items << new DeviceItem(id,
                              QString::fromStdString(ddesc.friendlyName),
                              type,
                              QString::fromStdString(ddesc.modelName),
-#ifdef DESKTOP
+#ifdef WIDGETS
                              QIcon(),
 #else
-                             iconUrl,
+                             iconPath.isEmpty() ? QUrl() : QUrl::fromLocalFile(iconPath),
 #endif
                              supported,
                              active,
                              xc
                          );
 
-#ifdef DESKTOP
-            if (!iconUrl.isEmpty()) {
+            if (iconPath.isEmpty() && !iconUrl.isEmpty()) {
                 auto downloader = new FileDownloader(iconUrl, this);
-                connect(downloader, &FileDownloader::downloaded,
+                connect(downloader, &FileDownloader::downloaded, this,
                         [this, id, downloader](int error){
-                    //qDebug() << "Icon downloaded for:" << id;
-                    if (error == 0) {
-                        auto item = dynamic_cast<DeviceItem*>(this->find(id));
+                    if (!error) {
+                        auto item = qobject_cast<DeviceItem*>(this->find(id));
                         if (item) {
-                            auto img = QImage::fromData(downloader->downloadedData());
-                            img = img.scaled(QSize(icon_size,icon_size));
-                            auto pix = QPixmap::fromImage(img);
-                            item->setIcon(QIcon(pix));
+                            auto data = downloader->downloadedData();
+                            auto ext = ContentServer::extFromMime(downloader->contentType());
+
+                            if (!data.isEmpty() && !ext.isEmpty()) {
+#ifdef WIDGETS
+                                auto img = QImage::fromData(downloader->downloadedData());
+                                img = img.scaled(QSize(icon_size,icon_size));
+                                auto pix = QPixmap::fromImage(img);
+                                item->setIcon(QIcon(pix));
+#else
+                                Utils::instance()->writeToCacheFile(
+                                            Utils::deviceIconFileName(id, ext), data, true);
+                                item->setIcon(QUrl::fromLocalFile(Utils::deviceIconFilePath(id)));
+#endif
+                            }
                         }
                     } else {
-                        qWarning() << "Icon downloading error";
+                        qWarning() << "Cannot download device icon:" << id;
                     }
 
                     downloader->deleteLater();
                 });
             }
-#endif
         }
     }
 
@@ -182,7 +193,7 @@ DeviceItem::DeviceItem(const QString &id,
                    const QString &title,
                    const QString &type,
                    const QString &model,
-#ifdef DESKTOP
+#ifdef WIDGETS
                    const QIcon &icon,
 #else
                    const QUrl &icon,
@@ -240,7 +251,7 @@ QVariant DeviceItem::data(int role) const
         return active();
     case XcRole:
         return xc();
-#ifdef DESKTOP
+#ifdef WIDGETS
     case ForegroundRole:
         return foreground();
 #endif
@@ -273,7 +284,7 @@ void DeviceItem::setPower(bool value)
     }
 }
 
-#ifdef DESKTOP
+#ifdef WIDGETS
 void DeviceItem::setIcon(const QIcon& icon)
 {
     m_icon = icon;
@@ -286,5 +297,11 @@ QBrush DeviceItem::foreground() const
     return m_supported ? m_active ? p.brush(QPalette::Highlight) :
                                     p.brush(QPalette::WindowText) :
                          p.brush(QPalette::Disabled, QPalette::WindowText);
+}
+#else
+void DeviceItem::setIcon(const QUrl& icon)
+{
+    m_icon = icon;
+    emit dataChanged();
 }
 #endif

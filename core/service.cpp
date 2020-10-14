@@ -13,6 +13,7 @@
 #include "directory.h"
 #include "devicemodel.h"
 #include "taskexecutor.h"
+#include "utils.h"
 
 Service::Service(QObject *parent) :
     QObject(parent),
@@ -83,7 +84,7 @@ void Service::setBusy(bool value)
 
 void Service::setInited(bool value)
 {
-    if (m_ser != nullptr) {
+    if (m_ser) {
         if (m_inited != value) {
             m_inited = value;
             emit initedChanged();
@@ -101,6 +102,11 @@ QString Service::getDeviceId() const
     auto id = m_ser && m_inited ? QString::fromStdString(m_ser->getDeviceId()) : QString();
     //qDebug() << "device id:" << id;
     return id;
+}
+
+QString Service::getDeviceIconPath() const
+{
+    return Utils::deviceIconFilePath(getDeviceId());
 }
 
 QString Service::getDeviceFriendlyName() const
@@ -123,6 +129,10 @@ void Service::deInit()
     m_initing = false;
     timer(false);
     reset();
+    if (m_ser) {
+        delete m_ser;
+        m_ser = nullptr;
+    }
     setBusy(false);
 }
 
@@ -170,20 +180,25 @@ bool Service::init(const QString &deviceId)
     reset();
 
     setBusy(true);
-    startTask([this, ddesc, sdesc](){
-        qDebug() << "Initing task";
+
+    startTask([this, ddesc, sdesc] {
+        qDebug() << "Initing started";
         m_initing = true;
 
         if (m_ser) {
-            m_ser->reInit(ddesc, sdesc);
+            if (!m_ser->reInit(ddesc, sdesc)) {
+                qDebug() << "Re-initing error";
+            }
         } else {
             m_ser = createUpnpService(ddesc, sdesc);
         }
 
         if (!m_ser->isCallbackRegistered()) {
-            qWarning() << "Unable to create UPnP service";
+            qWarning() << "Unable to connect to UPnP service";
             m_initing = false;
             delete m_ser;
+            m_ser = nullptr;
+            emit error(E_NotInited);
         } else {
             postInit();
         }
@@ -194,10 +209,13 @@ bool Service::init(const QString &deviceId)
             m_initing = false;
         } else {
             qWarning() << "Cannot init service";
+            if (m_ser) {
+                delete m_ser;
+                m_ser = nullptr;
+            }
         }
 
         setBusy(false);
-        qDebug() << "Initing task done";
     });
 
     return true;
