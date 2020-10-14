@@ -107,7 +107,7 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
             }
 
             if (icon.isEmpty())
-                icon = QUrl::fromLocalFile(IconProvider::pathToNoResId("icon-gpodder"));
+                icon = IconProvider::urlToNoResId("icon-gpodder");
             else if (dir.exists(icon.fileName()))
                 icon = QUrl::fromLocalFile(dir.absoluteFilePath(icon.fileName()));
 

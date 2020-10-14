@@ -176,7 +176,7 @@ QList<ListItem*> CDirModel::makeItems()
                              artist,
                              album,
                              url,
-                             type == ImageType ? ContentServer::minResUrl(item) : QUrl(), //QUrl(QString::fromStdString(item.getprop("upnp:albumArtURI"))),
+                             type == ImageType ? QUrl(ContentServer::minResUrl(item)) : QUrl(),
                              QString::fromStdString(item.getprop("upnp:originalTrackNumber")).toInt(),
                              QDateTime::fromString(QString::fromStdString(item.getprop("dc:date")), Qt::ISODate),
                              type);
@@ -356,11 +356,11 @@ CDirItem::CDirItem(const QString &id,
     m_title(title),
     m_artist(artist),
     m_album(album),
-    m_url(url),
     m_icon(icon),
+    m_url(url),
     m_number(number),
-    m_type(type),
-    m_date(date)
+    m_date(date),
+    m_type(type)
 {
     m_selectable =
             type != CDirModel::DirType &&
