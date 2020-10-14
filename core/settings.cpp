@@ -400,7 +400,11 @@ void Settings::setRec(bool value)
 
 bool Settings::getRec()
 {
+#ifdef SAILFISH
     return settings.value("rec", false).toBool();
+#else
+    return settings.value("rec", true).toBool();
+#endif
 }
 
 void Settings::setScreenSupported(bool value)
