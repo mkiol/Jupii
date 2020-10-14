@@ -13,19 +13,20 @@
 #include <QString>
 #include <QUrl>
 
-#ifdef SAILFISH
+#if defined(SAILFISH) || defined(KIRIGAMI)
 #include <QQuickImageProvider>
-#endif
+#endif // SAILFISH || KIRIGAMI
 
-#ifdef SAILFISH
+#if defined(SAILFISH) || defined(KIRIGAMI)
 class IconProvider : public QQuickImageProvider
 #else
 class IconProvider
-#endif
+#endif // SAILFISH || KIRIGAMI
 {
 public:
     static QString pathToId(const QString &id);
     static QString pathToNoResId(const QString &id);
+    static QUrl urlToNoResId(const QString &id);
     static QUrl urlToImg(const QString &filename);
     static QString themeDirPath();
 

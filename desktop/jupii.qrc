@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/jupii.png</file>
         <file>images/upnp-32.png</file>
         <file>images/upnp-48.png</file>
         <file>images/upnp-120.png</file>
@@ -14,5 +13,46 @@
         <file>images/icon-gpodder.png</file>
         <file>images/icon-icecast.png</file>
         <file>images/icon-somafm.png</file>
+        <file>qml/main.qml</file>
+        <file>qml/DevicesPage.qml</file>
+        <file>qml/PlayQueuePage.qml</file>
+        <file>qml/DoubleListItem.qml</file>
+        <file>qml/AboutPage.qml</file>
+        <file>qml/ChangelogPage.qml</file>
+        <file>qml/SettingsPage.qml</file>
+        <file>images/jupii.svg</file>
+        <file>qml/PlayerPanel.qml</file>
+        <file>qml/FlatButtonWithToolTip.qml</file>
+        <file>qml/ImageWithFallback.qml</file>
+        <file>qml/LabelWithToolTip.qml</file>
+        <file>qml/CircularProgressBar.qml</file>
+        <file>qml/PlayButton.qml</file>
+        <file>qml/SeekSlider.qml</file>
+        <file>qml/DeviceInfoPage.qml</file>
+        <file>qml/AddMediaPage.qml</file>
+        <file>images/fosdem.svg</file>
+        <file>images/gpodder.svg</file>
+        <file>images/icecast.svg</file>
+        <file>images/somafm.svg</file>
+        <file>images/bandcamp.svg</file>
+        <file>images/soundcloud.svg</file>
+        <file>images/youtube.svg</file>
+        <file>qml/AddUrlDialog.qml</file>
+        <file>qml/SomafmPage.qml</file>
+        <file>qml/RecPage.qml</file>
+        <file>qml/UpnpCDirPage.qml</file>
+        <file>qml/UpnpCDirDevicesPage.qml</file>
+        <file>qml/BcPage.qml</file>
+        <file>qml/FosdemPage.qml</file>
+        <file>qml/FosdemYearsPage.qml</file>
+        <file>qml/IcecastPage.qml</file>
+        <file>images/icon-bandcamp.png</file>
+        <file>images/icon-fosdem.png</file>
+        <file>images/icon-mic.png</file>
+        <file>images/icon-pulse.png</file>
+        <file>images/icon-screen.png</file>
+        <file>images/icon-soundcloud.png</file>
+        <file>images/icon-youtube.png</file>
+        <file>qml/MediaInfoPage.qml</file>
     </qresource>
 </RCC>

@@ -18,12 +18,20 @@
 #include <sailfishapp.h>
 #include "iconprovider.h"
 #include "resourcehandler.h"
-#endif
+#endif // SAILFISH
 
-#ifdef DESKTOP
+#ifdef KIRIGAMI
+#include <QApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QIcon>
+#include "iconprovider.h"
+#endif // KIRIGAMI
+
+#ifdef WIDGETS
 #include <QApplication>
 #include "mainwindow.h"
-#endif
+#endif // WIDGETS
 
 #include <QLocale>
 #include <QTranslator>
@@ -63,6 +71,7 @@
 #include "cdirmodel.h"
 #include "youtubedl.h"
 #include "bcmodel.h"
+#include "notifications.h"
 
 int main(int argc, char *argv[])
 {
@@ -71,7 +80,19 @@ int main(int argc, char *argv[])
     auto view = SailfishApp::createView();
     auto context = view->rootContext();
     auto engine = view->engine();
+#endif // SAILFISH
 
+#ifdef KIRIGAMI
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    auto app = new QApplication(argc, argv);
+    auto engine = new QQmlApplicationEngine();
+    auto context = engine->rootContext();
+    //app->setOrganizationName(app->applicationName());
+    QApplication::setWindowIcon(QIcon::fromTheme(Jupii::APP_ID));
+#endif // KIRIGAMI
+
+#if defined(SAILFISH) || defined(KIRIGAMI)
     qmlRegisterUncreatableType<DeviceModel>("harbour.jupii.DeviceModel", 1, 0,
                                             "DeviceModel", "DeviceModel is a singleton");
     qmlRegisterType<RenderingControl>("harbour.jupii.RenderingControl", 1, 0,
@@ -102,19 +123,22 @@ int main(int argc, char *argv[])
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 
     context->setContextProperty("APP_NAME", Jupii::APP_NAME);
+    context->setContextProperty("APP_ID", Jupii::APP_ID);
     context->setContextProperty("APP_VERSION", Jupii::APP_VERSION);
     context->setContextProperty("COPYRIGHT_YEAR", Jupii::COPYRIGHT_YEAR);
     context->setContextProperty("AUTHOR", Jupii::AUTHOR);
+    context->setContextProperty("AUTHOR_EMAIL", Jupii::AUTHOR_EMAIL);
     context->setContextProperty("SUPPORT_EMAIL", Jupii::SUPPORT_EMAIL);
     context->setContextProperty("PAGE", Jupii::PAGE);
     context->setContextProperty("LICENSE", Jupii::LICENSE);
     context->setContextProperty("LICENSE_URL", Jupii::LICENSE_URL);
-#endif
+    context->setContextProperty("LICENSE_SPDX", Jupii::LICENSE_SPDX);
+#endif // SAILFISH || KIRIGAMI
 
-#ifdef DESKTOP
+#ifdef WIDGETS
     auto app = new QApplication(argc, argv);
     app->setOrganizationName(app->applicationName());
-#endif
+#endif // WIDGETS
 
     app->setApplicationDisplayName(Jupii::APP_NAME);
     app->setApplicationVersion(Jupii::APP_VERSION);
@@ -136,7 +160,7 @@ int main(int argc, char *argv[])
         }
     }
     app->installTranslator(&translator);
-#endif
+#endif // SAILFISH
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
@@ -147,14 +171,16 @@ int main(int argc, char *argv[])
     auto playlist = PlaylistModel::instance();
     auto devmodel = DeviceModel::instance();
     auto ytdl = YoutubeDl::instance();
+    auto notifications = Notifications::instance();
     new DbusProxy();
 
     services->avTransport->registerExternalConnections();
     cserver->registerExternalConnections();
 
-#ifdef SAILFISH
+#if defined(SAILFISH) || defined(KIRIGAMI)
     context->setContextProperty("utils", utils);
     context->setContextProperty("settings", settings);
+    context->setContextProperty("_settings", settings);
     context->setContextProperty("directory", dir);
     context->setContextProperty("cserver", cserver);
     context->setContextProperty("rc", services->renderingControl.get());
@@ -163,7 +189,10 @@ int main(int argc, char *argv[])
     context->setContextProperty("playlist", playlist);
     context->setContextProperty("devmodel", devmodel);
     context->setContextProperty("ytdl", ytdl);
+    context->setContextProperty("notifications", notifications);
+#endif // SAILFISH || KIRIGAMI
 
+#ifdef SAILFISH
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
 
     ResourceHandler handler;
@@ -172,12 +201,18 @@ int main(int argc, char *argv[])
 
     view->show();
     utils->setQmlRootItem(view->rootObject());
-#endif
+#endif // SAILFISH
 
-#ifdef DESKTOP
+#ifdef KIRIGAMI
+    const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
+    engine->load(url);
+#endif // KIRIGAMI
+
+#ifdef WIDGETS
     MainWindow devicesWindow;
     devicesWindow.show();
-#endif
+#endif // WIDGETS
+
     int ret = app->exec();
     fcloseall();
     return ret;

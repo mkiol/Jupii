@@ -18,11 +18,11 @@
 
 #include "iconprovider.h"
 
-#ifdef SAILFISH
+#if defined(SAILFISH) || defined(KIRIGAMI)
 IconProvider::IconProvider() : QQuickImageProvider(QQuickImageProvider::Pixmap)
 #else
 IconProvider::IconProvider()
-#endif
+#endif // SAILFISH || KIRIGAMI
 {
     this->themeDir = IconProvider::themeDirPath();
 }
@@ -30,6 +30,7 @@ IconProvider::IconProvider()
 QString IconProvider::themeDirPath()
 {
     QString themeDir;
+
 #ifdef SAILFISH
     double ratio = MGConfItem("/desktop/sailfish/silica/theme_pixel_ratio").value().toDouble();
     qDebug() << "Device pixel ratio:" << ratio;
@@ -52,9 +53,12 @@ QString IconProvider::themeDirPath()
         qWarning() << "Theme " + themeDir + " for ratio " + ratio + " doesn't exist";
         themeDir = SailfishApp::pathTo("images/z1.0").toString(QUrl::RemoveScheme);
     }
-#else
-    //TODO theme dir for desktop
-#endif
+#endif // SAILFISH
+
+#ifdef KIRIGAMI
+    //TODO theme dir for Kirigami
+#endif // KIRIGAMI
+
     return themeDir;
 }
 
@@ -77,8 +81,18 @@ QString IconProvider::pathToNoResId(const QString &id)
     QDir dir(SailfishApp::pathTo("images").toString(QUrl::RemoveScheme));
     return dir.absoluteFilePath(id + ".png");
 #else
-    return "qrc:///images/" + id + ".png";
-#endif
+    return "qrc:/images/" + id + ".png";
+#endif // SAILFISH
+}
+
+QUrl IconProvider::urlToNoResId(const QString &id)
+{
+#ifdef SAILFISH
+    QDir dir(SailfishApp::pathTo("images").toString(QUrl::RemoveScheme));
+    return QUrl::fromLocalFile(dir.absoluteFilePath(id + ".png"));
+#else
+    return QUrl("qrc:/images/" + id + ".png");
+#endif // SAILFISH
 }
 
 QUrl IconProvider::urlToImg(const QString &filename)
@@ -87,8 +101,8 @@ QUrl IconProvider::urlToImg(const QString &filename)
     QDir dir(SailfishApp::pathTo("images").toString(QUrl::RemoveScheme));
     return QUrl::fromLocalFile(dir.absoluteFilePath(filename));
 #else
-    return QUrl("qrc:///images/" + filename);
-#endif
+    return QUrl("qrc:/images/" + filename);
+#endif // SAILFISH
 }
 
 QPixmap IconProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)

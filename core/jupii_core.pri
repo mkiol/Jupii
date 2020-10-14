@@ -1,3 +1,6 @@
+CONFIG += c++14 json no_lflags_merge object_parallel_to_source
+QT += gui network dbus sql multimedia xml
+
 CORE_DIR = ../core
 
 include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
@@ -14,12 +17,15 @@ exists("$$QT_BIN_DIR/qdbusxml2cpp-qt5") {
 }
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.jupii.xml" -a $$CORE_DIR/dbus_jupii_adaptor)
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml" -p $$CORE_DIR/dbus_tracker_inf)
+desktop: system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Notifications.xml" -p $$CORE_DIR/dbus_notifications_inf)
 
 OTHER_FILES += \
     $$PROJECTDIR/dbus/org.jupii.xml \
     $$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml
 
 desktop {
+    OTHER_FILES += $$PROJECTDIR/dbus/org.freedesktop.Notifications.xml
+
     PKGCONFIG += libpulse x11
 
     packagesExist(taglib) {
@@ -69,6 +75,7 @@ INCLUDEPATH += $$CORE_DIR
 HEADERS += \
     $$CORE_DIR/dbus_jupii_adaptor.h \
     $$CORE_DIR/dbus_tracker_inf.h \
+    $$CORE_DIR/dbus_notifications_inf.h \
     $$CORE_DIR/utils.h \
     $$CORE_DIR/listmodel.h \
     $$CORE_DIR/devicemodel.h \
@@ -108,11 +115,14 @@ HEADERS += \
     $$CORE_DIR/contentdirectory.h \
     $$CORE_DIR/cdirmodel.h \
     $$CORE_DIR/youtubedl.h \
-    $$CORE_DIR/bcmodel.h
+    $$CORE_DIR/bcmodel.h \
+    $$CORE_DIR/notifications.h \
+    $$CORE_DIR/filedownloader.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
     $$CORE_DIR/dbus_tracker_inf.cpp \
+    $$CORE_DIR/dbus_notifications_inf.cpp \
     $$CORE_DIR/main.cpp \
     $$CORE_DIR/utils.cpp \
     $$CORE_DIR/listmodel.cpp \
@@ -152,7 +162,9 @@ SOURCES += \
     $$CORE_DIR/contentdirectory.cpp \
     $$CORE_DIR/cdirmodel.cpp \
     $$CORE_DIR/youtubedl.cpp \
-    $$CORE_DIR/bcmodel.cpp
+    $$CORE_DIR/bcmodel.cpp \
+    $$CORE_DIR/notifications.cpp \
+    $$CORE_DIR/filedownloader.cpp
 
 screencast {
     HEADERS += \

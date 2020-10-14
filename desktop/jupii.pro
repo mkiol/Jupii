@@ -2,44 +2,24 @@ TARGET = jupii
 
 TEMPLATE = app
 
-CONFIG += c++11 json no_lflags_merge object_parallel_to_source
-QT += core gui widgets network dbus sql multimedia xml
+QT += gui qml quick quickcontrols2 svg
 
 PROJECTDIR = $$PWD/..
 
 CONFIG += desktop screencast link_pkgconfig
-DEFINES += DESKTOP SCREENCAST
+DEFINES += DESKTOP KIRIGAMI SCREENCAST QT_NO_URL_CAST_FROM_STRING
 
 include($$PROJECTDIR/core/jupii_core.pri)
 
-INCLUDEPATH += src
-
-HEADERS += \
-    src/filedownloader.h \
-    src/mainwindow.h \
-    src/settingsdialog.h \
-    src/addurldialog.h
-
-SOURCES += \
-    src/mainwindow.cpp \
-    src/filedownloader.cpp \
-    src/settingsdialog.cpp \
-    src/addurldialog.cpp
-
-FORMS += \
-    src/mainwindow.ui \
-    src/settingsdialog.ui \
-    src/addurldialog.ui
-
 OTHER_FILES += \
-    $$PROJECTDIR/dbus/org.jupii.xml \
-    packages/*.spec \
-    packages/*.sh \
-    packages/control \
-    packages/PKGINFO
+    $$PROJECTDIR/dbus/org.jupii.xml
 
 RESOURCES += \
     jupii.qrc
+
+OTHER_FILES += \
+    translations/*.ts \
+    qml/*.qml
 
 ####################
 # files to install #
@@ -58,17 +38,35 @@ install_bin.CONFIG = no_check_exist executable
 install_desktop.path = $$PREFIX/share/applications
 install_desktop.files = $$PROJECTDIR/desktop/$${TARGET}.desktop
 
+IMAGES_DIR = $$PROJECTDIR/desktop/images
 install_icons.path = $$PREFIX/share
 install_icons.files = $$OUT_PWD/icons
 install_icons.CONFIG = no_check_exist
+install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/32x32/apps;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-32.png $$OUT_PWD/icons/hicolor/32x32/apps/$${TARGET}.png;
 install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/48x48/apps;
-install_icons.extra += cp $$PROJECTDIR/desktop/images/$$TARGET-48.png $$OUT_PWD/icons/hicolor/48x48/apps/$${TARGET}.png;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-48.png $$OUT_PWD/icons/hicolor/48x48/apps/$${TARGET}.png;
 install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/64x64/apps;
-install_icons.extra += cp $$PROJECTDIR/desktop/images/$$TARGET-64.png $$OUT_PWD/icons/hicolor/64x64/apps/$${TARGET}.png;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-64.png $$OUT_PWD/icons/hicolor/64x64/apps/$${TARGET}.png;
+install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/72x72/apps;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-72.png $$OUT_PWD/icons/hicolor/72x72/apps/$${TARGET}.png;
+install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/96x96/apps;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-96.png $$OUT_PWD/icons/hicolor/96x96/apps/$${TARGET}.png;
 install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/128x128/apps;
-install_icons.extra += cp $$PROJECTDIR/desktop/images/$$TARGET-128.png $$OUT_PWD/icons/hicolor/128x128/apps/$${TARGET}.png;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-128.png $$OUT_PWD/icons/hicolor/128x128/apps/$${TARGET}.png;
+install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/150x150/apps;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-150.png $$OUT_PWD/icons/hicolor/150x150/apps/$${TARGET}.png;
+install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/192x192/apps;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-192.png $$OUT_PWD/icons/hicolor/192x192/apps/$${TARGET}.png;
+install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/256x256/apps;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-256.png $$OUT_PWD/icons/hicolor/256x256/apps/$${TARGET}.png;
+install_icons.extra += mkdir -p $$OUT_PWD/icons/hicolor/512x512/apps;
+install_icons.extra += cp $$IMAGES_DIR/$$TARGET-512.png $$OUT_PWD/icons/hicolor/512x512/apps/$${TARGET}.png;
 
 install_appstream.path = $$PREFIX/share/metainfo
 install_appstream.files = $$PROJECTDIR/desktop/$${TARGET}.metainfo.xml
 
-INSTALLS += install_bin install_desktop install_icons install_appstream
+install_license.path = $$PREFIX/share/$${TARGET}
+install_license.files = $$PROJECTDIR/LICENSE
+
+INSTALLS += install_bin install_desktop install_icons install_appstream install_license
