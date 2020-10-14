@@ -52,5 +52,5 @@ bool TaskExecutor::taskActive()
 void TaskExecutor::tsleep(int ms)
 {
     if (ms > 0)
-        QThread::currentThread()->msleep(ms);
+        QThread::currentThread()->msleep(uint64_t(ms));
 }

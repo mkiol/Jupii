@@ -8,7 +8,7 @@
 #include <QVariantList>
 #include "itemmodel.h"
 
-#ifdef DESKTOP
+#ifdef WIDGETS
 #include <QIcon>
 #endif
 
@@ -33,10 +33,10 @@ public:
                      const QString &title,
                      const QString &author,
                      const QDateTime &date,
-#ifdef SAILFISH
-                     const QUrl &icon,
-#else
+#ifdef WIDGETS
                      const QIcon &icon,
+#else
+                     const QUrl &icon,
 #endif
                      QObject *parent = nullptr);
     QVariant data(int role) const;
@@ -47,10 +47,10 @@ public:
     inline QString author() const { return m_author; }
     inline QDateTime date() const { return m_date; }
     QString friendlyDate() const;
-#ifdef SAILFISH
-    inline QUrl icon() const { return m_icon; }
-#else
+#ifdef WIDGETS
     inline QIcon icon() const { return m_icon; }
+#else
+    inline QUrl icon() const { return m_icon; }
 #endif
 private:
     QString m_id;
@@ -58,10 +58,10 @@ private:
     QString m_title;
     QString m_author;
     QDateTime m_date;
-#ifdef SAILFISH
-    QUrl m_icon;
-#else
+#ifdef WIDGETS
     QIcon m_icon;
+#else
+    QUrl m_icon;
 #endif
 };
 

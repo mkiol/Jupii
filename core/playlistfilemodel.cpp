@@ -61,7 +61,7 @@ QList<ListItem*> PlaylistFileModel::makeItems()
 {
     const QString query = m_exId.isEmpty() ?
                 playlistsQueryTemplate.arg(getFilter()) :
-                playlistsQueryTemplateEx.arg(getFilter()).arg(m_exId);
+                playlistsQueryTemplateEx.arg(getFilter(), m_exId);
 
     m_exId.clear();
 

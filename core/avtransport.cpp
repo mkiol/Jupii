@@ -48,7 +48,7 @@ void AVTransport::registerExternalConnections()
 QUrl AVTransport::getCurrentId()
 {
     auto cs = ContentServer::instance();
-    return QUrl(cs->idFromUrl(m_currentURI));
+    return QUrl(cs->idFromUrl(QUrl(m_currentURI)));
 }
 
 QUrl AVTransport::getCurrentOrigUrl()
@@ -399,13 +399,13 @@ QString AVTransport::getNextURI()
 QString AVTransport::getCurrentPath()
 {
     auto cs = ContentServer::instance();
-    return cs->pathFromUrl(m_currentURI);
+    return cs->pathFromUrl(QUrl(m_currentURI));
 }
 
 QString AVTransport::getCurrentURL()
 {
     auto cs = ContentServer::instance();
-    return cs->urlFromUrl(m_currentURI);
+    return cs->urlFromUrl(QUrl(m_currentURI));
 }
 
 QString AVTransport::getContentType()
@@ -423,7 +423,7 @@ bool AVTransport::getCurrentYtdl()
 QString AVTransport::getNextPath()
 {
     auto cs = ContentServer::instance();
-    return cs->pathFromUrl(m_nextURI);
+    return cs->pathFromUrl(QUrl(m_nextURI));
 }
 
 AVTransport::Type AVTransport::getCurrentType()
@@ -471,11 +471,11 @@ QString AVTransport::getCurrentDescription()
 
 QUrl AVTransport::getCurrentAlbumArtURI()
 {
-#ifdef SAILFISH
+#ifdef WIDGETS
+    return m_currentAlbumArtURI;
+#else
     const auto ai = PlaylistModel::instance()->getActiveItem();
     return ai ? ai->icon() : m_currentAlbumArtURI;
-#else
-    return m_currentAlbumArtURI;
 #endif
 }
 
@@ -1052,10 +1052,10 @@ void AVTransport::seek(int value)
 
     m_futureSeek = value < 0 ? 0 :
                    value > m_currentTrackDuration ? m_currentTrackDuration : value;
-#ifdef SAILFISH
-    m_seekTimer.start();
-#else
+#ifdef WIDGETS
     seekTimeout();
+#else
+    m_seekTimer.start();
 #endif
 }
 
@@ -1136,6 +1136,8 @@ void AVTransport::update(int initDelay, int postDelay)
         return;
     }
 
+    qDebug() << "AVTransport::update start";
+
     tsleep(initDelay);
 
     updatePositionInfo();
@@ -1151,6 +1153,7 @@ void AVTransport::update(int initDelay, int postDelay)
     if (!isInitedOrIniting() || !srv) {
         m_updateMutex.unlock();
         qWarning() << "AVTransport service is not inited";
+        qDebug() << "AVTransport::update stop";
         return;
     }
 
@@ -1161,6 +1164,7 @@ void AVTransport::update(int initDelay, int postDelay)
             if (!isInitedOrIniting()) {
                 m_updateMutex.unlock();
                 qWarning() << "AVTransport service is not inited";
+                qDebug() << "AVTransport::update stop";
                 return;
             }
         }
@@ -1178,8 +1182,9 @@ void AVTransport::update(int initDelay, int postDelay)
 
 void AVTransport::needTimerCheck()
 {
+#ifdef SAILFISH
     auto app = static_cast<QGuiApplication*>(QGuiApplication::instance());
-    //qDebug() << "applicationState:" << app->applicationState();
+#endif
 
     if (m_transportState == Playing
 #ifdef SAILFISH
@@ -1236,7 +1241,6 @@ void AVTransport::updatePositionInfo()
         pi.reltime = 0;
         pi.track = 0;
         pi.trackduration = 0;
-
     }
 
     qDebug() << "PositionInfo:";

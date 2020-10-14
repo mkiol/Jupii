@@ -158,10 +158,10 @@ bool AudioCaster::init()
     av_dict_free(&options);
 
     in_audio_codec_ctx->frame_size = out_audio_codec_ctx->frame_size;
-    audio_frame_size = av_samples_get_buffer_size(nullptr,
+    audio_frame_size =  uint64_t(av_samples_get_buffer_size(nullptr,
                                           in_audio_codec_ctx->channels,
                                           out_audio_codec_ctx->frame_size,
-                                          in_audio_codec_ctx->sample_fmt, 0);
+                                          in_audio_codec_ctx->sample_fmt, 0));
     audio_pkt_duration = out_audio_codec_ctx->frame_size; // time_base is 1/rate, so duration of 1 sample is 1
 
     qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;

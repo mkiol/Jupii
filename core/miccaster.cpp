@@ -257,7 +257,7 @@ void MicCaster::start()
 
 int MicCaster::write_packet_callback(void *opaque, uint8_t *buf, int buf_size)
 {
-    Q_UNUSED(opaque);
+    Q_UNUSED(opaque)
     auto worker = ContentServerWorker::instance();
     worker->sendMicData(static_cast<void*>(buf), buf_size);
     return buf_size;

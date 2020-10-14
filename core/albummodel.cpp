@@ -56,8 +56,6 @@ QList<ListItem*> AlbumModel::processTrackerReply(
         const QStringList& varNames,
         const QByteArray& data)
 {
-    auto tracker = Tracker::instance();
-
     QList<ListItem*> items;
 
     TrackerCursor cursor(varNames, data);

@@ -365,7 +365,7 @@ void PulseAudioSource::discoverStream()
     if (inited()) {
         auto worker = ContentServerWorker::instance();
         QHash<uint32_t, SinkInput>::const_iterator i;
-        for (i = sinkInputs.begin(); i != sinkInputs.end(); ++i) {
+        for (i = sinkInputs.constBegin(); i != sinkInputs.constEnd(); ++i) {
             const auto si = i.value();
             if (!si.corked && clients.contains(si.clientIdx)) {
                 const auto client = clients.value(si.clientIdx);

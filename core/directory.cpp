@@ -493,7 +493,7 @@ QUrl Directory::getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc)
 
     // Finding largest icon
     int max_size = 0; std::string max_url;
-    for (auto icon : ddesc.iconList) {
+    for (const auto &icon : ddesc.iconList) {
         if (icon.mimeType == "image/jpeg" || icon.mimeType == "image/png") {
             int size = icon.width + icon.height;
             if (size > max_size) {

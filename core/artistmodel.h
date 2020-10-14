@@ -34,7 +34,7 @@ public:
     };
 
 public:
-    ArtistItem(QObject *parent = 0): SelectableItem(parent) {}
+    ArtistItem(QObject *parent = nullptr): SelectableItem(parent) {}
     explicit ArtistItem(const QString &id,
                       const QString &name,
                       const QUrl &icon,

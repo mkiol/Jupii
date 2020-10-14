@@ -212,7 +212,7 @@ void DbusProxy::add(const QString &url,
             qDebug() << "Url already exists";
         }
     } else {
-        pl->addItemUrl(u, name, ou, author, icon, description, app, play);
+        pl->addItemUrl(u, name, ou, author, QUrl(icon), description, app, play);
     }
 }
 
