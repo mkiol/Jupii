@@ -1,18 +1,22 @@
 {
-    "app-id": "org.mkiol.Jupii",
+    "id": "org.mkiol.Jupii",
+    "branch": "master",
     "runtime": "org.kde.Platform",
-    "runtime-version": "5.12",
+    "runtime-version": "5.15",
     "sdk": "org.kde.Sdk",
-    "command": "jupii",
     "rename-desktop-file": "jupii.desktop",
     "rename-icon": "jupii",
     "rename-appdata-file": "jupii.metainfo.xml",
     "finish-args": [
-        "--device=all",
+        "--device=dri",
         "--share=ipc",
         "--share=network",
         "--socket=x11",
-        "--socket=pulseaudio"
+        "--socket=wayland",
+        "--socket=pulseaudio",
+        "--filesystem=home",
+        "--talk-name=org.freedesktop.Tracker1.Steroids",
+        "--talk-name=org.freedesktop.Notifications"
     ],
     "modules": [
         {
@@ -203,7 +207,9 @@
                 "--enable-pic",
                 "--enable-static",
                 "--disable-shared",
-                "--disable-samples"
+                "--disable-samples",
+                "--disable-blocking-tcp-connections",
+                "--disable-debug"
             ],
             "cleanup": [
                 "/bin",
@@ -218,6 +224,10 @@
                     "type": "git",
                     "url": "https://github.com/pupnp/pupnp.git",
                     "tag": "release-1.6.25"
+                },
+                {
+                    "type": "patch",
+                    "path": "pupnp.patch"
                 }
             ]
         },
