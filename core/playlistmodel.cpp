@@ -24,13 +24,10 @@
 #include "directory.h"
 #include "youtubedl.h"
 
-#ifdef DESKTOP
-//#include <QPixmap>
-//#include <QImage>
+#ifdef WIDGETS
 #include <QPalette>
 #include <QApplication>
-//#include "filedownloader.h"
-#endif
+#endif // WIDGETS
 
 PlaylistModel* PlaylistModel::m_instance = nullptr;
 
@@ -301,7 +298,7 @@ PlaylistModel::PlaylistModel(QObject *parent) :
     m_backgroundActivity->setWakeupFrequency(BackgroundActivity::ThirtySeconds);
     connect(m_backgroundActivity, &BackgroundActivity::stateChanged, this,
             &PlaylistModel::handleBackgroundActivityStateChange);
-#endif
+#endif // SAILFISH
 
     m_updateTimer.setSingleShot(true);
     m_updateTimer.setInterval(1000);
@@ -339,7 +336,7 @@ void PlaylistModel::updateBackgroundActivity()
             m_backgroundActivity->stop();
     }
 }
-#endif
+#endif // SAILFISH
 
 std::pair<int, QString> PlaylistModel::getDidlList(int max, const QString& didlId)
 {
@@ -399,9 +396,6 @@ void PlaylistModel::updatePrevSupported()
 
 void PlaylistModel::updateNextSupported()
 {
-    /*auto av = Services::instance()->avTransport;
-    bool value =  m_playMode != PlaylistModel::PM_RepeatOne &&
-                        av->getNextSupported() && rowCount() > 0;*/
     bool value =  m_playMode != PlaylistModel::PM_RepeatOne &&
                         rowCount() > 0;
 
@@ -541,7 +535,7 @@ void PlaylistModel::onAvStateChanged()
     doUpdate();
 #ifdef SAILFISH
     updateBackgroundActivity();
-#endif
+#endif // SAILFISH
 }
 
 void PlaylistModel::onAvInitedChanged()
@@ -635,7 +629,7 @@ void PlaylistModel::update()
             qDebug() << "aid:" << aid;
             if (!aid.isEmpty()) {
                 auto av = Services::instance()->avTransport;
-                bool updateCurrent = av->getCurrentId() != aid &&
+                bool updateCurrent = av->getCurrentId() != QUrl(aid) &&
                         av->getTransportState() == AVTransport::Playing;
                 refreshAndSetContent(updateCurrent ? aid : "", nextActiveId());
             }
@@ -694,13 +688,26 @@ bool PlaylistModel::saveToFile(const QString& title)
     return true;
 }
 
+bool PlaylistModel::saveToUrl(const QUrl& path)
+{
+    if (m_list.isEmpty()) {
+        qWarning() << "Current playlist is empty";
+        return false;
+    }
+
+    Utils::instance()->writeToFile(path.toLocalFile(), makePlsData());
+
+    return true;
+}
+
 QByteArray PlaylistModel::makePlsData(const QString& name)
 {
     QByteArray data;
     QTextStream sdata(&data);
 
     sdata << "[playlist]" << endl;
-    sdata << "X-GNOME-Title=" << name << endl;
+    if (!name.isEmpty())
+        sdata << "X-GNOME-Title=" << name << endl;
     sdata << "NumberOfEntries=" << m_list.size() << endl;
 
     int l = m_list.size();
@@ -801,6 +808,16 @@ void PlaylistModel::addItemPaths(const QStringList& paths)
         urls << ui;
     }
     addItems(urls, false);
+}
+
+void PlaylistModel::addItemFileUrls(const QList<QUrl> &urls)
+{
+    QList<UrlItem> items;
+    for (auto& url : urls) {
+        UrlItem ui; ui.url = url;
+        items << ui;
+    }
+    addItems(items, false);
 }
 
 void PlaylistModel::addItemUrls(const QList<UrlItem> &urls)
@@ -1124,7 +1141,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 
     ContentServer::instance()->getMetaForImg(iconUrl, true); // create meta for albumArt
 
-#ifndef SAILFISH
+#ifdef WIDGETS
     QIcon icon;
     if (iconUrl.isEmpty()) {
         if (Utils::isUrlMic(url)) {
@@ -1148,7 +1165,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     } else {
         icon = QIcon(iconUrl.toLocalFile());
     }
-#endif
+#endif // WIDGETS
     finalId = meta->itemType == ContentServer::ItemType_Upnp ||
             url == meta->url ? Utils::cleanId(finalId) :
                                Utils::swapUrlInId(meta->url, finalId);
@@ -1164,10 +1181,10 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
                                "", // date
                                meta->duration, // duration
                                meta->size, // size
-#ifdef SAILFISH
-                               iconUrl, // icon
-#else
+#ifdef WIDGETS
                                icon, // icon
+#else
+                               iconUrl, // icon
 #endif
                                ytdl, // ytdl
                                play, // play
@@ -1196,7 +1213,7 @@ void PlaylistModel::setActiveId(const QString &id)
 {
     qDebug() << "setActiveId" << id;
     auto cookie = Utils::cookieFromId(id);
-    auto meta = ContentServer::instance()->getMetaForId(id, false);
+    auto meta = ContentServer::instance()->getMetaForId(QUrl(id), false);
 
     const int len = m_list.length();
     bool active_found = false;
@@ -1618,7 +1635,7 @@ void PlaylistModel::updateActiveId()
 {
     qDebug() << "updateActiveId";
     auto av = Services::instance()->avTransport;
-    setActiveUrl(av->getCurrentURI());
+    setActiveUrl(QUrl(av->getCurrentURI()));
 }
 
 void PlaylistModel::doUpdateActiveId()
@@ -1651,7 +1668,7 @@ void PlaylistModel::refresh()
     for (const auto item : m_list) {
         auto pitem = dynamic_cast<PlaylistItem*>(item);
         if (pitem && pitem->refreshable())
-            ids << pitem->id();
+            ids << QUrl(pitem->id());
     }
 
     if (ids.isEmpty()) {
@@ -1834,11 +1851,11 @@ PlaylistItem::PlaylistItem(const QUrl &id,
                            const QString &date,
                            const int duration,
                            const qint64 size,
-#ifdef SAILFISH
-                           const QUrl &icon,
-#else
+#ifdef WIDGETS
                            const QIcon &icon,
-#endif
+#else
+                           const QUrl &icon,
+#endif // WIDGETS
                            bool ytdl,
                            bool play,
                            const QString &desc,
@@ -1947,10 +1964,10 @@ QVariant PlaylistItem::data(int role) const
         return recUrl();
     case DescRole:
         return desc();
-#ifdef DESKTOP
+#ifdef WIDGETS
     case ForegroundRole:
         return foreground();
-#endif
+#endif // WIDGETS
     default:
         return QVariant();
     }
@@ -1984,7 +2001,7 @@ void PlaylistItem::setPlay(bool value)
     m_play = value;
 }
 
-#ifdef DESKTOP
+#ifdef WIDGETS
 QBrush PlaylistItem::foreground() const
 {
     auto p = QApplication::palette();
@@ -1992,4 +2009,4 @@ QBrush PlaylistItem::foreground() const
                           m_active ? p.brush(QPalette::Active, QPalette::Highlight) :
                           p.brush(QPalette::WindowText);
 }
-#endif
+#endif // WIDGETS

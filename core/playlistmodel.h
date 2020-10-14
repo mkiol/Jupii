@@ -26,7 +26,7 @@
 #include <QTimer>
 #include <memory>
 
-#ifdef DESKTOP
+#ifdef WIDGETS
 #include <QIcon>
 #include <QBrush>
 #endif
@@ -130,6 +130,7 @@ public:
     Q_INVOKABLE QString prevActiveId() const;
     Q_INVOKABLE QString nextId(const QString &id) const;
     Q_INVOKABLE bool saveToFile(const QString& title);
+    Q_INVOKABLE bool saveToUrl(const QUrl &path);
     Q_INVOKABLE void next();
     Q_INVOKABLE void prev();
     Q_INVOKABLE bool play(const QString &id);
@@ -160,7 +161,7 @@ signals:
     void itemsAdded();
     void itemsLoaded();
     void itemsRefreshed();
-    void error(ErrorType code);
+    void error(PlaylistModel::ErrorType code);
     void activeItemChanged();
     void activeItemIndexChanged();
     void playModeChanged();
@@ -178,10 +179,11 @@ public slots:
                      const QString &name = QString(),
                      bool autoPlay = false);
     void addItemUrls(const QList<UrlItem>& urls);
+    void addItemFileUrls(const QList<QUrl>& urls);
     void addItemUrls(const QVariantList& urls);
     void addItemUrl(const QUrl& url,
                     const QString& name = QString(),
-                    const QUrl& origUrl = QString(),
+                    const QUrl& origUrl = QUrl(),
                     const QString &author = QString(),
                     const QUrl& icon = QUrl(),
                     const QString& desc = QString(),
@@ -244,7 +246,7 @@ private:
     bool addId(const QUrl& id);
     PlaylistItem* makeItem(const QUrl &id);
     void save();
-    QByteArray makePlsData(const QString& name);
+    QByteArray makePlsData(const QString& name = QString());
     void setBusy(bool busy);
     void updateNextSupported();
     void updatePrevSupported();
@@ -300,10 +302,10 @@ public:
                       const QString &date,
                       const int duration,
                       const qint64 size,
-#ifdef SAILFISH
-                      const QUrl &icon,
-#else
+#ifdef WIDGETS
                       const QIcon &icon,
+#else
+                      const QUrl &icon,
 #endif
                       bool ytdl,
                       bool play, // auto play after adding
@@ -328,10 +330,10 @@ public:
     inline QString date() const { return m_date; }
     inline int duration() const { return m_duration; }
     inline qint64 size() const { return m_size; }
-#ifdef SAILFISH
-    inline QUrl icon() const { return m_icon; }
-#else
+#ifdef WIDGETS
     inline QIcon icon() const { return m_icon; }
+#else
+    inline QUrl icon() const { return m_icon; }
 #endif
     inline bool ytdl() const { return m_ytdl; }
     inline bool active() const { return m_active; }
@@ -346,7 +348,7 @@ public:
     void setPlay(bool value);
     inline bool refreshable() const { return m_ytdl; }
     QString friendlyRecDate() const;
-#ifdef DESKTOP
+#ifdef WIDGETS
     QBrush foreground() const;
 #endif
 
@@ -363,10 +365,10 @@ private:
     QString m_cookie;
     int m_duration = 0;
     qint64 m_size = 0;
-#ifdef SAILFISH
-    QUrl m_icon;
-#else
+#ifdef WIDGETS
     QIcon m_icon;
+#else
+    QUrl m_icon;
 #endif
     bool m_active = false;
     bool m_tobeactive = false;
