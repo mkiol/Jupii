@@ -305,7 +305,7 @@ void ContentServerWorker::endRecFile(ProxyItem &item)
             qDebug() << "Saving tmp recorded file:" << title;
             item.recFile->close();
             if (item.recFile->exists() && item.recFile->size() > ContentServer::recMinSize) {
-                tmpFile = QString("%1.tmp.%2").arg(item.recFile->fileName()).arg(item.recExt);
+                tmpFile = QString("%1.tmp.%2").arg(item.recFile->fileName(), item.recExt);
                 qDebug() << "tmp file:" << tmpFile;
                 if (item.recFile->copy(tmpFile)) {
                     auto url = item.origUrl.isEmpty() ?
@@ -413,7 +413,7 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     qDebug() << "  headers:" << req->url().path();
 
     const auto& headers = req->headers();
-    for (const auto& h : headers.keys()) {
+    for (const auto& h : req->headers().keys()) {
         qDebug() << "    " << h << ":" << headers.value(h);
     }
 
@@ -1711,6 +1711,16 @@ ContentServer::Type ContentServer::typeFromMime(const QString &mime)
 
     // Default type
     return ContentServer::TypeUnknown;
+}
+
+QString ContentServer::extFromMime(const QString &mime)
+{
+    if (m_imgMimeToExtMap.contains(mime))
+        return m_imgMimeToExtMap.value(mime);
+    if (m_musicMimeToExtMap.contains(mime))
+        return m_musicMimeToExtMap.value(mime);
+
+    return QString();
 }
 
 ContentServer::Type ContentServer::typeFromUpnpClass(const QString &upnpClass)
@@ -3439,9 +3449,9 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         auto data = reply->readAll();
         if (!ext.isEmpty() && !data.isEmpty()) {
             auto albumArt = QString("art_image_%1.%2")
-                    .arg(Utils::instance()->hash(meta.url.toString())).arg(ext);
+                    .arg(Utils::instance()->hash(meta.url.toString()), ext);
             Utils::writeToCacheFile(albumArt, data, true);
-            meta.path = QString("%1/%2").arg(Settings::instance()->getCacheDir()).arg(albumArt);
+            meta.path = QString("%1/%2").arg(Settings::instance()->getCacheDir(), albumArt);
         } else {
             qWarning() << "Cannot save album art for:" << meta.url.toString();
         }
@@ -3491,9 +3501,10 @@ ContentServer::makeMetaUsingExtension(const QUrl &url)
 
     ItemMeta meta;
     meta.valid = true;
+    /*meta.path = isFile ? url.toLocalFile() :
+                    isQrc ? (":" + Utils::urlFromId(url).toString().mid(6)) : "";*/
     meta.path = isFile ? url.toLocalFile() :
-                          isQrc ? (":" + Utils::urlFromId(url).toString().mid(6)) :
-                                  "";
+                  isQrc ? (":" + Utils::urlFromId(url).path()) : "";
     meta.url = url;
     meta.mime = getContentMimeByExtension(url);
     meta.type = getContentTypeByExtension(url);

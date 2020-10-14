@@ -154,6 +154,7 @@ public:
 
     static ContentServer* instance(QObject *parent = nullptr);
     static Type typeFromMime(const QString &mime);
+    static QString extFromMime(const QString &mime);
     static Type typeFromUpnpClass(const QString &upnpClass);
     static QString bestName(const ItemMeta &meta);
     static Type getContentTypeByExtension(const QString &path);
