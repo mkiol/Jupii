@@ -475,15 +475,12 @@ void Settings::setScreenEncoder(const QString &value)
 QString Settings::getScreenEncoder()
 {
     // valid encoders: libx264, libx264rgb, h264_nvenc, h264_omx
-
-    if (isDebug()) {
-        auto enc_name = settings.value("screenencoder").toString();
-        if (enc_name == "libx264" ||
-                enc_name == "libx264rgb" ||
-                enc_name == "h264_nvenc" ||
-                enc_name == "h264_omx")
-            return enc_name;
-    }
+    auto enc_name = settings.value("screenencoder").toString();
+    if (enc_name == "libx264" ||
+            enc_name == "libx264rgb" ||
+            enc_name == "h264_nvenc" ||
+            enc_name == "h264_omx")
+        return enc_name;
 
     return {};
 }

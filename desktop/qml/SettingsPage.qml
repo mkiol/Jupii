@@ -387,7 +387,7 @@ Kirigami.ScrollablePage {
             }
 
             Controls.ComboBox {
-                enabled: settings.screenSupported && settings.isDebug()
+                enabled: settings.screenSupported
                 Kirigami.FormData.label: qsTr("Screen encoder")
                 currentIndex: {
                     var enc = settings.screenEncoder;
