@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <QRegExp>
 #include <utility>
+#include <memory>
 
 #include "dbus_tracker_inf.h"
 
@@ -20,7 +21,6 @@ class Tracker :
         public QObject
 {
     Q_OBJECT
-
 public:
     static Tracker* instance(QObject *parent = nullptr);
     QString genAlbumArtFile(const QString& albumName,
@@ -39,7 +39,7 @@ private:
     const QRegExp m_re2;
     const QString m_cacheDir;
 
-    OrgFreedesktopTracker1SteroidsInterface* m_tracker_inf = nullptr;
+    std::unique_ptr<OrgFreedesktopTracker1SteroidsInterface> m_dbus_inf;
 
     QByteArray m_pipeData;
     QStringList m_dbusReplyData;

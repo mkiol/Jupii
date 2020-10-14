@@ -64,14 +64,8 @@ bool Tracker::query(const QString &query, bool emitSignal)
     m_dbusReplyData.clear();
     m_pipeData.clear();
 
-    if (m_tracker_inf == nullptr) {
+    if (!m_dbus_inf || !m_dbus_inf->isValid()) {
         qWarning() << "Tracker Dbus interface is not created";
-        emit queryError();
-        return false;
-    }
-
-    if (!m_tracker_inf->isValid()) {
-        qWarning() << "Tracker Dbus interface is invalid";
         emit queryError();
         return false;
     }
@@ -87,7 +81,7 @@ bool Tracker::query(const QString &query, bool emitSignal)
     QDBusUnixFileDescriptor qfd(writeFd);
     close(writeFd);
 
-    auto reply = m_tracker_inf->Query(query, qfd);
+    auto reply = m_dbus_inf->Query(query, qfd);
 
     reply.waitForFinished();
 
@@ -110,7 +104,7 @@ bool Tracker::query(const QString &query, bool emitSignal)
 
     while ((bytes_read = read(readFd, &pipe_buf, pipe_buf_len)) > 0) {
         //qDebug() << "Pipe bytes received:" << bytes_read;
-        m_pipeData.append(pipe_buf, bytes_read);
+        m_pipeData.append(pipe_buf, int(bytes_read));
     }
 
     //qDebug() << "Pipe last bytes_read: " << bytes_read;
@@ -158,7 +152,7 @@ QString Tracker::genAlbumArtFile(const QString &albumName,
 
 bool Tracker::createTrackerInf()
 {
-    if (m_tracker_inf == nullptr) {
+    if (!m_dbus_inf) {
         QDBusConnection bus = QDBusConnection::sessionBus();
         QDBusConnection::ConnectionCapabilities cap =
                 bus.connectionCapabilities();
@@ -168,15 +162,14 @@ bool Tracker::createTrackerInf()
             return false;
         }
 
-        m_tracker_inf = new OrgFreedesktopTracker1SteroidsInterface(
+        m_dbus_inf = std::make_unique<OrgFreedesktopTracker1SteroidsInterface>(
                     "org.freedesktop.Tracker1",
                     "/org/freedesktop/Tracker1/Steroids",
                     bus);
 
-        if (!m_tracker_inf->isValid()) {
+        if (!m_dbus_inf->isValid()) {
             qWarning() << "Tracker interface cannot be created";
-            delete m_tracker_inf;
-            m_tracker_inf = nullptr;
+            m_dbus_inf.reset();
             return false;
         }
     }
