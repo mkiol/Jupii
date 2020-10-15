@@ -18,11 +18,6 @@
 #include <QModelIndex>
 #include <QUrl>
 
-#ifdef WIDGETS
-#include <QIcon>
-#include <QBrush>
-#endif
-
 #include "listmodel.h"
 
 class DeviceItem : public ListItem
@@ -48,11 +43,7 @@ public:
                       const QString &title,
                       const QString &type,
                       const QString &model,
-#ifdef WIDGETS
-                      const QIcon &icon,
-#else
                       const QUrl &icon,
-#endif
                       bool supported,
                       bool active,
                       bool jxc,
@@ -63,11 +54,7 @@ public:
     inline QString title() const { return m_title; }
     inline QString type() const { return m_type; }
     inline QString model() const { return m_model; }
-#ifdef WIDGETS
-    inline QIcon icon() const { return m_icon; }
-#else
     inline QUrl icon() const { return m_icon; }
-#endif
     inline bool supported() const { return m_supported; }
     inline bool active() const { return m_active; }
     inline bool xc() const { return m_xc; }
@@ -75,23 +62,14 @@ public:
     bool isFav() const;
     void setActive(bool value);
     void setPower(bool value);
-#ifdef WIDGETS
-    void setIcon(const QIcon &icon);
-    QBrush foreground() const;
-#else
     void setIcon(const QUrl &icon);
-#endif
 
 private:
     QString m_id;
     QString m_title;
     QString m_type;
     QString m_model;
-#ifdef WIDGETS
-    QIcon m_icon;
-#else
     QUrl m_icon;
-#endif
     bool m_active = false;
     bool m_supported = false;
     bool m_xc = false;

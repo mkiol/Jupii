@@ -28,11 +28,6 @@
 #include "iconprovider.h"
 #endif // KIRIGAMI
 
-#ifdef WIDGETS
-#include <QApplication>
-#include "mainwindow.h"
-#endif // WIDGETS
-
 #include <QLocale>
 #include <QTranslator>
 #include <QTextCodec>
@@ -92,7 +87,6 @@ int main(int argc, char *argv[])
     QApplication::setWindowIcon(QIcon::fromTheme(Jupii::APP_ID));
 #endif // KIRIGAMI
 
-#if defined(SAILFISH) || defined(KIRIGAMI)
     qmlRegisterUncreatableType<DeviceModel>("harbour.jupii.DeviceModel", 1, 0,
                                             "DeviceModel", "DeviceModel is a singleton");
     qmlRegisterType<RenderingControl>("harbour.jupii.RenderingControl", 1, 0,
@@ -133,12 +127,6 @@ int main(int argc, char *argv[])
     context->setContextProperty("LICENSE", Jupii::LICENSE);
     context->setContextProperty("LICENSE_URL", Jupii::LICENSE_URL);
     context->setContextProperty("LICENSE_SPDX", Jupii::LICENSE_SPDX);
-#endif // SAILFISH || KIRIGAMI
-
-#ifdef WIDGETS
-    auto app = new QApplication(argc, argv);
-    app->setOrganizationName(app->applicationName());
-#endif // WIDGETS
 
     app->setApplicationDisplayName(Jupii::APP_NAME);
     app->setApplicationVersion(Jupii::APP_VERSION);
@@ -171,13 +159,11 @@ int main(int argc, char *argv[])
     auto playlist = PlaylistModel::instance();
     auto devmodel = DeviceModel::instance();
     auto ytdl = YoutubeDl::instance();
-    auto notifications = Notifications::instance();
     new DbusProxy();
 
     services->avTransport->registerExternalConnections();
     cserver->registerExternalConnections();
 
-#if defined(SAILFISH) || defined(KIRIGAMI)
     context->setContextProperty("utils", utils);
     context->setContextProperty("settings", settings);
     context->setContextProperty("_settings", settings);
@@ -189,15 +175,18 @@ int main(int argc, char *argv[])
     context->setContextProperty("playlist", playlist);
     context->setContextProperty("devmodel", devmodel);
     context->setContextProperty("ytdl", ytdl);
+
+#ifdef KIRIGAMI
+    auto notifications = Notifications::instance();
     context->setContextProperty("notifications", notifications);
-#endif // SAILFISH || KIRIGAMI
+#endif
 
 #ifdef SAILFISH
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
 
-    ResourceHandler handler;
+    auto rhandler = new ResourceHandler();
     QObject::connect(view, &QQuickView::focusObjectChanged,
-                     &handler, &ResourceHandler::handleFocusChange);
+                     rhandler, &ResourceHandler::handleFocusChange);
 
     view->show();
     utils->setQmlRootItem(view->rootObject());
@@ -207,11 +196,6 @@ int main(int argc, char *argv[])
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     engine->load(url);
 #endif // KIRIGAMI
-
-#ifdef WIDGETS
-    MainWindow devicesWindow;
-    devicesWindow.show();
-#endif // WIDGETS
 
     int ret = app->exec();
     fcloseall();

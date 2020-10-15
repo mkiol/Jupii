@@ -8,10 +8,6 @@
 #include <QVariantList>
 #include "itemmodel.h"
 
-#ifdef WIDGETS
-#include <QIcon>
-#endif
-
 class RecItem: public SelectableItem
 {
     Q_OBJECT
@@ -33,11 +29,7 @@ public:
                      const QString &title,
                      const QString &author,
                      const QDateTime &date,
-#ifdef WIDGETS
-                     const QIcon &icon,
-#else
                      const QUrl &icon,
-#endif
                      QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
@@ -47,22 +39,15 @@ public:
     inline QString author() const { return m_author; }
     inline QDateTime date() const { return m_date; }
     QString friendlyDate() const;
-#ifdef WIDGETS
-    inline QIcon icon() const { return m_icon; }
-#else
     inline QUrl icon() const { return m_icon; }
-#endif
+
 private:
     QString m_id;
     QString m_path;
     QString m_title;
     QString m_author;
     QDateTime m_date;
-#ifdef WIDGETS
-    QIcon m_icon;
-#else
     QUrl m_icon;
-#endif
 };
 
 class RecModel : public SelectableItemModel

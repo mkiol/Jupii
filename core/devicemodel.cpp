@@ -19,14 +19,6 @@
 #include "filedownloader.h"
 #include "contentserver.h"
 
-#ifdef WIDGETS
-#include <QPixmap>
-#include <QImage>
-#include <QPalette>
-#include <QApplication>
-const int icon_size = 64;
-#endif
-
 DeviceModel* DeviceModel::m_instance = nullptr;
 
 DeviceModel* DeviceModel::instance(QObject *parent)
@@ -117,11 +109,7 @@ void DeviceModel::updateModel()
                              QString::fromStdString(ddesc.friendlyName),
                              type,
                              QString::fromStdString(ddesc.modelName),
-#ifdef WIDGETS
-                             QIcon(),
-#else
                              iconPath.isEmpty() ? QUrl() : QUrl::fromLocalFile(iconPath),
-#endif
                              supported,
                              active,
                              xc
@@ -138,16 +126,9 @@ void DeviceModel::updateModel()
                             auto ext = ContentServer::extFromMime(downloader->contentType());
 
                             if (!data.isEmpty() && !ext.isEmpty()) {
-#ifdef WIDGETS
-                                auto img = QImage::fromData(downloader->downloadedData());
-                                img = img.scaled(QSize(icon_size,icon_size));
-                                auto pix = QPixmap::fromImage(img);
-                                item->setIcon(QIcon(pix));
-#else
                                 Utils::instance()->writeToCacheFile(
                                             Utils::deviceIconFileName(id, ext), data, true);
                                 item->setIcon(QUrl::fromLocalFile(Utils::deviceIconFilePath(id)));
-#endif
                             }
                         }
                     } else {
@@ -193,11 +174,7 @@ DeviceItem::DeviceItem(const QString &id,
                    const QString &title,
                    const QString &type,
                    const QString &model,
-#ifdef WIDGETS
-                   const QIcon &icon,
-#else
                    const QUrl &icon,
-#endif
                    bool supported,
                    bool active,
                    bool jxc,
@@ -251,10 +228,6 @@ QVariant DeviceItem::data(int role) const
         return active();
     case XcRole:
         return xc();
-#ifdef WIDGETS
-    case ForegroundRole:
-        return foreground();
-#endif
     case PowerRole:
         return power();
     default:
@@ -284,24 +257,8 @@ void DeviceItem::setPower(bool value)
     }
 }
 
-#ifdef WIDGETS
-void DeviceItem::setIcon(const QIcon& icon)
-{
-    m_icon = icon;
-    emit dataChanged();
-}
-
-QBrush DeviceItem::foreground() const
-{
-    auto p = QApplication::palette();
-    return m_supported ? m_active ? p.brush(QPalette::Highlight) :
-                                    p.brush(QPalette::WindowText) :
-                         p.brush(QPalette::Disabled, QPalette::WindowText);
-}
-#else
 void DeviceItem::setIcon(const QUrl& icon)
 {
     m_icon = icon;
     emit dataChanged();
 }
-#endif

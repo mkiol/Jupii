@@ -26,11 +26,6 @@
 #include <QTimer>
 #include <memory>
 
-#ifdef WIDGETS
-#include <QIcon>
-#include <QBrush>
-#endif
-
 #ifdef SAILFISH
 #include <keepalive/backgroundactivity.h>
 #endif
@@ -302,11 +297,7 @@ public:
                       const QString &date,
                       const int duration,
                       const qint64 size,
-#ifdef WIDGETS
-                      const QIcon &icon,
-#else
                       const QUrl &icon,
-#endif
                       bool ytdl,
                       bool play, // auto play after adding
                       const QString &desc,
@@ -330,11 +321,7 @@ public:
     inline QString date() const { return m_date; }
     inline int duration() const { return m_duration; }
     inline qint64 size() const { return m_size; }
-#ifdef WIDGETS
-    inline QIcon icon() const { return m_icon; }
-#else
     inline QUrl icon() const { return m_icon; }
-#endif
     inline bool ytdl() const { return m_ytdl; }
     inline bool active() const { return m_active; }
     inline bool toBeActive() const { return m_tobeactive; }
@@ -348,9 +335,6 @@ public:
     void setPlay(bool value);
     inline bool refreshable() const { return m_ytdl; }
     QString friendlyRecDate() const;
-#ifdef WIDGETS
-    QBrush foreground() const;
-#endif
 
 private:
     QUrl m_id;
@@ -365,11 +349,7 @@ private:
     QString m_cookie;
     int m_duration = 0;
     qint64 m_size = 0;
-#ifdef WIDGETS
-    QIcon m_icon;
-#else
     QUrl m_icon;
-#endif
     bool m_active = false;
     bool m_tobeactive = false;
     bool m_play = false;

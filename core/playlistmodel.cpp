@@ -24,11 +24,6 @@
 #include "directory.h"
 #include "youtubedl.h"
 
-#ifdef WIDGETS
-#include <QPalette>
-#include <QApplication>
-#endif // WIDGETS
-
 PlaylistModel* PlaylistModel::m_instance = nullptr;
 
 PlaylistWorker::PlaylistWorker(const QList<UrlItem> &urls,
@@ -163,7 +158,7 @@ void PlaylistWorker::run()
                 if (!name.isEmpty()) {
                     if (q.hasQueryItem(Utils::nameKey))
                         q.removeQueryItem(Utils::nameKey);
-                        q.addQueryItem(Utils::nameKey, name);
+                    q.addQueryItem(Utils::nameKey, name);
                 }
 
                 // type
@@ -1141,31 +1136,6 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 
     ContentServer::instance()->getMetaForImg(iconUrl, true); // create meta for albumArt
 
-#ifdef WIDGETS
-    QIcon icon;
-    if (iconUrl.isEmpty()) {
-        if (Utils::isUrlMic(url)) {
-            icon = QIcon::fromTheme("audio-input-microphone");
-        } else {
-            switch (type) {
-            case ContentServer::TypeMusic:
-                icon = QIcon::fromTheme("audio-x-generic");
-                break;
-            case ContentServer::TypeVideo:
-                icon = QIcon::fromTheme("video-x-generic");
-                break;
-            case ContentServer::TypeImage:
-                icon = QIcon::fromTheme("image-x-generic");
-                break;
-            default:
-                icon = QIcon::fromTheme("unknown");
-                break;
-            }
-        }
-    } else {
-        icon = QIcon(iconUrl.toLocalFile());
-    }
-#endif // WIDGETS
     finalId = meta->itemType == ContentServer::ItemType_Upnp ||
             url == meta->url ? Utils::cleanId(finalId) :
                                Utils::swapUrlInId(meta->url, finalId);
@@ -1181,11 +1151,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
                                "", // date
                                meta->duration, // duration
                                meta->size, // size
-#ifdef WIDGETS
-                               icon, // icon
-#else
                                iconUrl, // icon
-#endif
                                ytdl, // ytdl
                                play, // play
                                meta->comment,
@@ -1851,11 +1817,7 @@ PlaylistItem::PlaylistItem(const QUrl &id,
                            const QString &date,
                            const int duration,
                            const qint64 size,
-#ifdef WIDGETS
-                           const QIcon &icon,
-#else
                            const QUrl &icon,
-#endif // WIDGETS
                            bool ytdl,
                            bool play,
                            const QString &desc,
@@ -1964,10 +1926,6 @@ QVariant PlaylistItem::data(int role) const
         return recUrl();
     case DescRole:
         return desc();
-#ifdef WIDGETS
-    case ForegroundRole:
-        return foreground();
-#endif // WIDGETS
     default:
         return QVariant();
     }
@@ -2000,13 +1958,3 @@ void PlaylistItem::setPlay(bool value)
 {
     m_play = value;
 }
-
-#ifdef WIDGETS
-QBrush PlaylistItem::foreground() const
-{
-    auto p = QApplication::palette();
-    return m_tobeactive ? p.brush(QPalette::Inactive, QPalette::Highlight) :
-                          m_active ? p.brush(QPalette::Active, QPalette::Highlight) :
-                          p.brush(QPalette::WindowText);
-}
-#endif // WIDGETS

@@ -103,11 +103,7 @@ QList<ListItem*> RecModel::makeItems()
                          item.title,
                          item.author,
                          item.recDate,
-#ifdef WIDGETS
-                         QIcon(item.iconPath));
-#else
                          QUrl::fromLocalFile(item.iconPath));
-#endif
         }
     }
 
@@ -161,11 +157,7 @@ RecItem::RecItem(const QString &id,
                  const QString &title,
                  const QString &author,
                  const QDateTime &date,
-#ifdef WIDGETS
-                 const QIcon &icon,
-#else
                  const QUrl &icon,
-#endif
                  QObject *parent) :
     SelectableItem(parent),
     m_id(id),

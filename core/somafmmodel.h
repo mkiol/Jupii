@@ -20,10 +20,6 @@
 #include <QDomElement>
 #include <QNetworkReply>
 
-#ifdef WIDGETS
-#include <QIcon>
-#endif
-
 #include "listmodel.h"
 #include "itemmodel.h"
 
@@ -46,11 +42,7 @@ public:
                       const QString &name,
                       const QString &description,
                       const QUrl &url,
-#ifdef WIDGETS
-                      const QIcon &icon,
-#else
                       const QUrl &icon,
-#endif
                       QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
@@ -58,22 +50,14 @@ public:
     inline QString name() const { return m_name; }
     inline QString description() const { return m_description; }
     inline QUrl url() const { return m_url; }
-#ifdef WIDGETS
-    inline QIcon icon() const { return m_icon; }
-#else
     inline QUrl icon() const { return m_icon; }
-#endif
 
 private:
     QString m_id;
     QString m_name;
     QString m_description;
     QUrl m_url;
-#ifdef WIDGETS
-    QIcon m_icon;
-#else
     QUrl m_icon;
-#endif
 };
 
 class SomafmModel : public SelectableItemModel

@@ -471,12 +471,8 @@ QString AVTransport::getCurrentDescription()
 
 QUrl AVTransport::getCurrentAlbumArtURI()
 {
-#ifdef WIDGETS
-    return m_currentAlbumArtURI;
-#else
     const auto ai = PlaylistModel::instance()->getActiveItem();
     return ai ? ai->icon() : m_currentAlbumArtURI;
-#endif
 }
 
 QString AVTransport::getCurrentAlbum()
@@ -1052,11 +1048,7 @@ void AVTransport::seek(int value)
 
     m_futureSeek = value < 0 ? 0 :
                    value > m_currentTrackDuration ? m_currentTrackDuration : value;
-#ifdef WIDGETS
-    seekTimeout();
-#else
     m_seekTimer.start();
-#endif
 }
 
 void AVTransport::seekTimeout()

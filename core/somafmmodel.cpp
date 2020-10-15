@@ -281,11 +281,7 @@ QList<ListItem*> SomafmModel::makeItems()
                                     name, // name
                                     desc, // desc
                                     QUrl(url), // url
-#ifdef WIDGETS
-                                    QIcon(icon.toLocalFile())
-#else
                                     icon
-#endif
                                 );
                 }
             }
@@ -309,11 +305,7 @@ SomafmItem::SomafmItem(const QString &id,
                    const QString &name,
                    const QString &description,
                    const QUrl &url,
-#ifdef WIDGETS
-                   const QIcon &icon,
-#else
                    const QUrl &icon,
-#endif
                    QObject *parent) :
     SelectableItem(parent),
     m_id(id),
