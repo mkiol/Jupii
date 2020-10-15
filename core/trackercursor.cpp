@@ -4,7 +4,7 @@
 
 TrackerCursor::TrackerCursor(const QStringList& varNames, const QByteArray &data) :
     buffer(data.data()),
-    buffer_size(data.size()),
+    buffer_size(uint32_t(data.size())),
     variable_names(varNames)
 {
     _n_columns = varNames.length();

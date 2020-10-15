@@ -125,13 +125,13 @@ QString Tracker::genTrackerId(const QString& name)
     // Strip invalid entities and normalize as defined in
     // https://wiki.gnome.org/action/show/DraftSpecs/MediaArtStorageSpec
 
-    QString striped(name);
+    auto striped(name);
     striped.remove(m_re1);
     striped.replace(m_re2," ");
     striped = striped.trimmed().normalized(
                 QString::NormalizationForm_KD).toLower();
 
-    QString hash = QString(QCryptographicHash::hash(
+    auto hash = QString(QCryptographicHash::hash(
                                striped.isEmpty() ? " " : striped.toUtf8(),
                                QCryptographicHash::Md5).toHex()
                            );
@@ -141,10 +141,10 @@ QString Tracker::genTrackerId(const QString& name)
 QString Tracker::genAlbumArtFile(const QString &albumName,
                                  const QString &artistName)
 {
-    QString albumId = genTrackerId(albumName);
-    QString artistId = genTrackerId(artistName);
+    auto albumId = genTrackerId(albumName);
+    auto artistId = genTrackerId(artistName);
 
-    QString filepath = m_cacheDir + "/media-art/" + "album-" +
+    auto filepath = m_cacheDir + "/media-art/" + "album-" +
             artistId + "-" + albumId + ".jpeg";
 
     return QFileInfo::exists(filepath) ? filepath : QString();
@@ -153,9 +153,8 @@ QString Tracker::genAlbumArtFile(const QString &albumName,
 bool Tracker::createTrackerInf()
 {
     if (!m_dbus_inf) {
-        QDBusConnection bus = QDBusConnection::sessionBus();
-        QDBusConnection::ConnectionCapabilities cap =
-                bus.connectionCapabilities();
+        auto bus = QDBusConnection::sessionBus();
+        auto cap = bus.connectionCapabilities();
 
         if (!cap.testFlag(QDBusConnection::UnixFileDescriptorPassing)) {
             qWarning() << "Dbus doesn't support Unix File Descriptor";
@@ -179,5 +178,5 @@ bool Tracker::createTrackerInf()
 
 std::pair<const QStringList&, const QByteArray&> Tracker::getResult()
 {
-    return std::pair<const QStringList&, const QByteArray&>(m_dbusReplyData, m_pipeData);
+    return {m_dbusReplyData, m_pipeData};
 }

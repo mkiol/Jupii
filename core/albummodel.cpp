@@ -17,18 +17,19 @@
 #include "settings.h"
 
 const QString AlbumModel::albumsQueryTemplate =
-        "SELECT ?album nie:title(?album) AS title " \
-        "nmm:artistName(?artist) AS artist " \
-        "COUNT(?song) AS songs " \
-        "SUM(?length) AS totallength " \
+        "SELECT ?album " \
+        "nie:title(?album) AS ?title " \
+        "nmm:artistName(?artist) " \
+        "COUNT(?song) " \
+        "SUM(?length) " \
         "WHERE { ?album a nmm:MusicAlbum . " \
         "FILTER (regex(nie:title(?album), \"%1\", \"i\") || " \
         "regex(nmm:artistName(?artist), \"%1\", \"i\")) " \
         "?song nmm:musicAlbum ?album; " \
         "nfo:duration ?length; " \
         "nmm:performer ?artist . " \
-        "} GROUP BY ?album ?artist " \
-        "ORDER BY nie:title(?album) " \
+        "} GROUP BY ?album " \
+        "ORDER BY ?title " \
         "LIMIT 1000";
 
 AlbumModel::AlbumModel(QObject *parent) :
@@ -40,7 +41,7 @@ AlbumModel::AlbumModel(QObject *parent) :
 
 QList<ListItem*> AlbumModel::makeItems()
 {
-    const QString query = albumsQueryTemplate.arg(getFilter());
+    const auto query = albumsQueryTemplate.arg(getFilter());
     auto tracker = Tracker::instance();
     if (tracker->query(query, false)) {
         auto result = tracker->getResult();
@@ -49,7 +50,7 @@ QList<ListItem*> AlbumModel::makeItems()
         qWarning() << "Tracker query error";
     }
 
-    return QList<ListItem*>();
+    return {};
 }
 
 QList<ListItem*> AlbumModel::processTrackerReply(
@@ -70,7 +71,7 @@ QList<ListItem*> AlbumModel::processTrackerReply(
             if (albums.contains(id)) {
                 qDebug() << "Duplicate album id, updating count, length and skiping";
 
-                AlbumData& album = albums[id];
+                auto& album = albums[id];
                 album.count += cursor.value(3).toInt();
                 album.length += cursor.value(4).toInt();
 
@@ -80,7 +81,7 @@ QList<ListItem*> AlbumModel::processTrackerReply(
             auto imgFilePath = Tracker::instance()->genAlbumArtFile(cursor.value(1).toString(),
                                                                     cursor.value(2).toString());
             QFileInfo imgFile(imgFilePath);
-            AlbumData& album = albums[id];
+            auto& album = albums[id];
             album.id = id;
             album.title = cursor.value(1).toString();
             album.artist = cursor.value(2).toString();
@@ -91,7 +92,7 @@ QList<ListItem*> AlbumModel::processTrackerReply(
 
         auto end = albums.cend();
         for (auto it = albums.cbegin(); it != end; ++it) {
-            const AlbumData& album = it.value();
+            const auto& album = it.value();
             items << new AlbumItem(
                         album.id,
                         album.title,
@@ -104,14 +105,14 @@ QList<ListItem*> AlbumModel::processTrackerReply(
         // Sorting
         if (m_queryType == 0) { // by album title
             std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-                auto aa = dynamic_cast<AlbumItem*>(a);
-                auto bb = dynamic_cast<AlbumItem*>(b);
+                auto aa = qobject_cast<AlbumItem*>(a);
+                auto bb = qobject_cast<AlbumItem*>(b);
                 return aa->title().compare(bb->title(), Qt::CaseInsensitive) < 0;
             });
         } else { // by artist
             std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-                auto aa = dynamic_cast<AlbumItem*>(a);
-                auto bb = dynamic_cast<AlbumItem*>(b);
+                auto aa = qobject_cast<AlbumItem*>(a);
+                auto bb = qobject_cast<AlbumItem*>(b);
                 return aa->artist().compare(bb->artist(), Qt::CaseInsensitive) < 0;
             });
         }
@@ -183,6 +184,6 @@ QVariant AlbumItem::data(int role) const
     case LengthRole:
         return length();
     default:
-        return QVariant();
+        return {};
     }
 }

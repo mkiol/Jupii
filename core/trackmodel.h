@@ -49,7 +49,7 @@ public:
                       ContentServer::Type type,
                       int number,
                       int length,
-                      QObject *parent = 0);
+                      QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
     inline QString id() const { return m_id; }
@@ -99,6 +99,7 @@ signals:
 
 private:
     enum TrackerTasks {
+        TaskUnknown,
         TaskAlbum,
         TaskArtist,
         TaskPlaylist,

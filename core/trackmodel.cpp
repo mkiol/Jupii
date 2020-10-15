@@ -17,36 +17,36 @@
 
 const QString TrackModel::queryByAlbumTemplate =
       "SELECT ?song " \
-      "nie:title(?song) AS title " \
-      "nmm:artistName(nmm:performer(?song)) AS artist " \
-      "nie:title(nmm:musicAlbum(?song)) AS album "
-      "nie:url(?song) AS url " \
-      "nmm:trackNumber(?song) AS number " \
-      "nfo:duration(?song) AS length " \
-      "nie:mimeType(?song) AS mime " \
+      "nie:title(?song) " \
+      "nmm:artistName(nmm:performer(?song)) " \
+      "nie:title(nmm:musicAlbum(?song)) "
+      "nie:url(?song) " \
+      "nmm:trackNumber(?song) AS ?trackNumber " \
+      "nfo:duration(?song) " \
+      "nie:mimeType(?song) " \
       "WHERE { " \
       "?song a nmm:MusicPiece; " \
       "nmm:musicAlbum \"%1\" . " \
       "FILTER regex(nie:title(?song), \"%2\", \"i\") " \
       "} " \
-      "ORDER BY nmm:trackNumber(?song) " \
+      "ORDER BY ?trackNumber " \
       "LIMIT 500";
 
 const QString TrackModel::queryByArtistTemplate =
       "SELECT ?song " \
-      "nie:title(?song) AS title " \
-      "nmm:artistName(nmm:performer(?song)) AS artist " \
-      "nie:title(nmm:musicAlbum(?song)) AS album "
-      "nie:url(?song) AS url " \
-      "nmm:trackNumber(?song) AS number " \
-      "nfo:duration(?song) AS length " \
-      "nie:mimeType(?song) AS mime " \
+      "nie:title(?song) " \
+      "nmm:artistName(nmm:performer(?song)) " \
+      "nie:title(nmm:musicAlbum(?song)) AS ?albumTitle "
+      "nie:url(?song) " \
+      "nmm:trackNumber(?song) AS ?trackNumber " \
+      "nfo:duration(?song) " \
+      "nie:mimeType(?song) " \
       "WHERE { " \
       "?song a nmm:MusicPiece; " \
       "nmm:performer \"%1\" . " \
       "FILTER regex(nie:title(?song), \"%2\", \"i\") " \
       "} " \
-      "ORDER BY nie:title(nmm:musicAlbum(?song)) nmm:trackNumber(?song) " \
+      "ORDER BY ?albumTitle ?trackNumber " \
       "LIMIT 500";
 
 const QString TrackModel::queryByPlaylistTemplate =
@@ -72,7 +72,7 @@ QList<ListItem*> TrackModel::makeItems()
     auto tracker = Tracker::instance();
 
     QString query;
-    TrackerTasks task;
+    TrackerTasks task = TaskUnknown;
 
     if (!m_albumId.isEmpty()) {
         query = queryByAlbumTemplate.arg(m_albumId, getFilter());
@@ -96,7 +96,7 @@ QList<ListItem*> TrackModel::makeItems()
         }
     }
 
-    return QList<ListItem*>();
+    return {};
 }
 
 QList<ListItem*> TrackModel::processTrackerReply(
@@ -112,7 +112,7 @@ QList<ListItem*> TrackModel::processTrackerReply(
     if (task == TaskPlaylist && n == 1) {
         QString entries;
         while(cursor.next()) {
-            QStringList list = cursor.value(0).toString().split(',');
+            auto list = cursor.value(0).toString().split(',');
             list = list.mid(0, 50);
             list.replaceInStrings(QRegExp("^(.*)$"), "<\\1>");
             entries = list.join(',');
@@ -330,7 +330,7 @@ QVariant TrackItem::data(int role) const
     case SelectedRole:
         return selected();
     default:
-        return QVariant();
+        return {};
     }
 }
 

@@ -15,16 +15,16 @@
 #include "trackercursor.h"
 
 const QString ArtistModel::artistsQueryTemplate =
-        "SELECT ?artist nmm:artistName(?artist) AS artist " \
-        "COUNT(?song) AS songs " \
-        "SUM(?length) AS totallength " \
+        "SELECT ?artist nmm:artistName(?artist) AS ?artistName " \
+        "COUNT(?song) " \
+        "SUM(?length) " \
         "WHERE { " \
         "FILTER regex(nmm:artistName(?artist), \"%1\", \"i\") " \
         "?song a nmm:MusicPiece; " \
         "nfo:duration ?length; " \
         "nmm:performer ?artist . } " \
         "GROUP BY ?artist " \
-        "ORDER BY nmm:artistName(?artist) " \
+        "ORDER BY ?artistName " \
         "LIMIT 1000";
 
 ArtistModel::ArtistModel(QObject *parent) :
@@ -34,7 +34,7 @@ ArtistModel::ArtistModel(QObject *parent) :
 
 QList<ListItem*> ArtistModel::makeItems()
 {
-    const QString query = artistsQueryTemplate.arg(getFilter());
+    const auto query = artistsQueryTemplate.arg(getFilter());
     auto tracker = Tracker::instance();
 
     if (tracker->query(query, false)) {
@@ -44,7 +44,7 @@ QList<ListItem*> ArtistModel::makeItems()
         qWarning() << "Tracker query error";
     }
 
-    return QList<ListItem*>();
+    return {};
 }
 
 QList<ListItem*> ArtistModel::processTrackerReply(
@@ -60,7 +60,7 @@ QList<ListItem*> ArtistModel::processTrackerReply(
         QStringList artists;
 
         while(cursor.next()) {
-            QString id = cursor.value(0).toString();
+            auto id = cursor.value(0).toString();
 
             if (artists.contains(id)) {
                 qDebug() << "Duplicate artist, skiping";
@@ -124,6 +124,6 @@ QVariant ArtistItem::data(int role) const
     case LengthRole:
         return length();
     default:
-        return QVariant();
+        return {};
     }
 }
