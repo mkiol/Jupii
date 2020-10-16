@@ -461,7 +461,11 @@ void Settings::setScreenAudio(bool value)
 
 bool Settings::getScreenAudio()
 {
+#ifdef SAILFISH
     return settings.value("screenaudio", false).toBool();
+#else
+    return settings.value("screenaudio", true).toBool();
+#endif
 }
 
 void Settings::setScreenEncoder(const QString &value)

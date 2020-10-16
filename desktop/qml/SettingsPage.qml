@@ -246,9 +246,9 @@ Kirigami.ScrollablePage {
                 ]
 
                 onCurrentIndexChanged: {
-                    if (currentIndex === 2) {
+                    if (currentIndex === 1) {
                         settings.screenAudio = true;
-                    } else if (currentIndex === 1) {
+                    } else {
                         settings.screenAudio = false;
                     }
                 }
