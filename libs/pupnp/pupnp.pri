@@ -1,3 +1,16 @@
+#
+# SFOS:
+#
+# tar -xf libupnp-1.6.25.tar.bz2
+# cd libupnp-1.6.25
+# chmod u+x ./configure
+# sb2 -t SailfishOS-[target] ./configure --enable-shared --disable-static --disable-samples --disable-blocking-tcp-connections --disable-debug
+# sb2 -t SailfishOS-[target] make
+# cp -L upnp/.libs/libupnp.so.6 [dest]
+# cp -L ixml/.libs/libixml.so.2 [dest]
+# cp -L threadutil/.libs/libthreadutil.so.6 [dest]
+#
+
 PUPNP_ROOT = $$PROJECTDIR/libs/pupnp
 
 INCLUDEPATH += $$PUPNP_ROOT/include \
