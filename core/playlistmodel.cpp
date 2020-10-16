@@ -541,9 +541,13 @@ void PlaylistModel::onAvInitedChanged()
 
     qDebug() << "onAvInitedChanged:" << inited << busy;
 
-    if (inited && !busy) {
-        updateActiveId();
-        doUpdate();
+    if (inited) {
+        if (!busy) {
+            updateActiveId();
+            doUpdate();
+        }
+    } else {
+        resetToBeActive();
     }
 
 #ifdef SAILFISH
