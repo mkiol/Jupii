@@ -36,15 +36,7 @@ Kirigami.ApplicationWindow {
                 text: qsTr("Play Queue")
                 checked: homeAction.checked
                 iconName: "view-media-playlist"
-                onTriggered: {
-                    /*if (pageStack.depth > 1) {
-                        removePagesAfter(1)
-                        pageStack.flickBack()
-                    } else {
-                        homeAction.trigger()
-                    }*/
-                    homeAction.trigger()
-                }
+                onTriggered: homeAction.trigger()
             },
             Kirigami.PagePoolAction {
                 id: _devicesAction
@@ -68,6 +60,7 @@ Kirigami.ApplicationWindow {
             },
             Kirigami.PagePoolAction {
                 id: _trackInfoAction
+                visible: enabled
                 text: qsTr("Track info")
                 iconName: "documentinfo"
                 shortcut: "Alt+T"
@@ -86,7 +79,7 @@ Kirigami.ApplicationWindow {
             },
             Kirigami.PagePoolAction {
                 text: qsTr("About %1").arg(APP_NAME)
-                iconName: "help-about"
+                iconSource: "qrc:/images/jupii.svg"
                 pagePool: mainPagePool
                 basePage: pageStack.get(0)
                 page: Qt.resolvedUrl("AboutPage.qml")
@@ -110,7 +103,9 @@ Kirigami.ApplicationWindow {
         page: Qt.resolvedUrl("PlayQueuePage.qml")
     }
 
-    Component.onCompleted: homeAction.trigger()
+    Component.onCompleted: {
+        homeAction.trigger()
+    }
 
     // -- stream --
     property string streamTitle: ""

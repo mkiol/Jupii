@@ -8,6 +8,9 @@ PROJECTDIR = $$PWD/..
 
 CONFIG += desktop screencast link_pkgconfig
 DEFINES += DESKTOP KIRIGAMI SCREENCAST QT_NO_URL_CAST_FROM_STRING
+equals(FLATPAK, 1) {
+    DEFINES += FLATPAK
+}
 
 include($$PROJECTDIR/core/jupii_core.pri)
 

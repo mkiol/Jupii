@@ -1,8 +1,6 @@
 TARGET = harbour-jupii
 
-CONFIG += json no_lflags_merge object_parallel_to_source link_pkgconfig
-
-QT += dbus sql multimedia xml network
+CONFIG += link_pkgconfig
 
 linux-g++-32: CONFIG += x86
 linux-g++: CONFIG += arm

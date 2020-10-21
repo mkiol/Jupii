@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,14 +16,17 @@ static constexpr const char* APP_NAME = "Jupii";
 static constexpr const char* APP_VERSION = "2.7.3 (debug)";
 #else
 static constexpr const char* APP_VERSION = "2.7.3";
-#endif
+#endif // QT_DEBUG
 #ifdef SAILFISH
 static constexpr const char* APP_ID = "harbour-jupii";
-#elif KIRIGAMI
+#else
+#ifdef FLATPAK
 static constexpr const char* APP_ID = "org.mkiol.Jupii";
 #else
 static constexpr const char* APP_ID = "jupii";
-#endif
+#endif // FLATPAK
+#endif // SAILFISH
+static constexpr const char* ORG = "org.mkiol";
 static constexpr const char* AUTHOR = "Michal Kosciesza";
 static constexpr const char* AUTHOR_EMAIL = "michal@mkiol.net";
 static constexpr const char* COPYRIGHT_YEAR = "2018-2020";

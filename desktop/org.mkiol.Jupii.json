@@ -18,11 +18,11 @@
         "--talk-name=org.freedesktop.Tracker1.Steroids",
         "--talk-name=org.freedesktop.Notifications"
     ],
+    "command": "jupii",
     "modules": [
         {
             "name": "taglib",
             "buildsystem": "cmake-ninja",
-            "builddir": "true",
             "config-opts": [
                 "-DCMAKE_BUILD_TYPE=Release"
             ],
@@ -183,7 +183,8 @@
                 "--enable-cuda",
                 "--enable-nvenc",
                 "--enable-encoder=h264_nvenc",
-                "--enable-encoder=h264_vaapi"
+                "--enable-encoder=h264_vaapi",
+                "--enable-bsf=h264_mp4toannexb"
             ],
             "cleanup": [
                 "/bin",
@@ -204,7 +205,6 @@
         {
             "name": "pupnp",
             "config-opts": [
-                "--enable-pic",
                 "--enable-static",
                 "--disable-shared",
                 "--disable-samples",
@@ -236,7 +236,12 @@
             "buildsystem": "simple",
             "build-commands": [
                 "mkdir -p build/flatpak",
-                "cd build/flatpak && qmake PREFIX=$FLATPAK_DEST ../../desktop/jupii.pro && make && make install"
+                "cd build/flatpak && qmake FLATPAK=1 PREFIX=$FLATPAK_DEST ../../desktop/jupii.pro && make && make install"
+            ],
+            "post-install": [
+                "mv $FLATPAK_DEST/bin/jupii $FLATPAK_DEST/bin/jupii_bin",
+                "echo \"QT_STYLE_OVERRIDE=breeze QT_QUICK_CONTROLS_FALLBACK_STYLE=org.kde.desktop jupii_bin\">$FLATPAK_DEST/bin/jupii",
+                "chmod +x $FLATPAK_DEST/bin/jupii" 
             ],
             "sources": [
                 {

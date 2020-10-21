@@ -24,6 +24,7 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickStyle>
 #include <QIcon>
 #include "iconprovider.h"
 #endif // KIRIGAMI
@@ -83,7 +84,11 @@ int main(int argc, char *argv[])
     auto app = new QApplication(argc, argv);
     auto engine = new QQmlApplicationEngine();
     auto context = engine->rootContext();
-    //app->setOrganizationName(app->applicationName());
+    app->setApplicationName(Jupii::APP_ID);
+    app->setOrganizationName(Jupii::ORG);
+#ifdef FLATPAK
+    QIcon::setThemeName(QStringLiteral("breeze"));
+#endif // FLATPAK
     QApplication::setWindowIcon(QIcon::fromTheme(Jupii::APP_ID));
 #endif // KIRIGAMI
 
@@ -179,7 +184,7 @@ int main(int argc, char *argv[])
 #ifdef KIRIGAMI
     auto notifications = Notifications::instance();
     context->setContextProperty("notifications", notifications);
-#endif
+#endif // KIRIGAMI
 
 #ifdef SAILFISH
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
@@ -199,5 +204,6 @@ int main(int argc, char *argv[])
 
     int ret = app->exec();
     fcloseall();
+
     return ret;
 }
