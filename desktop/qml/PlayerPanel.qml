@@ -111,7 +111,7 @@ Rectangle {
             Layout.leftMargin: Kirigami.Units.largeSpacing
             Layout.rightMargin: Kirigami.Units.largeSpacing
             visible: !root.inited && !root.open
-            icon.source: "offline"
+            icon.source: "network-offline"
             text: qsTr("Not connected to any device.")
             actions: [
                 Kirigami.Action {
