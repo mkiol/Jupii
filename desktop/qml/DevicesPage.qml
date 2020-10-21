@@ -80,7 +80,7 @@ Kirigami.ScrollablePage {
             actions: [
                 Kirigami.Action {
                     visible: model.supported
-                    iconName: model.active ? qsTr("offline") : qsTr("online")
+                    iconName: model.active ? qsTr("network-disconnect") : qsTr("network-connect")
                     text: model.active ? qsTr("Disconnect") : qsTr("Connect")
                     onTriggered: {
                         if (model.active)
