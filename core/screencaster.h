@@ -119,6 +119,7 @@ private:
     bool initOutAudio();
     bool initScaler();
     bool scalingNeeded();
+    static void fixSize(QSize &size, int *xoff = nullptr, int *yoff = nullptr);
 };
 
 #endif // SCREENCASTER_H

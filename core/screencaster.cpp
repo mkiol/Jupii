@@ -119,6 +119,18 @@ ScreenCaster::~ScreenCaster()
     qDebug() << "ScreenCaster destructor end";
 }
 
+void ScreenCaster::fixSize(QSize &size, int *xoff, int *yoff)
+{
+    int xoff_delta = size.width() % 2;
+    int yoff_delta = size.height() % 2;
+    size.setWidth(size.width() - xoff_delta);
+    size.setHeight(size.height() - yoff_delta);
+    if (xoff)
+        xoff += xoff_delta;
+    if (yoff)
+        yoff += yoff_delta;
+}
+
 void ScreenCaster::initVideoSize()
 {
 #ifdef DESKTOP
@@ -151,31 +163,18 @@ void ScreenCaster::initVideoSize()
             if (crop)
                 yoff = (video_size.height() - h) / 2;
 
-            int off = h % 2;
-            yoff += off;
-            video_size.setHeight(h-off);
-
-            xoff = video_size.width() % 2;
-            video_size.setWidth(video_size.width() - xoff);
+            video_size.setHeight(h);
         } else {
             int w = int((16.0/9.0)*video_size.height());
 
             if (crop)
                 xoff = (video_size.width() - w) / 2;
 
-            int off = w % 2;
-            xoff += off;
-            video_size.setWidth(w - off);
-
-            yoff = video_size.height() % 2;
-            video_size.setHeight(video_size.height() - yoff);
+            video_size.setWidth(w);
         }
-    } else {
-        xoff = video_size.width() % 2;
-        video_size.setWidth(video_size.width() - xoff);
-        yoff = video_size.height() % 2;
-        video_size.setHeight(video_size.height() - yoff);
     }
+
+    fixSize(video_size, &xoff, &yoff);
 
 #ifdef SAILFISH
     if (res_div > 1) {
@@ -183,6 +182,7 @@ void ScreenCaster::initVideoSize()
         video_size.setWidth(video_size.width() / res_div);
         yoff = yoff / res_div;
         xoff = xoff / res_div;
+        fixSize(video_size, &xoff, &yoff);
     }
 #endif
 }
@@ -344,8 +344,16 @@ bool ScreenCaster::initVideoEncoder(const char *name)
     out_video_codec_ctx->width = video_size.width();
     out_video_codec_ctx->height = video_size.height();
 #else
-    out_video_codec_ctx->width = video_size.width()/res_div;
-    out_video_codec_ctx->height = video_size.height()/res_div;
+    if (res_div > 1) {
+        auto size = QSize(video_size.width() / res_div,
+                          video_size.height() / res_div);
+        fixSize(size);
+        out_video_codec_ctx->width = size.width();
+        out_video_codec_ctx->height = size.height();
+    } else {
+        out_video_codec_ctx->width = video_size.width();
+        out_video_codec_ctx->height = video_size.height();
+    }
 #endif
     out_video_codec_ctx->flags = AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS;
     out_video_codec_ctx->time_base.num = 1;
