@@ -17,15 +17,13 @@ exists("$$QT_BIN_DIR/qdbusxml2cpp-qt5") {
 }
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.jupii.xml" -a $$CORE_DIR/dbus_jupii_adaptor)
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml" -p $$CORE_DIR/dbus_tracker_inf)
+system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.systemd1.Manager.xml" -p $$CORE_DIR/dbus_systemd_inf)
 desktop: system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Notifications.xml" -p $$CORE_DIR/dbus_notifications_inf)
 
 OTHER_FILES += \
-    $$PROJECTDIR/dbus/org.jupii.xml \
-    $$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml
+    $$PROJECTDIR/dbus/*.xml
 
 desktop {
-    OTHER_FILES += $$PROJECTDIR/dbus/org.freedesktop.Notifications.xml
-
     PKGCONFIG += libpulse x11
 
     packagesExist(taglib) {
@@ -76,6 +74,7 @@ HEADERS += \
     $$CORE_DIR/dbus_jupii_adaptor.h \
     $$CORE_DIR/dbus_tracker_inf.h \
     $$CORE_DIR/dbus_notifications_inf.h \
+    $$CORE_DIR/dbus_systemd_inf.h \
     $$CORE_DIR/utils.h \
     $$CORE_DIR/listmodel.h \
     $$CORE_DIR/devicemodel.h \
@@ -123,6 +122,7 @@ SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
     $$CORE_DIR/dbus_tracker_inf.cpp \
     $$CORE_DIR/dbus_notifications_inf.cpp \
+    $$CORE_DIR/dbus_systemd_inf.cpp \
     $$CORE_DIR/main.cpp \
     $$CORE_DIR/utils.cpp \
     $$CORE_DIR/listmodel.cpp \

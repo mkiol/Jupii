@@ -77,7 +77,7 @@ QList<ListItem*> RecModel::makeItems()
 
             // fallbacks
             if (item.iconPath.isEmpty() && !item.author.isEmpty() && !item.album.isEmpty())
-                item.iconPath = Tracker::instance()->genAlbumArtFile(item.album, item.author);
+                item.iconPath = Tracker::genAlbumArtFile(item.album, item.author);
             if (item.title.isEmpty())
                 item.title = file.baseName();
             if (item.author.isEmpty())

@@ -23,7 +23,7 @@ class Tracker :
     Q_OBJECT
 public:
     static Tracker* instance(QObject *parent = nullptr);
-    QString genAlbumArtFile(const QString& albumName,
+    static QString genAlbumArtFile(const QString& albumName,
                                    const QString& artistName);
     bool query(const QString& query, bool emitSignal = true);
     std::pair<const QStringList&, const QByteArray&> getResult();
@@ -34,19 +34,15 @@ signals:
 
 private:
     static Tracker* m_instance;
-
-    const QRegExp m_re1;
-    const QRegExp m_re2;
     const QString m_cacheDir;
-
     std::unique_ptr<OrgFreedesktopTracker1SteroidsInterface> m_dbus_inf;
-
     QByteArray m_pipeData;
     QStringList m_dbusReplyData;
 
     Tracker(QObject *parent = nullptr);
-    QString genTrackerId(const QString& name);
-    bool createTrackerInf();
+    static QString genTrackerId(const QString& name);
+    bool createTrackerInf(bool startTrackerOnError = true);
+    bool startTracker();
     bool createUnixPipe(int& readFd, int& writeFd);
 };
 

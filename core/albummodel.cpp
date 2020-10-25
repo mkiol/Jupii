@@ -78,8 +78,8 @@ QList<ListItem*> AlbumModel::processTrackerReply(
                 continue;
             }
 
-            auto imgFilePath = Tracker::instance()->genAlbumArtFile(cursor.value(1).toString(),
-                                                                    cursor.value(2).toString());
+            auto imgFilePath = Tracker::genAlbumArtFile(cursor.value(1).toString(),
+                                                        cursor.value(2).toString());
             QFileInfo imgFile(imgFilePath);
             auto& album = albums[id];
             album.id = id;

@@ -77,15 +77,15 @@ ContentServerWorker* ContentServerWorker::m_instance = nullptr;
 
 const QString ContentServer::queryTemplate =
         "SELECT ?item " \
-        "nie:mimeType(?item) as mime " \
-        "nie:title(?item) as title " \
-        "nie:comment(?item) as comment " \
-        "nfo:duration(?item) as duration " \
-        "nie:title(nmm:musicAlbum(?item)) as album " \
-        "nmm:artistName(nmm:performer(?item)) as artist " \
-        "nfo:averageBitrate(?item) as bitrate " \
-        "nfo:channels(?item) as channels " \
-        "nfo:sampleRate(?item) as sampleRate " \
+        "nie:mimeType(?item) " \
+        "nie:title(?item) " \
+        "nie:comment(?item) " \
+        "nfo:duration(?item) " \
+        "nie:title(nmm:musicAlbum(?item)) " \
+        "nmm:artistName(nmm:performer(?item)) " \
+        "nfo:averageBitrate(?item) " \
+        "nfo:channels(?item) " \
+        "nfo:sampleRate(?item) " \
         "WHERE { ?item nie:url \"%1\". }";
 
 const QHash<QString,QString> ContentServer::m_imgExtMap {
@@ -2632,7 +2632,7 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
             meta.sampleRate = cursor.value(9).toDouble();
             meta.path = path;
             meta.filename = file.fileName();
-            meta.albumArt = Tracker::instance()->genAlbumArtFile(meta.album, meta.artist);
+            meta.albumArt = Tracker::genAlbumArtFile(meta.album, meta.artist);
             meta.type = typeFromMime(meta.mime);
             meta.size = file.size();
             meta.local = true;
