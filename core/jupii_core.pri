@@ -3,7 +3,6 @@ QT += gui network dbus sql multimedia xml
 
 CORE_DIR = ../core
 
-include($$PROJECTDIR/libs/gumbo/gumbo.pri)
 include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
 include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
 
@@ -41,6 +40,13 @@ desktop {
         include($$PROJECTDIR/libs/pupnp/pupnp.pri)
     }
 
+    packagesExist(gumbo) {
+        PKGCONFIG += gumbo
+    } else {
+        message(Using static gumbo)
+        include($$PROJECTDIR/libs/gumbo/gumbo.pri)
+    }
+
     INCLUDEPATH += $$PROJECTDIR/libs/ffmpeg/include
 
     packagesExist(libavformat libavcodec libswscale libswresample libavdevice libavutil x264) {
@@ -62,6 +68,7 @@ sailfish {
     include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
     include($$PROJECTDIR/libs/x264/x264.pri)
     include($$PROJECTDIR/libs/lame/lame.pri)
+    include($$PROJECTDIR/libs/gumbo/gumbo.pri)
     #include($$PROJECTDIR/libs/omx/omx.pri)
 
     screencast {

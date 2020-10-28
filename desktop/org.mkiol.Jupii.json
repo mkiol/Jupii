@@ -232,6 +232,28 @@
             ]
         },
         {
+            "name": "gumbo",
+            "config-opts": [
+                "--enable-static",
+                "--disable-shared"
+            ],
+            "cleanup": [
+                "/bin",
+                "*.a",
+                "*.la",
+                "/include",
+                "/lib/pkgconfig",
+                "/share"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/google/gumbo-parser.git",
+                    "tag": "v0.10.1"
+                }
+            ]
+        },
+        {
             "name": "jupii",
             "buildsystem": "simple",
             "build-commands": [
