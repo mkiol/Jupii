@@ -3,6 +3,7 @@ QT += gui network dbus sql multimedia xml
 
 CORE_DIR = ../core
 
+include($$PROJECTDIR/libs/gumbo/gumbo.pri)
 include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
 include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
 
@@ -116,7 +117,8 @@ HEADERS += \
     $$CORE_DIR/youtubedl.h \
     $$CORE_DIR/bcmodel.h \
     $$CORE_DIR/notifications.h \
-    $$CORE_DIR/filedownloader.h
+    $$CORE_DIR/filedownloader.h \
+    $$CORE_DIR/bcapi.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -164,7 +166,8 @@ SOURCES += \
     $$CORE_DIR/youtubedl.cpp \
     $$CORE_DIR/bcmodel.cpp \
     $$CORE_DIR/notifications.cpp \
-    $$CORE_DIR/filedownloader.cpp
+    $$CORE_DIR/filedownloader.cpp \
+    $$CORE_DIR/bcapi.cpp
 
 screencast {
     HEADERS += \

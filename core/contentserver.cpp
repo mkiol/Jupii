@@ -46,6 +46,7 @@
 #include "youtubedl.h"
 #include "playlistmodel.h"
 #include "libupnpp/control/cdirectory.hxx"
+#include "bcapi.h"
 
 // TagLib
 #include "fileref.h"
@@ -3226,6 +3227,37 @@ ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+ContentServer::makeItemMetaUsingBcApi(const QUrl &url, ItemMeta &meta,
+                                          std::shared_ptr<QNetworkAccessManager> nam,
+                                          int counter)
+{
+    qDebug() << "Trying to find url with Bc API:" << url;
+
+    if (QThread::currentThread()->isInterruptionRequested()) {
+        qWarning() << "Thread interruption was requested";
+        return metaCache.end();
+    }
+
+    auto track = BcApi(nam).track(url);
+
+    if (track.streamUrl.isEmpty()) {
+        qWarning() << "Bc API returned empty url";
+        return metaCache.end();
+    }
+
+    meta.title = std::move(track.title);
+    meta.album = std::move(track.album);
+    meta.artist = std::move(track.artist);
+    meta.duration = track.duration;
+    meta.ytdl = true;
+
+    auto newUrl = std::move(track.streamUrl);
+    Utils::fixUrl(newUrl);
+
+    return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
+}
+
+const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                                             const QUrl &origUrl,
                                             bool ytdl, bool refresh,
@@ -3420,14 +3452,19 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     }
 
     if (!ytdl_broken && type != TypeMusic && type != TypeVideo && type != TypeImage) {
-        if (YoutubeDl::instance()->enabled() && mime.contains("text/html")) { // trying youtube-dl
+        if (mime.contains("text/html")) {
             reply->deleteLater();
-            return makeItemMetaUsingYoutubeDl(reply->url(), meta, nam, counter);
-        } else {
-            qWarning() << "Unsupported type:" << mime;
-            reply->deleteLater();
-            return metaCache.end();
+            auto url = reply->url();
+            if (BcApi::bcUrl(url)) {
+                return makeItemMetaUsingBcApi(url, meta, nam, counter);
+            } else if (YoutubeDl::instance()->enabled()) {
+                return makeItemMetaUsingYoutubeDl(url, meta, nam, counter);
+            }
         }
+
+        qWarning() << "Unsupported type:" << mime;
+        reply->deleteLater();
+        return metaCache.end();
     }
 
     auto ranges = QString(reply->rawHeader("Accept-Ranges")).toLower().contains("bytes");

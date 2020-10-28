@@ -13,10 +13,8 @@
 #include <QDebug>
 #include <QByteArray>
 #include <QVariant>
+#include <QVariantList>
 #include <QUrl>
-#include <QJsonArray>
-#include <QNetworkAccessManager>
-#include <memory>
 
 #include "listmodel.h"
 #include "itemmodel.h"
@@ -73,13 +71,6 @@ signals:
     void error();
 
 private:
-    static const int httpTimeout = 10000;
-    QJsonArray m_result;
-    std::unique_ptr<QNetworkAccessManager> nam;
-
-    QUrl makeBcUrl(const QString &phrase);
-    bool parseData(const QByteArray &data);
-    void callBcApi(const QString &phrase);
     QList<ListItem*> makeItems();
 };
 

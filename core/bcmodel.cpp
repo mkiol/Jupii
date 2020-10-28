@@ -7,18 +7,10 @@
 
 #include <QDebug>
 #include <QList>
-#include <QTimer>
-#include <QUrlQuery>
-#include <QJsonDocument>
-#include <QJsonParseError>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QEventLoop>
-#include <memory>
+#include <vector>
 
 #include "bcmodel.h"
+#include "bcapi.h"
 #include "utils.h"
 #include "iconprovider.h"
 
@@ -46,77 +38,6 @@ QVariantList BcModel::selectedItems()
     return list;
 }
 
-QUrl BcModel::makeBcUrl(const QString &phrase)
-{
-    QUrlQuery qurl;
-    qurl.addQueryItem("q", phrase);
-    QUrl url("https://bandcamp.com/api/fuzzysearch/1/mobile_autocomplete");
-    url.setQuery(qurl);
-    return url;
-}
-
-bool BcModel::parseData(const QByteArray &data)
-{
-    QJsonParseError err;
-    auto json = QJsonDocument::fromJson(data, &err);
-    if (err.error == QJsonParseError::NoError) {
-        auto res = json.object().value("auto").toObject().value("results");
-        if (res.isArray()) {
-            m_result = res.toArray();
-            return true;
-        } else {
-            qWarning() << "No results array";
-        }
-    } else {
-        qWarning() << "Error parsing json:" << err.errorString();
-    }
-    return false;
-}
-
-void BcModel::callBcApi(const QString &phrase)
-{
-    QNetworkRequest request;
-    request.setUrl(makeBcUrl(phrase));
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-    nam = std::unique_ptr<QNetworkAccessManager>(new QNetworkAccessManager());
-    auto reply = nam->get(request);
-    QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-    std::shared_ptr<QEventLoop> loop(new QEventLoop());
-    connect(reply, &QNetworkReply::finished, [this, loop, reply]{
-        if (!loop) {
-            reply->deleteLater();
-            qWarning() << "Loop doesn't exist";
-            return;
-        }
-
-        //auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        //auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-        auto err = reply->error();
-        //qDebug() << "Response code:" << code << reason << err;
-
-        if (err == QNetworkReply::NoError) {
-            auto data = reply->readAll();
-            if (data.isEmpty()) {
-                qWarning() << "No data received";
-                emit error();
-            } else {
-                if (!parseData(data)) {
-                    emit error();
-                }
-            }
-        } else {
-            qWarning() << "Error:" << err;
-            emit error();
-        }
-
-        reply->deleteLater();
-        loop->quit();
-    });
-
-    loop->exec();
-    loop.reset();
-}
-
 QList<ListItem*> BcModel::makeItems()
 {
     QList<ListItem*> items;
@@ -124,20 +45,18 @@ QList<ListItem*> BcModel::makeItems()
     auto phrase = getFilter().simplified();
 
     if (!phrase.isEmpty()) {
-        callBcApi(phrase);
+        BcApi api;
 
-        int count = m_result.count();
-        for (int i = 0; i < count; ++i) {
-            auto elm = m_result.at(i).toObject();
-            if (elm.value("type").toString() == "t") { // track
-                auto id = QString::number(elm.value("id").toInt());
-                auto name = elm.value("name").toString();
-                auto band = elm.value("band_name").toString();
-                auto album = elm.value("album_name").toString();
-                auto url = QUrl(elm.value("url").toString());
-                auto img = QUrl(elm.value("img").toString());
-                items << new BcItem(id, name, band, album, url, img);
-            }
+        auto results = api.search(phrase);
+
+        for (const auto& result : results) {
+            if (result.type == BcApi::Type_Track)
+            items << new BcItem(result.webUrl.toString(),
+                                result.name,
+                                result.artist,
+                                result.album,
+                                result.webUrl,
+                                result.imageUrl);
         }
     }
 
