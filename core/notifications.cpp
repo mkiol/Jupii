@@ -38,36 +38,53 @@ bool Notifications::createDbusInf()
                     "org.freedesktop.Notifications",
                     "/org/freedesktop/Notifications",
                     bus);
-
-        if (!m_dbus_inf->isValid()) {
-            qWarning() << "Dbus interface cannot be created";
-            m_dbus_inf.reset();
-            return false;
-        }
     }
+
+    if (!m_dbus_inf->isValid()) {
+        qWarning() << "Dbus interface cannot be created";
+        m_dbus_inf.reset();
+        return false;
+    }
+
+    /*auto reply = m_dbus_inf->GetCapabilities();
+    reply.waitForFinished();
+    if (reply.isError()) {
+        qWarning() << "Cannot get notification server caps";
+    } else {
+        auto caps = reply.value();
+        for (const auto& cap : reply.value()) {
+            qDebug() << "cap:" << cap;
+        }
+    }*/
+
+    /*auto reply = m_dbus_inf->GetServerInformation();
+    reply.waitForFinished();
+    if (reply.isError()) {
+        qWarning() << "Cannot get notification server info";
+    } else {
+        auto name = reply.argumentAt<0>();
+        auto vendor = reply.argumentAt<1>();
+        auto version = reply.argumentAt<2>();
+        auto spec = reply.argumentAt<3>();
+        qDebug() << "Notification server info:" << name << vendor << version << spec;
+    }*/
 
     return true;
 }
 
-bool Notifications::show(const QString& body, const QString& summary, const QString& iconPath)
+bool Notifications::show(const QString& summary, const QString& body, const QString& iconPath)
 {
     if (!m_dbus_inf || !m_dbus_inf->isValid())
         return false;
 
-    QVariantMap hints;
-
-    if (!iconPath.isEmpty()) {
-        hints.insert("image-path", iconPath);
-    }
-
     auto reply = m_dbus_inf->Notify(
                 Jupii::APP_NAME,
                 0,
-                Jupii::APP_ID,
+                iconPath.isEmpty() ? Jupii::APP_ID : iconPath,
                 summary,
                 body,
                 {},
-                hints,
+                {},
                 -1
                 );
 

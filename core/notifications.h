@@ -20,7 +20,7 @@ class Notifications : public QObject
 public:
     static Notifications* instance(QObject *parent = nullptr);
 
-    Q_INVOKABLE bool show(const QString& body, const QString& summary = QString(), const QString &iconPath = QString());
+    Q_INVOKABLE bool show(const QString& summary, const QString& body = QString(), const QString &iconPath = QString());
 
 private:
     static Notifications* m_instance;
