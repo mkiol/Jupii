@@ -18,14 +18,18 @@ Dialog {
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge
-
-    property var selectedItems
+    property alias albumPage: itemModel.albumUrl
+    property alias artistPage: itemModel.artistUrl
+    readonly property bool albumMode: albumPage && albumPage.toString().length > 0
+    readonly property bool artistMode: artistPage && artistPage.toString().length > 0
 
     canAccept: itemModel.selectedCount > 0
 
     onDone: {
-        if (result === DialogResult.Accepted)
-            selectedItems = itemModel.selectedItems()
+        if (result === DialogResult.Accepted) {
+            playlist.addItemUrls(itemModel.selectedItems())
+            app.popToQueue()
+        }
     }
 
     // Hack to update model after all transitions
@@ -54,10 +58,13 @@ Dialog {
 
         model: itemModel
 
+        /*title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
+               itemModel.artistName.length > 0 ? itemModel.artistName : qsTr("Bandcamp")*/
+
         header: SearchDialogHeader {
             implicitWidth: root.width
             noSearchCount: -1
-            searchPlaceholderText: qsTr("Search tracks")
+            searchPlaceholderText: qsTr("Search items")
             model: itemModel
             dialog: root
             view: listView
@@ -69,17 +76,16 @@ Dialog {
 
         PullDownMenu {
             id: menu
-            visible: itemModel.count > 0
+            visible: itemModel.selectableCount > 0
             busy: itemModel.busy
 
             MenuItem {
-                visible: itemModel.count !== 0
+                visible: itemModel.selectableCount > 0
 
-                text: itemModel.count === itemModel.selectedCount ?
-                          qsTr("Unselect all") :
-                          qsTr("Select all")
+                text: itemModel.selectableCount === itemModel.selectedCount ?
+                          qsTr("Unselect all") : qsTr("Select all")
                 onClicked: {
-                    if (itemModel.count === itemModel.selectedCount)
+                    if (itemModel.selectableCount === itemModel.selectedCount)
                         itemModel.setAllSelected(false)
                     else
                         itemModel.setAllSelected(true)
@@ -91,21 +97,37 @@ Dialog {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
             highlighted: down || model.selected
-            title.text: model.name
-            subtitle.text: model.artist
+            title.text: model.type === BcModel.Type_Track ? model.name :
+                        model.type === BcModel.Type_Album ? model.album :
+                        model.type === BcModel.Type_Artist ? model.artist : ""
+            subtitle.text: model.type === BcModel.Type_Track ||
+                           model.type === BcModel.Type_Album ? model.artist : ""
             enabled: !itemModel.busy
-            defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
+            defaultIcon.source: model.type === BcModel.Type_Album ?
+                                    "image://theme/icon-m-media-albums?" + primaryColor :
+                                model.type === BcModel.Type_Artist ?
+                                    "image://theme/icon-m-media-artists?" + primaryColor :
+                                "image://theme/icon-m-file-audio?" + primaryColor
             icon.source: model.icon
+            extra: model.type === BcModel.Type_Album ? qsTr("album") :
+                   model.type === BcModel.Type_Artist ? qsTr("artist") : ""
 
             onClicked: {
-                var selected = model.selected
-                itemModel.setSelected(model.index, !selected);
+                if (model.type === BcModel.Type_Track) {
+                    var selected = model.selected
+                    itemModel.setSelected(model.index, !selected);
+                } else {
+                    pageStack.push(Qt.resolvedUrl("BcPage.qml"),
+                                   model.type === BcModel.Type_Album ?
+                                       {albumPage: model.url} : {artistPage: model.url})
+                }
             }
         }
 
         ViewPlaceholder {
             enabled: listView.count === 0 && !itemModel.busy
-            text: qsTr("No tracks")
+            text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
+                      qsTr("Type the words to search.") : qsTr("No items")
         }
     }
 

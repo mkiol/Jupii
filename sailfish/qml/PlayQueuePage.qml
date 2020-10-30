@@ -7,8 +7,6 @@
 
 import QtQuick 2.4
 import Sailfish.Silica 1.0
-import Sailfish.Pickers 1.0
-import Nemo.DBus 2.0
 
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
@@ -17,6 +15,8 @@ import harbour.jupii.ContentServer 1.0
 
 Page {
     id: root
+
+    objectName: "queue"
 
     allowedOrientations: Orientation.All
 
@@ -80,172 +80,6 @@ Page {
             }
         }
     }
-
-    // -- Pickers --
-
-    Component {
-        id: filePickerPage
-        FilePickerPage {
-            allowedOrientations: Orientation.All
-            nameFilters: cserver.getExtensions(263)
-            onSelectedContentPropertiesChanged: {
-                playlist.addItemPath(selectedContentProperties.filePath)
-            }
-        }
-    }
-
-    Component {
-        id: musicPickerDialog
-        MultiMusicPickerDialog {
-            allowedOrientations: Orientation.All
-            onAccepted: {
-                var paths = [];
-                for (var i = 0; i < selectedContent.count; ++i)
-                    paths.push(selectedContent.get(i).filePath)
-                playlist.addItemPaths(paths)
-            }
-        }
-    }
-
-    Component {
-        id: albumPickerPage
-        AlbumsPage {
-            onAccepted: {
-               playlist.addItemUrls(items)
-            }
-        }
-    }
-
-    Component {
-        id: artistPickerPage
-        ArtistPage {
-            onAccepted: {
-                playlist.addItemUrls(items);
-            }
-        }
-    }
-
-    Component {
-        id: playlistPickerPage
-        PlaylistPage {
-            onAccepted: {
-                playlist.addItemUrls(items);
-            }
-        }
-    }
-
-    Component {
-        id: videoPickerDialog
-        MultiVideoPickerDialog {
-            allowedOrientations: Orientation.All
-            onAccepted: {
-                var paths = [];
-                for (var i = 0; i < selectedContent.count; ++i)
-                    paths.push(selectedContent.get(i).filePath)
-                playlist.addItemPaths(paths)
-            }
-        }
-    }
-
-    Component {
-        id: audioFromVideoPickerDialog
-        MultiVideoPickerDialog {
-            allowedOrientations: Orientation.All
-            onAccepted: {
-                var paths = [];
-                for (var i = 0; i < selectedContent.count; ++i)
-                    paths.push(selectedContent.get(i).filePath)
-                playlist.addItemPathsAsAudio(paths)
-            }
-        }
-    }
-
-    Component {
-        id: imagePickerDialog
-        MultiImagePickerDialog {
-            allowedOrientations: Orientation.All
-            onAccepted: {
-                var paths = [];
-                for (var i = 0; i < selectedContent.count; ++i)
-                    paths.push(selectedContent.get(i).filePath)
-                playlist.addItemPaths(paths)
-            }
-        }
-    }
-
-    Component {
-        id: urlPickerPage
-        AddUrlPage {
-            onAccepted: {
-                playlist.addItemUrl(url, name);
-            }
-        }
-    }
-
-    Component {
-        id: somafmPickerPage
-        SomafmPage {
-            onAccepted: {
-                playlist.addItemUrls(selectedItems);
-            }
-        }
-    }
-
-    Component {
-        id: fosdemPickerPage
-        FosdemYearsPage {
-            onAccepted: {
-                playlist.addItemUrls(items);
-            }
-        }
-    }
-
-    Component {
-        id: bcPickerPage
-        BcPage {
-            onAccepted: {
-                playlist.addItemUrls(selectedItems);
-            }
-        }
-    }
-
-    Component {
-        id: icecastPickerPage
-        IcecastPage {
-            onAccepted: {
-                playlist.addItemUrls(selectedItems);
-            }
-        }
-    }
-
-    Component {
-        id: gpodderPickerPage
-        GpodderEpisodesPage {
-            onAccepted: {
-                playlist.addItemUrls(selectedItems)
-            }
-        }
-    }
-
-    Component {
-        id: recPickerPage
-        RecPage {
-            onAccepted: {
-                playlist.addItemUrls(selectedItems);
-            }
-        }
-    }
-
-    Component {
-        id: upnpPickerPage
-        UpnpCDirDevicesPage {
-            onAccepted: {
-                playlist.addItemUrls(items)
-            }
-        }
-    }
-
-    // ----
 
     Connections {
         target: pageStack
@@ -428,24 +262,7 @@ Page {
                     if (playlist.busy) {
                         playlist.cancelAdd()
                     } else {
-                        pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {
-                                           musicPickerDialog: musicPickerDialog,
-                                           videoPickerDialog: videoPickerDialog,
-                                           audioFromVideoPickerDialog: audioFromVideoPickerDialog,
-                                           imagePickerDialog: imagePickerDialog,
-                                           albumPickerPage: albumPickerPage,
-                                           artistPickerPage: artistPickerPage,
-                                           playlistPickerPage: playlistPickerPage,
-                                           filePickerPage: filePickerPage,
-                                           urlPickerPage: urlPickerPage,
-                                           somafmPickerPage: somafmPickerPage,
-                                           fosdemPickerPage: fosdemPickerPage,
-                                           bcPickerPage: bcPickerPage,
-                                           icecastPickerPage: icecastPickerPage,
-                                           gpodderPickerPage: gpodderPickerPage,
-                                           recPickerPage: recPickerPage,
-                                           upnpPickerPage: upnpPickerPage
-                                       })
+                        pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"))
                     }
                 }
             }

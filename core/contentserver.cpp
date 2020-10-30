@@ -2526,17 +2526,18 @@ void ContentServer::removeMeta(const QUrl &url)
 const ContentServer::ItemMeta* ContentServer::getMetaForImg(const QUrl &url,
                                                       bool createNew)
 {
-    return getMeta(url, createNew, QUrl(), false, true);
+    return getMeta(url, createNew, QUrl(), QString(), false, true);
 }
 
 const ContentServer::ItemMeta* ContentServer::getMeta(const QUrl &url,
                                                       bool createNew,
                                                       const QUrl &origUrl,
+                                                      const QString &app,
                                                       bool ytdl, bool img,
                                                       bool refresh)
 {
     qDebug() << "getMeta:" << url << createNew << ytdl << img << refresh;
-    auto it = getMetaCacheIterator(url, createNew, origUrl, ytdl, img, refresh);
+    auto it = getMetaCacheIterator(url, createNew, origUrl, app, ytdl, img, refresh);
     auto meta = it == metaCache.end() ? nullptr : &it.value();
     return meta;
 }
@@ -2549,7 +2550,7 @@ const ContentServer::ItemMeta* ContentServer::getMetaForId(const QUrl &id, bool 
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
-                                    const QUrl &origUrl, bool ytdl, bool img,
+                                    const QUrl &origUrl, const QString &app, bool ytdl, bool img,
                                     bool refresh)
 {
     if (url.isEmpty())
@@ -2564,7 +2565,7 @@ ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
     if (i == metaCache.end()) {
         qDebug() << "Meta data for" << url << "not cached";
         if (createNew)
-            return makeItemMeta(url, origUrl, ytdl, img, refresh);
+            return makeItemMeta(url, origUrl, app, ytdl, img, refresh);
         else
             return metaCache.end();
     }
@@ -3249,7 +3250,9 @@ ContentServer::makeItemMetaUsingBcApi(const QUrl &url, ItemMeta &meta,
     meta.album = std::move(track.album);
     meta.artist = std::move(track.artist);
     meta.duration = track.duration;
+    meta.albumArt = track.imageUrl.toString();
     meta.ytdl = true;
+    meta.app = "bc";
 
     auto newUrl = std::move(track.streamUrl);
     Utils::fixUrl(newUrl);
@@ -3260,6 +3263,7 @@ ContentServer::makeItemMetaUsingBcApi(const QUrl &url, ItemMeta &meta,
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                                             const QUrl &origUrl,
+                                            const QString &app,
                                             bool ytdl, bool refresh,
                                             bool art)
 {
@@ -3267,6 +3271,7 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     meta.ytdl = ytdl;
     meta.refresh = refresh; // meta refreshing
     meta.art = art;
+    meta.app = app;
 
     QUrl fixed_url(url);
     QUrl fixed_origUrl(origUrl);
@@ -3386,8 +3391,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     bool ytdl_broken = false;
 
     if (code > 299) {
-        if (!meta.refresh && meta.ytdl) { // youtube-dl content
-            qDebug() << "Youtube-dl broken URL";
+        if (!meta.refresh && meta.ytdl) {
+            qDebug() << "ytdl broken URL";
             ytdl_broken = true;
             meta.metaUpdateTime = QTime(); // null time to set meta as dummy
         } else if (counter == 0 && meta.origUrlProvided) {
@@ -3455,7 +3460,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         if (mime.contains("text/html")) {
             reply->deleteLater();
             auto url = reply->url();
-            if (BcApi::bcUrl(url)) {
+            if (meta.app == "bc" || BcApi::bcUrl(url)) {
                 return makeItemMetaUsingBcApi(url, meta, nam, counter);
             } else if (YoutubeDl::instance()->enabled()) {
                 return makeItemMetaUsingYoutubeDl(url, meta, nam, counter);
@@ -3493,16 +3498,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
             qWarning() << "Cannot save album art for:" << meta.url.toString();
         }
     } else {
-#if defined(SAILFISH) || defined(KIRIGAMI)
-        if (meta.origUrl.host().contains("bandcamp.com") || meta.url.host().contains("bcbits.com"))
-            meta.albumArt = IconProvider::pathToNoResId("icon-bandcamp");
-        else if (meta.origUrl.host().contains("youtube.") || meta.origUrl.host().contains("yout.be"))
-            meta.albumArt = IconProvider::pathToNoResId("icon-youtube");
-        else if (meta.origUrl.host().contains("soundcloud.com"))
-            meta.albumArt = IconProvider::pathToNoResId("icon-soundcloud");
-        else if (meta.origUrl.host().contains("somafm.com") || meta.url.host().contains("somafm.com"))
-            meta.albumArt = IconProvider::pathToNoResId("icon-somafm");
-#endif
+        updateMetaAlbumArt(meta);
+
         if (reply->hasRawHeader("icy-metaint")) {
             int metaint = reply->rawHeader("icy-metaint").toInt();
             if (metaint > 0) {
@@ -3521,13 +3518,27 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         if (reply->hasRawHeader("x-amz-meta-bitrate")) {
             meta.bitrate = reply->rawHeader("x-amz-meta-bitrate").toInt() * 1000;
         }
-        if (reply->hasRawHeader("x-amz-meta-duration")) {
+        if (meta.duration == 0 && reply->hasRawHeader("x-amz-meta-duration")) {
             meta.duration = reply->rawHeader("x-amz-meta-duration").toInt() / 1000;
         }
     }
 
     reply->deleteLater();
     return metaCache.insert(url, meta);
+}
+
+void ContentServer::updateMetaAlbumArt(ItemMeta &meta) const
+{
+    if (meta.albumArt.isEmpty()) {
+        if (BcApi::bcUrl(meta.origUrl) || BcApi::bcUrl(meta.url))
+            meta.albumArt = IconProvider::pathToNoResId("icon-bandcamp");
+        else if (meta.origUrl.host().contains("youtube.") || meta.origUrl.host().contains("yout.be"))
+            meta.albumArt = IconProvider::pathToNoResId("icon-youtube");
+        else if (meta.origUrl.host().contains("soundcloud.com"))
+            meta.albumArt = IconProvider::pathToNoResId("icon-soundcloud");
+        else if (meta.origUrl.host().contains("somafm.com") || meta.url.host().contains("somafm.com"))
+            meta.albumArt = IconProvider::pathToNoResId("icon-somafm");
+    }
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
@@ -3555,7 +3566,8 @@ ContentServer::makeMetaUsingExtension(const QUrl &url)
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
-ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl,
+ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
+                            const QString &app, bool ytdl,
                             bool art, bool refresh)
 {
     metaCacheMutex.lock();
@@ -3596,7 +3608,7 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl, bool ytdl,
         it = makeUpnpItemMeta(url);
     } else if (itemType == ItemType_Url){
         qDebug() << "Geting meta using HTTP request";
-        it = makeItemMetaUsingHTTPRequest(url, origUrl, ytdl, refresh, art);
+        it = makeItemMetaUsingHTTPRequest(url, origUrl, app, ytdl, refresh, art);
     } else if (url.scheme() == "jupii") {
         qDebug() << "Unsupported Jupii URL detected";
         it = metaCache.end();

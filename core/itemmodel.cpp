@@ -11,8 +11,8 @@
 
 ItemWorker::ItemWorker(ItemModel *model, const QString &data) :
     QThread(model),
-    model(model),
-    data(data)
+    data(data),
+    model(model)
 {
 }
 
@@ -42,7 +42,7 @@ void ItemModel::updateModel(const QString &data)
 
 void ItemModel::postMakeItems(const QList<ListItem*> &items)
 {
-    Q_UNUSED(items);
+    Q_UNUSED(items)
 }
 
 void ItemModel::clear()

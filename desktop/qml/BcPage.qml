@@ -16,12 +16,18 @@ Kirigami.ScrollablePage {
     id: root
     objectName: "bc"
 
+    property alias albumPage: itemModel.albumUrl
+    property alias artistPage: itemModel.artistUrl
+    readonly property bool albumMode: albumPage && albumPage.toString().length > 0
+    readonly property bool artistMode: artistPage && artistPage.toString().length > 0
+
     leftPadding: 0
     rightPadding: 0
     bottomPadding: 0
     topPadding: 0
 
-    title: qsTr("Bandcamp")
+    title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
+           itemModel.artistName.length > 0 ? itemModel.artistName : qsTr("Bandcamp")
 
     //refreshing: itemModel.busy
     Component.onCompleted: {
@@ -41,15 +47,15 @@ Kirigami.ScrollablePage {
         }
         contextualActions: [
             Kirigami.Action {
-                text: itemModel.count === itemModel.selectedCount ?
+                text: itemModel.selectableCount === itemModel.selectedCount ?
                           qsTr("Unselect all") : qsTr("Select all")
                 iconName: itemModel.count === itemModel.selectedCount ?
                               "dialog-cancel" : "checkbox"
-                enabled: itemList.count !== 0
+                enabled: itemModel.selectableCount > 0
                 visible: enabled
                 displayHint: Kirigami.Action.DisplayHint.AlwaysHide
                 onTriggered: {
-                    if (itemModel.count === itemModel.selectedCount)
+                    if (itemModel.selectableCount === itemModel.selectedCount)
                         itemModel.setAllSelected(false)
                     else
                         itemModel.setAllSelected(true)
@@ -59,6 +65,8 @@ Kirigami.ScrollablePage {
     }
 
     header: Controls.ToolBar {
+        visible: !root.albumMode && !root.artistMode
+        height: visible ? implicitHeight : 0
         background: Rectangle {
             color: Kirigami.Theme.buttonBackgroundColor
         }
@@ -90,21 +98,35 @@ Kirigami.ScrollablePage {
             id: listItem
             highlighted: model.selected
             enabled: !itemModel.busy
-            label: model.name
-            subtitle: model.artist
+            label: model.type === BcModel.Type_Track ? model.name :
+                   model.type === BcModel.Type_Album ? model.album :
+                   model.type === BcModel.Type_Artist ? model.artist : ""
+            subtitle:  model.type === BcModel.Type_Track ||
+                       model.type === BcModel.Type_Album ? model.artist : ""
             defaultIconSource: "audio-x-generic"
             iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
+            next: model.type !== BcModel.Type_Track
 
             onClicked: {
-                var selected = model.selected
-                itemModel.setSelected(model.index, !selected);
+                if (model.type === BcModel.Type_Track) {
+                    var selected = model.selected
+                    itemModel.setSelected(model.index, !selected);
+                } else if (model.type === BcModel.Type_Album) {
+                    pageStack.push(Qt.resolvedUrl("BcPage.qml"), {albumPage: model.url})
+                } else if (model.type === BcModel.Type_Artist) {
+                    pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: model.url})
+                }
             }
+
+            extra: model.type === BcModel.Type_Album ? qsTr("album") :
+                   model.type === BcModel.Type_Artist ? qsTr("artist") : ""
 
             actions: [
                 Kirigami.Action {
                     iconName: "checkbox"
                     text: qsTr("Toggle selection")
+                    visible: !listItem.next
                     onTriggered: {
                         var selected = model.selected
                         itemModel.setSelected(model.index, !selected);
@@ -127,7 +149,8 @@ Kirigami.ScrollablePage {
             anchors.centerIn: parent
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: itemList.count === 0 && !itemModel.busy
-            text: qsTr("No tracks")
+            text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
+                      qsTr("Type the words to search.") : qsTr("No items")
         }
     }
 }

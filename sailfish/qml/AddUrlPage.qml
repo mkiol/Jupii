@@ -19,6 +19,13 @@ Dialog {
 
     canAccept: ok
 
+    onDone: {
+        if (result === DialogResult.Accepted) {
+            playlist.addItemUrl(url, name);
+            app.popToQueue()
+        }
+    }
+
     SilicaFlickable {
         anchors.fill: parent
 

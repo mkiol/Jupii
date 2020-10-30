@@ -108,7 +108,8 @@ public:
                                         QString *author = nullptr,
                                         QUrl *origUrl = nullptr,
                                         bool *ytdl = nullptr,
-                                        bool *play = nullptr);
+                                        bool *play = nullptr,
+                                        QString *app = nullptr);
     QString randString(int len = 5);
     static void removeFile(const QString &path);
     static bool writeToCacheFile(const QString &filename, const QByteArray &data, bool del = false);

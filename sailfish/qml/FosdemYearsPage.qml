@@ -19,8 +19,6 @@ Page {
 
     property bool _doPop: false
 
-    signal accepted(var items);
-
     function doPop() {
         if (pageStack.busy)
             _doPop = true
@@ -91,12 +89,7 @@ Page {
                                 (highlighted || model.active ?
                                 Theme.highlightColor : Theme.primaryColor)
             onClicked: {
-                var dialog = pageStack.push(Qt.resolvedUrl("FosdemPage.qml"),
-                                            {"year" : model.year})
-                dialog.accepted.connect(function() {
-                    root.accepted(dialog.selectedItems)
-                    root.doPop()
-                })
+                pageStack.push(Qt.resolvedUrl("FosdemPage.qml"), {year : model.year})
             }
         }
 

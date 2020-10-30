@@ -122,6 +122,7 @@ public:
         QTime metaUpdateTime = QTime::currentTime();
         bool refresh = false;
         bool art = false;
+        QString app;
 
         inline bool expired() const {
             if (metaUpdateTime.isNull())
@@ -197,13 +198,14 @@ public:
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(const QUrl &url,
                                                                      bool createNew = true,
                                                                      const QUrl &origUrl = QUrl(),
+                                                                     const QString &app = QString(),
                                                                      bool ytdl = false, bool img = false,
                                                                      bool refresh = false);
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(const QUrl &id,
                                                                           bool createNew = true);
     const QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
     const ItemMeta* getMeta(const QUrl &url, bool createNew,
-                            const QUrl &origUrl = QUrl(),
+                            const QUrl &origUrl = QUrl(), const QString &app = QString(),
                             bool ytdl = false, bool img = false, bool refresh = false);
     const ContentServer::ItemMeta* getMetaForImg(const QUrl &url, bool createNew);
     void removeMeta(const QUrl &url);
@@ -334,6 +336,7 @@ private:
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url,
                                                              const QUrl &origUrl = QUrl(),
+                                                             const QString &app = QString(),
                                                              bool ytdl = false,
                                                              bool art = false,
                                                              bool refresh = false);
@@ -344,6 +347,7 @@ private:
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
                                                                              const QUrl &origUrl = QUrl(),
+                                                                             const QString &app = QString(),
                                                                              bool ytdl = false,
                                                                              bool refresh = false,
                                                                              bool art = false);
@@ -367,6 +371,7 @@ private:
     static QString extractItemFromDidl(const QString &didl);
     bool saveTmpRec(const QString &path);
     static QString readTitleUsingTaglib(const QString &path);
+    void updateMetaAlbumArt(ItemMeta &meta) const;
 };
 
 class ContentServerWorker :

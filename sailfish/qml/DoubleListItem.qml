@@ -16,6 +16,7 @@ ListItem {
     property alias icon: _icon
     property alias defaultIcon: _dicon
     property alias attachedIcon: _aicon
+    property alias extra: extraLabel.text
 
     opacity: enabled ? 1.0 : 0.0
     visible: opacity > 0.0
@@ -70,8 +71,9 @@ ListItem {
             left: _icon.status !== Image.Ready &&
                   _dicon.status !== Image.Ready ? parent.left : _icon.right
             right: parent.right
+            rightMargin: Theme.horizontalPageMargin +
+                         (extraLabel.visible ? extraLabel.width + Theme.paddingSmall : 0)
             leftMargin: Theme.horizontalPageMargin;
-            rightMargin: Theme.horizontalPageMargin;
             verticalCenter: parent.verticalCenter
         }
 
@@ -99,6 +101,24 @@ ListItem {
             font.pixelSize: Theme.fontSizeSmall
             truncationMode: TruncationMode.Fade
             color: root.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+        }
+    }
+
+    Rectangle {
+        width: visible ? extraLabel.implicitWidth + 2 * Theme.paddingSmall : 0
+        height: visible ? extraLabel.implicitHeight + Theme.paddingSmall : 0
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        anchors.rightMargin: Theme.horizontalPageMargin
+        visible: extraLabel.text.length > 0
+        color: "transparent"
+        border.color: extraLabel.color
+        radius: 8
+        Label {
+            id: extraLabel
+            font.pixelSize: Theme.fontSizeSmall
+            color: root.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+            anchors.centerIn: parent
         }
     }
 }

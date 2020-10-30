@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,28 +7,88 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import Sailfish.Pickers 1.0
 
 Page {
     id: root
 
     allowedOrientations: Orientation.All
 
-    property var musicPickerDialog
-    property var videoPickerDialog
-    property var audioFromVideoPickerDialog
-    property var imagePickerDialog
-    property var albumPickerPage
-    property var artistPickerPage
-    property var playlistPickerPage
-    property var filePickerPage
-    property var urlPickerPage
-    property var somafmPickerPage
-    property var fosdemPickerPage
-    property var bcPickerPage
-    property var icecastPickerPage
-    property var gpodderPickerPage
-    property var recPickerPage
-    property var upnpPickerPage
+    Component {
+        id: filePickerPage
+        FilePickerPage {
+            allowedOrientations: Orientation.All
+            nameFilters: cserver.getExtensions(263)
+            onSelectedContentPropertiesChanged: {
+                playlist.addItemPath(selectedContentProperties.filePath)
+                app.popToQueue()
+            }
+        }
+    }
+
+    Component {
+        id: musicPickerDialog
+        MultiMusicPickerDialog {
+            allowedOrientations: Orientation.All
+            onDone: {
+                if (result === DialogResult.Accepted) {
+                    var paths = [];
+                    for (var i = 0; i < selectedContent.count; ++i)
+                        paths.push(selectedContent.get(i).filePath)
+                    playlist.addItemPaths(paths)
+                    app.popToQueue()
+                }
+            }
+        }
+    }
+
+    Component {
+        id: videoPickerDialog
+        MultiVideoPickerDialog {
+            allowedOrientations: Orientation.All
+            onDone: {
+                if (result === DialogResult.Accepted) {
+                    var paths = [];
+                    for (var i = 0; i < selectedContent.count; ++i)
+                        paths.push(selectedContent.get(i).filePath)
+                    playlist.addItemPaths(paths)
+                    app.popToQueue()
+                }
+            }
+        }
+    }
+
+    Component {
+        id: audioFromVideoPickerDialog
+        MultiVideoPickerDialog {
+            allowedOrientations: Orientation.All
+            onDone: {
+                if (result === DialogResult.Accepted) {
+                    var paths = [];
+                    for (var i = 0; i < selectedContent.count; ++i)
+                        paths.push(selectedContent.get(i).filePath)
+                    playlist.addItemPathsAsAudio(paths)
+                    app.popToQueue()
+                }
+            }
+        }
+    }
+
+    Component {
+        id: imagePickerDialog
+        MultiImagePickerDialog {
+            allowedOrientations: Orientation.All
+            onDone: {
+                if (result === DialogResult.Accepted) {
+                    var paths = [];
+                    for (var i = 0; i < selectedContent.count; ++i)
+                        paths.push(selectedContent.get(i).filePath)
+                    playlist.addItemPaths(paths)
+                    app.popToQueue()
+                }
+            }
+        }
+    }
 
     SilicaFlickable {
         id: flick
@@ -52,7 +112,7 @@ Page {
                 icon.source: "image://theme/icon-m-file-audio?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(musicPickerDialog)
+                    pageStack.push(musicPickerDialog)
                 }
             }
 
@@ -61,7 +121,7 @@ Page {
                 icon.source: "image://theme/icon-m-media-albums?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(albumPickerPage)
+                    pageStack.push(Qt.resolvedUrl("AlbumPage.qml"));
                 }
             }
 
@@ -70,7 +130,7 @@ Page {
                 icon.source: "image://theme/icon-m-media-artists?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(artistPickerPage)
+                    pageStack.push(Qt.resolvedUrl("ArtistPage.qml"));
                 }
             }
 
@@ -79,7 +139,7 @@ Page {
                 icon.source: "image://theme/icon-m-media-playlists?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(playlistPickerPage)
+                    pageStack.push(Qt.resolvedUrl("PlaylistPage.qml"));
                 }
             }
 
@@ -88,7 +148,7 @@ Page {
                 icon.source: "image://theme/icon-m-file-audio?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(audioFromVideoPickerDialog)
+                    pageStack.push(audioFromVideoPickerDialog)
                 }
             }
 
@@ -97,7 +157,7 @@ Page {
                 icon.source: "image://theme/icon-m-file-video?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(videoPickerDialog)
+                    pageStack.push(videoPickerDialog)
                 }
             }
 
@@ -106,7 +166,7 @@ Page {
                 icon.source: "image://theme/icon-m-file-image?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(imagePickerDialog)
+                    pageStack.push(imagePickerDialog)
                 }
             }
 
@@ -115,7 +175,7 @@ Page {
                 icon.source: "image://theme/icon-m-file-other?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(filePickerPage)
+                    pageStack.push(filePickerPage)
                 }
             }
 
@@ -124,7 +184,7 @@ Page {
                 icon.source: "image://icons/icon-m-browser?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(urlPickerPage)
+                    pageStack.push(Qt.resolvedUrl("AddUrlPage.qml"));
                 }
             }
 
@@ -133,7 +193,7 @@ Page {
                 icon.source: "image://icons/icon-m-device?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(upnpPickerPage)
+                    pageStack.push(Qt.resolvedUrl("UpnpCDirDevicesPage.qml"));
                 }
             }
 
@@ -144,7 +204,7 @@ Page {
 
                 onClicked: {
                     playlist.addItemUrl("jupii://pulse")
-                    pageStack.pop()
+                    app.popToQueue()
                 }
             }
 
@@ -156,7 +216,7 @@ Page {
 
                 onClicked: {
                     playlist.addItemUrl("jupii://screen")
-                    pageStack.pop()
+                    app.popToQueue()
                 }
             }
 
@@ -167,7 +227,7 @@ Page {
 
                 onClicked: {
                     playlist.addItemUrl("jupii://mic")
-                    pageStack.pop()
+                    app.popToQueue()
                 }
             }
 
@@ -177,7 +237,7 @@ Page {
                 icon.source: "image://icons/icon-m-record?"  + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.replace(recPickerPage)
+                    pageStack.push(Qt.resolvedUrl("RecPage.qml"));
                 }
             }
 
@@ -189,7 +249,7 @@ Page {
                 title.text: "Bandcamp"
                 icon.source: "image://icons/icon-m-bandcamp"
                 onClicked: {
-                    pageStack.replace(bcPickerPage)
+                    pageStack.push(Qt.resolvedUrl("BcPage.qml"));
                 }
             }
 
@@ -197,7 +257,7 @@ Page {
                 title.text: "FOSDEM"
                 icon.source: "image://icons/icon-m-fosdem"
                 onClicked: {
-                    pageStack.replace(fosdemPickerPage)
+                    pageStack.push(Qt.resolvedUrl("FosdemYearsPage.qml"));
                 }
             }
 
@@ -206,7 +266,7 @@ Page {
                 title.text: "gPodder"
                 icon.source: "image://icons/icon-m-gpodder"
                 onClicked: {
-                    pageStack.replace(gpodderPickerPage)
+                    pageStack.push(Qt.resolvedUrl("GpodderEpisodesPage.qml"));
                 }
             }
 
@@ -214,7 +274,7 @@ Page {
                 title.text: "Icecast"
                 icon.source: "image://icons/icon-m-icecast"
                 onClicked: {
-                    pageStack.replace(icecastPickerPage)
+                    pageStack.push(Qt.resolvedUrl("IcecastPage.qml"));
                 }
             }
 
@@ -222,7 +282,7 @@ Page {
                 title.text: "SomaFM"
                 icon.source: "image://icons/icon-m-somafm"
                 onClicked: {
-                    pageStack.replace(somafmPickerPage)
+                    pageStack.push(Qt.resolvedUrl("SomafmPage.qml"));
                 }
             }
         }

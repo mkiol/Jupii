@@ -7,7 +7,7 @@ Name:       harbour-jupii
 
 # >> macros
 %define __provides_exclude_from ^%{_datadir}/.*$
-%define __requires_exclude ^libomx*|libx264.*|libavdevice.|libavcodec.*|libavformat.*|libavutil.*|libswresample.*|libswscale.*|libmp3lame.*|libtag.*|libupnp.*|libixml.*|libthreadutil.*$
+%define __requires_exclude ^libgumbo.*|libomx*|libx264.*|libavdevice.*|libavcodec.*|libavformat.*|libavutil.*|libswresample.*|libswscale.*|libmp3lame.*|libtag.*|libupnp.*|libixml.*|libthreadutil.*$
 # << macros
 
 %{!?qtc_qmake:%define qtc_qmake %qmake}

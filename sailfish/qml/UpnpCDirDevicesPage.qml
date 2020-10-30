@@ -18,10 +18,7 @@ Page {
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge
-
     property bool _doPop: false
-
-    signal accepted(var items);
 
     function doPop() {
         if (pageStack.busy)
@@ -113,11 +110,7 @@ Page {
 
             onClicked: {
                 cdir.init(model.id)
-                var dialog = pageStack.push(Qt.resolvedUrl("UpnpCDirPage.qml"))
-                dialog.accepted.connect(function() {
-                    root.accepted(dialog.selectedItems)
-                    root.doPop()
-                })
+                pageStack.push(Qt.resolvedUrl("UpnpCDirPage.qml"))
             }
 
             menu: ContextMenu {

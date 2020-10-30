@@ -18,10 +18,7 @@ Page {
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge
-
     property bool _doPop: false
-
-    signal accepted(var items);
 
     function doPop() {
         if (pageStack.busy)
@@ -103,11 +100,7 @@ Page {
             onClicked: click()
 
             function click() {
-                var dialog = pageStack.push(Qt.resolvedUrl("TracksPage.qml"),{albumId: model.id})
-                dialog.accepted.connect(function() {
-                    root.accepted(dialog.selectedItems)
-                    root.doPop()
-                })
+                pageStack.push(Qt.resolvedUrl("TracksPage.qml"), {albumId: model.id})
             }
         }
 

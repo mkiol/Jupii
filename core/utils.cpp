@@ -272,7 +272,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
                                      QString* author,
                                      QUrl* origUrl,
                                      bool* ytdl,
-                                     bool* play)
+                                     bool* play,
+                                     QString* app)
 {
     if (!id.isValid()) {
         //qWarning() << "FromId: Id is invalid:" << id.toString();
@@ -286,7 +287,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             path->clear();
     }
 
-    if (type || cookie || name || desc || author || icon || origUrl || play || ytdl) {
+    if (type || cookie || name || desc || author || icon || origUrl || play || ytdl || app) {
         QUrlQuery q(id);
         if (type && q.hasQueryItem(Utils::typeKey))
             *type = q.queryItemValue(Utils::typeKey).toInt();
@@ -306,6 +307,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             *play = (q.queryItemValue(Utils::playKey) == "true");
         if (ytdl && q.hasQueryItem(Utils::ytdlKey))
             *ytdl = (q.queryItemValue(Utils::ytdlKey) == "true");
+        if (app && q.hasQueryItem(Utils::appKey))
+            *app = q.queryItemValue(Utils::appKey);
     }
 
     return true;

@@ -838,6 +838,8 @@ void PlaylistModel::addItemUrls(const QVariantList &urls)
             ui.author = m.value("author").toString();
             ui.icon = m.value("icon").toUrl();
             ui.desc = m.value("desc").toString();
+            ui.origUrl = m.value("origUrl").toUrl();
+            ui.app = m.value("app").toString();
             items << ui;
         } else if (item.canConvert(QMetaType::QUrl)) {
             UrlItem ui; ui.url = item.toUrl();
@@ -1044,13 +1046,13 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     qDebug() << "makeItem:" << id;
 
     int t = 0;
-    QString name, cookie, author;
+    QString name, cookie, author, app;
     QUrl ficon, origUrl;
     bool play = false;
     bool ytdl = false;
     if (!Utils::pathTypeNameCookieIconFromId(id, nullptr, &t,
-                &name, &cookie, &ficon, nullptr, &author, &origUrl, &ytdl, &play) ||
-            cookie.isEmpty()) {
+                &name, &cookie, &ficon, nullptr, &author,
+                &origUrl, &ytdl, &play, &app) || cookie.isEmpty()) {
         qWarning() << "Invalid Id";
         return nullptr;
     }
@@ -1065,12 +1067,12 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         meta = ContentServer::instance()->getMeta(url, false);
         if (meta && meta->expired()) {
             qDebug() << "Meta exipred";
-            meta = ContentServer::instance()->getMeta(url, true, origUrl, ytdl, false, true);
+            meta = ContentServer::instance()->getMeta(url, true, origUrl, app, ytdl, false, true);
         } else {
-            meta = ContentServer::instance()->getMeta(url, true, origUrl, ytdl);
+            meta = ContentServer::instance()->getMeta(url, true, origUrl, app, ytdl);
         }
     } else {
-        meta = ContentServer::instance()->getMeta(url, true, origUrl, ytdl);
+        meta = ContentServer::instance()->getMeta(url, true, origUrl, app, ytdl);
     }
     if (!meta) {
         qWarning() << "No meta item found";
@@ -1080,7 +1082,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     auto finalId = id;
 
     if (!ytdl) {
-        if (meta->ytdl) { // add ytdl to url for youtube-dl content
+        if (meta->ytdl) { // add ytdl to url
             QUrlQuery q(finalId);
             if (q.hasQueryItem(Utils::ytdlKey))
                 q.removeQueryItem(Utils::ytdlKey);
@@ -1090,9 +1092,20 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         }
     }
 
+    if (app.isEmpty()) {
+        if (!meta->app.isEmpty()) { // add app to url
+            QUrlQuery q(finalId);
+            if (q.hasQueryItem(Utils::appKey))
+                q.removeQueryItem(Utils::appKey);
+            q.addQueryItem(Utils::appKey, meta->app);
+            finalId.setQuery(q);
+            app = meta->app;
+        }
+    }
+
     auto type = static_cast<ContentServer::Type>(t);
     if (type == ContentServer::TypeUnknown) {
-        if (meta->ytdl) { // add type to url for youtube-dl content
+        if (meta->ytdl) { // add type to url for ytdl content
             QUrlQuery q(finalId);
             if (q.hasQueryItem(Utils::typeKey))
                 q.removeQueryItem(Utils::typeKey);
@@ -1104,7 +1117,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 
     if (name.isEmpty()) {
         name = ContentServer::bestName(*meta);
-        if (meta->ytdl) { // add discovered name to url for youtube-dl content
+        if (meta->ytdl) { // add discovered name to url for ytdl content
             QUrlQuery q(finalId);
             if (q.hasQueryItem(Utils::nameKey))
                 q.removeQueryItem(Utils::nameKey);

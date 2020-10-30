@@ -19,14 +19,13 @@ Dialog {
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge
-
-    property var selectedItems
-
     canAccept: itemModel.selectedCount > 0
 
     onDone: {
-        if (result === DialogResult.Accepted)
-            selectedItems = itemModel.selectedItems()
+        if (result === DialogResult.Accepted) {
+            playlist.addItemUrls(itemModel.selectedItems())
+            app.popToQueue()
+        }
     }
 
     // Hack to update model after all transitions

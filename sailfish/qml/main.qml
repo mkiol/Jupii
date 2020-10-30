@@ -26,6 +26,11 @@ ApplicationWindow {
         id: notification
     }
 
+    function popToQueue() {
+        var queuePage = pageStack.find(function(page){return page.objectName === "queue"})
+        pageStack.pop(queuePage)
+    }
+
     // -- stream --
     property string streamTitle: ""
     property var streamTitleHistory: []

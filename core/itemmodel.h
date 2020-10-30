@@ -74,7 +74,7 @@ class SelectableItem: public ListItem
     Q_OBJECT
 
 public:
-    SelectableItem(QObject* parent = 0) : ListItem(parent) {}
+    SelectableItem(QObject* parent = nullptr) : ListItem(parent) {}
     inline bool selected() const { return m_selected; }
     inline bool selectable() const { return m_selectable; }
     void setSelected(bool value);
