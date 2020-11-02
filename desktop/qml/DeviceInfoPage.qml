@@ -27,7 +27,7 @@ Kirigami.ScrollablePage {
             text: qsTr("Copy XML description")
             onTriggered: {
                utils.setClipboard(deviceInfo.getXML())
-               showPassiveNotification(qsTr("Description was copied to clipboard."))
+               showPassiveNotification(qsTr("Description was copied to clipboard"))
             }
         }
     }

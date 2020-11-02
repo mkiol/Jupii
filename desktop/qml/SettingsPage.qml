@@ -56,8 +56,8 @@ Kirigami.ScrollablePage {
         Controls.Label {
             textFormat: Text.StyledText
             text: "<h4>" + qsTr("Share play queue items via UPnP Media Server") + "</h4>" +
-                  "<p>" + qsTr("When enabled items on play queue are accessible " +
-                               "for other UPnP devices in a local network.") + "</p>" +
+                  "<p>" + qsTr("When enabled, items in Play Queue are accessible " +
+                               "for other UPnP devices in your local network.") + "</p>" +
                   "<br/>" +
                   "<h4>" + qsTr("Stream recorder") + "</h4>" +
                   "<p>" + qsTr("Enables audio recording from URL items. " +

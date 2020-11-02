@@ -24,12 +24,11 @@ Dialog {
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
 
     canAccept: itemModel.selectedCount > 0
+    acceptDestination: app.queuePage()
+    acceptDestinationAction: PageStackAction.Pop
 
-    onDone: {
-        if (result === DialogResult.Accepted) {
-            playlist.addItemUrls(itemModel.selectedItems())
-            app.popToQueue()
-        }
+    onAccepted: {
+        playlist.addItemUrls(itemModel.selectedItems())
     }
 
     // Hack to update model after all transitions
@@ -62,6 +61,7 @@ Dialog {
                itemModel.artistName.length > 0 ? itemModel.artistName : qsTr("Bandcamp")*/
 
         header: SearchDialogHeader {
+            search: !root.artistMode && !root.albumMode
             implicitWidth: root.width
             noSearchCount: -1
             searchPlaceholderText: qsTr("Search items")
@@ -127,7 +127,7 @@ Dialog {
         ViewPlaceholder {
             enabled: listView.count === 0 && !itemModel.busy
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
-                      qsTr("Type the words to search.") : qsTr("No items")
+                      qsTr("Type the words to search") : qsTr("No items")
         }
     }
 

@@ -45,7 +45,7 @@ Kirigami.ScrollablePage {
                 visible: enabled
                 onTriggered: {
                    utils.setClipboard(app.streamTitle)
-                   showPassiveNotification(qsTr("Current title was copied to clipboard."))
+                   showPassiveNotification(qsTr("Current title was copied to clipboard"))
                 }
             },
             Kirigami.Action {
@@ -59,8 +59,8 @@ Kirigami.ScrollablePage {
                    utils.setClipboard(itemType === ContentServer.ItemType_LocalFile ?
                                           av.currentPath : av.currentOrigURL)
                    showPassiveNotification(itemType === ContentServer.ItemType_LocalFile ?
-                                               qsTr("Path was copied to clipboard.") :
-                                               qsTr("URL  was copied to clipboard."))
+                                               qsTr("Path was copied to clipboard") :
+                                               qsTr("URL  was copied to clipboard"))
                 }
             },
             Kirigami.Action {
@@ -70,7 +70,7 @@ Kirigami.ScrollablePage {
                 visible: enabled
                 onTriggered: {
                    utils.setClipboard(av.currentRecUrl)
-                   showPassiveNotification(qsTr("Recording URL was copied to clipboard."))
+                   showPassiveNotification(qsTr("Recording URL was copied to clipboard"))
                 }
             }
         ]

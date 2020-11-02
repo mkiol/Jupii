@@ -79,7 +79,7 @@ Page {
         }
 
         header: PageHeader {
-            title: qsTr("Conferences")
+            title: qsTr("FOSDEM Conferences")
         }
 
         delegate: SimpleListItem {
@@ -91,11 +91,6 @@ Page {
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("FosdemPage.qml"), {year : model.year})
             }
-        }
-
-        ViewPlaceholder {
-            enabled: listView.count == 0
-            text: qsTr("No conferences found")
         }
     }
 

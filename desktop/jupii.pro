@@ -6,7 +6,7 @@ QT += gui qml quick quickcontrols2 svg
 
 PROJECTDIR = $$PWD/..
 
-CONFIG += desktop screencast link_pkgconfig
+CONFIG += desktop screencast link_pkgconfig qtquickcompiler
 DEFINES += DESKTOP KIRIGAMI SCREENCAST QT_NO_URL_CAST_FROM_STRING
 equals(FLATPAK, 1) {
     DEFINES += FLATPAK

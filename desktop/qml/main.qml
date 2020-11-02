@@ -12,6 +12,7 @@ import org.kde.kirigami 2.11 as Kirigami
 
 import harbour.jupii.YoutubeDl 1.0
 import harbour.jupii.AVTransport 1.0
+import harbour.jupii.RenderingControl 1.0
 
 Kirigami.ApplicationWindow {
     id: app
@@ -122,17 +123,8 @@ Kirigami.ApplicationWindow {
     Connections {
         target: pageStack
         onCurrentItemChanged: {
-            /*console.log("------------ onCurrentItemChanged")
-            console.log("lastItem: " + pageStack.lastItem)
-            console.log("firstVisibleItem: " + pageStack.firstVisibleItem)
-            console.log("currentItem: " + pageStack.currentItem)
-            console.log("currentIndex: " + pageStack.currentIndex)
-            console.log("depth: " + pageStack.depth)
-            console.log("PlayQueuePage: " + mainPagePool.pageForUrl("PlayQueuePage.qml"))
-            console.log("DevicesPage: " + mainPagePool.pageForUrl("DevicesPage.qml"))*/
-
             var idx = pageStack.currentIndex
-            var depth = pageStack.depth;
+            var depth = pageStack.depth
 
             if (depth > 2 && idx < depth - 1) {
                 removePagesAfter(idx)
@@ -160,6 +152,26 @@ Kirigami.ApplicationWindow {
         var page = pageStack.get(idx)
         if (page)
             pageStack.pop(page)
+    }
+
+    function findPageIdx(page) {
+        var depth = pageStack.depth
+        for (var i = 0; i < depth; i++) {
+            if (page === pageStack.get(i))
+                return i
+        }
+        return -1
+    }
+
+    function rightPage(page) {
+        var idx = findPageIdx(page)
+        if (idx < 0)
+            return null // no page on stack
+        var lastIdx = pageStack.depth - 1
+        if (idx >= lastIdx) {
+            return null // last page
+        }
+        return pageStack.get(idx + 1)
     }
 
     Connections {

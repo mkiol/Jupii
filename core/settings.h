@@ -48,7 +48,14 @@ class Settings:
     Q_PROPERTY (bool contentDirSupported READ getContentDirSupported WRITE setContentDirSupported NOTIFY contentDirSupportedChanged)
     Q_PROPERTY (bool logToFile READ getLogToFile WRITE setLogToFile NOTIFY logToFileChanged)
     Q_PROPERTY (int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY colorSchemeChanged)
-public:
+
+public:   
+    enum Hint {
+        Hint_DeviceSwipeLeft = 1 << 0,
+        Hint_NotConnectedTip = 1 << 1
+    };
+    Q_ENUM(Hint)
+
 #ifdef SAILFISH
     static constexpr const char* HW_RELEASE_FILE = "/etc/hw-release";
 #endif
@@ -153,6 +160,10 @@ public:
     QString prettyName();
     Q_INVOKABLE bool isDebug();
     Q_INVOKABLE void reset();
+
+    Q_INVOKABLE bool hintEnabled(Hint hint);
+    Q_INVOKABLE void disableHint(Hint hint);
+    Q_INVOKABLE void resetHints();
 
 signals:
     void portChanged();

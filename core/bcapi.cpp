@@ -27,7 +27,7 @@ BcApi::BcApi(std::shared_ptr<QNetworkAccessManager> nam, QObject *parent) :
 {
 }
 
-bool BcApi::bcUrl(const QUrl &url)
+bool BcApi::validUrl(const QUrl &url)
 {
     auto str = url.host();
 
@@ -48,9 +48,17 @@ QByteArray BcApi::downloadData(const QUrl &url)
     QNetworkRequest request;
     request.setUrl(url);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-    if (!nam)
-        nam = std::make_shared<QNetworkAccessManager>();
-    auto reply = nam->get(request);
+
+    QNetworkReply* reply;
+    std::unique_ptr<QNetworkAccessManager> priv_nam;
+
+    if (nam) {
+        reply = nam->get(request);
+    } else {
+        priv_nam = std::make_unique<QNetworkAccessManager>();
+        reply = priv_nam->get(request);
+    }
+
     QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
     QEventLoop loop;
     connect(reply, &QNetworkReply::finished, this, [&loop, reply, &data] {
@@ -59,16 +67,16 @@ QByteArray BcApi::downloadData(const QUrl &url)
             data = reply->readAll();
         } else {
             qWarning() << "Error:" << err;
-            reply->deleteLater();
             loop.exit(1);
         }
-        reply->deleteLater();
         loop.quit();
     });
 
     if (loop.exec() == 1) {
         qWarning() << "Cannot download data";
     }
+
+    reply->deleteLater();
 
     return data;
 }
@@ -195,8 +203,7 @@ BcApi::Album BcApi::album(const QUrl &url)
     for (int i = 0; i < track_info.size(); ++i) {
         AlbumTrack track;
         track.title = track_info.at(i).toObject().value("title").toString();
-        track.webUrl.setScheme(url.scheme());
-        track.webUrl.setAuthority(url.authority());
+        track.webUrl = url;
         track.webUrl.setPath(track_info.at(i).toObject().value("title_link").toString());
         track.duration = int(track_info.at(i).toObject().value("duration").toDouble());
         track.streamUrl = QUrl(track_info.at(i).toObject().value("file").toObject().value("mp3-128").toString());
@@ -211,7 +218,12 @@ BcApi::Artist BcApi::artist(const QUrl &url)
 {
     Artist artist;
 
-    auto data = downloadData(url);
+    QUrl newUrl = url;
+    if (newUrl.path().isEmpty()) {
+        newUrl.setPath("/music");
+    }
+
+    auto data = downloadData(newUrl);
 
     if (data.isEmpty()) {
         qWarning() << "No data received";
@@ -305,7 +317,6 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
             item.album = elm.value("album_name").toString();
         } else if (type == Type_Artist) {
             item.artist = elm.value("name").toString();
-            item.webUrl.setPath("/music");
         } else if (type == Type_Album) {
             item.album = elm.value("name").toString();
             item.artist = elm.value("band_name").toString();

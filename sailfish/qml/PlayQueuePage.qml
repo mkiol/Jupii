@@ -12,6 +12,7 @@ import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
 import harbour.jupii.PlayListModel 1.0
 import harbour.jupii.ContentServer 1.0
+import harbour.jupii.Settings 1.0
 
 Page {
     id: root
@@ -20,13 +21,17 @@ Page {
 
     allowedOrientations: Orientation.All
 
-    property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
-    property int itemType: utils.itemTypeFromUrl(av.currentId)
-    property bool inited: av.inited && rc.inited
+    readonly property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
+    readonly property int itemType: utils.itemTypeFromUrl(av.currentId)
+    readonly property bool inited: av.inited && rc.inited
     property bool _doPop: false
 
     onStatusChanged: {
         if (status === PageStatus.Active) {
+            if (devless) {
+                settings.disableHint(Settings.Hint_DeviceSwipeLeft)
+            }
+
             updateMediaInfoPage()
             if (rc.inited)
                 volumeSlider.updateValue(rc.volume)
@@ -38,26 +43,6 @@ Page {
             _doPop = true;
         else
             pageStack.pop(pageStack.previousPage(root))
-    }
-
-    function handleError(code) {
-        switch(code) {
-        case AVTransport.E_LostConnection:
-        case RenderingControl.E_LostConnection:
-            notification.show("Cannot connect to the device")
-            doPop()
-            break
-        case AVTransport.E_ServerError:
-        case RenderingControl.E_ServerError:
-            notification.show("Device responded with an error")
-            playlist.resetToBeActive()
-            break
-
-        case AVTransport.E_InvalidPath:
-            notification.show("Cannot play the file")
-            playlist.resetToBeActive()
-            break
-        }
     }
 
     function showActiveItem() {
@@ -92,6 +77,12 @@ Page {
     }
 
     Connections {
+        target: av
+
+        onControlableChanged: updateMediaInfoPage()
+    }
+
+    Connections {
         target: rc
 
         onVolumeChanged: {
@@ -107,43 +98,14 @@ Page {
     }
 
     Connections {
-        target: av
-
-        onControlableChanged: {
-            console.log("onControlableChanged: " + av.controlable)
-            console.log(" playable: " + av.playable)
-            console.log(" stopable: " + av.stopable)
-            console.log(" av.transportStatus: " + av.transportStatus)
-            console.log(" av.currentURI: " + av.currentURI)
-            console.log(" av.playSupported: " + av.playSupported)
-            console.log(" av.pauseSupported: " + av.pauseSupported)
-            console.log(" av.playSupported: " + av.playSupported)
-            console.log(" av.stopSupported: " + av.stopSupported)
-
-            updateMediaInfoPage()
-        }
-        onError: {
-            handleError(code)
-        }
-        onUpdated: {
-            rc.asyncUpdate()
-        }
-    }
-
-    Connections {
         target: playlist
 
-        onItemsAdded: {
-            root.showLastItem()
-        }
-
-        onItemsLoaded: {
-            root.showActiveItem()
-        }
+        onItemsAdded: root.showLastItem()
+        onItemsLoaded: root.showActiveItem()
 
         onError: {
             if (code === PlayListModel.E_FileExists)
-                notification.show(qsTr("Item is already added"))
+                notification.show(qsTr("Item is already in play queue"))
             else if (code === PlayListModel.E_ItemNotAdded)
                 notification.show(qsTr("Item cannot be added"))
             else if (code === PlayListModel.E_SomeItemsNotAdded)
@@ -464,6 +426,24 @@ Page {
 
         onRecordClicked: {
             cserver.setStreamToRecord(av.currentId, !app.streamToRecord)
+        }
+    }
+
+    InteractionHintLabel_ {
+        anchors.bottom: parent.bottom
+        opacity: enabled ? 1.0 : 0.0
+        Behavior on opacity { FadeAnimation {} }
+        text: qsTr("Not connected")
+        subtext: qsTr("Connect to some device to control playback using %1.").arg(APP_NAME)
+                 + (settings.contentDirSupported ? " " + qsTr("Without connection, all items in play queue are still accessible on other devices in your local network.") : "")
+        enabled: settings.hintEnabled(Settings.Hint_NotConnectedTip) && devless && !menu.active
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                settings.disableHint(Settings.Hint_NotConnectedTip)
+                parent.enabled = false
+            }
         }
     }
 

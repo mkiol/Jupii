@@ -32,7 +32,7 @@ Kirigami.ScrollablePage {
     actions {
         main: Kirigami.Action {
             id: refreshAction
-            text: qsTr("Find more")
+            text: qsTr("Find devices")
             iconName: "view-refresh"
             enabled: directory.inited && !directory.busy
             onTriggered: {
@@ -136,7 +136,7 @@ Kirigami.ScrollablePage {
                       qsTr("No devices") : qsTr("Disconnected")
             helpfulAction: Kirigami.Action {
                 iconName: "view-refresh"
-                text: qsTr("Find more")
+                text: qsTr("Find devices")
                 onTriggered: refreshAction.trigger()
             }
         }

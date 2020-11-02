@@ -20,7 +20,6 @@
 #include "trackercursor.h"
 #include "settings.h"
 #include "dbus_systemd_inf.h"
-#include "dbus_properties_inf.h"
 
 #include <fcntl.h>
 #include <unistd.h>

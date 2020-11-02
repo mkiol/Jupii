@@ -107,6 +107,10 @@ Page {
                 title: qsTr("Add item")
             }
 
+            SectionHeader {
+                text: qsTr("Local")
+            }
+
             SimpleListItem {
                 title.text: qsTr("Music")
                 icon.source: "image://theme/icon-m-file-audio?" + (highlighted ?
@@ -121,7 +125,7 @@ Page {
                 icon.source: "image://theme/icon-m-media-albums?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
-                    pageStack.push(Qt.resolvedUrl("AlbumPage.qml"));
+                    pageStack.push(Qt.resolvedUrl("AlbumsPage.qml"));
                 }
             }
 
@@ -180,6 +184,20 @@ Page {
             }
 
             SimpleListItem {
+                visible: settings.rec
+                title.text: qsTr("Recordings")
+                icon.source: "image://icons/icon-m-record?"  + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("RecPage.qml"));
+                }
+            }
+
+            SectionHeader {
+                text: qsTr("Remote")
+            }
+
+            SimpleListItem {
                 title.text: qsTr("URL")
                 icon.source: "image://icons/icon-m-browser?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
@@ -195,6 +213,10 @@ Page {
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("UpnpCDirDevicesPage.qml"));
                 }
+            }
+
+            SectionHeader {
+                text: qsTr("Capture")
             }
 
             SimpleListItem {
@@ -228,16 +250,6 @@ Page {
                 onClicked: {
                     playlist.addItemUrl("jupii://mic")
                     app.popToQueue()
-                }
-            }
-
-            SimpleListItem {
-                visible: settings.rec
-                title.text: qsTr("Recordings")
-                icon.source: "image://icons/icon-m-record?"  + (highlighted ?
-                             Theme.highlightColor : Theme.primaryColor)
-                onClicked: {
-                    pageStack.push(Qt.resolvedUrl("RecPage.qml"));
                 }
             }
 
@@ -283,6 +295,14 @@ Page {
                 icon.source: "image://icons/icon-m-somafm"
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("SomafmPage.qml"));
+                }
+            }
+
+            SimpleListItem {
+                title.text: "TuneIn"
+                icon.source: "image://icons/icon-m-tunein"
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("TuneinPage.qml"));
                 }
             }
         }

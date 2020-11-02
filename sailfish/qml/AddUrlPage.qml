@@ -79,8 +79,7 @@ Dialog {
             Tip {
                 text: qsTr("Only HTTP URLs are supported. If URL points to a playlist file, " +
                            "first playlist item will be added. If URL doesn't point to any media content, " +
-                           "youtube-dl will be used to find a direct media URL. If Name is not provided, " +
-                           "it will be discovered automatically.");
+                           "youtube-dl will be used to find a direct media URL.")
             }
 
             Spacer {}

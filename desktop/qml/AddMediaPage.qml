@@ -14,7 +14,7 @@ import QtQuick.Dialogs 1.1
 Kirigami.ScrollablePage {
     id: root
 
-    property var rightPage: app.getRightPage(root)
+    property var rightPage: app.rightPage(root)
 
     leftPadding: 0
     rightPadding: 0
@@ -209,6 +209,17 @@ Kirigami.ScrollablePage {
             next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("SomafmPage.qml"))
+            }
+        }
+
+        DoubleListItem {
+            Layout.fillWidth: true
+            label: "TuneIn"
+            iconSource: "qrc:/images/tunein.svg"
+            highlighted: rightPage ? rightPage.objectName === "tunein" : false
+            next: true
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("TuneinPage.qml"))
             }
         }
     }

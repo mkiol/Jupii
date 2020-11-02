@@ -8,14 +8,13 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-import harbour.jupii.FosdemModel 1.0
+import harbour.jupii.TuneinModel 1.0
 
 Dialog {
     id: root
 
     allowedOrientations: Orientation.All
 
-    property alias year: itemModel.year
     property real preferredItemHeight: root && root.isLandscape ?
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge
@@ -37,10 +36,11 @@ Dialog {
         }
     }
 
-    FosdemModel {
+    TuneinModel {
         id: itemModel
+
         onError: {
-            notification.show(qsTr("Cannot download or parse FOSDEM events"))
+            notification.show(qsTr("Cannot download or parse TuneIn stations"))
         }
     }
 
@@ -55,11 +55,11 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
-            searchPlaceholderText: qsTr("Search items")
+            searchPlaceholderText: qsTr("Search stations")
+            noSearchCount: -1
             model: itemModel
             dialog: root
             view: listView
-            enabled: !itemModel.refreshing
 
             onActiveFocusChanged: {
                 listView.currentIndex = -1
@@ -68,12 +68,8 @@ Dialog {
 
         PullDownMenu {
             id: menu
-            busy: itemModel.refreshing
-
-            MenuItem {
-                text: qsTr("Refresh")
-                onClicked: itemModel.refresh()
-            }
+            visible: itemModel.selectableCount > 0
+            busy: itemModel.busy
 
             MenuItem {
                 visible: itemModel.count !== 0
@@ -95,9 +91,10 @@ Dialog {
                                          Theme.highlightColor : Theme.primaryColor
             highlighted: down || model.selected
             title.text: model.name
-            subtitle.text: model.track
+            subtitle.text: model.description
             enabled: !itemModel.busy
-            icon.source: "image://theme/icon-m-file-video?" + primaryColor
+            icon.source: model.icon
+            defaultIcon.source: "image://icons/icon-m-browser?" + primaryColor
 
             onClicked: {
                 var selected = model.selected
@@ -106,14 +103,15 @@ Dialog {
         }
 
         ViewPlaceholder {
-            enabled: listView.count === 0 && !itemModel.busy && !itemModel.refreshing
-            text: qsTr("No items")
+            enabled: listView.count === 0 && !itemModel.busy
+            text: itemModel.filter.length == 0 ?
+                      qsTr("Type the words to search") : qsTr("No stations")
         }
     }
 
     BusyIndicator {
         anchors.centerIn: parent
-        running: itemModel.busy || itemModel.refreshing
+        running: itemModel.busy
         size: BusyIndicatorSize.Large
     }
 

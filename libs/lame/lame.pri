@@ -8,7 +8,7 @@
 # sb2 -t SailfishOS-[target] make
 # cp -L libmp3lame/.libs/libmp3lame.so.0 [dest]
 #
-# 
+
 LAME_ROOT = $$PROJECTDIR/libs/lame
 
 INCLUDEPATH += $$LAME_ROOT/include

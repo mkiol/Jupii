@@ -236,7 +236,7 @@ Page {
                     visible: itemType !== ContentServer.ItemType_Mic &&
                              itemType !== ContentServer.ItemType_AudioCapture &&
                              itemType !== ContentServer.ItemType_ScreenCapture &&
-                             value !== 0
+                             value.length > 0
                 }
 
                 /*DetailItem {
@@ -303,11 +303,11 @@ Page {
                 Slider {
                     visible: itemType === ContentServer.ItemType_Mic
                     width: parent.width
-                    minimumValue: 0
+                    minimumValue: 1
                     maximumValue: 100
                     stepSize: 1
                     handleVisible: true
-                    value: settings.micVolume
+                    value: Math.round(settings.micVolume)
                     valueText: value
                     label: qsTr("Sensitivity")
 
@@ -315,6 +315,22 @@ Page {
                         settings.micVolume = value
                     }
                 }
+                /*Slider {
+                    visible: itemType === ContentServer.ItemType_AudioCapture ||
+                             itemType === ContentServer.ItemType_ScreenCapture
+                    width: parent.width
+                    minimumValue: 1
+                    maximumValue: 10
+                    stepSize: 1
+                    handleVisible: true
+                    value: Math.round(settings.audioBoost)
+                    valueText: value
+                    label: qsTr("Volume boost")
+
+                    onValueChanged: {
+                        settings.audioBoost = value
+                    }
+                }*/
 
                 SectionHeader {
                     text: qsTr("Tracks history")

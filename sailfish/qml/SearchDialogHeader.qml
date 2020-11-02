@@ -13,6 +13,7 @@ FocusScope {
 
     property alias searchPlaceholderText: search.placeholderText
     property int noSearchCount: 10
+    property bool search: true
     property var model
     property var dialog
     property var view
@@ -43,11 +44,11 @@ FocusScope {
         SearchField {
             id: search
             width: parent.width
-            visible: model.filter.length !== 0 ||
-                     model.count > root.noSearchCount
+            visible: root.search && (model.filter.length !== 0 ||
+                     model.count > root.noSearchCount)
             text: model.filter
 
-            placeholderText: qsTr("Search episodes")
+            placeholderText: qsTr("Search items")
 
             onActiveFocusChanged: {
                 if (activeFocus)

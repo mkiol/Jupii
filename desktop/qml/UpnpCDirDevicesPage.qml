@@ -46,7 +46,7 @@ Kirigami.ScrollablePage {
     actions {
         main: Kirigami.Action {
             id: refreshAction
-            text: qsTr("Find more")
+            text: qsTr("Find Media Servers")
             iconName: "view-refresh"
             enabled: directory.inited && !directory.busy
             onTriggered: {

@@ -45,7 +45,6 @@ OTHER_FILES += \
     qml/ArtistPage.qml \
     qml/PlaylistPage.qml \
     qml/SavePlaylistPage.qml \
-    qml/DBusVolumeAgent.qml \
     qml/AddUrlPage.qml \
     qml/Tip.qml \
     qml/SomafmPage.qml \
@@ -62,7 +61,9 @@ OTHER_FILES += \
     qml/UpnpCDirDevicesPage.qml \
     qml/UpnpCDirPage.qml \
     qml/PlayQueuePage.qml \
-    qml/BcPage.qml
+    qml/BcPage.qml \
+    qml/TuneinPage.qml \
+    qml/InteractionHintLabel_.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 

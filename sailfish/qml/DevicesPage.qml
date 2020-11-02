@@ -9,14 +9,18 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 import harbour.jupii.DeviceModel 1.0
+import harbour.jupii.Settings 1.0
 
 Page {
     id: root
 
+    objectName: "devices"
+
     allowedOrientations: Orientation.All
 
-    property real preferredItemHeight: root && root.isLandscape ?
+    readonly property real preferredItemHeight: root && root.isLandscape ?
                                      Theme.itemSizeSmall : Theme.itemSizeLarge
+    readonly property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
 
     function connectDevice(deviceId) {
         if (deviceId) {
@@ -27,9 +31,13 @@ Page {
         pageStack.navigateForward()
     }
 
+    function disconnectDevice() {
+        rc.deInit()
+        av.deInit()
+    }
+
     function createPlaylistPage() {
-        //console.log("createPlaylistPage: " + directory.inited + " " + pageStack.currentPage)
-        if (directory.inited && pageStack.currentPage === root && pageStack.depth === 1) {
+        if (directory.inited && pageStack.currentPage === root && !forwardNavigation) {
             pageStack.pushAttached(Qt.resolvedUrl("PlayQueuePage.qml"))
         }
     }
@@ -47,25 +55,12 @@ Page {
 
     Connections {
         target: directory
-
-        onError: {
-            switch(code) {
-            case 1:
-                notification.show(qsTr("Cannot connect to a local network"))
-                break
-            default:
-                notification.show(qsTr("An internal error occurred"))
-            }
-        }
         onInitedChanged: createPlaylistPage()
     }
 
     SilicaListView {
         id: listView
-        anchors { top: parent.top; left: parent.left; right: parent.right }
-        height: root.height
-        clip: true
-
+        anchors.fill: parent
         model: devmodel
 
         header: PageHeader {
@@ -78,7 +73,7 @@ Page {
             busy: directory.busy
 
             MenuItem {
-                text: qsTr("About")
+                text: qsTr("About %1").arg(APP_NAME)
                 onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
             }
 
@@ -120,11 +115,13 @@ Page {
 
             menu: ContextMenu {
                 MenuItem {
-                    text: qsTr("Connect")
-                    enabled: !model.active
+                    text: model.active ? qsTr("Disconnect") : qsTr("Connect")
                     visible: model.supported
                     onClicked: {
-                        connectDevice(model.id)
+                        if (model.active)
+                            disconnectDevice()
+                        else
+                            connectDevice(model.id)
                     }
                 }
 
@@ -168,11 +165,27 @@ Page {
         ViewPlaceholder {
             enabled: !directory.busy && (listView.count == 0 || !directory.inited)
             text: directory.inited ?
-                      qsTr("No devices found") : qsTr("Disconnected")
+                      qsTr("No devices") : qsTr("Disconnected")
             hintText: directory.inited ?
                           qsTr("Pull down to find more devices in your network") :
                           qsTr("Connect WLAN to find devices in your network")
         }
+    }
+
+    InteractionHintLabel_ {
+        anchors.bottom: parent.bottom
+        opacity: enabled ? 1.0 : 0.0
+        Behavior on opacity { FadeAnimation {} }
+        text: qsTr("Connect to device or flick left to access play queue")
+        enabled: settings.hintEnabled(Settings.Hint_DeviceSwipeLeft) && pageStack.currentPage === root && forwardNavigation && !menu.active
+        onEnabledChanged: enabled ? hint.start() : hint.stop()
+    }
+    TouchInteractionHint {
+        id: hint
+        interactionMode: TouchInteraction.Swipe
+        direction: TouchInteraction.Left
+        loops: Animation.Infinite
+        anchors.centerIn: parent
     }
 
     BusyIndicator {

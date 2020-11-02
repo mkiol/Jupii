@@ -150,12 +150,14 @@ void Directory::init()
         return;
     }
 
+    qDebug() << "LibUPnP init:" << ifname << addr;
+
     m_lib = UPnPP::LibUPnP::getLibUPnP(
-        false, 0, ifname.toStdString(), addr.toStdString(), 0
+        false, nullptr, ifname.toStdString(), addr.toStdString(), 0
     );
 
-    if (m_lib == 0) {
-        qWarning() << "Cannot initialize UPnPP lib (lib == 0)";
+    if (!m_lib) {
+        qWarning() << "Cannot initialize UPnPP lib (lib == nullptr)";
         setInited(false);
         emit error(2);
         return;
@@ -175,8 +177,8 @@ void Directory::init()
 #endif
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(5);
 
-    if (m_directory == 0) {
-        qWarning() << "Cannot initialize UPnPP directory (dir == 0)";
+    if (!m_directory) {
+        qWarning() << "Cannot initialize UPnPP directory (dir == nullptr)";
         setInited(false);
         emit error(3);
         return;

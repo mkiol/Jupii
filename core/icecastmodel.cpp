@@ -130,6 +130,7 @@ QVariantList IcecastModel::selectedItems()
             map.insert("name", QVariant(station->name()));
             map.insert("icon", QVariant(IconProvider::urlToNoResId("icon-icecast")));
             map.insert("author", QVariant("Icecast"));
+            map.insert("app", "icecast");
             list << map;
         }
     }

@@ -14,6 +14,7 @@
 #include <QUuid>
 #include <QSysInfo>
 #include <QFile>
+#include <limits>
 
 #include "settings.h"
 #include "directory.h"
@@ -715,6 +716,24 @@ void Settings::setContentDirSupported(bool value)
 bool Settings::getContentDirSupported()
 {
     return settings.value("contentdirsupported", true).toBool();
+}
+
+bool Settings::hintEnabled(Settings::Hint hint)
+{
+    int hints = settings.value("hints", std::numeric_limits<int>::max()).toInt();
+    return hints & hint;
+}
+
+void Settings::disableHint(Settings::Hint hint)
+{
+    int hints = settings.value("hints", std::numeric_limits<int>::max()).toInt();
+    hints &= ~hint;
+    settings.setValue("hints", hints);
+}
+
+void Settings::resetHints()
+{
+    settings.setValue("hints", std::numeric_limits<int>::max());
 }
 
 void Settings::setColorScheme(int value)

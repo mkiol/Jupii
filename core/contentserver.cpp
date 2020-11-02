@@ -3460,7 +3460,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         if (mime.contains("text/html")) {
             reply->deleteLater();
             auto url = reply->url();
-            if (meta.app == "bc" || BcApi::bcUrl(url)) {
+            if (meta.app == "bc" || BcApi::validUrl(url)) {
                 return makeItemMetaUsingBcApi(url, meta, nam, counter);
             } else if (YoutubeDl::instance()->enabled()) {
                 return makeItemMetaUsingYoutubeDl(url, meta, nam, counter);
@@ -3530,7 +3530,19 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
 void ContentServer::updateMetaAlbumArt(ItemMeta &meta) const
 {
     if (meta.albumArt.isEmpty()) {
-        if (BcApi::bcUrl(meta.origUrl) || BcApi::bcUrl(meta.url))
+        if (meta.app == "bc")
+            meta.albumArt = IconProvider::pathToNoResId("icon-bandcamp");
+        else if (meta.app == "somafm")
+            meta.albumArt = IconProvider::pathToNoResId("icon-somafm");
+        else if (meta.app == "icecast")
+            meta.albumArt = IconProvider::pathToNoResId("icon-icecast");
+        else if (meta.app == "fosdem")
+            meta.albumArt = IconProvider::pathToNoResId("icon-fosdem");
+        else if (meta.app == "gpodder")
+            meta.albumArt = IconProvider::pathToNoResId("icon-gpodder");
+        else if (meta.app == "tunein")
+            meta.albumArt = IconProvider::pathToNoResId("icon-tunein");
+        else if (BcApi::validUrl(meta.origUrl) || BcApi::validUrl(meta.url))
             meta.albumArt = IconProvider::pathToNoResId("icon-bandcamp");
         else if (meta.origUrl.host().contains("youtube.") || meta.origUrl.host().contains("yout.be"))
             meta.albumArt = IconProvider::pathToNoResId("icon-youtube");
@@ -3937,7 +3949,7 @@ void ContentServer::resolveM3u(QByteArray &data, const QString context)
     for (const auto& line : lines) {
         auto url = Utils::urlFromText(line, context);
         if (!url.isEmpty())
-            data.replace(line, url.toString().toUtf8());
+            data.replace(line.toUtf8(), url.toString().toUtf8());
     }
 }
 

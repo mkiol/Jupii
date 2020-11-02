@@ -44,7 +44,7 @@ Kirigami.ScrollablePage {
                     Layout.fillWidth: true
                     level: 2
                     wrapMode: Text.WordWrap
-                    text: "Stream audio, video and image files to UPnP/DLNA devices"
+                    text: qsTr("Stream audio, video and image files to UPnP/DLNA devices")
                 }
             }
         }
@@ -134,7 +134,7 @@ Kirigami.ScrollablePage {
         Controls.Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: "QHTTPServer \nLibupnpp \nLibupnp \nTagLib \nFFmpeg \nLAME \nx264"
+            text: "QHTTPServer \nLibupnpp \nLibupnp \nTagLib \nFFmpeg \nLAME \nx264 \ngumbo-parser"
         }
     }
 }

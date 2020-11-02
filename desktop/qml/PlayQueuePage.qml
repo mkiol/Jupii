@@ -117,7 +117,7 @@ Kirigami.ScrollablePage {
 
         onError: {
             if (code === PlayListModel.E_FileExists)
-                notifications.show(qsTr("Item is already in the play queue."))
+                notifications.show(qsTr("Item is already in play queue."))
             else if (code === PlayListModel.E_ItemNotAdded)
                 notifications.show(qsTr("Item cannot be added."))
             else if (code === PlayListModel.E_SomeItemsNotAdded)
@@ -148,7 +148,7 @@ Kirigami.ScrollablePage {
         id: clearDialog
         title: qsTr("Clear queue")
         icon: StandardIcon.Question
-        text: qsTr("Remove all items from the play queue?")
+        text: qsTr("Remove all items from Pay Queue?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
             playlist.clear()

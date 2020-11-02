@@ -49,16 +49,6 @@ Page {
     Connections {
         target: directory
 
-        onError: {
-            switch(code) {
-            case 1:
-                notification.show(qsTr("Cannot connect to a local network"))
-                break
-            default:
-                notification.show(qsTr("An internal error occurred"))
-            }
-        }
-
         onInitedChanged: {
             if (directory.inited) {
                 directory.discover()

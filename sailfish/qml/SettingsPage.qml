@@ -32,8 +32,8 @@ Page {
                 automaticCheck: false
                 checked: settings.contentDirSupported
                 text: qsTr("Share play queue items via UPnP Media Server")
-                description: qsTr("Items on play queue will be accessible for " +
-                                  "other UPnP devices.")
+                description: qsTr("When enabled, items in play queue are accessible " +
+                                  "for other UPnP devices in your local network.")
                 onClicked: {
                     settings.contentDirSupported = !settings.contentDirSupported
                 }
@@ -78,6 +78,36 @@ Page {
                     settings.volStep = value
                 }
             }
+
+            Slider {
+                width: parent.width
+                minimumValue: 1
+                maximumValue: 100
+                stepSize: 1
+                handleVisible: true
+                value: Math.round(settings.micVolume)
+                valueText: value
+                label: qsTr("Microphone sensitivity")
+
+                onValueChanged: {
+                    settings.micVolume = value
+                }
+            }
+
+            /*Slider {
+                width: parent.width
+                minimumValue: 1
+                maximumValue: 10
+                stepSize: 1
+                handleVisible: true
+                value: Math.round(settings.audioBoost)
+                valueText: value
+                label: qsTr("Audio Capture volume boost")
+
+                onValueChanged: {
+                    settings.audioBoost = value
+                }
+            }*/
 
             SectionHeader {
                 text: qsTr("Experiments")
@@ -235,6 +265,14 @@ Page {
                 }
             }
 
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Reset tips and hints"
+                onClicked: {
+                    remorse.execute(qsTr("Reseting tips and hints"), function() { settings.resetHints() } )
+                }
+            }
+
             SectionHeader {
                 text: qsTr("Advanced options")
             }
@@ -342,12 +380,16 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: "Reset settings"
                 onClicked: {
-                    settings.reset()
+                    remorse.execute(qsTr("Reseting settings"), function() { settings.reset() } )
                 }
             }
 
             Spacer {}
         }
+    }
+
+    RemorsePopup {
+        id: remorse
     }
 
     VerticalScrollDecorator {

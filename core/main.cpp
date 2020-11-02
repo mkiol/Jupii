@@ -68,6 +68,7 @@
 #include "youtubedl.h"
 #include "bcmodel.h"
 #include "notifications.h"
+#include "tuneinmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -116,8 +117,11 @@ int main(int argc, char *argv[])
     qmlRegisterType<DirModel>("harbour.jupii.DirModel", 1, 0, "DirModel");
     qmlRegisterType<RecModel>("harbour.jupii.RecModel", 1, 0, "RecModel");
     qmlRegisterType<CDirModel>("harbour.jupii.CDirModel", 1, 0, "CDirModel");
+    qmlRegisterType<TuneinModel>("harbour.jupii.TuneinModel", 1, 0, "TuneinModel");
     qmlRegisterUncreatableType<YoutubeDl>("harbour.jupii.YoutubeDl", 1, 0, "YoutubeDl",
                                           "YoutubeDl is a singleton");
+    qmlRegisterUncreatableType<Settings>("harbour.jupii.Settings", 1, 0, "Settings",
+                                          "Settings is a singleton");
 
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 

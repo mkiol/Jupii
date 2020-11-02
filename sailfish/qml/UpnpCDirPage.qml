@@ -19,12 +19,11 @@ Dialog {
                                            Theme.itemSizeSmall :
                                            Theme.itemSizeLarge
     canAccept: itemModel.selectedCount > 0
+    acceptDestination: app.queuePage()
+    acceptDestinationAction: PageStackAction.Pop
 
-    onDone: {
-        if (result === DialogResult.Accepted) {
-            playlist.addItemUrls(itemModel.selectedItems())
-            app.popToQueue()
-        }
+    onAccepted: {
+        playlist.addItemUrls(itemModel.selectedItems())
     }
 
     CDirModel {

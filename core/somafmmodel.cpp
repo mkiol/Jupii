@@ -223,6 +223,7 @@ QVariantList SomafmModel::selectedItems()
             map.insert("name", QVariant(channel->name()));
             map.insert("icon", QVariant(channel->icon()));
             map.insert("author", QVariant("SomaFM"));
+            map.insert("app", "somafm");
             list << map;
         }
     }

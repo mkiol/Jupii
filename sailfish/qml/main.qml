@@ -7,7 +7,10 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+
 import harbour.jupii.YoutubeDl 1.0
+import harbour.jupii.AVTransport 1.0
+import harbour.jupii.RenderingControl 1.0
 
 ApplicationWindow {
     id: app
@@ -27,8 +30,16 @@ ApplicationWindow {
     }
 
     function popToQueue() {
-        var queuePage = pageStack.find(function(page){return page.objectName === "queue"})
-        pageStack.pop(queuePage)
+        pageStack.pop(queuePage())
+    }
+    function popToDevices() {
+        pageStack.pop(devicesPage())
+    }
+    function queuePage() {
+        return pageStack.find(function(page){return page.objectName === "queue"})
+    }
+    function devicesPage() {
+        return pageStack.find(function(page){return page.objectName === "devices"})
     }
 
     // -- stream --
@@ -42,9 +53,36 @@ ApplicationWindow {
         streamRecordable = cserver.isStreamRecordable(av.currentId)
         streamToRecord = cserver.isStreamToRecord(av.currentId)
     }
+
     Connections {
         target: av
         onCurrentIdChanged: updateStreamInfo()
+        onUpdated: rc.asyncUpdate()
+        onInitedChanged: {
+            if (av.inited && av.deviceFriendlyName.length > 0) {
+                notification.show(qsTr("Connected to %1").arg(av.deviceFriendlyName))
+            }
+        }
+
+        onError: {
+            switch(code) {
+            case AVTransport.E_LostConnection:
+            case AVTransport.E_NotInited:
+            case RenderingControl.E_LostConnection:
+                notification.show(qsTr("Cannot connect to device"))
+                popToDevices()
+                break
+            case AVTransport.E_ServerError:
+            case RenderingControl.E_ServerError:
+                notification.show(qsTr("Device responded with an error"))
+                playlist.resetToBeActive()
+                break
+            case AVTransport.E_InvalidPath:
+                notification.show(qsTr("Cannot play the file"))
+                playlist.resetToBeActive()
+                break
+            }
+        }
     }
     Connections {
         target: cserver
@@ -54,12 +92,6 @@ ApplicationWindow {
         onStreamRecorded: {
             notification.show(qsTr("Track \"%1\" saved").arg(title))
         }
-    }
-
-    Binding {
-        target: settings
-        property: "colorScheme"
-        value: Theme.colorScheme
     }
 
     Connections {

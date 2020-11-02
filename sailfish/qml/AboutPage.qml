@@ -70,7 +70,14 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: qsTr("Translations are provided by:")
+                textFormat: Text.StyledText
+                text: qsTr("%1 is developed as an open source project under %2.")
+                .arg(APP_NAME)
+                .arg("<a href=\"" + LICENSE_URL + "\">" + LICENSE + "</a>")
+            }
+
+            SectionHeader {
+                text: qsTr("Translators")
             }
 
             PaddedLabel {
@@ -80,21 +87,13 @@ Page {
                       "\nBoštjan Štrumbelj \njgibbon \nFra \nPetr Tsymbarovich"
             }
 
-            PaddedLabel {
-                horizontalAlignment: Text.AlignLeft
-                textFormat: Text.StyledText
-                text: qsTr("%1 is developed as an open source project under %2.")
-                .arg(APP_NAME)
-                .arg("<a href=\"" + LICENSE_URL + "\">" + LICENSE + "</a>")
-            }
-
             SectionHeader {
-                text: qsTr("Libraries")
+                text: qsTr("Libraries in use")
             }
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "QHTTPServer \nLibupnpp \nLibupnp \nTagLib \nFFmpeg \nLAME \nx264"
+                text: "QHTTPServer \nLibupnpp \nLibupnp \nTagLib \nFFmpeg \nLAME \nx264 \ngumbo-parser"
             }
 
             Spacer {}

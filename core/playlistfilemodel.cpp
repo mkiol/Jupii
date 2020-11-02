@@ -14,10 +14,10 @@
 #include "trackercursor.h"
 
 const QString PlaylistFileModel::playlistsQueryTemplate =
-        "SELECT ?list nie:title(?list) AS title " \
-        "nie:url(?list) AS url " \
-        "nfo:entryCounter(?list) AS counter " \
-        "nfo:hasMediaFileListEntry(?list) AS list" \
+        "SELECT ?list nie:title(?list) " \
+        "nie:url(?list) " \
+        "nfo:entryCounter(?list) " \
+        "nfo:hasMediaFileListEntry(?list) " \
         "WHERE { ?list a nmm:Playlist . " \
         "FILTER (regex(nie:title(?list), \"%1\", \"i\")) . " \
         "} " \
@@ -25,10 +25,10 @@ const QString PlaylistFileModel::playlistsQueryTemplate =
         "LIMIT 1000";
 
 const QString PlaylistFileModel::playlistsQueryTemplateEx =
-        "SELECT ?list nie:title(?list) AS title " \
-        "nie:url(?list) AS url " \
-        "nfo:entryCounter(?list) AS counter " \
-        "nfo:hasMediaFileListEntry(?list) AS list" \
+        "SELECT ?list nie:title(?list) " \
+        "nie:url(?list) " \
+        "nfo:entryCounter(?list) " \
+        "nfo:hasMediaFileListEntry(?list) " \
         "WHERE { ?list a nmm:Playlist . " \
         "FILTER (regex(nie:title(?list), \"%1\", \"i\") && " \
         "?list != <%2>) . " \

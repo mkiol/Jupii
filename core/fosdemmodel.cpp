@@ -155,6 +155,7 @@ QVariantList FosdemModel::selectedItems()
             map.insert("name", QVariant(event->name()));
             map.insert("icon", QVariant(IconProvider::urlToNoResId("icon-fosdem")));
             map.insert("author", QVariant(QString("FOSDEM %1").arg(m_year)));
+            map.insert("app", "fosdem");
             list << map;
         }
     }

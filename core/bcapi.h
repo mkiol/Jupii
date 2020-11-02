@@ -82,7 +82,7 @@ public:
     Track track(const QUrl &url);
     Album album(const QUrl &url);
     Artist artist(const QUrl &url);
-    static bool bcUrl(const QUrl &url);
+    static bool validUrl(const QUrl &url);
 
 private:
     typedef std::unique_ptr<GumboOutput, std::function<void (GumboOutput*)>> GumboOutput_ptr;

@@ -19,7 +19,7 @@ Kirigami.ScrollablePage {
     bottomPadding: 0
     topPadding: 0
 
-    title: "FOSDEM Conferences"
+    title: qsTr("FOSDEM Conferences")
 
     ListView {
         model: ListModel {
@@ -61,7 +61,7 @@ Kirigami.ScrollablePage {
             label: model.title
             iconSource: "qrc:/images/fosdem.svg"
             iconSize: Kirigami.Units.iconSizes.medium
-            highlighted: app.getRightPage(root).year === model.year
+            highlighted: pageStack.currentItem !== root ? app.rightPage(root).year === model.year : false
             next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("FosdemPage.qml"), {"year" : model.year})

@@ -96,7 +96,6 @@ Kirigami.ScrollablePage {
         id: listItemComponent
         DoubleListItem {
             id: listItem
-            highlighted: model.selected
             enabled: !itemModel.busy
             label: model.type === BcModel.Type_Track ? model.name :
                    model.type === BcModel.Type_Album ? model.album :
@@ -121,6 +120,20 @@ Kirigami.ScrollablePage {
 
             extra: model.type === BcModel.Type_Album ? qsTr("album") :
                    model.type === BcModel.Type_Artist ? qsTr("artist") : ""
+
+            highlighted: {
+                if (pageStack.currentItem !== root) {
+                    var rightPage = app.rightPage(root)
+                    if (rightPage && rightPage.objectName === "bc") {
+                        if (model.type === BcModel.Type_Album)
+                            return rightPage.albumPage === model.url
+                        if (model.type === BcModel.Type_Artist)
+                            return rightPage.artistPage === model.url
+                    }
+                }
+
+                return model.selected
+            }
 
             actions: [
                 Kirigami.Action {
@@ -150,7 +163,7 @@ Kirigami.ScrollablePage {
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: itemList.count === 0 && !itemModel.busy
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
-                      qsTr("Type the words to search.") : qsTr("No items")
+                      qsTr("Type the words to search") : qsTr("No items")
         }
     }
 }
