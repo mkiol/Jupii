@@ -34,6 +34,7 @@ icons = {
     "gpodder" : [1],
     "icecast" : [1],
     "somafm" : [1],
+    "tunein" : [1],
     "fosdem" : [1],
     "bandcamp" : [1],
     "cover" : [6],
@@ -51,7 +52,8 @@ icons_nores = {
     "fosdem" : [1],
     "bandcamp" : [1],
     "youtube" : [1],
-    "soundcloud" : [1]
+    "soundcloud" : [1],
+    "tunein" : [1]
 }
 
 size_names = {
@@ -69,14 +71,14 @@ if not os.path.exists(dir_name):
 
 for svg in glob.glob("*.svg"):
     icon_id = svg[:-4]
-    
+
     if icon_id in icons.keys():
         for d in sizes.keys():
             _dir = "%s/%s" % (dir_name, d)
-            
+
             if not os.path.exists(_dir):
                 os.makedirs(_dir)
-                
+
             for size_id in icons[icon_id]:
                 png = "{}/icon-{}-{}.png".format(_dir, size_names[size_id], icon_id)
                 if not os.path.isfile(png):
@@ -89,11 +91,9 @@ for svg in glob.glob("*.svg"):
                         size1 = sizes[d][size_id]
                         size2 = size1
                     print("File name: %s, size: %dx%d" % (png, size1, size2))
-                    print("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
-                              .format(svg, png, size1, size2))
-                    os.system("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
-                              .format(svg, png, size1, size2))
-                    
+                    os.system("inkscape --export-filename={} -C -w {:.0f} -h {:.0f} {}"
+                              .format(png, size1, size2, svg))
+
     if icon_id in icons_nores.keys():
             for d in sizes.keys():
                 for size_id in icons_nores[icon_id]:
@@ -102,7 +102,5 @@ for svg in glob.glob("*.svg"):
                         size1 = sizes_nores[size_id]
                         size2 = size1
                         print("File name: %s, size: %dx%d" % (png, size1, size2))
-                        print("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
-                                .format(svg, png, size1, size2))
-                        os.system("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
-                                .format(svg, png, size1, size2))
+                        os.system("inkscape --export-filename={} -C -w {:.0f} -h {:.0f} {}"
+                                  .format(png, size1, size2, svg))

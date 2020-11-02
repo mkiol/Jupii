@@ -21,17 +21,15 @@ if not os.path.exists(dir_name):
 
 for name in sizes.keys():
     d = dir_name + "/" + name
-    
+
     if not os.path.exists(d):
         os.makedirs(d)
-        
+
     png = d + "/harbour-" + app_name + ".png"
-    
+
     if not os.path.isfile(png):
         size = sizes[name]
         print("File name: %s, size: %d" % (png, size))
-        print("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
-                  .format(svg, png, size, size))
-        os.system("inkscape -f {} -e {} -C -w {:.0f} -h {:.0f}"
-                  .format(svg, png, size, size))
+        os.system("inkscape --export-filename={} -C -w {:.0f} -h {:.0f} {}"
+                  .format(png, size, size, svg))
 

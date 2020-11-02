@@ -54,5 +54,7 @@
         <file>images/icon-soundcloud.png</file>
         <file>images/icon-youtube.png</file>
         <file>qml/MediaInfoPage.qml</file>
+        <file>images/tunein.svg</file>
+        <file>qml/TuneinPage.qml</file>
     </qresource>
 </RCC>
