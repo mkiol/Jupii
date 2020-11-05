@@ -10,7 +10,6 @@ import Sailfish.Silica 1.0
 
 import harbour.jupii.YoutubeDl 1.0
 import harbour.jupii.AVTransport 1.0
-import harbour.jupii.RenderingControl 1.0
 
 ApplicationWindow {
     id: app
@@ -68,12 +67,10 @@ ApplicationWindow {
             switch(code) {
             case AVTransport.E_LostConnection:
             case AVTransport.E_NotInited:
-            case RenderingControl.E_LostConnection:
                 notification.show(qsTr("Cannot connect to device"))
                 popToDevices()
                 break
             case AVTransport.E_ServerError:
-            case RenderingControl.E_ServerError:
                 notification.show(qsTr("Device responded with an error"))
                 playlist.resetToBeActive()
                 break
@@ -84,6 +81,7 @@ ApplicationWindow {
             }
         }
     }
+
     Connections {
         target: cserver
         onStreamTitleChanged: updateStreamInfo()

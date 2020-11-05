@@ -31,10 +31,8 @@ Page {
             if (devless) {
                 settings.disableHint(Settings.Hint_DeviceSwipeLeft)
             }
-
             updateMediaInfoPage()
-            if (rc.inited)
-                volumeSlider.updateValue(rc.volume)
+            ppanel.update()
         }
     }
 
@@ -78,23 +76,7 @@ Page {
 
     Connections {
         target: av
-
         onControlableChanged: updateMediaInfoPage()
-    }
-
-    Connections {
-        target: rc
-
-        onVolumeChanged: {
-            volumeSlider.updateValue(rc.volume)
-        }
-        onError: {
-            handleError(code)
-        }
-        onInitedChanged: {
-            if (rc.inited)
-                volumeSlider.updateValue(rc.volume)
-        }
     }
 
     Connections {
@@ -140,55 +122,6 @@ Page {
         PullDownMenu {
             id: menu
             busy: playlist.busy || av.busy || rc.busy || directory.busy || playlist.refreshing
-
-            Item {
-                width: parent.width
-                height: volumeSlider.height
-                visible: rc.inited && !rc.busy
-
-                Slider {
-                    id: volumeSlider
-
-                    property bool blockValueChangedSignal: false
-
-                    anchors {
-                        left: parent.left
-                        leftMargin: muteButt.width/1.5
-                        right: parent.right
-                    }
-
-                    minimumValue: 0
-                    maximumValue: 100
-                    stepSize: settings.volStep
-                    valueText: value
-                    opacity: rc.mute ? 0.7 : 1.0
-
-                    onValueChanged: {
-                        if (!blockValueChangedSignal) {
-                            rc.volume = value
-                            rc.setMute(false)
-                        }
-                    }
-
-                    function updateValue(_value) {
-                        blockValueChangedSignal = true
-                        value = _value
-                        blockValueChangedSignal = false
-                    }
-                }
-
-                IconButton {
-                    id: muteButt
-                    anchors {
-                        left: parent.left
-                        leftMargin: Theme.horizontalPageMargin
-                        bottom: parent.bottom
-                    }
-                    icon.source: rc.mute ? "image://theme/icon-m-speaker-mute":
-                                           "image://theme/icon-m-speaker"
-                    onClicked: rc.setMute(!rc.mute)
-                }
-            }
 
             MenuItem {
                 text: qsTr("Save queue")
@@ -397,7 +330,6 @@ Page {
 
         playMode: playlist.playMode
 
-        //controlable: av.controlable && av.currentType !== AVTransport.T_Image
         controlable: av.controlable
 
         onRunningChanged: {

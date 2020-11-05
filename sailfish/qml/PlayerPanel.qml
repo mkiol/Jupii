@@ -61,6 +61,19 @@ DockedPanel_ {
         full = true
     }
 
+    function update() {
+        if (rc.inited)
+            volumeSlider.updateValue(rc.volume)
+        else
+            volumeSlider.updateValue(0)
+    }
+
+    Connections {
+        target: rc
+        onVolumeChanged: update()
+        onInitedChanged: update()
+    }
+
     Column {
         id: column
 
@@ -263,7 +276,7 @@ DockedPanel_ {
 
             property real size: Theme.itemSizeSmall
 
-            height: root.isPortrait ? Theme.iconSizeExtraLarge : Theme.iconSizeLarge
+            height: size + (root.isPortrait ? Theme.paddingMedium : Theme.paddingSmall)
             spacing: {
                 var count = 0
                 if (prevButton.visible)
@@ -285,7 +298,7 @@ DockedPanel_ {
             IconButton {
                 id: prevButton
                 width: parent.size; height: parent.size
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.bottom: parent.bottom
                 icon.source: "image://theme/icon-m-previous"
                 onClicked: prevClicked()
             }
@@ -293,7 +306,7 @@ DockedPanel_ {
             IconButton {
                 id: backwardButton
                 width: parent.size; height: parent.size
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.bottom: parent.bottom
                 icon.source: "image://icons/icon-m-backward"
                 onClicked: backwardClicked()
             }
@@ -301,7 +314,7 @@ DockedPanel_ {
             IconButton {
                 id: forwardButton
                 width: parent.size; height: parent.size
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.bottom: parent.bottom
                 icon.source: "image://icons/icon-m-forward"
                 onClicked: forwardClicked()
             }
@@ -309,7 +322,7 @@ DockedPanel_ {
             IconButton {
                 id: nextButton
                 width: parent.size; height: parent.size
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.bottom: parent.bottom
                 icon.source: "image://theme/icon-m-next"
                 onClicked: nextClicked()
             }
@@ -317,7 +330,7 @@ DockedPanel_ {
             IconButton {
                 id: recordButton
                 width: parent.size; height: parent.size
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.bottom: parent.bottom
                 icon.source: recordActive ? "image://icons/icon-m-record-active" : "image://icons/icon-m-record"
                 onClicked: recordClicked()
                 visible: enabled
@@ -326,11 +339,61 @@ DockedPanel_ {
             IconButton {
                 id: playmodeButton
                 width: parent.size; height: parent.size
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.bottom: parent.bottom
                 icon.source: root.playMode === PlayListModel.PM_RepeatAll ? "image://theme/icon-m-repeat" :
                              root.playMode === PlayListModel.PM_RepeatOne ? "image://theme/icon-m-repeat-single" :
                                                                             "image://icons/icon-m-norepeat"
                 onClicked: repeatClicked()
+            }
+        }
+
+        Item {
+            visible: root.full && rc.inited && !rc.busy
+            width: parent.width
+            height: volumeSlider.height + Theme.paddingSmall
+
+            Slider {
+                id: volumeSlider
+
+                property bool blockValueChangedSignal: false
+
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.left
+                    rightMargin: muteButt.width/1.5
+                    right: parent.right
+                }
+
+                minimumValue: 0
+                maximumValue: 100
+                stepSize: settings.volStep
+                valueText: value
+                opacity: rc.mute ? 0.7 : 1.0
+
+                onValueChanged: {
+                    if (!blockValueChangedSignal) {
+                        rc.volume = value
+                        rc.setMute(false)
+                    }
+                }
+
+                function updateValue(_value) {
+                    blockValueChangedSignal = true
+                    value = _value
+                    blockValueChangedSignal = false
+                }
+            }
+
+            IconButton {
+                id: muteButt
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    right: parent.right
+                    rightMargin: Theme.horizontalPageMargin
+                }
+                icon.source: rc.mute ? "image://theme/icon-m-speaker-mute":
+                                       "image://theme/icon-m-speaker"
+                onClicked: rc.setMute(!rc.mute)
             }
         }
     }
