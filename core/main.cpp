@@ -168,6 +168,7 @@ int main(int argc, char *argv[])
     auto playlist = PlaylistModel::instance();
     auto devmodel = DeviceModel::instance();
     auto ytdl = YoutubeDl::instance();
+    auto notifications = Notifications::instance();
     new DbusProxy();
 
     services->avTransport->registerExternalConnections();
@@ -184,11 +185,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("playlist", playlist);
     context->setContextProperty("devmodel", devmodel);
     context->setContextProperty("ytdl", ytdl);
-
-#ifdef KIRIGAMI
-    auto notifications = Notifications::instance();
     context->setContextProperty("notifications", notifications);
-#endif // KIRIGAMI
 
 #ifdef SAILFISH
     view->setSource(SailfishApp::pathTo("qml/main.qml"));

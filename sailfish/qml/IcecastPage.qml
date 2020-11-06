@@ -41,7 +41,7 @@ Dialog {
         id: itemModel
 
         onError: {
-            notification.show(qsTr("Cannot download or parse Icecast directory"))
+            notifications.show(qsTr("Cannot download or parse Icecast directory"))
         }
     }
 

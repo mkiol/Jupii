@@ -87,15 +87,15 @@ Page {
 
         onError: {
             if (code === PlayListModel.E_FileExists)
-                notification.show(qsTr("Item is already in play queue"))
+                notifications.show(qsTr("Item is already in play queue"))
             else if (code === PlayListModel.E_ItemNotAdded)
-                notification.show(qsTr("Item cannot be added"))
+                notifications.show(qsTr("Item cannot be added"))
             else if (code === PlayListModel.E_SomeItemsNotAdded)
-                notification.show(qsTr("Some items cannot be added"))
+                notifications.show(qsTr("Some items cannot be added"))
             else if (code === PlayListModel.E_AllItemsNotAdded)
-                notification.show(qsTr("Items cannot be added"))
+                notifications.show(qsTr("Items cannot be added"))
             else
-                notification.show(qsTr("Unknown error"))
+                notifications.show(qsTr("Unknown error"))
         }
 
         onActiveItemChanged: {
@@ -366,7 +366,7 @@ Page {
         opacity: enabled ? 1.0 : 0.0
         Behavior on opacity { FadeAnimation {} }
         text: qsTr("Not connected")
-        subtext: qsTr("Connect to some device to control playback using %1.").arg(APP_NAME)
+        subtext: qsTr("Connect to a device to control playback using %1.").arg(APP_NAME)
                  + (settings.contentDirSupported ? " " + qsTr("Without connection, all items in play queue are still accessible on other devices in your local network.") : "")
         enabled: settings.hintEnabled(Settings.Hint_NotConnectedTip) && devless && !menu.active
 

@@ -44,7 +44,7 @@ Dialog {
     BcModel {
         id: itemModel
         onError: {
-            notification.show(qsTr("Error in getting data from bandcamp.com"))
+            notifications.show(qsTr("Error in getting data from bandcamp.com"))
         }
     }
 

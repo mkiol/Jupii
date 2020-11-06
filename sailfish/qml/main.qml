@@ -24,10 +24,6 @@ ApplicationWindow {
         DevicesPage {}
     }
 
-    Notification {
-        id: notification
-    }
-
     function popToQueue() {
         pageStack.pop(queuePage())
     }
@@ -59,7 +55,7 @@ ApplicationWindow {
         onUpdated: rc.asyncUpdate()
         onInitedChanged: {
             if (av.inited && av.deviceFriendlyName.length > 0) {
-                notification.show(qsTr("Connected to %1").arg(av.deviceFriendlyName))
+                notifications.show(qsTr("Connected to %1").arg(av.deviceFriendlyName), "", av.deviceIconPath)
             }
         }
 
@@ -67,15 +63,15 @@ ApplicationWindow {
             switch(code) {
             case AVTransport.E_LostConnection:
             case AVTransport.E_NotInited:
-                notification.show(qsTr("Cannot connect to device"))
+                notifications.show(qsTr("Cannot connect to device"))
                 popToDevices()
                 break
             case AVTransport.E_ServerError:
-                notification.show(qsTr("Device responded with an error"))
+                notifications.show(qsTr("Device responded with an error"))
                 playlist.resetToBeActive()
                 break
             case AVTransport.E_InvalidPath:
-                notification.show(qsTr("Cannot play the file"))
+                notifications.show(qsTr("Cannot play the file"))
                 playlist.resetToBeActive()
                 break
             }
@@ -88,7 +84,7 @@ ApplicationWindow {
         onStreamRecordableChanged: updateStreamInfo()
         onStreamToRecordChanged: updateStreamInfo()
         onStreamRecorded: {
-            notification.show(qsTr("Track \"%1\" saved").arg(title))
+            notifications.show(qsTr("Track \"%1\" saved").arg(title))
         }
     }
 
@@ -97,10 +93,10 @@ ApplicationWindow {
         onError: {
             switch(code) {
             case 1:
-                notification.show(qsTr("Cannot connect to a local network"))
+                notifications.show(qsTr("Cannot connect to a local network"))
                 break
             default:
-                notification.show(qsTr("An internal error occurred"))
+                notifications.show(qsTr("An internal error occurred"))
             }
         }
         onInitedChanged: {
@@ -117,13 +113,13 @@ ApplicationWindow {
         onError : {
             switch(code) {
             case YoutubeDl.DownloadBin_Error:
-                notification.show(qsTr("Cannot download youtube-dl"))
+                notifications.show(qsTr("Cannot download youtube-dl"))
                 break
             case YoutubeDl.UpdateBin_Error:
-                notification.show(qsTr("Cannot update youtube-dl"))
+                notifications.show(qsTr("Cannot update youtube-dl"))
                 break
             case YoutubeDl.FindBin_Error:
-                notification.show(qsTr("Cannot find URL with youtube-dl"))
+                notifications.show(qsTr("Cannot find URL with youtube-dl"))
                 break
             }
         }

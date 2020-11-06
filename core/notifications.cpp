@@ -46,27 +46,31 @@ bool Notifications::createDbusInf()
         return false;
     }
 
-    /*auto reply = m_dbus_inf->GetCapabilities();
-    reply.waitForFinished();
-    if (reply.isError()) {
-        qWarning() << "Cannot get notification server caps";
-    } else {
-        auto caps = reply.value();
-        for (const auto& cap : reply.value()) {
-            qDebug() << "cap:" << cap;
+    /*{
+        auto reply = m_dbus_inf->GetCapabilities();
+        reply.waitForFinished();
+        if (reply.isError()) {
+            qWarning() << "Cannot get notification server caps";
+        } else {
+            auto caps = reply.value();
+            for (const auto& cap : reply.value()) {
+                qDebug() << "cap:" << cap;
+            }
         }
-    }*/
+    }
 
-    /*auto reply = m_dbus_inf->GetServerInformation();
-    reply.waitForFinished();
-    if (reply.isError()) {
-        qWarning() << "Cannot get notification server info";
-    } else {
-        auto name = reply.argumentAt<0>();
-        auto vendor = reply.argumentAt<1>();
-        auto version = reply.argumentAt<2>();
-        auto spec = reply.argumentAt<3>();
-        qDebug() << "Notification server info:" << name << vendor << version << spec;
+    {
+        auto reply = m_dbus_inf->GetServerInformation();
+        reply.waitForFinished();
+        if (reply.isError()) {
+            qWarning() << "Cannot get notification server info";
+        } else {
+            auto name = reply.argumentAt<0>();
+            auto vendor = reply.argumentAt<1>();
+            auto version = reply.argumentAt<2>();
+            auto spec = reply.argumentAt<3>();
+            qDebug() << "Notification server info:" << name << vendor << version << spec;
+        }
     }*/
 
     return true;
@@ -77,17 +81,38 @@ bool Notifications::show(const QString& summary, const QString& body, const QStr
     if (!m_dbus_inf || !m_dbus_inf->isValid())
         return false;
 
+    QVariantMap hints;
+    int timeout = -1;
+
+#ifdef SAILFISH
+    timeout = 5;
+    hints.insert("urgency", 1);
+    hints.insert("x-nemo-owner", Jupii::APP_ID);
+    hints.insert("x-nemo-max-content-lines", 10);
+    if (!body.isEmpty())
+        hints.insert("x-nemo-preview-body", body);
+    if (!summary.isEmpty())
+        hints.insert("x-nemo-preview-summary", summary);
+    if (!iconPath.isEmpty()) {
+        hints.insert("x-nemo-preview-icon", iconPath);
+        hints.insert("image-path", QUrl::fromLocalFile(iconPath).toString());
+    }
+#else
+    if (!iconPath.isEmpty()) {
+        hints.insert("image-path", QUrl::fromLocalFile(iconPath).toString());
+    }
+#endif
+
     auto reply = m_dbus_inf->Notify(
                 Jupii::APP_NAME,
                 0,
-                iconPath.isEmpty() ? Jupii::APP_ID : iconPath,
+                Jupii::APP_ID,
                 summary,
                 body,
                 {},
-                {},
-                -1
+                hints,
+                timeout
                 );
 
     return !reply.isError();
 }
-

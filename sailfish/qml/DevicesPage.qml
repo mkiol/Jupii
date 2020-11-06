@@ -176,7 +176,7 @@ Page {
         anchors.bottom: parent.bottom
         opacity: enabled ? 1.0 : 0.0
         Behavior on opacity { FadeAnimation {} }
-        text: qsTr("Connect to device or flick left to access play queue")
+        text: qsTr("Connect to a device or flick left to access play queue")
         enabled: settings.hintEnabled(Settings.Hint_DeviceSwipeLeft) && pageStack.currentPage === root && forwardNavigation && !menu.active
         onEnabledChanged: enabled ? hint.start() : hint.stop()
     }

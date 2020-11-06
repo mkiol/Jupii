@@ -29,7 +29,6 @@ OTHER_FILES += \
     qml/DevicesPage.qml \
     qml/CoverPage.qml \
     qml/Spacer.qml \
-    qml/Notification.qml \
     qml/DeviceInfoPage.qml \
     qml/SettingsPage.qml \
     qml/AboutPage.qml \

@@ -40,7 +40,7 @@ Dialog {
         id: itemModel
 
         onError: {
-            notification.show(qsTr("Cannot download or parse SomaFM channels"))
+            notifications.show(qsTr("Cannot download or parse SomaFM channels"))
         }
     }
 
