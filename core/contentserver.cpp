@@ -655,8 +655,8 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
         item.reply = reply;
         item.id = id;
         item.meta = headers.contains("icy-metadata");
-        item.seek = meta->seekSupported;
-        item.mode = meta->mode;
+        item.seek = meta->flagSet(ContentServer::MetaFlag_Seek);
+        item.mode = meta->flagSet(ContentServer::MetaFlag_PlaylistProxy);
         item.head = head; // orig request is HEAD
         item.origUrl = (url == meta->origUrl ? QUrl() : meta->origUrl);
 
@@ -715,7 +715,7 @@ void ContentServerWorker::requestForMicHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->seekSupported));
+                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         sendResponse(resp, 200, "");
@@ -738,7 +738,7 @@ void ContentServerWorker::requestForMicHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->seekSupported));
+                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
 
@@ -770,7 +770,7 @@ void ContentServerWorker::requestForAudioCaptureHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->seekSupported));
+                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         sendResponse(resp, 200, "");
@@ -798,7 +798,7 @@ void ContentServerWorker::requestForAudioCaptureHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->seekSupported));
+                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         resp->writeHead(200);
@@ -843,7 +843,7 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->seekSupported));
+                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         sendResponse(resp, 200, "");
@@ -887,7 +887,7 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->seekSupported));
+                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         resp->writeHead(200);
@@ -1491,8 +1491,12 @@ void ContentServerWorker::streamFile(const QString& path, const QString& mime,
     }
 }
 
+ContentServer::ItemMeta::ItemMeta() :
+    flags(MetaFlag_Unknown|MetaFlag_Local|MetaFlag_Seek)
+{
+}
+
 ContentServer::ItemMeta::ItemMeta(const ItemMeta *meta) :
-    valid(meta->valid),
     trackerId(meta->trackerId),
     url(meta->url),
     origUrl(meta->origUrl),
@@ -1508,20 +1512,15 @@ ContentServer::ItemMeta::ItemMeta(const ItemMeta *meta) :
     upnpDevId(meta->upnpDevId),
     type(meta->type),
     itemType(meta->itemType),
-    shoutCast(meta->shoutCast),
-    local(meta->local),
-    ytdl(meta->ytdl),
-    origUrlProvided(meta->origUrlProvided),
-    seekSupported(meta->seekSupported),
     duration(meta->duration),
     bitrate(meta->bitrate),
     sampleRate(meta->sampleRate),
     channels(meta->channels),
     size(meta->size),
-    mode(meta->mode),
     recUrl(meta->recUrl),
     recDate(meta->recDate),
-    metaUpdateTime(meta->metaUpdateTime)
+    metaUpdateTime(meta->metaUpdateTime),
+    flags(meta->flags)
 {
 }
 
@@ -1815,7 +1814,7 @@ bool ContentServer::getContentMetaItem(const QString &id, QString &meta, bool in
         qDebug() << "Item is upnp and didl item for upnp is not supported";
         return false;
     } else if (item->itemType == ItemType_Url &&
-                   (relay == 2 || (relay == 4 && !item->shoutCast))) {
+                   (relay == 2 || (relay == 4 && !item->flagSet(MetaFlag_Seek)))) {
         url = item->url;
         if (!makeUrl(id, url, false)) {
             qWarning() << "Cannot make Url from id";
@@ -1851,7 +1850,7 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
     bool audioType = static_cast<Type>(t) == TypeMusic; // extract audio stream from video
 
     AvData data;
-    if (audioType && item->local) {
+    if (audioType && item->flagSet(MetaFlag_Local)) {
         if (!extractAudio(path, data)) {
             qWarning() << "Cannot extract audio stream";
             return false;
@@ -1920,7 +1919,7 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
 
     m << "<res ";
 
-    if (audioType && item->local) { // extract audio from video
+    if (audioType && item->flagSet(MetaFlag_Local)) { // extract audio from video
         // puting audio stream info instead video file
         if (data.size > 0)
             m << "size=\"" << QString::number(data.size) << "\" ";
@@ -1931,7 +1930,7 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
         if (item->size > 0)
             m << "size=\"" << QString::number(item->size) << "\" ";
         m << "protocolInfo=\"http-get:*:" << item->mime << ":"
-          << dlnaContentFeaturesHeader(item->mime, item->seekSupported, true)
+          << dlnaContentFeaturesHeader(item->mime, item->flagSet(MetaFlag_Seek), true)
           << "\" ";
     }
 
@@ -1945,7 +1944,7 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
         m << "duration=\"" << duration << "\" ";
     }
 
-    if (audioType && item->local) {
+    if (audioType && item->flagSet(MetaFlag_Local)) {
         if (data.bitrate > 0)
             m << "bitrate=\"" << QString::number(data.bitrate) << "\" ";
         if (item->sampleRate > 0)
@@ -2026,7 +2025,7 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         meta.replace("%URL%", url.toString());
         return true;
     } else if (item->itemType == ItemType_Url &&
-               (relay == 2 || (relay == 4 && !item->shoutCast))) {
+               (relay == 2 || (relay == 4 && !item->flagSet(MetaFlag_Seek)))) {
         qDebug() << "Item is url and relaying is disabled";
         url = item->url;
         if (!makeUrl(id, url, false)) {
@@ -2620,7 +2619,6 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
             QFileInfo file(path);
 
             auto& meta = metaCache[url];
-            meta.valid = true;
             meta.trackerId = cursor.value(0).toString();
             meta.url = url;
             meta.mime = cursor.value(1).toString();
@@ -2637,9 +2635,10 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
             meta.albumArt = Tracker::genAlbumArtFile(meta.album, meta.artist);
             meta.type = typeFromMime(meta.mime);
             meta.size = file.size();
-            meta.local = true;
-            meta.seekSupported = true;
             meta.itemType = ItemType_LocalFile;
+            meta.setFlags(ContentServer::MetaFlag_Valid|
+                          ContentServer::MetaFlag_Local|
+                          ContentServer::MetaFlag_Seek);
 
             // Recording meta
             if (meta.album == ContentServer::recAlbumName) {
@@ -2944,27 +2943,26 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url)
     QString path = url.toLocalFile();
     QFileInfo file(path);
 
-    ContentServer::ItemMeta meta;
-    meta.valid = true;
+    ItemMeta meta;
     meta.url = url;
     meta.path = path;
     meta.mime = getContentMimeByExtension(path);
     meta.type = getContentTypeByExtension(path);
     meta.size = file.size();
     meta.filename = file.fileName();
-    meta.local = true;
     meta.itemType = ItemType_LocalFile;
+    meta.setFlags(MetaFlag_Valid|MetaFlag_Local);
 
-    if (meta.type == ContentServer::TypeImage) {
-        meta.seekSupported = false;
+    if (meta.type == TypeImage) {
+        meta.setFlags(MetaFlag_Seek, false);
     } else {
-        meta.seekSupported = true;
+        meta.setFlags(MetaFlag_Seek);
 
-        if (!ContentServer::readMetaUsingTaglib(path,
-                               meta.title, meta.artist, meta.album,
-                               meta.comment, meta.recUrl, meta.recDate,
-                               meta.albumArt, &meta.duration, &meta.bitrate,
-                               &meta.sampleRate, &meta.channels)) {
+        if (!readMetaUsingTaglib(path,
+                           meta.title, meta.artist, meta.album,
+                           meta.comment, meta.recUrl, meta.recDate,
+                           meta.albumArt, &meta.duration, &meta.bitrate,
+                           &meta.sampleRate, &meta.channels)) {
             qWarning() << "Cannot read meta with TagLib";
         }
 
@@ -3047,10 +3045,9 @@ ContentServer::makeUpnpItemMeta(const QUrl &url)
 
     QString surl = QString::fromStdString(item.m_resources[0].m_uri);
 
-    ContentServer::ItemMeta meta;
-    meta.valid = true;
+    ItemMeta meta;
     meta.url = QUrl(surl);
-    meta.type = ContentServer::typeFromUpnpClass(QString::fromStdString(item.getprop("upnp:class")));
+    meta.type = typeFromUpnpClass(QString::fromStdString(item.getprop("upnp:class")));
     UPnPP::ProtocolinfoEntry proto;
     if (item.m_resources[0].protoInfo(proto)) {
         meta.mime = QString::fromStdString(proto.contentFormat);
@@ -3060,19 +3057,19 @@ ContentServer::makeUpnpItemMeta(const QUrl &url)
         meta.mime = "audio/mpeg";
     }
     meta.size = 0;
-    meta.local = false;
     meta.album = QString::fromStdString(item.getprop("upnp:album"));
     meta.artist = Utils::parseArtist(QString::fromStdString(item.getprop("upnp:artist")));
     meta.didl = QString::fromStdString(item.getdidl());
     meta.didl = meta.didl.replace(surl, "%URL%");
     meta.albumArt = meta.type == TypeImage ? minResUrl(item) : QString::fromStdString(item.getprop("upnp:albumArtURI"));
     meta.filename = url.fileName();
-    meta.seekSupported = false;
     meta.title = QString::fromStdString(item.m_title);
     if (meta.title.isEmpty())
         meta.title = meta.filename;
     meta.upnpDevId = did;
     meta.itemType = ItemType_Upnp;
+    meta.setFlags(MetaFlag_Valid);
+    meta.setFlags(MetaFlag_Local|MetaFlag_Seek, false);
 
     qDebug() << "DIDL:" << meta.didl;
 
@@ -3082,22 +3079,20 @@ ContentServer::makeUpnpItemMeta(const QUrl &url)
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeMicItemMeta(const QUrl &url)
 {
-    ContentServer::ItemMeta meta;
-    meta.valid = true;
+    ItemMeta meta;
     meta.url = url;
     meta.channels = MicCaster::channelCount;
     meta.sampleRate = MicCaster::sampleRate;
     meta.mime = m_musicExtMap.value("mp3");
-    meta.type = ContentServer::TypeMusic;
+    meta.type = TypeMusic;
     meta.size = 0;
-    meta.local = true;
-    meta.seekSupported = false;
     meta.title = tr("Microphone");
     meta.itemType = ItemType_Mic;
-
 #if defined(SAILFISH) || defined(KIRIGAMI)
     meta.albumArt = IconProvider::pathToNoResId("icon-mic");
 #endif
+    meta.setFlags(MetaFlag_Valid|MetaFlag_Local);
+    meta.setFlags(MetaFlag_Seek, false);
 
     return metaCache.insert(url, meta);
 }
@@ -3105,19 +3100,18 @@ ContentServer::makeMicItemMeta(const QUrl &url)
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeAudioCaptureItemMeta(const QUrl &url)
 {
-    ContentServer::ItemMeta meta;
-    meta.valid = true;
+    ItemMeta meta;
     meta.url = url;
     meta.mime = m_musicExtMap.value("mp3");
-    meta.type = ContentServer::TypeMusic;
+    meta.type = TypeMusic;
     meta.size = 0;
-    meta.local = true;
-    meta.seekSupported = false;
     meta.title = tr("Audio capture");
     meta.itemType = ItemType_AudioCapture;
 #if defined(SAILFISH) || defined(KIRIGAMI)
     meta.albumArt = IconProvider::pathToNoResId("icon-pulse");
 #endif
+    meta.setFlags(MetaFlag_Valid|MetaFlag_Local);
+    meta.setFlags(MetaFlag_Seek, false);
 
     return metaCache.insert(url, meta);
 }
@@ -3125,19 +3119,18 @@ ContentServer::makeAudioCaptureItemMeta(const QUrl &url)
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeScreenCaptureItemMeta(const QUrl &url)
 {
-    ContentServer::ItemMeta meta;
-    meta.valid = true;
+    ItemMeta meta;
     meta.url = url;
     meta.mime = m_videoExtMap.value("tsv");
-    meta.type = ContentServer::TypeVideo;
+    meta.type = TypeVideo;
     meta.size = 0;
-    meta.local = true;
-    meta.seekSupported = false;
     meta.title = tr("Screen capture");
     meta.itemType = ItemType_ScreenCapture;
 #if defined(SAILFISH) || defined(KIRIGAMI)
     meta.albumArt = IconProvider::pathToNoResId("icon-screen");
 #endif
+    meta.setFlags(MetaFlag_Valid|MetaFlag_Local);
+    meta.setFlags(MetaFlag_Seek, false);
 
     return metaCache.insert(url, meta);
 }
@@ -3220,7 +3213,7 @@ ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
     }
 
     meta.title = newTitle;
-    meta.ytdl = true;
+    meta.setFlags(MetaFlag_YtDl);
 
     Utils::fixUrl(newUrl);
 
@@ -3251,8 +3244,8 @@ ContentServer::makeItemMetaUsingBcApi(const QUrl &url, ItemMeta &meta,
     meta.artist = std::move(track.artist);
     meta.duration = track.duration;
     meta.albumArt = track.imageUrl.toString();
-    meta.ytdl = true;
     meta.app = "bc";
+    meta.setFlags(MetaFlag_YtDl);
 
     auto newUrl = std::move(track.streamUrl);
     Utils::fixUrl(newUrl);
@@ -3268,9 +3261,9 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                                             bool art)
 {
     ItemMeta meta;
-    meta.ytdl = ytdl;
-    meta.refresh = refresh; // meta refreshing
-    meta.art = art;
+    meta.setFlags(MetaFlag_YtDl, ytdl);
+    meta.setFlags(MetaFlag_Refresh, refresh); // meta refreshing
+    meta.setFlags(MetaFlag_Art, art);
     meta.app = app;
 
     QUrl fixed_url(url);
@@ -3279,10 +3272,10 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     Utils::fixUrl(fixed_origUrl);
 
     if (!origUrl.isEmpty() && fixed_origUrl != fixed_url) {
-        meta.origUrlProvided = true;
+        meta.setFlags(MetaFlag_OrigUrl);
         meta.origUrl = fixed_origUrl;
     } else {
-        meta.origUrlProvided = false;
+        meta.setFlags(MetaFlag_OrigUrl, false);
         meta.origUrl = fixed_url;
     }
     return makeItemMetaUsingHTTPRequest2(fixed_url, meta);
@@ -3316,7 +3309,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         nam = std::shared_ptr<QNetworkAccessManager>(new QNetworkAccessManager());
     auto reply = nam->get(request);
 
-    bool art = meta.art;
+    bool art = meta.flagSet(MetaFlag_Art);
     QEventLoop loop;
     connect(reply, &QNetworkReply::metaDataChanged, [reply, art]{
         qDebug() << ">> metaDataChanged in thread:" << QThread::currentThreadId();
@@ -3331,10 +3324,10 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
             mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
         auto type = typeFromMime(mime);
 
-        if (type == ContentServer::TypePlaylist) {
+        if (type == TypePlaylist) {
             qDebug() << "Content is a playlist";
             // Content is needed, so not aborting
-        } else if (type == ContentServer::TypeImage && art) {
+        } else if (type == TypeImage && art) {
             qDebug() << "Content is album art";
             // Content is needed, so not aborting
         } else {
@@ -3391,11 +3384,11 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     bool ytdl_broken = false;
 
     if (code > 299) {
-        if (!meta.refresh && meta.ytdl) {
+        if (!meta.flagSet(MetaFlag_Refresh) && meta.flagSet(MetaFlag_YtDl)) {
             qDebug() << "ytdl broken URL";
             ytdl_broken = true;
             meta.metaUpdateTime = QTime(); // null time to set meta as dummy
-        } else if (counter == 0 && meta.origUrlProvided) {
+        } else if (counter == 0 && meta.flagSet(MetaFlag_OrigUrl)) {
             qWarning() << "URL is invalid but origURL is provided => checking origURL instead";
             reply->deleteLater();
             return makeItemMetaUsingHTTPRequest2(meta.origUrl, meta, nam, counter + 1);
@@ -3414,7 +3407,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         mime = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
     auto type = typeFromMime(mime);
 
-    if (!meta.ytdl && type == ContentServer::TypePlaylist) {
+    if (!meta.flagSet(MetaFlag_YtDl) && type == TypePlaylist) {
         qDebug() << "Content is a playlist";
 
         auto size = reply->bytesAvailable();
@@ -3424,15 +3417,13 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
 
             if (hlsPlaylist(data)) {
                 qDebug() <<  "HLS playlist";
-                meta.valid = true;
                 meta.url = url;
                 meta.mime = mime;
-                meta.type = ContentServer::TypePlaylist;
+                meta.type = TypePlaylist;
                 meta.filename = url.fileName();
-                meta.local = false;
-                meta.seekSupported = false;
-                meta.mode = 2; // playlist proxy
                 meta.itemType = ItemType_Url;
+                meta.setFlags(MetaFlag_Valid|MetaFlag_PlaylistProxy);
+                meta.setFlags(MetaFlag_Local|MetaFlag_Seek, false);
                 reply->deleteLater();
                 return metaCache.insert(url, meta);
             } else {
@@ -3475,17 +3466,17 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     auto ranges = QString(reply->rawHeader("Accept-Ranges")).toLower().contains("bytes");
     int size = reply->header(QNetworkRequest::ContentLengthHeader).toInt();
 
-    meta.valid = true;
     meta.url = url;
     meta.mime = ytdl_broken ? QString() : mime;
     meta.type = type;
     meta.size = ranges ? size : 0;
     meta.filename = url.fileName();
-    meta.local = false;
-    meta.seekSupported = size > 0 ? ranges : false;
     meta.itemType = ItemType_Url;
+    meta.setFlags(MetaFlag_Valid);
+    meta.setFlags(MetaFlag_Local, false);
+    meta.setFlags(MetaFlag_Seek, size > 0 && ranges);
 
-    if (type == ContentServer::TypeImage && meta.art) {
+    if (type == TypeImage && meta.flagSet(MetaFlag_Art)) {
         qDebug() << "Saving album art to file";
         auto ext = m_imgMimeToExtMap.value(meta.mime);
         auto data = reply->readAll();
@@ -3504,7 +3495,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
             int metaint = reply->rawHeader("icy-metaint").toInt();
             if (metaint > 0) {
                 qDebug() << "Shoutcast stream detected";
-                meta.shoutCast = true;
+                meta.setFlags(MetaFlag_Seek);
             }
         }
 
@@ -3560,9 +3551,6 @@ ContentServer::makeMetaUsingExtension(const QUrl &url)
     bool isQrc = url.scheme() == "qrc";
 
     ItemMeta meta;
-    meta.valid = true;
-    /*meta.path = isFile ? url.toLocalFile() :
-                    isQrc ? (":" + Utils::urlFromId(url).toString().mid(6)) : "";*/
     meta.path = isFile ? url.toLocalFile() :
                   isQrc ? (":" + Utils::urlFromId(url).path()) : "";
     meta.url = url;
@@ -3570,9 +3558,9 @@ ContentServer::makeMetaUsingExtension(const QUrl &url)
     meta.type = getContentTypeByExtension(url);
     meta.size = 0;
     meta.filename = url.fileName();
-    meta.local = isFile || isQrc;
-    meta.seekSupported = isFile || isQrc;
     meta.itemType = itemTypeFromUrl(url);
+    meta.setFlags(MetaFlag_Valid);
+    meta.setFlags(MetaFlag_Local|MetaFlag_Seek, isFile || isQrc);
 
     return metaCache.insert(url, meta);
 }

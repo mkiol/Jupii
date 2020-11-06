@@ -86,8 +86,20 @@ public:
     };
     Q_ENUM(ItemType)
 
+    enum MetaFlag {
+        MetaFlag_Unknown        = 0,
+        MetaFlag_Valid          = 1 << 0,
+        MetaFlag_IceCast        = 1 << 1,
+        MetaFlag_Local          = 1 << 2,
+        MetaFlag_YtDl           = 1 << 3,
+        MetaFlag_OrigUrl        = 1 << 4,
+        MetaFlag_Seek           = 1 << 5,
+        MetaFlag_PlaylistProxy  = 1 << 6,
+        MetaFlag_Refresh        = 1 << 7,
+        MetaFlag_Art            = 1 << 8
+    };
+
     struct ItemMeta {
-        bool valid = false;
         QString trackerId;
         QUrl url;
         QUrl origUrl;
@@ -103,41 +115,42 @@ public:
         QString upnpDevId;
         Type type = TypeUnknown;
         ItemType itemType = ItemType_Unknown;
-        bool shoutCast  = false;
-        bool local = true;
-        bool ytdl = false;
-        bool origUrlProvided = false;
-        bool seekSupported = true;
         int duration = 0;
         double bitrate = 0.0;
         double sampleRate = 0.0;
         int channels = 0;
         int64_t size = 0;
-        // modes:
-        // 0 - stream proxy (default)
-        // 1 - playlist proxy (e.g. for HLS playlists)
-        bool mode = 0;
         QString recUrl;
         QDateTime recDate;
         QTime metaUpdateTime = QTime::currentTime();
-        bool refresh = false;
-        bool art = false;
         QString app;
+        int flags = 0;
+
+        inline bool flagSet(MetaFlag flag) const {
+            return this->flags & flag;
+        }
+
+        inline void setFlags(int flags, bool set = true) {
+            if (set)
+                this->flags &= flags;
+            else
+                this->flags &= ~flags;
+        }
 
         inline bool expired() const {
             if (metaUpdateTime.isNull())
                 return true;
-            if (ytdl) // ytdl meta is expired after 60s
+            if (flagSet(MetaFlag_YtDl)) // ytdl meta is expired after 60s
                 return metaUpdateTime.addSecs(60) < QTime::currentTime();
             return metaUpdateTime.addSecs(180) < QTime::currentTime();
         }
 
         inline bool dummy() const {
-            return ytdl ? metaUpdateTime.isNull() : false;
+            return flagSet(MetaFlag_YtDl) ? metaUpdateTime.isNull() : false;
         }
 
         ItemMeta(const ItemMeta *meta);
-        ItemMeta() {}
+        ItemMeta();
     };
 
     struct PlaylistItemMeta {

@@ -1082,7 +1082,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     auto finalId = id;
 
     if (!ytdl) {
-        if (meta->ytdl) { // add ytdl to url
+        if (meta->flagSet(ContentServer::MetaFlag_YtDl)) { // add ytdl to url
             QUrlQuery q(finalId);
             if (q.hasQueryItem(Utils::ytdlKey))
                 q.removeQueryItem(Utils::ytdlKey);
@@ -1105,7 +1105,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 
     auto type = static_cast<ContentServer::Type>(t);
     if (type == ContentServer::TypeUnknown) {
-        if (meta->ytdl) { // add type to url for ytdl content
+        if (meta->flagSet(ContentServer::MetaFlag_YtDl)) { // add type to url for ytdl content
             QUrlQuery q(finalId);
             if (q.hasQueryItem(Utils::typeKey))
                 q.removeQueryItem(Utils::typeKey);
@@ -1117,7 +1117,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 
     if (name.isEmpty()) {
         name = ContentServer::bestName(*meta);
-        if (meta->ytdl) { // add discovered name to url for ytdl content
+        if (meta->flagSet(ContentServer::MetaFlag_YtDl)) { // add discovered name to url for ytdl content
             QUrlQuery q(finalId);
             if (q.hasQueryItem(Utils::nameKey))
                 q.removeQueryItem(Utils::nameKey);
