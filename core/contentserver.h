@@ -127,12 +127,12 @@ public:
         int flags = 0;
 
         inline bool flagSet(MetaFlag flag) const {
-            return this->flags & flag;
+            return (this->flags & flag) != 0;
         }
 
         inline void setFlags(int flags, bool set = true) {
             if (set)
-                this->flags &= flags;
+                this->flags |= flags;
             else
                 this->flags &= ~flags;
         }

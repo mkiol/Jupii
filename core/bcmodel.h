@@ -94,6 +94,7 @@ public:
                       const QUrl &url,
                       const QUrl &origUrl,
                       const QUrl &icon,
+                      int duration,
                       BcModel::Type type,
                       QObject *parent = nullptr);
     QVariant data(int role) const;
@@ -105,6 +106,7 @@ public:
     inline QUrl url() const { return m_url; }
     inline QUrl origUrl() const { return m_origUrl; }
     inline QUrl icon() const { return m_icon; }
+    inline int duration() const { return m_duration; }
     inline BcModel::Type type() const { return m_type; }
     void refresh();
 private:
@@ -115,6 +117,7 @@ private:
     QUrl m_url;
     QUrl m_origUrl;
     QUrl m_icon;
+    int m_duration = 0;
     BcModel::Type m_type;
 };
 

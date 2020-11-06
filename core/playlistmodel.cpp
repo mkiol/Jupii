@@ -135,6 +135,7 @@ void PlaylistWorker::run()
             const auto &desc = purl.desc.trimmed();
             const auto &origUrl = purl.origUrl;
             const auto &app = purl.app;
+            const int duration = purl.duration;
             bool play = purl.play;
 
             if (Utils::isUrlValid(url)) {
@@ -208,6 +209,13 @@ void PlaylistWorker::run()
                     if (q.hasQueryItem(Utils::playKey))
                         q.removeQueryItem(Utils::playKey);
                     q.addQueryItem(Utils::playKey, "true");
+                }
+
+                // duration
+                if (duration > 0) {
+                    if (q.hasQueryItem(Utils::durKey))
+                        q.removeQueryItem(Utils::durKey);
+                    q.addQueryItem(Utils::durKey, QString::number(duration));
                 }
 
                 id.setQuery(q);
@@ -840,6 +848,7 @@ void PlaylistModel::addItemUrls(const QVariantList &urls)
             ui.desc = m.value("desc").toString();
             ui.origUrl = m.value("origUrl").toUrl();
             ui.app = m.value("app").toString();
+            ui.duration = m.value("duration").toInt();
             items << ui;
         } else if (item.canConvert(QMetaType::QUrl)) {
             UrlItem ui; ui.url = item.toUrl();
@@ -1046,13 +1055,14 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     qDebug() << "makeItem:" << id;
 
     int t = 0;
+    int duration = 0;
     QString name, cookie, author, app;
     QUrl ficon, origUrl;
     bool play = false;
     bool ytdl = false;
     if (!Utils::pathTypeNameCookieIconFromId(id, nullptr, &t,
                 &name, &cookie, &ficon, nullptr, &author,
-                &origUrl, &ytdl, &play, &app) || cookie.isEmpty()) {
+                &origUrl, &ytdl, &play, &app, &duration) || cookie.isEmpty()) {
         qWarning() << "Invalid Id";
         return nullptr;
     }
@@ -1150,6 +1160,9 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         iconUrl = ficon;
     }
 
+    if (duration == 0) {
+        duration = meta->duration;
+    }
 
     ContentServer::instance()->getMetaForImg(iconUrl, true); // create meta for albumArt
 
@@ -1166,11 +1179,11 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
                                author.isEmpty() ? meta->artist : author, // artist
                                meta->album, // album
                                "", // date
-                               meta->duration, // duration
-                               meta->size, // size
-                               iconUrl, // icon
-                               ytdl, // ytdl
-                               play, // play
+                               duration,
+                               meta->size,
+                               iconUrl,
+                               ytdl,
+                               play,
                                meta->comment,
                                meta->recDate,
                                meta->recUrl,

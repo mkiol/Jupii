@@ -37,6 +37,7 @@ public:
     static const QString idKey;
     static const QString ytdlKey;
     static const QString appKey;
+    static const QString durKey;
 
     static Utils* instance(QObject *parent = nullptr);
     std::unique_ptr<QNetworkAccessManager> nam;
@@ -109,7 +110,8 @@ public:
                                         QUrl *origUrl = nullptr,
                                         bool *ytdl = nullptr,
                                         bool *play = nullptr,
-                                        QString *app = nullptr);
+                                        QString *app = nullptr,
+                                        int *duration = nullptr);
     QString randString(int len = 5);
     static void removeFile(const QString &path);
     static bool writeToCacheFile(const QString &filename, const QByteArray &data, bool del = false);

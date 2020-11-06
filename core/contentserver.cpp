@@ -715,7 +715,7 @@ void ContentServerWorker::requestForMicHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
+                        meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         sendResponse(resp, 200, "");
@@ -738,7 +738,7 @@ void ContentServerWorker::requestForMicHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
+                        meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
 
@@ -770,7 +770,7 @@ void ContentServerWorker::requestForAudioCaptureHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
+                        meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         sendResponse(resp, 200, "");
@@ -798,7 +798,7 @@ void ContentServerWorker::requestForAudioCaptureHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
+                        meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         resp->writeHead(200);
@@ -843,7 +843,7 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
+                        meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         sendResponse(resp, 200, "");
@@ -887,7 +887,7 @@ void ContentServerWorker::requestForScreenCaptureHandler(const QUrl &id,
         resp->setHeader("transferMode.dlna.org", "Streaming");
         resp->setHeader("contentFeatures.dlna.org",
                         ContentServer::dlnaContentFeaturesHeader(meta->mime,
-                                                  meta->flagSet(ContentServer::MetaFlag_Seek)));
+                        meta->flagSet(ContentServer::MetaFlag_Seek)));
         //resp->setHeader("Transfer-Encoding", "chunked");
         resp->setHeader("Accept-Ranges", "none");
         resp->writeHead(200);
@@ -1630,8 +1630,8 @@ QString ContentServer::dlnaContentFeaturesHeader(const QString& mime, bool seek,
                         seek ? dlnaOrgFlagsForFile() : dlnaOrgFlagsForStreaming());
         else
             return QString("%1;%2").arg(seek ?
-                                            dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek,
-                                            dlnaOrgCiFlags);
+                        dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek,
+                        dlnaOrgCiFlags);
     } else {
         if (flags)
             return QString("%1;%2;%3;%4").arg(
@@ -1842,9 +1842,12 @@ bool ContentServer::getContentMetaItemByDidlId(const QString &didlId, QString &m
 bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
                                    QString &meta, const ItemMeta *item)
 {
-    QString path, name, desc, author; int t = 0; QUrl icon;
+    QString path, name, desc, author;
+    int t = 0;
+    int duration = 0;
+    QUrl icon;
     if (!Utils::pathTypeNameCookieIconFromId(QUrl(id), &path, &t, &name, nullptr,
-                                             &icon, &desc, &author))
+          &icon, &desc, &author, nullptr, nullptr, nullptr, nullptr, &duration))
         return false;
 
     bool audioType = static_cast<Type>(t) == TypeMusic; // extract audio stream from video
@@ -1934,14 +1937,17 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
           << "\" ";
     }
 
-    if (item->duration > 0) {
-        int seconds = item->duration % 60;
-        int minutes = ((item->duration - seconds) / 60) % 60;
-        int hours = (item->duration - (minutes * 60) - seconds) / 3600;
-        QString duration = QString::number(hours) + ":" + (minutes < 10 ? "0" : "") +
+    if (duration == 0) {
+        duration = item->duration;
+    }
+    if (duration > 0) {
+        int seconds = duration % 60;
+        int minutes = ((duration - seconds) / 60) % 60;
+        int hours = (duration - (minutes * 60) - seconds) / 3600;
+        QString durationStr = QString::number(hours) + ":" + (minutes < 10 ? "0" : "") +
                            QString::number(minutes) + ":" + (seconds < 10 ? "0" : "") +
                            QString::number(seconds) + ".000";
-        m << "duration=\"" << duration << "\" ";
+        m << "duration=\"" << durationStr << "\" ";
     }
 
     if (audioType && item->flagSet(MetaFlag_Local)) {
@@ -2636,16 +2642,14 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
             meta.type = typeFromMime(meta.mime);
             meta.size = file.size();
             meta.itemType = ItemType_LocalFile;
-            meta.setFlags(ContentServer::MetaFlag_Valid|
-                          ContentServer::MetaFlag_Local|
-                          ContentServer::MetaFlag_Seek);
+            meta.setFlags(MetaFlag_Valid|MetaFlag_Local|MetaFlag_Seek);
 
             // Recording meta
-            if (meta.album == ContentServer::recAlbumName) {
-                if (!ContentServer::readMetaUsingTaglib(path,
-                                       meta.title, meta.artist, meta.album,
-                                       meta.comment, meta.recUrl, meta.recDate,
-                                       meta.albumArt)) {
+            if (meta.album == recAlbumName) {
+                if (!readMetaUsingTaglib(path,
+                           meta.title, meta.artist, meta.album,
+                           meta.comment, meta.recUrl, meta.recDate,
+                           meta.albumArt)) {
                     qWarning() << "Cannot read meta with TagLib";
                 }
             }
@@ -3495,7 +3499,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
             int metaint = reply->rawHeader("icy-metaint").toInt();
             if (metaint > 0) {
                 qDebug() << "Shoutcast stream detected";
-                meta.setFlags(MetaFlag_Seek);
+                meta.setFlags(MetaFlag_IceCast);
             }
         }
 

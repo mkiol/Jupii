@@ -44,6 +44,7 @@ struct UrlItem {
     QUrl icon;
     QString desc;
     QString app;
+    int duration = 0;
     bool play = false;
 };
 

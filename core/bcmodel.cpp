@@ -79,12 +79,13 @@ QVariantList BcModel::selectedItems()
         auto bcitem = dynamic_cast<BcItem*>(item);
         if (bcitem->selected()) {
             QVariantMap map;
-            map.insert("url", QVariant(bcitem->url()));
-            map.insert("name", QVariant(bcitem->name()));
-            map.insert("author", QVariant(bcitem->artist()));
-            map.insert("icon", QVariant(bcitem->icon()));
-            map.insert("origUrl", QVariant(bcitem->origUrl()));
-            map.insert("app", QVariant("bc"));
+            map.insert("url", bcitem->url());
+            map.insert("name", bcitem->name());
+            map.insert("author", bcitem->artist());
+            map.insert("icon", bcitem->icon());
+            map.insert("origUrl", bcitem->origUrl());
+            map.insert("app", "bc");
+            map.insert("duration", bcitem->duration());
             list << map;
         }
     }
@@ -117,6 +118,7 @@ QList<ListItem*> BcModel::makeSearchItems()
                                 std::move(result.webUrl),
                                 {},
                                 std::move(result.imageUrl),
+                                0,
                                 BcModel::Type(result.type));
         }
 
@@ -150,6 +152,7 @@ QList<ListItem*> BcModel::makeAlbumItems()
                             std::move(track.streamUrl),
                             std::move(track.webUrl), // origUrl
                             album.imageUrl,
+                            track.duration,
                             Type_Track);
     }
 
@@ -174,6 +177,7 @@ QList<ListItem*> BcModel::makeArtistItems()
                             std::move(album.webUrl),
                             {},
                             std::move(album.imageUrl),
+                            0,
                             Type_Album);
     }
 
@@ -187,6 +191,7 @@ BcItem::BcItem(const QString &id,
                    const QUrl &url,
                    const QUrl &origUrl,
                    const QUrl &icon,
+                   int duration,
                    BcModel::Type type,
                    QObject *parent) :
     SelectableItem(parent),
@@ -197,6 +202,7 @@ BcItem::BcItem(const QString &id,
     m_url(url),
     m_origUrl(origUrl),
     m_icon(icon),
+    m_duration(duration),
     m_type(type)
 {
     m_selectable = type == BcModel::Type_Track;

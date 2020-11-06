@@ -45,6 +45,7 @@ const QString Utils::playKey = "jupii_play";
 const QString Utils::idKey = "jupii_id";
 const QString Utils::ytdlKey = "jupii_ytdl";
 const QString Utils::appKey = "jupii_app";
+const QString Utils::durKey = "jupii_dur";
 
 Utils* Utils::m_instance = nullptr;
 
@@ -273,7 +274,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
                                      QUrl* origUrl,
                                      bool* ytdl,
                                      bool* play,
-                                     QString* app)
+                                     QString* app,
+                                     int *duration)
 {
     if (!id.isValid()) {
         //qWarning() << "FromId: Id is invalid:" << id.toString();
@@ -287,7 +289,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             path->clear();
     }
 
-    if (type || cookie || name || desc || author || icon || origUrl || play || ytdl || app) {
+    if (type || cookie || name || desc || author || icon || origUrl || play || ytdl || app || duration) {
         QUrlQuery q(id);
         if (type && q.hasQueryItem(Utils::typeKey))
             *type = q.queryItemValue(Utils::typeKey).toInt();
@@ -309,6 +311,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
             *ytdl = (q.queryItemValue(Utils::ytdlKey) == "true");
         if (app && q.hasQueryItem(Utils::appKey))
             *app = q.queryItemValue(Utils::appKey);
+        if (duration && q.hasQueryItem(Utils::durKey))
+            *duration = q.queryItemValue(Utils::durKey).toInt();
     }
 
     return true;
@@ -695,6 +699,8 @@ QUrl Utils::urlFromId(const QUrl &id)
         q.removeAllQueryItems(Utils::ytdlKey);
     if (q.hasQueryItem(Utils::appKey))
         q.removeAllQueryItems(Utils::appKey);
+    if (q.hasQueryItem(Utils::durKey))
+        q.removeAllQueryItems(Utils::durKey);
     QUrl url(id);
     url.setQuery(q);
     return url;
