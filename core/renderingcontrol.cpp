@@ -14,6 +14,7 @@
 #include "devicemodel.h"
 #include "utils.h"
 #include "settings.h"
+#include "notifications.h"
 
 RenderingControl::RenderingControl(QObject *parent) : Service(parent),
     m_volumeTimer(parent)
@@ -250,8 +251,8 @@ void RenderingControl::updateMute()
 void RenderingControl::showVolNofification() const
 {
     auto name = getDeviceFriendlyName().isEmpty() ? tr("Remote device") : getDeviceFriendlyName();
-    Utils::instance()->showNotification(tr("Volume level of %1 is %2").arg(name).arg(m_volume), m_volume > 0 ?
-                         "icon-system-volume" : "icon-system-volume-mute");
+    Notifications::instance()->show(tr("Volume level of %1 is %2").arg(name).arg(m_volume), {}, m_volume > 0 ?
+                            "icon-system-volume" : "icon-system-volume-mute");
 }
 
 void RenderingControl::volumeUpTimeout()
