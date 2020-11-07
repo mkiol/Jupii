@@ -56,18 +56,49 @@ void Directory::handleNetworkConfChanged(const QNetworkConfiguration &conf)
 
 void Directory::updateNetworkConf()
 {
-    QString new_ifname;
-    QList<QNetworkConfiguration> configs = ncm->allConfigurations(QNetworkConfiguration::Active);
-    for (auto &conf : configs) {
-        if (conf.bearerType() == QNetworkConfiguration::BearerWLAN ||
-            conf.bearerType() == QNetworkConfiguration::BearerEthernet) {
-            QNetworkSession session(conf);
-            if (session.state() == QNetworkSession::Connected) {
-                new_ifname = session.interface().name();
-                auto type = session.configuration().bearerType();
-                if (type == QNetworkConfiguration::BearerWLAN)
-                    break;
+    QStringList eth_candidates;
+    QStringList wlan_candidates;
+
+    for (const auto& interface : QNetworkInterface::allInterfaces()) {
+        if (interface.flags().testFlag(QNetworkInterface::IsRunning)) {
+            if (Utils::ethNetworkInf(interface)) {
+                //qDebug() << "eth interface:" << interface.name();
+                eth_candidates << interface.name();
+            } else if (Utils::wlanNetworkInf(interface)) {
+                //qDebug() << "wlan interface:" << interface.name();
+                wlan_candidates << interface.name();
             }
+        }
+    }
+
+    QString new_ifname;
+
+    if (eth_candidates.isEmpty() && wlan_candidates.isEmpty()) {
+        qWarning() << "No connected network interface found";
+    } else {
+        QString pref_ifname = Settings::instance()->getPrefNetInf();
+        //qDebug() << "Preferred network interface:" << pref_ifname;
+
+        if (!pref_ifname.isEmpty() && (eth_candidates.contains(pref_ifname) ||
+                                       wlan_candidates.contains(pref_ifname))) {
+            qDebug() << "Preferred network interface found";
+            new_ifname = pref_ifname;
+        } else {
+#ifdef SAILFISH
+            // preferred WLAN
+            if (!wlan_candidates.isEmpty()) {
+                new_ifname = wlan_candidates.first();
+            } else {
+                new_ifname = eth_candidates.first();
+            }
+#else
+            // preferred Ethernet
+            if (!eth_candidates.isEmpty()) {
+                new_ifname = eth_candidates.first();
+            } else {
+                new_ifname = wlan_candidates.first();
+            }
+#endif
         }
     }
 
@@ -87,7 +118,6 @@ bool Directory::getNetworkIf(QString &ifname, QString &address)
 {
     if (isNetworkConnected()) {
         auto interface = QNetworkInterface::interfaceFromName(m_ifname);
-
         if (interface.isValid() &&
             interface.flags().testFlag(QNetworkInterface::IsUp) &&
             interface.flags().testFlag(QNetworkInterface::IsRunning)) {
@@ -100,7 +130,7 @@ bool Directory::getNetworkIf(QString &ifname, QString &address)
                 if (ha.protocol() == QAbstractSocket::IPv4Protocol ||
                     ha.protocol() == QAbstractSocket::IPv6Protocol) {
                     address = ha.toString();
-                    qDebug() << "Net interface:" << ifname << address;
+                    //qDebug() << "Net interface:" << ifname << address;
                     return true;
                 }
             }
@@ -234,7 +264,7 @@ void Directory::discover()
         return;
     }
 
-    if (m_directory == 0) {
+    if (!m_directory) {
         qWarning() << "Directory not initialized";
         setInited(false);
         emit error(3);
@@ -246,7 +276,7 @@ void Directory::discover()
     // last devices
     auto s = Settings::instance();
     auto last = s->getLastDevices();
-    qDebug() << "Adding last devices:" << last.size();
+    //qDebug() << "Adding last devices:" << last.size();
 
     for (auto it = last.begin(); it != last.end(); ++it) {
         qDebug() << it.key() << it.value().toString();
@@ -274,7 +304,7 @@ void Directory::discover()
         // favs
 
         auto favs = s->getFavDevices();
-        qDebug() << "Adding fav devices:" << favs.size();
+        //qDebug() << "Adding fav devices:" << favs.size();
 
         for (auto it = favs.begin(); it != favs.end(); ++it) {
             qDebug() << it.key() << it.value().toString();
@@ -336,7 +366,7 @@ void Directory::discover()
                 xcs[did] = true;
                 auto xc = new YamahaXC(did, QString::fromStdString(ddesc.XMLText));
                 if (xc->valid()) {
-                    qDebug() << "XCS is valid for" << did;
+                    //qDebug() << "XCS is valid for" << did;
                     xc->moveToThread(QCoreApplication::instance()->thread());
                     this->m_xcs.insert(did, xc);
                 } else {
@@ -351,19 +381,19 @@ void Directory::discover()
         };
 
         for (int i = 0; i < 5; ++i) {
-            if (m_directory == 0) {
+            if (!m_directory) {
                 qWarning() << "Directory not initialized";
                 setInited(false);
                 emit error(3);
                 return;
             }
-            qDebug() << "traverse:" << i;
+            //qDebug() << "traverse:" << i;
             m_directory->traverse(traverseFun);
             if (found)
                 break;
         }
 
-        qDebug() << "traverse end";
+        //qDebug() << "traverse end";
 
         emit discoveryReady();
 
@@ -401,7 +431,7 @@ bool Directory::getDeviceDesc(const QString& deviceId, UPnPClient::UPnPDeviceDes
     const auto lit = m_last_devsdesc.find(deviceId);
     if (lit != m_last_devsdesc.end()) {
         ddesc = lit.value();
-        qDebug() << "Found last device:" << deviceId;
+        //qDebug() << "Found last device:" << deviceId;
         return true;
     }
 

@@ -15,10 +15,10 @@
 #include <QStringList>
 #include <QNetworkAccessManager>
 #include <QThread>
+#include <QNetworkInterface>
 #include <memory>
 #ifdef SAILFISH
 #include <QQuickItem>
-#include <notification.h>
 #endif
 #include "contentserver.h"
 
@@ -42,14 +42,15 @@ public:
     static Utils* instance(QObject *parent = nullptr);
     std::unique_ptr<QNetworkAccessManager> nam;
 
-    //bool getNetworkIf(QString &ifname, QString &address);
-    //bool checkNetworkIf();
-    QStringList getNetworkIfs(bool onlyUp = true);
+    static bool ethNetworkInf(const QNetworkInterface& interface);
+    static bool wlanNetworkInf(const QNetworkInterface& interface);
+    Q_INVOKABLE QStringList networkInfs(bool onlyUp = true);
+    Q_INVOKABLE int prefNetworkInfIndex();
+    Q_INVOKABLE void setPrefNetworkInfIndex(int idx) const;
+
 #ifdef SAILFISH
     void setQmlRootItem(QQuickItem* rootItem);
     void activateWindow();
-    void showNotification(const QString& text, const QString& icon = QString(),
-                          bool replace = true);
 #endif
     Q_INVOKABLE QString friendlyDeviceType(const QString &deviceType);
     Q_INVOKABLE QString friendlyServiceType(const QString &serviceType);
@@ -134,6 +135,7 @@ public:
 private:
     static Utils* m_instance;
     QHash<QThread*,bool> seedDone;
+    QStringList lastNetIfs;
 #ifdef SAILFISH
     qint32 notifId = 0;
     //Notification notif;

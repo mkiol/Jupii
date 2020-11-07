@@ -7,7 +7,7 @@
 
 #include "utils.h"
 
-#include <QNetworkInterface>
+#include <QtGlobal>
 #include <QNetworkAddressEntry>
 #include <QHostAddress>
 #include <QList>
@@ -105,21 +105,65 @@ QString Utils::secToStr(int value)
     return str;
 }
 
-QStringList Utils::getNetworkIfs(bool onlyUp)
+bool Utils::ethNetworkInf(const QNetworkInterface& interface)
 {
-    auto ifList = QNetworkInterface::allInterfaces();
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+    return interface.name().startsWith('e') || interface.name().startsWith("rndis");
+#else
+    return interface.type() == QNetworkInterface::Ethernet;
+#endif
+}
 
-    QStringList infs;
-    for (auto interface : ifList) {
-        if (interface.isValid()) {
-            if (!onlyUp ||
-                    (interface.flags().testFlag(QNetworkInterface::IsUp) &&
-                    interface.flags().testFlag(QNetworkInterface::IsRunning)))
-                infs << interface.name();
+bool Utils::wlanNetworkInf(const QNetworkInterface& interface)
+{
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+    return interface.name().startsWith('w');
+#else
+    return interface.type() == QNetworkInterface::Wifi;
+#endif
+}
+
+QStringList Utils::networkInfs(bool onlyUp)
+{
+    lastNetIfs.clear();
+    lastNetIfs.append(tr("Auto"));
+    for (auto& interface : QNetworkInterface::allInterfaces()) {
+        if (interface.isValid() && (ethNetworkInf(interface) || wlanNetworkInf(interface))) {
+            if (!onlyUp || interface.flags().testFlag(QNetworkInterface::IsRunning))
+                lastNetIfs.append(interface.name());
         }
     }
+    return lastNetIfs;
+}
 
-    return infs;
+int Utils::prefNetworkInfIndex()
+{
+    auto pref_ifname = Settings::instance()->getPrefNetInf();
+    if (pref_ifname.isEmpty()) {
+        return 0;
+    }
+
+    if (lastNetIfs.isEmpty()) {
+        networkInfs();
+    }
+
+    int idx = lastNetIfs.indexOf(pref_ifname, 1);
+
+    return idx > -1 ? idx : 0;
+}
+
+void Utils::setPrefNetworkInfIndex(int idx) const
+{
+    if (lastNetIfs.size() <= idx) {
+        qWarning() << "Invalid networtk interface index";
+        return;
+    }
+
+    if (idx == 0) {
+        Settings::instance()->setPrefNetInf({});
+    } else {
+        Settings::instance()->setPrefNetInf(lastNetIfs.at(idx));
+    }
 }
 
 void Utils::removeFromCacheDir(const QStringList &filter)
@@ -793,19 +837,5 @@ void Utils::activateWindow()
     if (qmlRootItem) {
         QMetaObject::invokeMethod(qmlRootItem, "activate");
     }
-}
-
-void Utils::showNotification(const QString& text, const QString& icon, bool replace)
-{
-    Notification notif;
-    if (replace)
-        notif.setReplacesId(notifId);
-    notif.setBody(text);
-    notif.setMaxContentLines(10);
-    notif.setPreviewBody(text);
-    notif.setExpireTimeout(4000);
-    notif.setIcon(icon);
-    notif.publish();
-    notifId = notif.replacesId();
 }
 #endif

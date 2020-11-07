@@ -350,6 +350,27 @@ Kirigami.ScrollablePage {
             }
 
             Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Preferred network interface")
+                currentIndex: utils.prefNetworkInfIndex()
+                model: utils.networkInfs()
+                onCurrentIndexChanged: {
+                    utils.setPrefNetworkInfIndex(currentIndex)
+                }
+
+                Connections {
+                    target: settings
+                    onPrefNetInfChanged: {
+                        parent.model = utils.networkInfs()
+                        parent.currentIndex = utils.prefNetworkInfIndex()
+                    }
+                }
+            }
+
+            Item {
+                Kirigami.FormData.isSection: true
+            }
+
+            Controls.ComboBox {
                 Kirigami.FormData.label: qsTr("Stream relaying")
                 currentIndex: {
                     // 0 - proxy for all
