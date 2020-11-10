@@ -269,12 +269,28 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: "Reset tips and hints"
                 onClicked: {
-                    remorse.execute(qsTr("Reseting tips and hints"), function() { settings.resetHints() } )
+                    remorse.execute(qsTr("Resetting tips and hints"), function() { settings.resetHints() } )
                 }
             }
 
             SectionHeader {
                 text: qsTr("Advanced options")
+            }
+
+            ComboBox {
+                visible: settings.isDebug()
+                label: qsTr("Preferred network interface")
+                currentIndex: utils.prefNetworkInfIndex()
+                menu: ContextMenu {
+                    Repeater {
+                        model: utils.networkInfs()
+                        MenuItem { text: modelData }
+                    }
+                }
+                onCurrentIndexChanged: {
+                    utils.setPrefNetworkInfIndex(currentIndex)
+                    currentIndex = utils.prefNetworkInfIndex()
+                }
             }
 
             ComboBox {
