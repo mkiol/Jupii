@@ -28,7 +28,6 @@ public:
     enum Roles {
         TitleRole = Qt::DisplayRole,
         IdRole = Qt::UserRole,
-        ListRole,
         CountRole,
         LengthRole,
         IconRole,
@@ -39,17 +38,15 @@ public:
     PlaylistFileItem(QObject *parent = nullptr): SelectableItem(parent) {}
     explicit PlaylistFileItem(const QString &id,
                       const QString &title,
-                      const QString &list,
                       const QString &path,
                       const QUrl &url,
                       int count,
                       int length,
-                      QObject *parent = 0);
+                      QObject *parent = nullptr);
     QVariant data(int role) const;
     QHash<int, QByteArray> roleNames() const;
     inline QString id() const { return m_id; }
     inline QString title() const { return m_title; }
-    inline QString list() const { return m_list; }
     inline QString path() const { return m_path; }
     inline QUrl icon() const { return m_icon; }
     inline int count() const { return m_count; }
@@ -58,7 +55,6 @@ public:
 private:
     QString m_id;
     QString m_title;
-    QString m_list;
     QString m_path;
     QUrl m_icon;
     int m_count = 0;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2020 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -62,6 +62,15 @@ const QString TrackModel::queryByEntriesTemplate =
         "FILTER ( ?song in ( %1 )) } " \
         "LIMIT 500";
 
+const QString TrackModel::queryByUrlsTemplate =
+        "SELECT nie:url(?item) " \
+        "nie:mimeType(?item) " \
+        "nie:title(?item) " \
+        "nmm:artistName(nmm:performer(?item)) " \
+        "nie:title(nmm:musicAlbum(?item)) "
+        "WHERE { ?item a nmm:MusicPiece . " \
+        "FILTER ( nie:url(?item) in ( %1 ) ) }";
+
 TrackModel::TrackModel(QObject *parent) :
     SelectableItemModel(new TrackItem, parent)
 {
@@ -99,26 +108,75 @@ QList<ListItem*> TrackModel::makeItems()
     return {};
 }
 
-QList<ListItem*> TrackModel::processTrackerReply(
-        TrackerTasks task,
-        const QStringList& varNames,
-        const QByteArray& data)
+QList<ListItem*> TrackModel::processTrackerReplyForAlbumArtist(TrackerCursor& cursor)
 {
     QList<ListItem*> items;
 
-    TrackerCursor cursor(varNames, data);
-    int n = cursor.columnCount();
+    while(cursor.next()) {
+        auto type = ContentServer::typeFromMime(cursor.value(7).toString());
+        items << new TrackItem(
+                     cursor.value(0).toString(), // id
+                     cursor.value(1).toString(),
+                     cursor.value(2).toString(),
+                     cursor.value(3).toString(),
+                     QUrl(cursor.value(4).toString()), // url
+                     QUrl(), // icon
+                     type,
+                     cursor.value(5).toInt(),
+                     cursor.value(6).toInt()
+                     );
+    }
 
-    if (task == TaskPlaylist && n == 1) {
-        QString entries;
-        while(cursor.next()) {
-            auto list = cursor.value(0).toString().split(',');
-            list = list.mid(0, 50);
-            list.replaceInStrings(QRegExp("^(.*)$"), "<\\1>");
-            entries = list.join(',');
-            break;
-        }
+    return items;
+}
 
+TrackModel::TrackData TrackModel::makeTrackDataFromId(const QUrl& id) const
+{
+    TrackData data;
+    QString name;
+    int t = 0;
+
+    Utils::pathTypeNameCookieIconFromId(
+                id,
+                nullptr,
+                &t,
+                &name,
+                nullptr,
+                &data.icon,
+                nullptr,
+                &data.author);
+
+    data.type = t == 0 ?
+                ContentServer::getContentTypeByExtension(id) :
+                static_cast<ContentServer::Type>(t);
+
+    if (name.isEmpty()) {
+        auto itemType = ContentServer::itemTypeFromUrl(id);
+        if (itemType == ContentServer::ItemType_Mic)
+            data.title = tr("Microphone");
+        else if (itemType == ContentServer::ItemType_AudioCapture)
+            data.title = tr("Audio capture");
+        else if (itemType == ContentServer::ItemType_ScreenCapture)
+            data.title = tr("Screen capture");
+    } else {
+        data.title = name;
+    }
+
+    return data;
+}
+
+QList<ListItem*> TrackModel::processTrackerReplyForPlaylist(TrackerCursor& cursor)
+{
+    QString entries;
+    while(cursor.next()) {
+        auto list = cursor.value(0).toString().split(',');
+        list = list.mid(0, 50);
+        list.replaceInStrings(QRegExp("^(.*)$"), "<\\1>");
+        entries = list.join(',');
+        break;
+    }
+
+    if (!entries.isEmpty()) {
         auto tracker = Tracker::instance();
         auto query = queryByEntriesTemplate.arg(entries);
         if (tracker->query(query, false)) {
@@ -127,68 +185,131 @@ QList<ListItem*> TrackModel::processTrackerReply(
         } else {
             qWarning() << "Tracker query error";
         }
-    } else if (task == TaskEntries && n == 1) {
-        while(cursor.next()) {
-            auto id = QUrl(cursor.value(0).toString());
+    }
 
-            QString path, name, author; QUrl icon; int t = 0;
-            Utils::pathTypeNameCookieIconFromId(
-                        id,
-                        &path,
-                        &t,
-                        &name,
-                        nullptr,
-                        &icon,
-                        nullptr,
-                        &author);
+    return {};
+}
 
-            auto type = t == 0 ?
-                        ContentServer::getContentTypeByExtension(id) :
-                        static_cast<ContentServer::Type>(t);
+QList<ListItem*> TrackModel::processTrackerReplyForEntries(TrackerCursor& cursor)
+{
+    QStringList fileUrls;
 
-            auto title = name.isEmpty() ?
-                            Utils::isUrlMic(id) ? tr("Microphone") :
-                                path.isEmpty() ? id.toString() :
-                                    QFileInfo(path).fileName() :
-                         name;
+    auto filter = getFilter();
 
-            auto filter = getFilter();
-            if (filter.isEmpty() ||
-                    title.contains(filter, Qt::CaseInsensitive) ||
-                    author.contains(filter, Qt::CaseInsensitive)) {
-                items << new TrackItem(
-                             id.toString(), // id
-                             title, // title
-                             author, // artist
-                             QString(), // album
-                             id, // url
-                             icon, // icon
-                             type, // type
-                             0, // number
-                             0 // length
-                             );
+    while(cursor.next()) {
+        auto url = QUrl(cursor.value(0).toString());
+        if (!url.isEmpty()) {
+            m_ids.append(url);
+            if (url.isLocalFile()) {
+                fileUrls.append('"' + url.toString(QUrl::EncodeUnicode|QUrl::EncodeSpaces) + '"');
             }
         }
-    } else if ((task == TaskAlbum || task == TaskArtist) && n == 8) {
-        while(cursor.next()) {
-            auto type = ContentServer::typeFromMime(cursor.value(7).toString());
+    }
+
+    if (!fileUrls.isEmpty()) {
+        auto tracker = Tracker::instance();
+        auto query = queryByUrlsTemplate.arg(fileUrls.join(","));
+        if (tracker->query(query, false)) {
+            auto result = tracker->getResult();
+            return processTrackerReply(TaskUrls, result.first, result.second);
+        } else {
+            qWarning() << "Tracker query error";
+        }
+    }
+
+    return makeTrackItemsFromTrackData();
+}
+
+QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
+{
+    QList<ListItem*> items;
+
+    auto filter = getFilter();
+
+    for (const auto& id : m_ids) {
+        auto id_data = makeTrackDataFromId(id);
+        if (m_trackdata_by_id.contains(id)) {
+            auto& data = m_trackdata_by_id[id];
+            if (!id_data.title.isEmpty())
+                data.title = id_data.title;
+            if (!id_data.author.isEmpty())
+                data.author = id_data.author;
+            if (!id_data.icon.isEmpty())
+                data.icon = id_data.icon;
+            if (id_data.type != ContentServer::TypeUnknown)
+                data.type = id_data.type;
+        } else {
+            m_trackdata_by_id.insert(id, id_data);
+        }
+    }
+
+    for (const auto& id : m_ids) {
+        const auto& data = m_trackdata_by_id.value(id);
+        auto title = data.title.isEmpty() ?
+                    id.fileName().isEmpty() ? id.path().isEmpty() ?
+                    id.toString() : id.path() : id.fileName() : data.title;
+        if (filter.isEmpty() ||
+                title.contains(filter, Qt::CaseInsensitive) ||
+                data.author.contains(filter, Qt::CaseInsensitive)) {
             items << new TrackItem(
-                         cursor.value(0).toString(), // id
-                         cursor.value(1).toString(),
-                         cursor.value(2).toString(),
-                         cursor.value(3).toString(),
-                         QUrl(cursor.value(4).toString()), // url
-                         QUrl(), // icon
-                         type,
-                         cursor.value(5).toInt(),
-                         cursor.value(6).toInt()
+                         id.toString(), // id
+                         title, // title-
+                         data.author, // artist
+                         QString(), // album
+                         id, // url
+                         data.icon, // icon
+                         data.type, // type
+                         0, // number
+                         0, // length
+                         ContentServer::itemTypeFromUrl(id)
                          );
         }
+    }
+
+    m_ids.clear();
+    m_trackdata_by_id.clear();
+
+    return items;
+}
+
+QList<ListItem*> TrackModel::processTrackerReplyForUrls(TrackerCursor& cursor)
+{
+    while(cursor.next()) {
+        auto id = QUrl(cursor.value(0).toString());
+
+        TrackData data;
+        data.title = cursor.value(2).toString();
+        data.author = cursor.value(3).toString();
+        data.icon = Tracker::genAlbumArtFile(cursor.value(4).toString(), data.author);
+        data.type = ContentServer::typeFromMime(cursor.value(1).toString());
+
+        m_trackdata_by_id.insert(id, data);
+    }
+
+    return makeTrackItemsFromTrackData();
+}
+
+QList<ListItem*> TrackModel::processTrackerReply(
+        TrackerTasks task,
+        const QStringList& varNames,
+        const QByteArray& data)
+{
+    TrackerCursor cursor(varNames, data);
+    int n = cursor.columnCount();
+
+    if (task == TaskPlaylist && n == 1) {
+        return processTrackerReplyForPlaylist(cursor);
+    } else if (task == TaskEntries && n == 1) {
+        return processTrackerReplyForEntries(cursor);
+    } else if (task == TaskUrls && n == 5) {
+        return processTrackerReplyForUrls(cursor);
+    } else if ((task == TaskAlbum || task == TaskArtist) && n == 8) {
+        return processTrackerReplyForAlbumArtist(cursor);
     } else {
         qWarning() << "Tracker reply is incorrect";
     }
 
-    return items;
+    return {};
 }
 
 QVariantList TrackModel::selectedItems()
@@ -276,6 +397,7 @@ TrackItem::TrackItem(const QString &id,
                    ContentServer::Type type,
                    int number,
                    int length,
+                   ContentServer::ItemType itemType,
                    QObject *parent) :
     SelectableItem(parent),
     m_id(id),
@@ -286,7 +408,8 @@ TrackItem::TrackItem(const QString &id,
     m_icon(icon),
     m_type(type),
     m_number(number),
-    m_length(length)
+    m_length(length),
+    m_item_type(itemType)
 {
 }
 
@@ -302,6 +425,7 @@ QHash<int, QByteArray> TrackItem::roleNames() const
     names[NumberRole] = "number";
     names[LengthRole] = "length";
     names[TypeRole] = "type";
+    names[ItemTypeRole] = "itemType";
     names[SelectedRole] = "selected";
     return names;
 }
@@ -327,6 +451,8 @@ QVariant TrackItem::data(int role) const
         return length();
     case TypeRole:
         return type();
+    case ItemTypeRole:
+        return itemType();
     case SelectedRole:
         return selected();
     default:

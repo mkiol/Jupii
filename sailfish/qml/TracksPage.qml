@@ -10,6 +10,7 @@ import Sailfish.Silica 1.0
 
 import harbour.jupii.TrackModel 1.0
 import harbour.jupii.AVTransport 1.0
+import harbour.jupii.ContentServer 1.0
 
 Dialog {
     id: root
@@ -60,6 +61,7 @@ Dialog {
             id: menu
 
             enabled: itemModel.count !== 0
+            visible: enabled
 
             MenuItem {
                 text: itemModel.count === itemModel.selectedCount ?
@@ -85,7 +87,7 @@ Dialog {
             subtitle.text: root.albumId.length !== 0 || root.playlistId.length !== 0 ?
                                model.artist : model.album
             enabled: !itemModel.busy
-            //icon.source: model.icon.toString().length !== 0 ? (model.icon + "?" + primaryColor) : ""
+            icon.source: model.icon
             defaultIcon.source: {
                 if (isMic)
                     return "image://theme/icon-m-mic?" + primaryColor
@@ -103,6 +105,11 @@ Dialog {
                         return "image://theme/icon-m-file-other?" + primaryColor
                     }
             }
+
+            attachedIcon.source: model.itemType === ContentServer.ItemType_Url ?
+                                     ("image://icons/icon-s-browser?" + primaryColor) :
+                                 model.itemType === ContentServer.ItemType_Upnp ?
+                                     ("image://icons/icon-s-device?" + primaryColor) : ""
 
             onClicked: {
                 var selected = model.selected

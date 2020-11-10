@@ -28,7 +28,6 @@ const QString PlaylistFileModel::playlistsQueryTemplateEx =
         "SELECT ?list nie:title(?list) " \
         "nie:url(?list) " \
         "nfo:entryCounter(?list) " \
-        "nfo:hasMediaFileListEntry(?list) " \
         "WHERE { ?list a nmm:Playlist . " \
         "FILTER (regex(nie:title(?list), \"%1\", \"i\") && " \
         "?list != <%2>) . " \
@@ -92,12 +91,11 @@ QList<ListItem*> PlaylistFileModel::processTrackerReply(
     TrackerCursor cursor(varNames, data);
     int n = cursor.columnCount();
 
-    if (n > 4) {
+    if (n > 3) {
         while(cursor.next()) {
             items << new PlaylistFileItem(
                         cursor.value(0).toString(), // id
                         cursor.value(1).toString(), // title
-                        cursor.value(4).toString(), // list
                         QUrl(cursor.value(2).toString()).toLocalFile(), // path
                         QUrl(), // icon
                         cursor.value(3).toInt(), // count
@@ -113,7 +111,6 @@ QList<ListItem*> PlaylistFileModel::processTrackerReply(
 
 PlaylistFileItem::PlaylistFileItem(const QString &id,
                    const QString &title,
-                   const QString &list,
                    const QString &path,
                    const QUrl &url,
                    int count,
@@ -122,7 +119,6 @@ PlaylistFileItem::PlaylistFileItem(const QString &id,
     SelectableItem(parent),
     m_id(id),
     m_title(title),
-    m_list(list),
     m_path(path),
     m_icon(url),
     m_count(count),
@@ -135,7 +131,6 @@ QHash<int, QByteArray> PlaylistFileItem::roleNames() const
     QHash<int, QByteArray> names;
     names[IdRole] = "id";
     names[TitleRole] = "title";
-    names[ListRole] = "list";
     names[PathRole] = "path";
     names[IconRole] = "icon";
     names[CountRole] = "count";
@@ -150,8 +145,6 @@ QVariant PlaylistFileItem::data(int role) const
         return id();
     case TitleRole:
         return title();
-    case ListRole:
-        return list();
     case PathRole:
         return path();
     case IconRole:
