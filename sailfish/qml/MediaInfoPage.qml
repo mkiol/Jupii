@@ -11,6 +11,7 @@ import Sailfish.Silica 1.0
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
 import harbour.jupii.ContentServer 1.0
+import harbour.jupii.Settings 1.0
 
 Page {
     id: root
@@ -20,6 +21,12 @@ Page {
     property bool imgOk: imagep.status === Image.Ready || imagel.status === Image.Ready
     property int itemType: utils.itemTypeFromUrl(av.currentId)
     property bool isShout: app.streamTitle.length !== 0
+
+    onStatusChanged: {
+        if (status === PageStatus.Active) {
+            settings.disableHint(Settings.Hint_MediaInfoSwipeLeft)
+        }
+    }
 
     SilicaFlickable {
         anchors.fill: parent

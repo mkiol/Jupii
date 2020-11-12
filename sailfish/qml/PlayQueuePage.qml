@@ -28,9 +28,7 @@ Page {
 
     onStatusChanged: {
         if (status === PageStatus.Active) {
-            if (devless) {
-                settings.disableHint(Settings.Hint_DeviceSwipeLeft)
-            }
+            settings.disableHint(Settings.Hint_DeviceSwipeLeft)
             updateMediaInfoPage()
             ppanel.update()
         }
@@ -58,9 +56,11 @@ Page {
         if (pageStack.currentPage === root) {
             if (av.controlable) {
                 pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"))
-            } else if (pageStack.depth === 3) {
+            } else {
                 pageStack.popAttached(root, PageStackAction.Immediate)
-            }
+            } /*else if (pageStack.depth === 3) {
+                pageStack.popAttached(root, PageStackAction.Immediate)
+            }*/
         }
     }
 
@@ -359,16 +359,31 @@ Page {
         onRecordClicked: {
             cserver.setStreamToRecord(av.currentId, !app.streamToRecord)
         }
+
+        onFullChanged: {
+            if (full) {
+                settings.disableHint(Settings.Hint_ExpandPlayerPanelTip)
+                expandHintLabel.enabled = false
+            }
+        }
     }
 
+    // ***************//
+    // Tips and Hints //
+    // ***************//
+
+    // Not connected to UPnP device info
+
     InteractionHintLabel_ {
+        id: connectedHintLabel
         anchors.bottom: parent.bottom
         opacity: enabled ? 1.0 : 0.0
         Behavior on opacity { FadeAnimation {} }
         text: qsTr("Not connected")
         subtext: qsTr("Connect to a device to control playback using %1.").arg(APP_NAME)
                  + (settings.contentDirSupported ? " " + qsTr("Without connection, all items in play queue are still accessible on other devices in your local network.") : "")
-        enabled: settings.hintEnabled(Settings.Hint_NotConnectedTip) && devless && !menu.active
+        enabled: settings.hintEnabled(Settings.Hint_NotConnectedTip)
+                 && devless && !menu.active
 
         MouseArea {
             anchors.fill: parent
@@ -378,6 +393,49 @@ Page {
             }
         }
     }
+
+    // Expand Player panel
+
+    InteractionHintLabel_ {
+        id: expandHintLabel
+        invert: true
+        anchors.top: parent.top
+        opacity: enabled ? 1.0 : 0.0
+        Behavior on opacity { FadeAnimation {} }
+        text: qsTr("Tap to access playback & volume controls")
+        enabled: settings.hintEnabled(Settings.Hint_ExpandPlayerPanelTip) &&
+                 !connectedHintLabel.enabled && !ppanel.full && av.controlable && !menu.active
+        onEnabledChanged: enabled ? expandHint.start() : expandHint.stop()
+    }
+    TapInteractionHint {
+        id: expandHint
+        loops: Animation.Infinite
+        anchors.centerIn: ppanel
+    }
+
+    // Swipe left to Media info page
+
+    InteractionHintLabel_ {
+        id: mediaInfoHintLabel
+        anchors.bottom: parent.bottom
+        opacity: enabled ? 1.0 : 0.0
+        Behavior on opacity { FadeAnimation {} }
+        text: qsTr("Flick left to see current track details")
+        enabled: settings.hintEnabled(Settings.Hint_MediaInfoSwipeLeft) &&
+                 !connectedHintLabel.enabled && !expandHintLabel.enabled &&
+                 !ppanel.full && pageStack.currentPage === root &&
+                 forwardNavigation && !menu.active
+        onEnabledChanged: enabled ? mediaInfoHint.start() : mediaInfoHint.stop()
+    }
+    TouchInteractionHint {
+        id: mediaInfoHint
+        interactionMode: TouchInteraction.Swipe
+        direction: TouchInteraction.Left
+        loops: Animation.Infinite
+        anchors.centerIn: parent
+    }
+
+    // ---
 
     focus: true
     Keys.onVolumeUpPressed: {

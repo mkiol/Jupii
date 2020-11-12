@@ -51,8 +51,10 @@ class Settings:
 
 public:   
     enum Hint {
-        Hint_DeviceSwipeLeft = 1 << 0,
-        Hint_NotConnectedTip = 1 << 1
+        Hint_DeviceSwipeLeft =      1 << 0,
+        Hint_NotConnectedTip =      1 << 1,
+        Hint_ExpandPlayerPanelTip = 1 << 2,
+        Hint_MediaInfoSwipeLeft =   1 << 3
     };
     Q_ENUM(Hint)
 

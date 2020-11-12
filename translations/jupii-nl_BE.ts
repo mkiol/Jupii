@@ -965,6 +965,14 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <source>Remove all items from play queue?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Flick left to see current track details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tap to access playback &amp; volume controls</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PlayerPanel</name>
@@ -1348,35 +1356,7 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose a directory for recordings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings options</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Reset settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset all settings to defaults?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Restart is required for the changes to take effect.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Icecast titles and Stream recorder are disabled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen capture framerate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1384,19 +1364,7 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Auto</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen capture encoder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Reset tips and hints</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Audio capture volume boost</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -836,67 +836,67 @@
 <context>
     <name>MediaInfoPage</name>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="86"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="93"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="52"/>
         <source>Copy path</source>
         <translation>复制捷径</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="87"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="94"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="53"/>
         <source>Copy URL</source>
         <translation>复制网址</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="149"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="156"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="100"/>
         <source>Item type</source>
         <translation>项目类型</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="153"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="160"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="111"/>
         <source>Local file</source>
         <translation>本地文件</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="155"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="162"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="113"/>
         <source>Icecast URL</source>
         <translation>Icecast URL</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="159"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="166"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="117"/>
         <source>Screen Capture</source>
         <translation>屏幕捕获</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="161"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="168"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="119"/>
         <source>Audio Capture</source>
         <translation>音频采集</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="163"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="170"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="121"/>
         <source>Microphone</source>
         <translation>麦克风</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="171"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="178"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="131"/>
         <source>Title</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="171"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="178"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="131"/>
         <source>Station name</source>
         <translation>站台名称</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="186"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="193"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="166"/>
         <source>None</source>
         <translation>无</translation>
@@ -906,19 +906,19 @@
         <translation type="vanished">录音链接</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="312"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="319"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="306"/>
         <source>Sensitivity</source>
         <translation>灵敏度</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="336"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="343"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="399"/>
         <source>Tracks history</source>
         <translation>歌曲历史</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="94"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="101"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="42"/>
         <source>Copy current title</source>
         <translation>复制当前标题</translation>
@@ -932,76 +932,76 @@
         <translation type="vanished">复制录音链接</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="81"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="88"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="27"/>
         <source>Open URL in browser</source>
         <translation>在浏览器打开链接</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="182"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="189"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="151"/>
         <source>Audio source</source>
         <translation>音源</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="182"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="189"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="151"/>
         <source>Current title</source>
         <translation>当前标题</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="194"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="201"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="172"/>
         <source>Author</source>
         <translation>作者</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="204"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="211"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="191"/>
         <source>Album</source>
         <translation>影集</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="214"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="221"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="210"/>
         <source>Duration</source>
         <translation>时长</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="234"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="241"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="257"/>
         <source>Content type</source>
         <translation>内容类型</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="221"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="228"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="226"/>
         <source>Recording date</source>
         <translation>录音日期</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="157"/>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="227"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="164"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="234"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="115"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="241"/>
         <source>Media Server</source>
         <translation>媒体服务器</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="264"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="271"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="381"/>
         <source>Description</source>
         <translation>描述</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="292"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="299"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="290"/>
         <source>Path</source>
         <translation>捷径</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="155"/>
-        <location filename="../sailfish/qml/MediaInfoPage.qml" line="292"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="162"/>
+        <location filename="../sailfish/qml/MediaInfoPage.qml" line="299"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="113"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="290"/>
         <source>URL</source>
@@ -1192,17 +1192,27 @@
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="368"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="405"/>
+        <source>Tap to access playback &amp; volume controls</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="423"/>
+        <source>Flick left to see current track details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="382"/>
         <source>Not connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="369"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="383"/>
         <source>Connect to a device to control playback using %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="370"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="384"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1496,7 +1506,6 @@
     <name>SettingsPage</name>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="28"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="17"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
@@ -1512,8 +1521,6 @@
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="34"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="58"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="122"/>
         <source>Share play queue items via UPnP Media Server</source>
         <translation>通过 UPnP 媒体服务器分享播放队列项目</translation>
     </message>
@@ -1523,13 +1530,11 @@
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="75"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="162"/>
         <source>Volume level step</source>
         <translation>音量调节步长</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="117"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="240"/>
         <source>Screen capture</source>
         <translation>屏幕捕获</translation>
     </message>
@@ -1540,7 +1545,6 @@
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="147"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="259"/>
         <source>Force screen 16:9 aspect ratio</source>
         <translation>强制屏幕显示 16:9 比例</translation>
     </message>
@@ -1551,62 +1555,51 @@
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="35"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="59"/>
         <source>When enabled, items in play queue are accessible for other UPnP devices in your local network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="90"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="188"/>
         <source>Microphone sensitivity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="123"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="244"/>
         <source>Enabled</source>
         <translation>启用</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="124"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="245"/>
         <source>Enabled with audio</source>
         <translation>同时开启音频</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="150"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="262"/>
         <source>Don&apos;t force</source>
         <translation>请勿强制</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="151"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="263"/>
         <source>Scale</source>
         <translation>比例</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="152"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="264"/>
         <source>Crop</source>
         <translation>剪裁</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="169"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="273"/>
         <source>Screen capture quality</source>
         <translation>屏幕捕获质量</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="212"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="62"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="334"/>
         <source>Stream recorder</source>
         <translation>流媒体录制机</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="238"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="342"/>
         <source>Directory for recordings</source>
         <translation>录音文件目录</translation>
     </message>
@@ -1632,44 +1625,36 @@
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="282"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="353"/>
         <source>Preferred network interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="297"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="70"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="374"/>
         <source>Stream relaying</source>
         <translation>流媒体中继</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="298"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="71"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation>​互联网流媒体通过 %1 中继到 UPnP 设备。推荐的你使用“总是”选项，因为它提供了最好的兼容性。当中继被禁用时(“绝不”选项)， Icecast 标题及流媒体录制器不可用。</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="320"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="391"/>
         <source>Always</source>
         <translation>总是</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="321"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="392"/>
         <source>Only Icecast</source>
         <translation>仅 Icecast</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="322"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="393"/>
         <source>Never</source>
         <translation>绝不</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="338"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="78"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>​所有类型的 UPnP 设备都会被侦测和显示，包括不受支持的设备，如家用路由器。对于不受支持的设备，只有基本的描述信息可用。该选项可能对检查本地网络中的 UPnP 设备很有用。</translation>
     </message>
@@ -1680,14 +1665,11 @@
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="337"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="77"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="448"/>
         <source>All devices visible</source>
         <translation>所有设备可见</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="213"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="63"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
         <translation>从链接中加载录音。 如果链接项为 Icecast 串串流，则会录制串串流中的单独音乐。 要启用录制，请使用底栏上的 &quot;录音 &quot;按钮。 当 &quot;录音 &quot;按钮在当前音乐播完前激活时，整首歌都将被保存到一个文件中。</translation>
     </message>
@@ -1697,78 +1679,22 @@
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="386"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="86"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>用于排除故障。日志数据保存于 %1 文件。</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="385"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="85"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="460"/>
         <source>Enable logging</source>
         <translation>开启日志记录</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="22"/>
-        <source>Info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="38"/>
-        <source>Choose a directory for recordings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="54"/>
-        <source>Settings options</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="214"/>
-        <source>Audio capture volume boost</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="397"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="95"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="472"/>
         <source>Reset settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="97"/>
-        <source>Reset all settings to defaults?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="98"/>
-        <source>Restart is required for the changes to take effect.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="114"/>
-        <source>Icecast titles and Stream recorder are disabled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="297"/>
-        <source>Screen capture framerate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="277"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="348"/>
         <source>Advanced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="412"/>
-        <source>Screen capture encoder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="424"/>
-        <source>Auto</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
