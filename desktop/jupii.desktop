@@ -5,4 +5,4 @@ Icon=jupii
 Exec=jupii
 Name=Jupii
 Categories=AudioVideo;Player;Qt;Audio;
-Comment=Stream audio, video and image files to UPnP/DLNA devices
+Comment=Play audio, video and images on UPnP/DLNA devices

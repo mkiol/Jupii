@@ -13,7 +13,7 @@ arm: INCLUDEPATH += /usr/include/c++/8.3.0/armv7hl-meego-linux-gnueabi
 CONFIG += sailfish screencast
 DEFINES += SAILFISH SCREENCAST
 
-include($$PROJECTDIR/core/jupii_core.pri)
+include($${PROJECTDIR}/core/jupii_core.pri)
 
 INCLUDEPATH += src
 
@@ -64,23 +64,36 @@ OTHER_FILES += \
     qml/TuneinPage.qml \
     qml/InteractionHintLabel_.qml
 
-SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
+################
+# translations #
+################
 
-TRANSLATION_SOURCE_DIRS += $$PROJECTDIR/core
+TRANSLATION_SOURCE_DIRS += $${PROJECTDIR}/core \
+                           $${PROJECTDIR}/sailfish/qml \
+                           $${PROJECTDIR}/sailfish/src \
+                           $${PROJECTDIR}/desktop/qml \
+                           $${PROJECTDIR}/desktop/src
 CONFIG += sailfishapp_i18n_include_obsolete
+TRANSLATIONS_DIR = $${PROJECTDIR}/translations
 TRANSLATIONS += \
-    translations/harbour-jupii-en.ts \
-    translations/harbour-jupii-pl.ts \
-    translations/harbour-jupii-nl.ts \
-    translations/harbour-jupii-nl_BE.ts \
-    translations/harbour-jupii-ru.ts \
-    translations/harbour-jupii-de.ts \
-    translations/harbour-jupii-sv.ts \
-    translations/harbour-jupii-es.ts \
-    translations/harbour-jupii-zh_CN.ts \
-    translations/harbour-jupii-sl_SI.ts \
-    translations/harbour-jupii-it.ts
+    $${TRANSLATIONS_DIR}/jupii-en.ts \
+    $${TRANSLATIONS_DIR}/jupii-pl.ts \
+    $${TRANSLATIONS_DIR}/jupii-nl.ts \
+    $${TRANSLATIONS_DIR}/jupii-nl_BE.ts \
+    $${TRANSLATIONS_DIR}/jupii-ru.ts \
+    $${TRANSLATIONS_DIR}/jupii-de.ts \
+    $${TRANSLATIONS_DIR}/jupii-sv.ts \
+    $${TRANSLATIONS_DIR}/jupii-es.ts \
+    $${TRANSLATIONS_DIR}/jupii-zh_CN.ts \
+    $${TRANSLATIONS_DIR}/jupii-sl_SI.ts \
+    $${TRANSLATIONS_DIR}/jupii-it.ts
 include(sailfishapp_i18n.pri)
+
+##########
+# images #
+##########
+
+SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 
 images.files = images/*
 images.path = /usr/share/$${TARGET}/images

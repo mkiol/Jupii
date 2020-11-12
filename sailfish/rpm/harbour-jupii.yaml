@@ -1,6 +1,6 @@
 Name: harbour-jupii
 Summary: Jupii
-Version: 2.7.3
+Version: 2.8.0
 Release: 1
 # The contents of the Group field should be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
@@ -12,7 +12,7 @@ License: LICENSE
 Sources:
 - '%{name}-%{version}.tar.bz2'
 Description: |
-  Stream content from your mobile to UPnP/DLNA devices
+  Play audio, video and images on UPnP/DLNA devices
 Configure: none
 # The qtc5 builder inserts macros to allow QtCreator to have fine
 # control over qmake/make execution

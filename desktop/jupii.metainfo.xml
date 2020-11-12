@@ -3,9 +3,9 @@
   <id>org.mkiol.Jupii</id>
   <metadata_license>MPL-2.0</metadata_license>
   <name>Jupii</name>
-  <summary>Stream audio, video and image files to UPnP/DLNA devices.</summary>
+  <summary>Play audio, video and images on UPnP/DLNA devices.</summary>
   <description>
-    <p>Stream audio, video and image files to UPnP/DLNA devices.</p>
+    <p>Play audio, video and images on UPnP/DLNA devices.</p>
   </description>
   <categories>
     <category>AudioVideo</category>

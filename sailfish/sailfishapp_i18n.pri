@@ -33,22 +33,22 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-TS_FILE = $${_PRO_FILE_PWD_}/translations/$${TARGET}.ts
+TRANSLATIONS_OUT_DIR_NAME = "translations"
 HAVE_TRANSLATIONS = 0
 
 # Translation source directories
-TRANSLATION_SOURCE_CANDIDATES = $${_PRO_FILE_PWD_}/src $${_PRO_FILE_PWD_}/qml $$TRANSLATION_SOURCE_DIRS
+TRANSLATION_SOURCE_CANDIDATES = $$TRANSLATION_SOURCE_DIRS
 for(dir, TRANSLATION_SOURCE_CANDIDATES) {
     exists($$dir) {
-        TRANSLATION_SOURCES += $$dir
+        TRANSLATION_SOURCES += $$clean_path($$dir)
     }
 }
 
 # prefix all TRANSLATIONS with the src dir
 # the qm files are generated from the ts files copied to out dir
 for(t, TRANSLATIONS) {
-    TRANSLATIONS_IN  += $${_PRO_FILE_PWD_}/$$t
-    TRANSLATIONS_OUT += $${OUT_PWD}/$$t
+    TRANSLATIONS_IN  += $$clean_path($$t)
+    TRANSLATIONS_OUT += $$clean_path($${OUT_PWD}/$${TRANSLATIONS_OUT_DIR_NAME}/$$basename(t))
     HAVE_TRANSLATIONS = 1
 }
 

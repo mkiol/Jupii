@@ -56,5 +56,16 @@
         <file>qml/MediaInfoPage.qml</file>
         <file>images/tunein.svg</file>
         <file>qml/TuneinPage.qml</file>
+        <file>translations/jupii-zh_CN.qm</file>
+        <file>translations/jupii-de.qm</file>
+        <file>translations/jupii-en.qm</file>
+        <file>translations/jupii-es.qm</file>
+        <file>translations/jupii-it.qm</file>
+        <file>translations/jupii-nl_BE.qm</file>
+        <file>translations/jupii-nl.qm</file>
+        <file>translations/jupii-pl.qm</file>
+        <file>translations/jupii-ru.qm</file>
+        <file>translations/jupii-sl_SI.qm</file>
+        <file>translations/jupii-sv.qm</file>
     </qresource>
 </RCC>

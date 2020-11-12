@@ -146,18 +146,20 @@ int main(int argc, char *argv[])
 
     auto settings = Settings::instance();
 
-#ifdef SAILFISH
     QTranslator translator;
+#ifdef SAILFISH
     auto transDir = SailfishApp::pathTo("translations").toLocalFile();
-    auto locale = QLocale::system().name();
-    if(!translator.load(locale, "harbour-jupii", "-", transDir, ".qm")) {
-        qDebug() << "Cannot load translation:" << locale << transDir;
-        if (!translator.load("harbour-jupii-en", transDir)) {
+#else
+    QString transDir = ":/translations";
+#endif
+    if(!translator.load(QLocale::system().name(), QStringLiteral("jupii"), QStringLiteral("-"), transDir, QStringLiteral(".qm"))) {
+        qDebug() << "Cannot load translation:" << QLocale::system().name() << transDir;
+        if (!translator.load("jupii-en", transDir)) {
             qDebug() << "Cannot load default translation";
         }
     }
     app->installTranslator(&translator);
-#endif // SAILFISH
+
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
@@ -196,12 +198,10 @@ int main(int argc, char *argv[])
 
     view->show();
     utils->setQmlRootItem(view->rootObject());
-#endif // SAILFISH
-
-#ifdef KIRIGAMI
+#else
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     engine->load(url);
-#endif // KIRIGAMI
+#endif // SAILFISH
 
     int ret = app->exec();
     fcloseall();
