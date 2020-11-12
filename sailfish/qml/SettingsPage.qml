@@ -175,7 +175,7 @@ Page {
 
             /*ComboBox {
                 visible: settings.screenSupported && settings.isDebug()
-                label: qsTr("Screen encoder")
+                label: qsTr("Screen capture encoder")
                 currentIndex: {
                     var enc = settings.screenEncoder;
                     if (enc === "libx264")
@@ -267,14 +267,14 @@ Page {
 
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "Reset tips and hints"
+                text: qsTr("Reset tips and hints")
                 onClicked: {
                     remorse.execute(qsTr("Resetting tips and hints"), function() { settings.resetHints() } )
                 }
             }
 
             SectionHeader {
-                text: qsTr("Advanced options")
+                text: qsTr("Advanced")
             }
 
             ComboBox {
@@ -394,9 +394,9 @@ Page {
             Button {
                 visible: settings.isDebug()
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "Reset settings"
+                text: qsTr("Reset settings")
                 onClicked: {
-                    remorse.execute(qsTr("Reseting settings"), function() { settings.reset() } )
+                    remorse.execute(qsTr("Resetting settings"), function() { settings.reset() } )
                 }
             }
 

@@ -47,7 +47,6 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
-            searchPlaceholderText: qsTr("Search tracks")
             model: itemModel
             dialog: root
             view: listView

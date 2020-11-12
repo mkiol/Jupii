@@ -25,7 +25,7 @@ Kirigami.ScrollablePage {
 
     //refreshing: directory.busy
     Component.onCompleted: {
-        refreshing = Qt.binding(() => directory.busy)
+        refreshing = Qt.binding(function() { return directory.busy })
         devmodel.deviceType = DeviceModel.MediaServerType
     }
     Component.onDestruction: {
@@ -112,7 +112,7 @@ Kirigami.ScrollablePage {
             helpfulAction: Kirigami.Action {
                 enabled: directory.inited
                 iconName: "view-refresh"
-                text: qsTr("Find more")
+                text: qsTr("Find devices")
                 onTriggered: refreshAction.trigger()
             }
         }

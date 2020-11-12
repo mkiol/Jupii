@@ -19,7 +19,7 @@ Dialog {
 
     onAccepted: {
         if (playlist.saveToFile(textField.text.trim()))
-            notifications.show(qsTr("Playlist was saved"))
+            notifications.show(qsTr("Playlist has been saved"))
     }
 
     SilicaFlickable {

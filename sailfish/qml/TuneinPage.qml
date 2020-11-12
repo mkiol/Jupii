@@ -55,7 +55,6 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
-            searchPlaceholderText: qsTr("Search stations")
             noSearchCount: -1
             model: itemModel
             dialog: root

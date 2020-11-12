@@ -25,7 +25,7 @@ Page {
             spacing: Theme.paddingLarge
 
             PageHeader {
-                title: qsTr("About")
+                title: qsTr("About %1").arg(APP_NAME)
             }
 
             Image {

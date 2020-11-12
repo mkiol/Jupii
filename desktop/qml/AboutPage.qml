@@ -44,7 +44,7 @@ Kirigami.ScrollablePage {
                     Layout.fillWidth: true
                     level: 2
                     wrapMode: Text.WordWrap
-                    text: qsTr("Stream audio, video and image files to UPnP/DLNA devices")
+                    text: qsTr("Play audio, video and images on UPnP/DLNA devices")
                 }
             }
         }

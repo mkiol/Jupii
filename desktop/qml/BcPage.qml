@@ -27,17 +27,17 @@ Kirigami.ScrollablePage {
     topPadding: 0
 
     title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
-           itemModel.artistName.length > 0 ? itemModel.artistName : qsTr("Bandcamp")
+           itemModel.artistName.length > 0 ? itemModel.artistName : "Bandcamp"
 
     //refreshing: itemModel.busy
     Component.onCompleted: {
-        refreshing = Qt.binding(() => itemModel.busy)
+        refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()
     }
 
     actions {
         main: Kirigami.Action {
-            text: itemModel.selectedCount > 0 ? qsTr("Add %1 selected").arg(itemModel.selectedCount) : qsTr("Add selected")
+            text: itemModel.selectedCount > 0 ? qsTr("Add %n selected", "", itemModel.selectedCount) : qsTr("Add selected")
             enabled: itemModel.selectedCount > 0
             iconName: "list-add"
             onTriggered: {
@@ -118,8 +118,8 @@ Kirigami.ScrollablePage {
                 }
             }
 
-            extra: model.type === BcModel.Type_Album ? qsTr("album") :
-                   model.type === BcModel.Type_Artist ? qsTr("artist") : ""
+            extra: model.type === BcModel.Type_Album ? qsTr("Album") :
+                   model.type === BcModel.Type_Artist ? qsTr("Artist") : ""
 
             highlighted: {
                 if (pageStack.currentItem !== root) {

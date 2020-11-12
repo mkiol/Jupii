@@ -56,7 +56,7 @@ Kirigami.ScrollablePage {
         Controls.Label {
             textFormat: Text.StyledText
             text: "<h4>" + qsTr("Share play queue items via UPnP Media Server") + "</h4>" +
-                  "<p>" + qsTr("When enabled, items in Play Queue are accessible " +
+                  "<p>" + qsTr("When enabled, items in play queue are accessible " +
                                "for other UPnP devices in your local network.") + "</p>" +
                   "<br/>" +
                   "<h4>" + qsTr("Stream recorder") + "</h4>" +
@@ -211,7 +211,7 @@ Kirigami.ScrollablePage {
             }
 
             RowLayout {
-                Kirigami.FormData.label: qsTr("Audio Capture volume boost")
+                Kirigami.FormData.label: qsTr("Audio capture volume boost")
                 Controls.Slider {
                     from: 1
                     to: 10
@@ -409,7 +409,7 @@ Kirigami.ScrollablePage {
 
             Controls.ComboBox {
                 enabled: settings.screenSupported
-                Kirigami.FormData.label: qsTr("Screen encoder")
+                Kirigami.FormData.label: qsTr("Screen capture encoder")
                 currentIndex: {
                     var enc = settings.screenEncoder;
                     if (enc === "libx264")

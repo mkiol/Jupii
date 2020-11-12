@@ -64,7 +64,7 @@ Page {
                 visible: itemType === ContentServer.ItemType_LocalFile ||
                          itemType === ContentServer.ItemType_Url
 
-                MenuItem {
+                /*MenuItem {
                     visible: av.currentRecUrl.length !== 0
                     text: qsTr("Open recording URL in browser")
                     onClicked: Qt.openUrlExternally(av.currentRecUrl)
@@ -74,7 +74,7 @@ Page {
                     visible: av.currentRecUrl.length !== 0
                     text: qsTr("Copy recording URL")
                     onClicked: Clipboard.text = av.currentRecUrl
-                }
+                }*/
 
                 MenuItem {
                     visible: av.currentYtdl
@@ -278,7 +278,7 @@ Page {
                     font.pixelSize: Theme.fontSizeSmall
                 }
 
-                SectionHeader {
+                /*SectionHeader {
                     text: qsTr("Recording URL")
                     visible: av.currentRecUrl.length !== 0
                 }
@@ -286,7 +286,7 @@ Page {
                 PaddedLabel {
                     text: av.currentRecUrl
                     visible: text.length !== 0
-                }
+                }*/
 
                 SectionHeader {
                     text: av.currentPath.length !== 0 ? qsTr("Path") : qsTr("URL")

@@ -25,13 +25,13 @@ Kirigami.ScrollablePage {
 
     //refreshing: itemModel.busy
     Component.onCompleted: {
-        refreshing = Qt.binding(() => itemModel.busy)
+        refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()
     }
 
     actions {
         main: Kirigami.Action {
-            text: itemModel.selectedCount > 0 ? qsTr("Add %1 selected").arg(itemModel.selectedCount) : qsTr("Add selected")
+            text: itemModel.selectedCount > 0 ? qsTr("Add %n selected", "", itemModel.selectedCount) : qsTr("Add selected")
             enabled: itemModel.selectedCount > 0
             iconName: "list-add"
             onTriggered: {

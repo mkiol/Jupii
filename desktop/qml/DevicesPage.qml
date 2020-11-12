@@ -26,7 +26,7 @@ Kirigami.ScrollablePage {
 
     //refreshing: directory.busy
     Component.onCompleted: {
-        refreshing = Qt.binding(() => directory.busy)
+        refreshing = Qt.binding(function() { return directory.busy })
     }
 
     actions {
@@ -80,7 +80,7 @@ Kirigami.ScrollablePage {
             actions: [
                 Kirigami.Action {
                     visible: model.supported
-                    iconName: model.active ? qsTr("network-disconnect") : qsTr("network-connect")
+                    iconName: model.active ? "network-disconnect" : "network-connect"
                     text: model.active ? qsTr("Disconnect") : qsTr("Connect")
                     onTriggered: {
                         if (model.active)
@@ -90,7 +90,7 @@ Kirigami.ScrollablePage {
                     }
                 },
                 Kirigami.Action {
-                    iconName: qsTr("system-shutdown")
+                    iconName: "system-shutdown"
                     text: model.power ? qsTr("Power Off") : qsTr("Power On")
                     visible: model.xc
                     onTriggered: {

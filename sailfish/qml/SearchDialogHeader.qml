@@ -48,8 +48,6 @@ FocusScope {
                      model.count > root.noSearchCount)
             text: model.filter
 
-            placeholderText: qsTr("Search items")
-
             onActiveFocusChanged: {
                 if (activeFocus)
                     root.view.currentIndex = -1

@@ -47,7 +47,7 @@ Page {
                     visible: enabled
                     onClicked: {
                         Clipboard.text = deviceInfo.getXML()
-                        notifications.show(qsTr("Description copied to the clipboard"))
+                        notifications.show(qsTr("Description was copied to clipboard"))
                     }
                 }
             }

@@ -31,7 +31,7 @@ Kirigami.ScrollablePage {
     implicitWidth: Kirigami.Units.gridUnit * 20
 
     Component.onCompleted: {
-        refreshing = Qt.binding(() => root.busy)
+        refreshing = Qt.binding(function() { return root.busy })
     }
 
     title: av.deviceFriendlyName.length > 0 ? av.deviceFriendlyName : qsTr("Play queue")
@@ -117,13 +117,13 @@ Kirigami.ScrollablePage {
 
         onError: {
             if (code === PlayListModel.E_FileExists)
-                notifications.show(qsTr("Item is already in play queue."))
+                notifications.show(qsTr("Item is already in play queue"))
             else if (code === PlayListModel.E_ItemNotAdded)
-                notifications.show(qsTr("Item cannot be added."))
+                notifications.show(qsTr("Item cannot be added"))
             else if (code === PlayListModel.E_SomeItemsNotAdded)
-                notifications.show(qsTr("Some items cannot be added."))
+                notifications.show(qsTr("Some items cannot be added"))
             else if (code === PlayListModel.E_AllItemsNotAdded)
-                notifications.show(qsTr("Items cannot be added."))
+                notifications.show(qsTr("Items cannot be added"))
             else
                 notifications.show(qsTr("Unknown error"))
         }
@@ -140,7 +140,7 @@ Kirigami.ScrollablePage {
         folder: shortcuts.music
         onAccepted: {
             if (playlist.saveToUrl(saveDialog.fileUrls[0]))
-                showPassiveNotification(qsTr("Playlist has been saved."))
+                showPassiveNotification(qsTr("Playlist has been saved"))
         }
     }
 
@@ -148,7 +148,7 @@ Kirigami.ScrollablePage {
         id: clearDialog
         title: qsTr("Clear queue")
         icon: StandardIcon.Question
-        text: qsTr("Remove all items from Pay Queue?")
+        text: qsTr("Remove all items from play queue?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
             playlist.clear()

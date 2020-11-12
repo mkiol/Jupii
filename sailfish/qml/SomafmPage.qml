@@ -55,7 +55,6 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
-            searchPlaceholderText: qsTr("Search channels")
             model: itemModel
             dialog: root
             view: listView
@@ -73,6 +72,7 @@ Dialog {
             MenuItem {
                 text: qsTr("Refresh")
                 onClicked: itemModel.refresh()
+                enabled: !itemModel.refreshing
             }
 
             MenuItem {

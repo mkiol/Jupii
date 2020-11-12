@@ -34,7 +34,7 @@ Kirigami.ApplicationWindow {
 
         actions: [
             Kirigami.Action {
-                text: qsTr("Play Queue")
+                text: qsTr("Play queue")
                 checked: homeAction.checked
                 iconName: "view-media-playlist"
                 onTriggered: homeAction.trigger()

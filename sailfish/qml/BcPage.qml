@@ -64,7 +64,6 @@ Dialog {
             search: !root.artistMode && !root.albumMode
             implicitWidth: root.width
             noSearchCount: -1
-            searchPlaceholderText: qsTr("Search items")
             model: itemModel
             dialog: root
             view: listView
@@ -109,8 +108,8 @@ Dialog {
                                     "image://theme/icon-m-media-artists?" + primaryColor :
                                 "image://theme/icon-m-file-audio?" + primaryColor
             icon.source: model.icon
-            extra: model.type === BcModel.Type_Album ? qsTr("album") :
-                   model.type === BcModel.Type_Artist ? qsTr("artist") : ""
+            extra: model.type === BcModel.Type_Album ? qsTr("Album") :
+                   model.type === BcModel.Type_Artist ? qsTr("Artist") : ""
 
             onClicked: {
                 if (model.type === BcModel.Type_Track) {

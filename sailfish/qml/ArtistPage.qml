@@ -67,7 +67,6 @@ Page {
         header: SearchPageHeader {
             implicitWidth: root.width
             title: qsTr("Artists")
-            searchPlaceholderText: qsTr("Search artists")
             model: itemModel
             view: listView
         }

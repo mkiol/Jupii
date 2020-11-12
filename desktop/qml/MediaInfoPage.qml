@@ -31,13 +31,13 @@ Kirigami.ScrollablePage {
             onTriggered: Qt.openUrlExternally(av.currentOrigURL)
         }
         contextualActions: [
-            Kirigami.Action {
+            /*Kirigami.Action {
                 text: qsTr("Open recording URL in browser")
                 iconName: "globe"
                 enabled: av.currentRecUrl.length !== 0
                 visible: enabled
                 onTriggered: Qt.openUrlExternally(av.currentRecUrl)
-            },
+            },*/
             Kirigami.Action {
                 text: qsTr("Copy current title")
                 iconName: "edit-copy"
@@ -60,10 +60,10 @@ Kirigami.ScrollablePage {
                                           av.currentPath : av.currentOrigURL)
                    showPassiveNotification(itemType === ContentServer.ItemType_LocalFile ?
                                                qsTr("Path was copied to clipboard") :
-                                               qsTr("URL  was copied to clipboard"))
+                                               qsTr("URL was copied to clipboard"))
                 }
-            },
-            Kirigami.Action {
+            }
+            /*Kirigami.Action {
                 text: qsTr("Copy recording URL")
                 iconName: "edit-copy"
                 enabled: av.currentRecUrl.length !== 0
@@ -72,7 +72,7 @@ Kirigami.ScrollablePage {
                    utils.setClipboard(av.currentRecUrl)
                    showPassiveNotification(qsTr("Recording URL was copied to clipboard"))
                 }
-            }
+            }*/
         ]
     }
 
@@ -269,7 +269,7 @@ Kirigami.ScrollablePage {
                 text: av.currentContentType
             }
 
-            Controls.Label {
+            /*Controls.Label {
                 visible: recUrlLabel.visible
                 Layout.alignment: Qt.AlignRight | Qt.AlignTop
                 text: qsTr("Recording URL")
@@ -282,7 +282,7 @@ Kirigami.ScrollablePage {
                 visible: text.length !== 0
                 wrapMode: Text.WrapAnywhere
                 text: av.currentRecUrl
-            }
+            }*/
 
             Controls.Label {
                 visible: pathLabel.visible
