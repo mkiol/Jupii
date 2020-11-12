@@ -174,7 +174,6 @@ bool Tracker::startTracker()
     }
 
     auto path = reply.value().path();
-    qDebug() << "path:" << path;
 
     if (!dbus_inf.isValid() || path.isEmpty()) {
         qWarning() << "Systemd job is invalid";

@@ -280,7 +280,7 @@ QList<ListItem*> TrackModel::processTrackerReplyForUrls(TrackerCursor& cursor)
         TrackData data;
         data.title = cursor.value(2).toString();
         data.author = cursor.value(3).toString();
-        data.icon = Tracker::genAlbumArtFile(cursor.value(4).toString(), data.author);
+        data.icon = QUrl::fromLocalFile(Tracker::genAlbumArtFile(cursor.value(4).toString(), data.author));
         data.type = ContentServer::typeFromMime(cursor.value(1).toString());
 
         m_trackdata_by_id.insert(id, data);
