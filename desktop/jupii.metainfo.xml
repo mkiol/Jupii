@@ -22,4 +22,7 @@
   <provides>
     <binary>jupii</binary>
   </provides>
+  <releases>
+    <release version="2.8.0" date="2020-11-13" />
+  </releases>
 </component>

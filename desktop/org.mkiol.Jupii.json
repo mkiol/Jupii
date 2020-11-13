@@ -1,6 +1,6 @@
 {
     "id": "org.mkiol.Jupii",
-    "branch": "master",
+    "default-branch": "stable",
     "runtime": "org.kde.Platform",
     "runtime-version": "5.15",
     "sdk": "org.kde.Sdk",
