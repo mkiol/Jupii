@@ -36,12 +36,12 @@ Jupii relies on following open source libraries:
 - [FFmpeg](https://ffmpeg.org/)
 - [Lame](https://lame.sourceforge.io/)
 - [x264](https://www.videolan.org/developers/x264.html)
+- [Gumbo](https://github.com/google/gumbo-parser)
 
 ## Download
 
-- Sailfish OS packages are available for download from
-  [OpenRepos](https://openrepos.net/content/mkiol/jupii) and Jolla Store.
-- Experimental Linux Desktop x86_64 Flatpak bundle can be download [here](https://github.com/mkiol/Jupii/tree/master/desktop/packages).
+- Sailfish OS: [OpenRepos](https://openrepos.net/content/mkiol/jupii)
+- Linux Desktop: [Flatpak package](https://github.com/mkiol/Jupii/tree/master/binaries).
 
 ## Translations
 
