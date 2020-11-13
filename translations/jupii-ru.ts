@@ -434,10 +434,11 @@
     </message>
     <message>
         <location filename="../sailfish/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="42"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="102"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="158"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="245"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="68"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="78"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="138"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="194"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="281"/>
         <location filename="../desktop/qml/ChangelogPage.qml" line="32"/>
         <location filename="../desktop/qml/ChangelogPage.qml" line="42"/>
         <location filename="../desktop/qml/ChangelogPage.qml" line="102"/>
@@ -1072,50 +1073,50 @@
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="92"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="122"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="124"/>
         <source>Item cannot be added</source>
         <translation>Невозможно добавить</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="94"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="124"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="126"/>
         <source>Some items cannot be added</source>
         <translation>Некоторые медиа добавить невозможно</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="96"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="126"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="128"/>
         <source>Items cannot be added</source>
         <translation>Невозможно добавить</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="98"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="128"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="130"/>
         <source>Unknown error</source>
         <translation>Неизвестная ошибка</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="117"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="37"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="39"/>
         <source>Play queue</source>
         <translation>Воспроизвести</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="143"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="87"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="89"/>
         <source>Refresh items</source>
         <translation>Обновить список</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="127"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="72"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="74"/>
         <source>Save queue</source>
         <translation>Сохранить очередь</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="137"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="80"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="149"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="82"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="151"/>
         <source>Clear queue</source>
         <translation>Очистить очередь</translation>
     </message>
@@ -1127,14 +1128,14 @@
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="143"/>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="154"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="51"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="53"/>
         <source>Cancel</source>
         <translation>Отменить</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="154"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="42"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="276"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="44"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="278"/>
         <source>Add items</source>
         <translation>Добавить медиа</translation>
     </message>
@@ -1145,67 +1146,67 @@
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="244"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="239"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="241"/>
         <source>Show</source>
         <translation>Показать</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="90"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="120"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="122"/>
         <source>Item is already in play queue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="169"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="168"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="170"/>
         <source>Refreshing item %1 of %2...</source>
         <translation>Обновление пункта %1 из %2...</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="170"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="169"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="171"/>
         <source>Refreshing item...</source>
         <translation>Обновление...</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="172"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="171"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="173"/>
         <source>Adding item %1 of %2...</source>
         <translation>Добавление пункта %1 из %2...</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="173"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="172"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="174"/>
         <source>Adding item...</source>
         <translation>Добавление...</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="244"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="239"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="241"/>
         <source>Play</source>
         <translation>Играть</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="259"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="239"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="241"/>
         <source>Pause</source>
         <translation>Пауза</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="269"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="250"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="252"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="293"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="273"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="275"/>
         <source>No items</source>
         <translation>Пусто</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="311"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="292"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="294"/>
         <source>Unknown</source>
         <translation>Неизвестно</translation>
     </message>
@@ -1235,22 +1236,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="64"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="66"/>
         <source>Track info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="143"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="145"/>
         <source>Playlist has been saved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="151"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="153"/>
         <source>Remove all items from play queue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="134"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="136"/>
         <source>Save items to playlist file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2066,61 +2067,61 @@
     <name>main</name>
     <message>
         <location filename="../sailfish/qml/main.qml" line="58"/>
-        <location filename="../desktop/qml/main.qml" line="183"/>
+        <location filename="../desktop/qml/main.qml" line="185"/>
         <source>Connected to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="66"/>
-        <location filename="../desktop/qml/main.qml" line="192"/>
+        <location filename="../desktop/qml/main.qml" line="194"/>
         <source>Cannot connect to device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="70"/>
-        <location filename="../desktop/qml/main.qml" line="196"/>
+        <location filename="../desktop/qml/main.qml" line="198"/>
         <source>Device responded with an error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="74"/>
-        <location filename="../desktop/qml/main.qml" line="200"/>
+        <location filename="../desktop/qml/main.qml" line="202"/>
         <source>Cannot play the file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="87"/>
-        <location filename="../desktop/qml/main.qml" line="213"/>
+        <location filename="../desktop/qml/main.qml" line="215"/>
         <source>Track &quot;%1&quot; saved</source>
         <translation>Дорожка &quot;%1&quot; сохранена</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="96"/>
-        <location filename="../desktop/qml/main.qml" line="223"/>
+        <location filename="../desktop/qml/main.qml" line="225"/>
         <source>Cannot connect to a local network</source>
         <translation>Нет соединения с локальной сетью</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="99"/>
-        <location filename="../desktop/qml/main.qml" line="226"/>
+        <location filename="../desktop/qml/main.qml" line="228"/>
         <source>An internal error occurred</source>
         <translation>Внутренняя ошибка</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="116"/>
-        <location filename="../desktop/qml/main.qml" line="245"/>
+        <location filename="../desktop/qml/main.qml" line="247"/>
         <source>Cannot download youtube-dl</source>
         <translation>Невозможно загрузить youtube-dl</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="119"/>
-        <location filename="../desktop/qml/main.qml" line="248"/>
+        <location filename="../desktop/qml/main.qml" line="250"/>
         <source>Cannot update youtube-dl</source>
         <translation>Невозможно обновить youtube-dl</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="122"/>
-        <location filename="../desktop/qml/main.qml" line="251"/>
+        <location filename="../desktop/qml/main.qml" line="253"/>
         <source>Cannot find URL with youtube-dl</source>
         <translation>youtube-dl не может получить URL</translation>
     </message>
