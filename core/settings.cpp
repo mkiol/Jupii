@@ -401,11 +401,7 @@ void Settings::setRec(bool value)
 
 bool Settings::getRec()
 {
-#ifdef SAILFISH
-    return settings.value("rec", false).toBool();
-#else
     return settings.value("rec", true).toBool();
-#endif
 }
 
 void Settings::setScreenSupported(bool value)
@@ -565,6 +561,7 @@ float Settings::getMicVolume()
 void Settings::setAudioBoost(float value)
 {
 #ifdef SAILFISH
+    Q_UNUSED(value)
     return;
 #else
     value = value < 1 ? 1 : value > 10 ? 10 : value;
