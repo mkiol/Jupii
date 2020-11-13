@@ -29,6 +29,42 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.8.0")
+            }
+
+            LogItem {
+                title: "TuneIn browser"
+                description: "TuneIn is a popular online radio directory. " +
+                             "It enables discovery of internet radio stations " +
+                             "from all over the world. " +
+                             "Right now Jupii is able to play only HTTP stations. " +
+                             "ICY or MMS streamings are not supported therefore " +
+                             "some TuneIn stations cannot be added."
+            }
+
+            LogItem {
+                title: "Better Bandcamp browser"
+                description: "Bandcamp is a music streaming online service. " +
+                             "Previously the browser used Youtube-dl " +
+                             "to discover media URLs, but now other approach is chosen. " +
+                             "It is much faster and enables also browsing by Albums and Artists."
+            }
+
+            LogItem {
+                title: "Tips and hints for the fist time user"
+                description: "Fist time experience is improved. " +
+                             "Tips, swipe and touch hints are shown to navigate user " +
+                             "through the app."
+            }
+
+            LogItem {
+                title: "Fixes for bugs discovered on SFOS 3.4.0"
+                description: "In the recent SFOS version Albums, Artists and " +
+                             "Playlists browser stopped working. " +
+                             "This issue is now resolved."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.7.3")
             }
 

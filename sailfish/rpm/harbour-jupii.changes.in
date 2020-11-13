@@ -8,6 +8,12 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Fri Nov 13 2020 Michal Kosciesza <michal@mkiol.net> 2.8.0-1
+- TuneIn browser
+- Better Bandcamp browser
+- Tips and hints
+- Fixes for bugs discovered in SFOS 3.4
+
 * Sat Aug 29 2020 Michal Kosciesza <michal@mkiol.net> 2.7.3-1
 - New methods in DBus API
 
