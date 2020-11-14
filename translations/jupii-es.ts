@@ -1447,53 +1447,53 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="115"/>
         <source>Connect to a device to control playback using %1.</source>
-        <translation>Conectar un positivo para controlar la reproducción usando% 1.</translation>
+        <translation>Conectar un dispositivo para controlar la reproducción usando% 1.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="116"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sin conexión, todos los elementos de la cola de reproducción siguen siendo accesibles en otros dispositivos de su red local.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="119"/>
         <source>Devices</source>
-        <translation type="unfinished">Dispositivos</translation>
+        <translation>Dispositivos</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="307"/>
         <source>Skip Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Saltar hacia atrás</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="317"/>
         <source>Seek Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Saltar hacia adelante</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="327"/>
         <source>Seek Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar adelante</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="337"/>
         <source>Skip Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Saltar adelante</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="349"/>
         <source>Toggle Record</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar registro</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="363"/>
         <source>Toggle Repeat One</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar repetir uno</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="402"/>
         <location filename="../desktop/qml/PlayerPanel.qml" line="440"/>
         <source>Toggle Mute</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar mudo</translation>
     </message>
 </context>
 <context>
@@ -1508,11 +1508,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <name>PlaylistPage</name>
     <message>
         <source>Playlist files</source>
-        <translation type="vanished">Archivos de reproducción</translation>
+        <translation>Archivos de reproducción</translation>
     </message>
     <message>
         <source>Search playlist files</source>
-        <translation type="vanished">Buscar archivos de Reproducción</translation>
+        <translation>Buscar archivos de Reproducción</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="69"/>
@@ -1521,7 +1521,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Search playlists</source>
-        <translation type="vanished">Buscar reproducciones</translation>
+        <translation>Buscar reproducciones</translation>
     </message>
     <message numerus="yes">
         <location filename="../sailfish/qml/PlaylistPage.qml" line="79"/>
@@ -1548,7 +1548,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Delete playlist file</source>
-        <translation type="vanished">Borrar archivo de reproducción</translation>
+        <translation>Borrar archivo de reproducción</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="104"/>
@@ -1557,7 +1557,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>No playlist files</source>
-        <translation type="vanished">No hay archivos de reproducción</translation>
+        <translation>No hay archivos de reproducción</translation>
     </message>
 </context>
 <context>
@@ -1573,7 +1573,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <name>RecPage</name>
     <message>
         <source>Search recordings</source>
-        <translation type="vanished">Buscar grabados</translation>
+        <translation>Buscar grabados</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="70"/>
@@ -1638,38 +1638,38 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="25"/>
         <source>Recordings</source>
-        <translation type="unfinished">Grabando</translation>
+        <translation>Grabando</translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar seleccionados</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Agregar %n seleccionado</numerusform>
+            <numerusform>Agregar %n seleccionados</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="75"/>
         <source>Delete %n recording(s)?</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>¿Quitar %n grabado?</numerusform>
+            <numerusform>¿Quitar %n grabados?</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="98"/>
         <source>Sort by:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar por:</translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="149"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar selección</translation>
     </message>
 </context>
 <context>
@@ -1689,12 +1689,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <name>SavePlaylistPage</name>
     <message>
         <source>Playlist was saved</source>
-        <translation type="vanished">La reproducción fue guardada</translation>
+        <translation>La reproducción fue guardada</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SavePlaylistPage.qml" line="22"/>
         <source>Playlist has been saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Se guardó la lista</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SavePlaylistPage.qml" line="37"/>
@@ -1724,11 +1724,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Search items</source>
-        <translation type="obsolete">Buscar elementos</translation>
+        <translation>Buscar elementos</translation>
     </message>
     <message>
         <source>Search episodes</source>
-        <translation type="vanished">Buscar episodios</translation>
+        <translation>Buscar episodios</translation>
     </message>
 </context>
 <context>
@@ -1745,15 +1745,15 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Items on play queue will be accessible for other UPnP devices.</source>
-        <translation type="vanished">Los elementos en la cola de reproducción serán accesibles para otros dispositivos UPnP.</translation>
+        <translation>Los elementos en la cola de reproducción serán accesibles para otros dispositivos UPnP.</translation>
     </message>
     <message>
         <source>Start with last playlist</source>
-        <translation type="vanished">Iniciar con la última reproducción</translation>
+        <translation>Iniciar con la última reproducción</translation>
     </message>
     <message>
         <source>When Jupii starts, the last playlist will be automatically loaded.</source>
-        <translation type="vanished">Cuando Jupii se inicia, la última lista de reproducción se autocargará.</translation>
+        <translation>Cuando Jupii se inicia, la última lista de reproducción se autocargará.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="113"/>
@@ -1767,31 +1767,31 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation type="vanished">Cambia el nivel de volumen usando las teclas de volumen del teléfono físico, el nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
+        <translation>Cambia el nivel de volumen usando las teclas de volumen del teléfono físico, el nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
     </message>
     <message>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation type="vanished">Reproduce imágenes en dispositivos UPnP que no funcionan bien en este momento, hay algunos problemas menores que aún no se han resuelto. Esta opción forza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
+        <translation>Reproduce imágenes en dispositivos UPnP que no funcionan bien en este momento, hay algunos problemas menores que aún no se han resuelto. Esta opción forza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
     </message>
     <message>
         <source>Audio capture format</source>
-        <translation type="vanished">Formato de audio</translation>
+        <translation>Formato de audio</translation>
     </message>
     <message>
         <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="vanished">MP3 44100Hz 128 kbps(predefinido)</translation>
+        <translation>MP3 44100Hz 128 kbps(predefinido)</translation>
     </message>
     <message>
         <source>MP3 44100Hz 96 kbps</source>
-        <translation type="vanished">MP3 44100Hz 96 kbps</translation>
+        <translation>MP3 44100Hz 96 kbps</translation>
     </message>
     <message>
         <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="vanished">PCM 44100Hz 1411 kbps</translation>
+        <translation>PCM 44100Hz 1411 kbps</translation>
     </message>
     <message>
         <source>PCM 22050Hz 706 kbps</source>
-        <translation type="vanished">PCM 22050Hz 706 kbps</translation>
+        <translation>PCM 22050Hz 706 kbps</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="117"/>
@@ -1800,11 +1800,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Screen capture with audio</source>
-        <translation type="vanished">Captura de pantalla con audio.</translation>
+        <translation>Captura de pantalla con audio.</translation>
     </message>
     <message>
         <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="vanished">Durante una captura de pantalla, el audio también se captura. La captura de video junto con el audio aún se encuentra en estado beta, por lo que puede disminuir la calidad de la transmisión y causar un retraso adicional.</translation>
+        <translation>Durante una captura de pantalla, el audio también se captura. La captura de video junto con el audio aún se encuentra en estado beta, por lo que puede disminuir la calidad de la transmisión y causar un retraso adicional.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="147"/>
@@ -1819,12 +1819,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="35"/>
         <source>When enabled, items in play queue are accessible for other UPnP devices in your local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cuando está habilitado, los elementos en la cola de reproducción son accesibles para otros dispositivos UPnP en su red local.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="90"/>
         <source>Microphone sensitivity</source>
-        <translation type="unfinished">Sensibilidad del micrófono</translation>
+        <translation>Sensibilidad de micrófono</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="123"/>
@@ -1874,30 +1874,30 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="270"/>
         <source>Reset tips and hints</source>
-        <translation type="unfinished"></translation>
+        <translation>Restablecer sugerencias</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="272"/>
         <source>Resetting tips and hints</source>
-        <translation type="unfinished"></translation>
+        <translation>Restableciendo sugerencias</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="282"/>
         <source>Preferred network interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Interfaz de red preferida</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="399"/>
         <source>Resetting settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Restableciendo configuraciones</translation>
     </message>
     <message>
         <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="vanished">Permite la grabación de pistas desde transmisiones Icecast.</translation>
+        <translation>Permite la grabación de pistas desde transmisiones Icecast.</translation>
     </message>
     <message>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
-        <translation type="vanished">Permite la grabación de pistas desde transmisiones SHOUTcast. Cuando la retransmisión proporciona información sobre el título de la canción actualmente reproducida, puede guardar esta canción en un archivo. Para habilitar la grabación, use &quot;Grabar&quot; botón situado junto a &quot;Adelante&quot; Botón en la barra inferior. Este botón es visible solo cuando la grabación es posible. Cuando el &quot;Grabar&quot; El botón se activa antes del final de la canción, toda la grabación (desde el principio hasta el final de la canción) se guardará como un archivo. Actualmente las secuencias AAC no se pueden grabar.</translation>
+        <translation>Permite la grabación de pistas desde transmisiones SHOUTcast. Cuando la retransmisión proporciona información sobre el título de la canción actualmente reproducida, puede guardar esta canción en un archivo. Para habilitar la grabación, use &quot;Grabar&quot; botón situado junto a &quot;Adelante&quot; Botón en la barra inferior. Este botón es visible solo cuando la grabación es posible. Cuando el &quot;Grabar&quot; El botón se activa antes del final de la canción, toda la grabación (desde el principio hasta el final de la canción) se guardará como un archivo. Actualmente las secuencias AAC no se pueden grabar.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="251"/>
@@ -1936,19 +1936,19 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Proxy (default)</source>
-        <translation type="vanished">Proxy (por defecto)</translation>
+        <translation>Proxy (por defecto)</translation>
     </message>
     <message>
         <source>None</source>
-        <translation type="vanished">Ninguno</translation>
+        <translation>Ninguno</translation>
     </message>
     <message>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation type="vanished">%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluyendo los no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en la red local.</translation>
+        <translation>%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluyendo los no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en la red local.</translation>
     </message>
     <message>
         <source>Advanced options</source>
-        <translation type="vanished">Opciones avanzadas</translation>
+        <translation>Opciones avanzadas</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="386"/>
@@ -1962,27 +1962,27 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Adding devices manually</source>
-        <translation type="vanished">Agregar manual</translation>
+        <translation>Agregar manual</translation>
     </message>
     <message>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation type="vanished">Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
+        <translation>Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
     </message>
     <message>
         <source>Internet streaming mode</source>
-        <translation type="vanished">Modo transmisión por internet</translation>
+        <translation>Modo transmisión por internet</translation>
     </message>
     <message>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation type="vanished">La transmisión de internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predefinido) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido a host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para funcione la transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 no es necesario que se habilitarlo todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
+        <translation>La transmisión de internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predefinido) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido a host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para funcione la transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 no es necesario que se habilitarlo todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
     </message>
     <message>
         <source>Proxy</source>
-        <translation type="vanished">Proxy</translation>
+        <translation>Proxy</translation>
     </message>
     <message>
         <source>Redirection</source>
-        <translation type="vanished">Redirección</translation>
+        <translation>Redirección</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
@@ -1991,7 +1991,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Forward/backward time-step interval</source>
-        <translation type="vanished">Intervalo de paso de tiempo adelante/atrás</translation>
+        <translation>Intervalo de paso de tiempo adelante/atrás</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="75"/>
@@ -2000,11 +2000,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Image content</source>
-        <translation type="vanished">Contenido de imagen</translation>
+        <translation>Contenido de imagen</translation>
     </message>
     <message>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation type="vanished">Formato de retransmisión utilizado cuando %1 captura la salida de audio de otra aplicación. La transmisión no comprimida (PCM) produce un retraso menor, pero la tasa de bits más alta probablemente causará un mayor desgaste de la batería</translation>
+        <translation>Formato de retransmisión utilizado cuando %1 captura la salida de audio de otra aplicación. La transmisión no comprimida (PCM) produce un retraso menor, pero la tasa de bits más alta probablemente causará un mayor desgaste de la batería</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="238"/>
