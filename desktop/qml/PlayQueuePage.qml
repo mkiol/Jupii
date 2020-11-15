@@ -19,6 +19,8 @@ import harbour.jupii.ContentServer 1.0
 Kirigami.ScrollablePage {
     id: root
 
+    objectName: "queue"
+
     property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
     property int itemType: utils.itemTypeFromUrl(av.currentId)
     property bool inited: directory.inited && (av.inited || rc.busy)

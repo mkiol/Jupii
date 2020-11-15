@@ -93,7 +93,7 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "QHTTPServer \nLibupnpp \nLibupnp \nTagLib \nFFmpeg \nLAME \nx264 \ngumbo-parser"
+                text: "QHTTPServer \nLibupnpp \nLibupnp \nTagLib \nFFmpeg \nLAME \nx264 \nGumbo"
             }
 
             Spacer {}
