@@ -142,7 +142,9 @@ QList<ListItem*> BcModel::makeAlbumItems()
 
     auto album = api.album(albumUrl);
 
-    setAlbumTitle(album.title);
+    /*if (!album.title.isEmpty()) {
+        setAlbumTitle(album.title);
+    }*/
 
     for (auto& track : album.tracks) {
         items << new BcItem(track.webUrl.toString(),
@@ -167,7 +169,9 @@ QList<ListItem*> BcModel::makeArtistItems()
 
     auto artist = api.artist(artistUrl);
 
-    setArtistName(artist.name);
+    /*if (!artist.name.isEmpty()) {
+        setArtistName(artist.name);
+    }*/
 
     for (auto& album : artist.albums) {
         items << new BcItem(album.webUrl.toString(),

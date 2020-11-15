@@ -150,10 +150,16 @@ BcApi::Track BcApi::track(const QUrl &url)
         return track;
     }
 
+    track.webUrl = QUrl(json.object().value("url").toString());
+    if (track.webUrl.isRelative()) {
+        track.webUrl.setScheme(url.scheme());
+        track.webUrl.setHost(url.host());
+        track.webUrl.setPort(url.port());
+    }
+
     track.artist = json.object().value("artist").toString();
     track.title = track_info.at(0).toObject().value("title").toString();
     track.streamUrl = QUrl(track_info.at(0).toObject().value("file").toObject().value("mp3-128").toString());
-    track.webUrl = QUrl(json.object().value("url").toString());
     track.duration = int(track_info.at(0).toObject().value("duration").toDouble());
     track.imageUrl = QUrl(attr_data(search_for_attr_one(output->root, "property", "og:image"), "content"));
 
@@ -202,11 +208,25 @@ BcApi::Album BcApi::album(const QUrl &url)
 
     for (int i = 0; i < track_info.size(); ++i) {
         AlbumTrack track;
-        track.title = track_info.at(i).toObject().value("title").toString();
-        track.webUrl = url;
-        track.webUrl.setPath(track_info.at(i).toObject().value("title_link").toString());
-        track.duration = int(track_info.at(i).toObject().value("duration").toDouble());
+
         track.streamUrl = QUrl(track_info.at(i).toObject().value("file").toObject().value("mp3-128").toString());
+        if (track.streamUrl.isEmpty()) {
+            continue;
+        }
+
+        track.title = track_info.at(i).toObject().value("title").toString();
+        if (track.title.isEmpty()) {
+            continue;
+        }
+
+        track.duration = int(track_info.at(i).toObject().value("duration").toDouble());
+
+        track.webUrl = QUrl(track_info.at(i).toObject().value("title_link").toString());
+        if (track.webUrl.isRelative()) {
+            track.webUrl.setScheme(url.scheme());
+            track.webUrl.setHost(url.host());
+            track.webUrl.setPort(url.port());
+        }
 
         album.tracks.push_back(std::move(track));
     }
@@ -246,8 +266,16 @@ BcApi::Artist BcApi::artist(const QUrl &url)
     for (auto li : lis) {
         ArtistAlbum album;
         auto a = search_for_tag_one(li, GUMBO_TAG_A);
-        album.webUrl = url;
-        album.webUrl.setPath(attr_data(a, "href"));
+
+        album.webUrl = QUrl(attr_data(a, "href"));
+        if (album.webUrl.isEmpty()) {
+            continue;
+        }
+        if (album.webUrl.isRelative()) {
+            album.webUrl.setScheme(url.scheme());
+            album.webUrl.setHost(url.host());
+            album.webUrl.setPort(url.port());
+        }
 
         auto img = search_for_tag_one(a, GUMBO_TAG_IMG);
         album.imageUrl = QUrl(attr_data(img, "data-original"));
