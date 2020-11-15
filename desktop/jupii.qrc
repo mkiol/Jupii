@@ -18,7 +18,6 @@
         <file>qml/PlayQueuePage.qml</file>
         <file>qml/DoubleListItem.qml</file>
         <file>qml/AboutPage.qml</file>
-        <file>qml/ChangelogPage.qml</file>
         <file>qml/SettingsPage.qml</file>
         <file>images/jupii.svg</file>
         <file>qml/PlayerPanel.qml</file>
