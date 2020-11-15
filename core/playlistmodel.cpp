@@ -1160,6 +1160,14 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         iconUrl = ficon;
     }
 
+    if (ytdl && duration == 0 && meta->duration > 0) {
+        QUrlQuery q(finalId);
+        if (q.hasQueryItem(Utils::durKey))
+            q.removeQueryItem(Utils::durKey);
+        q.addQueryItem(Utils::durKey, QString::number(meta->duration));
+        finalId.setQuery(q);
+    }
+
     if (duration == 0) {
         duration = meta->duration;
     }
