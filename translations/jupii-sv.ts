@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sv" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="sv" sourcelanguage="en_US" version="2.1">
 <context>
     <name>AboutPage</name>
     <message>
@@ -11,7 +9,7 @@
     <message>
         <location filename="../sailfish/qml/AboutPage.qml" line="28"/>
         <source>About %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Om %1</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AboutPage.qml" line="44"/>
@@ -39,17 +37,13 @@
         <location filename="../sailfish/qml/AboutPage.qml" line="80"/>
         <location filename="../desktop/qml/AboutPage.qml" line="116"/>
         <source>Translators</source>
-        <translation type="unfinished"></translation>
+        <translation>Översättare</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AboutPage.qml" line="91"/>
         <location filename="../desktop/qml/AboutPage.qml" line="131"/>
         <source>Libraries in use</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Translations are provided by:</source>
-        <translation type="vanished">Översättningar levereras av:</translation>
+        <translation>Bibliotek som används</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AboutPage.qml" line="74"/>
@@ -58,28 +52,24 @@
         <translation>%1 är utvecklat som ett öppen källkodsprojekt under %2.</translation>
     </message>
     <message>
-        <source>Libraries</source>
-        <translation type="vanished">Bibliotek</translation>
-    </message>
-    <message>
         <location filename="../desktop/qml/AboutPage.qml" line="47"/>
         <source>Play audio, video and images on UPnP/DLNA devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Spelar upp ljud, film och visar bilder på UPnP-/DLNA-enheter</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AboutPage.qml" line="59"/>
         <source>Copyright</source>
-        <translation type="unfinished"></translation>
+        <translation>Copyright</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AboutPage.qml" line="81"/>
         <source>Support</source>
-        <translation type="unfinished"></translation>
+        <translation>Support</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AboutPage.qml" line="95"/>
         <source>Support e-mail</source>
-        <translation type="unfinished"></translation>
+        <translation>Support e-post</translation>
     </message>
 </context>
 <context>
@@ -93,7 +83,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="111"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="65"/>
         <source>Local</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokal</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="115"/>
@@ -140,7 +130,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="197"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="93"/>
         <source>Remote</source>
-        <translation type="unfinished"></translation>
+        <translation>Fjärr</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="201"/>
@@ -158,7 +148,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="219"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="119"/>
         <source>Capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Spela in</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="223"/>
@@ -193,12 +183,12 @@
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="26"/>
         <source>Add items</source>
-        <translation type="unfinished">Lägg till objekt</translation>
+        <translation>Lägg till objekt</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="35"/>
         <source>Choose a file</source>
-        <translation type="unfinished"></translation>
+        <translation>Välj en fil</translation>
     </message>
 </context>
 <context>
@@ -206,32 +196,32 @@
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="24"/>
         <source>Add URL</source>
-        <translation type="unfinished">Lägg till URL</translation>
+        <translation>Lägg till URL</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="43"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL.</source>
-        <translation type="unfinished"></translation>
+        <translation>Endast HTTP-URL:er stöds. Om URL:en pekar mot en spelningslista, kommer första listposten att läggas till. Om URL:en inte pekar mot något mediainnehåll, kommer youtube-dl att användas för att hitta en direkt media-URL.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="51"/>
         <source>URL</source>
-        <translation type="unfinished">URL</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="53"/>
         <source>Enter URL</source>
-        <translation type="unfinished">Ange URL</translation>
+        <translation>Ange URL</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="65"/>
         <source>Name</source>
-        <translation type="unfinished">Namn</translation>
+        <translation>Namn</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="66"/>
         <source>Enter Name (optional)</source>
-        <translation type="unfinished">Ange namn (frivilligt)</translation>
+        <translation>Ange namn (valfritt)</translation>
     </message>
 </context>
 <context>
@@ -264,11 +254,7 @@
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="80"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL. If Name is not provided, it will be discovered automatically.</source>
-        <translation type="vanished">Endast HTTP-formatet stöds. Om URL:en pekar mot en spelningslista, läggs första listobjektet till. Om webbadressen inte pekar på något medieinnehåll används youtube-dl för att hitta en direkt medieadress. Om inget namn anges, kommer det att identifieras automatiskt.</translation>
+        <translation>Endast HTTP-URL:er stöds. Om URL:en pekar mot en spelningslista, kommer första listposten att läggas till. Om URL:en inte pekar mot något mediainnehåll, kommer youtube-dl att användas för att hitta en direkt media-URL.</translation>
     </message>
 </context>
 <context>
@@ -277,10 +263,6 @@
         <location filename="../sailfish/qml/AlbumsPage.qml" line="69"/>
         <source>Albums</source>
         <translation>Album</translation>
-    </message>
-    <message>
-        <source>Search albums</source>
-        <translation type="vanished">Sök album</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AlbumsPage.qml" line="76"/>
@@ -300,10 +282,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/AlbumsPage.qml" line="86"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n spår</numerusform>
-            <numerusform>%n spår</numerusform>
-        </translation>
+        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AlbumsPage.qml" line="94"/>
@@ -323,17 +302,10 @@
         <source>Artists</source>
         <translation>Artister</translation>
     </message>
-    <message>
-        <source>Search artists</source>
-        <translation type="vanished">Sök artist</translation>
-    </message>
     <message numerus="yes">
         <location filename="../sailfish/qml/ArtistPage.qml" line="76"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n spår</numerusform>
-            <numerusform>%n spår</numerusform>
-        </translation>
+        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/ArtistPage.qml" line="84"/>
@@ -355,14 +327,6 @@
         <translation>Kunde inte hämta data från bandcamp.com</translation>
     </message>
     <message>
-        <source>Search tracks</source>
-        <translation type="vanished">Sök spår</translation>
-    </message>
-    <message>
-        <source>Search items</source>
-        <translation type="obsolete">Sök objekt</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/BcPage.qml" line="85"/>
         <location filename="../desktop/qml/BcPage.qml" line="51"/>
         <source>Unselect all</source>
@@ -378,47 +342,40 @@
         <location filename="../sailfish/qml/BcPage.qml" line="111"/>
         <location filename="../desktop/qml/BcPage.qml" line="121"/>
         <source>Album</source>
-        <translation type="unfinished">Album</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="112"/>
         <location filename="../desktop/qml/BcPage.qml" line="122"/>
         <source>Artist</source>
-        <translation type="unfinished">Artist</translation>
+        <translation>Artist</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="129"/>
         <location filename="../desktop/qml/BcPage.qml" line="166"/>
         <source>Type the words to search</source>
-        <translation type="unfinished"></translation>
+        <translation>Skriv något att söka efter</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="129"/>
         <location filename="../desktop/qml/BcPage.qml" line="166"/>
         <source>No items</source>
-        <translation type="unfinished">Inga objekt</translation>
-    </message>
-    <message>
-        <source>No tracks</source>
-        <translation type="vanished">Inga spår</translation>
+        <translation>Inga träffar</translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="40"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till markerat</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/BcPage.qml" line="40"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="141"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla markering</translation>
     </message>
 </context>
 <context>
@@ -499,10 +456,6 @@
         <translation>Kopiera beskrivning i XML-format</translation>
     </message>
     <message>
-        <source>Description copied to the clipboard</source>
-        <translation type="vanished">Beskrivning kopierad till urklipp</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/DeviceInfoPage.qml" line="72"/>
         <location filename="../desktop/qml/DeviceInfoPage.qml" line="59"/>
         <source>Name</source>
@@ -548,19 +501,11 @@
         <location filename="../sailfish/qml/DeviceInfoPage.qml" line="50"/>
         <location filename="../desktop/qml/DeviceInfoPage.qml" line="30"/>
         <source>Description was copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Beskrivningen kopierades till urklipp</translation>
     </message>
 </context>
 <context>
     <name>DevicesPage</name>
-    <message>
-        <source>Cannot connect to a local network</source>
-        <translation type="vanished">Kan inte ansluta till ett lokalt nätverket</translation>
-    </message>
-    <message>
-        <source>An internal error occurred</source>
-        <translation type="vanished">Ett internt fel inträffade</translation>
-    </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="68"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="19"/>
@@ -568,13 +513,14 @@
         <translation>Enheter</translation>
     </message>
     <message>
-        <source>About</source>
-        <translation type="vanished">Om</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="81"/>
         <source>Settings</source>
         <translation>Inställningar</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="76"/>
+        <source>About %1</source>
+        <translation>Om %1</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="86"/>
@@ -582,11 +528,6 @@
         <location filename="../desktop/qml/DevicesPage.qml" line="139"/>
         <source>Find devices</source>
         <translation>Sök enheter</translation>
-    </message>
-    <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="76"/>
-        <source>About %1</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="118"/>
@@ -598,7 +539,7 @@
         <location filename="../sailfish/qml/DevicesPage.qml" line="118"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="84"/>
         <source>Disconnect</source>
-        <translation type="unfinished"></translation>
+        <translation>Koppla ifrån</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="129"/>
@@ -634,21 +575,17 @@
         <location filename="../sailfish/qml/DevicesPage.qml" line="168"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="136"/>
         <source>No devices</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="179"/>
-        <source>Connect to a device or flick left to access play queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No devices found</source>
-        <translation type="vanished">Ingen enhet hittades</translation>
+        <translation>Inga enheter</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="170"/>
         <source>Pull down to find more devices in your network</source>
         <translation>Dra neråt för att hitta fler enheter i ditt nätverk</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="179"/>
+        <source>Connect to a device or flick left to access play queue</source>
+        <translation>Anslut till en enhet eller svep åt vänster för att komma åt uppspelningskön</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="171"/>
@@ -689,23 +626,11 @@
         <translation>Kan inte ladda ner eller tolka FOSDEM-händelser</translation>
     </message>
     <message>
-        <source>Search events</source>
-        <translation type="vanished">Sök händelser</translation>
-    </message>
-    <message>
-        <source>Refresh events list</source>
-        <translation type="vanished">Uppdatera händelselistan</translation>
-    </message>
-    <message>
-        <source>Search items</source>
-        <translation type="obsolete">Sök objekt</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="74"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="46"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="140"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdatera</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="82"/>
@@ -723,54 +648,35 @@
         <location filename="../sailfish/qml/FosdemPage.qml" line="110"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="137"/>
         <source>No items</source>
-        <translation type="unfinished">Inga objekt</translation>
-    </message>
-    <message>
-        <source>No events</source>
-        <translation type="vanished">Inga händelser</translation>
+        <translation>Inga objekt</translation>
     </message>
     <message>
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till markerat</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/FosdemPage.qml" line="114"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla markering</translation>
     </message>
 </context>
 <context>
     <name>FosdemYearsPage</name>
     <message>
-        <source>Conferences</source>
-        <translation type="vanished">Konferenser</translation>
-    </message>
-    <message>
-        <source>No conferences found</source>
-        <translation type="vanished">Inga konferenser hittades</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/FosdemYearsPage.qml" line="82"/>
         <location filename="../desktop/qml/FosdemYearsPage.qml" line="22"/>
         <source>FOSDEM Conferences</source>
-        <translation type="unfinished"></translation>
+        <translation>FOSDEM-konferenser</translation>
     </message>
 </context>
 <context>
     <name>GpodderEpisodesPage</name>
-    <message>
-        <source>Search episodes</source>
-        <translation type="vanished">Sök avsnitt</translation>
-    </message>
     <message>
         <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="72"/>
         <source>Unselect all</source>
@@ -796,19 +702,11 @@
         <translation>Kan inte ladda ner eller tolka Icecast-katalogen</translation>
     </message>
     <message>
-        <source>Search stations</source>
-        <translation type="vanished">Sök stationer</translation>
-    </message>
-    <message>
-        <source>Refresh station list</source>
-        <translation type="vanished">Uppdatera stationslistan</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="74"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="46"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="151"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdatera</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="83"/>
@@ -831,20 +729,17 @@
     <message>
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till markerat</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/IcecastPage.qml" line="125"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla markering</translation>
     </message>
 </context>
 <context>
@@ -916,10 +811,6 @@
         <translation>Ingen</translation>
     </message>
     <message>
-        <source>Recording URL</source>
-        <translation type="vanished">Inspelnings-URL</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="319"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="306"/>
         <source>Sensitivity</source>
@@ -936,14 +827,6 @@
         <location filename="../desktop/qml/MediaInfoPage.qml" line="42"/>
         <source>Copy current title</source>
         <translation>Kopiera aktuell titel</translation>
-    </message>
-    <message>
-        <source>Open recording URL in browser</source>
-        <translation type="vanished">Öppna inspelnings-URL:en i webbläsaren</translation>
-    </message>
-    <message>
-        <source>Copy recording URL</source>
-        <translation type="vanished">Kopiera inspelnings-URL</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="88"/>
@@ -1024,27 +907,27 @@
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="23"/>
         <source>No media</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingen media</translation>
     </message>
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="48"/>
         <source>Current title was copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuell titel kopierades till urklipp</translation>
     </message>
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="62"/>
         <source>Path was copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Sökvägen kopierades till urklipp</translation>
     </message>
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="63"/>
         <source>URL was copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>URL:en kopierades till urklipp</translation>
     </message>
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="339"/>
         <source>Volume boost</source>
-        <translation type="unfinished"></translation>
+        <translation>Volymförstärkning</translation>
     </message>
 </context>
 <context>
@@ -1052,20 +935,16 @@
     <message>
         <location filename="../desktop/qml/PlayButton.qml" line="23"/>
         <source>Play</source>
-        <translation type="unfinished">Spela upp</translation>
+        <translation>Spela</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayButton.qml" line="23"/>
         <source>Pause</source>
-        <translation type="unfinished">Paus</translation>
+        <translation>Paus</translation>
     </message>
 </context>
 <context>
     <name>PlayQueuePage</name>
-    <message>
-        <source>Item is already added</source>
-        <translation type="vanished">Objektet är redan tillagt</translation>
-    </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="92"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="124"/>
@@ -1091,12 +970,6 @@
         <translation>Okänt fel</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="117"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="39"/>
-        <source>Play queue</source>
-        <translation>Spela upp kö</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="143"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="89"/>
         <source>Refresh items</source>
@@ -1114,11 +987,6 @@
         <location filename="../desktop/qml/PlayQueuePage.qml" line="151"/>
         <source>Clear queue</source>
         <translation>Rensa kön</translation>
-    </message>
-    <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="139"/>
-        <source>Clearing play queue</source>
-        <translation>Rensar uppspelningskön</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="143"/>
@@ -1149,7 +1017,18 @@
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="90"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="122"/>
         <source>Item is already in play queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Objektet finns redan i uppspelningskön</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="117"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="39"/>
+        <source>Play queue</source>
+        <translation>Spela upp kö</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="139"/>
+        <source>Clearing play queue</source>
+        <translation>Rensar uppspelningskön</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="169"/>
@@ -1173,7 +1052,7 @@
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="173"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="174"/>
         <source>Adding item...</source>
-        <translation>Lägger till objekt</translation>
+        <translation>Lägger till objekt...</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="244"/>
@@ -1208,47 +1087,47 @@
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="405"/>
         <source>Tap to access playback &amp; volume controls</source>
-        <translation type="unfinished"></translation>
+        <translation>Tryck för att komma åt uppspelnings- &amp; volymkontroller</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="423"/>
         <source>Flick left to see current track details</source>
-        <translation type="unfinished"></translation>
+        <translation>Svep åt vänster för att se aktuell spårinformation</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="382"/>
         <source>Not connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Inte ansluten</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="383"/>
         <source>Connect to a device to control playback using %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Anslut till en enhet för att kontrollera uppspelning med %1.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="384"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Utan anslutning är alla objekt i uppspelningskön fortfarande tillgängliga på andra enheter i ditt nätverk.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="66"/>
         <source>Track info</source>
-        <translation type="unfinished"></translation>
+        <translation>Spårinformation</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="145"/>
         <source>Playlist has been saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Spelningslistan har sparats</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="153"/>
         <source>Remove all items from play queue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vill du ta bort alla objekt från uppspelningskön?</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="136"/>
         <source>Save items to playlist file</source>
-        <translation type="unfinished"></translation>
+        <translation>Spara objekten i en spelningslista</translation>
     </message>
 </context>
 <context>
@@ -1256,58 +1135,58 @@
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="115"/>
         <source>Not connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Inte ansluten</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="115"/>
         <source>Connect to a device to control playback using %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Anslut till en enhet för att kontrollera uppspelning med %1.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="116"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Utan anslutning är alla objekt i uppspelningskön fortfarande tillgängliga på andra enheter i ditt nätverk.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="119"/>
         <source>Devices</source>
-        <translation type="unfinished">Enheter</translation>
+        <translation>Enheter</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="307"/>
         <source>Skip Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Hoppa bakåt</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="317"/>
         <source>Seek Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök bakåt</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="327"/>
         <source>Seek Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Sök framåt</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="337"/>
         <source>Skip Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Hoppa framåt</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="349"/>
         <source>Toggle Record</source>
-        <translation type="unfinished"></translation>
+        <translation>Inspelning av/på</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="363"/>
         <source>Toggle Repeat One</source>
-        <translation type="unfinished"></translation>
+        <translation>Upprepa av/på</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="402"/>
         <location filename="../desktop/qml/PlayerPanel.qml" line="440"/>
         <source>Toggle Mute</source>
-        <translation type="unfinished"></translation>
+        <translation>Ljud av/på</translation>
     </message>
 </context>
 <context>
@@ -1325,17 +1204,10 @@
         <source>Playlists</source>
         <translation>Spellistor</translation>
     </message>
-    <message>
-        <source>Search playlists</source>
-        <translation type="vanished">Sök spellistor</translation>
-    </message>
     <message numerus="yes">
         <location filename="../sailfish/qml/PlaylistPage.qml" line="79"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n spår</numerusform>
-            <numerusform>%n spår</numerusform>
-        </translation>
+        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="87"/>
@@ -1370,10 +1242,6 @@
 <context>
     <name>RecPage</name>
     <message>
-        <source>Search recordings</source>
-        <translation type="vanished">Sök inspelningar</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/RecPage.qml" line="70"/>
         <location filename="../desktop/qml/RecPage.qml" line="61"/>
         <location filename="../desktop/qml/RecPage.qml" line="73"/>
@@ -1383,10 +1251,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/RecPage.qml" line="73"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Tar bort ett objekt</numerusform>
-            <numerusform>Tar bort %n objekt</numerusform>
-        </translation>
+        <translation><numerusform>Tar bort ett objekt</numerusform><numerusform>Tar bort %n objekt</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="82"/>
@@ -1432,38 +1297,32 @@
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="25"/>
         <source>Recordings</source>
-        <translation type="unfinished">Inspelningar</translation>
+        <translation>Inspelningar</translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till markerat</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="75"/>
         <source>Delete %n recording(s)?</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <translation><numerusform>Vill du ta bort %n inspelning?</numerusform><numerusform>Vill du ta bort %n inspelningar?</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="98"/>
         <source>Sort by:</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortera efter:</translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="149"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla markering</translation>
     </message>
 </context>
 <context>
@@ -1482,13 +1341,9 @@
 <context>
     <name>SavePlaylistPage</name>
     <message>
-        <source>Playlist was saved</source>
-        <translation type="vanished">Spellista sparades</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/SavePlaylistPage.qml" line="22"/>
         <source>Playlist has been saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Spelningslistan har sparats</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SavePlaylistPage.qml" line="37"/>
@@ -1511,18 +1366,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="40"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n markerad</numerusform>
-            <numerusform>%n markerade</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>Search items</source>
-        <translation type="obsolete">Sök objekt</translation>
-    </message>
-    <message>
-        <source>Search episodes</source>
-        <translation type="vanished">Sök avsnitt</translation>
+        <translation><numerusform>%n markerad</numerusform><numerusform>%n markerade</numerusform></translation>
     </message>
 </context>
 <context>
@@ -1541,15 +1385,6 @@
         <location filename="../sailfish/qml/SettingsPage.qml" line="60"/>
         <source>Volume control with hardware keys</source>
         <translation>Volymkontroll med hårdvaruknappar</translation>
-    </message>
-    <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="34"/>
-        <source>Share play queue items via UPnP Media Server</source>
-        <translation>Dela spellistans objekt via UPnP mediaserver</translation>
-    </message>
-    <message>
-        <source>Items on play queue will be accessible for other UPnP devices.</source>
-        <translation type="vanished">Objekt i uppspelningskön kommer att bli tillgängliga för andra UPnP-enheter.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="75"/>
@@ -1577,14 +1412,19 @@
         <translation>Inaktiverad</translation>
     </message>
     <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="34"/>
+        <source>Share play queue items via UPnP Media Server</source>
+        <translation>Dela spellistans objekt via UPnP mediaserver</translation>
+    </message>
+    <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="35"/>
         <source>When enabled, items in play queue are accessible for other UPnP devices in your local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vid aktivering är objekten i uppspelningskön tillgängliga för UPnP-enheter i ditt lokala nätverk.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="90"/>
         <source>Microphone sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Mikrofonkänslighet</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="123"/>
@@ -1639,17 +1479,17 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="270"/>
         <source>Reset tips and hints</source>
-        <translation type="unfinished"></translation>
+        <translation>Återställ tips och ledtrådar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="272"/>
         <source>Resetting tips and hints</source>
-        <translation type="unfinished"></translation>
+        <translation>Återställer tips och ledtrådar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="282"/>
         <source>Preferred network interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Föredraget nätverksgränssnitt</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="297"/>
@@ -1684,7 +1524,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="399"/>
         <source>Resetting settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Återställer inställningar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="337"/>
@@ -1695,10 +1535,6 @@
         <location filename="../sailfish/qml/SettingsPage.qml" line="213"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
         <translation>Möjliggör inspelning från URL:er. Om URL-objektet är en Icecast-ström kommer enskilda spår från en ström att spelas in. Använd knappen &quot;Spela in&quot;, i nedre fältet, för att starta inspelning. Om inspelning startas innan aktuellt spår spelat klart, kommer hela spåret att sparas till en fil.</translation>
-    </message>
-    <message>
-        <source>Advanced options</source>
-        <translation type="vanished">Avancerade alternativ</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="386"/>
@@ -1713,12 +1549,12 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="397"/>
         <source>Reset settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Återställ inställningar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="277"/>
         <source>Advanced</source>
-        <translation type="unfinished"></translation>
+        <translation>Avancerat</translation>
     </message>
 </context>
 <context>
@@ -1730,19 +1566,11 @@
         <translation>Kan inte ladda ner eller tolka SomaFM-kanaler</translation>
     </message>
     <message>
-        <source>Search channels</source>
-        <translation type="vanished">Sök kanaler</translation>
-    </message>
-    <message>
-        <source>Refresh channel list</source>
-        <translation type="vanished">Uppdatera kanallistan</translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/SomafmPage.qml" line="73"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="45"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="139"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdatera</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SomafmPage.qml" line="82"/>
@@ -1765,20 +1593,17 @@
     <message>
         <location filename="../desktop/qml/SomafmPage.qml" line="34"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till markerat</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/SomafmPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SomafmPage.qml" line="113"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla markering</translation>
     </message>
 </context>
 <context>
@@ -1791,20 +1616,16 @@
     <message>
         <location filename="../core/trackmodel.cpp" line="158"/>
         <source>Audio capture</source>
-        <translation type="unfinished">Ljudinspelning</translation>
+        <translation>Ljudinspelning</translation>
     </message>
     <message>
         <location filename="../core/trackmodel.cpp" line="160"/>
         <source>Screen capture</source>
-        <translation type="unfinished">Skärminspelning</translation>
+        <translation>Skärminspelning</translation>
     </message>
 </context>
 <context>
     <name>TracksPage</name>
-    <message>
-        <source>Search tracks</source>
-        <translation type="vanished">Sök spår</translation>
-    </message>
     <message>
         <location filename="../sailfish/qml/TracksPage.qml" line="67"/>
         <source>Unselect all</source>
@@ -1827,65 +1648,50 @@
         <location filename="../sailfish/qml/TuneinPage.qml" line="43"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="83"/>
         <source>Cannot download or parse TuneIn stations</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search stations</source>
-        <translation type="obsolete">Sök stationer</translation>
+        <translation>Kan inte ladda ner eller tolka TuneIn-stationer</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="77"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="45"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Avmarkera alla</translation>
+        <translation>Avmarkera alla</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="78"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="45"/>
         <source>Select all</source>
-        <translation type="unfinished">Markera alla</translation>
+        <translation>Markera alla</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="107"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="131"/>
         <source>No stations</source>
-        <translation type="unfinished">Inga stationer</translation>
+        <translation>Inga stationer</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="107"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="131"/>
         <source>Type the words to search</source>
-        <translation type="unfinished"></translation>
+        <translation>Skriv något att söka efter</translation>
     </message>
     <message>
         <location filename="../desktop/qml/TuneinPage.qml" line="34"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till markerat</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/TuneinPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/TuneinPage.qml" line="107"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla markering</translation>
     </message>
 </context>
 <context>
     <name>UpnpCDirDevicesPage</name>
-    <message>
-        <source>Cannot connect to a local network</source>
-        <translation type="vanished">Kan inte ansluta till ett lokalt nätverket</translation>
-    </message>
-    <message>
-        <source>An internal error occurred</source>
-        <translation type="vanished">Ett internt fel inträffade</translation>
-    </message>
     <message>
         <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="68"/>
         <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="24"/>
@@ -1932,12 +1738,12 @@
     <message>
         <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="110"/>
         <source>No Media Servers</source>
-        <translation type="unfinished"></translation>
+        <translation>Inga mediaservrar</translation>
     </message>
     <message>
         <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="115"/>
         <source>Find devices</source>
-        <translation type="unfinished">Sök enheter</translation>
+        <translation>Sök enheter</translation>
     </message>
 </context>
 <context>
@@ -1970,11 +1776,7 @@
         <location filename="../sailfish/qml/UpnpCDirPage.qml" line="154"/>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="185"/>
         <source>No items</source>
-        <translation type="unfinished">Inga objekt</translation>
-    </message>
-    <message>
-        <source>Search items</source>
-        <translation type="vanished">Sök objekt</translation>
+        <translation>Inga objekt</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/UpnpCDirPage.qml" line="80"/>
@@ -2000,36 +1802,29 @@
         <translation>Sortera efter: %1</translation>
     </message>
     <message>
-        <source>No tracks</source>
-        <translation type="vanished">Inga spår</translation>
-    </message>
-    <message>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="23"/>
         <source>Add item</source>
-        <translation type="unfinished">Lägg till objekt</translation>
+        <translation>Lägg till objekt</translation>
     </message>
     <message>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="33"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till markerat</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="33"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="77"/>
         <source>Sort by:</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortera efter:</translation>
     </message>
     <message>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="161"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla markering</translation>
     </message>
 </context>
 <context>
@@ -2037,7 +1832,7 @@
     <message>
         <location filename="../core/utils.cpp" line="129"/>
         <source>Auto</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto</translation>
     </message>
     <message>
         <location filename="../core/utils.cpp" line="463"/>
@@ -2056,25 +1851,25 @@
         <location filename="../sailfish/qml/main.qml" line="58"/>
         <location filename="../desktop/qml/main.qml" line="185"/>
         <source>Connected to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ansluten till %1</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="66"/>
         <location filename="../desktop/qml/main.qml" line="194"/>
         <source>Cannot connect to device</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte ansluta till enhet</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="70"/>
         <location filename="../desktop/qml/main.qml" line="198"/>
         <source>Device responded with an error</source>
-        <translation type="unfinished"></translation>
+        <translation>Enheten svarade med ett fel</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="74"/>
         <location filename="../desktop/qml/main.qml" line="202"/>
         <source>Cannot play the file</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte spela upp filen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/main.qml" line="87"/>
@@ -2115,42 +1910,42 @@
     <message>
         <location filename="../desktop/qml/main.qml" line="37"/>
         <source>Play queue</source>
-        <translation type="unfinished">Spela upp kö</translation>
+        <translation>Spelningskö</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="45"/>
         <source>Devices (connected to %1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Enheter (anslutna till %1)</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="46"/>
         <source>Devices</source>
-        <translation type="unfinished">Enheter</translation>
+        <translation>Enheter</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="55"/>
         <source>Add items</source>
-        <translation type="unfinished">Lägg till objekt</translation>
+        <translation>Lägg till objekt</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="65"/>
         <source>Track info</source>
-        <translation type="unfinished"></translation>
+        <translation>Spårinformation</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="74"/>
         <source>Settings</source>
-        <translation type="unfinished">Inställningar</translation>
+        <translation>Inställningar</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="82"/>
         <source>About %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Om %1</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="89"/>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Avsluta</translation>
     </message>
 </context>
 </TS>

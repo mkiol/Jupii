@@ -122,7 +122,8 @@ Kirigami.ScrollablePage {
             horizontalAlignment: Text.AlignLeft
             text: "Åke Engelbrektson \nCarlos Gonzalez \nd9h20f " +
                   "\nВячеслав Диконов \ndrosjesjaafoer \nRui Kon " +
-                  "\nBoštjan Štrumbelj \njgibbon \nFra \nPetr Tsymbarovich"
+                  "\nBoštjan Štrumbelj \njgibbon \nFra \nPetr Tsymbarovich " +
+                  "\nCarmen Fernández B."
         }
 
         Kirigami.Heading {
