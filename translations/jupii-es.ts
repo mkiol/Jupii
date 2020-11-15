@@ -15,12 +15,12 @@
     </message>
     <message>
         <source>Changelog</source>
-        <translation type="vanished">Registro</translation>
+        <translation>Registro</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AboutPage.qml" line="28"/>
         <source>About %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Acerca de %1</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AboutPage.qml" line="48"/>
@@ -43,17 +43,17 @@
         <location filename="../sailfish/qml/AboutPage.qml" line="80"/>
         <location filename="../desktop/qml/AboutPage.qml" line="116"/>
         <source>Translators</source>
-        <translation type="unfinished"></translation>
+        <translation>Traductores</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AboutPage.qml" line="91"/>
         <location filename="../desktop/qml/AboutPage.qml" line="131"/>
         <source>Libraries in use</source>
-        <translation type="unfinished"></translation>
+        <translation>librerías</translation>
     </message>
     <message>
         <source>Translations are provided by:</source>
-        <translation type="vanished">Traducciones por:</translation>
+        <translation>Traducciones por:</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AboutPage.qml" line="74"/>
@@ -63,42 +63,42 @@
     </message>
     <message>
         <source>Libraries</source>
-        <translation type="vanished">Librerias</translation>
+        <translation>Librerias</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AboutPage.qml" line="47"/>
         <source>Play audio, video and images on UPnP/DLNA devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Reproducir audio, video eh imágenes en dispositivos UPnP/DLNA</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AboutPage.qml" line="59"/>
         <source>Copyright</source>
-        <translation type="unfinished"></translation>
+        <translation>Derechos de autor</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AboutPage.qml" line="81"/>
         <source>Support</source>
-        <translation type="unfinished"></translation>
+        <translation>Soporte</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AboutPage.qml" line="95"/>
         <source>Support e-mail</source>
-        <translation type="unfinished"></translation>
+        <translation>Soporte de correo-e</translation>
     </message>
 </context>
 <context>
     <name>AddDevicePage</name>
     <message>
         <source>Add</source>
-        <translation type="vanished">Agregar</translation>
+        <translation>Agregar</translation>
     </message>
     <message>
         <source>Enter IP address</source>
-        <translation type="vanished">Marcar dirección IP</translation>
+        <translation>Marcar dirección IP</translation>
     </message>
     <message>
         <source>IP address</source>
-        <translation type="vanished">Dirección IP</translation>
+        <translation>Dirección IP</translation>
     </message>
 </context>
 <context>
@@ -112,7 +112,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="111"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="65"/>
         <source>Local</source>
-        <translation type="unfinished"></translation>
+        <translation>Local</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="115"/>
@@ -159,17 +159,17 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="197"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="93"/>
         <source>Remote</source>
-        <translation type="unfinished"></translation>
+        <translation>Remoto</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="210"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="107"/>
         <source>Media Server</source>
-        <translation type="unfinished">Servidor multimedia</translation>
+        <translation>Servidor multimedia</translation>
     </message>
     <message>
         <source>UPnP Media Server</source>
-        <translation type="vanished">Servidor UPnP</translation>
+        <translation>Servidor UPnP</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="223"/>
@@ -199,7 +199,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="219"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="119"/>
         <source>Capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Capturar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="257"/>
@@ -215,17 +215,17 @@
     </message>
     <message>
         <source>Playlist file</source>
-        <translation type="vanished">Archivo de reproducción</translation>
+        <translation>Archivo de reproducción</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="26"/>
         <source>Add items</source>
-        <translation type="unfinished">Agregar elemento</translation>
+        <translation>Agregar elemento</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="35"/>
         <source>Choose a file</source>
-        <translation type="unfinished"></translation>
+        <translation>Elegir un archivo</translation>
     </message>
 </context>
 <context>
@@ -233,32 +233,32 @@
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="24"/>
         <source>Add URL</source>
-        <translation type="unfinished">Agregar LUR</translation>
+        <translation>Agregar LUR</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="43"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL.</source>
-        <translation type="unfinished"></translation>
+        <translation>Solo se admiten URL HTTP. Si la URL apunta a un archivo de lista de reproducción, se agregará el primer elemento de la lista de reproducción. Si la URL no apunta a ningún contenido multimedia, se utilizará youtube-dl para buscar una URL multimedia directa.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="51"/>
         <source>URL</source>
-        <translation type="unfinished">LUR</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="53"/>
         <source>Enter URL</source>
-        <translation type="unfinished">Marcar LUR</translation>
+        <translation>Marcar URL</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="65"/>
         <source>Name</source>
-        <translation type="unfinished">Nombre</translation>
+        <translation>Nombre</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="66"/>
         <source>Enter Name (optional)</source>
-        <translation type="unfinished">Introducir el nombre</translation>
+        <translation>Marcar el nombre</translation>
     </message>
 </context>
 <context>
@@ -266,31 +266,31 @@
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="41"/>
         <source>Add URL</source>
-        <translation>Agregar LUR</translation>
+        <translation>Agregar URL</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="47"/>
         <source>Enter URL</source>
-        <translation>Marcar LUR</translation>
+        <translation>Marcar URL</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="48"/>
         <source>URL</source>
-        <translation>LUR</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="66"/>
         <source>Enter Name (optional)</source>
-        <translation>Introducir el nombre</translation>
+        <translation>Marcar el nombre</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="80"/>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL.</source>
-        <translation type="unfinished"></translation>
+        <translation>Solo se admiten URL HTTP. Si la URL apunta a un archivo de lista de reproducción, se agregará el primer elemento de la lista de reproducción. Si la URL no apunta a ningún contenido multimedia, se utilizará youtube-dl para buscar una URL multimedia directa.</translation>
     </message>
     <message>
         <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If Name is not provided, it will be discovered automatically based on stream meta data.</source>
-        <translation type="vanished">Sólo se admiten LURs HTTP. Si la LUR apunta a un archivo de lista de reproducción, se agregará el primer elemento de reproducción. Si no se proporciona el nombre, se autodescubrirá basándose en los metadatos del flujo.</translation>
+        <translation>Sólo se admiten LURs HTTP. Si la LUR apunta a un archivo de lista de reproducción, se agregará el primer elemento de reproducción. Si no se proporciona el nombre, se autodescubrirá basándose en los metadatos del flujo.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="67"/>
@@ -307,7 +307,7 @@
     </message>
     <message>
         <source>Search albums</source>
-        <translation type="vanished">Buscar álbumes</translation>
+        <translation>Buscar álbumes</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AlbumsPage.qml" line="76"/>
@@ -354,7 +354,7 @@
     </message>
     <message>
         <source>Search episodes</source>
-        <translation type="vanished">Buscar episodios</translation>
+        <translation>Buscar episodios</translation>
     </message>
 </context>
 <context>
@@ -366,7 +366,7 @@
     </message>
     <message>
         <source>Search artists</source>
-        <translation type="vanished">Buscar artistas</translation>
+        <translation>Buscar artistas</translation>
     </message>
     <message numerus="yes">
         <location filename="../sailfish/qml/ArtistPage.qml" line="76"/>
@@ -397,83 +397,83 @@
     </message>
     <message>
         <source>Search tracks</source>
-        <translation type="obsolete">Buscar pistas</translation>
+        <translation>Buscar pistas</translation>
     </message>
     <message>
         <source>Search items</source>
-        <translation type="obsolete">Buscar elementos</translation>
+        <translation>Buscar elementos</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="85"/>
         <location filename="../desktop/qml/BcPage.qml" line="51"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Deseleccionar todo</translation>
+        <translation>Deseleccionar todo</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="85"/>
         <location filename="../desktop/qml/BcPage.qml" line="51"/>
         <source>Select all</source>
-        <translation type="unfinished">Seleccionar todo</translation>
+        <translation>Seleccionar todo</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="111"/>
         <location filename="../desktop/qml/BcPage.qml" line="121"/>
         <source>Album</source>
-        <translation type="unfinished">Álbum</translation>
+        <translation>Álbum</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="112"/>
         <location filename="../desktop/qml/BcPage.qml" line="122"/>
         <source>Artist</source>
-        <translation type="unfinished">Artista</translation>
+        <translation>Artista</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="129"/>
         <location filename="../desktop/qml/BcPage.qml" line="166"/>
         <source>Type the words to search</source>
-        <translation type="unfinished"></translation>
+        <translation>Marcar las palabras a buscar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="129"/>
         <location filename="../desktop/qml/BcPage.qml" line="166"/>
         <source>No items</source>
-        <translation type="unfinished">No hay elementos</translation>
+        <translation>No hay elementos</translation>
     </message>
     <message>
         <source>No tracks</source>
-        <translation type="obsolete">No hay pistas</translation>
+        <translation>No hay pistas</translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="40"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar seleccionados</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/BcPage.qml" line="40"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Agregar %n seleccionado</numerusform>
+            <numerusform>Agregar %n seleccionados</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="141"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar selección</translation>
     </message>
 </context>
 <context>
     <name>CDirModel</name>
     <message>
         <source>Unknown</source>
-        <translation type="vanished">Desconocido</translation>
+        <translation>Desconocido</translation>
     </message>
 </context>
 <context>
     <name>ChangelogPage</name>
     <message>
         <source>Changelog</source>
-        <translation type="vanished">Registro</translation>
+        <translation>Registro</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/ChangelogPage.qml" line="28"/>
@@ -524,7 +524,7 @@
     <name>ContentServerWorker</name>
     <message>
         <source>Recorded from %1</source>
-        <translation type="vanished">Grabado desde %1</translation>
+        <translation>Grabado desde %1</translation>
     </message>
 </context>
 <context>
@@ -595,7 +595,7 @@
         <location filename="../sailfish/qml/DeviceInfoPage.qml" line="97"/>
         <location filename="../desktop/qml/DeviceInfoPage.qml" line="119"/>
         <source>URL</source>
-        <translation>LUR</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DeviceInfoPage.qml" line="103"/>
@@ -607,22 +607,22 @@
         <location filename="../sailfish/qml/DeviceInfoPage.qml" line="50"/>
         <location filename="../desktop/qml/DeviceInfoPage.qml" line="30"/>
         <source>Description was copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>La descripción se copió al portapapeles</translation>
     </message>
 </context>
 <context>
     <name>DevicesPage</name>
     <message>
         <source>Cannot connect to the local network</source>
-        <translation type="vanished">No se puede conectar a la red local</translation>
+        <translation>No se puede conectar a la red local</translation>
     </message>
     <message>
         <source>Cannot connect to a local network</source>
-        <translation type="vanished">No se puede conectar a la red local</translation>
+        <translation>No se puede conectar a la red local</translation>
     </message>
     <message>
         <source>An internal error occurred</source>
-        <translation type="vanished">Ah ocurrido un error interno</translation>
+        <translation>Ha ocurrido un error interno</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="68"/>
@@ -632,7 +632,7 @@
     </message>
     <message>
         <source>About</source>
-        <translation type="vanished">Acerca de</translation>
+        <translation>Acerca de</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="81"/>
@@ -642,13 +642,13 @@
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="76"/>
         <source>About %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Acerca de %1</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="118"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="84"/>
         <source>Disconnect</source>
-        <translation type="unfinished"></translation>
+        <translation>Desconectar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="137"/>
@@ -672,16 +672,16 @@
         <location filename="../sailfish/qml/DevicesPage.qml" line="168"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="136"/>
         <source>No devices</source>
-        <translation type="unfinished"></translation>
+        <translation>No hay dispositivos</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="179"/>
         <source>Connect to a device or flick left to access play queue</source>
-        <translation type="unfinished"></translation>
+        <translation>conecta un dispositivo o deslizar hacia la izquierda para acceder a la cola de reproducción</translation>
     </message>
     <message>
         <source>No devices found</source>
-        <translation type="vanished">No se hallaron dispositivos</translation>
+        <translation>No se hallaron dispositivos</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="170"/>
@@ -695,7 +695,7 @@
     </message>
     <message>
         <source>Add device manually</source>
-        <translation type="vanished">Agregar manual</translation>
+        <translation>Agregar manual</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="86"/>
@@ -712,7 +712,7 @@
     </message>
     <message>
         <source>Playlist</source>
-        <translation type="vanished">reproducciones</translation>
+        <translation>reproducciones</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="129"/>
@@ -722,7 +722,7 @@
     </message>
     <message>
         <source>Toggle power</source>
-        <translation type="vanished">Potencia de palanca</translation>
+        <translation>Potencia de palanca</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="145"/>
@@ -745,7 +745,7 @@ Halar hacia abajo para la lista de opciones y encontrar más dispositivos en la 
     <message>
         <source>Not connected. 
 Pull down to connect to the local network.</source>
-        <translation type="vanished">No conectado.
+        <translation>No conectado.
 Halar hacia abajo para la lista de opciones y conectarse a la red local.</translation>
     </message>
 </context>
@@ -777,86 +777,86 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Search events</source>
-        <translation type="vanished">Buscar eventos</translation>
+        <translation>Buscar eventos</translation>
     </message>
     <message>
         <source>Refresh events list</source>
-        <translation type="vanished">Actualizar lista de eventos</translation>
+        <translation>Actualizar lista de eventos</translation>
     </message>
     <message>
         <source>Search items</source>
-        <translation type="obsolete">Buscar elementos</translation>
+        <translation>Buscar elementos</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="74"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="46"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="140"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualizar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="82"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="52"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Deseleccionar todo</translation>
+        <translation>Deseleccionar todo</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="83"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="52"/>
         <source>Select all</source>
-        <translation type="unfinished">Seleccionar todo</translation>
+        <translation>Seleccionar todo</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="110"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="137"/>
         <source>No items</source>
-        <translation type="unfinished">No hay elementos</translation>
+        <translation>No hay elementos</translation>
     </message>
     <message>
         <source>No events</source>
-        <translation type="vanished">No hay eventos</translation>
+        <translation>No hay eventos</translation>
     </message>
     <message>
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar seleccionados</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Agregar %n seleccionado</numerusform>
+            <numerusform>Agregar %n seleccionados</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../desktop/qml/FosdemPage.qml" line="114"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar selección</translation>
     </message>
 </context>
 <context>
     <name>FosdemYearsPage</name>
     <message>
         <source>Conferences</source>
-        <translation type="vanished">Conferencia</translation>
+        <translation>Conferencias</translation>
     </message>
     <message>
         <source>No conferences found</source>
-        <translation type="vanished">No hay conferencias</translation>
+        <translation>No hay conferencias</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/FosdemYearsPage.qml" line="82"/>
         <location filename="../desktop/qml/FosdemYearsPage.qml" line="22"/>
         <source>FOSDEM Conferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Conferencias FOSDEM</translation>
     </message>
 </context>
 <context>
     <name>GpodderEpisodesPage</name>
     <message>
         <source>Search episodes</source>
-        <translation type="vanished">Buscar episodios</translation>
+        <translation>Buscar episodios</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="72"/>
@@ -884,18 +884,18 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Search stations</source>
-        <translation type="vanished">Buscar estaciones</translation>
+        <translation>Buscar estaciones</translation>
     </message>
     <message>
         <source>Refresh station list</source>
-        <translation type="vanished">Refrescar lista de  estación</translation>
+        <translation>Refrescar lista de  estación</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="74"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="46"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="151"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualizar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="83"/>
@@ -918,20 +918,20 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar seleccionado</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Agregar %n seleccionado</numerusform>
+            <numerusform>Agregar %n seleccionados</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../desktop/qml/IcecastPage.qml" line="125"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar selección</translation>
     </message>
 </context>
 <context>
@@ -946,7 +946,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="94"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="53"/>
         <source>Copy URL</source>
-        <translation>Copiar LUR</translation>
+        <translation>Copiar URL</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="93"/>
@@ -956,15 +956,15 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Copy stream title</source>
-        <translation type="vanished">copiar título del flujo</translation>
+        <translation>copiar título del flujo</translation>
     </message>
     <message>
         <source>Stream title</source>
-        <translation type="vanished">Título de flujo</translation>
+        <translation>Título de flujo</translation>
     </message>
     <message>
         <source>Captured application</source>
-        <translation type="vanished">Aplicación capturada</translation>
+        <translation>Aplicación capturada</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="101"/>
@@ -1028,7 +1028,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Recording URL</source>
-        <translation type="vanished">Grabando LUR</translation>
+        <translation>Grabando URL</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="319"/>
@@ -1050,11 +1050,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Open recording URL in browser</source>
-        <translation type="vanished">Abrir LUR de grabación en el navegador</translation>
+        <translation>Abrir LUR de grabación en el navegador</translation>
     </message>
     <message>
         <source>Copy recording URL</source>
-        <translation type="vanished">Copiar LUR de grabación</translation>
+        <translation>Copiar LUR de grabación</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="88"/>
@@ -1064,7 +1064,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>UPnP Media Server</source>
-        <translation type="vanished">Servidor UPnP</translation>
+        <translation>Servidor UPnP</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="201"/>
@@ -1122,107 +1122,107 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <location filename="../desktop/qml/MediaInfoPage.qml" line="113"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="290"/>
         <source>URL</source>
-        <translation>LUR</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <source>Microphone sensitivity</source>
-        <translation type="vanished">Sensibilidad del micrófono</translation>
+        <translation>Sensibilidad del micrófono</translation>
     </message>
     <message>
         <source>Microphone volume</source>
-        <translation type="vanished">Volumen de micrófono</translation>
+        <translation>Volumen de micrófono</translation>
     </message>
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="23"/>
         <source>No media</source>
-        <translation type="unfinished"></translation>
+        <translation>No hay multimedia</translation>
     </message>
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="48"/>
         <source>Current title was copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>El título actual se copió al portapapeles</translation>
     </message>
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="62"/>
         <source>Path was copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>La ruta se copió al portapapeles</translation>
     </message>
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="63"/>
         <source>URL was copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>La URL se copió al portapapeles</translation>
     </message>
     <message>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="339"/>
         <source>Volume boost</source>
-        <translation type="unfinished"></translation>
+        <translation>Aumentar volumen</translation>
     </message>
 </context>
 <context>
     <name>MediaRendererPage</name>
     <message>
         <source>Item is already added</source>
-        <translation type="vanished">El elemento ya está añadido</translation>
+        <translation>El elemento ya está añadido</translation>
     </message>
     <message>
         <source>Item cannot be added</source>
-        <translation type="vanished">El elemento no puede ser añadido</translation>
+        <translation>El elemento no puede ser añadido</translation>
     </message>
     <message>
         <source>Some items cannot be added</source>
-        <translation type="vanished">Algunos elementos no pueden ser añadidos</translation>
+        <translation>Algunos elementos no pueden ser añadidos</translation>
     </message>
     <message>
         <source>Items cannot be added</source>
-        <translation type="vanished">El elemento no pude ser añadido</translation>
+        <translation>El elemento no pude ser añadido</translation>
     </message>
     <message>
         <source>Unknown error</source>
-        <translation type="vanished">Error desconocido</translation>
+        <translation>Error desconocido</translation>
     </message>
     <message>
         <source>Playlist</source>
-        <translation type="vanished">reproducciones</translation>
+        <translation>reproducciones</translation>
     </message>
     <message>
         <source>Empty</source>
-        <translation type="vanished">Vacío</translation>
+        <translation>Vacío</translation>
     </message>
     <message>
         <source>Not connected</source>
-        <translation type="vanished">No conectado</translation>
+        <translation>No conectado</translation>
     </message>
     <message>
         <source>Save playlist</source>
-        <translation type="vanished">Guardar reproducción</translation>
+        <translation>Guardar reproducción</translation>
     </message>
     <message>
         <source>Clear playlist</source>
-        <translation type="vanished">Limpiar reproducción</translation>
+        <translation>Limpiar reproducción</translation>
     </message>
     <message>
         <source>Add item</source>
-        <translation type="vanished">Añadir elemento</translation>
+        <translation>Añadir elemento</translation>
     </message>
     <message>
         <source>Play</source>
-        <translation type="vanished">Reproducir</translation>
+        <translation>Reproducir</translation>
     </message>
     <message>
         <source>Show</source>
-        <translation type="vanished">Mostrar</translation>
+        <translation>Mostrar</translation>
     </message>
     <message>
         <source>Pause</source>
-        <translation type="vanished">Pausar</translation>
+        <translation>Pausar</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation type="vanished">Borrar</translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <source>Unknown</source>
-        <translation type="vanished">Desconocido</translation>
+        <translation>Desconocido</translation>
     </message>
 </context>
 <context>
@@ -1230,19 +1230,19 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../desktop/qml/PlayButton.qml" line="23"/>
         <source>Play</source>
-        <translation type="unfinished">Reproducir</translation>
+        <translation>Reproducir</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayButton.qml" line="23"/>
         <source>Pause</source>
-        <translation type="unfinished">Pausar</translation>
+        <translation>Pausar</translation>
     </message>
 </context>
 <context>
     <name>PlayQueuePage</name>
     <message>
         <source>Item is already added</source>
-        <translation type="vanished">El elemento ya está añadido</translation>
+        <translation>El elemento ya está añadido</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="92"/>
@@ -1283,7 +1283,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="90"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="122"/>
         <source>Item is already in play queue</source>
-        <translation type="unfinished"></translation>
+        <translation>El elemento ya está en la cola de reproducción</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="143"/>
@@ -1337,31 +1337,31 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="405"/>
         <source>Tap to access playback &amp; volume controls</source>
-        <translation type="unfinished"></translation>
+        <translation>Tocar para acceder a los controles de volumen de reproducción</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="423"/>
         <source>Flick left to see current track details</source>
-        <translation type="unfinished"></translation>
+        <translation>Deslizar el dedo hacia la izquierda para ver los detalles de la pista actual</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="382"/>
         <source>Not connected</source>
-        <translation type="unfinished">No conectado</translation>
+        <translation>No conectado</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="383"/>
         <source>Connect to a device to control playback using %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Conectar un dispositivo para controlar la reproducción usando %1.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="384"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sin conexión, todos los elementos de la cola de reproducción siguen siendo accesibles en otros dispositivos de su red local.</translation>
     </message>
     <message>
         <source>Empty</source>
-        <translation type="obsolete">Vacío</translation>
+        <translation>Vacío</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="127"/>
@@ -1378,7 +1378,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Save playlist</source>
-        <translation type="vanished">Guardar reproducción</translation>
+        <translation>Guardar reproducción</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="244"/>
@@ -1419,22 +1419,22 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="66"/>
         <source>Track info</source>
-        <translation type="unfinished"></translation>
+        <translation>Detalles de pista</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="145"/>
         <source>Playlist has been saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Se guardó la lista de reproducción</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="153"/>
         <source>Remove all items from play queue?</source>
-        <translation type="unfinished"></translation>
+        <translation>¿Quitar todos los elementos de la cola de reproducción?</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="136"/>
         <source>Save items to playlist file</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar elementos en un archivo de lista de reproducción</translation>
     </message>
 </context>
 <context>
@@ -1442,58 +1442,58 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="115"/>
         <source>Not connected</source>
-        <translation type="unfinished">No conectado</translation>
+        <translation>No conectado</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="115"/>
         <source>Connect to a device to control playback using %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Conectar un dispositivo para controlar la reproducción usando% 1.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="116"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sin conexión, todos los elementos de la cola de reproducción siguen siendo accesibles en otros dispositivos de su red local.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="119"/>
         <source>Devices</source>
-        <translation type="unfinished">Dispositivos</translation>
+        <translation>Dispositivos</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="307"/>
         <source>Skip Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Saltar hacia atrás</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="317"/>
         <source>Seek Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Saltar hacia adelante</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="327"/>
         <source>Seek Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar adelante</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="337"/>
         <source>Skip Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Saltar adelante</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="349"/>
         <source>Toggle Record</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar registro</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="363"/>
         <source>Toggle Repeat One</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar repetir uno</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="402"/>
         <location filename="../desktop/qml/PlayerPanel.qml" line="440"/>
         <source>Toggle Mute</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar mudo</translation>
     </message>
 </context>
 <context>
@@ -1508,11 +1508,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <name>PlaylistPage</name>
     <message>
         <source>Playlist files</source>
-        <translation type="vanished">Archivos de reproducción</translation>
+        <translation>Archivos de reproducción</translation>
     </message>
     <message>
         <source>Search playlist files</source>
-        <translation type="vanished">Buscar archivos de Reproducción</translation>
+        <translation>Buscar archivos de Reproducción</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="69"/>
@@ -1521,7 +1521,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Search playlists</source>
-        <translation type="vanished">Buscar reproducciones</translation>
+        <translation>Buscar reproducciones</translation>
     </message>
     <message numerus="yes">
         <location filename="../sailfish/qml/PlaylistPage.qml" line="79"/>
@@ -1548,7 +1548,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Delete playlist file</source>
-        <translation type="vanished">Borrar archivo de reproducción</translation>
+        <translation>Borrar archivo de reproducción</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="104"/>
@@ -1557,7 +1557,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>No playlist files</source>
-        <translation type="vanished">No hay archivos de reproducción</translation>
+        <translation>No hay archivos de reproducción</translation>
     </message>
 </context>
 <context>
@@ -1573,7 +1573,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <name>RecPage</name>
     <message>
         <source>Search recordings</source>
-        <translation type="vanished">Buscar grabados</translation>
+        <translation>Buscar grabados</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="70"/>
@@ -1638,38 +1638,38 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="25"/>
         <source>Recordings</source>
-        <translation type="unfinished">Grabando</translation>
+        <translation>Grabando</translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar seleccionados</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Agregar %n seleccionado</numerusform>
+            <numerusform>Agregar %n seleccionados</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="75"/>
         <source>Delete %n recording(s)?</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>¿Quitar %n grabado?</numerusform>
+            <numerusform>¿Quitar %n grabados?</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="98"/>
         <source>Sort by:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar por:</translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="149"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar selección</translation>
     </message>
 </context>
 <context>
@@ -1689,12 +1689,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <name>SavePlaylistPage</name>
     <message>
         <source>Playlist was saved</source>
-        <translation type="vanished">La reproducción fue guardada</translation>
+        <translation>La reproducción fue guardada</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SavePlaylistPage.qml" line="22"/>
         <source>Playlist has been saved</source>
-        <translation type="unfinished"></translation>
+        <translation>Se guardó la lista</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SavePlaylistPage.qml" line="37"/>
@@ -1724,11 +1724,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Search items</source>
-        <translation type="obsolete">Buscar elementos</translation>
+        <translation>Buscar elementos</translation>
     </message>
     <message>
         <source>Search episodes</source>
-        <translation type="vanished">Buscar episodios</translation>
+        <translation>Buscar episodios</translation>
     </message>
 </context>
 <context>
@@ -1745,15 +1745,15 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Items on play queue will be accessible for other UPnP devices.</source>
-        <translation type="vanished">Los elementos en la cola de reproducción serán accesibles para otros dispositivos UPnP.</translation>
+        <translation>Los elementos en la cola de reproducción serán accesibles para otros dispositivos UPnP.</translation>
     </message>
     <message>
         <source>Start with last playlist</source>
-        <translation type="vanished">Iniciar con la última reproducción</translation>
+        <translation>Iniciar con la última reproducción</translation>
     </message>
     <message>
         <source>When Jupii starts, the last playlist will be automatically loaded.</source>
-        <translation type="vanished">Cuando Jupii se inicia, la última lista de reproducción se autocargará.</translation>
+        <translation>Cuando Jupii se inicia, la última lista de reproducción se autocargará.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="113"/>
@@ -1767,31 +1767,31 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation type="vanished">Cambia el nivel de volumen usando las teclas de volumen del teléfono físico, el nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
+        <translation>Cambia el nivel de volumen usando las teclas de volumen del teléfono físico, el nivel de volumen del dispositivo de medios se establecerá para ser el mismo que el nivel de volumen de la alerta de llamada en el teléfono.</translation>
     </message>
     <message>
         <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation type="vanished">Reproduce imágenes en dispositivos UPnP que no funcionan bien en este momento, hay algunos problemas menores que aún no se han resuelto. Esta opción forza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
+        <translation>Reproduce imágenes en dispositivos UPnP que no funcionan bien en este momento, hay algunos problemas menores que aún no se han resuelto. Esta opción forza %1 a reproducir imágenes a pesar de que podría causar algunos problemas.</translation>
     </message>
     <message>
         <source>Audio capture format</source>
-        <translation type="vanished">Formato de audio</translation>
+        <translation>Formato de audio</translation>
     </message>
     <message>
         <source>MP3 44100Hz 128 kbps (default)</source>
-        <translation type="vanished">MP3 44100Hz 128 kbps(predefinido)</translation>
+        <translation>MP3 44100Hz 128 kbps(predefinido)</translation>
     </message>
     <message>
         <source>MP3 44100Hz 96 kbps</source>
-        <translation type="vanished">MP3 44100Hz 96 kbps</translation>
+        <translation>MP3 44100Hz 96 kbps</translation>
     </message>
     <message>
         <source>PCM 44100Hz 1411 kbps</source>
-        <translation type="vanished">PCM 44100Hz 1411 kbps</translation>
+        <translation>PCM 44100Hz 1411 kbps</translation>
     </message>
     <message>
         <source>PCM 22050Hz 706 kbps</source>
-        <translation type="vanished">PCM 22050Hz 706 kbps</translation>
+        <translation>PCM 22050Hz 706 kbps</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="117"/>
@@ -1800,11 +1800,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Screen capture with audio</source>
-        <translation type="vanished">Captura de pantalla con audio.</translation>
+        <translation>Captura de pantalla con audio.</translation>
     </message>
     <message>
         <source>During a screen capturing, audio is captured as well. Capturing video along with audio is still in beta state, so it may decrease a quality of the streaming and cause additional delay.</source>
-        <translation type="vanished">Durante una captura de pantalla, el audio también se captura. La captura de video junto con el audio aún se encuentra en estado beta, por lo que puede disminuir la calidad de la transmisión y causar un retraso adicional.</translation>
+        <translation>Durante una captura de pantalla, el audio también se captura. La captura de video junto con el audio aún se encuentra en estado beta, por lo que puede disminuir la calidad de la transmisión y causar un retraso adicional.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="147"/>
@@ -1819,12 +1819,12 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="35"/>
         <source>When enabled, items in play queue are accessible for other UPnP devices in your local network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cuando está habilitado, los elementos en la cola de reproducción son accesibles para otros dispositivos UPnP en su red local.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="90"/>
         <source>Microphone sensitivity</source>
-        <translation type="unfinished">Sensibilidad del micrófono</translation>
+        <translation>Sensibilidad de micrófono</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="123"/>
@@ -1874,30 +1874,30 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="270"/>
         <source>Reset tips and hints</source>
-        <translation type="unfinished"></translation>
+        <translation>Restablecer sugerencias</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="272"/>
         <source>Resetting tips and hints</source>
-        <translation type="unfinished"></translation>
+        <translation>Restableciendo sugerencias</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="282"/>
         <source>Preferred network interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Interfaz de red preferida</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="399"/>
         <source>Resetting settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Restableciendo configuraciones</translation>
     </message>
     <message>
         <source>Enables recording of tracks from Icecast streams. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="vanished">Permite la grabación de pistas desde transmisiones Icecast.</translation>
+        <translation>Permite la grabación de pistas desde transmisiones Icecast.</translation>
     </message>
     <message>
         <source>Enables recording of tracks from SHOUTcast stream. When stream provides information about the title of the currently played track, you can save this track to a file. To enable recording use &quot;Record&quot; button located next to &quot;Forward&quot; button on the bottom bar. This button is visible only when recording is possible. When the &quot;Record&quot; button is activated before the end of the track, the whole recording (from the begining to the end of the track) will be saved as a file. Currently AAC streams cannot be recorded.</source>
-        <translation type="vanished">Permite la grabación de pistas desde transmisiones SHOUTcast. Cuando la retransmisión proporciona información sobre el título de la canción actualmente reproducida, puede guardar esta canción en un archivo. Para habilitar la grabación, use &quot;Grabar&quot; botón situado junto a &quot;Adelante&quot; Botón en la barra inferior. Este botón es visible solo cuando la grabación es posible. Cuando el &quot;Grabar&quot; El botón se activa antes del final de la canción, toda la grabación (desde el principio hasta el final de la canción) se guardará como un archivo. Actualmente las secuencias AAC no se pueden grabar.</translation>
+        <translation>Permite la grabación de pistas desde transmisiones SHOUTcast. Cuando la retransmisión proporciona información sobre el título de la canción actualmente reproducida, puede guardar esta canción en un archivo. Para habilitar la grabación, use &quot;Grabar&quot; botón situado junto a &quot;Adelante&quot; Botón en la barra inferior. Este botón es visible solo cuando la grabación es posible. Cuando el &quot;Grabar&quot; El botón se activa antes del final de la canción, toda la grabación (desde el principio hasta el final de la canción) se guardará como un archivo. Actualmente las secuencias AAC no se pueden grabar.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="251"/>
@@ -1936,19 +1936,19 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Proxy (default)</source>
-        <translation type="vanished">Proxy (por defecto)</translation>
+        <translation>Proxy (por defecto)</translation>
     </message>
     <message>
         <source>None</source>
-        <translation type="vanished">Ninguno</translation>
+        <translation>Ninguno</translation>
     </message>
     <message>
         <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation type="vanished">%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluyendo los no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en la red local.</translation>
+        <translation>%1 solo admite dispositivo Media Renderer. Con esta opción habilitada, se mostrarán todos los dispositivos UPnP incluyendo los no compatibles, como los enrutadores domésticos o los servidores de medios. Para dispositivos no compatibles %1 solo puede mostrar información de descripción básica, esta opción podría ser útil para auditar dispositivos UPnP en la red local.</translation>
     </message>
     <message>
         <source>Advanced options</source>
-        <translation type="vanished">Opciones avanzadas</translation>
+        <translation>Opciones avanzadas</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="386"/>
@@ -1962,27 +1962,27 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Adding devices manually</source>
-        <translation type="vanished">Agregar manual</translation>
+        <translation>Agregar manual</translation>
     </message>
     <message>
         <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation type="vanished">Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
+        <translation>Si %1 no descubre un dispositivo (por ejemplo, porque está en una LAN diferente), puede agregarlo manualmente con la dirección IP. Cuando está habilitado, halar la lista de opciones para agregar el dispositivo manualmente. Asegúrarse de que el dispositivo no esté detrás de un NAT o un corta fuego.</translation>
     </message>
     <message>
         <source>Internet streaming mode</source>
-        <translation type="vanished">Modo transmisión por internet</translation>
+        <translation>Modo transmisión por internet</translation>
     </message>
     <message>
         <source>Streaming from the Internet to UPnP devices can be handled in two modes: Proxy (default) or Redirection. In Proxy mode, %1 relays every packet received from a streaming host (e.g. internet radio server) to a UPnP device located in your home network. This mode is transparent for a UPnP device, so it works in most cases. Because packets goes through your phone/tablet, %1 must be enabled all the time to make a streaming working. In Redirection mode, %1 uses HTTP redirection to instruct UPnP device where internet host is located. The actual streaming goes directly between UPnP device and a streaming server, so %1 in not required to be enabled all the time. The downside of Redirection mode is that not every UPnP device supports redirection. Therefore on some devices this mode will not work properly.</source>
-        <translation type="vanished">La transmisión de internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predefinido) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido a host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para funcione la transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 no es necesario que se habilitarlo todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
+        <translation>La transmisión de internet a los dispositivos UPnP se puede manejar en dos modos: proxy (predefinido) o redireccionamiento. En el modo proxy, %1 retransmite cada paquete recibido a host de transmisión (por ejemplo, un servidor de radio por internet) a un dispositivo UPnP ubicado en la red doméstica. Este modo es transparente para un dispositivo UPnP, por lo que funciona en la mayoría de los casos. Debido a que los paquetes pasan a través de el teléfono/tableta, %1 debe estar habilitado todo el tiempo para funcione la transmisión. En el modo de redirección, %1 utiliza la redirección HTTP para indicar el dispositivo UPnP donde se encuentra el host de internet. La transmisión real va directamente entre el dispositivo UPnP y un servidor de transmisión, por lo que %1 no es necesario que se habilitarlo todo el tiempo. La desventaja del modo de redireccionamiento es que no todos los dispositivos UPnP admiten la redirección. Por lo tanto en algunos dispositivos en este modo no funcionará correctamente.</translation>
     </message>
     <message>
         <source>Proxy</source>
-        <translation type="vanished">Proxy</translation>
+        <translation>Proxy</translation>
     </message>
     <message>
         <source>Redirection</source>
-        <translation type="vanished">Redirección</translation>
+        <translation>Redirección</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPage.qml" line="118"/>
@@ -1991,7 +1991,7 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Forward/backward time-step interval</source>
-        <translation type="vanished">Intervalo de paso de tiempo adelante/atrás</translation>
+        <translation>Intervalo de paso de tiempo adelante/atrás</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="75"/>
@@ -2000,11 +2000,11 @@ Halar hacia abajo para la lista de opciones y conectarse a la red local.</transl
     </message>
     <message>
         <source>Image content</source>
-        <translation type="vanished">Contenido de imagen</translation>
+        <translation>Contenido de imagen</translation>
     </message>
     <message>
         <source>Stream format used when %1 captures audio output of another application. Uncompressed stream (PCM) results in lower delay but the higher bitrate will likely cause quicker battery drain.</source>
-        <translation type="vanished">Formato de retransmisión utilizado cuando %1 captura la salida de audio de otra aplicación. La transmisión no comprimida (PCM) produce un retraso menor, pero la tasa de bits más alta probablemente causará un mayor desgaste de la batería</translation>
+        <translation>Formato de retransmisión utilizado cuando %1 captura la salida de audio de otra aplicación. La transmisión no comprimida (PCM) produce un retraso menor, pero la tasa de bits más alta probablemente causará un mayor desgaste de la batería</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="238"/>
