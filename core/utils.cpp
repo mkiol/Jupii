@@ -655,7 +655,7 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id,
     if (uq.hasQueryItem(Utils::typeKey))
         uq.removeAllQueryItems(Utils::typeKey);
 
-    QString cookie, type, name, icon, desc, author, origUrl, ytdl;
+    QString cookie, type, name, icon, desc, author, origUrl, ytdl, dur;
     QUrlQuery iq(id);
     if (swapCookie && iq.hasQueryItem(Utils::cookieKey))
         cookie = iq.queryItemValue(Utils::cookieKey);
@@ -673,6 +673,8 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id,
         origUrl = iq.queryItemValue(Utils::origUrlKey);
     if (swapYtdl && iq.hasQueryItem(Utils::ytdlKey))
         ytdl = iq.queryItemValue(Utils::ytdlKey);
+    if (iq.hasQueryItem(Utils::durKey))
+        dur = iq.queryItemValue(Utils::durKey);
 
     if (!cookie.isEmpty())
         uq.addQueryItem(Utils::cookieKey, cookie);
@@ -690,6 +692,8 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id,
         uq.addQueryItem(Utils::origUrlKey, origUrl);
     if (!ytdl.isEmpty())
         uq.addQueryItem(Utils::ytdlKey, ytdl);
+    if (!dur.isEmpty())
+        uq.addQueryItem(Utils::durKey, dur);
 
     QUrl newUrl(url);
     newUrl.setQuery(uq);

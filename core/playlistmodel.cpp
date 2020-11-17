@@ -1177,8 +1177,10 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     finalId = meta->itemType == ContentServer::ItemType_Upnp ||
             url == meta->url ? Utils::cleanId(finalId) :
                                Utils::swapUrlInId(meta->url, finalId);
+
     qDebug() << "final id:" << finalId;
-    auto item = new PlaylistItem(finalId, // id
+
+    return new PlaylistItem(finalId, // id
                                name, // name
                                meta->url, // url
                                origUrl, // orig url
@@ -1198,8 +1200,6 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
                                meta->itemType,
                                meta->upnpDevId
                                );
-
-    return item;
 }
 
 bool PlaylistModel::addId(const QUrl &id)
