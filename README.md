@@ -45,7 +45,7 @@ Jupii relies on following open source libraries:
 
 ## Translations
 
-Enabled translations are [here](https://github.com/mkiol/Jupii/tree/master/sailfish/translations).
+Enabled translations are [here](https://github.com/mkiol/Jupii/tree/master/translations).
 
 Every new translation is very welcome. There are three ways to contribute:
 
