@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Wed Nov 18 2020 Michal Kosciesza <michal@mkiol.net> 2.8.1-1
+- Bandcamp browser fixes
+- Translations update
+
 * Fri Nov 13 2020 Michal Kosciesza <michal@mkiol.net> 2.8.0-1
 - TuneIn browser
 - Better Bandcamp browser
