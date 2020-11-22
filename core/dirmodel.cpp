@@ -39,7 +39,7 @@ bool DirModel::isCurrentWritable()
 
 void DirModel::changeToRemovable()
 {
-    setCurrentPath("/run/media/nemo");
+    setCurrentPath("/run/media/" + qgetenv("USER"));
 }
 
 void DirModel::changeToHome()
