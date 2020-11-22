@@ -18,6 +18,9 @@ ListItem {
     property alias attachedIcon: _aicon
     property alias extra: extraLabel.text
 
+    readonly property bool _iconDisabled: _icon.status !== Image.Ready &&
+                                         _dicon.status !== Image.Ready
+
     opacity: enabled ? 1.0 : 0.0
     visible: opacity > 0.0
     Behavior on opacity { FadeAnimation {} }
@@ -68,12 +71,11 @@ ListItem {
         width: parent.width
 
         anchors {
-            left: _icon.status !== Image.Ready &&
-                  _dicon.status !== Image.Ready ? parent.left : _icon.right
+            left: _iconDisabled ? parent.left : _icon.right
             right: parent.right
             rightMargin: Theme.horizontalPageMargin +
                          (extraLabel.visible ? extraLabel.width + Theme.paddingSmall : 0)
-            leftMargin: Theme.horizontalPageMargin;
+            leftMargin: _iconDisabled ? Theme.horizontalPageMargin : Theme.paddingMedium
             verticalCenter: parent.verticalCenter
         }
 

@@ -16,6 +16,9 @@ ListItem {
     property alias defaultIcon: _dicon
     property bool active: false
 
+    readonly property bool _iconDisabled: _icon.status !== Image.Ready &&
+                                         _dicon.status !== Image.Ready
+
     contentHeight: Theme.itemSizeMedium
 
     anchors {
@@ -50,11 +53,10 @@ ListItem {
         truncationMode: TruncationMode.Fade
 
         anchors {
-            left: _icon.status !== Image.Ready &&
-                  _dicon.status !== Image.Ready ? parent.left : _icon.right
+            left: _iconDisabled ? parent.left : _icon.right
             right: parent.right
-            leftMargin: Theme.horizontalPageMargin;
-            rightMargin: Theme.horizontalPageMargin;
+            leftMargin: _iconDisabled ? Theme.horizontalPageMargin : Theme.paddingMedium
+            rightMargin: Theme.horizontalPageMargin
             verticalCenter: parent.verticalCenter
         }
 

@@ -17,6 +17,9 @@ ListItem {
     property bool active: false
     property bool fav: false
 
+    readonly property bool _iconDisabled: _icon.status !== Image.Ready &&
+                                         _dicon.status !== Image.Ready
+
     signal favClicked
 
     contentHeight: Theme.itemSizeMedium
@@ -53,11 +56,10 @@ ListItem {
         truncationMode: TruncationMode.Fade
 
         anchors {
-            left: _icon.status !== Image.Ready &&
-                  _dicon.status !== Image.Ready ? parent.left : _icon.right
+            left: _iconDisabled ? parent.left : _icon.right
             right: _icon_fav.left
-            leftMargin: Theme.horizontalPageMargin;
-            rightMargin: Theme.horizontalPageMargin;
+            leftMargin: _iconDisabled ? Theme.horizontalPageMargin : Theme.paddingMedium
+            rightMargin: Theme.horizontalPageMargin
             verticalCenter: parent.verticalCenter
         }
 
