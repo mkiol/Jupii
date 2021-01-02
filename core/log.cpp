@@ -10,6 +10,8 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QByteArray>
+#include <QDateTime>
+#include <QThread>
 #include <cstdlib>
 #include <libavutil/log.h>
 
@@ -47,12 +49,17 @@ void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg
         break;
     }
 
-    fprintf(logFile, "[%c] %s:%u - %s\n", t, function, context.line, localMsg.constData());
+    fprintf(logFile, "[%c] %s %p %s:%u - %s\n", t,
+            QDateTime::currentDateTime().toString("hh:mm:ss.zzz").toLatin1().constData(),
+            static_cast<void*>(QThread::currentThread()),
+            function, context.line, localMsg.constData());
     fflush(logFile);
 }
 
 void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs)
 {
+    Q_UNUSED(ptr)
+
     if (!ffmpegLogFile) {
         QDir home(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
         auto file = home.filePath(FFMPEG_LOG_FILE).toLatin1();
