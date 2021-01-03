@@ -408,7 +408,7 @@ ContentServerWorker::ProxyItem::~ProxyItem()
 
 void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
 {
-    qDebug() << ">>> requestHandler thread:" << QThread::currentThreadId();
+    qDebug() << ">>> requestHandler";
     qDebug() << "  method:" << req->methodString();
     qDebug() << "  URL:" << req->url().path();
     qDebug() << "  headers:" << req->url().path();
@@ -1527,8 +1527,6 @@ ContentServer::ItemMeta::ItemMeta(const ItemMeta *meta) :
 ContentServer::ContentServer(QObject *parent) :
     QThread(parent)
 {
-    qDebug() << "Creating Content Server in thread:" << QThread::currentThreadId();
-
     // FFMPEG stuff
 #ifdef QT_DEBUG
     av_log_set_level(AV_LOG_DEBUG);
@@ -3290,7 +3288,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
                                              std::shared_ptr<QNetworkAccessManager> nam,
                                              int counter)
 {
-    qDebug() << ">> makeItemMetaUsingHTTPRequest in thread:" << QThread::currentThreadId();
+    qDebug() << ">> makeItemMetaUsingHTTPRequest";
 
     if (QThread::currentThread()->isInterruptionRequested()) {
         qWarning() << "Thread interruption was requested";
@@ -3316,7 +3314,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     bool art = meta.flagSet(MetaFlag_Art);
     QEventLoop loop;
     connect(reply, &QNetworkReply::metaDataChanged, [reply, art]{
-        qDebug() << ">> metaDataChanged in thread:" << QThread::currentThreadId();
+        qDebug() << ">> metaDataChanged";
         qDebug() << "Received meta data of HTTP reply for url:" << reply->url();
 
         // Bug in Qt? "Content-Disposition" cannot be retrived with QNetworkRequest::ContentDispositionHeader
@@ -3627,8 +3625,7 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
 
 void ContentServer::run()
 {
-    qDebug() << "Creating content server worker in thread:"
-             << QThread::currentThreadId();
+    qDebug() << "Creating content server worker";
 
     auto worker = ContentServerWorker::instance();
     connect(worker, &ContentServerWorker::shoutcastMetadataUpdated, this,

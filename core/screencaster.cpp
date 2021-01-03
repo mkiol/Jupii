@@ -727,8 +727,6 @@ bool ScreenCaster::init()
 void ScreenCaster::start()
 {
 #ifdef SAILFISH
-    qDebug() << "start thread:" << QThread::currentThreadId();
-    qDebug() << "frameTimer interval:" << frameTimer.interval();
     recorder = std::unique_ptr<Recorder>(new Recorder(this,1));
     frameTimer.start();
     repaintTimer.start();

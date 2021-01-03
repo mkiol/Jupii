@@ -631,8 +631,6 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         return;
     }
 
-    //qDebug() << ">>> setLocalContent thread:" << QThread::currentThreadId();
-
     startTask([this, cid, nid](){
         auto cs = ContentServer::instance();
 

@@ -13,9 +13,9 @@
 namespace Jupii {
 static constexpr const char* APP_NAME = "Jupii";
 #ifdef QT_DEBUG
-static constexpr const char* APP_VERSION = "2.8.1 (debug)";
+static constexpr const char* APP_VERSION = "2.8.2 (debug)";
 #else
-static constexpr const char* APP_VERSION = "2.8.1";
+static constexpr const char* APP_VERSION = "2.8.2";
 #endif // QT_DEBUG
 #ifdef SAILFISH
 static constexpr const char* APP_ID = "harbour-jupii";
@@ -29,7 +29,7 @@ static constexpr const char* APP_ID = "jupii";
 static constexpr const char* ORG = "org.mkiol";
 static constexpr const char* AUTHOR = "Michal Kosciesza";
 static constexpr const char* AUTHOR_EMAIL = "michal@mkiol.net";
-static constexpr const char* COPYRIGHT_YEAR = "2018-2020";
+static constexpr const char* COPYRIGHT_YEAR = "2018-2021";
 static constexpr const char* SUPPORT_EMAIL = "jupii@mkiol.net";
 static constexpr const char* PAGE = "https://github.com/mkiol/Jupii";
 static constexpr const char* LICENSE = "Mozilla Public License 2.0";

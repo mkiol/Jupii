@@ -173,38 +173,6 @@ Page {
                 }
             }
 
-            /*ComboBox {
-                visible: settings.screenSupported && settings.isDebug()
-                label: qsTr("Screen capture encoder")
-                currentIndex: {
-                    var enc = settings.screenEncoder;
-                    if (enc === "libx264")
-                        return 1;
-                    if (enc === "libx264rgb")
-                        return 2;
-                    if (enc === "h264_omx")
-                        return 3;
-                    return 0;
-                }
-                menu: ContextMenu {
-                    MenuItem { text: qsTr("Auto") }
-                    MenuItem { text: qsTr("libx264") }
-                    MenuItem { text: qsTr("libx264rgb") }
-                    //MenuItem { text: qsTr("h264_omx") }
-                }
-
-                onCurrentIndexChanged: {
-                    if (currentIndex === 1)
-                        settings.screenEncoder = "libx264";
-                    else if (currentIndex === 2)
-                        settings.screenEncoder = "libx264rgb";
-                    else if (currentIndex === 3)
-                        settings.screenEncoder = "h264_omx";
-                    else
-                        settings.screenEncoder = "";
-                }
-            }*/
-
             TextSwitch {
                 automaticCheck: false
                 visible:  settings.remoteContentMode == 0
@@ -346,7 +314,39 @@ Page {
                 }
             }
 
-            /*ComboBox {
+            ComboBox {
+                visible: settings.isDebug() && settings.screenSupported
+                label: qsTr("Screen capture encoder")
+                currentIndex: {
+                    var enc = settings.screenEncoder;
+                    if (enc === "libx264")
+                        return 1;
+                    if (enc === "libx264rgb")
+                        return 2;
+                    if (enc === "h264_omx")
+                        return 3;
+                    return 0;
+                }
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("Auto") }
+                    MenuItem { text: "libx264" }
+                    MenuItem { text: "libx264rgb" }
+                    MenuItem { text: "h264_omx" }
+                }
+
+                onCurrentIndexChanged: {
+                    if (currentIndex === 1)
+                        settings.screenEncoder = "libx264";
+                    else if (currentIndex === 2)
+                        settings.screenEncoder = "libx264rgb";
+                    else if (currentIndex === 3)
+                        settings.screenEncoder = "h264_omx";
+                    else
+                        settings.screenEncoder = "";
+                }
+            }
+
+            ComboBox {
                 visible: settings.isDebug() && settings.screenSupported
                 label: "Screen capture framerate"
                 currentIndex: {
@@ -377,7 +377,6 @@ Page {
                     }
                 }
             }
-            */
 
             TextSwitch {
                 automaticCheck: false

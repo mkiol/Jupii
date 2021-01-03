@@ -475,7 +475,19 @@ void Settings::setScreenEncoder(const QString &value)
 
 QString Settings::getScreenEncoder()
 {
-    // valid encoders: libx264, libx264rgb, h264_nvenc, h264_omx
+#ifdef SAILFISH
+    if (isDebug()) {
+        // valid encoders: libx264, libx264rgb, h264_omx
+        auto enc_name = settings.value("screenencoder").toString();
+        if (enc_name == "libx264" ||
+                enc_name == "libx264rgb" ||
+                enc_name == "h264_omx")
+            return enc_name;
+    }
+
+    return {};
+#else
+    // valid encoders: libx264, libx264rgb, h264_nvenc
     auto enc_name = settings.value("screenencoder").toString();
     if (enc_name == "libx264" ||
             enc_name == "libx264rgb" ||
@@ -484,6 +496,7 @@ QString Settings::getScreenEncoder()
         return enc_name;
 
     return {};
+#endif
 }
 
 void Settings::setScreenFramerate(int value)
@@ -498,7 +511,10 @@ int Settings::getScreenFramerate()
 {
 #ifdef SAILFISH
     // default 5 fps
-    return settings.value("screenframerate", 5).toInt();
+    if (isDebug())
+        return settings.value("screenframerate", 5).toInt();
+    else
+        return 5;
 #else
     // default 15 fps
     return settings.value("screenframerate", 15).toInt();
