@@ -5,15 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "device.h"
+
 #include <QDebug>
 #include <QUrl>
 #include <QDir>
 #include <QCoreApplication>
 
-#include <unordered_map>
 #include <string>
+#include <functional>
+#include <algorithm>
 
-#include "device.h"
 #include "directory.h"
 #include "settings.h"
 #include "info.h"
@@ -22,113 +24,90 @@
 #include "playlistmodel.h"
 #include "iconprovider.h"
 
-const QString MediaServerDevice::descTemplate = R"(<?xml version="1.0"?>
-<root xmlns="urn:schemas-upnp-org:device-1-0">
-    <specVersion>
-        <major>1</major>
-        <minor>0</minor>
-    </specVersion>
-    <device>
-        <deviceType>urn:schemas-upnp-org:device:MediaServer:1</deviceType>
-        <friendlyName>%1</friendlyName>
-        <manufacturer>%1</manufacturer>
-        <manufacturerURL>%2</manufacturerURL>
-        <modelDescription>%1</modelDescription>
-        <modelName>%1</modelName>
-        <modelNumber>%3</modelNumber>
-        <modelURL>%2</modelURL>
-        <dlna:X_DLNADOC xmlns:dlna="urn:schemas-dlna-org:device-1-0">DMS-1.50</dlna:X_DLNADOC>
-        <UDN>uuid:%4</UDN>
-        <iconList>
-            <icon>
-                <mimetype>image/png</mimetype>
-                <width>256</width>
-                <height>256</height>
-                <depth>8</depth>
-                <url>%5</url>
-            </icon>
-            <icon>
-                <mimetype>image/png</mimetype>
-                <width>120</width>
-                <height>120</height>
-                <depth>8</depth>
-                <url>%6</url>
-            </icon>
-            <icon>
-                <mimetype>image/png</mimetype>
-                <width>48</width>
-                <height>48</height>
-                <depth>8</depth>
-                <url>%7</url>
-            </icon>
-            <icon>
-                <mimetype>image/png</mimetype>
-                <width>32</width>
-                <height>32</height>
-                <depth>8</depth>
-                <url>%8</url>
-            </icon>
-            <icon>
-                <mimetype>image/png</mimetype>
-                <width>16</width>
-                <height>16</height>
-                <depth>8</depth>
-                <url>%9</url>
-            </icon>
-            <icon>
-                <mimetype>image/jpeg</mimetype>
-                <width>256</width>
-                <height>256</height>
-                <depth>8</depth>
-                <url>%10</url>
-            </icon>
-            <icon>
-                <mimetype>image/jpeg</mimetype>
-                <width>120</width>
-                <height>120</height>
-                <depth>8</depth>
-                <url>%11</url>
-            </icon>
-            <icon>
-                <mimetype>image/jpeg</mimetype>
-                <width>48</width>
-                <height>48</height>
-                <depth>8</depth>
-                <url>%12</url>
-            </icon>
-            <icon>
-                <mimetype>image/jpeg</mimetype>
-                <width>32</width>
-                <height>32</height>
-                <depth>8</depth>
-                <url>%13</url>
-            </icon>
-            <icon>
-                <mimetype>image/jpeg</mimetype>
-                <width>16</width>
-                <height>16</height>
-                <depth>8</depth>
-                <url>%14</url>
-            </icon>
-        </iconList>
-        <serviceList>
-            <service>
-                <serviceType>urn:schemas-upnp-org:service:ContentDirectory:1</serviceType>
-                <serviceId>urn:upnp-org:serviceId:ContentDirectory</serviceId>
-                <SCPDURL>/ContentDirectory/scpd.xml</SCPDURL>
-                <controlURL>/ContentDirectory/control.xml</controlURL>
-                <eventSubURL>/ContentDirectory/event.xml</eventSubURL>
-            </service>
-            <service>
-                <serviceType>urn:schemas-upnp-org:service:ConnectionManager:1</serviceType>
-                <serviceId>urn:upnp-org:serviceId:ConnectionManager</serviceId>
-                <SCPDURL>/ConnectionManager/scpd.xml</SCPDURL>
-                <controlURL>/ConnectionManager/control.xml</controlURL>
-                <eventSubURL>/ConnectionManager/event.xml</eventSubURL>
-            </service>
-        </serviceList>
-    </device>
-</root>)";
+#include "libupnpp/device/service.hxx"
+#include "libupnpp/device/device.hxx"
+
+const QString MediaServerDevice::descTemplate = R"(<deviceType>urn:schemas-upnp-org:device:MediaServer:1</deviceType>
+<friendlyName>%1</friendlyName>
+<manufacturer>%1</manufacturer>
+<manufacturerURL>%2</manufacturerURL>
+<modelDescription>%1</modelDescription>
+<modelName>%1</modelName>
+<modelNumber>%3</modelNumber>
+<modelURL>%2</modelURL>
+<dlna:X_DLNADOC xmlns:dlna="urn:schemas-dlna-org:device-1-0">DMS-1.50</dlna:X_DLNADOC>
+<iconList>
+    <icon>
+        <mimetype>image/png</mimetype>
+        <width>256</width>
+        <height>256</height>
+        <depth>8</depth>
+        <url>%5</url>
+    </icon>
+    <icon>
+        <mimetype>image/png</mimetype>
+        <width>120</width>
+        <height>120</height>
+        <depth>8</depth>
+        <url>%6</url>
+    </icon>
+    <icon>
+        <mimetype>image/png</mimetype>
+        <width>48</width>
+        <height>48</height>
+        <depth>8</depth>
+        <url>%7</url>
+    </icon>
+    <icon>
+        <mimetype>image/png</mimetype>
+        <width>32</width>
+        <height>32</height>
+        <depth>8</depth>
+        <url>%8</url>
+    </icon>
+    <icon>
+        <mimetype>image/png</mimetype>
+        <width>16</width>
+        <height>16</height>
+        <depth>8</depth>
+        <url>%9</url>
+    </icon>
+    <icon>
+        <mimetype>image/jpeg</mimetype>
+        <width>256</width>
+        <height>256</height>
+        <depth>8</depth>
+        <url>%10</url>
+    </icon>
+    <icon>
+        <mimetype>image/jpeg</mimetype>
+        <width>120</width>
+        <height>120</height>
+        <depth>8</depth>
+        <url>%11</url>
+    </icon>
+    <icon>
+        <mimetype>image/jpeg</mimetype>
+        <width>48</width>
+        <height>48</height>
+        <depth>8</depth>
+        <url>%12</url>
+    </icon>
+    <icon>
+        <mimetype>image/jpeg</mimetype>
+        <width>32</width>
+        <height>32</height>
+        <depth>8</depth>
+        <url>%13</url>
+    </icon>
+    <icon>
+        <mimetype>image/jpeg</mimetype>
+        <width>16</width>
+        <height>16</height>
+        <depth>8</depth>
+        <url>%14</url>
+    </icon>
+</iconList>)";
 
 const QString MediaServerDevice::csTemplate = R"(<?xml version="1.0"?>
 <scpd xmlns="urn:schemas-upnp-org:service-1-0">
@@ -426,11 +405,10 @@ void MediaServerDevice::updateDirectory()
 
 QString MediaServerDevice::desc()
 {
-    qDebug() << "UUID:" << Settings::instance()->mediaServerDevUuid();
     auto desc = descTemplate.arg(Settings::instance()->prettyName(),
                      Jupii::PAGE,
-                     Jupii::APP_VERSION,
-                     Settings::instance()->mediaServerDevUuid());
+                     Jupii::APP_VERSION);
+
     // -- icons --
     QString ifname, addr;
     if (!Directory::instance()->getNetworkIf(ifname, addr)) {
@@ -466,37 +444,12 @@ QString MediaServerDevice::desc()
     return desc;
 }
 
-std::unordered_map<std::string, UPnPProvider::VDirContent> MediaServerDevice::desc_files()
-{
-    std::unordered_map<std::string, UPnPProvider::VDirContent> files;
-    files.insert({"/MediaServer/description.xml", {desc().toStdString(), "text/xml"}});
-    files.insert({"/ContentDirectory/scpd.xml", {csTemplate.toStdString(), "text/xml"}});
-    files.insert({"/ConnectionManager/scpd.xml", {cmTemplate.toStdString(), "text/xml"}});
-    return files;
-}
-
 MediaServerDevice::MediaServerDevice(QObject *parent) :
-    QThread(parent),
+    QObject(parent),
     UPnPProvider::UpnpDevice(
-        "uuid:" + Settings::instance()->mediaServerDevUuid().toStdString(),
-        desc_files())
+        "uuid:" + Settings::instance()->mediaServerDevUuid().toStdString())
 {
     qDebug() << "Creating UPnP Media Server device";
-
-    cd = std::unique_ptr<ContentDirectoryService>(
-                new ContentDirectoryService("urn:schemas-upnp-org:service:ContentDirectory:1",
-                                "urn:upnp-org:serviceId:ContentDirectory", this));
-    addActionMapping(cd.get(), "GetSearchCapabilities", actionHandler);
-    addActionMapping(cd.get(), "GetSortCapabilities", actionHandler);
-    addActionMapping(cd.get(), "GetSystemUpdateID", actionHandler);
-    addActionMapping(cd.get(), "Browse", actionHandler);
-
-    cm = std::unique_ptr<ConnectionManagerService>(
-                new ConnectionManagerService("urn:schemas-upnp-org:service:ConnectionManager:1",
-                                "urn:upnp-org:serviceId:ConnectionManager", this));
-    addActionMapping(cm.get(), "GetProtocolInfo", actionHandler);
-    addActionMapping(cm.get(), "GetCurrentConnectionIDs", actionHandler);
-    addActionMapping(cm.get(), "GetCurrentConnectionInfo", actionHandler);
 
     auto pl = PlaylistModel::instance();
     connect(pl, &PlaylistModel::itemsAdded, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
@@ -504,66 +457,57 @@ MediaServerDevice::MediaServerDevice(QObject *parent) :
     connect(pl, &PlaylistModel::itemsLoaded, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
     connect(pl, &PlaylistModel::itemsRefreshed, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
 
-    auto s = Settings::instance();
-    connect(s, &Settings::contentDirSupportedChanged, this, &MediaServerDevice::restart);
-    connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, &MediaServerDevice::stop);
-
-    restart();
+    start();
 }
 
 MediaServerDevice::~MediaServerDevice()
 {
-    stop();
-    if (!wait(1000))
-        qWarning() << "Timeout on stop";
+    qDebug() << "Ending UPnP Media Server device";
 }
 
-void MediaServerDevice::run()
+bool MediaServerDevice::readLibFile(const std::string& name, std::string& contents)
 {
-    qDebug() << "UPnP Media Server device starting";
-    emit runningChanged();
-    eventloop();
-    qDebug() << "UPnP Media Server device ending";
-    emit runningChanged();
+    qDebug() << "readLibFile name:" << QString::fromStdString(name);
+
+    if (name.empty())
+        contents = desc().toStdString();
+    else if (name == "CD")
+        contents = csTemplate.toStdString();
+    else if (name == "CM")
+        contents = cmTemplate.toStdString();
+    else
+        return false;
+
+    return true;
 }
 
-void MediaServerDevice::restart()
+void MediaServerDevice::start()
 {
-    auto s = Settings::instance();
-    bool supported = s->getContentDirSupported();
+    auto handler = std::bind(&MediaServerDevice::actionHandler, this,
+                             std::placeholders::_1, std::placeholders::_2);
 
-    if (isRunning()) {
-        if (!supported)
-            stop();
-    } else {
-        if (supported)
-            start(QThread::LowPriority);
-    }
-}
+    cd = std::make_unique<ContentDirectoryService>("urn:schemas-upnp-org:service:ContentDirectory:1",
+                                "urn:upnp-org:serviceId:ContentDirectory", this);
+    addActionMapping(cd.get(), "GetSearchCapabilities", handler);
+    addActionMapping(cd.get(), "GetSortCapabilities", handler);
+    addActionMapping(cd.get(), "GetSystemUpdateID", handler);
+    addActionMapping(cd.get(), "Browse", handler);
 
-void MediaServerDevice::stop()
-{
-    shouldExit();
-}
+    cm = std::make_unique<ConnectionManagerService>("urn:schemas-upnp-org:service:ConnectionManager:1",
+                                "urn:upnp-org:serviceId:ConnectionManager", this);
+    addActionMapping(cm.get(), "GetProtocolInfo", handler);
+    addActionMapping(cm.get(), "GetCurrentConnectionIDs", handler);
+    addActionMapping(cm.get(), "GetCurrentConnectionInfo", handler);
 
-void MediaServerDevice::sendAdvertisement()
-{
-    shouldSendAdvertisement();
+    startloop();
 }
 
 int MediaServerDevice::actionHandler(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
 {
-    auto dir = Directory::instance();
-    if (dir->msdev) {
-        return dir->msdev->actionHandler2(in, out);
-    } else {
-        qWarning() << "Msdev is not created inited";
-    }
-}
+    auto action = QString::fromStdString(out.getName());
 
-int MediaServerDevice::actionHandler2(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
-{    auto action = QString::fromStdString(in.getName());
-    qDebug() << "actionHandler:" << action;
+    qDebug() << "Action to handle in:" << QString::fromStdString(in.getName());
+    qDebug() << "Action to handle out:" << action;
 
     if (action == "GetSortCapabilities") {
         return getSortCapabilities(in, out);
@@ -581,7 +525,7 @@ int MediaServerDevice::actionHandler2(const UPnPP::SoapIncoming& in, UPnPP::Soap
         return getCurrentConnectionInfo(in, out);
     }
 
-    return UPNP_E_BAD_REQUEST;
+    return UPNP_E_INVALID_ACTION;
 }
 
 int MediaServerDevice::getSearchCapabilities(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
@@ -764,7 +708,7 @@ int MediaServerDevice::getCurrentConnectionInfo(const UPnPP::SoapIncoming& in, U
 
 ContentDirectoryService::ContentDirectoryService(const std::string& stp, const std::string& sid,
                          UPnPProvider::UpnpDevice *dev) :
-    UPnPProvider::UpnpService(stp, sid, dev)
+    UPnPProvider::UpnpService(stp, sid, "CD", dev)
 {
 }
 
@@ -793,7 +737,7 @@ bool ContentDirectoryService::getEventData(bool all, std::vector<std::string>& n
 
 ConnectionManagerService::ConnectionManagerService(const std::string& stp, const std::string& sid,
                          UPnPProvider::UpnpDevice *dev) :
-    UPnPProvider::UpnpService(stp, sid, dev)
+    UPnPProvider::UpnpService(stp, sid, "CM", dev)
 {
 }
 

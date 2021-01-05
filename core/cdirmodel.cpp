@@ -14,6 +14,8 @@
 #include "utils.h"
 #include "contentserver.h"
 
+#include "libupnpp/control/cdircontent.hxx"
+
 const QHash<QString,CDirModel::Types> CDirModel::containerClasses {
     {"object.container.album.musicAlbum", CDirModel::MusicAlbumType},
     {"object.container.person.musicArtist", CDirModel::ArtistType},
@@ -86,7 +88,7 @@ QList<ListItem*> CDirModel::makeItems()
     if (cd->readItems(m_id, content)) {
         auto did = cd->getDeviceId();
         QList<ListItem*> items_dir;
-        for (const UPnPClient::UPnPDirObject &item : content.m_containers) {
+        for (const auto &item : content.m_containers) {
             if (items.size() > maxItems) {
                 qWarning() << "Max cdir items";
                 break;

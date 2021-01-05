@@ -23,6 +23,8 @@
 #include "services.h"
 #include "directory.h"
 #include "youtubedl.h"
+#include "avtransport.h"
+#include "renderingcontrol.h"
 
 PlaylistModel* PlaylistModel::m_instance = nullptr;
 

@@ -135,7 +135,7 @@ Kirigami.ScrollablePage {
         Controls.Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: "QHTTPServer \nLibupnpp \nLibupnp \nTagLib \nFFmpeg \nLAME \nx264 \nGumbo"
+            text: "QHTTPServer \nLibupnpp \nTagLib \nFFmpeg \nLAME \nx264 \nGumbo"
         }
     }
 }

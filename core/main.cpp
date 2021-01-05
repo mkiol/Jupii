@@ -41,9 +41,6 @@
 #include "utils.h"
 #include "directory.h"
 #include "devicemodel.h"
-#include "renderingcontrol.h"
-#include "avtransport.h"
-#include "contentserver.h"
 #include "filemetadata.h"
 #include "settings.h"
 #include "deviceinfo.h"
@@ -69,6 +66,9 @@
 #include "bcmodel.h"
 #include "notifications.h"
 #include "tuneinmodel.h"
+#include "renderingcontrol.h"
+#include "avtransport.h"
+#include "contentserver.h"
 
 int main(int argc, char *argv[])
 {

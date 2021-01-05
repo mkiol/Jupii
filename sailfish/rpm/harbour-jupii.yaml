@@ -1,6 +1,6 @@
 Name: harbour-jupii
 Summary: Jupii
-Version: 2.8.1
+Version: 2.8.2
 Release: 1
 # The contents of the Group field should be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
@@ -47,7 +47,7 @@ PkgBR:
 # Runtime dependencies which are not automatically detected
 Requires:
   - sailfishsilica-qt5 >= 0.10.9 
-  - python
+  - python # needed for youtube-dl but not allowed in harbour
 
 # All installed files
 Files:

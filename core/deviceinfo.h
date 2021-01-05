@@ -15,6 +15,7 @@
 
 #include <libupnpp/control/description.hxx>
 
+
 class DeviceInfo : public QObject
 {
     Q_OBJECT

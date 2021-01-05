@@ -26,7 +26,6 @@
 #include <qhttpserver.h>
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
-#include "libupnpp/control/cdirectory.hxx"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -50,6 +49,9 @@ extern "C" {
 #include "screencaster.h"
 #endif
 
+namespace UPnPClient {
+class UPnPDirObject;
+}
 class ContentServerWorker;
 
 class ContentServer :

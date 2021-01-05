@@ -20,7 +20,6 @@
 #ifdef SAILFISH
 #include <QQuickItem>
 #endif
-#include "contentserver.h"
 
 class Utils : public QObject
 {

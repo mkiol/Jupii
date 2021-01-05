@@ -5,9 +5,9 @@
 
 #include <memory>
 
-#include "renderingcontrol.h"
-#include "avtransport.h"
-#include "contentdirectory.h"
+class RenderingControl;
+class AVTransport;
+class ContentDirectory;
 
 class Services : public QObject
 {

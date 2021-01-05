@@ -10,11 +10,12 @@
 #include <QGuiApplication>
 
 #include "renderingcontrol.h"
-#include "directory.h"
+
 #include "devicemodel.h"
 #include "utils.h"
 #include "settings.h"
 #include "notifications.h"
+
 
 RenderingControl::RenderingControl(QObject *parent) : Service(parent),
     m_volumeTimer(parent)

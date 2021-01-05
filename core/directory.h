@@ -19,13 +19,20 @@
 #include <memory>
 #include <functional>
 
-#include "libupnpp/upnpplib.hxx"
-#include "libupnpp/control/discovery.hxx"
-#include "libupnpp/control/description.hxx"
-
 #include "taskexecutor.h"
 #include "yamahaextendedcontrol.h"
-#include "device.h"
+
+namespace UPnPP {
+    class LibUPnP;
+}
+
+namespace UPnPClient {
+    class UPnPDeviceDirectory;
+    class UPnPServiceDesc;
+    class UPnPDeviceDesc;
+}
+
+class MediaServerDevice;
 
 class Directory :
         public QObject,
@@ -76,6 +83,7 @@ private slots:
     void handleBusyChanged();
     void handleInitedChanged();
     void handleNetworkConfChanged(const QNetworkConfiguration &conf);
+    void restartMediaServer();
 
 private:
     static Directory* m_instance;
@@ -89,6 +97,7 @@ private:
     QHash<QString,YamahaXC*> m_xcs;
     QString m_ifname;
     explicit Directory(QObject *parent = nullptr);
+    ~Directory();
     void setBusy(bool busy);
     void setInited(bool inited);
     bool handleError(int ret);

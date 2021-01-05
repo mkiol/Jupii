@@ -7,7 +7,7 @@ Name:       harbour-jupii
 
 # >> macros
 %define __provides_exclude_from ^%{_datadir}/.*$
-%define __requires_exclude ^libgumbo.*|libomx*|libx264.*|libavdevice.*|libavcodec.*|libavformat.*|libavutil.*|libswresample.*|libswscale.*|libmp3lame.*|libtag.*|libupnp.*|libixml.*|libthreadutil.*$
+%define __requires_exclude ^libgumbo.*|libomx*|libx264.*|libavdevice.*|libavcodec.*|libavformat.*|libavutil.*|libswresample.*|libswscale.*|libmp3lame.*|libtag.*|libnpupnp.*|libmicrohttpd.*|libupnpp.*$
 # << macros
 
 %{!?qtc_qmake:%define qtc_qmake %qmake}
@@ -15,7 +15,7 @@ Name:       harbour-jupii
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
-Version:    2.8.1
+Version:    2.8.2
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE

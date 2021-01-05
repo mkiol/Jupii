@@ -9,11 +9,11 @@
 #define DEVICE_H
 
 #include <QObject>
-#include <QThread>
 #include <QString>
 #include <memory>
 
-#include <device/device.hxx>
+#include "libupnpp/device/service.hxx"
+#include "libupnpp/device/device.hxx"
 
 class ContentDirectoryService : public UPnPProvider::UpnpService
 {
@@ -36,35 +36,26 @@ public:
                               std::vector<std::string>& values);
 };
 
-class MediaServerDevice : public QThread, public UPnPProvider::UpnpDevice
+class MediaServerDevice : public QObject, public UPnPProvider::UpnpDevice
 {
     Q_OBJECT
-    Q_PROPERTY (bool running READ isRunning NOTIFY runningChanged)
 public:
     static const QString descTemplate;
     static const QString csTemplate;
     static const QString cmTemplate;
     static QString desc();
-    static std::unordered_map<std::string, UPnPProvider::VDirContent> desc_files();
     MediaServerDevice(QObject *parent = nullptr);
     ~MediaServerDevice();
-    bool getRunning();
-    void sendAdvertisement();
-
-signals:
-    void runningChanged();
+    bool readLibFile(const std::string& name, std::string& contents);
 
 public slots:
     void updateDirectory();
-    void restart();
-    void stop();
 
 private:
     std::unique_ptr<ContentDirectoryService> cd;
     std::unique_ptr<ConnectionManagerService> cm;
-    void run();
-    static int actionHandler(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out);
-    int actionHandler2(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out);
+    int actionHandler(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out);
+    void start();
 
     // cd actions
     int getSearchCapabilities(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out);

@@ -18,6 +18,13 @@
 #include "services.h"
 #include "filedownloader.h"
 #include "contentserver.h"
+#include "service.h"
+#include "services.h"
+#include "avtransport.h"
+#include "renderingcontrol.h"
+#include "contentdirectory.h"
+
+#include "libupnpp/control/description.hxx"
 
 DeviceModel* DeviceModel::m_instance = nullptr;
 

@@ -15,8 +15,10 @@ ContentDirectory::ContentDirectory(QObject *parent) : Service(parent)
 {
 }
 
-void ContentDirectory::changed(const QString &name, const QVariant &_value)
+void ContentDirectory::changed(const QString &name, const QVariant &value)
 {
+    Q_UNUSED(name)
+    Q_UNUSED(value)
 }
 
 UPnPClient::Service* ContentDirectory::createUpnpService(const UPnPClient::UPnPDeviceDesc &ddesc,

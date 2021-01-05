@@ -1,5 +1,9 @@
 #include "services.h"
 
+#include "renderingcontrol.h"
+#include "avtransport.h"
+#include "contentdirectory.h"
+
 Services* Services::m_instance = nullptr;
 
 Services* Services::instance(QObject *parent)

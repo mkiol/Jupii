@@ -15,7 +15,6 @@
 #include <QVariant>
 #include <functional>
 
-#include <libupnpp/control/avtransport.hxx>
 #include <libupnpp/control/service.hxx>
 
 #include "taskexecutor.h"

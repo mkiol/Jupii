@@ -1,86 +1,57 @@
-LIBUPNPP_ROOT = $$PROJECTDIR/libs/libupnpp
+#
+# SFOS:
+#
+# wget https://ftpmirror.gnu.org/libmicrohttpd/libmicrohttpd-latest.tar.gz
+# tar -xf libmicrohttpd-latest.tar.gz
+# cd libmicrohttpd-0.9.72
+# chmod u+x ./configure
+# sb2 -t SailfishOS-[target] ./configure --enable-shared --disable-doc --disable-examples --without-gnutls
+# sb2 -t SailfishOS-[target] make
+# cp -L ./src/microhttpd/.libs/libmicrohttpd.so.12 [dest]
+#
+# git clone -b master --single-branch https://framagit.org/medoc92/npupnp.git npupnp-master
+# cd npupnp-master
+# chmod u+x ./autogen.sh
+# sb2 -t SailfishOS-[target] ./autogen.sh
+# sb2 -t SailfishOS-[target] ./configure --enable-shared --disable-static
+# sb2 -t SailfishOS-[target] make
+# cp -L .libs/libnpupnp.so.4 [dest]
+#
+# git clone -b master --single-branch https://framagit.org/medoc92/libupnpp.git libupnpp-master
+# cd libupnpp-master
+# chmod u+x ./autogen.sh
+# sb2 -t SailfishOS-[target] ./autogen.sh
+# sb2 -t SailfishOS-[target] ./configure --enable-shared --disable-static
+# sb2 -t SailfishOS-[target] make
+# cp -L .libs/libupnpp.so.9 [dest]
+#
 
-PKGCONFIG += libcurl expat
-LIBS += -lpthread
+UPNPP_ROOT = $$PROJECTDIR/libs/libupnpp
 
-QMAKE_CXXFLAGS += -std=c++11 -D_FILE_OFFSET_BITS=64 -pthread
+INCLUDEPATH += $$UPNPP_ROOT/include
 
-QMAKE_LFLAGS += -Wl,-zdefs
+HEADERS += $$UPNPP_ROOT/include/npupnp/*.h
+HEADERS += $$UPNPP_ROOT/include/libupnpp/*.h
+HEADERS += $$UPNPP_ROOT/include/libupnpp/*.hxx
+HEADERS += $$UPNPP_ROOT/include/libupnpp/control/*.hxx
+HEADERS += $$UPNPP_ROOT/include/libupnpp/device/*.hxx
 
-libupnpp_HEADERS += \
-  $$LIBUPNPP_ROOT/libupnpp/control/avlastchg.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/avtransport.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/cdircontent.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/cdirectory.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/description.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/device.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/discovery.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/httpdownload.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/linnsongcast.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/mediarenderer.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/mediaserver.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohplaylist.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohproduct.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohradio.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohinfo.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohreceiver.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohsender.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohtime.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohvolume.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/renderingcontrol.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/service.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/device/device.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/device/vdir.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/base64.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/expatmm.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/getsyshwaddr.h \
-  $$LIBUPNPP_ROOT/libupnpp/ixmlwrap.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/log.h \
-  $$LIBUPNPP_ROOT/libupnpp/log.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/md5.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/smallut.h \
-  $$LIBUPNPP_ROOT/libupnpp/soaphelp.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/upnpavutils.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/upnpp_p.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/upnpplib.hxx \
-  $$LIBUPNPP_ROOT/libupnpp/workqueue.h \
-  $$LIBUPNPP_ROOT/libupnpp/conf_post.h \
-  $$LIBUPNPP_ROOT/libupnpp/config.h
+sailfish {
+    x86 {
+        LIBS += -L$$UPNPP_ROOT/build/i486 -l:libnpupnp.so.4 -l:libmicrohttpd.so.12 -l:libupnpp.so.9
+        upnpp.files = $$UPNPP_ROOT/build/i486/*
+    }
 
-SOURCES += \
-  $$LIBUPNPP_ROOT/libupnpp/control/avlastchg.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/avtransport.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/cdircontent.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/cdirectory.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/description.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/device.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/discovery.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/httpdownload.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/linnsongcast.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/mediarenderer.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/mediaserver.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohplaylist.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohproduct.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohradio.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohinfo.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohreceiver.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohsender.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohtime.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/ohvolume.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/renderingcontrol.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/control/service.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/device/device.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/device/vdir.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/base64.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/getsyshwaddr.cpp \
-  $$LIBUPNPP_ROOT/libupnpp/ixmlwrap.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/log.cpp \
-  $$LIBUPNPP_ROOT/libupnpp/md5.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/smallut.cpp \
-  $$LIBUPNPP_ROOT/libupnpp/soaphelp.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/upnpavutils.cxx \
-  $$LIBUPNPP_ROOT/libupnpp/upnpplib.cxx
+    arm {
+        LIBS += -L$$UPNPP_ROOT/build/armv7hl -l:libnpupnp.so.4 -l:libmicrohttpd.so.12 -l:libupnpp.so.9
+        upnpp.files = $$UPNPP_ROOT/build/armv7hl/*
+    }
 
-INCLUDEPATH += \
-  $$LIBUPNPP_ROOT \
-  $$LIBUPNPP_ROOT/libupnpp
+    upnpp.path = /usr/share/$${TARGET}/lib
+    INSTALLS += upnpp
+}
+
+desktop {
+    LIBS += -L$$UPNPP_ROOT/build/amd64 \
+            -l:libupnpp.a -l:libupnpputil.a -l:libnpupnp.a -l:libmicrohttpd.a -l:libexpat.a -l:libcurl.a
+}

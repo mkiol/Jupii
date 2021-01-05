@@ -1,10 +1,9 @@
-CONFIG += c++14 json no_lflags_merge object_parallel_to_source
+CONFIG += c++14 json no_lflags_merge #object_parallel_to_source
 QT += gui network dbus sql multimedia xml
 
 CORE_DIR = ../core
 
 include($$PROJECTDIR/libs/qhttpserver/qhttpserver.pri)
-include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
 
 message(Qt is installed in $$[QT_INSTALL_PREFIX])
 
@@ -33,11 +32,12 @@ desktop {
         include($$PROJECTDIR/libs/taglib/taglib.pri)
     }
 
-    packagesExist(libupnp) {
-        PKGCONFIG += libupnp
+    packagesExist(libupnpp libnpupnp libmicrohttpd expat libcurl) {
+        PKGCONFIG += libnpupnp libmicrohttpd expat libcurl
+        LIBS += -lupnpp -lupnpputil
     } else {
-        message(Using static libupnp)
-        include($$PROJECTDIR/libs/pupnp/pupnp.pri)
+        message(Using static libupnpp libnpupnp libmicrohttpd expat libcurl)
+        include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
     }
 
     packagesExist(gumbo) {
@@ -63,7 +63,7 @@ desktop {
 sailfish {
     PKGCONFIG += libpulse keepalive
 
-    include($$PROJECTDIR/libs/pupnp/pupnp.pri)
+    include($$PROJECTDIR/libs/libupnpp/libupnpp.pri)
     include($$PROJECTDIR/libs/taglib/taglib.pri)
     include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
     include($$PROJECTDIR/libs/x264/x264.pri)

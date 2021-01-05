@@ -14,6 +14,7 @@
 
 #define LOG_FILE "jupii.log"
 #define FFMPEG_LOG_FILE "jupii_ffmpeg.log"
+#define UPNPP_LOG_FILE "jupii_upnpp.log"
 
 extern FILE * logFile;
 extern FILE * ffmpegLogFile;

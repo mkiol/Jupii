@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "deviceinfo.h"
+
 #include <QDebug>
 
-#include "deviceinfo.h"
 #include "directory.h"
 #include "utils.h"
+
 
 DeviceInfo::DeviceInfo(QObject *parent) : QObject(parent)
 {

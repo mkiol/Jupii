@@ -15,6 +15,9 @@
 #include "taskexecutor.h"
 #include "utils.h"
 
+#include "libupnpp/control/description.hxx"
+
+
 Service::Service(QObject *parent) :
     QObject(parent),
     TaskExecutor(parent, 5),
@@ -168,7 +171,7 @@ bool Service::init(const QString &deviceId)
     }
 
     if (m_inited && m_ser) {
-        if (m_ser->isSameService(ddesc, sdesc)) {
+        if (m_ser->getDeviceId() == ddesc.UDN && m_ser->getServiceType() == sdesc.serviceType) {
             qDebug() << "Same service, init not needed";
             return true;
         }
@@ -185,7 +188,7 @@ bool Service::init(const QString &deviceId)
         qDebug() << "Initing started";
         m_initing = true;
 
-        if (m_ser) {
+        /*if (m_ser) {
             if (!m_ser->reInit(ddesc, sdesc)) {
                 qDebug() << "Re-initing error";
             }
@@ -201,7 +204,22 @@ bool Service::init(const QString &deviceId)
             emit error(E_NotInited);
         } else {
             postInit();
+        }*/
+
+        if (m_ser) {
+            delete m_ser;
+            m_ser = nullptr;
         }
+
+        m_ser = createUpnpService(ddesc, sdesc);
+
+        if (!m_ser) {
+            qWarning() << "Unable to connect to UPnP service";
+            m_initing = false;
+            emit error(E_NotInited);
+        }
+
+        postInit();
 
         if (m_initing) {
             m_ser->installReporter(this);

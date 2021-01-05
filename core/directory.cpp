@@ -15,14 +15,22 @@
 #include <QCoreApplication>
 #include <QNetworkConfiguration>
 #include <QNetworkInterface>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QStandardPaths>
+#include <QDir>
 #include <string>
+#include <algorithm>
 
-#include <libupnpp/control/description.hxx>
+#include "libupnpp/upnpplib.hxx"
+#include "libupnpp/control/discovery.hxx"
+#include "libupnpp/control/description.hxx"
 
 #include "settings.h"
 #include "utils.h"
 #include "directory.h"
 #include "device.h"
+#include "log.h"
 
 Directory* Directory::m_instance = nullptr;
 
@@ -40,10 +48,16 @@ Directory::Directory(QObject *parent) :
 
     connect(this, &Directory::busyChanged, this, &Directory::handleBusyChanged);
     connect(this, &Directory::networkStateChanged, this, &Directory::init);
-    connect(this, &Directory::initedChanged, this, &Directory::handleInitedChanged, Qt::QueuedConnection);
+    connect(this, &Directory::initedChanged, this,
+            &Directory::handleInitedChanged, Qt::QueuedConnection);
+    connect(Settings::instance(), &Settings::contentDirSupportedChanged,
+            this, &Directory::restartMediaServer, Qt::QueuedConnection);
 
     updateNetworkConf();
 }
+
+Directory::~Directory()
+{}
 
 void Directory::handleNetworkConfChanged(const QNetworkConfiguration &conf)
 {
@@ -151,21 +165,23 @@ void Directory::handleBusyChanged()
             i.value()->getStatus();
             ++i;
         }
-
-        qDebug() << "Sending SSDP advertisement";
-        if (msdev)
-            msdev->sendAdvertisement();
     }
 }
 
 void Directory::handleInitedChanged()
 {
-    if (m_inited) {
-        msdev = std::unique_ptr<MediaServerDevice>(new MediaServerDevice());
-    } else {
+    restartMediaServer();
+
+    if (!m_inited)
         clearLists(true);
-        msdev.reset(nullptr);
-    }
+}
+
+void Directory::restartMediaServer()
+{
+    if (m_inited && Settings::instance()->getContentDirSupported())
+        msdev = std::make_unique<MediaServerDevice>();
+    else
+        msdev.reset();
 }
 
 void Directory::init()
@@ -183,7 +199,7 @@ void Directory::init()
     qDebug() << "LibUPnP init:" << ifname << addr;
 
     m_lib = UPnPP::LibUPnP::getLibUPnP(
-        false, nullptr, ifname.toStdString(), addr.toStdString(), 0
+        false, nullptr, ifname.toStdString()
     );
 
     if (!m_lib) {
@@ -200,10 +216,15 @@ void Directory::init()
         return;
     }
 
+    std::string logFile;
+    if (Settings::instance()->getLogToFile()) {
+        QDir home(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
+        logFile = home.filePath(UPNPP_LOG_FILE).toLatin1().toStdString();
+    }
 #ifdef QT_DEBUG
-    m_lib->setLogFileName("", UPnPP::LibUPnP::LogLevelDebug);
+    m_lib->setLogFileName(logFile, UPnPP::LibUPnP::LogLevelDebug);
 #else
-    m_lib->setLogFileName("", UPnPP::LibUPnP::LogLevelError);
+    m_lib->setLogFileName(logFile, UPnPP::LibUPnP::LogLevelError);
 #endif
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(5);
 
@@ -520,21 +541,35 @@ void Directory::setInited(bool inited)
 
 QUrl Directory::getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc)
 {
-    if (ddesc.iconList.empty())
-        return QUrl();
+    QDomDocument doc; QString error;
+    if (!doc.setContent(QString::fromStdString(ddesc.XMLText), false, &error)) {
+        qWarning() << "Parse error:" << error;
+        return {};
+    }
 
-    // Finding largest icon
-    int max_size = 0; std::string max_url;
-    for (const auto &icon : ddesc.iconList) {
-        if (icon.mimeType == "image/jpeg" || icon.mimeType == "image/png") {
-            int size = icon.width + icon.height;
+    const auto icons = doc.elementsByTagName("icon");
+
+    // Find largest icon
+    int max_size = 0; QString max_url;
+    for (int i = 0; i < icons.length(); ++i) {
+        const auto icon = icons.item(i).toElement();
+        const auto mime = icon.elementsByTagName("mimetype").item(0).toElement().text();
+
+        if (mime == "image/jpeg" || mime == "image/png") {
+            const int size =
+                    icon.elementsByTagName("width").item(0).toElement().text().toInt() +
+                    icon.elementsByTagName("height").item(0).toElement().text().toInt();
             if (size > max_size) {
                 max_size = size;
-                max_url = icon.url;
+                max_url = icon.elementsByTagName("url").item(0).toElement().text();
             }
         }
     }
 
-    QUrl url(QString::fromStdString(ddesc.URLBase));
-    return url.resolved(QUrl(QString::fromStdString(max_url)));
+    if (max_url.isEmpty()) {
+        qWarning() << "No icon for device:" << QString::fromStdString(ddesc.friendlyName);
+        return {};
+    }
+
+    return QUrl(QString::fromStdString(ddesc.URLBase)).resolved(QUrl(max_url));
 }
