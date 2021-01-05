@@ -362,7 +362,14 @@ void Settings::setPrefNetInf(const QString& value)
 
 QString Settings::getPrefNetInf()
 {
+#ifdef SAILFISH
+    if (isDebug())
+        return settings.value("prefnetinf", "").toString();
+    else
+        return {};
+#else
     return settings.value("prefnetinf", "").toString();
+#endif
 }
 
 void Settings::setLastPlaylist(const QStringList& value)
