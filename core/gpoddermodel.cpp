@@ -153,7 +153,7 @@ QVariantList GpodderEpisodeModel::selectedItems()
             map.insert("name", QVariant(episode->title()));
             map.insert("author", QVariant(episode->podcastTitle()));
             //map.insert("desc", QVariant(episode->description()));
-            //map.insert("icon", QVariant(episode->icon()));
+            map.insert("icon", QVariant(episode->icon()));
             map.insert("app", "gpodder");
             list << map;
         }
