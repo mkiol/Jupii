@@ -289,6 +289,7 @@ bool Service::handleError(int ret)
         case -206:
         case -207:
         case -208:
+        case -113: // libnpupnp on *any curl error* generates UPNP_E_BAD_RESPONSE :(
             emit error(E_LostConnection);
             deInit();
             break;
