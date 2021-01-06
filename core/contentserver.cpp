@@ -29,6 +29,7 @@
 #include <QEventLoop>
 #include <iomanip>
 #include <limits>
+#include <algorithm>
 
 #include <QDBusInterface>
 #include <QDBusMessage>
@@ -1216,8 +1217,7 @@ void ContentServerWorker::processShoutcastMetadata(QByteArray &data,
     qDebug() << "metacounter:" << item.metacounter;
     qDebug() << "metaint:" << item.metaint;
     qDebug() << "count:" << count;
-    qDebug() << "bytes:" << bytes;
-    qDebug() << "data size:" << data.size();*/
+    qDebug() << "bytes:" << bytes;*/
 
     if (bytes > item.metaint) {
         Q_ASSERT(item.metaint >= item.metacounter);
@@ -1226,60 +1226,72 @@ void ContentServerWorker::processShoutcastMetadata(QByteArray &data,
         int totalsize = 0;
         QList<QPair<int,int>> rpoints; // (start,size) to remove from data
 
+        //qDebug() << "nmeta:" << nmeta;
+
+        int mcount = 0;
         for (int i = 0; i < nmeta; ++i) {
             int offset = i * item.metaint + totalsize + i;
             int start = item.metaint - item.metacounter;
-            int size = 16 * static_cast<uchar>(data.at(start + offset));
-            int maxsize = count - (start + offset);
 
-            /*qDebug() << "------- Soutcast metadata detected ---------";
-            qDebug() << "totalsize:" << totalsize;
+            /*qDebug() << "------- soutcast metadata scan:" << i;
             qDebug() << "offset:" << offset;
-            qDebug() << "start:" << start;
-            qDebug() << "start+offset:" << start + offset;
-            qDebug() << "metadata size:" << size;
-            qDebug() << "metadata max size:" << maxsize;
-            qDebug() << "data size:" << data.size();
-            qDebug() << "metacounter:" << item.metacounter;
-            qDebug() << "metaint:" << item.metaint;*/
+            qDebug() << "start:" << start;*/
 
-            if (size > maxsize) {
-                // partial metadata received
-                qDebug() << "Partial metadata received";
-                auto metadata = data.mid(start + offset, maxsize);
-                data.remove(start + offset, maxsize);
-                item.data = metadata;
-                item.metacounter = bytes - metadata.size();
-                return;
-            } else {
-                // full metadata received
-                if (size > 0) {
-                    auto metadata = data.mid(start + offset + 1, size);
-                    if (metadata != item.metadata) {
-                        // recorder
-                        auto newTitle = ContentServer::streamTitleFromShoutcastMetadata(metadata);
-                        auto oldTitle = ContentServer::streamTitleFromShoutcastMetadata(item.metadata);
-                        qDebug() << "old metadata:" << item.metadata << oldTitle;
-                        qDebug() << "new metadata:" << metadata << newTitle;
-                        if (item.recFile) {
-                            if (item.recFile->isOpen())
-                                saveRecFile(item);
-                            if (!newTitle.isEmpty())
-                                openRecFile(item);
+            if ((start + offset) < count) {
+                int size = 16 * static_cast<uchar>(data.at(start + offset));
+                int maxsize = count - (start + offset);
+
+                /*qDebug() << "------- metadata detected ---------";
+                qDebug() << "totalsize:" << totalsize;
+                qDebug() << "start+offset:" << start + offset;
+                qDebug() << "metadata size:" << size;
+                qDebug() << "metadata max size:" << maxsize;
+                qDebug() << "data size:" << data.size();
+                qDebug() << "metacounter:" << item.metacounter;
+                qDebug() << "metaint:" << item.metaint;*/
+
+                if (size > maxsize) {
+                    // partial metadata received
+                    qDebug() << "Partial metadata received";
+                    auto metadata = data.mid(start + offset, maxsize);
+                    data.remove(start + offset, maxsize);
+                    item.data = metadata;
+                    item.metacounter = bytes - metadata.size();
+                    return;
+                } else {
+                    // full metadata received
+                    if (size > 0) {
+                        auto metadata = data.mid(start + offset + 1, size);
+                        if (metadata != item.metadata) {
+                            // recorder
+                            auto newTitle = ContentServer::streamTitleFromShoutcastMetadata(metadata);
+                            auto oldTitle = ContentServer::streamTitleFromShoutcastMetadata(item.metadata);
+                            qDebug() << "old metadata:" << item.metadata << oldTitle;
+                            qDebug() << "new metadata:" << metadata << newTitle;
+                            if (item.recFile) {
+                                if (item.recFile->isOpen())
+                                    saveRecFile(item);
+                                if (!newTitle.isEmpty())
+                                    openRecFile(item);
+                            }
+                            //--
+                            item.metadata = metadata;
+                            emit shoutcastMetadataUpdated(item.id, item.metadata);
                         }
-                        //--
-                        item.metadata = metadata;
-                        emit shoutcastMetadataUpdated(item.id, item.metadata);
+                        totalsize += size;
                     }
-                    totalsize += size;
-                }
 
-                // Metadata point to remove from stream
-                rpoints.append({start + offset, size +1});
+                    // Metadata point to remove from stream
+                    rpoints.append({start + offset, size +1});
+                }
+                mcount += item.metaint + 1;
+            } else {
+                mcount += item.metaint;
+                break;
             }
         }
 
-        item.metacounter = bytes - nmeta * (item.metaint + 1) - totalsize;
+        item.metacounter = bytes - mcount - totalsize;
 
         if (!rpoints.isEmpty()) {
             if (!item.meta) {
