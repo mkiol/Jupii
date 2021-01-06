@@ -51,7 +51,7 @@
         <location filename="../sailfish/qml/AboutPage.qml" line="74"/>
         <location filename="../desktop/qml/AboutPage.qml" line="72"/>
         <source>%1 is developed as an open source project under %2.</source>
-        <translation>%1 проект с открытым исходным кодом на условиях %2.</translation>
+        <translation>%1 - проект с открытым исходным кодом на условиях %2.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AboutPage.qml" line="47"/>
@@ -1118,12 +1118,12 @@
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="383"/>
         <source>Connect to a device to control playback using %1.</source>
-        <translation>Подключитесь к устройству для управления воспроизведением с помощью %1</translation>
+        <translation>Подключитесь к устройству для управления воспроизведением с помощью %1.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="384"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
-        <translation>Без подключения все записи в очереди воспроизведения остаются доступными на других устройствах вашей локальной сети.</translation>
+        <translation>Без подключения все записи в очереди остаются доступными на других устройствах в вашей локальной сети.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="66"/>
@@ -1455,7 +1455,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="35"/>
         <source>When enabled, items in play queue are accessible for other UPnP devices in your local network.</source>
-        <translation>При включении делает записи из очереди воспроизведения доступными для других UPnP устройств в локальной сети.</translation>
+        <translation>Делает записи из очереди воспроизведения доступными для других UPnP-устройств в локальной сети.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="90"/>
@@ -1535,7 +1535,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="298"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
-        <translation>Получаемые из интернета потоковые данные будут пересылаться на  UPnP-устройство через %1. Рекомендуется использовать вариант &apos;Всегда&apos;, так как он даёт наилучшую совместимость. Если перенаправление отключить (вариант &apos;Никогда&apos;), то Icecast-станции и запись потоков бкдкт недоступны.</translation>
+        <translation>Получаемые из Интернета потоковые данные будут пересылаться на UPnP-устройство через %1. Рекомендуется использовать вариант &apos;Всегда&apos;, так как это обеспечит наилучшую совместимость. Если перенаправление отключить (вариант &apos;Никогда&apos;), то будут недоступны Icecast-станции и запись потоков.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="320"/>
@@ -1555,7 +1555,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="338"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
-        <translation>Будут обнаружены и показаны все устройства UPnP, включая неподдерживаемые, например сетевые маршрутизаторы. Для неизвестных устройств доступно только краткое описание. Это поможет узнать, какие устройства UPnP есть в вашей сети.</translation>
+        <translation>Будут обнаружены и показаны все устройства с UPnP, включая неподдерживаемые, например сетевые маршрутизаторы. Для неизвестных устройств доступно только краткое описание. Это поможет узнать, какие UPnP-устройства есть в вашей сети.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="399"/>
@@ -1570,7 +1570,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="213"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation>Позволяет записывать звук по ссылкам URL. Если URL указывает на поток Icecast, то будут записаны отдельные дорожки из потока. Чтобы начать запись, воспользуйтесь кнопкой &apos;Запись&apos; на панель снизу. Если кнопка записи нажата до окончания проигрываемой дорожки, то в файл запишется вся дорожка целиком. </translation>
+        <translation>Позволяет записывать звук по ссылкам URL. Если URL указывает на поток Icecast, то будут записаны отдельные дорожки из потока. Чтобы начать запись, воспользуйтесь кнопкой &apos;Запись&apos; на панели снизу. Если кнопка записи нажата до окончания проигрываемой дорожки, то в файл запишется вся дорожка целиком. </translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="386"/>
