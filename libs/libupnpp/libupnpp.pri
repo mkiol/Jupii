@@ -11,6 +11,7 @@
 #
 # git clone -b master --single-branch https://framagit.org/medoc92/npupnp.git npupnp-master
 # cd npupnp-master
+# patch -p1 < [libs/libupnpp]/npupnp.patch
 # chmod u+x ./autogen.sh
 # sb2 -t SailfishOS-[target] ./autogen.sh
 # sb2 -t SailfishOS-[target] ./configure --enable-shared --disable-static

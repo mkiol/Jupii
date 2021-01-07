@@ -1,0 +1,14 @@
+diff -ruN a/src/inc/upnpapi.h b/src/inc/upnpapi.h
+--- a/src/inc/upnpapi.h	2021-01-05 13:46:46.639268152 +0100
++++ b/src/inc/upnpapi.h	2021-01-07 13:55:08.807645855 +0100
+@@ -64,8 +64,8 @@
+ extern int g_UpnpSdkEQMaxLen;
+ extern int g_UpnpSdkEQMaxAge;
+ 
+-/* 30-second timeout */
+-#define UPNP_TIMEOUT    30
++/* 10-second timeout */
++#define UPNP_TIMEOUT    10
+ 
+ typedef enum {HND_INVALID=-1,HND_CLIENT,HND_DEVICE} Upnp_Handle_Type;
+ 
