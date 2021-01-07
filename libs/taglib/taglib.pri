@@ -32,6 +32,13 @@ sailfish {
 }
 
 desktop {
-    LIBS += -L$$TAGLIB_ROOT/build/amd64 \
-            -l:libtag.a
+    amd64 {
+        LIBS += -L$$TAGLIB_ROOT/build/amd64 \
+                -l:libtag.a
+    }
+
+    arm64 {
+        LIBS += -L$$TAGLIB_ROOT/build/arm64 \
+                -l:libtag.a
+    }
 }

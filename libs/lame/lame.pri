@@ -12,10 +12,9 @@
 LAME_ROOT = $$PROJECTDIR/libs/lame
 
 INCLUDEPATH += $$LAME_ROOT/include
+HEADERS += $$LAME_ROOT/include/*.h
 
 sailfish {
-    HEADERS += $$LAME_ROOT/include/*.h
-
     x86 {
         LIBS += -L$$LAME_ROOT/build/i486/ -l:libmp3lame.so.0
         liblame.files = $$LAME_ROOT/build/i486/*
@@ -31,6 +30,13 @@ sailfish {
 }
 
 desktop {
-    LIBS += -L$$LAME_ROOT/build/amd64 \
-            -l:libmp3lame.a
+    amd64 {
+        LIBS += -L$$LAME_ROOT/build/amd64 \
+                -l:libmp3lame.a
+    }
+
+    arm64 {
+        LIBS += -L$$LAME_ROOT/build/arm64 \
+                -l:libmp3lame.a
+    }
 }

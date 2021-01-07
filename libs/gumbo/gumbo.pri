@@ -33,6 +33,13 @@ sailfish {
 }
 
 desktop {
-    LIBS += -L$$GUMBO_ROOT/build/amd64 \
-            -l:libgumbo.a
+    amd64 {
+        LIBS += -L$$GUMBO_ROOT/build/amd64 \
+                -l:libgumbo.a
+    }
+
+    arm64 {
+        LIBS += -L$$GUMBO_ROOT/build/arm64 \
+                -l:libgumbo.a
+    }
 }

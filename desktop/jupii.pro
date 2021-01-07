@@ -6,6 +6,30 @@ QT += gui qml quick quickcontrols2 svg
 
 PROJECTDIR = $${PWD}/..
 
+contains(QT_ARCH, i386){
+   message("Compiling for x86")
+   CONFIG += x86
+   DEFINES += X86
+} else {
+   contains(QT_ARCH, x86_64) {
+       message("Compiling for amd64")
+       CONFIG += amd64
+       DEFINES += X86
+   } else {
+       contains(QT_ARCH, arm){
+           message("Compiling for arm")
+           CONFIG += arm
+           DEFINES += ARM
+       } else {
+            contains(QT_ARCH, arm64) {
+                message("Compiling for arm64")
+                CONFIG += arm64
+                DEFINES += ARM
+            }
+       }
+   }
+}
+
 CONFIG += desktop screencast link_pkgconfig qtquickcompiler
 DEFINES += DESKTOP KIRIGAMI SCREENCAST QT_NO_URL_CAST_FROM_STRING
 equals(FLATPAK, 1) {

@@ -53,6 +53,13 @@ sailfish {
 }
 
 desktop {
-    LIBS += -L$$UPNPP_ROOT/build/amd64 \
-            -l:libupnpp.a -l:libupnpputil.a -l:libnpupnp.a -l:libmicrohttpd.a -l:libexpat.a -l:libcurl.a
+    amd64 {
+        LIBS += -L$$UPNPP_ROOT/build/amd64 \
+                -l:libupnpp.a -l:libupnpputil.a -l:libnpupnp.a -l:libmicrohttpd.a -l:libexpat.a -l:libcurl.a
+    }
+
+    arm64 {
+        LIBS += -L$$UPNPP_ROOT/build/arm64 \
+                -l:libupnpp.a -l:libupnpputil.a -l:libnpupnp.a -l:libmicrohttpd.a -l:libexpat.a -l:libcurl.a
+    }
 }

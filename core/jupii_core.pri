@@ -49,7 +49,7 @@ desktop {
 
     INCLUDEPATH += $$PROJECTDIR/libs/ffmpeg/include
 
-    packagesExist(libavformat libavcodec libswscale libswresample libavdevice libavutil x264) {
+    packagesExist(libavformat libavcodec libswscale libswresample libavdevice libavutil x264 lame) {
         PKGCONFIG += x264 lame libavformat libavcodec libswscale \
                      libswresample libavdevice libavutil
     } else {

@@ -65,12 +65,25 @@ sailfish {
 desktop {
     PKGCONFIG += zlib bzip2 xcb xcb-shm xcb-xfixes xcb-shape x11 libva \
                  libva-drm libva-x11 vdpau
-    LIBS += -L$$FFMPEG_ROOT/build/amd64 \
-            -l:libswscale.a \
-            -l:libavdevice.a \
-            -l:libavformat.a \
-            -l:libavfilter.a \
-            -l:libavcodec.a \
-            -l:libavutil.a \
-            -l:libswresample.a
+    amd64 {
+        LIBS += -L$$FFMPEG_ROOT/build/amd64 \
+                -l:libswscale.a \
+                -l:libavdevice.a \
+                -l:libavformat.a \
+                -l:libavfilter.a \
+                -l:libavcodec.a \
+                -l:libavutil.a \
+                -l:libswresample.a
+    }
+
+    arm64 {
+        LIBS += -L$$FFMPEG_ROOT/build/arm64 \
+                -l:libswscale.a \
+                -l:libavdevice.a \
+                -l:libavformat.a \
+                -l:libavfilter.a \
+                -l:libavcodec.a \
+                -l:libavutil.a \
+                -l:libswresample.a
+    }
 }

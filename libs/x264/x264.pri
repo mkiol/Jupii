@@ -30,7 +30,14 @@ sailfish {
     INSTALLS += libx264
 }
 
-desktop {
-    LIBS += -L$$X264_ROOT/build/amd64 \
-            -l:libx264.a
+desktop {     
+    amd64 {
+        LIBS += -L$$X264_ROOT/build/amd64 \
+                -l:libx264.a
+    }
+
+    arm64 {
+        LIBS += -L$$X264_ROOT/build/arm64 \
+                -l:libx264.a
+    }
 }
