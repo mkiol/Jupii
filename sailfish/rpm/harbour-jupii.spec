@@ -16,14 +16,13 @@ Name:       harbour-jupii
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
 Version:    2.8.2
-Release:    2
+Release:    3
 Group:      Qt/Qt
 License:    LICENSE
 URL:        http://mozilla.org/MPL/2.0/
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  harbour-jupii.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
-Requires:   python
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)

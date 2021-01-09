@@ -8,9 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
-* Sun Jan 03 2021 Michal Kosciesza <michal@mkiol.net> 2.8.2-1
+* Sat Jan 09 2021 Michal Kosciesza <michal@mkiol.net> 2.8.2-3
 - Minor UI fixes
 - Better logging
+- Libupnpp update (git commits: libupnpp 3310a04f, npupnp bad26d73)
 
 * Wed Nov 18 2020 Michal Kosciesza <michal@mkiol.net> 2.8.1-1
 - Bandcamp browser fixes
