@@ -31,6 +31,7 @@ Settings::Settings(QObject *parent) :
     TaskExecutor(parent),
     settings(parent)
 {
+    removeLogFiles();
     if (getLogToFile())
         qInstallMessageHandler(qtLog);
 

@@ -467,8 +467,6 @@ MediaServerDevice::~MediaServerDevice()
 
 bool MediaServerDevice::readLibFile(const std::string& name, std::string& contents)
 {
-    qDebug() << "readLibFile name:" << QString::fromStdString(name);
-
     if (name.empty())
         contents = desc().toStdString();
     else if (name == "CD")

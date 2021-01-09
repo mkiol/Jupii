@@ -78,3 +78,11 @@ void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs)
     vfprintf(ffmpegLogFile, fmt, vargs);
     fflush(ffmpegLogFile);
 }
+
+void removeLogFiles()
+{
+    QDir home(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
+    home.remove(LOG_FILE);
+    home.remove(FFMPEG_LOG_FILE);
+    home.remove(UPNPP_LOG_FILE);
+}

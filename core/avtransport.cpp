@@ -767,6 +767,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         }
 
         if (do_play) {
+            qDebug() << "Calling setPlayMode";
             if (!handleError(srv->setPlayMode(UPnPClient::AVTransport::PM_Normal))) {
                 qWarning() << "Error response for setPlayMode()";
                 if (!getInited()) {
@@ -775,6 +776,8 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
                     return;
                 }
             }
+
+            qDebug() << "Calling play";
             if (!handleError(srv->play())) {
                 qWarning() << "Error response for play()";
                 if (!getInited()) {
