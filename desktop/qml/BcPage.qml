@@ -112,8 +112,10 @@ Kirigami.ScrollablePage {
                     var selected = model.selected
                     itemModel.setSelected(model.index, !selected);
                 } else if (model.type === BcModel.Type_Album) {
+                    pageStack.pop(root)
                     pageStack.push(Qt.resolvedUrl("BcPage.qml"), {albumPage: model.url})
                 } else if (model.type === BcModel.Type_Artist) {
+                    pageStack.pop(root)
                     pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: model.url})
                 }
             }
