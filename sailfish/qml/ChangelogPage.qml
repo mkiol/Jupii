@@ -29,22 +29,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.8.1")
-            }
-
-            LogItem {
-                title: "Fixes in Bandcamp browser"
-            }
-
-            LogItem {
-                title: "Spanish, Swedish, Slovenian, Russian and Chinese translations update"
-                description: "Many thanks to Carlos Gonzalez, Carmen Fernández B., Åke Engelbrektson, " +
-                             "Boštjan Štrumbelj, Вячеслав Диконов and Rui Kon " +
-                             "for providing updated translations."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.8.0")
+                text: qsTr("Version %1").arg("2.8.2")
             }
 
             LogItem {
