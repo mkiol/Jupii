@@ -1,6 +1,6 @@
 TARGET = harbour-jupii
 
-CONFIG += link_pkgconfig
+CONFIG += c++17 link_pkgconfig
 
 linux-g++-32: CONFIG += x86
 linux-g++: CONFIG += arm

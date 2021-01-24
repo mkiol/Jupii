@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -31,6 +31,7 @@
 #include "directory.h"
 #include "device.h"
 #include "log.h"
+#include "xc.h"
 
 Directory* Directory::m_instance = nullptr;
 
@@ -158,13 +159,18 @@ bool Directory::getNetworkIf(QString &ifname, QString &address)
 
 void Directory::handleBusyChanged()
 {
-    if (!m_busy) {
-        qDebug() << "Refreshing status for XC devices";
-        QHash<QString,YamahaXC*>::iterator i = m_xcs.begin();
-        while (i != m_xcs.end()) {
-            i.value()->getStatus();
-            ++i;
-        }
+    if (!m_busy)
+        refreshXC();
+}
+
+void Directory::refreshXC()
+{
+    qDebug() << "Refreshing status for XC devices";
+
+    auto i = m_xcs.begin();
+    while (i != m_xcs.end()) {
+        i.value()->getStatus();
+        ++i;
     }
 }
 
@@ -329,28 +335,32 @@ void Directory::discover()
 
         for (auto it = favs.begin(); it != favs.end(); ++it) {
             qDebug() << it.key() << it.value().toString();
+
             QString id = it.key();
             QString url = it.value().toString();
             QByteArray xml;
+
             if (!Settings::readDeviceXML(id, xml))
                 continue;
+
             UPnPClient::UPnPDeviceDesc ddesc(url.toStdString(), xml.toStdString());
+
             auto did = QString::fromStdString(ddesc.UDN);
             for (auto& sdesc : ddesc.services) {
                 auto sid = QString::fromStdString(sdesc.serviceId);
                 this->m_servsdesc.insert(did + sid, sdesc);
             }
+
             this->m_devsdesc.insert(did, ddesc);
+
             if (!xcs.contains(did)) {
                 xcs[did] = true;
-                auto xc = new YamahaXC(did, xml);
+
+                auto xc = XC::make(did, xml);
                 if (xc->valid()) {
-                    qDebug() << "XCS is valid for" << did;
+                    qDebug() << "Valid" << xc->name() << "for" << did;
                     xc->moveToThread(QCoreApplication::instance()->thread());
-                    this->m_xcs.insert(did, xc);
-                } else {
-                    //qWarning() << "XCS is invalid for" << did;
-                    delete xc;
+                    this->m_xcs.insert(did, std::move(xc));
                 }
             }
         }
@@ -385,14 +395,12 @@ void Directory::discover()
 
             if (!xcs.contains(did)) {
                 xcs[did] = true;
-                auto xc = new YamahaXC(did, QString::fromStdString(ddesc.XMLText));
+
+                auto xc = XC::make(did, QString::fromStdString(ddesc.XMLText));
                 if (xc->valid()) {
-                    //qDebug() << "XCS is valid for" << did;
+                    qDebug() << "Valid" << xc->name() << "for" << did;
                     xc->moveToThread(QCoreApplication::instance()->thread());
-                    this->m_xcs.insert(did, xc);
-                } else {
-                    //qWarning() << "XCS is invalid for" << did;
-                    delete xc;
+                    this->m_xcs.insert(did, std::move(xc));
                 }
             }
 
@@ -478,14 +486,6 @@ QString Directory::deviceNameFromId(const QString& deviceId)
     return QString();
 }
 
-YamahaXC* Directory::deviceXC(const QString& deviceId)
-{
-    auto it = m_xcs.find(deviceId);
-    if (it != m_xcs.end())
-        return it.value();
-    return nullptr;
-}
-
 bool Directory::xcExists(const QString& deviceId)
 {
     return m_xcs.contains(deviceId);
@@ -498,24 +498,23 @@ bool Directory::getBusy()
 
 void Directory::xcTogglePower(const QString& deviceId)
 {
-    auto xc = deviceXC(deviceId);
-    if (xc) {
-        xc->powerToggle();
-    } else {
-        qWarning() << "Device doesn't have XC API";
-    }
+    auto it = m_xcs.find(deviceId);
+
+    if (it == m_xcs.end())
+        return;
+
+    (*it)->powerToggle();
 }
 
 void Directory::xcGetStatus(const QString& deviceId)
 {
-    auto xc = deviceXC(deviceId);
-    if (xc) {
-        xc->getStatus();
-    } else {
-        qWarning() << "Device doesn't have XC API";
-    }
-}
+    auto it = m_xcs.find(deviceId);
 
+    if (it == m_xcs.end())
+        return;
+
+    (*it)->getStatus();
+}
 
 bool Directory::getInited()
 {

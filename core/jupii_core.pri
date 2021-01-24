@@ -110,7 +110,7 @@ HEADERS += \
     $$CORE_DIR/gpoddermodel.h \
     $$CORE_DIR/itemmodel.h \
     $$CORE_DIR/icecastmodel.h \
-    $$CORE_DIR/yamahaextendedcontrol.h \
+    $$CORE_DIR/yamahaxc.h \
     $$CORE_DIR/dirmodel.h \
     $$CORE_DIR/recmodel.h \
     $$CORE_DIR/log.h \
@@ -126,7 +126,8 @@ HEADERS += \
     $$CORE_DIR/notifications.h \
     $$CORE_DIR/filedownloader.h \
     $$CORE_DIR/bcapi.h \
-    $$CORE_DIR/tuneinmodel.h
+    $$CORE_DIR/tuneinmodel.h \
+    $$CORE_DIR/xc.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -160,7 +161,7 @@ SOURCES += \
     $$CORE_DIR/gpoddermodel.cpp \
     $$CORE_DIR/itemmodel.cpp \
     $$CORE_DIR/icecastmodel.cpp \
-    $$CORE_DIR/yamahaextendedcontrol.cpp \
+    $$CORE_DIR/yamahaxc.cpp \
     $$CORE_DIR/dirmodel.cpp \
     $$CORE_DIR/recmodel.cpp \
     $$CORE_DIR/log.cpp \
@@ -176,7 +177,8 @@ SOURCES += \
     $$CORE_DIR/notifications.cpp \
     $$CORE_DIR/filedownloader.cpp \
     $$CORE_DIR/bcapi.cpp \
-    $$CORE_DIR/tuneinmodel.cpp
+    $$CORE_DIR/tuneinmodel.cpp \
+    $$CORE_DIR/xc.cpp
 
 screencast {
     HEADERS += \

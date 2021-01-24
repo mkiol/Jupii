@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,7 +20,8 @@
 #include <functional>
 
 #include "taskexecutor.h"
-#include "yamahaextendedcontrol.h"
+
+class XC;
 
 namespace UPnPP {
     class LibUPnP;
@@ -39,6 +40,7 @@ class Directory :
         public TaskExecutor
 {
     Q_OBJECT
+
     Q_PROPERTY (bool busy READ getBusy NOTIFY busyChanged)
     Q_PROPERTY (bool inited READ getInited NOTIFY initedChanged)
     Q_PROPERTY (bool networkConnected READ isNetworkConnected NOTIFY networkStateChanged)
@@ -55,7 +57,6 @@ public:
     bool getServiceDesc(const QString& deviceId, const QString& serviceId, UPnPClient::UPnPServiceDesc& sdesc);
     bool getDeviceDesc(const QString& deviceId, UPnPClient::UPnPDeviceDesc& ddesc);
     QString deviceNameFromId(const QString& deviceId);
-    YamahaXC* deviceXC(const QString& deviceId);
     bool xcExists(const QString& deviceId);
     const QHash<QString,UPnPClient::UPnPDeviceDesc>& getDeviceDescs();
     QUrl getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc);
@@ -89,13 +90,14 @@ private:
     static Directory* m_instance;
     bool m_busy = false;
     bool m_inited = false;
-    UPnPP::LibUPnP* m_lib = 0;
+    UPnPP::LibUPnP* m_lib = nullptr;
     UPnPClient::UPnPDeviceDirectory* m_directory;
     QHash<QString,UPnPClient::UPnPServiceDesc> m_servsdesc;
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_devsdesc;
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_last_devsdesc;
-    QHash<QString,YamahaXC*> m_xcs;
+    QHash<QString,std::shared_ptr<XC>> m_xcs;
     QString m_ifname;
+
     explicit Directory(QObject *parent = nullptr);
     ~Directory();
     void setBusy(bool busy);
@@ -103,6 +105,7 @@ private:
     bool handleError(int ret);
     void clearLists(bool all);
     void updateNetworkConf();
+    void refreshXC();
 };
 
 #endif // DIRECTORY_H
