@@ -20,6 +20,8 @@ class YamahaXC : public XC
 public:
     YamahaXC(const QString &deviceId, const QString& desc, QObject *parent = nullptr);
 
+    void powerOn();
+    void powerOff();
     void powerToggle();
     void getStatus();
     QString name() const;
@@ -28,8 +30,8 @@ private:
     static const QString urlBase_tag;
     static const QString controlUrl_tag;
 
-    bool parse(const QString& desc);
-    Status handleGetStatus(const QByteArray& data);
+    bool init(const QString& desc);
+    Status handleActionGetStatus(const QByteArray& data, const QVariant& userData = {});
 };
 
 #endif // YAMAHAEXTENDEDCONTROL_H

@@ -67,6 +67,7 @@ public:
     // Extended control API
     Q_INVOKABLE void xcTogglePower(const QString &deviceId);
     Q_INVOKABLE void xcGetStatus(const QString& deviceId);
+    Q_INVOKABLE void xcPowerOn(const QString& deviceId);
 
 signals:
     void discoveryReady();

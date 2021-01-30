@@ -1373,7 +1373,7 @@ void PlaylistModel::setActiveItemIndex(int index)
 
 bool PlaylistModel::autoPlay()
 {
-    auto av = Services::instance()->avTransport;
+    auto& av = Services::instance()->avTransport;
 
     auto ai = activeId();
     bool playing = static_cast<AVTransport::TransportState>
@@ -1382,7 +1382,7 @@ bool PlaylistModel::autoPlay()
     // start playing fist item with play flag
     bool done = false;
     for (auto li : m_list) {
-        auto fi = dynamic_cast<PlaylistItem*>(li);
+        auto fi = qobject_cast<PlaylistItem*>(li);
         if (!done && fi->play()) {
             if (ai != fi->id() || !playing) {
                 qDebug() << "Playing item:" << fi->id();
@@ -1491,13 +1491,15 @@ QString PlaylistModel::prevActiveId() const
 bool PlaylistModel::play(const QString &id)
 {
     auto dir = Directory::instance();
-    auto av = Services::instance()->avTransport;
+    auto& av = Services::instance()->avTransport;
 
     if (m_list.isEmpty() || !dir->getInited() || !av->getInited() ||
             !find(id)) {
         qWarning() << "Cannot play";
         return false;
     }
+
+    dir->xcPowerOn(av->getDeviceId());
 
     if (activeId() == id) {
         qDebug() << "Id is active id";

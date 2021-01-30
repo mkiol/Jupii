@@ -106,6 +106,9 @@ public:
     };
     Q_ENUM(Type)
 
+    static QString transportStateValue(TransportState state);
+    static QString transportStatusValue(TransportStatus status);
+
     explicit AVTransport(QObject *parent = nullptr);
     void registerExternalConnections();
 

@@ -65,11 +65,11 @@ QByteArray BcApi::downloadData(const QUrl &url)
         auto err = reply->error();
         if (err == QNetworkReply::NoError) {
             data = reply->readAll();
+            loop.quit();
         } else {
             qWarning() << "Error:" << err;
             loop.exit(1);
         }
-        loop.quit();
     });
 
     if (loop.exec() == 1) {

@@ -11,14 +11,21 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
+#include <QUrlQuery>
+#include <QTimer>
 
 #include "utils.h"
 #include "devicemodel.h"
 #include "yamahaxc.h"
+#include "frontiersiliconxc.h"
+#include "directory.h"
 
-XC::XC(const QString &deviceId, QObject *parent)
+const int XC::TIMEOUT = 2000;
+
+XC::XC(const QString &deviceId, const QString &address, QObject *parent)
     : QObject(parent),
-      deviceId(deviceId)
+      deviceId(deviceId),
+      address(address)
 {
 }
 
@@ -27,23 +34,34 @@ bool XC::valid() const
     return ok;
 }
 
-QUrl XC::makeApiCallUrl(const QString& path) const
+QUrl XC::makeApiCallUrl(const QString& path, const std::vector<param>& params) const
 {
-    return QUrl(urlBase + path);
+    if (params.empty())
+        return QUrl(urlBase + path);
+
+    QUrlQuery query;
+    for (auto [key, value] : params)
+        query.addQueryItem(key, value);
+
+    QUrl url(urlBase + path);
+    url.setQuery(query);
+
+    return url;
 }
 
-void XC::apiCall(XC::Action action, const QString& path)
+void XC::apiCall(XC::Action action, const QString& path, const std::vector<param>& params, const QVariant& userData, int timeout)
 {
-    if (reply && reply->isRunning()) {
-        qDebug() << "Previous reply is running, so aborting";
-        reply->abort();
-    }
-
-    auto url = makeApiCallUrl(path);
+    auto url = makeApiCallUrl(path, params);
     qDebug() << "XC API call:" << url.toString();
 
-    auto reply = Utils::instance()->nam->get(QNetworkRequest(url));
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::Attribute::FollowRedirectsAttribute, true);
+
+    auto reply = Utils::instance()->nam->get(request);
     reply->setProperty("action", action);
+    reply->setProperty("userData", userData);
+
+    QTimer::singleShot(timeout, reply, &QNetworkReply::abort);
 
     connect(reply, &QNetworkReply::finished, this, &XC::handleActionFinished);
 }
@@ -55,15 +73,26 @@ void XC::handleActionFinished()
 
     qDebug() << "XC API call finished:" << reply->url().toString();
 
-    if (reply->error() == QNetworkReply::NoError) {
+    if (reply->error() == QNetworkReply::NetworkError::NoError) {
         auto d = reply->readAll();
         if (!d.isEmpty()) {
+            qDebug() << "XC API call response:" << d;
             switch (action) {
-            case ACTION_POWER_TOGGLE:
-                handleGetStatus(d);
+            case Action::ACTION_POWER_ON:
+                handleActionPowerOn(d, reply->property("userData"));
                 break;
-            case ACTION_GET_STATUS:
-                DeviceModel::instance()->updatePower(deviceId, handleGetStatus(d) == STATUS_POWER_ON);
+            case Action::ACTION_POWER_OFF:
+                handleActionPowerOff(d, reply->property("userData"));
+                break;
+            case Action::ACTION_POWER_TOGGLE:
+                handleActionGetStatus(d, reply->property("userData"));
+                break;
+            case Action::ACTION_GET_STATUS:
+                DeviceModel::instance()->
+                        updatePower(deviceId, handleActionGetStatus(d, reply->property("userData")) == Status::STATUS_POWER_ON);
+                break;
+            case Action::ACTION_CREATE_SESSION:
+                handleActionCreateSession(d, reply->property("userData"));
                 break;
             default:
                 break;
@@ -73,24 +102,60 @@ void XC::handleActionFinished()
         }
     } else {
         qWarning() << "Network error in XC call:" << reply->error() << reply->errorString();
+        handleActionError(action, reply->error(), reply->property("userData"));
     }
 
     reply->deleteLater();
     reply = nullptr;
 }
 
-XC::Status XC::handleGetStatus(const QByteArray& data)
+XC::Status XC::handleActionGetStatus(const QByteArray& data, const QVariant& userData)
 {
     Q_UNUSED(data)
-    return STATUS_UNKNOWN;
+    Q_UNUSED(userData)
+    return Status::STATUS_UNKNOWN;
 }
 
-void XC::handlePowerToggle(const QByteArray& data)
+void XC::handleActionPowerToggle(const QByteArray& data, const QVariant& userData)
 {
     Q_UNUSED(data)
+    Q_UNUSED(userData)
 }
 
-std::shared_ptr<XC> XC::make(const QString& deviceId, const QString& desc)
+void XC::handleActionCreateSession(const QByteArray& data, const QVariant& userData)
 {
-    return std::make_shared<YamahaXC>(deviceId, desc);
+    Q_UNUSED(data)
+    Q_UNUSED(userData)
+}
+
+void XC::handleActionPowerOn(const QByteArray& data, const QVariant& userData)
+{
+    Q_UNUSED(data)
+    Q_UNUSED(userData)
+}
+
+void XC::handleActionPowerOff(const QByteArray& data, const QVariant& userData)
+{
+    Q_UNUSED(data)
+    Q_UNUSED(userData)
+}
+
+void XC::handleActionError(XC::Action action, QNetworkReply::NetworkError error, const QVariant& userData)
+{
+    Q_UNUSED(error)
+    Q_UNUSED(action)
+    Q_UNUSED(userData)
+}
+
+std::shared_ptr<XC> XC::make_shared(const QString& deviceId, const QString &address, const QString& desc)
+{
+    if (std::shared_ptr<XC> fsapi = std::make_shared<FrontierSiliconXC>(deviceId, address);
+            fsapi->valid())
+        return fsapi;
+
+    if (std::shared_ptr<XC> yxc = std::make_shared<YamahaXC>(deviceId, desc);
+            yxc->valid())
+        return yxc;
+
+    return {};
 }

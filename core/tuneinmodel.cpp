@@ -65,13 +65,13 @@ QByteArray TuneinModel::downloadData(const QUrl &url)
         auto err = reply->error();
         if (err == QNetworkReply::NoError) {
             data = reply->readAll();
+            reply->deleteLater();
+            loop.quit();
         } else {
             qWarning() << "Error:" << err;
             reply->deleteLater();
             loop.exit(1);
         }
-        reply->deleteLater();
-        loop.quit();
     });
 
     if (loop.exec() == 1) {

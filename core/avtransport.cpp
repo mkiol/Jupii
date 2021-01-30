@@ -20,7 +20,6 @@
 #include "contentserver.h"
 #include "playlistmodel.h"
 
-
 AVTransport::AVTransport(QObject *parent) :
     Service(parent),
     m_seekTimer(parent)
@@ -35,6 +34,40 @@ AVTransport::AVTransport(QObject *parent) :
     m_seekTimer.setInterval(500);
     m_seekTimer.setSingleShot(true);
     connect(&m_seekTimer, &QTimer::timeout, this, &AVTransport::seekTimeout);
+}
+
+QString AVTransport::transportStateValue(TransportState state)
+{
+    switch (state) {
+    case TransportState::Stopped:
+        return "Stopped";
+    case TransportState::Playing:
+        return "Playing";
+    case TransportState::Transitioning:
+        return "Transitioning";
+    case TransportState::PausedPlayback:
+        return "PausedPlayback";
+    case TransportState::PausedRecording:
+        return "PausedRecording";
+    case TransportState::Recording:
+        return "Recording";
+    case TransportState::NoMediaPresent:
+        return "NoMediaPresent";
+    default:
+        return "Unknown";
+    }
+}
+
+QString AVTransport::transportStatusValue(TransportStatus status)
+{
+    switch (status) {
+    case TransportStatus::TPS_Ok:
+        return "Ok";
+    case TransportStatus::TPS_Error:
+        return "Error";
+    default:
+        return "Unknown";
+    }
 }
 
 void AVTransport::registerExternalConnections()
@@ -68,8 +101,11 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
         int value = _value.toInt();
 
         if (name == "TransportState") {
-            qDebug() << "TransportState changed:" << m_oldTransportState << m_transportState << value;
             if (m_transportState != value) {
+                qDebug() << "TransportState changed:"
+                         << transportStateValue(static_cast<TransportState>(m_oldTransportState)) << "->"
+                         << transportStateValue(static_cast<TransportState>(m_transportState)) << "->"
+                         << transportStateValue(static_cast<TransportState>(value));
                 m_oldTransportState = m_transportState;
                 m_transportState = value;
                 emit transportStateChanged();
@@ -77,6 +113,9 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
             }
         } else if (name == "TransportStatus") {
             if (m_transportStatus != value) {
+                qDebug() << "TransportStatus changed:"
+                         << transportStatusValue(static_cast<TransportStatus>(m_transportStatus)) << "->"
+                         << transportStatusValue(static_cast<TransportStatus>(value));
                 m_transportStatus = value;
                 emit transportStatusChanged();
                 emit preControlableChanged();
@@ -555,19 +594,39 @@ bool AVTransport::getStopSupported()
 
 bool AVTransport::getPlayable()
 {
-    return getInited() && m_transportStatus == TPS_Ok &&
+    /*qDebug() << "getPlayable:"
+             << "transportStatus =" << transportStatusValue(static_cast<TransportStatus>(m_transportStatus))
+             << "transportState =" << transportStateValue(static_cast<TransportState>(m_transportState))
+             << "playSupported =" << getPlaySupported();*/
+
+    bool playable = getInited() && m_transportStatus == TPS_Ok &&
            getPlaySupported() &&
            (m_transportState == Stopped ||
             m_transportState == PausedPlayback ||
             m_transportState == PausedRecording);
+
+    qDebug() << "playable:" << playable;
+
+    return playable;
 }
 
 bool AVTransport::getStopable()
 {
-    return getInited() && m_transportStatus == TPS_Ok &&
-           m_transportState == Playing &&
-           !m_currentURI.isEmpty() &&
-           (getPauseSupported() || getStopSupported());
+    /*qDebug() << "getStopable:"
+             << "transportStatus =" << transportStatusValue(static_cast<TransportStatus>(m_transportStatus))
+             << "transportState =" << transportStateValue(static_cast<TransportState>(m_transportState))
+             << "pauseSupported =" << getPauseSupported()
+             << "playSupported =" << getPlaySupported()
+             << "m_currentURI =" << m_currentURI;*/
+
+    bool stopable = getInited() && m_transportStatus == TPS_Ok &&
+            m_transportState == Playing &&
+            !m_currentURI.isEmpty() &&
+            (getPauseSupported() || getStopSupported());
+
+    qDebug() << "stopable:" << stopable;
+
+    return stopable;
 }
 
 bool AVTransport::getControlable()
@@ -640,9 +699,6 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         bool do_clearNext = m_nextURISupported && !do_next;
         QUrl cURL, nURL;
         QString cmeta, nmeta, s_cURI, s_nURI;
-
-        //qDebug() << "2| do_current, do_play, do_next, do_clearNext:" << do_current << do_play << do_next << do_clearNext;
-        //qDebug() << "2| cid, nid:" << cid << nid;
 
         if (do_current) {
             if (!cs->getContentUrl(cid, cURL, cmeta, m_currentURI)) {

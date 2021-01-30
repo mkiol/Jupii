@@ -127,7 +127,8 @@ HEADERS += \
     $$CORE_DIR/filedownloader.h \
     $$CORE_DIR/bcapi.h \
     $$CORE_DIR/tuneinmodel.h \
-    $$CORE_DIR/xc.h
+    $$CORE_DIR/xc.h \
+    $$PWD/frontiersiliconxc.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -178,7 +179,8 @@ SOURCES += \
     $$CORE_DIR/filedownloader.cpp \
     $$CORE_DIR/bcapi.cpp \
     $$CORE_DIR/tuneinmodel.cpp \
-    $$CORE_DIR/xc.cpp
+    $$CORE_DIR/xc.cpp \
+    $$PWD/frontiersiliconxc.cpp
 
 screencast {
     HEADERS += \

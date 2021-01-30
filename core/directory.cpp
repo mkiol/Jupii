@@ -356,8 +356,9 @@ void Directory::discover()
             if (!xcs.contains(did)) {
                 xcs[did] = true;
 
-                auto xc = XC::make(did, xml);
-                if (xc->valid()) {
+                auto xc = XC::make_shared(did, QUrl(QString::fromStdString(ddesc.URLBase)).host(),
+                                          xml);
+                if (xc) {
                     qDebug() << "Valid" << xc->name() << "for" << did;
                     xc->moveToThread(QCoreApplication::instance()->thread());
                     this->m_xcs.insert(did, std::move(xc));
@@ -370,7 +371,8 @@ void Directory::discover()
         // discovery
 
         bool found = false;
-        auto traverseFun = [this, &found, &xcs](const UPnPClient::UPnPDeviceDesc &ddesc,
+        bool debug = Settings::instance()->isDebug();
+        auto traverseFun = [this, &found, debug, &xcs](const UPnPClient::UPnPDeviceDesc &ddesc,
                 const UPnPClient::UPnPServiceDesc &sdesc) {
             qDebug() << "==> Visitor";
             qDebug() << " Device";
@@ -385,7 +387,9 @@ void Directory::discover()
             qDebug() << "  SCPDURL:" << QString::fromStdString(sdesc.SCPDURL);
             qDebug() << "  serviceId:" << QString::fromStdString(sdesc.serviceId);
             qDebug() << "  serviceType:" << QString::fromStdString(sdesc.serviceType);
-            //qDebug() << "  ddesc.XMLText:" << QString::fromStdString(ddesc.XMLText);
+            if (debug) {
+                qDebug() << "  ddesc.XMLText:" << QString::fromStdString(ddesc.XMLText);
+            }
 
             auto did = QString::fromStdString(ddesc.UDN);
             auto sid = QString::fromStdString(sdesc.serviceId);
@@ -396,8 +400,9 @@ void Directory::discover()
             if (!xcs.contains(did)) {
                 xcs[did] = true;
 
-                auto xc = XC::make(did, QString::fromStdString(ddesc.XMLText));
-                if (xc->valid()) {
+                auto xc = XC::make_shared(did, QUrl(QString::fromStdString(ddesc.URLBase)).host(),
+                                          QString::fromStdString(ddesc.XMLText));
+                if (xc) {
                     qDebug() << "Valid" << xc->name() << "for" << did;
                     xc->moveToThread(QCoreApplication::instance()->thread());
                     this->m_xcs.insert(did, std::move(xc));
@@ -488,7 +493,8 @@ QString Directory::deviceNameFromId(const QString& deviceId)
 
 bool Directory::xcExists(const QString& deviceId)
 {
-    return m_xcs.contains(deviceId);
+    auto it = m_xcs.constFind(deviceId);
+    return it != m_xcs.cend() && (*it)->valid();
 }
 
 bool Directory::getBusy()
@@ -514,6 +520,16 @@ void Directory::xcGetStatus(const QString& deviceId)
         return;
 
     (*it)->getStatus();
+}
+
+void Directory::xcPowerOn(const QString& deviceId)
+{
+    auto it = m_xcs.find(deviceId);
+
+    if (it == m_xcs.end())
+        return;
+
+    (*it)->powerOn();
 }
 
 bool Directory::getInited()

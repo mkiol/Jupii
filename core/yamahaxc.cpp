@@ -18,7 +18,7 @@
 const QString YamahaXC::urlBase_tag = "yamaha:X_URLBase";
 const QString YamahaXC::controlUrl_tag = "yamaha:X_yxcControlURL";
 
-bool YamahaXC::parse(const QString &desc)
+bool YamahaXC::init(const QString &desc)
 {
     QXmlStreamReader xml(desc);
     QString* elm = nullptr;
@@ -27,14 +27,14 @@ bool YamahaXC::parse(const QString &desc)
 
     while (!xml.atEnd()) {
         auto type = xml.readNext();
-        if (type == QXmlStreamReader::StartElement) {
+        if (type == QXmlStreamReader::TokenType::StartElement) {
             if (xml.qualifiedName() == urlBase_tag)
                 elm = &urlBase;
             else if (xml.qualifiedName() == controlUrl_tag)
                 elm = &controlUrl;
-        } else if (elm && type == QXmlStreamReader::Characters)
+        } else if (elm && type == QXmlStreamReader::TokenType::Characters)
             *elm = xml.text().toString();
-        else if (type == QXmlStreamReader::EndElement)
+        else if (type == QXmlStreamReader::TokenType::EndElement)
              elm = nullptr;
     }
 
@@ -52,9 +52,9 @@ bool YamahaXC::parse(const QString &desc)
 }
 
 YamahaXC::YamahaXC(const QString &deviceId, const QString& desc, QObject *parent) :
-    XC(deviceId, parent)
+    XC(deviceId, QString(), parent)
 {
-    ok = parse(desc);
+    ok = init(desc);
 }
 
 QString YamahaXC::name() const
@@ -62,13 +62,28 @@ QString YamahaXC::name() const
     return "Yamaha Extended Control";
 }
 
+void YamahaXC::powerOn()
+{
+    qDebug() << "Power on";
+
+    if (valid())
+        apiCall(Action::ACTION_POWER_ON, "main/setPower?power=on");
+}
+
+void YamahaXC::powerOff()
+{
+    qDebug() << "Power off";
+
+    if (valid())
+        apiCall(Action::ACTION_POWER_OFF, "main/setPower?power=standby");
+}
+
 void YamahaXC::powerToggle()
 {
     qDebug() << "Power toggle";
 
-    if (valid()) {
-        apiCall(ACTION_POWER_TOGGLE, "main/setPower?power=toggle");
-    }
+    if (valid())
+        apiCall(Action::ACTION_POWER_TOGGLE, "main/setPower?power=toggle");
 }
 
 void YamahaXC::getStatus()
@@ -76,20 +91,22 @@ void YamahaXC::getStatus()
     qDebug() << "Get status";
 
     if (valid())
-        apiCall(ACTION_GET_STATUS, "main/getStatus");
+        apiCall(Action::ACTION_GET_STATUS, "main/getStatus");
 }
 
-XC::Status YamahaXC::handleGetStatus(const QByteArray& data)
+XC::Status YamahaXC::handleActionGetStatus(const QByteArray& data, const QVariant& userData)
 {
+    Q_UNUSED(userData)
+
     QJsonParseError err;
 
     auto json = QJsonDocument::fromJson(data, &err);
 
-    if (err.error != QJsonParseError::NoError || !json.isObject()) {
+    if (err.error != QJsonParseError::ParseError::NoError || !json.isObject()) {
         qWarning() << "Error parsing json:" << err.errorString();
-        return STATUS_UNKNOWN;
+        return Status::STATUS_UNKNOWN;
     }
 
     return json.object()["power"].toString() == "on" ?
-            STATUS_POWER_ON : STATUS_POWER_OFF;
+            Status::STATUS_POWER_ON : Status::STATUS_POWER_OFF;
 }
