@@ -20,7 +20,7 @@
 #include "frontiersiliconxc.h"
 #include "directory.h"
 
-const int XC::TIMEOUT = 2000;
+const int XC::TIMEOUT = 1000;
 
 XC::XC(const QString &deviceId, const QString &address, QObject *parent)
     : QObject(parent),
@@ -85,7 +85,7 @@ void XC::handleActionFinished()
                 handleActionPowerOff(d, reply->property("userData"));
                 break;
             case Action::ACTION_POWER_TOGGLE:
-                handleActionGetStatus(d, reply->property("userData"));
+                handleActionPowerToggle(d, reply->property("userData"));
                 break;
             case Action::ACTION_GET_STATUS:
                 DeviceModel::instance()->

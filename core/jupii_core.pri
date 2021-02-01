@@ -1,4 +1,4 @@
-CONFIG += c++14 json no_lflags_merge #object_parallel_to_source
+CONFIG += c++17 json no_lflags_merge #object_parallel_to_source
 QT += gui network dbus sql multimedia xml
 
 CORE_DIR = ../core
@@ -17,7 +17,7 @@ exists("$$QT_BIN_DIR/qdbusxml2cpp-qt5") {
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.jupii.xml" -a $$CORE_DIR/dbus_jupii_adaptor)
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml" -p $$CORE_DIR/dbus_tracker_inf)
 system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.systemd1.Manager.xml" -p $$CORE_DIR/dbus_systemd_inf)
-desktop: system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Notifications.xml" -p $$CORE_DIR/dbus_notifications_inf)
+system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Notifications.xml" -p $$CORE_DIR/dbus_notifications_inf)
 
 OTHER_FILES += \
     $$PROJECTDIR/dbus/*.xml
