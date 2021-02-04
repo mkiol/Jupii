@@ -23,6 +23,7 @@
 #include "contentserver.h"
 #include "playlistmodel.h"
 #include "iconprovider.h"
+#include "connectivitydetector.h"
 
 #include "libupnpp/device/service.hxx"
 #include "libupnpp/device/device.hxx"
@@ -411,7 +412,7 @@ QString MediaServerDevice::desc()
 
     // -- icons --
     QString ifname, addr;
-    if (!Directory::instance()->getNetworkIf(ifname, addr)) {
+    if (!ConnectivityDetector::instance()->selectNetworkIf(ifname, addr)) {
         qWarning() << "Cannot find valid network interface";
         return desc;
     }

@@ -1,9 +1,30 @@
 TARGET = harbour-jupii
 
-CONFIG += c++17 link_pkgconfig
+CONFIG += link_pkgconfig
 
-linux-g++-32: CONFIG += x86
-linux-g++: CONFIG += arm
+contains(QT_ARCH, i386){
+   message("Compiling for x86")
+   CONFIG += x86
+   DEFINES += X86
+} else {
+   contains(QT_ARCH, x86_64) {
+       message("Compiling for amd64")
+       CONFIG += amd64
+       DEFINES += X86
+   } else {
+       contains(QT_ARCH, arm){
+           message("Compiling for arm")
+           CONFIG += arm
+           DEFINES += ARM
+       } else {
+            contains(QT_ARCH, arm64) {
+                message("Compiling for arm64")
+                CONFIG += arm64
+                DEFINES += ARM
+            }
+       }
+   }
+}
 
 PROJECTDIR = $$PWD/..
 

@@ -36,10 +36,8 @@ Kirigami.ScrollablePage {
         target: directory
 
         onInitedChanged: {
-            if (directory.inited) {
-                devmodel.deviceType = DeviceModel.MediaServerType
-                directory.discover()
-            }
+            devmodel.deviceType = DeviceModel.MediaServerType
+            directory.discover()
         }
     }
 
@@ -107,7 +105,7 @@ Kirigami.ScrollablePage {
             anchors.centerIn: parent
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             text: directory.inited ?
-                      qsTr("No Media Servers") : qsTr("Disconnected")
+                      qsTr("No Media Servers") : qsTr("No network connection")
             visible: !directory.busy && itemList.count === 0
             helpfulAction: Kirigami.Action {
                 enabled: directory.inited

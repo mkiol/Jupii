@@ -21,7 +21,7 @@
 #endif // SAILFISH
 
 #ifdef KIRIGAMI
-#include <QApplication>
+#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
@@ -69,30 +69,10 @@
 #include "renderingcontrol.h"
 #include "avtransport.h"
 #include "contentserver.h"
+#include "connectivitydetector.h"
 
-int main(int argc, char *argv[])
+void registerTypes()
 {
-#ifdef SAILFISH
-    auto app = SailfishApp::application(argc, argv);
-    auto view = SailfishApp::createView();
-    auto context = view->rootContext();
-    auto engine = view->engine();
-#endif // SAILFISH
-
-#ifdef KIRIGAMI
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    auto app = new QApplication(argc, argv);
-    auto engine = new QQmlApplicationEngine();
-    auto context = engine->rootContext();
-    app->setApplicationName(Jupii::APP_ID);
-    app->setOrganizationName(Jupii::ORG);
-#ifdef FLATPAK
-    QIcon::setThemeName(QStringLiteral("breeze"));
-#endif // FLATPAK
-    QApplication::setWindowIcon(QIcon::fromTheme(Jupii::APP_ID));
-#endif // KIRIGAMI
-
     qmlRegisterUncreatableType<DeviceModel>("harbour.jupii.DeviceModel", 1, 0,
                                             "DeviceModel", "DeviceModel is a singleton");
     qmlRegisterType<RenderingControl>("harbour.jupii.RenderingControl", 1, 0,
@@ -123,6 +103,55 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<Settings>("harbour.jupii.Settings", 1, 0, "Settings",
                                           "Settings is a singleton");
 
+    qRegisterMetaType<Service::ErrorType>("ErrorType");
+    qRegisterMetaType<QList<ListItem*>>("QListOfListItem");
+    qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
+}
+
+void installTranslator(QGuiApplication* app)
+{
+    QTranslator translator;
+#ifdef SAILFISH
+    auto transDir = SailfishApp::pathTo("translations").toLocalFile();
+#else
+    QString transDir = ":/translations";
+#endif
+    if(!translator.load(QLocale::system().name(), QStringLiteral("jupii"), QStringLiteral("-"), transDir, QStringLiteral(".qm"))) {
+        qDebug() << "Cannot load translation:" << QLocale::system().name() << transDir;
+        if (!translator.load("jupii-en", transDir)) {
+            qDebug() << "Cannot load default translation";
+        }
+    }
+
+    app->installTranslator(&translator);
+}
+
+int main(int argc, char *argv[])
+{
+#ifdef SAILFISH
+    auto app = SailfishApp::application(argc, argv);
+    auto view = SailfishApp::createView();
+    auto context = view->rootContext();
+    auto engine = view->engine();
+#endif // SAILFISH
+
+#ifdef KIRIGAMI
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    auto app = new QGuiApplication(argc, argv);
+    auto engine = new QQmlApplicationEngine();
+    auto context = engine->rootContext();
+    app->setApplicationName(Jupii::APP_ID);
+    app->setOrganizationName(Jupii::ORG);
+#ifdef FLATPAK
+    QIcon::setThemeName(QStringLiteral("breeze"));
+#endif // FLATPAK
+    QGuiApplication::setWindowIcon(QIcon::fromTheme(Jupii::APP_ID));
+    QQuickStyle::setFallbackStyle(QStringLiteral("org.kde.desktop"));
+#endif // KIRIGAMI
+
+    registerTypes();
+
     engine->addImageProvider(QLatin1String("icons"), new IconProvider);
 
     context->setContextProperty("APP_NAME", Jupii::APP_NAME);
@@ -140,29 +169,11 @@ int main(int argc, char *argv[])
     app->setApplicationDisplayName(Jupii::APP_NAME);
     app->setApplicationVersion(Jupii::APP_VERSION);
 
-    qRegisterMetaType<Service::ErrorType>("ErrorType");
-    qRegisterMetaType<QList<ListItem*>>("QListOfListItem");
-    qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
-
-    auto settings = Settings::instance();
-
-    QTranslator translator;
-#ifdef SAILFISH
-    auto transDir = SailfishApp::pathTo("translations").toLocalFile();
-#else
-    QString transDir = ":/translations";
-#endif
-    if(!translator.load(QLocale::system().name(), QStringLiteral("jupii"), QStringLiteral("-"), transDir, QStringLiteral(".qm"))) {
-        qDebug() << "Cannot load translation:" << QLocale::system().name() << transDir;
-        if (!translator.load("jupii-en", transDir)) {
-            qDebug() << "Cannot load default translation";
-        }
-    }
-    app->installTranslator(&translator);
-
+    installTranslator(app);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
+    auto settings = Settings::instance();
     auto utils = Utils::instance();
     auto dir = Directory::instance();
     auto cserver = ContentServer::instance();
@@ -171,6 +182,7 @@ int main(int argc, char *argv[])
     auto devmodel = DeviceModel::instance();
     auto ytdl = YoutubeDl::instance();
     auto notifications = Notifications::instance();
+    auto conn = ConnectivityDetector::instance();
     new DbusProxy();
 
     services->avTransport->registerExternalConnections();
@@ -188,6 +200,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("devmodel", devmodel);
     context->setContextProperty("ytdl", ytdl);
     context->setContextProperty("notifications", notifications);
+    context->setContextProperty("conn", conn);
 
 #ifdef SAILFISH
     view->setSource(SailfishApp::pathTo("qml/main.qml"));

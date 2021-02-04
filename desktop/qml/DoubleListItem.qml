@@ -23,14 +23,26 @@ Kirigami.SwipeListItem {
     property alias next: nextIcon.visible
     property alias busy: busyIndicator.running
     property alias extra: extraLabel.text
+    property real leadingPadding: Kirigami.Units.largeSpacing
+    property real trailingPadding: Kirigami.Units.largeSpacing
 
     activeTextColor: Kirigami.Theme.activeTextColor
 
     width: parent ? parent.width : implicitWidth
     implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
 
-    contentItem: RowLayout {
+    contentItem: Item {
+        id: contItem
+        implicitWidth: layout.implicitWidth
+        implicitHeight: layout.implicitHeight
+
+        RowLayout {
         id: layout
+        anchors.left: contItem.left
+        anchors.leftMargin: root.leadingPadding
+        anchors.right: contItem.right
+        anchors.rightMargin: root.trailingPadding
+
         Controls.BusyIndicator {
             id: busyIndicator
             running: false
@@ -113,5 +125,6 @@ Kirigami.SwipeListItem {
             Layout.maximumHeight: root.iconSize
             Layout.minimumWidth: root.iconSize
         }
+    }
     }
 }

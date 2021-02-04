@@ -89,8 +89,6 @@ Page {
             defaultIcon.source: "image://icons/icon-m-device?" +
                                 (highlighted || model.active ?
                                 Theme.highlightColor : Theme.primaryColor)
-            visible: directory.inited
-
             onFavClicked: {
                 if (model.fav)
                     settings.removeFavDevice(model.id)
@@ -117,9 +115,9 @@ Page {
         }
 
         ViewPlaceholder {
-            enabled: !directory.busy && (listView.count == 0 || !directory.inited)
+            enabled: !directory.busy && listView.count == 0
             text: directory.inited ?
-                      qsTr("No Media Servers found") : qsTr("Disconnected")
+                      qsTr("No Media Servers found") : qsTr("No network connection")
             hintText: directory.inited ?
                           qsTr("Pull down to find Media Servers in your network") :
                           qsTr("Connect WLAN to find Media Servers in your network")

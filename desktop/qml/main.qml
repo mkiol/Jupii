@@ -105,7 +105,9 @@ Kirigami.ApplicationWindow {
     }
 
     Component.onCompleted: {
+        console.log(">>>>>>>>>>> QML ApplicationWindow completed <<<<<<<<<<<");
         homeAction.trigger()
+        conn.update()
     }
 
     // -- stream --
@@ -231,9 +233,7 @@ Kirigami.ApplicationWindow {
 
         onInitedChanged: {
             if (!directory.inited) {
-                pageStack.clear()
-                pageStack.completeAnimation()
-                pageStack.push(devPage, {}, PageStackAction.Immediate)
+                homeAction.trigger()
             }
         }
     }

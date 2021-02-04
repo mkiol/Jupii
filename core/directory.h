@@ -15,7 +15,6 @@
 #include <QString>
 #include <QUrl>
 #include <QNetworkConfigurationManager>
-#include <QNetworkSession>
 #include <memory>
 #include <functional>
 
@@ -43,14 +42,13 @@ class Directory :
 
     Q_PROPERTY (bool busy READ getBusy NOTIFY busyChanged)
     Q_PROPERTY (bool inited READ getInited NOTIFY initedChanged)
-    Q_PROPERTY (bool networkConnected READ isNetworkConnected NOTIFY networkStateChanged)
 
 public:
-    QNetworkConfigurationManager* ncm;
-    QNetworkSession* nsession;
     std::unique_ptr<MediaServerDevice> msdev;
 
     static Directory* instance(QObject *parent = nullptr);
+    Directory(const Directory&) = delete;
+    Directory& operator= (const Directory&) = delete;
 
     bool getBusy();
     bool getInited();
@@ -61,8 +59,6 @@ public:
     const QHash<QString,UPnPClient::UPnPDeviceDesc>& getDeviceDescs();
     QUrl getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc);
     Q_INVOKABLE void discover();
-    bool isNetworkConnected();
-    bool getNetworkIf(QString &ifname, QString &address);
 
     // Extended control API
     Q_INVOKABLE void xcTogglePower(const QString &deviceId);
@@ -75,7 +71,6 @@ signals:
     void discoveryLastReady();
     void busyChanged();
     void initedChanged();
-    void networkStateChanged();
     void error(int code);
 
 public slots:
@@ -84,7 +79,6 @@ public slots:
 private slots:
     void handleBusyChanged();
     void handleInitedChanged();
-    void handleNetworkConfChanged(const QNetworkConfiguration &conf);
     void restartMediaServer();
 
 private:
@@ -97,7 +91,6 @@ private:
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_devsdesc;
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_last_devsdesc;
     QHash<QString,std::shared_ptr<XC>> m_xcs;
-    QString m_ifname;
 
     explicit Directory(QObject *parent = nullptr);
     ~Directory();
@@ -105,7 +98,6 @@ private:
     void setInited(bool inited);
     bool handleError(int ret);
     void clearLists(bool all);
-    void updateNetworkConf();
     void refreshXC();
 };
 

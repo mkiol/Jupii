@@ -133,8 +133,9 @@ Kirigami.ScrollablePage {
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: !directory.busy && itemList.count === 0
             text: directory.inited ?
-                      qsTr("No devices") : qsTr("Disconnected")
+                      qsTr("No devices") : qsTr("No network connection")
             helpfulAction: Kirigami.Action {
+                enabled: directory.inited
                 iconName: "view-refresh"
                 text: qsTr("Find devices")
                 onTriggered: refreshAction.trigger()

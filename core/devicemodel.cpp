@@ -42,6 +42,8 @@ DeviceModel::DeviceModel(QObject *parent) :
 {
     connect(Directory::instance(), &Directory::discoveryReady,
             this, &DeviceModel::updateModel);
+    connect(Directory::instance(), &Directory::initedChanged,
+            this, &DeviceModel::updateModel);
     connect(Directory::instance(), &Directory::discoveryFavReady,
             this, &DeviceModel::updateModel);
     connect(Services::instance()->avTransport.get(), &Service::initedChanged,

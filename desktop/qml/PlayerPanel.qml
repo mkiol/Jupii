@@ -111,13 +111,20 @@ Rectangle {
             Layout.leftMargin: Kirigami.Units.largeSpacing
             Layout.rightMargin: Kirigami.Units.largeSpacing
             visible: !root.inited && !root.open
-            icon.source: "network-offline"
-            text: qsTr("Not connected") + ". " + qsTr("Connect to a device to control playback using %1.").arg(APP_NAME)
-            + (settings.contentDirSupported ? " " + qsTr("Without connection, all items in play queue are still accessible on other devices in your local network.") : "")
+            icon.source: "network-offline"     
+            text: {
+                if (!directory.inited)
+                    return qsTr("No network connection")
+                return qsTr("Not connected") + ". " + qsTr("Connect to a device to control playback using %1.").arg(APP_NAME) +
+                       (settings.contentDirSupported ? " " + qsTr("Without connection, all items in play queue are still accessible on other devices in your local network.") :
+                                                       "");
+            }
+
             actions: [
                 Kirigami.Action {
                     text: qsTr("Devices")
                     icon.name: "computer"
+                    enabled: directory.inited
                     onTriggered: app.devicesAction.trigger()
                 }
             ]

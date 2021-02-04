@@ -152,7 +152,7 @@ Page {
 
             MenuItem {
                 text: playlist.busy ? qsTr("Cancel") : qsTr("Add items")
-                visible: !playlist.refreshing && directory.inited
+                visible: !playlist.refreshing
                 onClicked: {
                     if (playlist.busy) {
                         playlist.cancelAdd()
@@ -268,7 +268,6 @@ Page {
                 MenuItem {
                     text: qsTr("Remove")
                     enabled: model.active || listItem.enabled
-                    visible: directory.inited
                     onClicked: {
                         playlist.remove(model.id)
                     }

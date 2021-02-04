@@ -32,129 +32,25 @@
 #include "device.h"
 #include "log.h"
 #include "xc.h"
+#include "connectivitydetector.h"
 
 Directory* Directory::m_instance = nullptr;
 
 Directory::Directory(QObject *parent) :
     QObject(parent),
-    TaskExecutor(parent),
-    ncm(new QNetworkConfigurationManager())
+    TaskExecutor(parent)
 {
-    connect(ncm, &QNetworkConfigurationManager::configurationAdded,
-            this, &Directory::handleNetworkConfChanged);
-    connect(ncm, &QNetworkConfigurationManager::configurationRemoved,
-            this, &Directory::handleNetworkConfChanged);
-    connect(ncm, &QNetworkConfigurationManager::configurationChanged,
-            this, &Directory::handleNetworkConfChanged);
-
     connect(this, &Directory::busyChanged, this, &Directory::handleBusyChanged);
-    connect(this, &Directory::networkStateChanged, this, &Directory::init);
     connect(this, &Directory::initedChanged, this,
             &Directory::handleInitedChanged, Qt::QueuedConnection);
     connect(Settings::instance(), &Settings::contentDirSupportedChanged,
             this, &Directory::restartMediaServer, Qt::QueuedConnection);
-
-    updateNetworkConf();
+    connect(ConnectivityDetector::instance(), &ConnectivityDetector::networkStateChanged,
+            this, &Directory::init, Qt::QueuedConnection);
 }
 
 Directory::~Directory()
-{}
-
-void Directory::handleNetworkConfChanged(const QNetworkConfiguration &conf)
 {
-    if (conf.state() & QNetworkConfiguration::Defined &&
-        (conf.bearerType() == QNetworkConfiguration::BearerWLAN ||
-        conf.bearerType() == QNetworkConfiguration::BearerEthernet)) {
-        updateNetworkConf();
-    }
-}
-
-void Directory::updateNetworkConf()
-{
-    QStringList eth_candidates;
-    QStringList wlan_candidates;
-
-    for (const auto& interface : QNetworkInterface::allInterfaces()) {
-        if (interface.flags().testFlag(QNetworkInterface::IsRunning)) {
-            if (Utils::ethNetworkInf(interface)) {
-                //qDebug() << "eth interface:" << interface.name();
-                eth_candidates << interface.name();
-            } else if (Utils::wlanNetworkInf(interface)) {
-                //qDebug() << "wlan interface:" << interface.name();
-                wlan_candidates << interface.name();
-            }
-        }
-    }
-
-    QString new_ifname;
-
-    if (eth_candidates.isEmpty() && wlan_candidates.isEmpty()) {
-        qWarning() << "No connected network interface found";
-    } else {
-        QString pref_ifname = Settings::instance()->getPrefNetInf();
-        //qDebug() << "Preferred network interface:" << pref_ifname;
-
-        if (!pref_ifname.isEmpty() && (eth_candidates.contains(pref_ifname) ||
-                                       wlan_candidates.contains(pref_ifname))) {
-            qDebug() << "Preferred network interface found";
-            new_ifname = pref_ifname;
-        } else {
-#ifdef SAILFISH
-            // preferred WLAN
-            if (!wlan_candidates.isEmpty()) {
-                new_ifname = wlan_candidates.first();
-            } else {
-                new_ifname = eth_candidates.first();
-            }
-#else
-            // preferred Ethernet
-            if (!eth_candidates.isEmpty()) {
-                new_ifname = eth_candidates.first();
-            } else {
-                new_ifname = wlan_candidates.first();
-            }
-#endif
-        }
-    }
-
-    if (m_ifname != new_ifname) {
-        qDebug() << "Connected network interface changed:" << new_ifname;
-        m_ifname = new_ifname;
-        emit networkStateChanged();
-    }
-}
-
-bool Directory::isNetworkConnected()
-{
-    return !m_ifname.isEmpty();
-}
-
-bool Directory::getNetworkIf(QString &ifname, QString &address)
-{
-    if (isNetworkConnected()) {
-        auto interface = QNetworkInterface::interfaceFromName(m_ifname);
-        if (interface.isValid() &&
-            interface.flags().testFlag(QNetworkInterface::IsUp) &&
-            interface.flags().testFlag(QNetworkInterface::IsRunning)) {
-
-            ifname = m_ifname;
-
-            auto addra = interface.addressEntries();
-            for (const auto &a : addra) {
-                auto ha = a.ip();
-                if (ha.protocol() == QAbstractSocket::IPv4Protocol ||
-                    ha.protocol() == QAbstractSocket::IPv6Protocol) {
-                    address = ha.toString();
-                    //qDebug() << "Net interface:" << ifname << address;
-                    return true;
-                }
-            }
-
-            qWarning() << "Cannot find valid ip addr for interface:" << m_ifname;
-        }
-    }
-
-    return false;
 }
 
 void Directory::handleBusyChanged()
@@ -177,9 +73,6 @@ void Directory::refreshXC()
 void Directory::handleInitedChanged()
 {
     restartMediaServer();
-
-    if (!m_inited)
-        clearLists(true);
 }
 
 void Directory::restartMediaServer()
@@ -195,7 +88,7 @@ void Directory::init()
     qDebug() << "Directory init";
 
     QString ifname, addr;
-    if (!getNetworkIf(ifname, addr)) {
+    if (!ConnectivityDetector::instance()->selectNetworkIf(ifname, addr)) {
         qWarning() << "Cannot find valid network interface";
         setInited(false);
         emit error(1);
@@ -280,7 +173,7 @@ void Directory::discover()
         return;
     }
 
-    if (!isNetworkConnected()) {
+    if (!ConnectivityDetector::instance()->networkConnected()) {
         qWarning() << "Cannot find valid network interface";
         setInited(false);
         return;
@@ -550,6 +443,8 @@ void Directory::setInited(bool inited)
     if (inited != m_inited) {
         m_inited = inited;
         qDebug() << "Directory inited:" << m_inited;
+        if (!m_inited)
+            clearLists(true);
         emit initedChanged();
     }
 }

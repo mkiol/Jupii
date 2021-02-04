@@ -48,6 +48,7 @@
 #include "playlistmodel.h"
 #include "libupnpp/control/cdirectory.hxx"
 #include "bcapi.h"
+#include "connectivitydetector.h"
 
 // TagLib
 #include "fileref.h"
@@ -2087,7 +2088,7 @@ QString ContentServer::bestName(const ContentServer::ItemMeta &meta)
 bool ContentServer::makeUrl(const QString& id, QUrl& url, bool relay)
 {
     QString ifname, addr;
-    if (!Directory::instance()->getNetworkIf(ifname, addr)) {
+    if (!ConnectivityDetector::instance()->selectNetworkIf(ifname, addr)) {
         qWarning() << "Cannot find valid network interface";
         return false;
     }

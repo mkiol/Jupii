@@ -1,4 +1,4 @@
-CONFIG += c++17 json no_lflags_merge #object_parallel_to_source
+CONFIG += c++17 json no_lflags_merge
 QT += gui network dbus sql multimedia xml
 
 CORE_DIR = ../core
@@ -128,7 +128,8 @@ HEADERS += \
     $$CORE_DIR/bcapi.h \
     $$CORE_DIR/tuneinmodel.h \
     $$CORE_DIR/xc.h \
-    $$PWD/frontiersiliconxc.h
+    $$CORE_DIR/frontiersiliconxc.h \
+    $$CORE_DIR/connectivitydetector.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -180,7 +181,8 @@ SOURCES += \
     $$CORE_DIR/bcapi.cpp \
     $$CORE_DIR/tuneinmodel.cpp \
     $$CORE_DIR/xc.cpp \
-    $$PWD/frontiersiliconxc.cpp
+    $$CORE_DIR/frontiersiliconxc.cpp \
+    $$CORE_DIR/connectivitydetector.cpp
 
 screencast {
     HEADERS += \

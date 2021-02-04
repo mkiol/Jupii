@@ -51,6 +51,7 @@ PlaylistWorker::PlaylistWorker(QList<UrlItem> &&urls,
 PlaylistWorker::PlaylistWorker(QList<QUrl> &&ids, QObject *parent) :
     QThread(parent),
     ids(ids),
+    asAudio(false),
     urlIsId(true)
 {
 }
@@ -225,6 +226,9 @@ void PlaylistWorker::run()
                 ids << id;
             }
         }
+    } else {
+        for (auto& id : ids)
+            Utils::fixUrl(id);
     }
 
     auto pl = PlaylistModel::instance();
@@ -317,7 +321,6 @@ PlaylistModel::PlaylistModel(QObject *parent) :
     m_trackEndedTimer.setInterval(1000);
     connect(&m_trackEndedTimer, &QTimer::timeout, this,
             &PlaylistModel::onTrackEnded, Qt::QueuedConnection);
-    load();
 }
 
 #ifdef SAILFISH
@@ -742,23 +745,21 @@ void PlaylistModel::load()
 {
     qDebug() << "Playlist load";
 
-    auto dir = Directory::instance();
-    if (!dir->getInited()) {
-        qWarning() << "Unloading playlist because directory is not inited";
-        clear(false);
+    if (!Directory::instance()->getInited()) {
+        qWarning() << "Directory is not inited, skipping playlist load";
         return;
     }
+
+    if (!m_list.isEmpty())
+        return;
 
     setBusy(true);
 
     auto ids = QUrl::fromStringList(Settings::instance()->getLastPlaylist());
-    for (auto& id : ids) {
-        Utils::fixUrl(id);
-    }
 
     m_add_worker = std::unique_ptr<PlaylistWorker>(new PlaylistWorker(std::move(ids)));
-    connect(m_add_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::addWorkerDone);
-    connect(m_add_worker.get(), &PlaylistWorker::progress, this, &PlaylistModel::progressUpdate);
+    connect(m_add_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::addWorkerDone, Qt::QueuedConnection);
+    connect(m_add_worker.get(), &PlaylistWorker::progress, this, &PlaylistModel::progressUpdate, Qt::QueuedConnection);
     progressUpdate(0, 0);
     m_add_worker->start();
 }

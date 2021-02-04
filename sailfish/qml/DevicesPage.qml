@@ -37,7 +37,7 @@ Page {
     }
 
     function createPlaylistPage() {
-        if (directory.inited && pageStack.currentPage === root && !forwardNavigation) {
+        if (pageStack.currentPage === root && !forwardNavigation) {
             pageStack.pushAttached(Qt.resolvedUrl("PlayQueuePage.qml"))
         }
     }
@@ -64,7 +64,6 @@ Page {
         model: devmodel
 
         header: PageHeader {
-            visible: directory.inited
             title: qsTr("Devices")
         }
 
@@ -99,7 +98,6 @@ Page {
             defaultIcon.source: "image://icons/icon-m-device?" +
                                 (highlighted || model.active ?
                                 Theme.highlightColor : Theme.primaryColor)
-            visible: directory.inited
 
             onFavClicked: {
                 if (model.fav)
@@ -165,7 +163,7 @@ Page {
         ViewPlaceholder {
             enabled: !directory.busy && (listView.count == 0 || !directory.inited)
             text: directory.inited ?
-                      qsTr("No devices") : qsTr("Disconnected")
+                      qsTr("No devices") : qsTr("No network connection")
             hintText: directory.inited ?
                           qsTr("Pull down to find more devices in your network") :
                           qsTr("Connect WLAN to find devices in your network")

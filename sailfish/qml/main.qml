@@ -19,6 +19,11 @@ ApplicationWindow {
 
     initialPage: devPage
 
+    Component.onCompleted: {
+        console.log(">>>>>>>>>>> QML ApplicationWindow completed <<<<<<<<<<<");
+        conn.update()
+    }
+
     Component {
         id: devPage
         DevicesPage {}

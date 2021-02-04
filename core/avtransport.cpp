@@ -19,6 +19,7 @@
 #include "taskexecutor.h"
 #include "contentserver.h"
 #include "playlistmodel.h"
+#include "connectivitydetector.h"
 
 AVTransport::AVTransport(QObject *parent) :
     Service(parent),
@@ -684,7 +685,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         return;
     }
 
-    if (!Directory::instance()->isNetworkConnected()) {
+    if (!ConnectivityDetector::instance()->networkConnected()) {
         qWarning() << "Cannot find valid network interface";
         emit error(E_LostConnection);
         return;

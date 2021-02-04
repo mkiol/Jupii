@@ -17,15 +17,15 @@
 
 #include "youtubedl.h"
 #include "utils.h"
-#include "directory.h"
+#include "connectivitydetector.h"
 
 YoutubeDl* YoutubeDl::m_instance = nullptr;
 
 YoutubeDl::YoutubeDl(QObject *parent) : QObject(parent)
 {
     install();
-    auto dir = Directory::instance();
-    connect(dir, &Directory::networkStateChanged, this, &YoutubeDl::terminateAll);
+    connect(ConnectivityDetector::instance(), &ConnectivityDetector::networkStateChanged,
+            this, &YoutubeDl::terminateAll, Qt::QueuedConnection);
 }
 
 YoutubeDl* YoutubeDl::instance()

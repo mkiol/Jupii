@@ -39,8 +39,7 @@ CDirModel::CDirModel(QObject *parent) :
 
 void CDirModel::handleContentDirectoryInited()
 {
-    auto cd = Services::instance()->contentDir;
-    if (cd->getInited())
+    if (Services::instance()->contentDir->getInited())
         updateModel();
 }
 

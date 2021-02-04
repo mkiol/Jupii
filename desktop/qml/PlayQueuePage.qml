@@ -23,10 +23,10 @@ Kirigami.ScrollablePage {
 
     property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
     property int itemType: utils.itemTypeFromUrl(av.currentId)
-    property bool inited: directory.inited && (av.inited || rc.busy)
-    property bool busy: !directory.inited || playlist.busy || playlist.refreshing || av.busy || rc.busy
-    property bool canCancel: directory.inited && !av.busy && !rc.busy && (playlist.busy || playlist.refreshing)
-    property bool controlEnabled: true
+    property bool inited: av.inited || rc.busy
+    property bool busy: playlist.busy || playlist.refreshing || av.busy || rc.busy
+    property bool canCancel: !av.busy && !rc.busy && (playlist.busy || playlist.refreshing)
+    property bool networkEnabled: directory.inited
 
     Kirigami.Theme.colorSet: Kirigami.Theme.View
 
@@ -44,7 +44,7 @@ Kirigami.ScrollablePage {
             text: qsTr("Add items")
             checked: app.addMediaPageAction.checked
             iconName: "list-add"
-            enabled: !root.busy && root.controlEnabled
+            enabled: !root.busy
             onTriggered: app.addMediaPageAction.trigger()
         }
 
@@ -53,7 +53,7 @@ Kirigami.ScrollablePage {
                 text: qsTr("Cancel")
                 checked: addMediaPageAction.checked
                 iconName: "dialog-cancel"
-                enabled: root.canCancel && root.controlEnabled
+                enabled: root.canCancel
                 visible: enabled
                 onTriggered: {
                     if (playlist.busy)
@@ -73,7 +73,6 @@ Kirigami.ScrollablePage {
                 displayHint: Kirigami.Action.DisplayHint.AlwaysHide
                 text: qsTr("Save queue")
                 iconName: "document-save"
-                enabled: root.controlEnabled
                 visible: !playlist.refreshing && !playlist.busy && itemList.count !== 0
                 onTriggered: saveDialog.open()
             },
@@ -81,14 +80,13 @@ Kirigami.ScrollablePage {
                 displayHint: Kirigami.Action.DisplayHint.AlwaysHide
                 text: qsTr("Clear queue")
                 iconName: "edit-clear-all"
-                enabled: root.controlEnabled
                 visible: !root.busy && itemList.count !== 0
                 onTriggered: clearDialog.open()
             },
             Kirigami.Action {
                 text: qsTr("Refresh items")
                 iconName: "view-refresh"
-                enabled: root.controlEnabled
+                enabled: root.networkEnabled
                 visible: !root.busy && playlist.refreshable && itemList.count !== 0
                 onTriggered: playlist.refresh()
             }
@@ -261,7 +259,6 @@ Kirigami.ScrollablePage {
     ListView {
         id: itemList
         model: playlist
-        enabled: root.controlEnabled
 
         delegate: Kirigami.DelegateRecycler {
             width: parent.width
@@ -274,6 +271,7 @@ Kirigami.ScrollablePage {
             visible: !root.busy && itemList.count === 0
             text: qsTr("No items")
             helpfulAction: Kirigami.Action {
+                enabled: root.networkEnabled
                 iconName: "list-add"
                 text: qsTr("Add items")
                 onTriggered: addAction.trigger()
@@ -283,8 +281,6 @@ Kirigami.ScrollablePage {
 
     footer: PlayerPanel {
         id: ppanel
-
-        enabled: root.controlEnabled
 
         width: root.width
 
