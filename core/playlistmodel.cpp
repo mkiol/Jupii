@@ -1500,11 +1500,10 @@ bool PlaylistModel::play(const QString &id)
         return false;
     }
 
-    dir->xcPowerOn(av->getDeviceId());
-
     if (activeId() == id) {
         qDebug() << "Id is active id";
         if (av->getTransportState() != AVTransport::Playing) {
+            dir->xcPowerOn(av->getDeviceId());
             av->setSpeed(1);
             av->play();
         }
@@ -1516,7 +1515,13 @@ bool PlaylistModel::play(const QString &id)
         return false;
     }
 
-    refreshAndSetContent(id, nextId(id), true);
+    dir->xcPowerOn(av->getDeviceId());
+
+    // delaying refreshAndSetContent for xcPowerOn finish
+    QTimer::singleShot(200, this, [this, id] {
+        refreshAndSetContent(id, nextId(id), true);
+    });
+
     return true;
 }
 
