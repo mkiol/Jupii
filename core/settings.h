@@ -48,6 +48,7 @@ class Settings:
     Q_PROPERTY (bool contentDirSupported READ getContentDirSupported WRITE setContentDirSupported NOTIFY contentDirSupportedChanged)
     Q_PROPERTY (bool logToFile READ getLogToFile WRITE setLogToFile NOTIFY logToFileChanged)
     Q_PROPERTY (int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY colorSchemeChanged)
+    Q_PROPERTY (QString fsapiPin READ fsapiPin WRITE setFsapiPin NOTIFY fsapiPinChanged)
 
 public:   
     enum Hint {
@@ -111,6 +112,9 @@ public:
 
     void setPlayMode(int value);
     int getPlayMode();
+
+    void setFsapiPin(const QString &value);
+    QString fsapiPin() const;
 
     void setFavDevices(const QHash<QString,QVariant> &devs);
     QHash<QString, QVariant> getFavDevices();
@@ -198,6 +202,7 @@ signals:
     void logToFileChanged();
     void colorSchemeChanged();
     void audioBoostChanged();
+    void fsapiPinChanged();
 
 private:
     QSettings settings;

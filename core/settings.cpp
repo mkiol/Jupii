@@ -778,3 +778,16 @@ void Settings::reset()
         qWarning() << "Cannot remove file:" << settings.fileName();
     }
 }
+
+void Settings::setFsapiPin(const QString &value)
+{
+    if (fsapiPin() != value) {
+        settings.setValue("fsapipin", value);
+        emit fsapiPinChanged();
+    }
+}
+
+QString Settings::fsapiPin() const
+{
+    return settings.value("fsapipin", "1234").toString();
+}

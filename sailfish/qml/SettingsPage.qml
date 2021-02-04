@@ -378,6 +378,21 @@ Page {
                 }
             }
 
+            TextField {
+                anchors {
+                    left: parent.left; right: parent.right
+                    /*leftMargin: Theme.paddingLarge
+                    rightMargin: Theme.paddingLarge*/
+                }
+                label: qsTr("Frontier Silicon PIN")
+                text: settings.fsapiPin
+                inputMethodHints: Qt.ImhDigitsOnly
+                placeholderText: qsTr("Enter Frontier Silicon PIN")
+                onTextChanged: {
+                    settings.fsapiPin = text
+                }
+            }
+
             TextSwitch {
                 automaticCheck: false
                 checked: settings.logToFile

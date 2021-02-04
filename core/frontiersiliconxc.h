@@ -30,7 +30,6 @@ public:
 
 private:
     static const QString URL;
-    static const QString PIN;
     static const int TIMEOUT;
     QString sid;
 

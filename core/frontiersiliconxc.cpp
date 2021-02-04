@@ -17,8 +17,9 @@
 #include <QEventLoop>
 #include <QTimer>
 
+#include "settings.h"
+
 const QString FrontierSiliconXC::URL("http://%1:80/device"); // TODO: port & path should be provided via UI
-const QString FrontierSiliconXC::PIN("1234"); // TODO: pin should be provided via UI
 const int FrontierSiliconXC::TIMEOUT = 1000;
 
 FrontierSiliconXC::FrontierSiliconXC(const QString &deviceId, const QString &address, QObject *parent) :
@@ -44,7 +45,7 @@ void FrontierSiliconXC::powerOn()
         createSession(Action::ACTION_POWER_ON);
     else
         apiCall(Action::ACTION_POWER_ON, "/SET/netRemote.sys.power",
-                {{"pin", PIN}, {"sid", sid}, {"value", "1"}});
+                {{"pin", Settings::instance()->fsapiPin()}, {"sid", sid}, {"value", "1"}});
 }
 
 void FrontierSiliconXC::powerOff()
@@ -58,7 +59,7 @@ void FrontierSiliconXC::powerOff()
         createSession(Action::ACTION_POWER_OFF);
     else
         apiCall(Action::ACTION_POWER_OFF, "/SET/netRemote.sys.power",
-                {{"pin", PIN}, {"sid", sid}, {"value", "0"}});
+                {{"pin", Settings::instance()->fsapiPin()}, {"sid", sid}, {"value", "0"}});
 }
 
 void FrontierSiliconXC::powerToggle()
@@ -72,7 +73,7 @@ void FrontierSiliconXC::powerToggle()
         createSession(Action::ACTION_POWER_TOGGLE);
     else
         apiCall(Action::ACTION_GET_STATUS, "/GET/netRemote.sys.power",
-                {{"pin", PIN}, {"sid", sid}}, Action::ACTION_POWER_TOGGLE);
+                {{"pin", Settings::instance()->fsapiPin()}, {"sid", sid}}, Action::ACTION_POWER_TOGGLE);
 }
 
 void FrontierSiliconXC::getStatus()
@@ -86,14 +87,14 @@ void FrontierSiliconXC::getStatus()
         createSession(Action::ACTION_GET_STATUS);
     else
         apiCall(Action::ACTION_GET_STATUS, "/GET/netRemote.sys.power",
-                {{"pin", PIN}, {"sid", sid}});
+                {{"pin", Settings::instance()->fsapiPin()}, {"sid", sid}});
 }
 
 void FrontierSiliconXC::createSession(Action action)
 {
     qDebug() << "Create session";
 
-    apiCall(ACTION_CREATE_SESSION, "/CREATE_SESSION", {{"pin", PIN}}, action);
+    apiCall(ACTION_CREATE_SESSION, "/CREATE_SESSION", {{"pin", Settings::instance()->fsapiPin()}}, action);
 }
 
 bool FrontierSiliconXC::downloadDeviceDescription(QByteArray& data)
@@ -252,7 +253,7 @@ XC::Status FrontierSiliconXC::handleActionGetStatus(const QByteArray& data, cons
             userData.value<XC::Action>() == Action::ACTION_POWER_TOGGLE &&
             status != Status::STATUS_UNKNOWN) {
         apiCall(Action::ACTION_POWER_TOGGLE, "/SET/netRemote.sys.power",
-                {{"pin", PIN}, {"sid", sid}, {"value", status == Status::STATUS_POWER_OFF ? "1" : "0"}});
+                {{"pin", Settings::instance()->fsapiPin()}, {"sid", sid}, {"value", status == Status::STATUS_POWER_OFF ? "1" : "0"}});
     }
 
     return status;

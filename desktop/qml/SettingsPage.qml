@@ -443,6 +443,19 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.isSection: true
             }
 
+            Controls.TextField {
+                Kirigami.FormData.label: qsTr("Frontier Silicon PIN")
+                inputMethodHints: Qt.ImhDigitsOnly
+                text: settings.fsapiPin
+                onEditingFinished: {
+                    settings.fsapiPin = text
+                }
+            }
+
+            Item {
+                Kirigami.FormData.isSection: true
+            }
+
             Controls.Switch {
                 checked: settings.showAllDevices
                 text: qsTr("All devices visible")
