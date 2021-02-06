@@ -64,26 +64,12 @@ Utils* Utils::instance(QObject *parent)
     return Utils::m_instance;
 }
 
-QString Utils::homeDirPath()
+QString Utils::homeDirPath() const
 {
     return QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 }
 
-QString Utils::friendlyDeviceType(const QString &deviceType)
-{
-    auto list = deviceType.split(':');
-    return list.mid(list.length()-2).join(':');
-    //return list.at(list.length()-2);
-}
-
-QString Utils::friendlyServiceType(const QString &serviceType)
-{
-    auto list = serviceType.split(':');
-    return list.mid(list.length()-2).join(':');
-    //return list.at(list.length()-2);
-}
-
-QString Utils::secToStr(int value)
+QString Utils::secToStr(int value) const
 {
     int s = value % 60;
     int m = (value - s)/60 % 60;
@@ -260,7 +246,7 @@ bool Utils::readFromCacheFile(const QString &filename, QByteArray &data)
     return false;
 }
 
-QString Utils::readLicenseFile()
+QString Utils::readLicenseFile() const
 {
     QByteArray data;
 
@@ -367,32 +353,32 @@ bool Utils::isIdValid(const QString &id)
     return isIdValid(QUrl(id));
 }
 
-bool Utils::isUrlOk(const QUrl &url)
+bool Utils::isUrlOk(const QUrl &url) const
 {
     return Utils::isUrlValid(url);
 }
 
-bool Utils::isGpodderAvailable()
+bool Utils::isGpodderAvailable() const
 {
     return Gpodder::enabled();
 }
 
-bool Utils::isIdMic(const QUrl &id)
+bool Utils::isIdMic(const QUrl &id) const
 {
     return Utils::isUrlMic(id);
 }
 
-bool Utils::isIdPulse(const QUrl &id)
+bool Utils::isIdPulse(const QUrl &id) const
 {
     return Utils::isUrlPulse(id);
 }
 
-bool Utils::isIdScreen(const QUrl &id)
+bool Utils::isIdScreen(const QUrl &id) const
 {
     return Utils::isUrlScreen(id);
 }
 
-bool Utils::isIdUpnp(const QUrl &id)
+bool Utils::isIdUpnp(const QUrl &id) const
 {
     return Utils::isUrlUpnp(id);
 }
@@ -413,22 +399,22 @@ QString Utils::devNameFromUpnpId(const QUrl &id)
     return QString();
 }
 
-QString Utils::urlToPath(const QUrl &url)
+QString Utils::urlToPath(const QUrl &url) const
 {
     return url.toLocalFile();
 }
 
-QUrl Utils::pathToUrl(const QString &path)
+QUrl Utils::pathToUrl(const QString &path) const
 {
     return QUrl::fromLocalFile(path);
 }
 
-void Utils::setClipboard(const QString &data)
+void Utils::setClipboard(const QString &data) const
 {
     QGuiApplication::clipboard()->setText(data);
 }
 
-int Utils::itemTypeFromUrl(const QUrl &url)
+int Utils::itemTypeFromUrl(const QUrl &url) const
 {
     return static_cast<int>(ContentServer::itemTypeFromUrl(url));
 }
@@ -810,7 +796,7 @@ void Utils::removeFile(const QString &path)
         file.remove();
 }
 
-QString Utils::dirNameFromPath(const QString &path)
+QString Utils::dirNameFromPath(const QString &path) const
 {
     QDir dir(path);
     dir.makeAbsolute();

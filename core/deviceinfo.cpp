@@ -8,6 +8,7 @@
 #include "deviceinfo.h"
 
 #include <QDebug>
+#include <algorithm>
 
 #include "directory.h"
 #include "utils.h"
@@ -41,8 +42,7 @@ QString DeviceInfo::getFriendlyName() const
 
 QString DeviceInfo::getDeviceType() const
 {
-    return Utils::instance()->friendlyDeviceType(
-                QString::fromStdString(m_ddesc.deviceType));
+    return QString::fromStdString(m_ddesc.deviceType);
 }
 
 QString DeviceInfo::getModelName() const
@@ -74,12 +74,11 @@ QString DeviceInfo::getXML() const
 QStringList DeviceInfo::getServices() const
 {
     QStringList list;
-    for (const auto &service : m_ddesc.services) {
-        QString type = Utils::instance()->friendlyServiceType(
-                    QString::fromStdString(service.serviceType));
-        list.append(type);
-    }
+
+    std::transform(m_ddesc.services.cbegin(), m_ddesc.services.cend(), std::back_inserter(list),
+                   [](const auto& service) {
+        return QString::fromStdString(service.serviceType);
+    });
 
     return list;
 }
-
