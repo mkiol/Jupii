@@ -390,6 +390,11 @@ bool Directory::xcExists(const QString& deviceId)
     return it != m_xcs.cend() && (*it)->valid();
 }
 
+const std::shared_ptr<XC>& Directory::xc(const QString& deviceId)
+{
+    return m_xcs.constFind(deviceId).value();
+}
+
 bool Directory::getBusy()
 {
     return m_busy;

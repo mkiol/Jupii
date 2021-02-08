@@ -36,8 +36,14 @@ public:
         STATUS_POWER_ON,
         STATUS_POWER_OFF
     };
+    enum ErrorType {
+        ERROR_UNKNOWN,
+        ERROR_INVALID_PIN
+    };
 
     using param = std::pair<QString,QString>;
+
+    QString deviceId;
 
     static std::shared_ptr<XC> make_shared(const QString& deviceId, const QString &address, const QString& desc);
 
@@ -50,9 +56,11 @@ public:
     virtual void powerOff() = 0;
     virtual QString name() const = 0;
 
+signals:
+    void error(XC::ErrorType code);
+
 protected:
     bool ok = true;
-    QString deviceId;
     QString urlBase;
     QString address;
 
@@ -76,5 +84,6 @@ private:
 };
 
 Q_DECLARE_METATYPE(XC::Action)
+Q_DECLARE_METATYPE(XC::ErrorType)
 
 #endif // XC_H

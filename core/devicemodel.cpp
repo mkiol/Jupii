@@ -23,6 +23,7 @@
 #include "avtransport.h"
 #include "renderingcontrol.h"
 #include "contentdirectory.h"
+#include "notifications.h"
 
 #include "libupnpp/control/description.hxx"
 
@@ -72,13 +73,20 @@ void DeviceModel::setDeviceType(DeviceModel::DeviceType value)
 
 void DeviceModel::serviceInitedHandler()
 {
-    auto service = dynamic_cast<Service*>(sender());
-    if (service) {
-        int l = rowCount();
-        for (int i = 0; i < l; ++i) {
-            auto item = dynamic_cast<DeviceItem*>(readRow(i));
-            if (item)
-                item->setActive(item->id() == service->getDeviceId());
+    const auto service = qobject_cast<Service*>(sender());
+    for (int i = 0; i < rowCount(); ++i) {
+        if (auto item = qobject_cast<DeviceItem*>(readRow(i)); item)
+            item->setActive(item->id() == service->getDeviceId());
+    }
+}
+
+void DeviceModel::handleXcError(XC::ErrorType code)
+{
+    if (code == XC::ErrorType::ERROR_INVALID_PIN) {
+        if (const auto item = qobject_cast<DeviceItem*>(
+                    find(qobject_cast<XC*>(sender())->deviceId)); item) {
+            Notifications::instance()->show(tr("Invalid PIN for %1").arg(item->title()),
+                                            {}, item->icon().toLocalFile());
         }
     }
 }
@@ -113,16 +121,20 @@ void DeviceModel::updateModel()
             auto iconUrl = d->getDeviceIconUrl(ddesc);
             auto iconPath = Utils::deviceIconFilePath(id);
             bool active = av && av->getDeviceId() == id;
-            bool xc = d->xcExists(it.key());
-            items << new DeviceItem(id,
-                             QString::fromStdString(ddesc.friendlyName),
-                             type,
-                             QString::fromStdString(ddesc.modelName),
-                             iconPath.isEmpty() ? QUrl() : QUrl::fromLocalFile(iconPath),
-                             supported,
-                             active,
-                             xc
-                         );
+            auto& xc = d->xc(it.key());
+            auto item = new DeviceItem(id,
+                                       QString::fromStdString(ddesc.friendlyName),
+                                       type,
+                                       QString::fromStdString(ddesc.modelName),
+                                       iconPath.isEmpty() ? QUrl() : QUrl::fromLocalFile(iconPath),
+                                       supported,
+                                       active,
+                                       xc ? true : false
+                                   );
+            if (xc)
+                connect(xc.get(), &XC::error, this, &DeviceModel::handleXcError, Qt::QueuedConnection);
+
+            items << item;
 
             if (iconPath.isEmpty() && !iconUrl.isEmpty()) {
                 auto downloader = new FileDownloader(iconUrl, this);

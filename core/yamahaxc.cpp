@@ -94,10 +94,8 @@ void YamahaXC::getStatus()
         apiCall(Action::ACTION_GET_STATUS, "main/getStatus");
 }
 
-XC::Status YamahaXC::handleActionGetStatus(const QByteArray& data, const QVariant& userData)
+XC::Status YamahaXC::handleActionGetStatus(const QByteArray& data, const QVariant&)
 {
-    Q_UNUSED(userData)
-
     QJsonParseError err;
 
     auto json = QJsonDocument::fromJson(data, &err);

@@ -214,15 +214,14 @@ void FrontierSiliconXC::handleActionCreateSession(const QByteArray& data, const 
     }
 }
 
-void FrontierSiliconXC::handleActionError(XC::Action action, QNetworkReply::NetworkError error, const QVariant& userData)
+void FrontierSiliconXC::handleActionError(XC::Action, QNetworkReply::NetworkError error, const QVariant&)
 {
-    Q_UNUSED(action)
-    Q_UNUSED(userData)
-
     if (error == QNetworkReply::NetworkError::ContentNotFoundError) {
         qWarning() << "Received 404, so most likely sid is invalid";
-    } else if (error == QNetworkReply::NetworkError::ContentAccessDenied) {
+    } else if (error == QNetworkReply::NetworkError::ContentAccessDenied ||
+               error == QNetworkReply::NetworkError::ContentOperationNotPermittedError) {
         qWarning() << "Received 403, so most likely pin is invalid";
+        emit XC::error(XC::ErrorType::ERROR_INVALID_PIN);
     }
 
     sid.clear();

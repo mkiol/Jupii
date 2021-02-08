@@ -109,42 +109,29 @@ void XC::handleActionFinished()
     reply = nullptr;
 }
 
-XC::Status XC::handleActionGetStatus(const QByteArray& data, const QVariant& userData)
+XC::Status XC::handleActionGetStatus(const QByteArray&, const QVariant&)
 {
-    Q_UNUSED(data)
-    Q_UNUSED(userData)
     return Status::STATUS_UNKNOWN;
 }
 
-void XC::handleActionPowerToggle(const QByteArray& data, const QVariant& userData)
+void XC::handleActionPowerToggle(const QByteArray&, const QVariant&)
 {
-    Q_UNUSED(data)
-    Q_UNUSED(userData)
 }
 
-void XC::handleActionCreateSession(const QByteArray& data, const QVariant& userData)
+void XC::handleActionCreateSession(const QByteArray&, const QVariant&)
 {
-    Q_UNUSED(data)
-    Q_UNUSED(userData)
 }
 
-void XC::handleActionPowerOn(const QByteArray& data, const QVariant& userData)
+void XC::handleActionPowerOn(const QByteArray&, const QVariant&)
 {
-    Q_UNUSED(data)
-    Q_UNUSED(userData)
 }
 
-void XC::handleActionPowerOff(const QByteArray& data, const QVariant& userData)
+void XC::handleActionPowerOff(const QByteArray&, const QVariant&)
 {
-    Q_UNUSED(data)
-    Q_UNUSED(userData)
 }
 
-void XC::handleActionError(XC::Action action, QNetworkReply::NetworkError error, const QVariant& userData)
+void XC::handleActionError(XC::Action, QNetworkReply::NetworkError, const QVariant&)
 {
-    Q_UNUSED(error)
-    Q_UNUSED(action)
-    Q_UNUSED(userData)
 }
 
 std::shared_ptr<XC> XC::make_shared(const QString& deviceId, const QString &address, const QString& desc)

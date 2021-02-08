@@ -19,6 +19,7 @@
 #include <QUrl>
 
 #include "listmodel.h"
+#include "xc.h"
 
 class DeviceItem : public ListItem
 {
@@ -105,6 +106,7 @@ private:
     static DeviceModel* m_instance;
     DeviceType m_deviceType = AnyType;
     explicit DeviceModel(QObject *parent = nullptr);
+    void handleXcError(XC::ErrorType code);
 };
 
 #endif // DEVICEMODEL_H

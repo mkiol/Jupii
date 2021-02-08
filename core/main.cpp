@@ -70,6 +70,7 @@
 #include "avtransport.h"
 #include "contentserver.h"
 #include "connectivitydetector.h"
+#include "xc.h"
 
 void registerTypes()
 {
@@ -106,6 +107,7 @@ void registerTypes()
     qRegisterMetaType<Service::ErrorType>("ErrorType");
     qRegisterMetaType<QList<ListItem*>>("QListOfListItem");
     qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
+    qRegisterMetaType<XC::ErrorType>("XcErrorType");
 }
 
 void installTranslator(QGuiApplication* app)
