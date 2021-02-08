@@ -1,4 +1,4 @@
-CONFIG += c++17 json no_lflags_merge
+CONFIG += c++1z json no_lflags_merge
 QT += gui network dbus sql multimedia xml
 
 CORE_DIR = ../core

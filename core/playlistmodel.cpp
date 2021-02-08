@@ -78,7 +78,7 @@ void PlaylistWorker::run()
         QList<UrlItem> nurls;
 
         // check for playlists
-        for (const auto& url : urls) {
+        foreach (const auto& url, urls) {
             bool isPlaylist = false;
 
             if (url.url.isLocalFile()) {
@@ -130,7 +130,7 @@ void PlaylistWorker::run()
 
         urls = nurls;
 
-        for (const auto &purl : urls) {
+        foreach (const auto &purl, urls) {
             const auto &url = purl.url;
             const auto &name = purl.name.trimmed();
             const auto &author = purl.author.trimmed();
@@ -360,11 +360,11 @@ std::pair<int, QString> PlaylistModel::getDidlList(int max, const QString& didlI
 
     if (didlId.isEmpty()) {
         int count = 0;
-        for (auto li : m_list) {
+        foreach (const auto li, m_list) {
             if (max > 0 && count > max) {
                 break;
             }
-            auto fi = dynamic_cast<PlaylistItem*>(li);
+            auto fi = qobject_cast<PlaylistItem*>(li);
             if (fi->itemType() != ContentServer::ItemType_Upnp &&
                     cs->getContentMetaItem(fi->id(), ret.second, false)) {
                 ++count;
@@ -594,10 +594,10 @@ void PlaylistModel::save()
     QStringList p_ids;
     QStringList d_ids;
 
-    for (auto item : m_list) {
+    foreach (const auto item, m_list) {
         p_ids << item->id();
 
-        auto pitem = dynamic_cast<PlaylistItem*>(item);
+        auto pitem = qobject_cast<PlaylistItem*>(item);
         if (pitem->itemType() == ContentServer::ItemType_Upnp &&
                 !pitem->devId().isEmpty()) {
             d_ids << pitem->devId();
@@ -902,8 +902,8 @@ void PlaylistModel::addItemPath(const QString& path,
 
 bool PlaylistModel::pathExists(const QString& path)
 {
-    for (auto li : m_list) {
-        auto fi = dynamic_cast<PlaylistItem*>(li);
+    foreach (const auto li, m_list) {
+        auto fi = qobject_cast<PlaylistItem*>(li);
         if (fi->path() == path)
             return true;
     }
@@ -913,8 +913,8 @@ bool PlaylistModel::pathExists(const QString& path)
 
 bool PlaylistModel::playPath(const QString& path)
 {
-    for (auto li : m_list) {
-        auto fi = dynamic_cast<PlaylistItem*>(li);
+    foreach (const auto li, m_list) {
+        auto fi = qobject_cast<PlaylistItem*>(li);
         if (fi->path() == path) {
             // path exists, so playing it
             play(fi->id());
@@ -927,8 +927,8 @@ bool PlaylistModel::playPath(const QString& path)
 
 bool PlaylistModel::urlExists(const QUrl& url)
 {
-    for (auto li : m_list) {
-        auto fi = dynamic_cast<PlaylistItem*>(li);
+    foreach (const auto li, m_list) {
+        auto fi = qobject_cast<PlaylistItem*>(li);
         if (fi->url() == url || fi->origUrl() == url)
             return true;
     }
@@ -938,8 +938,8 @@ bool PlaylistModel::urlExists(const QUrl& url)
 
 bool PlaylistModel::playUrl(const QUrl& url)
 {
-    for (auto li : m_list) {
-        auto fi = dynamic_cast<PlaylistItem*>(li);
+    foreach (const auto li, m_list) {
+        auto fi = qobject_cast<PlaylistItem*>(li);
         if (fi->url() == url || fi->origUrl() == url) {
             // url exists, so playing it
             play(fi->id());
@@ -1025,8 +1025,8 @@ void PlaylistModel::addWorkerDone()
 
         if (!m_add_worker->items.isEmpty()) {
             int old_refreshable = m_refreshable_count;
-            for (auto item : m_add_worker->items) {
-                if (dynamic_cast<PlaylistItem*>(item)->refreshable())
+            foreach (const auto item, m_add_worker->items) {
+                if (qobject_cast<PlaylistItem*>(item)->refreshable())
                     ++m_refreshable_count;
             }
 
@@ -1268,14 +1268,12 @@ void PlaylistModel::setToBeActiveIndex(int index)
 void PlaylistModel::setToBeActiveId(const QString &id)
 {
     if (id.isEmpty()) {
-        for (auto li : m_list) {
-            auto fi = dynamic_cast<PlaylistItem*>(li);
-            fi->setToBeActive(false);
+        foreach (auto li,  m_list) {
+            qobject_cast<PlaylistItem*>(li)->setToBeActive(false);
         }
     } else {
-        for (auto li : m_list) {
-            auto fi = dynamic_cast<PlaylistItem*>(li);
-            fi->setToBeActive(fi->id() == id);
+        foreach (auto li, m_list) {
+            qobject_cast<PlaylistItem*>(li)->setToBeActive(li->id() == id);
         }
     }
 }
@@ -1382,7 +1380,7 @@ bool PlaylistModel::autoPlay()
 
     // start playing fist item with play flag
     bool done = false;
-    for (auto li : m_list) {
+    foreach (auto li, m_list) {
         auto fi = qobject_cast<PlaylistItem*>(li);
         if (!done && fi->play()) {
             if (ai != fi->id() || !playing) {
@@ -1593,13 +1591,12 @@ QList<ListItem*> PlaylistModel::handleRefreshWorker()
 
     if (m_refresh_worker) {
         bool refreshed = false;
-        //bool refreshable = isRefreshable();
         for (auto& item : m_refresh_worker->items) {
             const auto id = m_refresh_worker->origId(item);
             qDebug() << "Refresh done for:" << id;
-            auto oldItem = dynamic_cast<PlaylistItem*>(find(id));
+            auto oldItem = qobject_cast<PlaylistItem*>(find(id));
             if (oldItem) {
-                auto newItem = dynamic_cast<PlaylistItem*>(item);
+                auto newItem = qobject_cast<PlaylistItem*>(item);
                 if (newItem->id() == id) {
                     qDebug() << "No need to update item";
                     delete newItem;
@@ -1614,15 +1611,10 @@ QList<ListItem*> PlaylistModel::handleRefreshWorker()
                                 setActiveItemIndex(-1);
                             clear(false, false);
                             appendRows(list);
-                            /*if (oldItem->refreshable() != newItem->refreshable()) {
-                                if (newItem->refreshable())
-                                    m_refreshable_count++;
-                                else
-                                    m_refreshable_count--;
-                            }*/
-                            delete oldItem;
+                            delete oldItem;;
                             items << newItem;
                             refreshed = true;
+                            break;
                         }
                     }
                 }
@@ -1636,10 +1628,6 @@ QList<ListItem*> PlaylistModel::handleRefreshWorker()
             save();
             emit itemsRefreshed();
         }
-
-        /*if (refreshable != isRefreshable()) {
-            emit refreshableChanged();
-        }*/
     }
 
     return items;
@@ -1679,10 +1667,9 @@ void PlaylistModel::cancelAdd()
 void PlaylistModel::refresh()
 {
     QList<QUrl> ids;
-    for (const auto item : m_list) {
-        auto pitem = dynamic_cast<PlaylistItem*>(item);
-        if (pitem && pitem->refreshable())
-            ids << QUrl(pitem->id());
+    foreach (const auto item, m_list) {
+        if (qobject_cast<PlaylistItem*>(item)->refreshable())
+            ids << QUrl(item->id());
     }
 
     if (ids.isEmpty()) {

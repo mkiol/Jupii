@@ -405,10 +405,10 @@ QList<PulseAudioSource::Client> PulseAudioSource::activeClients()
 {
     QList<PulseAudioSource::Client> list;
 
-    for (auto ci : clients.keys()) {
-        for (auto& s : sinkInputs.values()) {
-            if (s.clientIdx == ci) {
-                list << clients[ci];
+    for (auto it = clients.cbegin(); it != clients.cend(); ++it) {
+        foreach (const auto& s, sinkInputs) {
+            if (s.clientIdx == it.key()) {
+                list << clients[it.key()];
                 break;
             }
         }

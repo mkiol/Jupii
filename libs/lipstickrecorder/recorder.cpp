@@ -76,7 +76,7 @@ void Recorder::start()
         qFatal("The lipstick_recorder_manager global is not available.");
 
     QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
-    m_screen = QGuiApplication::screens().first();
+    m_screen = QGuiApplication::screens().at(0);
     wl_output *output = static_cast<wl_output *>(native->nativeResourceForScreen("output", m_screen));
 
     m_lipstickRecorder = lipstick_recorder_manager_create_recorder(m_manager, output);

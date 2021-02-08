@@ -147,8 +147,8 @@ QVariantList FosdemModel::selectedItems()
 {
     QVariantList list;
 
-    for (auto item : m_list) {
-        auto event = dynamic_cast<FosdemItem*>(item);
+    foreach (const auto item, m_list) {
+        const auto event = qobject_cast<FosdemItem*>(item);
         if (event->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(event->url()));

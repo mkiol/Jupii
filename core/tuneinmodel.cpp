@@ -86,8 +86,8 @@ QVariantList TuneinModel::selectedItems()
 {
     QVariantList list;
 
-    for (auto item : m_list) {
-        auto station = dynamic_cast<TuneinItem*>(item);
+    foreach (const auto item, m_list) {
+        const auto station = qobject_cast<TuneinItem*>(item);
         if (station->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(station->url()));

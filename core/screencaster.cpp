@@ -126,9 +126,9 @@ void ScreenCaster::fixSize(QSize &size, int *xoff, int *yoff)
     size.setWidth(size.width() - xoff_delta);
     size.setHeight(size.height() - yoff_delta);
     if (xoff)
-        xoff += xoff_delta;
+        *xoff += xoff_delta;
     if (yoff)
-        yoff += yoff_delta;
+        *yoff += yoff_delta;
 }
 
 void ScreenCaster::initVideoSize()

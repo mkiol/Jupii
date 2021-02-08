@@ -37,7 +37,7 @@ public slots:
 
 signals:
     void newStream(const QUrl &url, const QUrl &streamUrl, const QString &title);
-    void error(Errors code);
+    void error(YoutubeDl::Errors code);
 
 private:
     static YoutubeDl* m_instance;

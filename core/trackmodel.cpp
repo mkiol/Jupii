@@ -194,15 +194,12 @@ QList<ListItem*> TrackModel::processTrackerReplyForEntries(TrackerCursor& cursor
 {
     QStringList fileUrls;
 
-    auto filter = getFilter();
-
     while(cursor.next()) {
-        auto url = QUrl(cursor.value(0).toString());
+        QUrl url{cursor.value(0).toString()};
         if (!url.isEmpty()) {
-            m_ids.append(url);
-            if (url.isLocalFile()) {
+            if (url.isLocalFile())
                 fileUrls.append('"' + url.toString(QUrl::EncodeUnicode|QUrl::EncodeSpaces) + '"');
-            }
+            m_ids.push_back(std::move(url));
         }
     }
 
@@ -226,7 +223,7 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
 
     auto filter = getFilter();
 
-    for (const auto& id : m_ids) {
+    foreach (const auto& id, m_ids) {
         auto id_data = makeTrackDataFromId(id);
         if (m_trackdata_by_id.contains(id)) {
             auto& data = m_trackdata_by_id[id];
@@ -243,7 +240,7 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
         }
     }
 
-    for (const auto& id : m_ids) {
+    foreach (const auto& id, m_ids) {
         const auto& data = m_trackdata_by_id.value(id);
         auto title = data.title.isEmpty() ?
                     id.fileName().isEmpty() ? id.path().isEmpty() ?
@@ -316,8 +313,8 @@ QVariantList TrackModel::selectedItems()
 {
     QVariantList list;
 
-    for (auto item : m_list) {
-        auto track = dynamic_cast<TrackItem*>(item);
+    foreach (const auto item, m_list) {
+        const auto track = qobject_cast<TrackItem*>(item);
         if (track->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(track->url()));

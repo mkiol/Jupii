@@ -40,7 +40,7 @@ QUrl XC::makeApiCallUrl(const QString& path, const std::vector<param>& params) c
         return QUrl(urlBase + path);
 
     QUrlQuery query;
-    for (auto [key, value] : params)
+    for (const auto& [key, value] : params)
         query.addQueryItem(key, value);
 
     QUrl url(urlBase + path);

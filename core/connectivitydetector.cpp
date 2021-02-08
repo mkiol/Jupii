@@ -44,7 +44,7 @@ bool ConnectivityDetector::networkConnected() const
 
 void ConnectivityDetector::selectIfnameCandidates(QStringList& ethCandidates, QStringList& wlanCandidates)
 {
-    for (const auto& interface : QNetworkInterface::allInterfaces()) {
+    foreach (const auto& interface, QNetworkInterface::allInterfaces()) {
         if (interface.flags().testFlag(QNetworkInterface::IsRunning) && !interface.addressEntries().isEmpty()) {
             if (Utils::ethNetworkInf(interface)) {
                 //qDebug() << "eth interface:" << interface.name();

@@ -157,7 +157,7 @@ void Utils::removeFromCacheDir(const QStringList &filter)
     QDir dir(Settings::instance()->getCacheDir());
     dir.setNameFilters(filter);
     dir.setFilter(QDir::Files);
-    for (const QString& f : dir.entryList()) {
+    foreach (const auto& f, dir.entryList()) {
         qDebug() << "Removing file from cache:" << f;
         dir.remove(f);
     }
@@ -581,7 +581,7 @@ int Utils::typeFromId(const QString& id)
 
 int Utils::typeFromId(const QUrl& id)
 {
-    int type;
+    int type = 0;
     bool valid = Utils::pathTypeNameCookieIconFromId(id, nullptr, &type);
 
     if (!valid) {

@@ -56,7 +56,7 @@ public:
 signals:
     void initedChanged();
     void busyChanged();
-    void error(ErrorType code);
+    void error(Service::ErrorType code);
     void needTimer(bool start);
 
 public slots:

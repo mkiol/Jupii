@@ -122,8 +122,8 @@ QVariantList IcecastModel::selectedItems()
 {
     QVariantList list;
 
-    for (auto item : m_list) {
-        auto station = dynamic_cast<IcecastItem*>(item);
+    foreach (const auto item, m_list) {
+        const auto station = qobject_cast<IcecastItem*>(item);
         if (station->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(station->url()));

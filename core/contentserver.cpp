@@ -30,6 +30,7 @@
 #include <iomanip>
 #include <limits>
 #include <algorithm>
+#include <utility>
 
 #include <QDBusInterface>
 #include <QDBusMessage>
@@ -414,10 +415,8 @@ void ContentServerWorker::requestHandler(QHttpRequest *req, QHttpResponse *resp)
     qDebug() << "  method:" << req->methodString();
     qDebug() << "  URL:" << req->url().path();
     qDebug() << "  headers:" << req->url().path();
-
-    const auto& headers = req->headers();
-    for (const auto& h : req->headers().keys()) {
-        qDebug() << "    " << h << ":" << headers.value(h);
+    for (auto it = req->headers().cbegin(); it != req->headers().cend(); ++it) {
+        qDebug() << "    " << it.key() << ":" << it.value();
     }
 
     if (req->method() != QHttpRequest::HTTP_GET &&
@@ -1327,11 +1326,11 @@ void ContentServerWorker::removePoints(const QList<QPair<int,int>> &rpoints,
 
 void ContentServerWorker::updatePulseStreamName(const QString &name)
 {
-    for (const auto& item : audioCaptureItems) {
+    foreach (const auto& item, audioCaptureItems) {
         qDebug() << "pulseStreamUpdated:" << item.id << name;
         emit pulseStreamUpdated(item.id, name);
     }
-    for (const auto& item : screenCaptureItems) {
+    foreach (const auto& item, screenCaptureItems) {
         qDebug() << "pulseStreamUpdated:" << item.id << name;
         emit pulseStreamUpdated(item.id, name);
     }
@@ -2554,7 +2553,7 @@ const ContentServer::ItemMeta* ContentServer::getMeta(const QUrl &url,
 {
     qDebug() << "getMeta:" << url << createNew << ytdl << img << refresh;
     auto it = getMetaCacheIterator(url, createNew, origUrl, app, ytdl, img, refresh);
-    auto meta = it == metaCache.end() ? nullptr : &it.value();
+    auto meta = it == metaCache.cend() ? nullptr : &it.value();
     return meta;
 }
 
@@ -2570,23 +2569,21 @@ ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
                                     bool refresh)
 {
     if (url.isEmpty())
-        return metaCache.end();
+        return metaCache.cend();
 
-    if (refresh) {
+    if (refresh)
         removeMeta(url);
-    }
 
-    const auto i = metaCache.find(url);
+    auto i = std::as_const(metaCache).find(url);
 
-    if (i == metaCache.end()) {
+    if (i == metaCache.cend()) {
         qDebug() << "Meta data for" << url << "not cached";
         if (createNew)
             return makeItemMeta(url, origUrl, app, ytdl, img, refresh);
         else
-            return metaCache.end();
+            return metaCache.cend();
     }
 
-    //qDebug() << "Meta data for" << url << "found in cache";
     return i;
 }
 
@@ -2600,7 +2597,7 @@ ContentServer::getMetaCacheIteratorForId(const QUrl &id, bool createNew)
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::metaCacheIteratorEnd()
 {
-    return metaCache.end();
+    return metaCache.cend();
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
@@ -2613,7 +2610,7 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
     auto tracker = Tracker::instance();
     if (!tracker->query(query, false)) {
         qWarning() << "Cannot get tracker data for url:" << fileUrl;
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     auto res = tracker->getResult();
@@ -2665,11 +2662,11 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
                 }
             }
 
-            return metaCache.find(url);
+            return std::as_const(metaCache).find(url);
         }
     }
 
-    return metaCache.end();
+    return metaCache.cend();
 }
 
 QString ContentServer::readTitleUsingTaglib(const QString &path)
@@ -3000,13 +2997,13 @@ ContentServer::makeUpnpItemMeta(const QUrl &url)
 
     if (QThread::currentThread()->isInterruptionRequested()) {
         qWarning() << "Thread interruption was requested";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     auto spl = url.path(QUrl::FullyEncoded).split('/');
     if (spl.size() < 3) {
         qDebug() << "Path is too short";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     auto did = QUrl::fromPercentEncoding(spl.at(1).toLatin1()); // cdir dev id
@@ -3018,7 +3015,7 @@ ContentServer::makeUpnpItemMeta(const QUrl &url)
     auto cd = Services::instance()->contentDir;
     if (!cd->init(did)) {
         qWarning() << "Cannot init CDir service";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     if (!cd->getInited()) {
@@ -3031,31 +3028,31 @@ ContentServer::makeUpnpItemMeta(const QUrl &url)
 
         if (!cd->getInited()) {
             qDebug() << "Cannot init CDir service";
-            return metaCache.end();
+            return metaCache.cend();
         }
     }
 
     UPnPClient::UPnPDirContent content;
     if (!cd->readItem(id, content)) {
         qDebug() << "Cannot read from CDir service";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     if (content.m_items.empty()) {
         qDebug() << "Item doesn't exist on CDir";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     UPnPClient::UPnPDirObject &item = content.m_items[0];
 
     if (item.m_resources.empty()) {
         qDebug() << "Item doesn't have resources";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     if (item.m_resources[0].m_uri.empty()) {
         qDebug() << "Item uri is empty";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     QString surl = QString::fromStdString(item.m_resources[0].m_uri);
@@ -3186,7 +3183,7 @@ ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
 
     if (QThread::currentThread()->isInterruptionRequested()) {
         qWarning() << "Thread interruption was requested";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     QUrl newUrl;
@@ -3224,7 +3221,7 @@ ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
     qDebug() << "New url found by youtube-dl:" << newUrl << newTitle;
     if (newUrl.isEmpty()) {
         qWarning() << "Youtube-dl returned empty url";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     meta.title = newTitle;
@@ -3244,14 +3241,14 @@ ContentServer::makeItemMetaUsingBcApi(const QUrl &url, ItemMeta &meta,
 
     if (QThread::currentThread()->isInterruptionRequested()) {
         qWarning() << "Thread interruption was requested";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     auto track = BcApi(nam).track(url);
 
     if (track.streamUrl.isEmpty()) {
         qWarning() << "Bc API returned empty url";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     meta.title = std::move(track.title);
@@ -3305,12 +3302,12 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
 
     if (QThread::currentThread()->isInterruptionRequested()) {
         qWarning() << "Thread interruption was requested";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     if (counter >= maxRedirections) {
         qWarning() << "Max redirections reached";
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     qDebug() << "Sending HTTP request for url:" << url;
@@ -3321,7 +3318,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 
     if (!nam)
-        nam = std::shared_ptr<QNetworkAccessManager>(new QNetworkAccessManager());
+        nam = std::make_shared<QNetworkAccessManager>();
+
     auto reply = nam->get(request);
 
     bool art = meta.flagSet(MetaFlag_Art);
@@ -3360,7 +3358,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         reply->abort();
         reply->deleteLater();
         disconnect(reply, nullptr, &loop, nullptr);
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     qDebug() << "Received HTTP reply for url:" << url;
@@ -3379,7 +3377,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         error != QNetworkReply::OperationCanceledError) {
         qWarning() << "Error:" << error;
         reply->deleteLater();
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     if (code > 299 && code < 399) {
@@ -3393,7 +3391,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         if (newUrl.isValid())
             return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
         else
-            return metaCache.end();
+            return metaCache.cend();
     }
 
     bool ytdl_broken = false;
@@ -3410,7 +3408,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         } else {
             qWarning() << "Unsupported response code:" << reply->error() << code << reason;
             reply->deleteLater();
-            return metaCache.end();
+            return metaCache.cend();
         }
     }
 
@@ -3459,7 +3457,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
 
         qWarning() << "Playlist content is empty";
         reply->deleteLater();
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     if (!ytdl_broken && type != TypeMusic && type != TypeVideo && type != TypeImage) {
@@ -3475,7 +3473,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
 
         qWarning() << "Unsupported type:" << mime;
         reply->deleteLater();
-        return metaCache.end();
+        return metaCache.cend();
     }
 
     auto ranges = QString(reply->rawHeader("Accept-Ranges")).toLower().contains("bytes");
@@ -3595,7 +3593,7 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
         } else {
 #ifdef SAILFISH
             it = makeItemMetaUsingTracker(url);
-            if (it == metaCache.end()) {
+            if (it == metaCache.cend()) {
                 qWarning() << "Cannot get meta using Tacker, so fallbacking to Taglib";
                 it = makeItemMetaUsingTaglib(url);
             }
@@ -3616,7 +3614,7 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
             it = makeScreenCaptureItemMeta(url);
         } else {
             qWarning() << "Screen capturing is not supported";
-            it = metaCache.end();
+            it = metaCache.cend();
         }
     } else if (itemType == ItemType_Upnp) {
         qDebug() << "Upnp URL detected";
@@ -3626,10 +3624,10 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
         it = makeItemMetaUsingHTTPRequest(url, origUrl, app, ytdl, refresh, art);
     } else if (url.scheme() == "jupii") {
         qDebug() << "Unsupported Jupii URL detected";
-        it = metaCache.end();
+        it = metaCache.cend();
     } else {
         qDebug() << "Unsupported URL type";
-        it = metaCache.end();
+        it = metaCache.cend();
     }
 
     metaCacheMutex.unlock();
@@ -3948,7 +3946,7 @@ void ContentServer::resolveM3u(QByteArray &data, const QString context)
             lines << line;
     }
 
-    for (const auto& line : lines) {
+    foreach (const auto& line, lines) {
         auto url = Utils::urlFromText(line, context);
         if (!url.isEmpty())
             data.replace(line.toUtf8(), url.toString().toUtf8());

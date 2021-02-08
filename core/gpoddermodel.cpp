@@ -145,8 +145,8 @@ QVariantList GpodderEpisodeModel::selectedItems()
 {
     QVariantList list;
 
-    for (auto item : m_list) {
-        auto episode = dynamic_cast<GpodderEpisodeItem*>(item);
+    foreach (const auto item, m_list) {
+        const auto episode = qobject_cast<GpodderEpisodeItem*>(item);
         if (episode->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(episode->url()));

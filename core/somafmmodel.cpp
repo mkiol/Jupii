@@ -215,8 +215,8 @@ QVariantList SomafmModel::selectedItems()
 {
     QVariantList list;
 
-    for (auto item : m_list) {
-        auto channel = dynamic_cast<SomafmItem*>(item);
+    foreach (const auto item, m_list) {
+        const auto channel = qobject_cast<SomafmItem*>(item);
         if (channel->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(channel->url()));

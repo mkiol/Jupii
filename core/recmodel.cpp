@@ -29,8 +29,8 @@ QVariantList RecModel::selectedItems()
 {
     QVariantList list;
 
-    for (auto item : m_list) {
-        auto rec = dynamic_cast<RecItem*>(item);
+    foreach (auto item, m_list) {
+        auto rec = qobject_cast<RecItem*>(item);
         if (rec->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(QUrl::fromLocalFile(rec->path())));
@@ -45,8 +45,8 @@ void RecModel::deleteSelected()
 {
     bool removed = false;
 
-    for (auto item : m_list) {
-        auto rec = dynamic_cast<RecItem*>(item);
+    foreach (auto item, m_list) {
+        auto rec = qobject_cast<RecItem*>(item);
         if (rec->selected()) {
             if (QFile::remove(rec->path()))
                 removed = true;
@@ -94,7 +94,7 @@ QList<ListItem*> RecModel::makeItems()
     QList<ListItem*> items;
     auto filter = getFilter();
 
-    for (const auto& item : m_items) {
+    foreach (const auto item, m_items) {
         if (item.title.contains(filter, Qt::CaseInsensitive) ||
             item.author.contains(filter, Qt::CaseInsensitive)) {
             items << new RecItem(

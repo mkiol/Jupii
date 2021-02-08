@@ -75,8 +75,8 @@ QVariantList BcModel::selectedItems()
 {
     QVariantList list;
 
-    for (auto item : m_list) {
-        auto bcitem = dynamic_cast<BcItem*>(item);
+    foreach (const auto item, m_list) {
+        const auto bcitem = qobject_cast<BcItem*>(item);
         if (bcitem->selected()) {
             QVariantMap map;
             map.insert("url", bcitem->url());

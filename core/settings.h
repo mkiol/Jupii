@@ -167,8 +167,8 @@ public:
     Q_INVOKABLE bool isDebug();
     Q_INVOKABLE void reset();
 
-    Q_INVOKABLE bool hintEnabled(Hint hint);
-    Q_INVOKABLE void disableHint(Hint hint);
+    Q_INVOKABLE bool hintEnabled(Settings::Hint hint);
+    Q_INVOKABLE void disableHint(Settings::Hint hint);
     Q_INVOKABLE void resetHints();
 
 signals:

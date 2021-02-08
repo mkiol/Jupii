@@ -249,8 +249,8 @@ QVariantList CDirModel::selectedItems()
 {
     QVariantList list;
 
-    for (auto item : m_list) {
-        auto citem = dynamic_cast<CDirItem*>(item);
+    foreach (const auto item, m_list) {
+        const auto citem = qobject_cast<CDirItem*>(item);
         if (citem->selected()) {
             QVariantMap map;
             //map.insert("name", QVariant(citem->title()));
