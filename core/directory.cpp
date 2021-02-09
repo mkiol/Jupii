@@ -390,8 +390,11 @@ bool Directory::xcExists(const QString& deviceId)
     return it != m_xcs.cend() && (*it)->valid();
 }
 
-const std::shared_ptr<XC>& Directory::xc(const QString& deviceId)
+std::optional<std::reference_wrapper<const std::shared_ptr<XC>>> Directory::xc(const QString& deviceId)
 {
+    auto it = m_xcs.constFind(deviceId);
+    if (it == m_xcs.cend())
+        return std::nullopt;
     return m_xcs.constFind(deviceId).value();
 }
 

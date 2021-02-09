@@ -121,7 +121,7 @@ void DeviceModel::updateModel()
             auto iconUrl = d->getDeviceIconUrl(ddesc);
             auto iconPath = Utils::deviceIconFilePath(id);
             bool active = av && av->getDeviceId() == id;
-            auto& xc = d->xc(it.key());
+            auto xc = d->xc(it.key());
             auto item = new DeviceItem(id,
                                        QString::fromStdString(ddesc.friendlyName),
                                        type,
@@ -132,7 +132,7 @@ void DeviceModel::updateModel()
                                        xc ? true : false
                                    );
             if (xc)
-                connect(xc.get(), &XC::error, this, &DeviceModel::handleXcError, Qt::QueuedConnection);
+                connect(xc->get().get(), &XC::error, this, &DeviceModel::handleXcError, Qt::QueuedConnection);
 
             items << item;
 

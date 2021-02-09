@@ -17,6 +17,7 @@
 #include <QNetworkConfigurationManager>
 #include <memory>
 #include <functional>
+#include <optional>
 
 #include "taskexecutor.h"
 
@@ -56,7 +57,7 @@ public:
     bool getDeviceDesc(const QString& deviceId, UPnPClient::UPnPDeviceDesc& ddesc);
     QString deviceNameFromId(const QString& deviceId);
     bool xcExists(const QString& deviceId);
-    const std::shared_ptr<XC>& xc(const QString& deviceId);
+    std::optional<std::reference_wrapper<const std::shared_ptr<XC>>> xc(const QString& deviceId);
     const QHash<QString,UPnPClient::UPnPDeviceDesc>& getDeviceDescs();
     QUrl getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc);
     Q_INVOKABLE void discover();
