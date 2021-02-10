@@ -93,20 +93,14 @@ bool Notifications::show(const QString& summary, const QString& body, const QStr
         hints.insert("x-nemo-preview-body", body);
     if (!summary.isEmpty())
         hints.insert("x-nemo-preview-summary", summary);
-    if (!iconPath.isEmpty()) {
-        hints.insert("x-nemo-preview-icon", iconPath);
-        hints.insert("image-path", QUrl::fromLocalFile(iconPath).toString());
-    }
-#else
-    if (!iconPath.isEmpty()) {
-        hints.insert("image-path", QUrl::fromLocalFile(iconPath).toString());
-    }
+    if (!iconPath.isEmpty())
+        hints.insert("x-nemo-icon", iconPath);
 #endif
 
     auto reply = m_dbus_inf->Notify(
                 Jupii::APP_NAME,
                 0,
-                Jupii::APP_ID,
+                iconPath.isEmpty() ? Jupii::APP_ID : iconPath,
                 summary,
                 body,
                 {},
