@@ -46,7 +46,7 @@ public:
     QString deviceId;
 
     static std::shared_ptr<XC> make_shared(const QString& deviceId, const QString &address, const QString& desc);
-
+    static bool possible(const QString& deviceType);
     explicit XC(const QString& deviceId, const QString& address = QString(), QObject *parent = nullptr);
 
     virtual bool valid() const;

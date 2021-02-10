@@ -34,6 +34,11 @@ bool XC::valid() const
     return ok;
 }
 
+bool XC::possible(const QString &deviceType)
+{
+    return deviceType.contains("MediaRenderer");
+}
+
 QUrl XC::makeApiCallUrl(const QString& path, const std::vector<param>& params) const
 {
     if (params.empty())
@@ -136,13 +141,13 @@ void XC::handleActionError(XC::Action, QNetworkReply::NetworkError, const QVaria
 
 std::shared_ptr<XC> XC::make_shared(const QString& deviceId, const QString &address, const QString& desc)
 {
-    if (std::shared_ptr<XC> fsapi = std::make_shared<FrontierSiliconXC>(deviceId, address);
-            fsapi->valid())
-        return fsapi;
-
     if (std::shared_ptr<XC> yxc = std::make_shared<YamahaXC>(deviceId, desc);
             yxc->valid())
         return yxc;
+
+    if (std::shared_ptr<XC> fsapi = std::make_shared<FrontierSiliconXC>(deviceId, address);
+            fsapi->valid())
+        return fsapi;
 
     return {};
 }

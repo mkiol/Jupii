@@ -198,19 +198,20 @@ void Directory::discover()
     auto last = s->getLastDevices();
     //qDebug() << "Adding last devices:" << last.size();
 
-    for (auto it = last.begin(); it != last.end(); ++it) {
-        qDebug() << it.key() << it.value().toString();
-        QString id = it.key();
-        QString url = it.value().toString();
+    for (auto it = last.cbegin(); it != last.cend(); ++it) {
+        const auto& id = it.key();
+
         QByteArray xml;
         if (!Settings::readDeviceXML(id, xml))
             continue;
-        UPnPClient::UPnPDeviceDesc ddesc(url.toStdString(), xml.toStdString());
+
+        UPnPClient::UPnPDeviceDesc ddesc{it.value().toString().toStdString(), xml.toStdString()};
+
         auto did = QString::fromStdString(ddesc.UDN);
-        for (auto& sdesc : ddesc.services) {
-            auto sid = QString::fromStdString(sdesc.serviceId);
-            this->m_servsdesc.insert(did + sid, sdesc);
+        for (const auto& sdesc : ddesc.services) {
+            this->m_servsdesc.insert(did + QString::fromStdString(sdesc.serviceId), sdesc);
         }
+
         this->m_last_devsdesc.insert(did, ddesc);
     }
 
@@ -226,27 +227,23 @@ void Directory::discover()
         auto favs = s->getFavDevices();
         //qDebug() << "Adding fav devices:" << favs.size();
 
-        for (auto it = favs.begin(); it != favs.end(); ++it) {
-            qDebug() << it.key() << it.value().toString();
+        for (auto it = favs.cbegin(); it != favs.cend(); ++it) {
+            const auto& id = it.key();
 
-            QString id = it.key();
-            QString url = it.value().toString();
             QByteArray xml;
-
             if (!Settings::readDeviceXML(id, xml))
                 continue;
 
-            UPnPClient::UPnPDeviceDesc ddesc(url.toStdString(), xml.toStdString());
+            UPnPClient::UPnPDeviceDesc ddesc(it.value().toString().toStdString(), xml.toStdString());
 
             auto did = QString::fromStdString(ddesc.UDN);
-            for (auto& sdesc : ddesc.services) {
-                auto sid = QString::fromStdString(sdesc.serviceId);
-                this->m_servsdesc.insert(did + sid, sdesc);
+            for (const auto& sdesc : ddesc.services) {
+                this->m_servsdesc.insert(did + QString::fromStdString(sdesc.serviceId), sdesc);
             }
 
             this->m_devsdesc.insert(did, ddesc);
 
-            if (!xcs.contains(did)) {
+            if (!xcs.contains(did) && XC::possible(QString::fromStdString(ddesc.deviceType))) {
                 xcs[did] = true;
 
                 auto xc = XC::make_shared(did, QUrl(QString::fromStdString(ddesc.URLBase)).host(),
@@ -264,9 +261,8 @@ void Directory::discover()
         // discovery
 
         bool found = false;
-        bool debug = Settings::instance()->isDebug();
-        auto traverseFun = [this, &found, debug, &xcs](const UPnPClient::UPnPDeviceDesc &ddesc,
-                const UPnPClient::UPnPServiceDesc &sdesc) {
+        auto traverseFun = [this, &found, debug = s->isDebug(), &xcs]
+                (const UPnPClient::UPnPDeviceDesc& ddesc, const UPnPClient::UPnPServiceDesc& sdesc) {
             qDebug() << "==> Visitor";
             qDebug() << " Device";
             qDebug() << "  friendlyName:" << QString::fromStdString(ddesc.friendlyName);
@@ -285,12 +281,11 @@ void Directory::discover()
             }
 
             auto did = QString::fromStdString(ddesc.UDN);
-            auto sid = QString::fromStdString(sdesc.serviceId);
 
             this->m_devsdesc.insert(did, ddesc);
-            this->m_servsdesc.insert(did + sid, sdesc);
+            this->m_servsdesc.insert(did + QString::fromStdString(sdesc.serviceId), sdesc);
 
-            if (!xcs.contains(did)) {
+            if (!xcs.contains(did) && XC::possible(QString::fromStdString(ddesc.deviceType))) {
                 xcs[did] = true;
 
                 auto xc = XC::make_shared(did, QUrl(QString::fromStdString(ddesc.URLBase)).host(),
@@ -314,7 +309,7 @@ void Directory::discover()
                 emit error(3);
                 return;
             }
-            //qDebug() << "traverse:" << i;
+
             m_directory->traverse(traverseFun);
             if (found)
                 break;
