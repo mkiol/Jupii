@@ -27,6 +27,7 @@ class DeviceInfo : public QObject
     Q_PROPERTY (QString manufacturer READ getManufacturer NOTIFY dataChanged)
     Q_PROPERTY (QUrl icon READ getIcon NOTIFY dataChanged)
     Q_PROPERTY (QStringList services READ getServices NOTIFY dataChanged)
+    Q_PROPERTY (QString xc READ getXc NOTIFY dataChanged)
 
 public:
     explicit DeviceInfo(QObject *parent = nullptr);
@@ -42,6 +43,7 @@ public:
     QString getManufacturer() const;
     QUrl getIcon() const;
     QStringList getServices() const;
+    QString getXc() const;
 
 signals:
     void dataChanged();

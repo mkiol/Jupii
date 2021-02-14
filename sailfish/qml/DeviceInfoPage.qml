@@ -97,6 +97,12 @@ Page {
                     label: qsTr("URL")
                     value: deviceInfo.urlBase
                 }
+
+                DetailItem {
+                    visible: deviceInfo.xc.length > 0
+                    label: qsTr("Extra API")
+                    value: deviceInfo.xc
+                }
             }
 
             SectionHeader {

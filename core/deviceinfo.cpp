@@ -9,10 +9,13 @@
 
 #include <QDebug>
 #include <algorithm>
+#include <optional>
+#include <functional>
+#include <memory>
 
 #include "directory.h"
 #include "utils.h"
-
+#include "xc.h"
 
 DeviceInfo::DeviceInfo(QObject *parent) : QObject(parent)
 {
@@ -83,4 +86,12 @@ QStringList DeviceInfo::getServices() const
     });
 
     return list;
+}
+
+QString DeviceInfo::getXc() const
+{
+    auto xc = Directory::instance()->xc(m_udn);
+    if (xc)
+        return xc->get()->name();
+    return {};
 }

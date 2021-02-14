@@ -137,6 +137,20 @@ Kirigami.ScrollablePage {
                 wrapMode: Text.WordWrap
                 text: deviceInfo.services.join("\n")
             }
+
+            Controls.Label {
+                visible: deviceInfo.xc.length > 0
+                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                text: qsTr("Extra API")
+                color: Kirigami.Theme.disabledTextColor
+            }
+            Controls.Label {
+                visible: text.length > 0
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                text: deviceInfo.xc
+            }
         }
     }
 }
