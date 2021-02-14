@@ -174,16 +174,16 @@ QList<ListItem*> FosdemModel::makeItems()
         if (!entry.isNull() && entry.hasAttribute("id")) {
             const auto id = entry.attribute("id");
 
-            const auto name = entry.elementsByTagName("title").at(0).toElement().text();
-            const auto track = entry.elementsByTagName("track").at(0).toElement().text();
+            const auto name = entry.elementsByTagName("title").at(0).toElement().text().trimmed();
+            const auto track = entry.elementsByTagName("track").at(0).toElement().text().trimmed();
 
             // getting video URL, mp4 is preferred
             QString url;
             auto urls = entry.elementsByTagName("link");
             int ul = urls.length();
             for (int ui = 0; ui < ul; ++ui) {
-                auto href = urls.at(ui).toElement().attribute("href");
-                if (href.endsWith(".mp4", Qt::CaseInsensitive)) {
+                const auto href = urls.at(ui).toElement().attribute("href");
+                if (href.contains("fosdem.org", Qt::CaseInsensitive) && href.endsWith(".mp4", Qt::CaseInsensitive)) {
                     url = href;
                     break;
                 }
@@ -191,8 +191,8 @@ QList<ListItem*> FosdemModel::makeItems()
             if (url.isEmpty()) {
                 // fallback to webm
                 for (int ui = 0; ui < ul; ++ui) {
-                    auto href = urls.at(ui).toElement().attribute("href");
-                    if (href.endsWith(".webm", Qt::CaseInsensitive)) {
+                    const auto href = urls.at(ui).toElement().attribute("href");
+                    if (href.contains("fosdem.org", Qt::CaseInsensitive) && href.endsWith(".webm", Qt::CaseInsensitive)) {
                         url = href;
                         break;
                     }
@@ -204,7 +204,7 @@ QList<ListItem*> FosdemModel::makeItems()
             auto persons = entry.elementsByTagName("person");
             int pl = persons.length();
             for (int pi = 0; pi < pl; ++pi) {
-                auto p = persons.at(pi).toElement().text();
+                const auto p = persons.at(pi).toElement().text().trimmed();
                 if (!p.isEmpty()) {
                     person += p;
                     if (pi != pl - 1) {
