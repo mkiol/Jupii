@@ -234,6 +234,8 @@ Page {
                             }
                         }
 
+                        Spacer {}
+
                         Button {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: qsTr("Reset tips and hints")
@@ -409,8 +411,9 @@ Page {
                             }
                         }
 
+                        Spacer {}
+
                         Button {
-                            visible: settings.isDebug()
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: qsTr("Reset settings")
                             onClicked: {
