@@ -32,9 +32,7 @@ QVariantList RecModel::selectedItems()
     foreach (auto item, m_list) {
         auto rec = qobject_cast<RecItem*>(item);
         if (rec->selected()) {
-            QVariantMap map;
-            map.insert("url", QVariant(QUrl::fromLocalFile(rec->path())));
-            list << map;
+            list << QVariantMap{{"url", QVariant(QUrl::fromLocalFile(rec->path()))}};
         }
     }
 
@@ -92,7 +90,7 @@ QList<ListItem*> RecModel::makeItems()
     }
 
     QList<ListItem*> items;
-    auto filter = getFilter();
+    const auto& filter = getFilter();
 
     foreach (const auto item, m_items) {
         if (item.title.contains(filter, Qt::CaseInsensitive) ||
@@ -110,8 +108,8 @@ QList<ListItem*> RecModel::makeItems()
     // Sorting
     if (m_queryType == 0) { // by date
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-            auto aa = dynamic_cast<RecItem*>(a);
-            auto bb = dynamic_cast<RecItem*>(b);
+            auto aa = qobject_cast<RecItem*>(a);
+            auto bb = qobject_cast<RecItem*>(b);
             if (aa->date().isNull() && !bb->date().isNull())
                 return false;
             if (!aa->date().isNull() && bb->date().isNull())
@@ -120,14 +118,14 @@ QList<ListItem*> RecModel::makeItems()
         });
     } else if (m_queryType == 1) { // by title
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-            auto aa = dynamic_cast<RecItem*>(a);
-            auto bb = dynamic_cast<RecItem*>(b);
+            auto aa = qobject_cast<RecItem*>(a);
+            auto bb = qobject_cast<RecItem*>(b);
             return aa->title().compare(bb->title(), Qt::CaseInsensitive) < 0;
         });
     } else { // by author
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-            auto aa = dynamic_cast<RecItem*>(a);
-            auto bb = dynamic_cast<RecItem*>(b);
+            auto aa = qobject_cast<RecItem*>(a);
+            auto bb = qobject_cast<RecItem*>(b);
             return aa->author().compare(bb->author(), Qt::CaseInsensitive) < 0;
         });
     }
@@ -146,8 +144,7 @@ void RecModel::setQueryType(int value)
     if (value != m_queryType) {
         m_queryType = value;
         emit queryTypeChanged();
-        auto s = Settings::instance();
-        s->setRecQueryType(m_queryType);
+        Settings::instance()->setRecQueryType(m_queryType);
         updateModel();
     }
 }

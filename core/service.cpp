@@ -188,24 +188,6 @@ bool Service::init(const QString &deviceId)
         qDebug() << "Initing started";
         m_initing = true;
 
-        /*if (m_ser) {
-            if (!m_ser->reInit(ddesc, sdesc)) {
-                qDebug() << "Re-initing error";
-            }
-        } else {
-            m_ser = createUpnpService(ddesc, sdesc);
-        }
-
-        if (!m_ser->isCallbackRegistered()) {
-            qWarning() << "Unable to connect to UPnP service";
-            m_initing = false;
-            delete m_ser;
-            m_ser = nullptr;
-            emit error(E_NotInited);
-        } else {
-            postInit();
-        }*/
-
         if (m_ser) {
             delete m_ser;
             m_ser = nullptr;

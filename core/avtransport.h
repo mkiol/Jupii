@@ -251,7 +251,7 @@ private:
     void controlableChangedHandler();
     void blockUriChanged(int time = 500);
     void setNextURISupported(bool value);
-    bool isIgnoreActions();
+    [[nodiscard]] bool ignoreActions();
     std::string type() const;
 };
 

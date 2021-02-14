@@ -26,8 +26,7 @@ CDirModel::CDirModel(QObject *parent) :
     SelectableItemModel(new CDirItem, parent),
     m_id("0"), m_pid("0"), m_type(CDirModel::DirType)
 {
-    auto s = Settings::instance();
-    m_queryType = s->getCDirQueryType();
+    m_queryType = Settings::instance()->getCDirQueryType();
 
     auto cd = Services::instance()->contentDir;
     m_title = cd->getDeviceFriendlyName();
@@ -79,13 +78,13 @@ QList<ListItem*> CDirModel::makeItems()
     UPnPClient::UPnPDirContent content;
 
     if (m_id != m_pid) {
-        auto ppid = findPid(m_pid);
-        //auto ptitle = findTitle(m_pid);
+        const auto ppid = findPid(m_pid);
+        //const auto ptitle = findTitle(m_pid);
         items << new CDirItem(m_pid, ppid, "..", BackType);
     }
 
     if (cd->readItems(m_id, content)) {
-        auto did = cd->getDeviceId();
+        const auto did = cd->getDeviceId();
         QList<ListItem*> items_dir;
         for (const auto &item : content.m_containers) {
             if (items.size() > maxItems) {
@@ -93,15 +92,14 @@ QList<ListItem*> CDirModel::makeItems()
                 break;
             }
 
-            auto type = typeFromContainerClass(QString::fromStdString(item.getprop("upnp:class")));
-            auto title = QString::fromStdString(item.m_title);
+            const auto type = typeFromContainerClass(QString::fromStdString(item.getprop("upnp:class")));
+            const auto title = QString::fromStdString(item.m_title);
 
             if (type == MusicAlbumType || type == ArtistType) {
-                auto artist = Utils::parseArtist(QString::fromStdString(item.getprop("upnp:artist")));
-                auto album = QString::fromStdString(item.getprop("upnp:album"));
+                const auto artist = Utils::parseArtist(QString::fromStdString(item.getprop("upnp:artist")));
+                const auto album = QString::fromStdString(item.getprop("upnp:album"));
 
-                auto f = getFilter();
-                if (!f.isEmpty()) {
+                if (const auto& f = getFilter(); !f.isEmpty()) {
                     if (!title.contains(f, Qt::CaseInsensitive) &&
                         !artist.contains(f, Qt::CaseInsensitive) &&
                         !album.contains(f, Qt::CaseInsensitive)) {
@@ -122,8 +120,7 @@ QList<ListItem*> CDirModel::makeItems()
                                  Utils::parseDate(QString::fromStdString(item.getprop("dc:date"))),
                                  type);
             } else {
-                auto f = getFilter();
-                if (!f.isEmpty()) {
+                if (const auto& f = getFilter(); !f.isEmpty()) {
                     if (!title.contains(f, Qt::CaseInsensitive)) {
                         // filtered
                         continue;
@@ -153,16 +150,15 @@ QList<ListItem*> CDirModel::makeItems()
             if (type == UnknownType)
                 continue; // skip item with unknown type
 
-            auto item_id = QString::fromStdString(item.m_id);
+            const auto item_id = QString::fromStdString(item.m_id);
             QUrl url = QUrl("jupii://upnp/" +
                        QUrl::toPercentEncoding(did.toLatin1()) + "/" +
                        QUrl::toPercentEncoding(item_id.toLatin1()));
-            auto title = QString::fromStdString(item.m_title);
-            auto artist = Utils::parseArtist(QString::fromStdString(item.getprop("upnp:artist")));
-            auto album = QString::fromStdString(item.getprop("upnp:album"));
+            const auto title = QString::fromStdString(item.m_title);
+            const auto artist = Utils::parseArtist(QString::fromStdString(item.getprop("upnp:artist")));
+            const auto album = QString::fromStdString(item.getprop("upnp:album"));
 
-            auto f = getFilter();
-            if (!f.isEmpty()) {
+            if (const auto& f = getFilter(); !f.isEmpty()) {
                 if (!title.contains(f, Qt::CaseInsensitive) &&
                     !artist.contains(f, Qt::CaseInsensitive) &&
                     !album.contains(f, Qt::CaseInsensitive)) {
@@ -265,19 +261,26 @@ QVariantList CDirModel::selectedItems()
 
 QString CDirModel::findTitle(const QString &id)
 {
-    return idToTitle.contains(id) ?
-                idToTitle.value(id) :
-                Services::instance()->contentDir->getDeviceFriendlyName();
+    if (idToTitle.contains(id))
+        return idToTitle.value(id);
+
+    return Services::instance()->contentDir->getDeviceFriendlyName();
 }
 
 QString CDirModel::findPid(const QString &id)
 {
-    return idToPid.contains(id) ? idToPid.value(id) : "0";
+    if (idToPid.contains(id))
+        return idToPid.value(id);
+
+    return {"0"};
 }
 
 CDirModel::Types CDirModel::findType(const QString &id)
 {
-    return idToType.contains(id) ? idToType.value(id) : DirType;
+    if (idToType.contains(id))
+        return idToType.value(id);
+
+    return DirType;
 }
 
 void CDirModel::setCurrentId(const QString &id)
@@ -286,7 +289,7 @@ void CDirModel::setCurrentId(const QString &id)
         setAllSelected(false);
         setFilterNoUpdate("");
         m_id = id;
-        auto item = dynamic_cast<CDirItem*>(find(m_id));
+        const auto item = qobject_cast<CDirItem*>(find(m_id));
         if (item) {
             m_title = item->title();
             m_pid = item->pid();
@@ -328,8 +331,7 @@ void CDirModel::setQueryType(int value)
 {
     if (value != m_queryType) {
         m_queryType = value;
-        auto s = Settings::instance();
-        s->setCDirQueryType(m_queryType);
+        Settings::instance()->setCDirQueryType(m_queryType);
         emit queryTypeChanged();
         updateModel();
     }

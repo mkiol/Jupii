@@ -159,7 +159,7 @@ void SelectableItemModel::setFilterNoUpdate(const QString &filter)
     }
 }
 
-QString SelectableItemModel::getFilter()
+const QString& SelectableItemModel::getFilter() const
 {
     return m_filter;
 }

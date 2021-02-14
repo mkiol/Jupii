@@ -124,7 +124,7 @@ QStringList Utils::networkInfs(bool onlyUp)
 
 int Utils::prefNetworkInfIndex()
 {
-    auto pref_ifname = Settings::instance()->getPrefNetInf();
+    const auto pref_ifname = Settings::instance()->getPrefNetInf();
     if (pref_ifname.isEmpty()) {
         return 0;
     }
@@ -154,9 +154,10 @@ void Utils::setPrefNetworkInfIndex(int idx) const
 
 void Utils::removeFromCacheDir(const QStringList &filter)
 {
-    QDir dir(Settings::instance()->getCacheDir());
+    QDir dir{Settings::instance()->getCacheDir()};
     dir.setNameFilters(filter);
     dir.setFilter(QDir::Files);
+
     foreach (const auto& f, dir.entryList()) {
         qDebug() << "Removing file from cache:" << f;
         dir.remove(f);
@@ -165,13 +166,14 @@ void Utils::removeFromCacheDir(const QStringList &filter)
 
 bool Utils::writeToCacheFile(const QString &filename, const QByteArray &data, bool del)
 {
-    QDir dir(Settings::instance()->getCacheDir());
+    QDir dir{Settings::instance()->getCacheDir()};
     return writeToFile(dir.absoluteFilePath(filename), data, del);
 }
 
 bool Utils::writeToFile(const QString &path, const QByteArray &data, bool del)
 {
-    QFile f(path);
+    QFile f{path};
+
     if (del && f.exists())
         f.remove();
 
@@ -180,12 +182,11 @@ bool Utils::writeToFile(const QString &path, const QByteArray &data, bool del)
             f.write(data);
             f.close();
         } else {
-            qWarning() << "Cannott open file" << f.fileName() <<
-                          "for writing (" + f.errorString() + ")";
+            qWarning() << "Cannot open file for writing:" << f.fileName() << f.errorString();
             return false;
         }
     } else {
-        qDebug() << "File" << f.fileName() << "already exists";
+        qDebug() << "File already exists:" << f.fileName();
         return false;
     }
 
@@ -194,7 +195,7 @@ bool Utils::writeToFile(const QString &path, const QByteArray &data, bool del)
 
 bool Utils::createCacheDir()
 {
-    const QString dir = Settings::instance()->getCacheDir();
+    const auto dir = Settings::instance()->getCacheDir();
 
     if (!QFile::exists(dir)) {
         if (!QDir::root().mkpath(dir)) {
@@ -208,7 +209,7 @@ bool Utils::createCacheDir()
 
 bool Utils::createPlaylistDir()
 {
-    const QString dir = Settings::instance()->getPlaylistDir();
+    const auto dir = Settings::instance()->getPlaylistDir();
 
     if (!QFile::exists(dir)) {
         if (!QDir::root().mkpath(dir)) {
@@ -228,19 +229,17 @@ QString Utils::pathToCacheFile(const QString &filename)
 
 bool Utils::readFromCacheFile(const QString &filename, QByteArray &data)
 {
-    QDir dir(Settings::instance()->getCacheDir());
-    QFile f(dir.absoluteFilePath(filename));
+    QDir dir{Settings::instance()->getCacheDir()};
+    QFile f{dir.absoluteFilePath(filename)};
+
     if (f.exists()) {
         if (f.open(QIODevice::ReadOnly)) {
             data = f.readAll();
             f.close();
             return true;
         } else {
-            qWarning() << "Cannot open file" << f.fileName() <<
-                          "for reading (" + f.errorString() + ")";
+            qWarning() << "Cannot open file for reading:" << f.fileName() << f.errorString();
         }
-    } else {
-        qDebug() << "File" << f.fileName() << "doesn't exist";
     }
 
     return false;
@@ -250,10 +249,10 @@ QString Utils::readLicenseFile() const
 {
     QByteArray data;
 
-    auto dirs = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    const auto dirs = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
 
-    for (const auto& dir : dirs) {
-        QFile file(QDir(dir).absoluteFilePath("LICENSE"));
+    foreach (const auto& dir, dirs) {
+        QFile file{QDir{dir}.absoluteFilePath("LICENSE")};
         if (file.exists()) {
             if (file.open(QIODevice::ReadOnly)) {
                 data = file.readAll();
@@ -270,15 +269,19 @@ QString Utils::readLicenseFile() const
 
 bool Utils::cacheFileExists(const QString &filename)
 {
-    QDir dir(Settings::instance()->getCacheDir());
+    QDir dir{Settings::instance()->getCacheDir()};
     return QFileInfo::exists(dir.absoluteFilePath(filename));
 }
 
 QString Utils::cachePathForFile(const QString &filename)
 {
-    QDir dir(Settings::instance()->getCacheDir());
+    QDir dir{Settings::instance()->getCacheDir()};
     auto path = dir.absoluteFilePath(filename);
-    return QFileInfo::exists(path) ? path : QString();
+
+    if (QFileInfo::exists(path))
+        return path;
+
+    return {};
 }
 
 QString Utils::hash(const QString &value)
@@ -289,7 +292,7 @@ QString Utils::hash(const QString &value)
 QUrl Utils::iconFromId(const QUrl &id)
 {
     QUrl icon;
-    Utils::pathTypeNameCookieIconFromId(id,nullptr,nullptr,nullptr,nullptr,&icon);
+    Utils::pathTypeNameCookieIconFromId(id, nullptr, nullptr, nullptr, nullptr, &icon);
     return icon;
 }
 
@@ -320,7 +323,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
     }
 
     if (type || cookie || name || desc || author || icon || origUrl || play || ytdl || app || duration) {
-        QUrlQuery q(id);
+        QUrlQuery q{id};
         if (type && q.hasQueryItem(Utils::typeKey))
             *type = q.queryItemValue(Utils::typeKey).toInt();
         if (cookie && q.hasQueryItem(Utils::cookieKey))
@@ -350,7 +353,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
 
 bool Utils::isIdValid(const QString &id)
 {
-    return isIdValid(QUrl(id));
+    return isIdValid(QUrl{id});
 }
 
 bool Utils::isUrlOk(const QUrl &url) const
@@ -396,7 +399,7 @@ QString Utils::devNameFromUpnpId(const QUrl &id)
     auto meta = ContentServer::instance()->getMetaForId(id, false);
     if (meta && meta->itemType == ContentServer::ItemType_Upnp && !meta->upnpDevId.isEmpty())
         return Directory::instance()->deviceNameFromId(meta->upnpDevId);
-    return QString();
+    return {};
 }
 
 QString Utils::urlToPath(const QUrl &url) const
@@ -422,22 +425,22 @@ int Utils::itemTypeFromUrl(const QUrl &url) const
 QString Utils::recUrlFromId(const QUrl &id)
 {
     if (!id.isEmpty()) {
-        auto meta = ContentServer::instance()->getMetaForId(id, false);
-        if (meta) {
+        if (const auto meta = ContentServer::instance()->getMetaForId(id, false);
+                meta) {
             return meta->recUrl;
         }
     }
-    return QString();
+    return {};
 }
 
 QString Utils::recDateFromId(const QUrl &id)
 {
     if (!id.isEmpty()) {
-        auto meta = ContentServer::instance()->getMetaForId(id, false);
-        if (meta && !meta->recDate.isNull())
+        if (const auto meta = ContentServer::instance()->getMetaForId(id, false);
+                meta && !meta->recDate.isNull())
             return friendlyDate(meta->recDate);
     }
-    return QString();
+    return {};
 }
 
 QString Utils::friendlyDate(const QDateTime &date)
@@ -458,15 +461,17 @@ QString Utils::friendlyDate(const QDateTime &date)
         }
     }
 
-    return QString();
+    return {};
 }
 
 QString Utils::parseArtist(const QString &artist)
 {
-    QString artist_parsed = artist.split(',').first();
+    const auto artist_parsed = artist.split(',').first();
+
     int pos = artist_parsed.indexOf('(');
     if (pos < 2)
         return artist_parsed;
+
     return artist_parsed.left(pos-1).trimmed();
 }
 
@@ -499,7 +504,7 @@ bool Utils::isIdValid(const QUrl &id)
         return false;
     }
 
-    QUrlQuery q(id);
+    QUrlQuery q{id};
     QString cookie;
     if (q.hasQueryItem(Utils::cookieKey))
         cookie = q.queryItemValue(Utils::cookieKey);
@@ -531,21 +536,21 @@ QUrl Utils::urlFromText(const QString &text, const QString &context)
 {
     if (!context.isEmpty()) {
         // check if text is a relative file path
-        QDir dir(context);
+        QDir dir{context};
         if (dir.exists(text))
             return QUrl::fromLocalFile(dir.absoluteFilePath(text));
 
         // check if text is a ralative URL
-        QUrl url(text);
+        QUrl url{text};
         if (url.isRelative()) {
-            url = QUrl(context).resolved(url);
+            url = QUrl{context}.resolved(url);
             if (Utils::isUrlValid(url))
                 return url;
         }
     }
 
     // check if text is a absolute file path
-    auto file = QUrl::fromLocalFile(text);
+    const auto file = QUrl::fromLocalFile(text);
     if (QFileInfo::exists(file.toLocalFile()))
         return file;
 
@@ -554,95 +559,84 @@ QUrl Utils::urlFromText(const QString &text, const QString &context)
     if (Utils::isUrlValid(url))
         return url;
 
-    return QUrl();
+    return {};
 }
 
 QString Utils::pathFromId(const QString &id)
 {
-    return pathFromId(QUrl(id));
+    return pathFromId(QUrl{id});
 }
 
 QString Utils::pathFromId(const QUrl &id)
 {
-    QString path;
-    bool valid = Utils::pathTypeNameCookieIconFromId(id, &path);
-
-    if (!valid) {
-        return QString();
+    if (QString path; Utils::pathTypeNameCookieIconFromId(id, &path)) {
+        return path;
     }
 
-    return path;
+    return {};
 }
 
 int Utils::typeFromId(const QString& id)
 {
-    return typeFromId(QUrl(id));
+    return typeFromId(QUrl{id});
 }
 
 int Utils::typeFromId(const QUrl& id)
 {
-    int type = 0;
-    bool valid = Utils::pathTypeNameCookieIconFromId(id, nullptr, &type);
-
-    if (!valid) {
-        return 0;
+    if (int type = 0; Utils::pathTypeNameCookieIconFromId(id, nullptr, &type)) {
+        return type;
     }
 
-    return type;
+    return 0;
 }
 
 QString Utils::cookieFromId(const QString &id)
 {
-    return cookieFromId(QUrl(id));
+    return cookieFromId(QUrl{id});
 }
 
 QString Utils::cookieFromId(const QUrl &id)
 {
-    QString cookie;
-    bool valid = Utils::pathTypeNameCookieIconFromId(id, nullptr, nullptr,
-                                                 nullptr, &cookie);
-
-    if (!valid) {
-        return QString();
+    if (QString cookie;
+            Utils::pathTypeNameCookieIconFromId(id, nullptr, nullptr, nullptr, &cookie)) {
+        return cookie;
     }
 
-    return cookie;
+    return {};
 }
 
 QString Utils::nameFromId(const QString &id)
 {
-    return nameFromId(QUrl(id));
+    return nameFromId(QUrl{id});
 }
 
 QString Utils::nameFromId(const QUrl &id)
 {
-    QString name;
-    bool valid = Utils::pathTypeNameCookieIconFromId(id, nullptr, nullptr, &name);
-
-    if (!valid) {
-        return QString();
+    if (QString name;
+            Utils::pathTypeNameCookieIconFromId(id, nullptr, nullptr, &name)) {
+        return name;
     }
 
-    return name;
+    return {};
 }
 
 void Utils::fixUrl(QUrl &url)
 {
-    url.setQuery(QUrlQuery(url));
+    url.setQuery(QUrlQuery{url});
 }
 
 QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id,
                         bool swapCookie,
                         bool swapOrigUrl, bool swapYtdl)
 {
-    QUrlQuery uq(url);
+    QUrlQuery uq{url};
     if (uq.hasQueryItem(Utils::cookieKey))
         uq.removeAllQueryItems(Utils::cookieKey);
     if (uq.hasQueryItem(Utils::typeKey))
         uq.removeAllQueryItems(Utils::typeKey);
 
     QString cookie, type, name, icon, desc, author, origUrl, ytdl, dur;
-    QUrlQuery iq(id);
+    QUrlQuery iq{id};
     if (swapCookie && iq.hasQueryItem(Utils::cookieKey))
         cookie = iq.queryItemValue(Utils::cookieKey);
     if (iq.hasQueryItem(Utils::typeKey))
@@ -681,7 +675,7 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id,
     if (!dur.isEmpty())
         uq.addQueryItem(Utils::durKey, dur);
 
-    QUrl newUrl(url);
+    QUrl newUrl{url};
     newUrl.setQuery(uq);
 
     return newUrl;
@@ -689,21 +683,21 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id,
 
 QString Utils::idFromUrl(const QUrl &url, const QString &cookie)
 {
-    QUrlQuery q(url);
+    QUrlQuery q{url};
     if (q.hasQueryItem(Utils::cookieKey))
         q.removeAllQueryItems(Utils::cookieKey);
     q.addQueryItem(Utils::cookieKey, cookie);
-    QUrl id(url);
+    QUrl id{url};
     id.setQuery(q);
     return id.toString();
 }
 
 QUrl Utils::cleanId(const QUrl &id)
 {
-    QUrlQuery q(id);
+    QUrlQuery q{id};
     if (q.hasQueryItem(Utils::playKey)) {
         q.removeAllQueryItems(Utils::playKey);
-        QUrl url(id);
+        QUrl url{id};
         url.setQuery(q);
         return url;
     }
@@ -712,7 +706,7 @@ QUrl Utils::cleanId(const QUrl &id)
 
 QUrl Utils::urlFromId(const QUrl &id)
 {
-    QUrlQuery q(id);
+    QUrlQuery q{id};
     if (q.hasQueryItem(Utils::cookieKey))
         q.removeAllQueryItems(Utils::cookieKey);
     if (q.hasQueryItem(Utils::typeKey))
@@ -735,15 +729,15 @@ QUrl Utils::urlFromId(const QUrl &id)
         q.removeAllQueryItems(Utils::appKey);
     if (q.hasQueryItem(Utils::durKey))
         q.removeAllQueryItems(Utils::durKey);
-    QUrl url(id);
+    QUrl url{id};
     url.setQuery(q);
     return url;
 }
 
 QUrl Utils::bestUrlFromId(const QUrl &id)
 {
-    QUrl url(id);
-    QUrlQuery q(id);
+    QUrl url{id};
+    QUrlQuery q{id};
     /*if (q.hasQueryItem(Utils::origUrlKey)) {
         auto origUrl = q.queryItemValue(Utils::origUrlKey);
         if (origUrl.isEmpty()) {
@@ -764,7 +758,7 @@ QUrl Utils::bestUrlFromId(const QUrl &id)
 
 QUrl Utils::urlFromId(const QString &id)
 {
-    return urlFromId(QUrl(id));
+    return urlFromId(QUrl{id});
 }
 
 QString Utils::randString(int len)
@@ -779,11 +773,8 @@ QString Utils::randString(int len)
     const QString pc("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
 
     QString rs;
-
     for(int i = 0; i < len; ++i) {
-        int in = qrand() % pc.length();
-        QChar nc = pc.at(in);
-        rs.append(nc);
+        rs.append(pc.at(qrand() % pc.length()));
     }
 
     return rs;
@@ -791,14 +782,14 @@ QString Utils::randString(int len)
 
 void Utils::removeFile(const QString &path)
 {
-    QFile file(path);
+    QFile file{path};
     if (file.exists())
         file.remove();
 }
 
 QString Utils::dirNameFromPath(const QString &path) const
 {
-    QDir dir(path);
+    QDir dir{path};
     dir.makeAbsolute();
     return dir.dirName();
 }

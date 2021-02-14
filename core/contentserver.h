@@ -26,6 +26,7 @@
 #include <qhttpserver.h>
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
+#include <optional>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -232,8 +233,7 @@ public:
     Q_INVOKABLE bool isStreamRecordable(const QUrl &id);
     bool getContentMetaItem(const QString &id, QString &meta, bool includeDummy = true);
     bool getContentMetaItemByDidlId(const QString &didlId, QString &meta);
-    QUrl idUrlFromUrl(const QUrl &url, bool* ok = nullptr,
-                             bool* isFile = nullptr) const;
+    std::optional<QUrl> idUrlFromUrl(const QUrl &url, bool* isFile = nullptr) const;
     bool makeUrl(const QString& id, QUrl& url, bool relay = true);
 
 signals:
@@ -404,8 +404,8 @@ public:
     QNetworkAccessManager* nam;
     QHttpServer* server;
     static void adjustVolume(QByteArray *data, float factor, bool le = true);
-    bool isStreamToRecord(const QUrl &id);
-    bool isStreamRecordable(const QUrl &id);
+    [[nodiscard]] bool streamToRecord(const QUrl &id);
+    [[nodiscard]] bool streamRecordable(const QUrl &id);
 
 signals:
     void streamRecorded(const QString& title, const QString& path);

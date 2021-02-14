@@ -475,7 +475,7 @@ bool ScreenCaster::initOutAudio()
     video_audio_ratio = int(av_rescale_q(video_pkt_duration,
                                      AVRational{1, 1000000},
                                      AVRational{1, out_audio_codec_ctx->sample_rate})/audio_pkt_duration);
-
+#ifdef QT_DEBUG
     qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;
     qDebug() << " codec_id:" << out_audio_codec_ctx->codec_id;
     qDebug() << " codec_type:" << out_audio_codec_ctx->codec_type;
@@ -490,7 +490,7 @@ bool ScreenCaster::initOutAudio()
     qDebug() << " audio_frame_size:" << audio_frame_size;
     qDebug() << " audio_pkt_duration:" << audio_pkt_duration;
     qDebug() << " video_audio_ratio:" << video_audio_ratio;
-
+#endif
     audio_swr_ctx = swr_alloc();
     av_opt_set_int(audio_swr_ctx, "in_channel_layout", int(in_audio_codec_ctx->channel_layout), 0);
     av_opt_set_int(audio_swr_ctx, "out_channel_layout", int(out_audio_codec_ctx->channel_layout), 0);
@@ -610,7 +610,7 @@ bool ScreenCaster::init()
     av_dict_free(&options);
 
     int in_video_stream_idx = -1;
-    qDebug() << "x11grab streams count:" << in_video_format_ctx->nb_streams;
+    //qDebug() << "x11grab streams count:" << in_video_format_ctx->nb_streams;
     for (int i = 0; i < int(in_video_format_ctx->nb_streams); ++i) {
         if (in_video_format_ctx->streams[i]->codecpar &&
             in_video_format_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -622,12 +622,14 @@ bool ScreenCaster::init()
         return false;
     }
 
+#ifdef QT_DEBUG
     qDebug() << "x11grab video stream:";
     qDebug() << " id:" << in_video_format_ctx->streams[in_video_stream_idx]->id;
     qDebug() << " height:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->height;
     qDebug() << " width:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->width;
     qDebug() << " codec_id:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->codec_id;
     qDebug() << " codec_type:" << in_video_format_ctx->streams[in_video_stream_idx]->codecpar->codec_type;
+#endif
 
     auto in_video_codec = avcodec_find_decoder(in_video_format_ctx->
                                                streams[in_video_stream_idx]->
@@ -642,8 +644,9 @@ bool ScreenCaster::init()
         qWarning() << "Error: in_video_codec_ctx is null";
         return false;
     }
-
+#ifdef QT_DEBUG
     qDebug() << "x11grab video stream pixel format:" << in_video_codec_ctx->pix_fmt;
+#endif
 #endif
 
     if (avformat_alloc_output_context2(&out_format_ctx, nullptr, "mpegts", nullptr) < 0) {
@@ -681,7 +684,7 @@ bool ScreenCaster::init()
     }
 
     // out
-
+#ifdef QT_DEBUG
     qDebug() << "Out video codec params:" << out_video_codec_ctx->codec_id;
     qDebug() << " codec_id:" << out_video_codec_ctx->codec_id;
     qDebug() << " codec_type:" << out_video_codec_ctx->codec_type;
@@ -693,7 +696,7 @@ bool ScreenCaster::init()
     qDebug() << " max_b_frames:" << out_video_codec_ctx->max_b_frames;
     qDebug() << " time_base.num:" << out_video_codec_ctx->time_base.num;
     qDebug() << " time_base.den:" << out_video_codec_ctx->time_base.den;
-
+#endif
     initScaler(); //TODO: Skip if scaling is not needed
 
     const size_t outbuf_size = 500000;

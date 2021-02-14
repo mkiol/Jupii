@@ -179,9 +179,8 @@ void RenderingControl::setMute(bool value)
     }
 }
 
-void RenderingControl::handleApplicationStateChanged(Qt::ApplicationState state)
+void RenderingControl::handleApplicationStateChanged(Qt::ApplicationState)
 {
-    Q_UNUSED(state)
     update();
 }
 
@@ -209,7 +208,7 @@ void RenderingControl::updateVolume()
     int v = srv->getVolume();
 
     if (handleError(v)) {
-        qDebug() << "Volume:" << v;
+        //qDebug() << "Volume:" << v;
         if (m_volume != v) {
             m_volume = v;
             emit volumeChanged();

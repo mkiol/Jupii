@@ -81,7 +81,9 @@ void XC::handleActionFinished()
     if (reply->error() == QNetworkReply::NetworkError::NoError) {
         auto d = reply->readAll();
         if (!d.isEmpty()) {
+#ifdef QT_DEBUG
             qDebug() << "XC API call response:" << d;
+#endif
             switch (action) {
             case Action::ACTION_POWER_ON:
                 handleActionPowerOn(d, reply->property("userData"));

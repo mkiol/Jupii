@@ -63,7 +63,9 @@ QString DeviceInfo::getManufacturer() const
 QUrl DeviceInfo::getIcon() const
 {
     auto iconPath = Utils::deviceIconFilePath(getUdn());
-    return iconPath.isEmpty() ? QUrl() : QUrl::fromLocalFile(iconPath);
+    if (iconPath.isEmpty())
+        return {};
+    return QUrl::fromLocalFile(iconPath);
 }
 
 QString DeviceInfo::getXML() const

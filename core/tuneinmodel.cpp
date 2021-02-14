@@ -89,13 +89,12 @@ QVariantList TuneinModel::selectedItems()
     foreach (const auto item, m_list) {
         const auto station = qobject_cast<TuneinItem*>(item);
         if (station->selected()) {
-            QVariantMap map;
-            map.insert("url", QVariant(station->url()));
-            map.insert("name", QVariant(station->name()));
-            map.insert("icon", QVariant(station->icon()));
-            map.insert("author", QVariant("TuneIn"));
-            map.insert("app", QVariant("tunein"));
-            list << map;
+            list << QVariantMap{
+                {"url", {station->url()}},
+                {"name", {station->name()}},
+                {"icon", {station->icon()}},
+                {"author", {"TuneIn"}},
+                {"app", {"tunein"}}};
         }
     }
 
@@ -106,7 +105,7 @@ QList<ListItem*> TuneinModel::makeItems()
 {
     QList<ListItem*> items;
 
-    auto filter = getFilter();
+    const auto& filter = getFilter();
 
     if (filter.isEmpty()) {
         return items;
@@ -136,9 +135,9 @@ QList<ListItem*> TuneinModel::makeItems()
     for (int i = 0; i < ols.size(); ++i) {
         auto ol = ols.at(i).toElement();
         if (ol.attribute("item") == "station") {
-            auto id = ol.attribute("preset_id");
-            auto url = QUrl(ol.attribute("URL"));
-            auto name = ol.attribute("text");
+            const auto id = ol.attribute("preset_id");
+            const auto url = QUrl{ol.attribute("URL")};
+            const auto name = ol.attribute("text");
 
             if (id.isEmpty() || url.isEmpty() || name.isEmpty()) {
                 continue;
@@ -160,8 +159,8 @@ QList<ListItem*> TuneinModel::makeItems()
 
     // Sorting
     /*std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-        auto aa = dynamic_cast<TuneinItem*>(a);
-        auto bb = dynamic_cast<TuneinItem*>(b);
+        const auto aa = qobject_cast<TuneinItem*>(a);
+        const auto bb = qobject_cast<TuneinItem*>(b);
         return aa->name().compare(bb->name(), Qt::CaseInsensitive) < 0;
     });*/
 

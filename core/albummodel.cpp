@@ -47,7 +47,7 @@ QList<ListItem*> AlbumModel::makeItems()
         auto result = tracker->getResult();
         return processTrackerReply(result.first, result.second);
     } else {
-        qWarning() << "Tracker query error";
+        qWarning() << "Tracker query error:" << query;
     }
 
     return {};
@@ -66,11 +66,12 @@ QList<ListItem*> AlbumModel::processTrackerReply(
         QHash<QString, AlbumData> albums; // album id => album data
 
         while(cursor.next()) {
-            auto id = cursor.value(0).toString();
+            const auto id = cursor.value(0).toString();
 
             if (albums.contains(id)) {
+#ifdef QT_DEBUG
                 qDebug() << "Duplicate album id, updating count, length and skiping";
-
+#endif
                 auto& album = albums[id];
                 album.count += cursor.value(3).toInt();
                 album.length += cursor.value(4).toInt();
@@ -78,7 +79,7 @@ QList<ListItem*> AlbumModel::processTrackerReply(
                 continue;
             }
 
-            auto imgFilePath = Tracker::genAlbumArtFile(cursor.value(1).toString(),
+            const auto imgFilePath = Tracker::genAlbumArtFile(cursor.value(1).toString(),
                                                         cursor.value(2).toString());
             QFileInfo imgFile(imgFilePath);
             auto& album = albums[id];
@@ -133,8 +134,7 @@ void AlbumModel::setQueryType(int value)
     if (value != m_queryType) {
         m_queryType = value;
         emit queryTypeChanged();
-        auto s = Settings::instance();
-        s->setAlbumQueryType(m_queryType);
+        Settings::instance()->setAlbumQueryType(m_queryType);
         updateModel();
     }
 }

@@ -97,7 +97,7 @@ public:
     explicit SelectableItemModel(SelectableItem *prototype, QObject *parent = nullptr);
     void setFilter(const QString& filter);
     void setFilterNoUpdate(const QString& filter);
-    QString getFilter();
+    const QString& getFilter() const;
     int selectedCount();
     int selectableCount();
 

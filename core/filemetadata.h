@@ -22,7 +22,7 @@ struct FileMetaData {
 
     FileMetaData();
     void clear();
-    bool isEmpty();
+    [[nodiscard]] bool empty() const;
 };
 
 #endif // FILEMETADATA_H

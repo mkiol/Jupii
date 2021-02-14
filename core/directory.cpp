@@ -166,7 +166,7 @@ void Directory::clearLists(bool all)
 
 void Directory::discover()
 {
-    qDebug() << "discover";
+    qDebug() << "Discover";
 
     if (!m_inited) {
         qWarning() << "Directory not inited.";
@@ -263,24 +263,23 @@ void Directory::discover()
         bool found = false;
         auto traverseFun = [this, &found, debug = s->isDebug(), &xcs]
                 (const UPnPClient::UPnPDeviceDesc& ddesc, const UPnPClient::UPnPServiceDesc& sdesc) {
-            qDebug() << "==> Visitor";
-            qDebug() << " Device";
-            qDebug() << "  friendlyName:" << QString::fromStdString(ddesc.friendlyName);
-            qDebug() << "  deviceType:" << QString::fromStdString(ddesc.deviceType);
+            qDebug() << "==> Visitor|"
+                     << "device type:" << QString::fromStdString(ddesc.deviceType)
+                     << "friendly name:" << QString::fromStdString(ddesc.friendlyName);
+#ifdef QT_DEBUG
             qDebug() << "  UDN:" << QString::fromStdString(ddesc.UDN);
-            qDebug() << "  modelName:" << QString::fromStdString(ddesc.modelName);
-            qDebug() << "  URLBase:" << QString::fromStdString(ddesc.URLBase);
-            qDebug() << " Service";
+            qDebug() << "  model name:" << QString::fromStdString(ddesc.modelName);
+            qDebug() << "  URL base:" << QString::fromStdString(ddesc.URLBase);
+#endif
+            qDebug() << "Service| serviceType:" << QString::fromStdString(sdesc.serviceType);
+#ifdef QT_DEBUG
             qDebug() << "  controlURL:" << QString::fromStdString(sdesc.controlURL);
             qDebug() << "  eventSubURL:" << QString::fromStdString(sdesc.eventSubURL);
             qDebug() << "  SCPDURL:" << QString::fromStdString(sdesc.SCPDURL);
             qDebug() << "  serviceId:" << QString::fromStdString(sdesc.serviceId);
-            qDebug() << "  serviceType:" << QString::fromStdString(sdesc.serviceType);
-            if (debug) {
-                qDebug() << "  ddesc.XMLText:" << QString::fromStdString(ddesc.XMLText);
-            }
-
-            auto did = QString::fromStdString(ddesc.UDN);
+            qDebug() << "  ddesc.XMLText:" << QString::fromStdString(ddesc.XMLText);
+#endif
+            const auto did = QString::fromStdString(ddesc.UDN);
 
             this->m_devsdesc.insert(did, ddesc);
             this->m_servsdesc.insert(did + QString::fromStdString(sdesc.serviceId), sdesc);

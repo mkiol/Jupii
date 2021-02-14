@@ -79,7 +79,9 @@ void ConnectivityDetector::update()
         qWarning() << "No connected network interface found";
     } else {
         QString prefIfname = Settings::instance()->getPrefNetInf();
-        //qDebug() << "Preferred network interface:" << prefIfname;
+#ifdef QT_DEBUG
+        qDebug() << "Preferred network interface:" << prefIfname;
+#endif
 
         if (!prefIfname.isEmpty() &&
                 (ethCandidates.contains(prefIfname) || wlanCandidates.contains(prefIfname))) {

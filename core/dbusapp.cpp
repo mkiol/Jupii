@@ -71,7 +71,9 @@ void DbusProxy::updateCanControl()
 QString DbusProxy::deviceName()
 {
     auto av = Services::instance()->avTransport;
-    return av ? av->getDeviceFriendlyName() : QString();
+    if (av)
+        av->getDeviceFriendlyName();
+    return {};
 }
 
 bool DbusProxy::canControl()

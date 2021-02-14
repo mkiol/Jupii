@@ -103,21 +103,21 @@ QList<ListItem*> BcModel::makeSearchItems()
 {
     QList<ListItem*> items;
 
-    auto phrase = getFilter().simplified();
+    const auto phrase = getFilter().simplified();
 
     if (!phrase.isEmpty()) {
         BcApi api;
 
-        auto results = api.search(phrase);
+        const auto results = api.search(phrase);
 
-        for (auto& result : results) {
+        for (const auto& result : results) {
             items << new BcItem(result.webUrl.toString(),
-                                std::move(result.title),
-                                std::move(result.artist),
-                                std::move(result.album),
-                                std::move(result.webUrl),
+                                result.title,
+                                result.artist,
+                                result.album,
+                                result.webUrl,
                                 {},
-                                std::move(result.imageUrl),
+                                result.imageUrl,
                                 0,
                                 BcModel::Type(result.type));
         }
@@ -140,17 +140,17 @@ QList<ListItem*> BcModel::makeAlbumItems()
 
     BcApi api;
 
-    auto album = api.album(albumUrl);
+    const auto album = api.album(albumUrl);
 
     setAlbumTitle(album.title);
 
-    for (auto& track : album.tracks) {
+    for (const auto& track : album.tracks) {
         items << new BcItem(track.webUrl.toString(),
-                            std::move(track.title),
+                            track.title,
                             album.artist,
                             album.title,
-                            std::move(track.streamUrl),
-                            std::move(track.webUrl), // origUrl
+                            track.streamUrl,
+                            track.webUrl, // origUrl
                             album.imageUrl,
                             track.duration,
                             Type_Track);
@@ -165,18 +165,18 @@ QList<ListItem*> BcModel::makeArtistItems()
 
     BcApi api;
 
-    auto artist = api.artist(artistUrl);
+    const auto artist = api.artist(artistUrl);
 
     setArtistName(artist.name);
 
-    for (auto& album : artist.albums) {
+    for (const auto& album : artist.albums) {
         items << new BcItem(album.webUrl.toString(),
                             album.title,
                             artist.name,
                             album.title,
-                            std::move(album.webUrl),
+                            album.webUrl,
                             {},
-                            std::move(album.imageUrl),
+                            album.imageUrl,
                             0,
                             Type_Album);
     }

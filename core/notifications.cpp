@@ -46,7 +46,8 @@ bool Notifications::createDbusInf()
         return false;
     }
 
-    /*{
+#ifdef QT_DEBUG
+    {
         auto reply = m_dbus_inf->GetCapabilities();
         reply.waitForFinished();
         if (reply.isError()) {
@@ -71,7 +72,8 @@ bool Notifications::createDbusInf()
             auto spec = reply.argumentAt<3>();
             qDebug() << "Notification server info:" << name << vendor << version << spec;
         }
-    }*/
+    }
+#endif
 
     return true;
 }

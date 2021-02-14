@@ -101,15 +101,12 @@ void SomafmModel::handleIconDownloadFinished()
     if (reply && m_replyToId.contains(reply)) {
         auto id = m_replyToId.value(reply);
         auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-        auto err = reply->error();
-        //qDebug() << "Image download response code:" << code << reason << err;
 
-        if (err != QNetworkReply::NoError) {
+        if (const auto err = reply->error(); err != QNetworkReply::NoError) {
             qWarning() << "Error:" << err;
         } else if (code > 299 && code < 399) {
             qWarning() << "Redirection received but unsupported";
-        } else if (code > 299) {
+        } else if (const auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString(); code > 299) {
             qWarning() << "Unsupported response code:" << reply->error() << code << reason;
         } else {
             auto data = reply->readAll();
@@ -137,8 +134,8 @@ void SomafmModel::downloadImage()
     if (m_imagesToDownload.isEmpty()) {
         updateModel();
     } else {
-        auto image = m_imagesToDownload.takeFirst();  // <id, image URL>
-        auto id = image.first;
+        const auto image = m_imagesToDownload.takeFirst();  // <id, image URL>
+        const auto& id = image.first;
 
         QNetworkRequest request;
         request.setUrl(QUrl(image.second));
@@ -157,17 +154,14 @@ void SomafmModel::handleDataDownloadFinished()
     auto reply = qobject_cast<QNetworkReply*>(sender());
     if (reply) {
         auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-        auto err = reply->error();
-        //qDebug() << "Response code:" << code << reason << err;
 
-        if (err != QNetworkReply::NoError) {
+        if (const auto err = reply->error(); err != QNetworkReply::NoError) {
             qWarning() << "Error:" << err;
             emit error();
         } else if (code > 299 && code < 399) {
             qWarning() << "Redirection received but unsupported";
             emit error();
-        } else if (code > 299) {
+        } else if (const auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString(); code > 299) {
             qWarning() << "Unsupported response code:" << reply->error() << code << reason;
             emit error();
         } else {
@@ -200,7 +194,7 @@ void SomafmModel::refresh()
         emit refreshingChanged();
 
         QNetworkRequest request;
-        request.setUrl(QUrl(m_dirUrl));
+        request.setUrl(QUrl{m_dirUrl});
         request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         auto reply = Utils::instance()->nam->get(request);
         QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
@@ -218,13 +212,13 @@ QVariantList SomafmModel::selectedItems()
     foreach (const auto item, m_list) {
         const auto channel = qobject_cast<SomafmItem*>(item);
         if (channel->selected()) {
-            QVariantMap map;
-            map.insert("url", QVariant(channel->url()));
-            map.insert("name", QVariant(channel->name()));
-            map.insert("icon", QVariant(channel->icon()));
-            map.insert("author", QVariant("SomaFM"));
-            map.insert("app", "somafm");
-            list << map;
+            list << QVariantMap{
+                {"url", {channel->url()}},
+                {"name", {channel->name()}},
+                {"icon", {channel->icon()}},
+                {"author", {"SomaFM"}},
+                {"app", "somafm"}
+            };
         }
     }
 
@@ -235,19 +229,14 @@ QList<ListItem*> SomafmModel::makeItems()
 {
     QList<ListItem*> items;
 
-    auto filter = getFilter();
+    const auto& filter = getFilter();
 
     int l = filter.isEmpty() ? 1000 : m_entries.length();
 
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
         if (!entry.isNull() && entry.hasAttribute("id")) {
-            auto id = entry.attribute("id");
-
-            auto name = entry.elementsByTagName("title").at(0).toElement().text();
-            auto desc = entry.elementsByTagName("description").at(0).toElement().text();
-            auto genre = entry.elementsByTagName("genre").at(0).toElement().text();
-            auto dj = entry.elementsByTagName("dj").at(0).toElement().text();
+            const auto name = entry.elementsByTagName("title").at(0).toElement().text();
 
             // getting low bitrate MP3 stream URL
             QString url;
@@ -261,13 +250,18 @@ QList<ListItem*> SomafmModel::makeItems()
             }
 
             if (!url.isEmpty() && !name.isEmpty()) {
+                const auto desc = entry.elementsByTagName("description").at(0).toElement().text();
+                const auto genre = entry.elementsByTagName("genre").at(0).toElement().text();
+                const auto dj = entry.elementsByTagName("dj").at(0).toElement().text();
+
                 if (name.contains(filter, Qt::CaseInsensitive) ||
                     desc.contains(filter, Qt::CaseInsensitive) ||
                     genre.contains(filter, Qt::CaseInsensitive) ||
                     dj.contains(filter, Qt::CaseInsensitive)) {
 
                     QUrl icon;
-                    auto filename = m_imageFilename + id;
+                    const auto id = entry.attribute("id");
+                    const auto filename = m_imageFilename + id;
                     auto imgpath = Utils::pathToCacheFile(filename + ".jpg");
                     if (!QFileInfo::exists(imgpath)) {
                         imgpath = Utils::pathToCacheFile(filename + ".png");
@@ -294,8 +288,8 @@ QList<ListItem*> SomafmModel::makeItems()
 
     // Sorting
     std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-        auto aa = dynamic_cast<SomafmItem*>(a);
-        auto bb = dynamic_cast<SomafmItem*>(b);
+        const auto aa = qobject_cast<SomafmItem*>(a);
+        const auto bb = qobject_cast<SomafmItem*>(b);
         return aa->name().compare(bb->name(), Qt::CaseInsensitive) < 0;
     });
 

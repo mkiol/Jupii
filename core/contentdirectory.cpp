@@ -64,6 +64,7 @@ bool ContentDirectory::readItems(const QString &id, UPnPClient::UPnPDirContent &
         return false;
     }
 
+#ifdef QT_DEBUG
     qDebug() << "containers:";
     for (const UPnPClient::UPnPDirObject &dir : content.m_containers) {
         qDebug() << QString::fromStdString(dir.dump());
@@ -72,7 +73,7 @@ bool ContentDirectory::readItems(const QString &id, UPnPClient::UPnPDirContent &
     for (const UPnPClient::UPnPDirObject &dir : content.m_items) {
         qDebug() << QString::fromStdString(dir.dump());
     }
-
+#endif
     return true;
 }
 
@@ -89,6 +90,7 @@ bool ContentDirectory::readItem(const QString &id, UPnPClient::UPnPDirContent &c
         return false;
     }
 
+#ifdef QT_DEBUG
     qDebug() << "containers:";
     for (const UPnPClient::UPnPDirObject &dir : content.m_containers) {
         qDebug() << QString::fromStdString(dir.dump());
@@ -97,6 +99,6 @@ bool ContentDirectory::readItem(const QString &id, UPnPClient::UPnPDirContent &c
     for (const UPnPClient::UPnPDirObject &dir : content.m_items) {
         qDebug() << QString::fromStdString(dir.dump());
     }
-
+#endif
     return true;
 }

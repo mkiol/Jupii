@@ -80,11 +80,11 @@ void YoutubeDl::handleBinDownloaded()
 
         if (err == QNetworkReply::NoError && code > 199 && code < 300 && !data.isEmpty()) {
             auto dataDir = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-            if (QDir().mkpath(dataDir)) {
+            if (QDir{}.mkpath(dataDir)) {
                 auto binPath = dataDir + "/youtube-dl";
                 if (Utils::writeToFile(binPath, data, true)) {
                     qDebug() << "Youtube-dl bin successfully downloaded to:" << binPath;
-                    QFile(binPath).setPermissions(QFileDevice::ExeUser|QFileDevice::ExeGroup|
+                    QFile{binPath}.setPermissions(QFileDevice::ExeUser|QFileDevice::ExeGroup|
                                        QFileDevice::ExeOther|QFileDevice::ReadUser|
                                        QFileDevice::ReadGroup|QFileDevice::ReadOther|
                                        QFileDevice::WriteUser);
@@ -119,13 +119,9 @@ void YoutubeDl::update()
 void YoutubeDl::handleUpdateProcFinished(int exitCode)
 {
     qDebug() << "Youtube-dl update process finished with exit code:" << exitCode;
-
-    auto proc = dynamic_cast<QProcess*>(sender());
-    if (proc) {
-        proc->deleteLater();
-        if (exitCode != 0) {
-            emit error(UpdateBin_Error);
-        }
+    qobject_cast<QProcess*>(sender())->deleteLater();
+    if (exitCode != 0) {
+        emit error(UpdateBin_Error);
     }
 }
 
@@ -135,12 +131,8 @@ void YoutubeDl::handleUpdateProcError(QProcess::ProcessError error)
 
     if (error == QProcess::FailedToStart) {
         qWarning() << "Youtube-dl update process failed to start";
-
-        auto proc = dynamic_cast<QProcess*>(sender());
-        if (proc) {
-            proc->deleteLater();
-            emit this->error(UpdateBin_Error);
-        }
+        qobject_cast<QProcess*>(sender())->deleteLater();
+        emit this->error(UpdateBin_Error);
     }
 }
 
@@ -148,7 +140,7 @@ void YoutubeDl::install()
 {
     binPath.clear();
 
-    QFile bin(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/youtube-dl");
+    QFile bin{QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/youtube-dl"};
     if (!bin.exists()) {
         downloadBin();
         return;
@@ -163,8 +155,8 @@ void YoutubeDl::handleProcFinished(int exitCode)
 {
     qDebug() << "Youtube-dl process finished with exit code:" << exitCode;
 
-    auto proc = dynamic_cast<QProcess*>(sender());
-    if (proc && procToUrl.contains(proc)) {
+    auto proc = qobject_cast<QProcess*>(sender());
+    if (procToUrl.contains(proc)) {
         auto url = procToUrl.value(proc);
         auto out = procToData[proc].split('\n');
         procToUrl.remove(proc);
@@ -194,14 +186,12 @@ void YoutubeDl::handleProcFinished(int exitCode)
 
 void YoutubeDl::handleReadyRead()
 {
-    auto proc = dynamic_cast<QProcess*>(sender());
-    if (proc) {
-        proc->setReadChannel(QProcess::StandardOutput);
-        procToData[proc].push_back(proc->readAll());
-        if (procToData[proc].split('\n').size() > 2) {
-            qDebug() << "All data received from youtube-dl process";
-            proc->terminate();
-        }
+    auto proc = qobject_cast<QProcess*>(sender());
+    proc->setReadChannel(QProcess::StandardOutput);
+    procToData[proc].push_back(proc->readAll());
+    if (procToData[proc].split('\n').size() > 2) {
+        qDebug() << "All data received from youtube-dl process";
+        proc->terminate();
     }
 }
 
@@ -209,16 +199,14 @@ void YoutubeDl::handleProcError(QProcess::ProcessError error)
 {
     if (error == QProcess::FailedToStart) {
         qWarning() << "Youtube-dl process failed to start";
-        auto proc = dynamic_cast<QProcess*>(sender());
-        if (proc) {
-            auto url = procToUrl.value(proc);
-            procToUrl.remove(proc);
-            procToData.remove(proc);
-            urlToProc.remove(url);
-            proc->deleteLater();
-            emit newStream(url, QUrl(), QString());
-            emit this->error(FindStream_Error);
-        }
+        auto proc = qobject_cast<QProcess*>(sender());
+        const auto url = procToUrl.value(proc);
+        procToUrl.remove(proc);
+        procToData.remove(proc);
+        urlToProc.remove(url);
+        proc->deleteLater();
+        emit newStream(url, {}, {});
+        emit this->error(FindStream_Error);
     }
 }
 
@@ -237,8 +225,10 @@ bool YoutubeDl::findStream(const QUrl &url)
     procToUrl.insert(proc, url);
     urlToProc.insert(url, proc);
 
-    auto command = binPath + " --get-title --get-url --no-call-home --format best \"" + url.toString() + "\"";
+    const auto command = binPath + " --get-title --get-url --no-call-home --format best \"" + url.toString() + "\"";
+#ifdef QT_DEBUG
     qDebug() << "youtube-dl command:" << command;
+#endif
     proc->start(command, QIODevice::ReadOnly);
 
     qDebug() << "process started:" << proc;

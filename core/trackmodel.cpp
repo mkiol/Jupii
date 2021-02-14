@@ -78,8 +78,6 @@ TrackModel::TrackModel(QObject *parent) :
 
 QList<ListItem*> TrackModel::makeItems()
 {
-    auto tracker = Tracker::instance();
-
     QString query;
     TrackerTasks task = TaskUnknown;
 
@@ -97,7 +95,7 @@ QList<ListItem*> TrackModel::makeItems()
     }
 
     if (!query.isEmpty()) {
-        if (tracker->query(query, false)) {
+        if (auto tracker = Tracker::instance(); tracker->query(query, false)) {
             auto result = tracker->getResult();
             return processTrackerReply(task, result.first, result.second);
         } else {
@@ -221,7 +219,7 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
 {
     QList<ListItem*> items;
 
-    auto filter = getFilter();
+    const auto& filter = getFilter();
 
     foreach (const auto& id, m_ids) {
         auto id_data = makeTrackDataFromId(id);
@@ -242,7 +240,7 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
 
     foreach (const auto& id, m_ids) {
         const auto& data = m_trackdata_by_id.value(id);
-        auto title = data.title.isEmpty() ?
+        const auto title = data.title.isEmpty() ?
                     id.fileName().isEmpty() ? id.path().isEmpty() ?
                     id.toString() : id.path() : id.fileName() : data.title;
         if (filter.isEmpty() ||
@@ -272,7 +270,7 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
 QList<ListItem*> TrackModel::processTrackerReplyForUrls(TrackerCursor& cursor)
 {
     while(cursor.next()) {
-        auto id = QUrl(cursor.value(0).toString());
+        const auto id = QUrl{cursor.value(0).toString()};
 
         TrackData data;
         data.title = cursor.value(2).toString();

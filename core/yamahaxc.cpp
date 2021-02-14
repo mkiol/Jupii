@@ -20,7 +20,7 @@ const QString YamahaXC::controlUrl_tag = "yamaha:X_yxcControlURL";
 
 bool YamahaXC::init(const QString &desc)
 {
-    QXmlStreamReader xml(desc);
+    QXmlStreamReader xml{desc};
     QString* elm = nullptr;
     QString urlBase;
     QString controlUrl;

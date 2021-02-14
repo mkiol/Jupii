@@ -21,7 +21,7 @@ void FileMetaData::clear() {
     type = ContentServer::TypeUnknown;
 }
 
-bool FileMetaData::isEmpty() {
+bool FileMetaData::empty() const
+{
     return path.isEmpty();
 }
-

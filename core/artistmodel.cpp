@@ -38,10 +38,10 @@ QList<ListItem*> ArtistModel::makeItems()
     auto tracker = Tracker::instance();
 
     if (tracker->query(query, false)) {
-        auto result = tracker->getResult();
+        const auto result = tracker->getResult();
         return processTrackerReply(result.first, result.second);
     } else {
-        qWarning() << "Tracker query error";
+        qWarning() << "Tracker query error:" << query;
     }
 
     return {};
@@ -60,10 +60,12 @@ QList<ListItem*> ArtistModel::processTrackerReply(
         QStringList artists;
 
         while(cursor.next()) {
-            auto id = cursor.value(0).toString();
+            const auto id = cursor.value(0).toString();
 
             if (artists.contains(id)) {
+#ifdef QT_DEBUG
                 qDebug() << "Duplicate artist, skiping";
+#endif
                 continue;
             }
 

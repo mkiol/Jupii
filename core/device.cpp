@@ -504,9 +504,10 @@ void MediaServerDevice::start()
 int MediaServerDevice::actionHandler(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
 {
     auto action = QString::fromStdString(out.getName());
-
+#ifdef QT_DEBUG
     qDebug() << "Action to handle in:" << QString::fromStdString(in.getName());
     qDebug() << "Action to handle out:" << action;
+#endif
 
     if (action == "GetSortCapabilities") {
         return getSortCapabilities(in, out);
@@ -527,23 +528,20 @@ int MediaServerDevice::actionHandler(const UPnPP::SoapIncoming& in, UPnPP::SoapO
     return UPNP_E_INVALID_ACTION;
 }
 
-int MediaServerDevice::getSearchCapabilities(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
+int MediaServerDevice::getSearchCapabilities(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
 {
-    Q_UNUSED(in)
     out.addarg("SortCaps","dc:title");
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::getSortCapabilities(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
+int MediaServerDevice::getSortCapabilities(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
 {
-    Q_UNUSED(in)
     out.addarg("SearchCaps","dc:title");
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::getSystemUpdateID(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
+int MediaServerDevice::getSystemUpdateID(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
 {
-    Q_UNUSED(in)
     out.addarg("Id", cd->systemUpdateId());
     return UPNP_E_SUCCESS;
 }
@@ -553,7 +551,7 @@ int MediaServerDevice::browse(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing
     std::string objectId; in.get("ObjectID", &objectId);
     std::string browseFlag; in.get("BrowseFlag", &browseFlag);
     std::string requestedCount; in.get("RequestedCount", &requestedCount);
-
+#ifdef SAILFISH
     qDebug() << "ObjectID:" << QString::fromStdString(objectId);
     qDebug() << "BrowseFlag:" << QString::fromStdString(browseFlag);
     qDebug() << "RequestedCount:" << QString::fromStdString(requestedCount);
@@ -564,7 +562,7 @@ int MediaServerDevice::browse(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing
     //qDebug() << "Filter:" << QString::fromStdString(filter);
     //qDebug() << "StartingIndex:" << QString::fromStdString(startingIndex);
     //qDebug() << "SortCriteria:" << QString::fromStdString(sortCriteria);
-
+#endif
     if (objectId == "0") {
         if (browseFlag == "BrowseMetadata") {
             out.addarg("Result", "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" "
@@ -601,9 +599,8 @@ int MediaServerDevice::browse(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::getProtocolInfo(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
+int MediaServerDevice::getProtocolInfo(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
 {
-    Q_UNUSED(in)
     out.addarg("Source","http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN,"
                         "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_SM,"
                         "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_MED,"
@@ -684,9 +681,8 @@ int MediaServerDevice::getProtocolInfo(const UPnPP::SoapIncoming& in, UPnPP::Soa
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::getCurrentConnectionIDs(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
+int MediaServerDevice::getCurrentConnectionIDs(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
 {
-    Q_UNUSED(in)
     out.addarg("ConnectionIDs","");
     return UPNP_E_SUCCESS;
 }
@@ -722,10 +718,9 @@ void ContentDirectoryService::update()
     updateNeeded = true;
 }
 
-bool ContentDirectoryService::getEventData(bool all, std::vector<std::string>& names,
+bool ContentDirectoryService::getEventData(bool, std::vector<std::string>& names,
                           std::vector<std::string>& values)
 {
-    Q_UNUSED(all)
     if (updateNeeded) {
         names.push_back("SystemUpdateID");
         values.push_back(systemUpdateId());
@@ -740,11 +735,7 @@ ConnectionManagerService::ConnectionManagerService(const std::string& stp, const
 {
 }
 
-bool ConnectionManagerService::getEventData(bool all, std::vector<std::string>& names,
-                          std::vector<std::string>& values)
+bool ConnectionManagerService::getEventData(bool, std::vector<std::string>&, std::vector<std::string>&)
 {
-    Q_UNUSED(all)
-    Q_UNUSED(names)
-    Q_UNUSED(values)
     return true;
 }

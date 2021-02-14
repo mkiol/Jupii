@@ -64,9 +64,6 @@ bool AudioCaster::init()
 {
     qDebug() << "AudioCaster init";
 
-    char errbuf[50];
-    int ret = 0;
-
     auto in_audio_codec = avcodec_find_decoder(AV_CODEC_ID_PCM_S16LE);
     if (!in_audio_codec) {
         qWarning() << "Error in avcodec_find_decoder for audio";
@@ -116,7 +113,7 @@ bool AudioCaster::init()
     }
 
     const size_t outbuf_size = 500000;
-    auto outbuf = new uint8_t[outbuf_size];
+    const auto outbuf = new uint8_t[outbuf_size];
     if (!outbuf) {
         qWarning() << "Unable to allocate memory";
         return false;
@@ -164,6 +161,7 @@ bool AudioCaster::init()
                                           in_audio_codec_ctx->sample_fmt, 0));
     audio_pkt_duration = out_audio_codec_ctx->frame_size; // time_base is 1/rate, so duration of 1 sample is 1
 
+#ifdef QT_DEBUG
     qDebug() << "Out audio codec params:" << out_audio_codec_ctx->codec_id;
     qDebug() << " codec_id:" << out_audio_codec_ctx->codec_id;
     qDebug() << " codec_type:" << out_audio_codec_ctx->codec_type;
@@ -177,6 +175,7 @@ bool AudioCaster::init()
     qDebug() << " frame_size:" << out_audio_codec_ctx->frame_size;
     qDebug() << " audio_frame_size:" << audio_frame_size;
     qDebug() << " audio_pkt_duration:" << audio_pkt_duration;
+#endif
 
     audio_swr_ctx = swr_alloc();
     av_opt_set_int(audio_swr_ctx, "in_channel_layout", int64_t(in_audio_codec_ctx->channel_layout), 0);
@@ -187,8 +186,9 @@ bool AudioCaster::init()
     av_opt_set_sample_fmt(audio_swr_ctx, "out_sample_fmt", out_audio_codec_ctx->sample_fmt,  0);
     swr_init(audio_swr_ctx);
 
-    ret = avformat_write_header(out_format_ctx, nullptr);
-    if (ret != AVSTREAM_INIT_IN_WRITE_HEADER && ret != AVSTREAM_INIT_IN_INIT_OUTPUT) {
+    if (int ret = avformat_write_header(out_format_ctx, nullptr);
+            ret != AVSTREAM_INIT_IN_WRITE_HEADER && ret != AVSTREAM_INIT_IN_INIT_OUTPUT) {
+        char errbuf[50];
         qWarning() << "Error in avformat_write_header:"
                    << av_make_error_string(errbuf, 50, ret);
         return false;
@@ -197,11 +197,9 @@ bool AudioCaster::init()
     return true;
 }
 
-int AudioCaster::write_packet_callback(void *opaque, uint8_t *buf, int buf_size)
+int AudioCaster::write_packet_callback(void*, uint8_t *buf, int buf_size)
 {
-    Q_UNUSED(opaque)
-    auto worker = ContentServerWorker::instance();
-    worker->sendAudioCaptureData(static_cast<void*>(buf), buf_size);
+    ContentServerWorker::instance()->sendAudioCaptureData(static_cast<void*>(buf), buf_size);
     return buf_size;
 }
 
@@ -227,7 +225,7 @@ bool AudioCaster::writeAudioData2()
 
         AVPacket audio_in_pkt;
         if (av_new_packet(&audio_in_pkt, int32_t(audio_frame_size)) < 0) {
-            qDebug() << "Error in av_new_packet";
+            qWarning() << "Error in av_new_packet";
             return false;
         }
 

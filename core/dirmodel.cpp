@@ -19,8 +19,8 @@ QList<ListItem*> DirModel::makeItems()
 {
     QList<ListItem*> items;
 
-    auto dirs = m_dir.entryInfoList(QDir::Dirs|QDir::NoDot);
-    for (auto& dir : dirs) {
+    const auto dirs = m_dir.entryInfoList(QDir::Dirs|QDir::NoDot);
+    foreach (const auto& dir, dirs) {
         if (!m_dir.isRoot() || dir.fileName() != "..") {
             items << new DirItem(
                          dir.absoluteFilePath(),
@@ -49,9 +49,8 @@ void DirModel::changeToHome()
 
 void DirModel::setCurrentPath(const QString &path)
 {
-    auto currentPath = m_dir.canonicalPath();
-    auto newPath = QDir::cleanPath(path);
-    if (currentPath != newPath) {
+    const auto newPath = QDir::cleanPath(path);
+    if (m_dir.canonicalPath() != newPath) {
         m_dir.setPath(newPath);
         emit currentDirChanged();
         updateModel();

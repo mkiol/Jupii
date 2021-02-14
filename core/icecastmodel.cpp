@@ -142,7 +142,7 @@ QList<ListItem*> IcecastModel::makeItems()
 {
     QList<ListItem*> items;
 
-    auto filter = getFilter();
+    const auto& filter = getFilter();
 
     int l = filter.isEmpty() ? 1000 : m_entries.length();
 

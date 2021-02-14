@@ -111,15 +111,14 @@ void DeviceModel::updateModel()
 
     QList<ListItem*> items;
 
-    for (auto it = ddescs.begin(); it != ddescs.end(); ++it) {
-        auto& ddesc = it.value();
+    for (auto it = ddescs.cbegin(); it != ddescs.cend(); ++it) {
+        const auto& ddesc = it.value();
         auto type = QString::fromStdString(ddesc.deviceType);
-        auto devid = QString::fromStdString(ddesc.UDN);
         bool supported = type.contains(typeStr, Qt::CaseInsensitive);
-        if ((supported && devid != ownMediaServerId) || showAll) {
-            auto id = QString::fromStdString(ddesc.UDN);
-            auto iconUrl = d->getDeviceIconUrl(ddesc);
-            auto iconPath = Utils::deviceIconFilePath(id);
+        if ((supported && QString::fromStdString(ddesc.UDN) != ownMediaServerId) || showAll) {
+            const auto id = QString::fromStdString(ddesc.UDN);
+            const auto iconUrl = d->getDeviceIconUrl(ddesc);
+            const auto iconPath = Utils::deviceIconFilePath(id);
             bool active = av && av->getDeviceId() == id;
             auto xc = d->xc(it.key());
             auto item = new DeviceItem(id,
@@ -164,8 +163,8 @@ void DeviceModel::updateModel()
 
     // Sorting
     std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-        auto aa = dynamic_cast<DeviceItem*>(a);
-        auto bb = dynamic_cast<DeviceItem*>(b);
+        auto aa = qobject_cast<DeviceItem*>(a);
+        auto bb = qobject_cast<DeviceItem*>(b);
         if (aa->isFav()) {
             if (!bb->isFav())
                 return true;
@@ -188,7 +187,7 @@ void DeviceModel::updatePower(const QString &id, bool value)
 {
     auto item = find(id);
     if (item)
-        dynamic_cast<DeviceItem*>(item)->setPower(value);
+        qobject_cast<DeviceItem*>(item)->setPower(value);
 }
 
 DeviceItem::DeviceItem(const QString &id,
@@ -258,8 +257,7 @@ QVariant DeviceItem::data(int role) const
 
 bool DeviceItem::isFav() const
 {
-    auto fd = Settings::instance()->getFavDevices();
-    return fd.contains(m_id);
+    return Settings::instance()->getFavDevices().contains(m_id);
 }
 
 void DeviceItem::setActive(bool value)

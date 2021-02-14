@@ -75,13 +75,11 @@ QString PulseAudioSource::subscriptionEventToStr(pa_subscription_event_type_t t)
     return facility_str + " " + type_str;
 }
 
-void PulseAudioSource::subscriptionCallback(pa_context *ctx, pa_subscription_event_type_t t, uint32_t idx, void *userdata)
+void PulseAudioSource::subscriptionCallback(pa_context*, pa_subscription_event_type_t t, uint32_t idx, void*)
 {
-    Q_ASSERT(ctx);
-    Q_UNUSED(userdata)
-
+#ifdef QT_DEBUG
     qDebug() << "Pulse-audio subscriptionCallback:" << subscriptionEventToStr(t) << idx;
-
+#endif
     auto facility = t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK;
     auto type = t & PA_SUBSCRIPTION_EVENT_TYPE_MASK;
 
@@ -107,11 +105,8 @@ void PulseAudioSource::subscriptionCallback(pa_context *ctx, pa_subscription_eve
     }
 }
 
-void PulseAudioSource::successSubscribeCallback(pa_context *ctx, int success, void *userdata)
+void PulseAudioSource::successSubscribeCallback(pa_context*, int success, void*)
 {
-    Q_ASSERT(ctx);
-    Q_UNUSED(userdata)
-
     if (success) {
          pa_operation_unref(pa_context_get_sink_info_list(ctx, sinkInfoCallback, nullptr));
          pa_operation_unref(pa_context_get_client_info_list(ctx, clientInfoCallback, nullptr));
@@ -119,10 +114,9 @@ void PulseAudioSource::successSubscribeCallback(pa_context *ctx, int success, vo
     }
 }
 
-void PulseAudioSource::stateCallback(pa_context *ctx, void *userdata)
+void PulseAudioSource::stateCallback(pa_context* ctx, void*)
 {
     Q_ASSERT(ctx);
-    Q_UNUSED(userdata)
 
     switch (pa_context_get_state(ctx)) {
         case PA_CONTEXT_CONNECTING:
@@ -155,10 +149,9 @@ void PulseAudioSource::stateCallback(pa_context *ctx, void *userdata)
     }
 }
 
-void PulseAudioSource::streamRequestCallback(pa_stream *stream, size_t nbytes, void *userdata)
+void PulseAudioSource::streamRequestCallback(pa_stream *stream, size_t nbytes, void*)
 {
     Q_ASSERT(stream);
-    Q_UNUSED(userdata)
 
     //qDebug() << "streamRequestCallback:" << nbytes;
 
@@ -206,10 +199,8 @@ void PulseAudioSource::stopRecordStream()
     }
 }
 
-void PulseAudioSource::contextSuccessCallback(pa_context *ctx, int success, void *userdata)
+void PulseAudioSource::contextSuccessCallback(pa_context*, int success, void*)
 {
-    Q_UNUSED(ctx)
-    Q_UNUSED(userdata)
     qDebug() << "contextSuccessCallback:" << success;
 }
 
@@ -260,7 +251,9 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
     stopRecordStream();
 
     qDebug() << "Creating new pulse-audio stream connected to sink input";
+#ifdef QT_DEBUG
     qDebug() << "Orig monitor source:" << monitorSources.value(si.sinkIdx);
+#endif
 #ifdef SAILFISH
     /* Ugly hacks
        SFOS > 3.1.0:
@@ -286,9 +279,11 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
 
     muteConnectedSinkInput(si);
 
+#ifdef QT_DEBUG
     const char* source = muted ? nullSinkMonitor : monitorSources.value(si.sinkIdx).constData();
-
     qDebug() << "New monitor source:" << source;
+#endif
+
     int ret;
     if ((ret = pa_stream_set_monitor_stream(stream, si.idx)) < 0) {
         qCritical() << "Pulse-audio stream set monitor error:" << pa_strerror(ret);
@@ -312,10 +307,9 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
     return false;
 }
 
-void PulseAudioSource::sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, int eol, void *userdata)
+void PulseAudioSource::sinkInfoCallback(pa_context *ctx, const pa_sink_info *i, int eol, void*)
 {
     Q_ASSERT(ctx);
-    Q_UNUSED(userdata)
 
     if (!eol) {
         qDebug() << "sinkInfoCallback:";
@@ -336,18 +330,20 @@ void PulseAudioSource::sinkInputInfoCallback(pa_context *ctx, const pa_sink_inpu
         qDebug() << "  index:" << i->index;
         qDebug() << "  name:" << i->name;
         qDebug() << "  client:" << (i->client == PA_INVALID_INDEX ? 0 : i->client);
-        qDebug() << "  has_volume:" << i->has_volume;
         qDebug() << "  mute:" << i->mute;
-        qDebug() << "  volume.channels:" << i->volume.channels;
-        qDebug() << "  volume.values[0]:" << i->volume.values[0];
         qDebug() << "  corked:" << i->corked;
         qDebug() << "  sink:" << i->sink;
+#ifdef QT_DEBUG
+        qDebug() << "  has_volume:" << i->has_volume;
+        qDebug() << "  volume.channels:" << i->volume.channels;
+        qDebug() << "  volume.values[0]:" << i->volume.values[0];
         qDebug() << "  sample_spec:" << pa_sample_format_to_string(i->sample_spec.format) << " "
              << i->sample_spec.rate << " "
              << static_cast<uint>(i->sample_spec.channels);
         auto props = pa_proplist_to_string(i->proplist);
         qDebug() << "  props:\n" << props;
         pa_xfree(props);
+#endif
 
         auto& si = sinkInputs[i->index];
         si.idx = i->index;
@@ -382,10 +378,12 @@ void PulseAudioSource::discoverStream()
                 }
 
                 if (needUpdate) {
+#ifdef QT_DEBUG
                     qDebug() << "Updating stream name to name of sink input's client:" << client.name;
+#endif
                     worker->updatePulseStreamName(client.name);
                 } else {
-                    qDebug() << "Reseting stream name";
+                    //qDebug() << "Reseting stream name";
                     worker->updatePulseStreamName(QString());
                 }
 
@@ -464,9 +462,11 @@ void PulseAudioSource::clientInfoCallback(pa_context *ctx, const pa_client_info 
         qDebug() << "clientInfoCallback:";
         qDebug() << "  index:" << i->index;
         qDebug() << "  name:" << i->name;
+#ifdef QT_DEBUG
         auto props = pa_proplist_to_string(i->proplist);
         qDebug() << "  props:\n" << props;
         pa_xfree(props);
+#endif
 
         if (!blocked(i->name)) {
             auto& client = clients[i->index];

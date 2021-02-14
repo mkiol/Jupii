@@ -25,7 +25,6 @@ const int FrontierSiliconXC::TIMEOUT = 1000;
 FrontierSiliconXC::FrontierSiliconXC(const QString &deviceId, const QString &address, QObject *parent) :
     XC(deviceId, address, parent)
 {
-    qDebug() << "FrontierSiliconXC:" << deviceId << address;
     ok = init();
 }
 
@@ -166,7 +165,9 @@ bool FrontierSiliconXC::init()
         return false;
     }
 
+#ifdef QT_DEBUG
     qDebug() << "FrontierSiliconXC data:" << data;
+#endif
 
     if (!parseDeviceDescription(data)) {
         qWarning() << "Cannot parse device description:" << data;

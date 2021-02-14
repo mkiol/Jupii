@@ -35,8 +35,7 @@ FosdemModel::FosdemModel(QObject *parent) :
 
 void FosdemModel::init()
 {
-    auto filename = m_filename.arg(m_year);
-    if (Utils::cacheFileExists(filename))
+    if (Utils::cacheFileExists(m_filename.arg(m_year)))
         parseData();
     else
         refresh();
@@ -58,17 +57,16 @@ void FosdemModel::setYear(int value)
 
 QUrl FosdemModel::makeUrl()
 {
-    return QDate::currentDate().year() == m_year ?
-                QUrl(m_url.arg(m_year)) : QUrl(m_url_archive.arg(m_year));
+    if (QDate::currentDate().year() == m_year)
+        return QUrl(m_url.arg(m_year));
+    return QUrl(m_url_archive.arg(m_year));
 }
 
 bool FosdemModel::parseData()
 {
-    QByteArray data;
-    if (Utils::readFromCacheFile(m_filename.arg(m_year), data)) {
-        qDebug() << "Parsing Fosdem events";
-        QDomDocument doc; QString error;
-        if (doc.setContent(data, false, &error)) {
+    if (QByteArray data; Utils::readFromCacheFile(m_filename.arg(m_year), data)) {
+        QString error;
+        if (QDomDocument doc; doc.setContent(data, false, &error)) {
             m_entries = doc.elementsByTagName("event");
             return true;
         } else {
@@ -105,7 +103,7 @@ void FosdemModel::handleDataDownloadFinished()
             qWarning() << "Unsupported response code:" << reply->error() << code << reason;
             emit error();
         } else {
-            auto data = reply->readAll();
+            const auto data = reply->readAll();
             if (data.isEmpty()) {
                 qWarning() << "No data received";
                 emit error();
@@ -167,17 +165,17 @@ QList<ListItem*> FosdemModel::makeItems()
 {
     QList<ListItem*> items;
 
-    auto filter = getFilter();
+    const auto& filter = getFilter();
 
     int l = filter.isEmpty() ? 1000 : m_entries.length();
 
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
         if (!entry.isNull() && entry.hasAttribute("id")) {
-            auto id = entry.attribute("id");
+            const auto id = entry.attribute("id");
 
-            auto name = entry.elementsByTagName("title").at(0).toElement().text();
-            auto track = entry.elementsByTagName("track").at(0).toElement().text();
+            const auto name = entry.elementsByTagName("title").at(0).toElement().text();
+            const auto track = entry.elementsByTagName("track").at(0).toElement().text();
 
             // getting video URL, mp4 is preferred
             QString url;
@@ -235,8 +233,8 @@ QList<ListItem*> FosdemModel::makeItems()
 
     // Sorting
     std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-        auto aa = dynamic_cast<FosdemItem*>(a);
-        auto bb = dynamic_cast<FosdemItem*>(b);
+        auto aa = qobject_cast<FosdemItem*>(a);
+        auto bb = qobject_cast<FosdemItem*>(b);
         return aa->name().compare(bb->name(), Qt::CaseInsensitive) < 0;
     });
 
@@ -245,7 +243,7 @@ QList<ListItem*> FosdemModel::makeItems()
 
 void FosdemModel::refreshItem(const QString &id)
 {
-    auto item = dynamic_cast<FosdemItem*>(find(id));
+    auto item = qobject_cast<FosdemItem*>(find(id));
     if (item)
         item->refresh();
 }

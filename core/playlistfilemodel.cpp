@@ -42,14 +42,13 @@ PlaylistFileModel::PlaylistFileModel(QObject *parent) :
 
 bool PlaylistFileModel::deleteFile(const QString &playlistId)
 {
-    const auto item = dynamic_cast<PlaylistFileItem*>(find(playlistId));
+    const auto item = qobject_cast<PlaylistFileItem*>(find(playlistId));
     if (item) {
-        const QString path = item->path();
-        if (QFile::remove(path)) {
+        if (const auto path = item->path(); !QFile::remove(path)) {
+            qWarning() << "Cannot remove playlist file:" << path;
+        } else {
             updateModelEx(playlistId);
             return true;
-        } else {
-            qWarning() << "Cannot remove playlist file:" << path;
         }
     }
 
@@ -64,16 +63,14 @@ QList<ListItem*> PlaylistFileModel::makeItems()
 
     m_exId.clear();
 
-    auto tracker = Tracker::instance();
-
-    if (tracker->query(query, false)) {
+    if (auto tracker = Tracker::instance(); tracker->query(query, false)) {
         auto result = tracker->getResult();
         return processTrackerReply(result.first, result.second);
     } else {
         qWarning() << "Tracker query error";
     }
 
-    return QList<ListItem*>();
+    return {};
 }
 
 void PlaylistFileModel::updateModelEx(const QString &exId)
@@ -88,7 +85,7 @@ QList<ListItem*> PlaylistFileModel::processTrackerReply(
 {
     QList<ListItem*> items;
 
-    TrackerCursor cursor(varNames, data);
+    TrackerCursor cursor{varNames, data};
     int n = cursor.columnCount();
 
     if (n > 3) {
@@ -96,8 +93,8 @@ QList<ListItem*> PlaylistFileModel::processTrackerReply(
             items << new PlaylistFileItem(
                         cursor.value(0).toString(), // id
                         cursor.value(1).toString(), // title
-                        QUrl(cursor.value(2).toString()).toLocalFile(), // path
-                        QUrl(), // icon
+                        QUrl{cursor.value(2).toString()}.toLocalFile(), // path
+                        {}, // icon
                         cursor.value(3).toInt(), // count
                         0 // length
              );
