@@ -24,6 +24,10 @@ Kirigami.ScrollablePage {
     ListView {
         model: ListModel {
             ListElement {
+                title: "FOSDEM 2021"
+                year: 2021
+            }
+            ListElement {
                 title: "FOSDEM 2020"
                 year: 2020
             }
