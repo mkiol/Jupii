@@ -124,8 +124,8 @@ QList<ListItem*> BcModel::makeSearchItems()
 
         // Sorting
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-            auto aa = qobject_cast<BcItem*>(a);
-            auto bb = qobject_cast<BcItem*>(b);
+            const auto aa = qobject_cast<BcItem*>(a);
+            const auto bb = qobject_cast<BcItem*>(b);
             // Artist = 1, Album = 2, Track = 3
             return aa->type() < bb->type();
         });
@@ -245,6 +245,6 @@ QVariant BcItem::data(int role) const
     case SelectedRole:
         return selected();
     default:
-        return QVariant();
+        return {};
     }
 }

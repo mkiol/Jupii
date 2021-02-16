@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "bcapi.h"
+
 #include <QDebug>
 #include <QTimer>
 #include <QUrlQuery>
@@ -16,10 +18,8 @@
 #include <QJsonParseError>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <memory>
-#include <string>
 
-#include "bcapi.h"
+#include "gumbotools.h"
 #include "utils.h"
 
 BcApi::BcApi(std::shared_ptr<QNetworkAccessManager> nam, QObject *parent) :
@@ -131,14 +131,14 @@ BcApi::Track BcApi::track(const QUrl &url)
         return track;
     }
 
-    auto output = parseHtmlData(data);
+    auto output = gumbo::parseHtmlData(data);
 
     if (!output) {
         qWarning() << "Cannot parse HTML data";
         return track;
     }
 
-    auto json = parseJsonData(attr_data(search_for_attr_one(output->root, "data-tralbum"), "data-tralbum"));
+    auto json = parseJsonData(gumbo::attr_data(gumbo::search_for_attr_one(output->root, "data-tralbum"), "data-tralbum"));
     if (json.isNull() || !json.isObject()) {
         qWarning() << "Cannot parse JSON data";
         return track;
@@ -150,7 +150,7 @@ BcApi::Track BcApi::track(const QUrl &url)
         return track;
     }
 
-    track.webUrl = QUrl(json.object().value("url").toString());
+    track.webUrl = QUrl{json.object().value("url").toString()};
     if (track.webUrl.isRelative()) {
         track.webUrl.setScheme(url.scheme());
         track.webUrl.setHost(url.host());
@@ -159,9 +159,9 @@ BcApi::Track BcApi::track(const QUrl &url)
 
     track.artist = json.object().value("artist").toString();
     track.title = track_info.at(0).toObject().value("title").toString();
-    track.streamUrl = QUrl(track_info.at(0).toObject().value("file").toObject().value("mp3-128").toString());
+    track.streamUrl = QUrl{track_info.at(0).toObject().value("file").toObject().value("mp3-128").toString()};
     track.duration = int(track_info.at(0).toObject().value("duration").toDouble());
-    track.imageUrl = QUrl(attr_data(search_for_attr_one(output->root, "property", "og:image"), "content"));
+    track.imageUrl = QUrl{gumbo::attr_data(gumbo::search_for_attr_one(output->root, "property", "og:image"), "content")};
 
     if (track.streamUrl.isEmpty()) {
         qWarning() << "Stream URL is missing";
@@ -187,14 +187,14 @@ BcApi::Album BcApi::album(const QUrl &url)
         return album;
     }
 
-    auto output = parseHtmlData(data);
+    auto output = gumbo::parseHtmlData(data);
 
     if (!output) {
         qWarning() << "Cannot parse HTML data";
         return album;
     }
 
-    auto json = parseJsonData(attr_data(search_for_attr_one(output->root, "data-tralbum"), "data-tralbum"));
+    auto json = parseJsonData(gumbo::attr_data(gumbo::search_for_attr_one(output->root, "data-tralbum"), "data-tralbum"));
     if (json.isNull() || !json.isObject()) {
         qWarning() << "Cannot parse JSON data";
         return album;
@@ -202,14 +202,14 @@ BcApi::Album BcApi::album(const QUrl &url)
 
     album.title = json.object().value("current").toObject().value("title").toString();
     album.artist = json.object().value("artist").toString();
-    album.imageUrl = QUrl(attr_data(search_for_attr_one(output->root, "property", "og:image"), "content"));
+    album.imageUrl = QUrl{gumbo::attr_data(gumbo::search_for_attr_one(output->root, "property", "og:image"), "content")};
 
     auto track_info = json.object().value("trackinfo").toArray();
 
     for (int i = 0; i < track_info.size(); ++i) {
         AlbumTrack track;
 
-        track.streamUrl = QUrl(track_info.at(i).toObject().value("file").toObject().value("mp3-128").toString());
+        track.streamUrl = QUrl{track_info.at(i).toObject().value("file").toObject().value("mp3-128").toString()};
         if (track.streamUrl.isEmpty()) {
             continue;
         }
@@ -221,7 +221,7 @@ BcApi::Album BcApi::album(const QUrl &url)
 
         track.duration = int(track_info.at(i).toObject().value("duration").toDouble());
 
-        track.webUrl = QUrl(track_info.at(i).toObject().value("title_link").toString());
+        track.webUrl = QUrl{track_info.at(i).toObject().value("title_link").toString()};
         if (track.webUrl.isRelative()) {
             track.webUrl.setScheme(url.scheme());
             track.webUrl.setHost(url.host());
@@ -250,24 +250,24 @@ BcApi::Artist BcApi::artist(const QUrl &url)
         return artist;
     }
 
-    auto output = parseHtmlData(data);
+    auto output = gumbo::parseHtmlData(data);
 
     if (!output) {
         qWarning() << "Cannot parse HTML data";
         return artist;
     }
 
-    auto head = search_for_tag_one(output->root, GUMBO_TAG_HEAD);
-    artist.name = QString::fromUtf8(attr_data(search_for_attr_one(head, "property", "og:title"), "content"));
-    artist.imageUrl = QUrl(attr_data(search_for_attr_one(head, "property", "og:image"), "content"));
+    auto head = gumbo::search_for_tag_one(output->root, GUMBO_TAG_HEAD);
+    artist.name = QString::fromUtf8(gumbo::attr_data(gumbo::search_for_attr_one(head, "property", "og:title"), "content"));
+    artist.imageUrl = QUrl{gumbo::attr_data(gumbo::search_for_attr_one(head, "property", "og:image"), "content")};
 
-    auto lis = search_for_tag(search_for_id(output->root, "music-grid"), GUMBO_TAG_LI);
+    auto lis = gumbo::search_for_tag(gumbo::search_for_id(output->root, "music-grid"), GUMBO_TAG_LI);
 
     for (auto li : lis) {
         ArtistAlbum album;
-        auto a = search_for_tag_one(li, GUMBO_TAG_A);
+        auto a = gumbo::search_for_tag_one(li, GUMBO_TAG_A);
 
-        album.webUrl = QUrl(attr_data(a, "href"));
+        album.webUrl = QUrl{gumbo::attr_data(a, "href")};
         if (album.webUrl.isEmpty()) {
             continue;
         }
@@ -277,19 +277,19 @@ BcApi::Artist BcApi::artist(const QUrl &url)
             album.webUrl.setPort(url.port());
         }
 
-        auto img = search_for_tag_one(a, GUMBO_TAG_IMG);
-        album.imageUrl = QUrl(attr_data(img, "data-original"));
+        auto img = gumbo::search_for_tag_one(a, GUMBO_TAG_IMG);
+        album.imageUrl = QUrl{gumbo::attr_data(img, "data-original")};
         if (album.imageUrl.isEmpty())
-            album.imageUrl = QUrl(attr_data(img, "src"));
+            album.imageUrl = QUrl{gumbo::attr_data(img, "src")};
 
-        album.title = node_text(search_for_class_one(a, "title"));
+        album.title = gumbo::node_text(gumbo::search_for_class_one(a, "title"));
         artist.albums.push_back(std::move(album));
     }
 
     return artist;
 }
 
-QJsonDocument BcApi::parseJsonData(const QByteArray &data) const
+QJsonDocument BcApi::parseJsonData(const QByteArray &data)
 {
     QJsonParseError err;
 
@@ -332,12 +332,12 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
         SearchResultItem item;
         item.type = type;
 
-        item.webUrl = QUrl(elm.value("url").toString());
+        item.webUrl = QUrl{elm.value("url").toString()};
         if (item.webUrl.isEmpty()) {
             continue;
         }
 
-        item.imageUrl = QUrl(elm.value("img").toString());
+        item.imageUrl = QUrl{elm.value("img").toString()};
 
         if (type == Type_Track) {
             item.title = elm.value("name").toString();
@@ -367,14 +367,14 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
         return items;
     }
 
-    auto output = parseHtmlData(data);
+    auto output = gumbo::parseHtmlData(data);
 
     if (!output) {
         qWarning() << "Cannot parse data";
         return items;
     }
 
-    auto srs = search_for_class(output->root, "searchresult");
+    auto srs = gumbo::search_for_class(output->root, "searchresult");
 
     for (auto sr : srs) {
         auto ri = search_for_class_one(sr, "result-info");
@@ -382,7 +382,7 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
             break;
         }
 
-        auto type = textToType(node_text(search_for_class_one(ri, "itemtype")));
+        auto type = textToType(gumbo::node_text(gumbo::search_for_class_one(ri, "itemtype")));
         if (type == Type_Unknown) {
             break;
         }
@@ -390,24 +390,24 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
         SearchResultItem item;
         item.type = type;
 
-        auto img = search_for_tag_one(search_for_class_one(sr, "art"), GUMBO_TAG_IMG);
+        auto img = gumbo::search_for_tag_one(gumbo::search_for_class_one(sr, "art"), GUMBO_TAG_IMG);
         if (img) {
-            if (auto src = gumbo_get_attribute(&img->v.element.attributes, "src")) {
+            if (auto src = gumbo::gumbo_get_attribute(&img->v.element.attributes, "src")) {
                 item.imageUrl = QUrl(QString::fromUtf8(src->value));
             }
         }
 
-        item.name = node_text(search_for_tag_one(search_for_class_one(ri, "heading"), GUMBO_TAG_A));
+        item.name = gumbo::node_text(gumbo::search_for_tag_one(search_for_class_one(ri, "heading"), GUMBO_TAG_A));
         if (item.name.isEmpty()) {
             break;
         }
 
-        auto subhead = search_for_class_one(ri, "subhead");
+        auto subhead = gumbo::search_for_class_one(ri, "subhead");
         if (!subhead) {
             break;
         }
 
-        item.webUrl = QUrl(node_text(search_for_tag_one(search_for_class_one(ri, "itemurl"), GUMBO_TAG_A)));
+        item.webUrl = QUrl(gumbo::node_text(gumbo::search_for_tag_one(search_for_class_one(ri, "itemurl"), GUMBO_TAG_A)));
         if (item.webUrl.isEmpty()) {
             break;
         }
@@ -440,172 +440,7 @@ QUrl BcApi::makeSearchUrl(const QString &phrase)
     QUrlQuery qurl;
     qurl.addQueryItem("q", phrase);
     //QUrl url("https://bandcamp.com/search");
-    QUrl url("https://bandcamp.com/api/fuzzysearch/1/mobile_autocomplete");
+    QUrl url{"https://bandcamp.com/api/fuzzysearch/1/mobile_autocomplete"};
     url.setQuery(qurl);
     return url;
-}
-
-BcApi::GumboOutput_ptr BcApi::parseHtmlData(const QByteArray &data)
-{
-    return GumboOutput_ptr(
-                gumbo_parse_with_options(&kGumboDefaultOptions, data.data(),
-                size_t(data.length())), [](auto output){
-        gumbo_destroy_output(&kGumboDefaultOptions, output);
-    });
-}
-
-void BcApi::search_for_class(GumboNode* node, const char* cls_name, std::vector<GumboNode*> *nodes)
-{
-    if (!node || node->type != GUMBO_NODE_ELEMENT) {
-        return;
-    }
-
-    GumboAttribute* cls_attr;
-    if ((cls_attr = gumbo_get_attribute(&node->v.element.attributes, "class")) &&
-            strstr(cls_attr->value, cls_name) != nullptr) {
-        nodes->push_back(node);
-    }
-
-    GumboVector* children = &node->v.element.children;
-    for (size_t i = 0; i < children->length; ++i) {
-        search_for_class(static_cast<GumboNode*>(children->data[i]), cls_name, nodes);
-    }
-}
-
-std::vector<GumboNode*> BcApi::search_for_class(GumboNode* node, const char* cls_name)
-{
-    std::vector<GumboNode*> nodes;
-    BcApi::search_for_class(node, cls_name, &nodes);
-    return nodes;
-}
-
-GumboNode* BcApi::search_for_attr_one(GumboNode* node, const char* attr_name, const char* attr_value)
-{
-    if (!node || node->type != GUMBO_NODE_ELEMENT) {
-        return nullptr;
-    }
-
-    GumboAttribute* attr;
-    if ((attr = gumbo_get_attribute(&node->v.element.attributes, attr_name)) &&
-            strstr(attr->value, attr_value) != nullptr) {
-        return node;
-    }
-
-    GumboVector* children = &node->v.element.children;
-    for (size_t i = 0; i < children->length; ++i) {
-        GumboNode* result = search_for_attr_one(static_cast<GumboNode*>(children->data[i]), attr_name, attr_value);
-        if (result) {
-            return result;
-        }
-    }
-
-    return nullptr;
-}
-
-GumboNode* BcApi::search_for_class_one(GumboNode* node, const char* cls_name)
-{
-    return search_for_attr_one(node, "class", cls_name);
-}
-
-GumboNode* BcApi::search_for_id(GumboNode* node, const char* id)
-{
-    return search_for_attr_one(node, "id", id);
-}
-
-GumboNode* BcApi::search_for_attr_one(GumboNode* node, const char* attr_name)
-{
-    if (!node || node->type != GUMBO_NODE_ELEMENT) {
-        return nullptr;
-    }
-
-    if (gumbo_get_attribute(&node->v.element.attributes, attr_name) != nullptr) {
-        return node;
-    }
-
-    GumboVector* children = &node->v.element.children;
-    for (size_t i = 0; i < children->length; ++i) {
-        GumboNode* result = search_for_attr_one(static_cast<GumboNode*>(children->data[i]), attr_name);
-        if (result) {
-            return result;
-        }
-    }
-
-    return nullptr;
-}
-
-void BcApi::search_for_tag(GumboNode* node, GumboTag tag, std::vector<GumboNode*> *nodes)
-{
-    if (!node || node->type != GUMBO_NODE_ELEMENT) {
-        return;
-    }
-
-    if (node->v.element.tag == tag) {
-        nodes->push_back(node);
-    }
-
-    GumboVector* children = &node->v.element.children;
-    for (size_t i = 0; i < children->length; ++i) {
-        search_for_tag(static_cast<GumboNode*>(children->data[i]), tag, nodes);
-    }
-}
-
-std::vector<GumboNode*> BcApi::search_for_tag(GumboNode* node, GumboTag tag)
-{
-    std::vector<GumboNode*> nodes;
-    BcApi::search_for_tag(node, tag, &nodes);
-    return nodes;
-}
-
-GumboNode* BcApi::search_for_tag_one(GumboNode* node, GumboTag tag)
-{
-    if (!node || node->type != GUMBO_NODE_ELEMENT) {
-        return nullptr;
-    }
-
-    if (node->v.element.tag == tag) {
-        return node;
-    }
-
-    GumboVector* children = &node->v.element.children;
-    for (size_t i = 0; i < children->length; ++i) {
-        GumboNode* result = search_for_tag_one(static_cast<GumboNode*>(children->data[i]), tag);
-        if (result) {
-            return result;
-        }
-    }
-
-    return nullptr;
-}
-
-QString BcApi::node_text(GumboNode* node)
-{
-    QString text;
-    QTextStream ts(&text);
-
-    if (!node || node->type != GUMBO_NODE_ELEMENT) {
-        return {};
-    }
-
-    for (size_t i = 0; i < node->v.element.children.length; ++i) {
-        auto text = static_cast<GumboNode*>(node->v.element.children.data[0]);
-        if (text->type == GUMBO_NODE_TEXT) {
-            ts << text->v.text.text;
-        }
-    }
-
-    return text.simplified();
-}
-
-QByteArray BcApi::attr_data(GumboNode* node, const char* attr_name)
-{
-    if (!node || node->type != GUMBO_NODE_ELEMENT) {
-        return {};
-    }
-
-    GumboAttribute* attr_value;
-    if ((attr_value = gumbo_get_attribute(&node->v.element.attributes, attr_name)) != nullptr) {
-        return QByteArray(attr_value->value);
-    }
-
-    return {};
 }

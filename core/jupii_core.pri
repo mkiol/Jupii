@@ -129,7 +129,9 @@ HEADERS += \
     $$CORE_DIR/tuneinmodel.h \
     $$CORE_DIR/xc.h \
     $$CORE_DIR/frontiersiliconxc.h \
-    $$CORE_DIR/connectivitydetector.h
+    $$CORE_DIR/connectivitydetector.h \
+    $$CORE_DIR/soundcloudmodel.h \
+    $$CORE_DIR/gumbotools.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -182,7 +184,9 @@ SOURCES += \
     $$CORE_DIR/tuneinmodel.cpp \
     $$CORE_DIR/xc.cpp \
     $$CORE_DIR/frontiersiliconxc.cpp \
-    $$CORE_DIR/connectivitydetector.cpp
+    $$CORE_DIR/connectivitydetector.cpp \
+    $$CORE_DIR/soundcloudmodel.cpp \
+    $$CORE_DIR/gumbotools.cpp
 
 screencast {
     HEADERS += \

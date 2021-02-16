@@ -15,9 +15,7 @@
 #include <QUrl>
 #include <QJsonDocument>
 #include <memory>
-#include <functional>
-
-#include "gumbo.h"
+#include <vector>
 
 class BcApi : QObject
 {
@@ -85,27 +83,12 @@ public:
     static bool validUrl(const QUrl &url);
 
 private:
-    typedef std::unique_ptr<GumboOutput, std::function<void (GumboOutput*)>> GumboOutput_ptr;
-
     static const int httpTimeout = 10000;
     std::shared_ptr<QNetworkAccessManager> nam;
 
     QByteArray downloadData(const QUrl &url);
-    QUrl makeSearchUrl(const QString &phrase);
-    GumboOutput_ptr parseHtmlData(const QByteArray &data);
-    QJsonDocument parseJsonData(const QByteArray &data) const;
-
-    static void search_for_class(GumboNode* node, const char* cls_name, std::vector<GumboNode*> *nodes);
-    static std::vector<GumboNode*> search_for_class(GumboNode* node, const char* cls_name);
-    static GumboNode* search_for_class_one(GumboNode* node, const char* cls_name);
-    static GumboNode* search_for_id(GumboNode* node, const char* id);
-    static GumboNode* search_for_attr_one(GumboNode* node, const char* attr_name);
-    static GumboNode* search_for_attr_one(GumboNode* node, const char* attr_name, const char* attr_value);
-    static GumboNode* search_for_tag_one(GumboNode* node, GumboTag tag);
-    static void search_for_tag(GumboNode* node, GumboTag tag, std::vector<GumboNode*> *nodes);
-    static std::vector<GumboNode*> search_for_tag(GumboNode* node, GumboTag tag);
-    static QString node_text(GumboNode* node);
-    static QByteArray attr_data(GumboNode* node, const char *attr_name);
+    static QUrl makeSearchUrl(const QString &phrase);
+    static QJsonDocument parseJsonData(const QByteArray &data);
     static Type textToType(const QString &text);
 };
 
