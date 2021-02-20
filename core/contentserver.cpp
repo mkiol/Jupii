@@ -50,6 +50,7 @@
 #include "libupnpp/control/cdirectory.hxx"
 #include "bcapi.h"
 #include "connectivitydetector.h"
+#include "soundcloudapi.h"
 
 // TagLib
 #include "fileref.h"
@@ -3231,6 +3232,39 @@ ContentServer::makeItemMetaUsingBcApi(const QUrl &url, ItemMeta &meta,
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+ContentServer::makeItemMetaUsingSoundcloudApi(const QUrl &url, ItemMeta &meta,
+                                          std::shared_ptr<QNetworkAccessManager> nam,
+                                          int counter)
+{
+    qDebug() << "Trying to find url with Soundcloud API:" << url;
+
+    if (QThread::currentThread()->isInterruptionRequested()) {
+        qWarning() << "Thread interruption was requested";
+        return metaCache.cend();
+    }
+
+    auto track = SoundcloudApi(nam).track(url);
+
+    if (track.streamUrl.isEmpty()) {
+        qWarning() << "Soundcloud API returned empty url";
+        return metaCache.cend();
+    }
+
+    meta.title = std::move(track.title);
+    meta.album = std::move(track.album);
+    meta.artist = std::move(track.artist);
+    meta.duration = track.duration;
+    meta.albumArt = track.imageUrl.toString();
+    meta.app = "soundcloud";
+    meta.setFlags(MetaFlag_YtDl);
+
+    auto newUrl = std::move(track.streamUrl);
+    Utils::fixUrl(newUrl);
+
+    return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
+}
+
+const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                                             const QUrl &origUrl,
                                             const QString &app,
@@ -3431,6 +3465,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
             const auto url = reply->url();
             if (meta.app == "bc" || BcApi::validUrl(url)) {
                 return makeItemMetaUsingBcApi(url, meta, nam, counter);
+            } else if (meta.app == "soundcloud" || SoundcloudApi::validUrl(url)) {
+                return makeItemMetaUsingSoundcloudApi(url, meta, nam, counter);
             } else if (YoutubeDl::instance()->enabled()) {
                 return makeItemMetaUsingYoutubeDl(url, meta, nam, counter);
             }

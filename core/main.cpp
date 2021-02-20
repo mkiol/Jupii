@@ -71,6 +71,7 @@
 #include "contentserver.h"
 #include "connectivitydetector.h"
 #include "xc.h"
+#include "soundcloudmodel.h"
 
 void registerTypes()
 {
@@ -92,6 +93,7 @@ void registerTypes()
     qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0, "SomafmModel");
     qmlRegisterType<FosdemModel>("harbour.jupii.FosdemModel", 1, 0, "FosdemModel");
     qmlRegisterType<BcModel>("harbour.jupii.BcModel", 1, 0, "BcModel");
+    qmlRegisterType<SoundcloudModel>("harbour.jupii.SoundcloudModel", 1, 0, "SoundcloudModel");
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0, "IcecastModel");
     qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1, 0,
                                          "GpodderEpisodeModel");

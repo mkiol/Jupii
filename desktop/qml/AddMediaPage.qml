@@ -214,6 +214,17 @@ Kirigami.ScrollablePage {
 
         DoubleListItem {
             Layout.fillWidth: true
+            label: "SoundCloud"
+            iconSource: "qrc:/images/soundcloud.svg"
+            highlighted: rightPage ? rightPage.objectName === "soundcloud" : false
+            next: true
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"))
+            }
+        }
+
+        DoubleListItem {
+            Layout.fillWidth: true
             label: "TuneIn"
             iconSource: "qrc:/images/tunein.svg"
             highlighted: rightPage ? rightPage.objectName === "tunein" : false

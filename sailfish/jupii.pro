@@ -83,7 +83,8 @@ OTHER_FILES += \
     qml/PlayQueuePage.qml \
     qml/BcPage.qml \
     qml/TuneinPage.qml \
-    qml/InteractionHintLabel_.qml
+    qml/InteractionHintLabel_.qml \
+    qml/SoundcloudPage.qml
 
 ################
 # translations #

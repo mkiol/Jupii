@@ -299,6 +299,14 @@ Page {
             }
 
             SimpleListItem {
+                title.text: "SoundCloud"
+                icon.source: "image://icons/icon-m-soundcloud"
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"));
+                }
+            }
+
+            SimpleListItem {
                 title.text: "TuneIn"
                 icon.source: "image://icons/icon-m-tunein"
                 onClicked: {
