@@ -74,7 +74,7 @@ ListItem {
             left: _iconDisabled ? parent.left : _icon.right
             right: parent.right
             rightMargin: Theme.horizontalPageMargin +
-                         (extraLabel.visible ? extraLabel.width + Theme.paddingSmall : 0)
+                         (extraLabel.visible ? extraLabel.width + Theme.paddingMedium : 0)
             leftMargin: _iconDisabled ? Theme.horizontalPageMargin : Theme.paddingMedium
             verticalCenter: parent.verticalCenter
         }

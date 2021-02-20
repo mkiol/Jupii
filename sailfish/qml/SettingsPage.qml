@@ -245,6 +245,7 @@ Page {
                         }
 
                         Spacer {}
+                        Spacer {}
                     }
                 }
 
@@ -387,8 +388,6 @@ Page {
                         TextField {
                             anchors {
                                 left: parent.left; right: parent.right
-                                /*leftMargin: Theme.paddingLarge
-                                rightMargin: Theme.paddingLarge*/
                             }
                             label: qsTr("Frontier Silicon PIN")
                             text: settings.fsapiPin
@@ -421,6 +420,7 @@ Page {
                             }
                         }
 
+                        Spacer {}
                         Spacer {}
                     }
                 }
