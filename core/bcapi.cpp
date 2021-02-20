@@ -125,14 +125,12 @@ BcApi::Track BcApi::track(const QUrl &url)
     Track track;
 
     auto data = downloadData(url);
-
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return track;
     }
 
     auto output = gumbo::parseHtmlData(data);
-
     if (!output) {
         qWarning() << "Cannot parse HTML data";
         return track;
@@ -181,14 +179,12 @@ BcApi::Album BcApi::album(const QUrl &url)
     Album album;
 
     auto data = downloadData(url);
-
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return album;
     }
 
     auto output = gumbo::parseHtmlData(data);
-
     if (!output) {
         qWarning() << "Cannot parse HTML data";
         return album;
@@ -244,14 +240,12 @@ BcApi::Artist BcApi::artist(const QUrl &url)
     }
 
     auto data = downloadData(newUrl);
-
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return artist;
     }
 
     auto output = gumbo::parseHtmlData(data);
-
     if (!output) {
         qWarning() << "Cannot parse HTML data";
         return artist;
@@ -307,7 +301,6 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
     std::vector<SearchResultItem> items;
 
     auto data = downloadData(makeSearchUrl(query));
-
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return items;

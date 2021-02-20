@@ -165,7 +165,7 @@ Kirigami.ScrollablePage {
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: itemList.count === 0 && !itemModel.busy
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
-                      qsTr("Type the words to search") : qsTr("No items")
+                      qsTr("Type the words to search") : artistMode ? qsTr("No albums") : qsTr("No items")
         }
     }
 }

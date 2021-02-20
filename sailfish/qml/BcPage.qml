@@ -58,7 +58,7 @@ Dialog {
         model: itemModel
 
         /*title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
-               itemModel.artistName.length > 0 ? itemModel.artistName : qsTr("Bandcamp")*/
+               itemModel.artistName.length > 0 ? itemModel.artistName : "Bandcamp"*/
 
         header: SearchDialogHeader {
             search: !root.artistMode && !root.albumMode
@@ -126,7 +126,7 @@ Dialog {
         ViewPlaceholder {
             enabled: listView.count === 0 && !itemModel.busy
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
-                      qsTr("Type the words to search") : qsTr("No items")
+                      qsTr("Type the words to search") : root.artistMode ? qsTr("No albums") : qsTr("No items")
         }
     }
 
