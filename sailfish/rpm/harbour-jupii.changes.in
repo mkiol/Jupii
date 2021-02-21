@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun Feb 21 2021 Michal Kosciesza <michal@mkiol.net> 2.9.0-2
+- Support for Frontier Silicon API
+- SoundCloud browser
+
 * Sat Jan 09 2021 Michal Kosciesza <michal@mkiol.net> 2.8.2-3
 - Minor UI fixes
 - Better logging
