@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,6 +26,38 @@ Page {
 
             PageHeader {
                 title: qsTr("Changes")
+            }
+
+            SectionHeader {
+                text: qsTr("Version %1").arg("2.9.0")
+            }
+
+            LogItem {
+                title: "SoundCloud browser"
+                description: "SoundCloud is an online music community and sharing website. " +
+                             "You can search and add audio content from SoundCloud using simple browser. " +
+                             "New option is available via 'Add Items' menu."
+            }
+
+            LogItem {
+                title: "FOSDEM 2021 browser"
+                description: "FOSDEM is a conference centered on free and open-source " +
+                             "software development. It is well known for having excellent video recordings. " +
+                             "Now you can browse and add videos from FOSDEM 2021."
+            }
+
+            LogItem {
+                title: "Frontier Silicon API"
+                description: "Frontier Silicon chipset is used in some digital radios products from " +
+                             "Hama, Medion, Slivercrest, Auna, Technisat, Revo, Pinnel and more. " +
+                             "Initial support for the FSAPI has been added. " +
+                             "When remote device supports FSAPI, option to toggle power is visible in the context menu."
+            }
+
+            LogItem {
+                title: "Performance improvements and fixes for bugs discovered on SFOS 4.0"
+                description: "Jupii starts quicker and uses less memory. " +
+                             "Minor bugs discovered on SFOS 4.0 have been fixed as well."
             }
 
             SectionHeader {
