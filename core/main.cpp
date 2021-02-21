@@ -114,20 +114,20 @@ void registerTypes()
 
 void installTranslator(QGuiApplication* app)
 {
-    QTranslator translator;
+    auto translator = new QTranslator();
 #ifdef SAILFISH
     auto transDir = SailfishApp::pathTo("translations").toLocalFile();
 #else
     QString transDir = ":/translations";
 #endif
-    if(!translator.load(QLocale::system().name(), QStringLiteral("jupii"), QStringLiteral("-"), transDir, QStringLiteral(".qm"))) {
+    if(!translator->load(QLocale::system().name(), QStringLiteral("jupii"), QStringLiteral("-"), transDir, QStringLiteral(".qm"))) {
         qDebug() << "Cannot load translation:" << QLocale::system().name() << transDir;
-        if (!translator.load("jupii-en", transDir)) {
+        if (!translator->load("jupii-en", transDir)) {
             qDebug() << "Cannot load default translation";
         }
     }
 
-    app->installTranslator(&translator);
+    app->installTranslator(translator);
 }
 
 int main(int argc, char *argv[])
