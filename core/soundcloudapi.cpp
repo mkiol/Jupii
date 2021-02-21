@@ -29,15 +29,15 @@ SoundcloudApi::SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam, QObject
     discoverClientId();
 }
 
-bool SoundcloudApi::discoverClientId()
+void SoundcloudApi::discoverClientId()
 {
     if (!clientId.isEmpty())
-        return true;
+        return;
 
     auto output = downloadHtmlData(QUrl{"https://soundcloud.com"});
     if (!output) {
         qWarning() << "Cannot parse HTML data";
-        return false;
+        return;
     }
 
     auto scripts = gumbo::search_for_tag(output->root, GUMBO_TAG_SCRIPT);
@@ -45,15 +45,17 @@ bool SoundcloudApi::discoverClientId()
         if (QUrl url{gumbo::attr_data(script, "src")}; !url.isEmpty()) {
             if (auto data = downloadData(url); !data.isEmpty()) {
                 if (auto id = extractClientId(data); !id.isEmpty()) {
-                    qWarning() << "client id: " << id;
+#ifdef QT_DEBUG
+                    qDebug() << "Client id: " << id;
+#endif
                     clientId = id;
-                    return true;
+                    return;
                 }
             }
         }
     }
 
-    return false;
+    qWarning() << "Cannot find clientId";
 }
 
 bool SoundcloudApi::validUrl(const QUrl &url)
@@ -67,7 +69,9 @@ bool SoundcloudApi::validUrl(const QUrl &url)
 
 QByteArray SoundcloudApi::downloadData(const QUrl &url)
 {
-    qDebug() << url;
+#ifdef QT_DEBUG
+    qDebug() << "download data:" << url;
+#endif
     QByteArray data;
 
     QNetworkRequest request;
@@ -649,7 +653,7 @@ QUrl SoundcloudApi::makeSearchUrl(const QString &phrase) const
     qurl.addQueryItem("client_id", clientId);
     qurl.addQueryItem("limit", "50");
     qurl.addQueryItem("offset", "0");
-    QUrl url("https://api-v2.soundcloud.com/search");
+    QUrl url{"https://api-v2.soundcloud.com/search"};
     url.setQuery(qurl);
     return url;
 }
@@ -659,7 +663,7 @@ QUrl SoundcloudApi::makePlaylistUrl(const QString &id) const
     QUrlQuery qurl;
     qurl.addQueryItem("app_locale", locale);
     qurl.addQueryItem("client_id", clientId);
-    QUrl url("https://api-v2.soundcloud.com/playlists/" + id);
+    QUrl url{"https://api-v2.soundcloud.com/playlists/" + id};
     url.setQuery(qurl);
     return url;
 }
@@ -669,7 +673,7 @@ QUrl SoundcloudApi::makeTrackUrl(const QString &id) const
     QUrlQuery qurl;
     qurl.addQueryItem("app_locale", locale);
     qurl.addQueryItem("client_id", clientId);
-    QUrl url("https://api-v2.soundcloud.com/tracks/" + id);
+    QUrl url{"https://api-v2.soundcloud.com/tracks/" + id};
     url.setQuery(qurl);
     return url;
 }
@@ -682,7 +686,7 @@ QUrl SoundcloudApi::makeUserPlaylistsUrl(const QString &id) const
     qurl.addQueryItem("limit", "50");
     qurl.addQueryItem("offset", "0");
     qurl.addQueryItem("linked_partitioning", "1");
-    QUrl url("https://api-v2.soundcloud.com/users/" + id + "/playlists");
+    QUrl url{"https://api-v2.soundcloud.com/users/" + id + "/playlists"};
     url.setQuery(qurl);
     return url;
 }
@@ -695,7 +699,7 @@ QUrl SoundcloudApi::makeUserStreamUrl(const QString &id) const
     qurl.addQueryItem("limit", "50");
     qurl.addQueryItem("offset", "0");
     qurl.addQueryItem("linked_partitioning", "1");
-    QUrl url("https://api-v2.soundcloud.com/stream/users/" + id);
+    QUrl url{"https://api-v2.soundcloud.com/stream/users/" + id};
     url.setQuery(qurl);
     return url;
 }

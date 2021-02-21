@@ -101,7 +101,7 @@ private:
     std::shared_ptr<QNetworkAccessManager> nam;
     QString locale;
 
-    bool discoverClientId();
+    void discoverClientId();
     QByteArray downloadData(const QUrl &url);
     QJsonDocument downloadJsonData(const QUrl &url);
     gumbo::GumboOutput_ptr downloadHtmlData(const QUrl &url);
