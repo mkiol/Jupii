@@ -46,6 +46,7 @@ public:
     Q_INVOKABLE QStringList networkInfs(bool onlyUp = true);
     Q_INVOKABLE int prefNetworkInfIndex();
     Q_INVOKABLE void setPrefNetworkInfIndex(int idx) const;
+    static QString escapeName(const QString &filename);
 
 #ifdef SAILFISH
     void setQmlRootItem(QQuickItem* rootItem);

@@ -20,6 +20,7 @@
 #include "trackercursor.h"
 #include "settings.h"
 #include "dbus_systemd_inf.h"
+#include "utils.h"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -125,37 +126,28 @@ QString Tracker::genTrackerId(const QString& name)
     // Strip invalid entities and normalize as defined in
     // https://wiki.gnome.org/action/show/DraftSpecs/MediaArtStorageSpec
 
-    auto striped(name);
-    striped.remove(QRegExp(QStringLiteral("\\[[^\\]]*\\]|\\([^\\)]*\\)|\\{[^\\}]*\\}|<[^>}]*>|" \
-                                          "[_!@#\\$\\^&\\*\\+=\\|\\\\/\"'\\?~`]+"), Qt::CaseInsensitive));
-    striped.replace(QRegExp(QStringLiteral("\\s\\s"), Qt::CaseInsensitive)," ");
-    striped = striped.trimmed().normalized(
-                QString::NormalizationForm_KD).toLower();
-
-    auto hash = QString(QCryptographicHash::hash(
-                               striped.isEmpty() ? " " : striped.toUtf8(),
-                               QCryptographicHash::Md5).toHex()
-                           );
-    return hash;
+    auto striped = Utils::escapeName(name);
+    return QString{QCryptographicHash::hash(striped.isEmpty() ? " " : striped.toUtf8(),
+                                            QCryptographicHash::Md5).toHex()};
 }
 
 QString Tracker::genAlbumArtFile(const QString &albumName,
                                  const QString &artistName)
 {
-    const auto cacheDir = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation);
-    const auto filepath = cacheDir + "/media-art/" + "album-" +
-            genTrackerId(artistName) + "-" + genTrackerId(albumName) + ".jpeg";
-    return QFileInfo::exists(filepath) ? filepath : QString();
+    const auto filepath = QString{"%1/media-art/album-%2-%3.jpeg"}
+            .arg(QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation),
+                 genTrackerId(artistName), genTrackerId(albumName));
+    if (!QFileInfo::exists(filepath))
+        return {};
+    return filepath;
 }
 
 bool Tracker::startTracker()
 {
-    auto bus = QDBusConnection::sessionBus();
-
     OrgFreedesktopSystemd1ManagerInterface dbus_inf(
                 QStringLiteral("org.freedesktop.systemd1"),
                 QStringLiteral("/org/freedesktop/systemd1"),
-                bus);
+                QDBusConnection::sessionBus());
 
     if (!dbus_inf.isValid()) {
         qWarning() << "Systemd interface cannot be created";
@@ -183,12 +175,10 @@ bool Tracker::startTracker()
     QEventLoop loop;
     QTimer::singleShot(1000, &loop, &QEventLoop::quit); // timeout 1s
     connect(&dbus_inf, &OrgFreedesktopSystemd1ManagerInterface::JobRemoved,
-            this, [&loop, &path](uint id,
+            this, [&loop, &path](uint,
                           const QDBusObjectPath &job,
-                          const QString &unit,
+                          const QString&,
                           const QString &result){
-        Q_UNUSED(id)
-        Q_UNUSED(unit)
         qDebug() << "JobRemoved:" << job.path() << result;
         if (path == job.path()) {
             loop.exit(1);

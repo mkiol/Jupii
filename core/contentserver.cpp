@@ -356,8 +356,8 @@ void ContentServerWorker::saveRecFile(ProxyItem &item)
                     !title.isEmpty()) {
                 qDebug() << "Saving recorded file for title:" << title;
                 item.recFile->close();
-                auto recFilePath = QDir(Settings::instance()->getRecDir()).filePath(
-                            QString("%1.%2.%3.%4").arg(title, Utils::instance()->randString(),
+                auto recFilePath = QDir{Settings::instance()->getRecDir()}.filePath(
+                            QString{"%1.%2.%3.%4"}.arg(Utils::escapeName(title), Utils::instance()->randString(),
                                                        "jupii_rec", item.recExt));
                 if (item.recFile->exists() && item.recFile->size() > ContentServer::recMinSize) {
                     if (item.recFile->copy(recFilePath)) {
@@ -370,7 +370,7 @@ void ContentServerWorker::saveRecFile(ProxyItem &item)
                             item.metaint > 0 ? item.title : item.author, // author
                             ContentServer::recAlbumName, // album
                             //QString("Recorded by %1").arg(Jupii::APP_NAME),
-                            QString(), // comment
+                            {}, // comment
                             url, // URL
                             QDateTime::currentDateTime(), // time of recording
                             item.artPath
@@ -393,7 +393,7 @@ void ContentServerWorker::saveRecFile(ProxyItem &item)
 
     item.saveRec = false;
     emit streamToRecordChanged(item.id, item.saveRec);
-    emit streamRecordableChanged(item.id, false, QString());
+    emit streamRecordableChanged(item.id, false, {});
 }
 
 ContentServerWorker::ProxyItem::~ProxyItem()
@@ -3699,8 +3699,8 @@ bool ContentServer::saveTmpRec(const QString &path)
     const auto ext = path.split('.').last();
 
     if (!title.isEmpty() && !ext.isEmpty()) {
-        auto recFilePath = QDir(Settings::instance()->getRecDir()).filePath(
-                    QString("%1.%2.%3.%4").arg(title, Utils::instance()->randString(),
+        auto recFilePath = QDir{Settings::instance()->getRecDir()}.filePath(
+                    QString{"%1.%2.%3.%4"}.arg(Utils::escapeName(title), Utils::instance()->randString(),
                                                "jupii_rec", ext));
         qDebug() << "Saving rec file:" << path << recFilePath;
         if (QFile::copy(path, recFilePath)) {

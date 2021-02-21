@@ -807,6 +807,16 @@ QString Utils::deviceIconFilePath(const QString& id)
                 Utils::cachePathForFile(deviceIconFileName(id, "png")) : jpgPath;
 }
 
+QString Utils::escapeName(const QString& filename)
+{
+    QString escapedName{filename};
+    escapedName.remove(QRegExp(QStringLiteral("\\[[^\\]]*\\]|\\([^\\)]*\\)|\\{[^\\}]*\\}|<[^>}]*>|" \
+                                          "[_!@#\\$\\^&\\*\\+=\\|\\\\/\"'\\?~`]+"), Qt::CaseInsensitive));
+    escapedName.replace(QRegExp(QStringLiteral("\\s\\s"), Qt::CaseInsensitive)," ");
+    escapedName = escapedName.trimmed().normalized(QString::NormalizationForm_KD).toLower();
+    return escapedName;
+}
+
 #ifdef SAILFISH
 void Utils::setQmlRootItem(QQuickItem *rootItem)
 {
