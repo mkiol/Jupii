@@ -292,7 +292,7 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url)
             }
 
             track.streamUrl = QUrl{json.object().value("url").toString()};
-            track.duration = int(m.value("duration").toDouble());
+            track.duration = int(m.value("duration").toDouble() / 1000);
 
             break;
         }
