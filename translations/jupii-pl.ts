@@ -46,8 +46,8 @@
         <translation>Tłumacze</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AboutPage.qml" line="91"/>
-        <location filename="../desktop/qml/AboutPage.qml" line="131"/>
+        <location filename="../sailfish/qml/AboutPage.qml" line="92"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="132"/>
         <source>Libraries in use</source>
         <translation>Wykorzystane biblioteki</translation>
     </message>
@@ -394,21 +394,27 @@
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="111"/>
-        <location filename="../desktop/qml/BcPage.qml" line="121"/>
+        <location filename="../desktop/qml/BcPage.qml" line="123"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="112"/>
-        <location filename="../desktop/qml/BcPage.qml" line="122"/>
+        <location filename="../desktop/qml/BcPage.qml" line="124"/>
         <source>Artist</source>
         <translation>Artysta</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="129"/>
-        <location filename="../desktop/qml/BcPage.qml" line="166"/>
+        <location filename="../desktop/qml/BcPage.qml" line="168"/>
         <source>Type the words to search</source>
         <translation>Wpisz słowa aby wyszukać</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/BcPage.qml" line="129"/>
+        <location filename="../desktop/qml/BcPage.qml" line="168"/>
+        <source>No albums</source>
+        <translation>Brak albumów</translation>
     </message>
     <message>
         <source>No tracks</source>
@@ -416,7 +422,7 @@
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="129"/>
-        <location filename="../desktop/qml/BcPage.qml" line="166"/>
+        <location filename="../desktop/qml/BcPage.qml" line="168"/>
         <source>No items</source>
         <translation>Brak elementów</translation>
     </message>
@@ -435,7 +441,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/BcPage.qml" line="141"/>
+        <location filename="../desktop/qml/BcPage.qml" line="143"/>
         <source>Toggle selection</source>
         <translation>Zaznacz/Odznacz</translation>
     </message>
@@ -455,22 +461,17 @@
     </message>
     <message>
         <location filename="../sailfish/qml/ChangelogPage.qml" line="28"/>
-        <location filename="../desktop/qml/ChangelogPage.qml" line="28"/>
         <source>Changes</source>
         <translation>Lista zmian</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="68"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="78"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="138"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="194"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="281"/>
-        <location filename="../desktop/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../desktop/qml/ChangelogPage.qml" line="42"/>
-        <location filename="../desktop/qml/ChangelogPage.qml" line="102"/>
-        <location filename="../desktop/qml/ChangelogPage.qml" line="158"/>
-        <location filename="../desktop/qml/ChangelogPage.qml" line="245"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="64"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="100"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="110"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="170"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="226"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="313"/>
         <source>Version %1</source>
         <translation>Wersja %1</translation>
     </message>
@@ -478,22 +479,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../core/contentserver.cpp" line="2072"/>
+        <location filename="../core/contentserver.cpp" line="2068"/>
         <source>Unknown</source>
         <translation>Nieznany</translation>
     </message>
     <message>
-        <location filename="../core/contentserver.cpp" line="3093"/>
+        <location filename="../core/contentserver.cpp" line="3066"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../core/contentserver.cpp" line="3112"/>
+        <location filename="../core/contentserver.cpp" line="3085"/>
         <source>Audio capture</source>
         <translation>Przechwytywanie dźwięku</translation>
     </message>
     <message>
-        <location filename="../core/contentserver.cpp" line="3131"/>
+        <location filename="../core/contentserver.cpp" line="3104"/>
         <source>Screen capture</source>
         <translation>Przechwytywanie ekranu</translation>
     </message>
@@ -576,7 +577,7 @@
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DeviceInfoPage.qml" line="103"/>
+        <location filename="../sailfish/qml/DeviceInfoPage.qml" line="109"/>
         <location filename="../desktop/qml/DeviceInfoPage.qml" line="131"/>
         <source>Services</source>
         <translation>Usługi</translation>
@@ -586,6 +587,20 @@
         <location filename="../desktop/qml/DeviceInfoPage.qml" line="30"/>
         <source>Description was copied to clipboard</source>
         <translation>Opis został skopiowany do schowka</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/DeviceInfoPage.qml" line="103"/>
+        <location filename="../desktop/qml/DeviceInfoPage.qml" line="144"/>
+        <source>Extra API</source>
+        <translation>Ekstra API</translation>
+    </message>
+</context>
+<context>
+    <name>DeviceModel</name>
+    <message>
+        <location filename="../core/devicemodel.cpp" line="88"/>
+        <source>Invalid PIN for %1</source>
+        <translation>Niepoprawny PIN dla %1</translation>
     </message>
 </context>
 <context>
@@ -603,7 +618,7 @@
         <translation type="vanished">Wystąpił wewnętrzny błąd</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="68"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="67"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="19"/>
         <source>Devices</source>
         <translation>Urządzenia</translation>
@@ -613,60 +628,64 @@
         <translation type="vanished">O Jupiim</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="81"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="80"/>
         <source>Settings</source>
         <translation>Ustawienia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="86"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="85"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="35"/>
-        <location filename="../desktop/qml/DevicesPage.qml" line="139"/>
+        <location filename="../desktop/qml/DevicesPage.qml" line="140"/>
         <source>Find devices</source>
         <translation>Szukaj urządzeń</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="76"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="75"/>
         <source>About %1</source>
         <translation>O Jupiim</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="118"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="116"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="84"/>
         <source>Connect</source>
         <translation>Połącz</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="118"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="116"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="84"/>
         <source>Disconnect</source>
         <translation>Rozłącz</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="137"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="135"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="94"/>
         <source>Power Off</source>
         <translation>Wyłącz</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="137"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="135"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="94"/>
         <source>Power On</source>
         <translation>Włącz</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="168"/>
-        <location filename="../desktop/qml/DevicesPage.qml" line="136"/>
         <source>Disconnected</source>
-        <translation>Rozłączony</translation>
+        <translation type="vanished">Rozłączony</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="168"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="166"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="136"/>
         <source>No devices</source>
         <translation>Brak urządzeń</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="179"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="166"/>
+        <location filename="../desktop/qml/DevicesPage.qml" line="136"/>
+        <source>No network connection</source>
+        <translation>Brak połączenia z siecią</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="177"/>
         <source>Connect to a device or flick left to access play queue</source>
         <translation>Połącz z urządzeniem albo przesuń w lewo aby przejść do kolejki odtwarzania</translation>
     </message>
@@ -675,12 +694,12 @@
         <translation type="vanished">Nie znaleziono urządzeń</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="170"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="168"/>
         <source>Pull down to find more devices in your network</source>
         <translation>Otwórz górne menu aby poszukać więcej urządzeń</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="171"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="169"/>
         <source>Connect WLAN to find devices in your network</source>
         <translation>Połącz sieć WLAN aby poszukać urządzeń</translation>
     </message>
@@ -689,7 +708,7 @@
         <translation type="obsolete">Playlista</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="129"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="127"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="103"/>
         <source>Show description</source>
         <translation>Pokaż opis</translation>
@@ -699,13 +718,13 @@
         <translation type="vanished">Włącz/Wyłącz</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="145"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="143"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="111"/>
         <source>Remove from favorites</source>
         <translation>Usuń z ulubionych</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/DevicesPage.qml" line="145"/>
+        <location filename="../sailfish/qml/DevicesPage.qml" line="143"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="111"/>
         <source>Add to favorites</source>
         <translation>Dodaj do ulubionych</translation>
@@ -823,7 +842,7 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Brak konferencji</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemYearsPage.qml" line="82"/>
+        <location filename="../sailfish/qml/FosdemYearsPage.qml" line="86"/>
         <location filename="../desktop/qml/FosdemYearsPage.qml" line="22"/>
         <source>FOSDEM Conferences</source>
         <translation>Konferencje FOSDEM</translation>
@@ -1224,25 +1243,25 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="92"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="124"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="122"/>
         <source>Item cannot be added</source>
         <translation>Element nie może zostać dodany</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="94"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="126"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="124"/>
         <source>Some items cannot be added</source>
         <translation>Niektóre elementy nie mogą być dodane</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="96"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="128"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="126"/>
         <source>Items cannot be added</source>
         <translation>Elementy nie mogą zostać dodane</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="98"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="130"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="128"/>
         <source>Unknown error</source>
         <translation>Nieznany błąd</translation>
     </message>
@@ -1254,7 +1273,7 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="143"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="89"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="87"/>
         <source>Refresh items</source>
         <translation>Odśwież</translation>
     </message>
@@ -1272,68 +1291,68 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="90"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="122"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="120"/>
         <source>Item is already in play queue</source>
         <translation>Element już jest w kolejce odtwarzania</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="154"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="44"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="278"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="276"/>
         <source>Add items</source>
         <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="169"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="170"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="168"/>
         <source>Refreshing item %1 of %2...</source>
         <translation>Odświeżanie elementu %1 z %2...</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="170"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="171"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="169"/>
         <source>Refreshing item...</source>
         <translation>Odświeżanie...</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="172"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="173"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="171"/>
         <source>Adding item %1 of %2...</source>
         <translation>Dodawanie elementu %1 z %2...</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="173"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="174"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="172"/>
         <source>Adding item...</source>
         <translation>Dodawanie...</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="294"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="293"/>
         <source>Pull down to add new items</source>
         <translation>Otwórz górne menu aby dodać nowe elementy</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="405"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="404"/>
         <source>Tap to access playback &amp; volume controls</source>
         <translation>Dotknij aby sterować odtwarzaniem i głośnością</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="423"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="422"/>
         <source>Flick left to see current track details</source>
         <translation>Przesuń w lewo aby zobaczyć szczegóły aktualnego utworu</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="382"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="381"/>
         <source>Not connected</source>
         <translation>Nie połączony</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="383"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="382"/>
         <source>Connect to a device to control playback using %1.</source>
         <translation>Połącz z urządzeniem aby sterować odtwarzaniem za pomocą Jupiiego.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="384"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="383"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>Bez połączenia, wszystkie elementy w kolejce odtwarzania są nadal dostępne dla urządzeń w sieci domowej.</translation>
     </message>
@@ -1349,8 +1368,8 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="137"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="82"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="151"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="81"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="149"/>
         <source>Clear queue</source>
         <translation>Wyczyść kolejkę</translation>
     </message>
@@ -1364,37 +1383,37 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="244"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="241"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="239"/>
         <source>Show</source>
         <translation>Pokaż</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="244"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="241"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="239"/>
         <source>Play</source>
         <translation>Odtwarzaj</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="259"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="241"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="239"/>
         <source>Pause</source>
         <translation>Zatrzymaj</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="269"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="252"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="250"/>
         <source>Remove</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="293"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="275"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="292"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="272"/>
         <source>No items</source>
         <translation>Brak elementów</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="311"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="294"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="310"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="290"/>
         <source>Unknown</source>
         <translation>Nieznany</translation>
     </message>
@@ -1404,17 +1423,17 @@ Pull down to connect to the local network.</source>
         <translation>Informacje o utworze</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="145"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="143"/>
         <source>Playlist has been saved</source>
         <translation>Lista odtwarzania została zapisana</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="153"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="151"/>
         <source>Remove all items from play queue?</source>
         <translation>Usunąć wszystkie elementy z kolejki odtwarzania?</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="136"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="134"/>
         <source>Save items to playlist file</source>
         <translation>Zapisz elementy jako plik playlisty</translation>
     </message>
@@ -1422,58 +1441,63 @@ Pull down to connect to the local network.</source>
 <context>
     <name>PlayerPanel</name>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="115"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="117"/>
+        <source>No network connection</source>
+        <translation>Brak połączenia z siecią</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="118"/>
         <source>Not connected</source>
         <translation>Nie połączony</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="115"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="118"/>
         <source>Connect to a device to control playback using %1.</source>
         <translation>Połącz z urządzeniem aby sterować odtwarzaniem za pomocą Jupiiego.</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="116"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="119"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>Bez połączenia, wszystkie elementy w kolejce odtwarzania są nadal dostępne dla urządzeń w sieci domowej.</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="119"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="125"/>
         <source>Devices</source>
         <translation>Urządzenia</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="307"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="314"/>
         <source>Skip Backward</source>
         <translation>Przejdź do poprzedniego</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="317"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="324"/>
         <source>Seek Backward</source>
         <translation>Przewiń wstecz</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="327"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="334"/>
         <source>Seek Forward</source>
         <translation>Przewiń do przodu</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="337"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="344"/>
         <source>Skip Forward</source>
         <translation>Przejdź do następnego</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="349"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="356"/>
         <source>Toggle Record</source>
         <translation>Przełącz nagrywanie</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="363"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="370"/>
         <source>Toggle Repeat One</source>
         <translation>Przełącz powtarzanie tylko jednego</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="402"/>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="440"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="409"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="447"/>
         <source>Toggle Mute</source>
         <translation>Przełącz wyciszenie</translation>
     </message>
@@ -1481,7 +1505,7 @@ Pull down to connect to the local network.</source>
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../core/playlistmodel.cpp" line="680"/>
+        <location filename="../core/playlistmodel.cpp" line="681"/>
         <source>Playlist</source>
         <translation>List odtwarzania</translation>
     </message>
@@ -1546,8 +1570,8 @@ Pull down to connect to the local network.</source>
 <context>
     <name>RecModel</name>
     <message>
+        <location filename="../core/recmodel.cpp" line="82"/>
         <location filename="../core/recmodel.cpp" line="84"/>
-        <location filename="../core/recmodel.cpp" line="86"/>
         <source>Unknown</source>
         <translation>Nieznany</translation>
     </message>
@@ -1742,7 +1766,7 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Skok przewijania</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="113"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="114"/>
         <source>Experiments</source>
         <translation>Eksperymenty</translation>
     </message>
@@ -1771,37 +1795,42 @@ Pull down to connect to the local network.</source>
         <translation>Wzmocnienie mikrofonu</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="140"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="141"/>
         <source>Enables Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
         <translation>Włącza funkcję przechwytywania ekranu. Funkcja jest jeszcze w fazie beta, dlatego jakość wideo może być niska.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="169"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="170"/>
         <source>Screen capture quality</source>
         <translation>Jakość przechwytywania ekranu</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="213"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="182"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
         <translation>Uwożliwia nagrywanie audio. Jeśli element URL jest typu Icecast, poszczególne utwory ze strumienia będą nagrywane oddzielnie. Aby włączyć, użyj przycisku &apos;Nagraj&apos; na dolnym panelu. Kiedy przycisk &apos;Nagraj&apos; jest włączony przed końcem aktualnie odtwarzanego utworu, to cały utwór zostanie zapisany do pliku.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="270"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="241"/>
         <source>Reset tips and hints</source>
         <translation>Resetuj pokazywanie porad i wskazówek</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="272"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="243"/>
         <source>Resetting tips and hints</source>
         <translation>Resetuj pokazywanie porad i wskazówek</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="282"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="257"/>
         <source>Preferred network interface</source>
         <translation>Preferowany interfejs sieciowy</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="399"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="395"/>
+        <source>Enter Frontier Silicon PIN</source>
+        <translation>Wprowadź PIN dla Frontier Silicon</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="419"/>
         <source>Resetting settings</source>
         <translation>Resetowanie ustawień</translation>
     </message>
@@ -1810,12 +1839,12 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Uwożliwia nagrywanie utworów z radia internetowego typu Icecast. Aby włączyć, użyj przycisku &apos;Nagraj&apos; na dolnym panelu. Kiedy przycisk &apos;Nagraj&apos; jest włączony przed końcem aktualnie odtwarzanego utworu, to cały utwór zostanie zapisany do pliku.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="298"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="273"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation>Określa kiedy dane z Internetu (np. radio internetowe) są przekazywane do urządzeń UPnP za pośrednictwem Jupiiego. Zalecaną opcją jest &apos;Zawsze&apos; ponieważ zapewnia najlepszą kompatybilność. W przypadku gdy przekazywanie jest wyłączone (opcja &apos;Nigdy&apos;), wykrywanie tytułów Icecast oraz Nagrywanie nie są dostępne.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="321"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="296"/>
         <source>Only Icecast</source>
         <translation>Tylko Icecast</translation>
     </message>
@@ -1840,7 +1869,7 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Wyświetlanie obrazów na urządzeniach UPnP nie jest w pełni zaimplementowane. Ta opcja odblokowuje możliwość wyświetlania obrazów pomimo tego, że może powodować to błędy w %1m.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="117"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="118"/>
         <source>Screen capture</source>
         <translation>Przechwytywanie ekranu</translation>
     </message>
@@ -1873,7 +1902,12 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Wzmocnienie głośności dla przechwytywania dźwięku</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="397"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="392"/>
+        <source>Frontier Silicon PIN</source>
+        <translation>PIN Frontier Silicon</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="417"/>
         <source>Reset settings</source>
         <translation>Resetuj ustawienia</translation>
     </message>
@@ -1894,17 +1928,19 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Liczba klatek w przechwytywaniu ekranu</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="277"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="253"/>
         <source>Advanced</source>
         <translation>Zaawansowane</translation>
     </message>
     <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="326"/>
         <source>Screen capture encoder</source>
-        <translation type="vanished">Encoder w przechwytywaniu ekranu</translation>
+        <translation>Encoder w przechwytywaniu ekranu</translation>
     </message>
     <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="338"/>
         <source>Auto</source>
-        <translation type="vanished">Automaczny</translation>
+        <translation>Automaczny</translation>
     </message>
     <message>
         <source>5 fps (default)</source>
@@ -1919,12 +1955,12 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">30 fps</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="147"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="148"/>
         <source>Force screen 16:9 aspect ratio</source>
         <translation>Wymuszaj proporcję 16:9</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="122"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="123"/>
         <source>Disabled</source>
         <translation>Wyłączone</translation>
     </message>
@@ -1934,12 +1970,12 @@ Pull down to connect to the local network.</source>
         <translation>Gdy włączone, wszystkie elementy w kolejce odtwarzania są dostępne dla urządzeń UPnP w sieci domowej.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="123"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="124"/>
         <source>Enabled</source>
         <translation>Włączone</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="124"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="125"/>
         <source>Enabled with audio</source>
         <translation>Włączone razem z dźwiękiem</translation>
     </message>
@@ -1948,22 +1984,22 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Włącza funkcję przesyłania ekranu. Przechwytywanie ekranu razem z dźwiękiem jest jeszcze w fazie beta i dlatego jakość strumieniowania może być niska.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="150"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="151"/>
         <source>Don&apos;t force</source>
         <translation>Nie wymuszaj</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="151"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="152"/>
         <source>Scale</source>
         <translation>Skaluj</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="152"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="153"/>
         <source>Crop</source>
         <translation>Przytnij</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="212"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="181"/>
         <source>Stream recorder</source>
         <translation>Nagrywanie</translation>
     </message>
@@ -1980,22 +2016,22 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Uwożliwia nagrywanie utworów z strumieni SHOUTcast. Aby włączyć, użyj przycisku &apos;Nagraj&apos; na dolnym panelu. Kiedy przycisk &apos;Nagraj&apos; jest włączony przed końcem aktualnie odtwarzanego utworu, to cały utwór zostanie zapisany do pliku.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="238"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="207"/>
         <source>Directory for recordings</source>
         <translation>Katalog z nagraniami</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="251"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="220"/>
         <source>Change</source>
         <translation>Zmień</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="260"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="229"/>
         <source>Set default</source>
         <translation>Ustaw domyślny</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="297"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="272"/>
         <source>Stream relaying</source>
         <translation>Przekazywanie strumieni z Internetu</translation>
     </message>
@@ -2004,7 +2040,7 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Strumienie z Internetu są przekazywane do urządzeń UPnP za pośrednictwem Jupiiego. Zalecaną opcją jest &apos;Zawsze&apos; ponieważ zapewnia najlepszą kompatybilność. W przypadku gdy przekazywanie jest wyłączone (opcja &apos;Nigdy&apos;), wykrywanie tytułów w strumieniach SHOUTcast oraz Nagrywanie nie są dostępne.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="320"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="295"/>
         <source>Always</source>
         <translation>Zawsze</translation>
     </message>
@@ -2013,12 +2049,12 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Tylko SHOUTcast</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="322"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="297"/>
         <source>Never</source>
         <translation>Nigdy</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="338"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="313"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>Wszystkie typy urządzeń UPnP są wykrywane i wyświetlane. Dotyczy to także niekompatybilnych urządzeń takich jak domowe rutery. W przypadku niekompatybilnych urządzeń tylko podstawowe informacje o urządzeniu są dostępne. Ta opcja może być użyteczna w sprawdzeniu jakie urządzenia UPnP są w twojej sieci dowmowej.</translation>
     </message>
@@ -2043,7 +2079,7 @@ Pull down to connect to the local network.</source>
         <translation type="obsolete">Brak</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="337"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="312"/>
         <source>All devices visible</source>
         <translation>Wszystkie urządzenia widoczne</translation>
     </message>
@@ -2060,12 +2096,12 @@ Pull down to connect to the local network.</source>
         <translation type="vanished">Określa kiedy dane z Internetu (np. radio internetowe) są przekazywane do urządzeń UPnP za pośrednictwem Jupiiego. Zalecaną opcją jest &apos;Zawsze&apos; ponieważ zapewnia najlepszą kompatybilność. W przypadku gdy przekazywanie jest wyłączone (opcja &apos;Nigdy&apos;), wykrywanie tytułów SHOUTcast oraz Nagrywanie nie są dostępne.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="386"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="405"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Potrzebne do diagnozowania błędów. Dane będą zapisywane do pliku %1.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="385"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="404"/>
         <source>Enable logging</source>
         <translation>Włącz zapis logów do pliku</translation>
     </message>
@@ -2132,19 +2168,91 @@ Pull down to connect to the local network.</source>
     </message>
 </context>
 <context>
+    <name>SoundcloudPage</name>
+    <message numerus="yes">
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
+        <source>Add %n selected</source>
+        <translation>
+            <numerusform>Dodaj %n wybrany</numerusform>
+            <numerusform>Dodaj %n wybrane</numerusform>
+            <numerusform>Dodaj %n wybranych</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
+        <source>Add selected</source>
+        <translation>Dodaj wybrane</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="85"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
+        <source>Unselect all</source>
+        <translation>Wyczyść zaznaczenia</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="85"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
+        <source>Select all</source>
+        <translation>Zaznacz wszystkie</translation>
+    </message>
+    <message>
+        <source>Error in getting data from bandcamp.com</source>
+        <translation type="obsolete">Błąd przy pobieraniu danych z bandcamp.com</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="47"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="91"/>
+        <source>Error in getting data from soundcloud.com</source>
+        <translation>Błąd przy pobieraniu danych z soundcloud.com</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="111"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="123"/>
+        <source>Album</source>
+        <translation>Album</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="112"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="124"/>
+        <source>Artist</source>
+        <translation>Artysta</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="143"/>
+        <source>Toggle selection</source>
+        <translation>Zaznacz/Odznacz</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="129"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="168"/>
+        <source>Type the words to search</source>
+        <translation>Wpisz słowa aby wyszukać</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="129"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="168"/>
+        <source>No items</source>
+        <translation>Brak elementów</translation>
+    </message>
+    <message>
+        <source>No albums</source>
+        <translation type="obsolete">Brak albumów</translation>
+    </message>
+</context>
+<context>
     <name>TrackModel</name>
     <message>
-        <location filename="../core/trackmodel.cpp" line="156"/>
+        <location filename="../core/trackmodel.cpp" line="154"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="158"/>
+        <location filename="../core/trackmodel.cpp" line="156"/>
         <source>Audio capture</source>
         <translation>Przechwytywanie dźwięku</translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="160"/>
+        <location filename="../core/trackmodel.cpp" line="158"/>
         <source>Screen capture</source>
         <translation>Przechwytywanie ekranu</translation>
     </message>
@@ -2249,37 +2357,41 @@ Pull down to connect to the local network.</source>
     </message>
     <message>
         <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="76"/>
-        <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="49"/>
+        <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="47"/>
         <source>Find Media Servers</source>
         <translation>Szukaj serwerów mediów</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="122"/>
+        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="120"/>
         <source>No Media Servers found</source>
         <translation>Brak serwerów mediów</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="124"/>
+        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="120"/>
+        <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="108"/>
+        <source>No network connection</source>
+        <translation>Brak połączenia z siecią</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="122"/>
         <source>Pull down to find Media Servers in your network</source>
         <translation>Otwórz górne menu aby znaleźć więcej serwerów mediów</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="125"/>
+        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="123"/>
         <source>Connect WLAN to find Media Servers in your network</source>
         <translation>Połącz sieć WLAN aby poszukać serwerów mediów</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="122"/>
-        <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="110"/>
         <source>Disconnected</source>
-        <translation>Rozłączony</translation>
+        <translation type="vanished">Rozłączony</translation>
     </message>
     <message>
         <source>Devices</source>
         <translation type="obsolete">Urządzenia</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="115"/>
+        <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="113"/>
         <source>Find devices</source>
         <translation>Szukaj urządzeń</translation>
     </message>
@@ -2288,12 +2400,12 @@ Pull down to connect to the local network.</source>
         <translation type="obsolete">Połącz</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="108"/>
+        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="106"/>
         <source>Remove from favorites</source>
         <translation>Usuń z ulubionych</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="108"/>
+        <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="106"/>
         <source>Add to favorites</source>
         <translation>Dodaj do ulubionych</translation>
     </message>
@@ -2303,7 +2415,7 @@ Pull down to find more devices in your network.</source>
         <translation type="obsolete">Nie znaleziono urządzeń. Otwórz górne menu aby znaleźć więcej urządzeń.</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="110"/>
+        <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="108"/>
         <source>No Media Servers</source>
         <translation>Brak serwerów mediów</translation>
     </message>
@@ -2436,17 +2548,17 @@ Pull down to find more devices in your network.</source>
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../core/utils.cpp" line="129"/>
+        <location filename="../core/utils.cpp" line="115"/>
         <source>Auto</source>
         <translation>Automaczny</translation>
     </message>
     <message>
-        <location filename="../core/utils.cpp" line="463"/>
+        <location filename="../core/utils.cpp" line="452"/>
         <source>Today</source>
         <translation>Dzisiaj</translation>
     </message>
     <message>
-        <location filename="../core/utils.cpp" line="465"/>
+        <location filename="../core/utils.cpp" line="454"/>
         <source>Yesterday</source>
         <translation>Wczoraj</translation>
     </message>
@@ -2454,61 +2566,61 @@ Pull down to find more devices in your network.</source>
 <context>
     <name>main</name>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="58"/>
-        <location filename="../desktop/qml/main.qml" line="185"/>
+        <location filename="../sailfish/qml/main.qml" line="63"/>
+        <location filename="../desktop/qml/main.qml" line="187"/>
         <source>Connected to %1</source>
         <translation>Połączono z %1</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="66"/>
-        <location filename="../desktop/qml/main.qml" line="194"/>
+        <location filename="../sailfish/qml/main.qml" line="71"/>
+        <location filename="../desktop/qml/main.qml" line="196"/>
         <source>Cannot connect to device</source>
         <translation>Nie można połączyć z urządzeniem</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="70"/>
-        <location filename="../desktop/qml/main.qml" line="198"/>
+        <location filename="../sailfish/qml/main.qml" line="75"/>
+        <location filename="../desktop/qml/main.qml" line="200"/>
         <source>Device responded with an error</source>
         <translation>Urządzenie zgłosiło błąd</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="74"/>
-        <location filename="../desktop/qml/main.qml" line="202"/>
+        <location filename="../sailfish/qml/main.qml" line="79"/>
+        <location filename="../desktop/qml/main.qml" line="204"/>
         <source>Cannot play the file</source>
         <translation>Nie można odtworzyć pliku</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="87"/>
-        <location filename="../desktop/qml/main.qml" line="215"/>
+        <location filename="../sailfish/qml/main.qml" line="92"/>
+        <location filename="../desktop/qml/main.qml" line="217"/>
         <source>Track &quot;%1&quot; saved</source>
         <translation>Utwór &quot;%1&quot; został zapisany</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="96"/>
-        <location filename="../desktop/qml/main.qml" line="225"/>
+        <location filename="../sailfish/qml/main.qml" line="101"/>
+        <location filename="../desktop/qml/main.qml" line="227"/>
         <source>Cannot connect to a local network</source>
         <translation>Nie można połączyć z siecią lokalną</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="99"/>
-        <location filename="../desktop/qml/main.qml" line="228"/>
+        <location filename="../sailfish/qml/main.qml" line="104"/>
+        <location filename="../desktop/qml/main.qml" line="230"/>
         <source>An internal error occurred</source>
         <translation>Wystąpił wewnętrzny błąd</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="116"/>
+        <location filename="../sailfish/qml/main.qml" line="121"/>
         <location filename="../desktop/qml/main.qml" line="247"/>
         <source>Cannot download youtube-dl</source>
         <translation>Błąd przy pobieraniu youtube-dl</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="119"/>
+        <location filename="../sailfish/qml/main.qml" line="124"/>
         <location filename="../desktop/qml/main.qml" line="250"/>
         <source>Cannot update youtube-dl</source>
         <translation>Błąd przy aktualizowaniu youtube-dl</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="122"/>
+        <location filename="../sailfish/qml/main.qml" line="127"/>
         <location filename="../desktop/qml/main.qml" line="253"/>
         <source>Cannot find URL with youtube-dl</source>
         <translation>Błąd przy znajdywaniu URL za pomocą youtube-dl</translation>

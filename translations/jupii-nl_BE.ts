@@ -335,6 +335,10 @@
             <numerusform></numerusform>
         </translation>
     </message>
+    <message>
+        <source>No albums</source>
+        <translation type="unfinished">Geen albums</translation>
+    </message>
 </context>
 <context>
     <name>CDirModel</name>
@@ -437,6 +441,17 @@
         <source>Description was copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Extra API</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DeviceModel</name>
+    <message>
+        <source>Invalid PIN for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DevicesPage</name>
@@ -505,10 +520,6 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disconnected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Pull down to find more devices in your network</source>
         <translation type="unfinished"></translation>
     </message>
@@ -530,6 +541,10 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
     </message>
     <message>
         <source>Connect to a device or flick left to access play queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No network connection</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1020,6 +1035,10 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <source>Toggle Mute</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>No network connection</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PlaylistModel</name>
@@ -1367,6 +1386,22 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <source>Reset tips and hints</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Screen capture encoder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Frontier Silicon PIN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Frontier Silicon PIN</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SomafmPage</name>
@@ -1404,6 +1439,56 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
             <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
+    </message>
+</context>
+<context>
+    <name>SoundcloudPage</name>
+    <message numerus="yes">
+        <source>Add %n selected</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Add selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Album</source>
+        <translation type="unfinished">Album</translation>
+    </message>
+    <message>
+        <source>Artist</source>
+        <translation type="unfinished">Artiest</translation>
+    </message>
+    <message>
+        <source>Toggle selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type the words to search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error in getting data from soundcloud.com</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No albums</source>
+        <translation type="obsolete">Geen albums</translation>
     </message>
 </context>
 <context>
@@ -1519,10 +1604,6 @@ Trekt omlaag voor meer apparaten in uw netwerk te vinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disconnected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No Media Servers found</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1536,6 +1617,10 @@ Trekt omlaag voor meer apparaten in uw netwerk te vinden.</translation>
     </message>
     <message>
         <source>No Media Servers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No network connection</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
