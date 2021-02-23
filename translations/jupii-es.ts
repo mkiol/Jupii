@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="es" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="es" sourcelanguage="en_US" version="2.1">
 <context>
     <name>AboutPage</name>
     <message>
@@ -284,10 +282,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/AlbumsPage.qml" line="86"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n pista</numerusform>
-            <numerusform>%n pistas</numerusform>
-        </translation>
+        <translation><numerusform>%n pista</numerusform><numerusform>%n pistas</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AlbumsPage.qml" line="94"/>
@@ -310,10 +305,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/ArtistPage.qml" line="76"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n pista</numerusform>
-            <numerusform>%n pistas</numerusform>
-        </translation>
+        <translation><numerusform>%n pista</numerusform><numerusform>%n pistas</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/ArtistPage.qml" line="84"/>
@@ -374,7 +366,7 @@
         <location filename="../sailfish/qml/BcPage.qml" line="129"/>
         <location filename="../desktop/qml/BcPage.qml" line="168"/>
         <source>No albums</source>
-        <translation type="unfinished">No hay álbumes</translation>
+        <translation>No hay álbumes</translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="40"/>
@@ -384,10 +376,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/BcPage.qml" line="40"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="143"/>
@@ -519,7 +508,7 @@
         <location filename="../sailfish/qml/DeviceInfoPage.qml" line="103"/>
         <location filename="../desktop/qml/DeviceInfoPage.qml" line="144"/>
         <source>Extra API</source>
-        <translation type="unfinished"></translation>
+        <translation>API extra</translation>
     </message>
 </context>
 <context>
@@ -527,7 +516,7 @@
     <message>
         <location filename="../core/devicemodel.cpp" line="88"/>
         <source>Invalid PIN for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>PIN no válido para %1</translation>
     </message>
 </context>
 <context>
@@ -607,7 +596,7 @@
         <location filename="../sailfish/qml/DevicesPage.qml" line="166"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="136"/>
         <source>No network connection</source>
-        <translation type="unfinished"></translation>
+        <translation>Sin conexión a la red</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="168"/>
@@ -623,10 +612,6 @@
         <location filename="../sailfish/qml/DevicesPage.qml" line="169"/>
         <source>Connect WLAN to find devices in your network</source>
         <translation>Conéctate a la WLAN para buscar dispositivos en la red</translation>
-    </message>
-    <message>
-        <source>Disconnected</source>
-        <translation type="vanished">Desconectado</translation>
     </message>
 </context>
 <context>
@@ -688,10 +673,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/FosdemPage.qml" line="114"/>
@@ -767,10 +749,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/IcecastPage.qml" line="125"/>
@@ -1171,7 +1150,7 @@
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="117"/>
         <source>No network connection</source>
-        <translation type="unfinished"></translation>
+        <translation>Sin conexión a la red</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="118"/>
@@ -1248,10 +1227,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/PlaylistPage.qml" line="79"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n pista</numerusform>
-            <numerusform>%n pistas</numerusform>
-        </translation>
+        <translation><numerusform>%n pista</numerusform><numerusform>%n pistas</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="87"/>
@@ -1295,10 +1271,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/RecPage.qml" line="73"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Borrando %n elemento</numerusform>
-            <numerusform>Borrando %n elementos</numerusform>
-        </translation>
+        <translation><numerusform>Borrando %n elemento</numerusform><numerusform>Borrando %n elementos</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="82"/>
@@ -1354,18 +1327,12 @@
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="75"/>
         <source>Delete %n recording(s)?</source>
-        <translation>
-            <numerusform>¿Borrar %n grabación?</numerusform>
-            <numerusform>¿Borrar %n grabaciones?</numerusform>
-        </translation>
+        <translation><numerusform>¿Borrar %n grabación?</numerusform><numerusform>¿Borrar %n grabaciones?</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="98"/>
@@ -1419,10 +1386,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="40"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n seleccionado</numerusform>
-            <numerusform>%n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>%n seleccionado</numerusform><numerusform>%n seleccionados</numerusform></translation>
     </message>
 </context>
 <context>
@@ -1515,12 +1479,12 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="326"/>
         <source>Screen capture encoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Codificador de captura de pantalla</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="338"/>
         <source>Auto</source>
-        <translation type="unfinished">Auto</translation>
+        <translation>Auto</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="181"/>
@@ -1590,7 +1554,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="395"/>
         <source>Enter Frontier Silicon PIN</source>
-        <translation type="unfinished"></translation>
+        <translation>Introduce PIN de Frontier Silicon</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="419"/>
@@ -1630,7 +1594,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="392"/>
         <source>Frontier Silicon PIN</source>
-        <translation type="unfinished"></translation>
+        <translation>PIN de Frontier Silicon</translation>
     </message>
 </context>
 <context>
@@ -1674,10 +1638,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SomafmPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SomafmPage.qml" line="113"/>
@@ -1690,70 +1651,59 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Añadir seleccionado</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="85"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Seleccionar ninguno</translation>
+        <translation>Seleccionar ninguno</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="85"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
         <source>Select all</source>
-        <translation type="unfinished">Seleccionar todo</translation>
-    </message>
-    <message>
-        <source>Error in getting data from bandcamp.com</source>
-        <translation type="obsolete">Error al obtener datos de bandcamp.com</translation>
+        <translation>Seleccionar todo</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="47"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="91"/>
         <source>Error in getting data from soundcloud.com</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al obtener datos de soundcloud.com</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="111"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="123"/>
         <source>Album</source>
-        <translation type="unfinished">Álbum</translation>
+        <translation>Álbum</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="112"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="124"/>
         <source>Artist</source>
-        <translation type="unfinished">Artista</translation>
+        <translation>Artista</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="143"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar selección</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="129"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="168"/>
         <source>Type the words to search</source>
-        <translation type="unfinished">Escribe palabras para buscar</translation>
+        <translation>Escribe las palabras de búsqueda</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="129"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="168"/>
         <source>No items</source>
-        <translation type="unfinished">No hay elementos</translation>
-    </message>
-    <message>
-        <source>No albums</source>
-        <translation type="obsolete">No hay álbumes</translation>
+        <translation>No hay elementos</translation>
     </message>
 </context>
 <context>
@@ -1832,10 +1782,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/TuneinPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/TuneinPage.qml" line="107"/>
@@ -1866,7 +1813,7 @@
         <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="120"/>
         <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="108"/>
         <source>No network connection</source>
-        <translation type="unfinished"></translation>
+        <translation>Sin conexión a la red</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="122"/>
@@ -1877,10 +1824,6 @@
         <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="123"/>
         <source>Connect WLAN to find Media Servers in your network</source>
         <translation>Conectarse a la WLAN para buscar servidores multimedia en la red</translation>
-    </message>
-    <message>
-        <source>Disconnected</source>
-        <translation type="vanished">Desconectado</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="106"/>
@@ -1971,10 +1914,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="33"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="77"/>
@@ -2075,7 +2015,7 @@
     <message>
         <location filename="../desktop/qml/main.qml" line="45"/>
         <source>Devices (connected to %1)</source>
-        <translation>DIspositivos (conectados a %1)</translation>
+        <translation>Dispositivos (conectados a %1)</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="46"/>
