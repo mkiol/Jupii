@@ -19,6 +19,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QLocale>
+#include <QThread>
 
 QString SoundcloudApi::clientId;
 
@@ -40,6 +41,9 @@ void SoundcloudApi::discoverClientId()
         return;
     }
 
+    if (QThread::currentThread()->isInterruptionRequested())
+        return;
+
     auto scripts = gumbo::search_for_tag(output->root, GUMBO_TAG_SCRIPT);
     for (auto script : scripts) {
         if (QUrl url{gumbo::attr_data(script, "src")}; !url.isEmpty()) {
@@ -53,6 +57,8 @@ void SoundcloudApi::discoverClientId()
                 }
             }
         }
+        if (QThread::currentThread()->isInterruptionRequested())
+            return;
     }
 
     qWarning() << "Cannot find clientId";
@@ -211,11 +217,16 @@ void SoundcloudApi::addClientId(QUrl& url) const
 
 QJsonArray SoundcloudApi::extractItems(const QUrl &url)
 {
+    QJsonArray items;
+
     auto output = downloadHtmlData(url);
     if (!output) {
         qWarning() << "Cannot parse HTML data";
-        return {};
+        return items;
     }
+
+    if (QThread::currentThread()->isInterruptionRequested())
+        return items;
 
     QJsonArray chunks;
     auto scripts = gumbo::search_for_tag(output->root, GUMBO_TAG_SCRIPT);
@@ -228,14 +239,14 @@ QJsonArray SoundcloudApi::extractItems(const QUrl &url)
                 chunks = json.array();
             break;
         }
+        if (QThread::currentThread()->isInterruptionRequested())
+            return items;
     }
 
     if (chunks.isEmpty()) {
         qWarning() << "Empty chunks data";
-        return {};
+        return items;
     }
-
-    QJsonArray items;
 
     for (int i = 0; i < chunks.size(); ++i) {
         auto res = chunks.at(i).toObject().value("data").toArray();
@@ -261,6 +272,9 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url)
         qWarning() << "No items";
         return track;
     }
+
+    if (QThread::currentThread()->isInterruptionRequested())
+        return track;
 
     for (int i = 0; i < items.size(); ++i) {
         auto elm = items.at(i).toObject();
@@ -297,6 +311,9 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url)
 
             track.streamUrl = QUrl{json.object().value("url").toString()};
             track.duration = int(m.value("duration").toDouble() / 1000);
+
+            if (QThread::currentThread()->isInterruptionRequested())
+                return track;
 
             break;
         }
@@ -350,6 +367,9 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url)
         return playlist;
     }
 
+    if (QThread::currentThread()->isInterruptionRequested())
+        return playlist;
+
     QString playlistId;
 
     auto metas = gumbo::search_for_tag(output->root, GUMBO_TAG_META);
@@ -371,6 +391,9 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url)
         qWarning() << "Cannot parse JSON data";
         return playlist;
     }
+
+    if (QThread::currentThread()->isInterruptionRequested())
+        return playlist;
 
     auto pobj = json.object();
     playlist.title = pobj.value("title").toString();
@@ -422,6 +445,9 @@ void SoundcloudApi::user(const QUrl &url, User &user, int count)
         qWarning() << "Cannot parse JSON data";
         return;
     }
+
+    if (QThread::currentThread()->isInterruptionRequested())
+        return;
 
     auto items = json.object().value("collection").toArray();
     if (items.isEmpty()) {
@@ -475,9 +501,11 @@ void SoundcloudApi::user(const QUrl &url, User &user, int count)
     json = QJsonDocument{};
     items = QJsonArray{};
 
+    if (QThread::currentThread()->isInterruptionRequested())
+        return;
+
     addClientId(nextUrl);
     this->user(nextUrl, user, count + 1);
-    return;
 }
 
 SoundcloudApi::User SoundcloudApi::user(const QUrl &url)
@@ -489,6 +517,9 @@ SoundcloudApi::User SoundcloudApi::user(const QUrl &url)
         qWarning() << "Cannot parse HTML data";
         return user;
     }
+
+    if (QThread::currentThread()->isInterruptionRequested())
+        return user;
 
     QString userId;
 
@@ -606,6 +637,9 @@ std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::search(const QString
         qWarning() << "Cannot parse JSON data";
         return items;
     }
+
+    if (QThread::currentThread()->isInterruptionRequested())
+        return items;
 
     auto res = json.object().value("collection").toArray();
 

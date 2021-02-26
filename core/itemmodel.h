@@ -25,6 +25,7 @@ friend class SelectableItemModel;
 
 public:
     explicit ItemWorker(ItemModel *model, const QString &data = QString());
+    ~ItemWorker();
 
 private:
     QString data;

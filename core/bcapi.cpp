@@ -130,6 +130,9 @@ BcApi::Track BcApi::track(const QUrl &url)
         return track;
     }
 
+    if (QThread::currentThread()->isInterruptionRequested())
+        return track;
+
     auto output = gumbo::parseHtmlData(data);
     if (!output) {
         qWarning() << "Cannot parse HTML data";
@@ -183,6 +186,9 @@ BcApi::Album BcApi::album(const QUrl &url)
         qWarning() << "No data received";
         return album;
     }
+
+    if (QThread::currentThread()->isInterruptionRequested())
+        return album;
 
     auto output = gumbo::parseHtmlData(data);
     if (!output) {
@@ -245,6 +251,9 @@ BcApi::Artist BcApi::artist(const QUrl &url)
         return artist;
     }
 
+    if (QThread::currentThread()->isInterruptionRequested())
+        return artist;
+
     auto output = gumbo::parseHtmlData(data);
     if (!output) {
         qWarning() << "Cannot parse HTML data";
@@ -305,6 +314,9 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
         qWarning() << "No data received";
         return items;
     }
+
+    if (QThread::currentThread()->isInterruptionRequested())
+        return items;
 
     auto json = parseJsonData(data);
     if (json.isNull() || !json.isObject()) {

@@ -112,11 +112,13 @@ QList<ListItem*> TuneinModel::makeItems()
     }
 
     auto data = downloadData(makeSearchUrl(filter));
-
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return items;
     }
+
+    if (QThread::currentThread()->isInterruptionRequested())
+        return items;
 
     auto doc = parseXmlData(data);
 

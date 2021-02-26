@@ -106,12 +106,13 @@ QList<ListItem*> BcModel::makeSearchItems()
     const auto phrase = getFilter().simplified();
 
     if (!phrase.isEmpty()) {
-        BcApi api;
+        const auto results = BcApi{}.search(phrase);
 
-        const auto results = api.search(phrase);
+        if (QThread::currentThread()->isInterruptionRequested())
+            return items;
 
         for (const auto& result : results) {
-            items << new BcItem(result.webUrl.toString(),
+            items << new BcItem{result.webUrl.toString(),
                                 result.title,
                                 result.artist,
                                 result.album,
@@ -119,7 +120,7 @@ QList<ListItem*> BcModel::makeSearchItems()
                                 {},
                                 result.imageUrl,
                                 0,
-                                BcModel::Type(result.type));
+                                BcModel::Type(result.type)};
         }
 
         // Sorting
@@ -138,14 +139,15 @@ QList<ListItem*> BcModel::makeAlbumItems()
 {
     QList<ListItem*> items;
 
-    BcApi api;
+    const auto album = BcApi{}.album(albumUrl);
 
-    const auto album = api.album(albumUrl);
+    if (QThread::currentThread()->isInterruptionRequested())
+        return items;
 
     setAlbumTitle(album.title);
 
     for (const auto& track : album.tracks) {
-        items << new BcItem(track.webUrl.toString(),
+        items << new BcItem{track.webUrl.toString(),
                             track.title,
                             album.artist,
                             album.title,
@@ -153,7 +155,7 @@ QList<ListItem*> BcModel::makeAlbumItems()
                             track.webUrl, // origUrl
                             album.imageUrl,
                             track.duration,
-                            Type_Track);
+                            Type_Track};
     }
 
     return items;
@@ -163,14 +165,15 @@ QList<ListItem*> BcModel::makeArtistItems()
 {
     QList<ListItem*> items;
 
-    BcApi api;
+    const auto artist = BcApi{}.artist(artistUrl);
 
-    const auto artist = api.artist(artistUrl);
+    if (QThread::currentThread()->isInterruptionRequested())
+        return items;
 
     setArtistName(artist.name);
 
     for (const auto& album : artist.albums) {
-        items << new BcItem(album.webUrl.toString(),
+        items << new BcItem{album.webUrl.toString(),
                             album.title,
                             artist.name,
                             album.title,
@@ -178,7 +181,7 @@ QList<ListItem*> BcModel::makeArtistItems()
                             {},
                             album.imageUrl,
                             0,
-                            Type_Album);
+                            Type_Album};
     }
 
     return items;

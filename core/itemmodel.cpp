@@ -16,10 +16,20 @@ ItemWorker::ItemWorker(ItemModel *model, const QString &data) :
 {
 }
 
+ItemWorker::~ItemWorker()
+{
+    qDebug() << "~ItemWorker start";
+    requestInterruption();
+    wait();
+    qDebug() << "~ItemWorker end";
+}
+
 void ItemWorker::run()
 {
-    items = model->makeItems();
-    model->postMakeItems(items);
+    if (!isInterruptionRequested())
+        items = model->makeItems();
+    if (!isInterruptionRequested())
+        model->postMakeItems(items);
 }
 
 ItemModel::ItemModel(ListItem *prototype, QObject *parent) :

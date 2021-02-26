@@ -108,14 +108,17 @@ QList<ListItem*> SoundcloudModel::makeSearchItems()
     if (!phrase.isEmpty()) {
         const auto results = SoundcloudApi{}.search(phrase);
 
+        if (QThread::currentThread()->isInterruptionRequested())
+            return items;
+
         for (const auto& result : results) {
-            items << new SoundcloudItem(result.webUrl.toString(),
+            items << new SoundcloudItem{result.webUrl.toString(),
                                 result.title,
                                 result.artist,
                                 result.album,
                                 result.webUrl,
                                 result.imageUrl,
-                                SoundcloudModel::Type(result.type));
+                                SoundcloudModel::Type(result.type)};
         }
 
         // Sorting
@@ -136,16 +139,19 @@ QList<ListItem*> SoundcloudModel::makeAlbumItems()
 
     const auto album = SoundcloudApi{}.playlist(albumUrl);
 
+    if (QThread::currentThread()->isInterruptionRequested())
+        return items;
+
     setAlbumTitle(album.title);
 
     for (const auto& track : album.tracks) {
-        items << new SoundcloudItem(track.webUrl.toString(),
+        items << new SoundcloudItem{track.webUrl.toString(),
                             track.title,
                             track.artist,
                             track.album,
                             track.webUrl,
                             track.imageUrl,
-                            Type_Track);
+                            Type_Track};
     }
 
     return items;
@@ -160,6 +166,9 @@ QList<ListItem*> SoundcloudModel::makeArtistItems()
         setArtistName(lastArtist->name);
     }
 
+    if (QThread::currentThread()->isInterruptionRequested())
+        return items;
+
     const auto phrase = getFilter().simplified();
 
     for (const auto& album : lastArtist->playlists) {
@@ -169,13 +178,13 @@ QList<ListItem*> SoundcloudModel::makeArtistItems()
             continue;
         }
 
-        items << new SoundcloudItem(album.webUrl.toString(),
+        items << new SoundcloudItem{album.webUrl.toString(),
                             album.title,
                             album.artist,
                             album.title,
                             album.webUrl,
                             album.imageUrl,
-                            Type_Album);
+                            Type_Album};
     }
 
     for (const auto& track : lastArtist->tracks) {
@@ -186,13 +195,13 @@ QList<ListItem*> SoundcloudModel::makeArtistItems()
             continue;
         }
 
-        items << new SoundcloudItem(track.webUrl.toString(),
+        items << new SoundcloudItem{track.webUrl.toString(),
                             track.title,
                             track.artist,
                             track.album,
                             track.webUrl,
                             track.imageUrl,
-                            Type_Track);
+                            Type_Track};
     }
 
     return items;

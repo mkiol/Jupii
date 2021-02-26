@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,8 +7,6 @@
 
 #ifndef INFO_H
 #define INFO_H
-
-#include "utils.h"
 
 namespace Jupii {
 static constexpr const char* APP_NAME = "Jupii";
