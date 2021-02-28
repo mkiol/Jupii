@@ -20,6 +20,11 @@ SoundcloudModel::SoundcloudModel(QObject *parent) :
 {
 }
 
+SoundcloudModel::~SoundcloudModel()
+{
+    m_worker.reset();
+}
+
 QUrl SoundcloudModel::getAlbumUrl() const
 {
     return albumUrl;

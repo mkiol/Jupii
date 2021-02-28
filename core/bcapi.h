@@ -86,7 +86,6 @@ private:
     static const int httpTimeout = 10000;
     std::shared_ptr<QNetworkAccessManager> nam;
 
-    QByteArray downloadData(const QUrl &url);
     static QUrl makeSearchUrl(const QString &phrase);
     static QJsonDocument parseJsonData(const QByteArray &data);
     static Type textToType(const QString &text);

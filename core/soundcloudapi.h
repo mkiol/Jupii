@@ -103,7 +103,6 @@ private:
     QString locale;
 
     void discoverClientId();
-    QByteArray downloadData(const QUrl &url);
     QJsonDocument downloadJsonData(const QUrl &url);
     gumbo::GumboOutput_ptr downloadHtmlData(const QUrl &url);
     static QJsonDocument parseJsonData(const QByteArray &data);

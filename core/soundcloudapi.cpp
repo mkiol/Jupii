@@ -10,9 +10,6 @@
 #include <QDebug>
 #include <QTimer>
 #include <QUrlQuery>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QEventLoop>
 #include <QTextStream>
 #include <QJsonDocument>
 #include <QJsonParseError>
@@ -20,6 +17,8 @@
 #include <QJsonObject>
 #include <QLocale>
 #include <QThread>
+
+#include "downloader.h"
 
 QString SoundcloudApi::clientId;
 
@@ -47,7 +46,7 @@ void SoundcloudApi::discoverClientId()
     auto scripts = gumbo::search_for_tag(output->root, GUMBO_TAG_SCRIPT);
     for (auto script : scripts) {
         if (QUrl url{gumbo::attr_data(script, "src")}; !url.isEmpty()) {
-            if (auto data = downloadData(url); !data.isEmpty()) {
+            if (auto data = Downloader{nam}.downloadData(url); !data.isEmpty()) {
                 if (auto id = extractClientId(data); !id.isEmpty()) {
 #ifdef QT_DEBUG
                     qDebug() << "Client id: " << id;
@@ -73,49 +72,6 @@ bool SoundcloudApi::validUrl(const QUrl &url)
     return false;
 }
 
-QByteArray SoundcloudApi::downloadData(const QUrl &url)
-{
-#ifdef QT_DEBUG
-    qDebug() << "download data:" << url;
-#endif
-    QByteArray data;
-
-    QNetworkRequest request;
-    request.setUrl(url);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-
-    QNetworkReply* reply;
-    std::unique_ptr<QNetworkAccessManager> priv_nam;
-
-    if (nam) {
-        reply = nam->get(request);
-    } else {
-        priv_nam = std::make_unique<QNetworkAccessManager>();
-        reply = priv_nam->get(request);
-    }
-
-    QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-    QEventLoop loop;
-    connect(reply, &QNetworkReply::finished, this, [&loop, reply, &data] {
-        auto err = reply->error();
-        if (err == QNetworkReply::NoError) {
-            data = reply->readAll();
-            loop.quit();
-        } else {
-            qWarning() << "Error:" << err << reply->url();
-            loop.exit(1);
-        }
-    });
-
-    if (loop.exec() == 1) {
-        qWarning() << "Cannot download data:" << reply->url();
-    }
-
-    reply->deleteLater();
-
-    return data;
-}
-
 QJsonDocument SoundcloudApi::parseJsonData(const QByteArray &data)
 {
     QJsonParseError err;
@@ -131,7 +87,7 @@ QJsonDocument SoundcloudApi::parseJsonData(const QByteArray &data)
 
 gumbo::GumboOutput_ptr SoundcloudApi::downloadHtmlData(const QUrl &url)
 {
-    auto data = downloadData(url);
+    auto data = Downloader{nam}.downloadData(url);
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return {};
@@ -142,7 +98,7 @@ gumbo::GumboOutput_ptr SoundcloudApi::downloadHtmlData(const QUrl &url)
 
 QJsonDocument SoundcloudApi::downloadJsonData(const QUrl &url)
 {
-    auto data = downloadData(url);
+    auto data = Downloader{nam}.downloadData(url);
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return {};

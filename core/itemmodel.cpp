@@ -35,6 +35,11 @@ ItemModel::ItemModel(ListItem *prototype, QObject *parent) :
 {
 }
 
+ItemModel::~ItemModel()
+{
+    m_worker.reset();
+}
+
 void ItemModel::updateModel(const QString &data)
 {
     if (m_worker && m_worker->isRunning())
@@ -82,12 +87,12 @@ void ItemModel::workerDone()
     setBusy(false);
 }
 
-int ItemModel::getCount()
+int ItemModel::getCount() const
 {
     return m_list.length();
 }
 
-bool ItemModel::isBusy()
+bool ItemModel::isBusy() const
 {
     return m_busy;
 }

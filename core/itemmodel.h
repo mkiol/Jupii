@@ -44,7 +44,8 @@ friend class ItemWorker;
 
 public:
     explicit ItemModel(ListItem *prototype, QObject *parent = nullptr);
-    int getCount();
+    ~ItemModel();
+    int getCount() const;
 
 public slots:
     virtual void updateModel(const QString &data = {});
@@ -64,7 +65,7 @@ protected:
     void setBusy(bool busy);
 
 private slots:
-    bool isBusy();
+    bool isBusy() const;
 
 private:
     bool m_busy = true;

@@ -10,9 +10,6 @@
 #include <QDebug>
 #include <QTimer>
 #include <QUrlQuery>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QEventLoop>
 #include <QTextStream>
 #include <QJsonDocument>
 #include <QJsonParseError>
@@ -21,6 +18,7 @@
 
 #include "gumbotools.h"
 #include "utils.h"
+#include "downloader.h"
 
 BcApi::BcApi(std::shared_ptr<QNetworkAccessManager> nam, QObject *parent) :
     QObject(parent), nam(nam)
@@ -39,46 +37,6 @@ bool BcApi::validUrl(const QUrl &url)
     }
 
     return false;
-}
-
-QByteArray BcApi::downloadData(const QUrl &url)
-{
-    QByteArray data;
-
-    QNetworkRequest request;
-    request.setUrl(url);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-
-    QNetworkReply* reply;
-    std::unique_ptr<QNetworkAccessManager> priv_nam;
-
-    if (nam) {
-        reply = nam->get(request);
-    } else {
-        priv_nam = std::make_unique<QNetworkAccessManager>();
-        reply = priv_nam->get(request);
-    }
-
-    QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-    QEventLoop loop;
-    connect(reply, &QNetworkReply::finished, this, [&loop, reply, &data] {
-        auto err = reply->error();
-        if (err == QNetworkReply::NoError) {
-            data = reply->readAll();
-            loop.quit();
-        } else {
-            qWarning() << "Error:" << err;
-            loop.exit(1);
-        }
-    });
-
-    if (loop.exec() == 1) {
-        qWarning() << "Cannot download data";
-    }
-
-    reply->deleteLater();
-
-    return data;
 }
 
 BcApi::Type BcApi::textToType(const QString &text)
@@ -124,7 +82,7 @@ BcApi::Track BcApi::track(const QUrl &url)
 {
     Track track;
 
-    auto data = downloadData(url);
+    auto data = Downloader{nam}.downloadData(url);
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return track;
@@ -181,7 +139,7 @@ BcApi::Album BcApi::album(const QUrl &url)
 {
     Album album;
 
-    auto data = downloadData(url);
+    auto data = Downloader{nam}.downloadData(url);
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return album;
@@ -245,7 +203,7 @@ BcApi::Artist BcApi::artist(const QUrl &url)
         newUrl.setPath("/music");
     }
 
-    auto data = downloadData(newUrl);
+    auto data = Downloader{nam}.downloadData(newUrl);
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return artist;
@@ -309,7 +267,7 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
 {
     std::vector<SearchResultItem> items;
 
-    auto data = downloadData(makeSearchUrl(query));
+    auto data = Downloader{nam}.downloadData(makeSearchUrl(query));
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return items;

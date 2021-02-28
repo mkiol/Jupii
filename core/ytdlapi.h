@@ -38,7 +38,6 @@ private:
     static QString binPath;
     std::shared_ptr<QNetworkAccessManager> nam;
 
-    QByteArray downloadData(const QUrl &url);
     bool downloadBin();
     bool checkBin(const QString& binPath);
     void update();

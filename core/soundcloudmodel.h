@@ -39,6 +39,7 @@ public:
     Q_ENUM(Type)
 
     explicit SoundcloudModel(QObject *parent = nullptr);
+    ~SoundcloudModel();
     Q_INVOKABLE QVariantList selectedItems();
 
     QUrl getAlbumUrl() const;

@@ -132,7 +132,8 @@ HEADERS += \
     $$CORE_DIR/connectivitydetector.h \
     $$CORE_DIR/soundcloudmodel.h \
     $$CORE_DIR/gumbotools.h \
-    $$CORE_DIR/soundcloudapi.h
+    $$CORE_DIR/soundcloudapi.h \
+    $$CORE_DIR/downloader.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -188,7 +189,8 @@ SOURCES += \
     $$CORE_DIR/connectivitydetector.cpp \
     $$CORE_DIR/soundcloudmodel.cpp \
     $$CORE_DIR/gumbotools.cpp \
-    $$CORE_DIR/soundcloudapi.cpp
+    $$CORE_DIR/soundcloudapi.cpp \
+    $$CORE_DIR/downloader.cpp
 
 screencast {
     HEADERS += \

@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,11 +14,10 @@
 #include <QByteArray>
 #include <QVariant>
 #include <QUrl>
-#include <QPair>
-#include <QDir>
 #include <QDomNodeList>
 #include <QDomElement>
-#include <QNetworkReply>
+#include <QNetworkAccessManager>
+#include <memory>
 
 #include "listmodel.h"
 #include "itemmodel.h"
@@ -63,39 +62,28 @@ private:
 class SomafmModel : public SelectableItemModel
 {
     Q_OBJECT
-    Q_PROPERTY (bool refreshing READ isRefreshing NOTIFY refreshingChanged)
 public:
     explicit SomafmModel(QObject *parent = nullptr);
-    bool isRefreshing();
+    ~SomafmModel();
     Q_INVOKABLE QVariantList selectedItems();
 
 public slots:
     void refresh();
 
 signals:
-    void refreshingChanged();
     void error();
 
-private slots:
-    void handleDataDownloadFinished();
-    void handleIconDownloadFinished();
-
 private:
-    static const QString m_dirUrl;
+    static const QUrl m_dirUrl;
     static const QString m_dirFilename;
     static const QString m_imageFilename;
-    static const int httpTimeout = 100000;
-
     QDomNodeList m_entries;
-    QList<QPair<QString,QString>> m_imagesToDownload;  // <id, image URL>
-    QHash<QNetworkReply*,QString> m_replyToId;
-    bool m_refreshing = false;
 
     QList<ListItem*> makeItems();
     bool parseData();
-    void downloadImages();
-    void downloadImage();
-    QString bestImage(const QDomElement& entry);
+    void downloadImages(std::shared_ptr<QNetworkAccessManager> nam);
+    void downloadDir();
+    static QString bestImage(const QDomElement& entry);
 };
 
 #endif // SOMAFMMODEL_H

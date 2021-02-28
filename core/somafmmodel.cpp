@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,33 +6,33 @@
  */
 
 #include <QDebug>
-#include <QFile>
-#include <QDir>
+#include <QFileInfo>
 #include <QList>
-#include <QTimer>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
-#include <QNetworkRequest>
+#include <QThread>
 #include <memory>
 
 #include "somafmmodel.h"
 #include "utils.h"
 #include "iconprovider.h"
+#include "downloader.h"
 
-const QString SomafmModel::m_dirUrl = "https://somafm.com/channels.xml";
-const QString SomafmModel::m_dirFilename = "somafm2.xml";
-const QString SomafmModel::m_imageFilename = "somafm_image_";
+const QUrl SomafmModel::m_dirUrl{"https://somafm.com/channels.xml"};
+const QString SomafmModel::m_dirFilename{"somafm2.xml"};
+const QString SomafmModel::m_imageFilename{"somafm_image_"};
 
 SomafmModel::SomafmModel(QObject *parent) :
     SelectableItemModel(new SomafmItem, parent)
 {
-    if (Utils::cacheFileExists(m_dirFilename))
-        parseData();
-    else
-        refresh();
+}
+
+SomafmModel::~SomafmModel()
+{
+    m_worker.reset();
 }
 
 bool SomafmModel::parseData()
@@ -54,11 +54,6 @@ bool SomafmModel::parseData()
     return false;
 }
 
-bool SomafmModel::isRefreshing()
-{
-    return m_refreshing;
-}
-
 QString SomafmModel::bestImage(const QDomElement& entry)
 {
     auto image = entry.elementsByTagName("ximage").at(0).toElement().text();
@@ -75,134 +70,68 @@ QString SomafmModel::bestImage(const QDomElement& entry)
     return image;
 }
 
-void SomafmModel::downloadImages()
+void SomafmModel::downloadImages(std::shared_ptr<QNetworkAccessManager> nam)
 {
-    m_imagesToDownload.clear();
+    Utils::removeFromCacheDir({m_imageFilename + "*"});
 
-    Utils::removeFromCacheDir(QStringList() << (m_imageFilename + "*"));
+    for (int i = 0; i < m_entries.length(); ++i) {
+        if (QThread::currentThread()->isInterruptionRequested())
+            break;
 
-    int l = m_entries.length();
-    for (int i = 0; i < l; ++i) {
-        auto entry = m_entries.at(i).toElement();
+        const auto entry = m_entries.at(i).toElement();
         if (!entry.isNull() && entry.hasAttribute("id")) {
-            auto id = entry.attribute("id");
-            auto image = bestImage(entry);
-            if (!image.isNull())
-                m_imagesToDownload << QPair<QString,QString>(id, image);
-        }
-    }
-
-    downloadImage();
-}
-
-void SomafmModel::handleIconDownloadFinished()
-{
-    auto reply = qobject_cast<QNetworkReply*>(sender());
-    if (reply && m_replyToId.contains(reply)) {
-        auto id = m_replyToId.value(reply);
-        auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-        if (const auto err = reply->error(); err != QNetworkReply::NoError) {
-            qWarning() << "Error:" << err;
-        } else if (code > 299 && code < 399) {
-            qWarning() << "Redirection received but unsupported";
-        } else if (const auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString(); code > 299) {
-            qWarning() << "Unsupported response code:" << reply->error() << code << reason;
-        } else {
-            auto data = reply->readAll();
-            if (data.isEmpty()) {
-                qWarning() << "No data received";
-            } else {
-                auto filename = m_imageFilename + id;
-                auto ext = reply->url().fileName().split('.').last();
-                if (!ext.isEmpty())
-                    filename = filename + "." + ext;
-                qDebug() << "Downloaded image:" << filename;
-                Utils::writeToCacheFile(filename, data, true);
-            }
-        }
-
-        m_replyToId.remove(reply);
-        reply->deleteLater();
-
-        downloadImage();
-    }
-}
-
-void SomafmModel::downloadImage()
-{
-    if (m_imagesToDownload.isEmpty()) {
-        updateModel();
-    } else {
-        const auto image = m_imagesToDownload.takeFirst();  // <id, image URL>
-        const auto& id = image.first;
-
-        QNetworkRequest request;
-        request.setUrl(QUrl(image.second));
-        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        auto reply = Utils::instance()->nam->get(request);
-        QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-
-        m_replyToId.insert(reply, id);
-        connect(reply, &QNetworkReply::finished, this,
-                &SomafmModel::handleIconDownloadFinished, Qt::QueuedConnection);
-    }
-}
-
-void SomafmModel::handleDataDownloadFinished()
-{
-    auto reply = qobject_cast<QNetworkReply*>(sender());
-    if (reply) {
-        auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-        if (const auto err = reply->error(); err != QNetworkReply::NoError) {
-            qWarning() << "Error:" << err;
-            emit error();
-        } else if (code > 299 && code < 399) {
-            qWarning() << "Redirection received but unsupported";
-            emit error();
-        } else if (const auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString(); code > 299) {
-            qWarning() << "Unsupported response code:" << reply->error() << code << reason;
-            emit error();
-        } else {
-            auto data = reply->readAll();
-            if (data.isEmpty()) {
-                qWarning() << "No data received";
-                emit error();
-            } else {
-                Utils::writeToCacheFile(m_dirFilename, data, true);
-                if (!parseData()) {
-                    emit error();
-                } else {
-                    downloadImages();
+            const auto id = entry.attribute("id");
+            const auto url = QUrl{bestImage(entry)};
+            if (!id.isEmpty() && !url.isEmpty()) {
+                auto data = Downloader{nam}.downloadData(url);
+                if (!data.isEmpty()) {
+                    auto filename = m_imageFilename + id;
+                    if (auto ext = url.fileName().split('.').last(); !ext.isEmpty())
+                        filename = filename + "." + ext;
+                    qDebug() << "Downloaded image:" << filename;
+                    Utils::writeToCacheFile(filename, data, true);
                 }
             }
         }
-        reply->deleteLater();
-        m_refreshing = false;
-        emit refreshingChanged();
-        setBusy(false);
-        updateModel();
+    }
+}
+
+void SomafmModel::downloadDir()
+{
+    if (!Utils::cacheFileExists(m_dirFilename)) {
+        auto nam = std::make_shared<QNetworkAccessManager>();
+        auto data = Downloader{nam}.downloadData(m_dirUrl);
+
+        if (QThread::currentThread()->isInterruptionRequested())
+            return;
+
+        if (data.isEmpty()) {
+            qWarning() << "No data received";
+            emit error();
+            return;
+        }
+
+        Utils::writeToCacheFile(m_dirFilename, data, true);
+
+        if (!parseData()) {
+            emit error();
+            Utils::removeFromCacheDir({m_dirFilename});
+            return;
+        }
+
+        downloadImages(nam);
+    } else if (!parseData()) {
+        emit error();
+        Utils::removeFromCacheDir({m_dirFilename});
+        return;
     }
 }
 
 void SomafmModel::refresh()
 {
-    if (!m_refreshing) {
-        setBusy(true);
-        m_refreshing = true;
-        emit refreshingChanged();
-
-        QNetworkRequest request;
-        request.setUrl(QUrl{m_dirUrl});
-        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        auto reply = Utils::instance()->nam->get(request);
-        QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-        connect(reply, &QNetworkReply::finished, this,
-                &SomafmModel::handleDataDownloadFinished, Qt::QueuedConnection);
-    } else {
-        qWarning() << "Refreshing already active";
-    }
+    Utils::removeFromCacheDir({m_dirFilename});
+    m_entries = {};
+    updateModel();
 }
 
 QVariantList SomafmModel::selectedItems()
@@ -227,6 +156,9 @@ QVariantList SomafmModel::selectedItems()
 
 QList<ListItem*> SomafmModel::makeItems()
 {
+    if (m_entries.isEmpty())
+        downloadDir();
+
     QList<ListItem*> items;
 
     const auto& filter = getFilter();
@@ -271,13 +203,12 @@ QList<ListItem*> SomafmModel::makeItems()
                     if (icon.isEmpty())
                         icon = QUrl::fromLocalFile(imgpath);
 
-                    items << new SomafmItem(
+                    items << new SomafmItem{
                                     id, // id
                                     name, // name
                                     desc, // desc
-                                    QUrl(url), // url
-                                    icon
-                                );
+                                    QUrl{url}, // url
+                                    icon};
                 }
             }
         }

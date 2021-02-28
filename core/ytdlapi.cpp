@@ -13,13 +13,12 @@
 #include <QDir>
 #include <QProcess>
 #include <QIODevice>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QTimer>
 #include <QEventLoop>
 
 #include "utils.h"
 #include "settings.h"
+#include "downloader.h"
 
 bool YtdlApi::enabled = true;
 QString YtdlApi::binPath;
@@ -28,49 +27,6 @@ YtdlApi::YtdlApi(std::shared_ptr<QNetworkAccessManager> nam, QObject *parent) :
     QObject(parent), nam(nam)
 {
     init();
-}
-
-QByteArray YtdlApi::downloadData(const QUrl &url)
-{
-#ifdef QT_DEBUG
-    qDebug() << "download data:" << url;
-#endif
-    QByteArray data;
-
-    QNetworkRequest request;
-    request.setUrl(url);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-
-    QNetworkReply* reply;
-    std::unique_ptr<QNetworkAccessManager> priv_nam;
-
-    if (nam) {
-        reply = nam->get(request);
-    } else {
-        priv_nam = std::make_unique<QNetworkAccessManager>();
-        reply = priv_nam->get(request);
-    }
-
-    QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-    QEventLoop loop;
-    connect(reply, &QNetworkReply::finished, this, [&loop, reply, &data] {
-        auto err = reply->error();
-        if (err == QNetworkReply::NoError) {
-            data = reply->readAll();
-            loop.quit();
-        } else {
-            qWarning() << "Error:" << err << reply->url();
-            loop.exit(1);
-        }
-    });
-
-    if (loop.exec() == 1) {
-        qWarning() << "Cannot download data:" << reply->url();
-    }
-
-    reply->deleteLater();
-
-    return data;
 }
 
 bool YtdlApi::ok() const
@@ -82,7 +38,7 @@ bool YtdlApi::downloadBin()
 {
     qDebug() << "Downloading youtube-dl";
 
-    auto data = downloadData(QUrl{"https://yt-dl.org/downloads/latest/youtube-dl"});
+    auto data = Downloader{nam}.downloadData(QUrl{"https://yt-dl.org/downloads/latest/youtube-dl"});
     if (!data.isEmpty()) {
         auto binPath = defaultBinPath();
         if (QDir{}.mkpath(QFileInfo{binPath}.dir().absolutePath())) {
