@@ -69,13 +69,13 @@ QList<ListItem*> ArtistModel::processTrackerReply(
                 continue;
             }
 
-            items << new ArtistItem(
+            items << new ArtistItem{
                          id,
                          cursor.value(1).toString(),
                          QUrl(), // icon
                          cursor.value(2).toInt(),
                          cursor.value(3).toInt()
-                         );
+                         };
 
             artists << id;
         }

@@ -45,7 +45,7 @@
 #include "contentdirectory.h"
 #include "log.h"
 #include "directory.h"
-#include "youtubedl.h"
+#include "ytdlapi.h"
 #include "playlistmodel.h"
 #include "libupnpp/control/cdirectory.hxx"
 #include "bcapi.h"
@@ -3140,59 +3140,29 @@ bool ContentServer::hlsPlaylist(const QByteArray &data)
 }
 
 const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
-ContentServer::makeItemMetaUsingYoutubeDl(const QUrl &url, ItemMeta &meta,
+ContentServer::makeItemMetaUsingYtdlApi(const QUrl &url, ItemMeta &meta,
                                           std::shared_ptr<QNetworkAccessManager> nam,
                                           int counter)
 {
-    qDebug() << "Trying to find url with youtube-dl:" << url;
+    qDebug() << "Trying to find url with Ytdl API:" << url;
 
     if (QThread::currentThread()->isInterruptionRequested()) {
         qWarning() << "Thread interruption was requested";
         return metaCache.cend();
     }
 
-    QUrl newUrl;
-    QString newTitle;
+    auto track = YtdlApi{nam}.track(url);
 
-    auto ytd = YoutubeDl::instance();
-
-    if (ytd->findStream(url)) {
-        QEventLoop loop;
-        QTimer::singleShot(3*httpTimeout, &loop, &QEventLoop::quit); // timeout
-
-        connect(ytd, &YoutubeDl::newStream, &loop,
-                [&loop, &url, &newUrl, &newTitle](const QUrl &origUrl,
-                const QUrl &streamUrl, const QString &streamTitle) {
-            if (QThread::currentThread()->isInterruptionRequested()) {
-                qWarning() << "Thread interruption was requested";
-                loop.exit(1);
-                return;
-            }
-            if (url == origUrl) {
-                newUrl = streamUrl;
-                newTitle = streamTitle;
-                loop.exit(1);
-            }
-        }, Qt::QueuedConnection);
-
-        if (!loop.exec()) { // waiting for youtube-dl resp
-            qWarning() << "Youtube-dl timeouted";
-            ytd->terminate(url);
-        }
-
-        disconnect(ytd, nullptr, &loop, nullptr);
-    }
-
-    if (newUrl.isEmpty()) {
-        qWarning() << "Youtube-dl returned empty url";
+    if (track.streamUrl.isEmpty()) {
+        qWarning() << "Ytdl API returned empty url";
         return metaCache.cend();
     }
 
-    qDebug() << "New url found by youtube-dl:" << newUrl << newTitle;
-
-    meta.title = newTitle;
+    meta.title = std::move(track.title);
+    meta.app = "ytdl";
     meta.setFlags(MetaFlag_YtDl);
 
+    auto newUrl = std::move(track.streamUrl);
     Utils::fixUrl(newUrl);
 
     return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
@@ -3210,7 +3180,7 @@ ContentServer::makeItemMetaUsingBcApi(const QUrl &url, ItemMeta &meta,
         return metaCache.cend();
     }
 
-    auto track = BcApi(nam).track(url);
+    auto track = BcApi{nam}.track(url);
 
     if (track.streamUrl.isEmpty()) {
         qWarning() << "Bc API returned empty url";
@@ -3243,7 +3213,7 @@ ContentServer::makeItemMetaUsingSoundcloudApi(const QUrl &url, ItemMeta &meta,
         return metaCache.cend();
     }
 
-    auto track = SoundcloudApi(nam).track(url);
+    auto track = SoundcloudApi{nam}.track(url);
 
     if (track.streamUrl.isEmpty()) {
         qWarning() << "Soundcloud API returned empty url";
@@ -3467,8 +3437,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
                 return makeItemMetaUsingBcApi(url, meta, nam, counter);
             } else if (meta.app == "soundcloud" || SoundcloudApi::validUrl(url)) {
                 return makeItemMetaUsingSoundcloudApi(url, meta, nam, counter);
-            } else if (YoutubeDl::instance()->enabled()) {
-                return makeItemMetaUsingYoutubeDl(url, meta, nam, counter);
+            } else {
+                return makeItemMetaUsingYtdlApi(url, meta, nam, counter);
             }
         }
 

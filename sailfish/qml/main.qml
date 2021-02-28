@@ -8,7 +8,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-import harbour.jupii.YoutubeDl 1.0
 import harbour.jupii.AVTransport 1.0
 
 ApplicationWindow {
@@ -109,23 +108,6 @@ ApplicationWindow {
                 pageStack.clear()
                 pageStack.completeAnimation()
                 pageStack.push(devPage, {}, PageStackAction.Immediate)
-            }
-        }
-    }
-
-    Connections {
-        target: ytdl
-        onError : {
-            switch(code) {
-            case YoutubeDl.DownloadBin_Error:
-                notifications.show(qsTr("Cannot download youtube-dl"))
-                break
-            case YoutubeDl.UpdateBin_Error:
-                notifications.show(qsTr("Cannot update youtube-dl"))
-                break
-            case YoutubeDl.FindBin_Error:
-                notifications.show(qsTr("Cannot find URL with youtube-dl"))
-                break
             }
         }
     }

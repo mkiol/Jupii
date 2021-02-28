@@ -88,7 +88,8 @@ public:
         std::vector<UserTrack> tracks;
     };
 
-    explicit SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(), QObject *parent = nullptr);
+    explicit SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam = {},
+                           QObject *parent = nullptr);
     std::vector<SearchResultItem> search(const QString &query);
     Track track(const QUrl &url);
     User user(const QUrl &url);

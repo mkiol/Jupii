@@ -121,7 +121,7 @@ HEADERS += \
     $$CORE_DIR/iconprovider.h \
     $$CORE_DIR/contentdirectory.h \
     $$CORE_DIR/cdirmodel.h \
-    $$CORE_DIR/youtubedl.h \
+    $$CORE_DIR/ytdlapi.h \
     $$CORE_DIR/bcmodel.h \
     $$CORE_DIR/notifications.h \
     $$CORE_DIR/filedownloader.h \
@@ -177,7 +177,7 @@ SOURCES += \
     $$CORE_DIR/iconprovider.cpp \
     $$CORE_DIR/contentdirectory.cpp \
     $$CORE_DIR/cdirmodel.cpp \
-    $$CORE_DIR/youtubedl.cpp \
+    $$CORE_DIR/ytdlapi.cpp \
     $$CORE_DIR/bcmodel.cpp \
     $$CORE_DIR/notifications.cpp \
     $$CORE_DIR/filedownloader.cpp \

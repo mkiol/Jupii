@@ -24,7 +24,7 @@ friend class ItemModel;
 friend class SelectableItemModel;
 
 public:
-    explicit ItemWorker(ItemModel *model, const QString &data = QString());
+    explicit ItemWorker(ItemModel *model, const QString &data = {});
     ~ItemWorker();
 
 private:
@@ -47,7 +47,7 @@ public:
     int getCount();
 
 public slots:
-    virtual void updateModel(const QString &data = QString());
+    virtual void updateModel(const QString &data = {});
 
 signals:
     void busyChanged();

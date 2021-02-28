@@ -791,3 +791,16 @@ QString Settings::fsapiPin() const
 {
     return settings.value("fsapipin", "1234").toString();
 }
+
+void Settings::setGlobalYtdl(bool value)
+{
+    if (globalYtdl() != value) {
+        settings.setValue("globalytdl", value);
+        emit globalYtdlChanged();
+    }
+}
+
+bool Settings::globalYtdl() const
+{
+    return settings.value("globalytdl", true).toBool();
+}

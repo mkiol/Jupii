@@ -49,6 +49,7 @@ class Settings:
     Q_PROPERTY (bool logToFile READ getLogToFile WRITE setLogToFile NOTIFY logToFileChanged)
     Q_PROPERTY (int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY colorSchemeChanged)
     Q_PROPERTY (QString fsapiPin READ fsapiPin WRITE setFsapiPin NOTIFY fsapiPinChanged)
+    Q_PROPERTY (bool globalYtdl READ globalYtdl WRITE setGlobalYtdl NOTIFY globalYtdlChanged)
 
 public:   
     enum Hint {
@@ -102,6 +103,9 @@ public:
 
     void setLogToFile(bool value);
     bool getLogToFile();
+
+    void setGlobalYtdl(bool value);
+    bool globalYtdl() const;
 
     void setAlbumQueryType(int value);
     int getAlbumQueryType();
@@ -203,6 +207,7 @@ signals:
     void colorSchemeChanged();
     void audioBoostChanged();
     void fsapiPinChanged();
+    void globalYtdlChanged();
 
 private:
     QSettings settings;

@@ -62,7 +62,6 @@
 #include "devicemodel.h"
 #include "contentdirectory.h"
 #include "cdirmodel.h"
-#include "youtubedl.h"
 #include "bcmodel.h"
 #include "notifications.h"
 #include "tuneinmodel.h"
@@ -101,8 +100,6 @@ void registerTypes()
     qmlRegisterType<RecModel>("harbour.jupii.RecModel", 1, 0, "RecModel");
     qmlRegisterType<CDirModel>("harbour.jupii.CDirModel", 1, 0, "CDirModel");
     qmlRegisterType<TuneinModel>("harbour.jupii.TuneinModel", 1, 0, "TuneinModel");
-    qmlRegisterUncreatableType<YoutubeDl>("harbour.jupii.YoutubeDl", 1, 0, "YoutubeDl",
-                                          "YoutubeDl is a singleton");
     qmlRegisterUncreatableType<Settings>("harbour.jupii.Settings", 1, 0, "Settings",
                                           "Settings is a singleton");
 
@@ -184,7 +181,6 @@ int main(int argc, char *argv[])
     auto services = Services::instance();
     auto playlist = PlaylistModel::instance();
     auto devmodel = DeviceModel::instance();
-    auto ytdl = YoutubeDl::instance();
     auto notifications = Notifications::instance();
     auto conn = ConnectivityDetector::instance();
     new DbusProxy();
@@ -202,7 +198,6 @@ int main(int argc, char *argv[])
     context->setContextProperty("cdir", services->contentDir.get());
     context->setContextProperty("playlist", playlist);
     context->setContextProperty("devmodel", devmodel);
-    context->setContextProperty("ytdl", ytdl);
     context->setContextProperty("notifications", notifications);
     context->setContextProperty("conn", conn);
 

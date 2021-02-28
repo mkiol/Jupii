@@ -370,7 +370,7 @@ private:
             ItemMeta &meta,
             std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
             int counter = 0);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingYoutubeDl(const QUrl &url,
+    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingYtdlApi(const QUrl &url,
             ItemMeta &meta,
             std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(),
             int counter = 0);

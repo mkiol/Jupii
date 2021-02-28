@@ -10,7 +10,6 @@ import QtQuick.Controls 2.2 as Controls
 import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.11 as Kirigami
 
-import harbour.jupii.YoutubeDl 1.0
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
 
@@ -234,24 +233,6 @@ Kirigami.ApplicationWindow {
         onInitedChanged: {
             if (!directory.inited) {
                 homeAction.trigger()
-            }
-        }
-    }
-
-    Connections {
-        target: ytdl
-
-        onError : {
-            switch(code) {
-            case YoutubeDl.DownloadBin_Error:
-                notifications.show(qsTr("Cannot download youtube-dl"))
-                break
-            case YoutubeDl.UpdateBin_Error:
-                notifications.show(qsTr("Cannot update youtube-dl"))
-                break
-            case YoutubeDl.FindBin_Error:
-                notifications.show(qsTr("Cannot find URL with youtube-dl"))
-                break
             }
         }
     }

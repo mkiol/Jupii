@@ -22,7 +22,6 @@
 #include "settings.h"
 #include "services.h"
 #include "directory.h"
-#include "youtubedl.h"
 #include "avtransport.h"
 #include "renderingcontrol.h"
 

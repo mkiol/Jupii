@@ -35,8 +35,7 @@ const QString AlbumModel::albumsQueryTemplate =
 AlbumModel::AlbumModel(QObject *parent) :
     SelectableItemModel(new AlbumItem, parent)
 {
-    auto s = Settings::instance();
-    m_queryType = s->getAlbumQueryType();
+    m_queryType = Settings::instance()->getAlbumQueryType();
 }
 
 QList<ListItem*> AlbumModel::makeItems()
@@ -59,7 +58,7 @@ QList<ListItem*> AlbumModel::processTrackerReply(
 {
     QList<ListItem*> items;
 
-    TrackerCursor cursor(varNames, data);
+    TrackerCursor cursor{varNames, data};
     int n = cursor.columnCount();
 
     if (n > 4) {
@@ -81,12 +80,11 @@ QList<ListItem*> AlbumModel::processTrackerReply(
 
             const auto imgFilePath = Tracker::genAlbumArtFile(cursor.value(1).toString(),
                                                         cursor.value(2).toString());
-            QFileInfo imgFile(imgFilePath);
             auto& album = albums[id];
             album.id = id;
             album.title = cursor.value(1).toString();
             album.artist = cursor.value(2).toString();
-            album.icon = imgFile.exists() ? QUrl(imgFilePath) : QUrl();
+            album.icon = QFileInfo{imgFilePath}.exists() ? QUrl{imgFilePath} : QUrl{};
             album.count = cursor.value(3).toInt();
             album.length = cursor.value(4).toInt();
         }
@@ -94,13 +92,13 @@ QList<ListItem*> AlbumModel::processTrackerReply(
         auto end = albums.cend();
         for (auto it = albums.cbegin(); it != end; ++it) {
             const auto& album = it.value();
-            items << new AlbumItem(
+            items << new AlbumItem{
                         album.id,
                         album.title,
                         album.artist,
                         album.icon,
                         album.count,
-                        album.length);
+                        album.length};
         }
 
         // Sorting
