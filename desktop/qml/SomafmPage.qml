@@ -23,7 +23,7 @@ Kirigami.ScrollablePage {
 
     title: "SomaFM"
 
-    //refreshing: itemModel.busy || itemModel.refreshing
+    //refreshing: itemModel.busy
     Component.onCompleted: {
         refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()

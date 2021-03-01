@@ -20,7 +20,7 @@ class Downloader : public QObject
 public:
     Downloader(std::shared_ptr<QNetworkAccessManager> nam = {},
                QObject *parent = nullptr);
-    QByteArray downloadData(const QUrl &url);
+    QByteArray downloadData(const QUrl &url, int timeout = httpTimeout);
 private:
     static const int httpTimeout = 10000;
     std::shared_ptr<QNetworkAccessManager> nam;

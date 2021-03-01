@@ -142,12 +142,11 @@ QVariantList SomafmModel::selectedItems()
         const auto channel = qobject_cast<SomafmItem*>(item);
         if (channel->selected()) {
             list << QVariantMap{
-                {"url", {channel->url()}},
-                {"name", {channel->name()}},
-                {"icon", {channel->icon()}},
-                {"author", {"SomaFM"}},
-                {"app", "somafm"}
-            };
+                {"url", channel->url()},
+                {"name", channel->name()},
+                {"icon", channel->icon()},
+                {"author", "SomaFM"},
+                {"app", "somafm"}};
         }
     }
 
@@ -163,7 +162,7 @@ QList<ListItem*> SomafmModel::makeItems()
 
     const auto& filter = getFilter();
 
-    int l = filter.isEmpty() ? 1000 : m_entries.length();
+    const int l = filter.isEmpty() ? 1000 : m_entries.length();
 
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
@@ -270,6 +269,6 @@ QVariant SomafmItem::data(int role) const
     case SelectedRole:
         return selected();
     default:
-        return QVariant();
+        return {};
     }
 }

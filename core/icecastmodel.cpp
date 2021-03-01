@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "icecastmodel.h"
+
 #include <QDebug>
 #include <QFile>
 #include <QDir>
@@ -15,23 +17,22 @@
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
-#include <QNetworkRequest>
-#include <memory>
 
-#include "icecastmodel.h"
 #include "utils.h"
 #include "iconprovider.h"
+#include "downloader.h"
 
-const QString IcecastModel::m_dirUrl = "http://dir.xiph.org/yp.xml";
-const QString IcecastModel::m_dirFilename = "icecast.xml";
+const QUrl IcecastModel::m_dirUrl{"http://dir.xiph.org/yp.xml"};
+const QString IcecastModel::m_dirFilename{"icecast.xml"};
 
 IcecastModel::IcecastModel(QObject *parent) :
     SelectableItemModel(new IcecastItem, parent)
 {
-    if (Utils::cacheFileExists(m_dirFilename))
-        parseData();
-    else
-        refresh();
+}
+
+IcecastModel::~IcecastModel()
+{
+    m_worker.reset();
 }
 
 bool IcecastModel::parseData()
@@ -53,69 +54,34 @@ bool IcecastModel::parseData()
     return false;
 }
 
-bool IcecastModel::isRefreshing()
+void IcecastModel::downloadDir()
 {
-    return m_refreshing;
-}
+    if (!Utils::cacheFileExists(m_dirFilename)) {
+        auto data = Downloader{}.downloadData(m_dirUrl, 30000);
 
-void IcecastModel::handleDataDownloadFinished()
-{
-    auto reply = qobject_cast<QNetworkReply*>(sender());
-    if (reply) {
-        auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-        auto err = reply->error();
-        //qDebug() << "Response code:" << code << reason << err;
+        if (QThread::currentThread()->isInterruptionRequested())
+            return;
 
-        if (err != QNetworkReply::NoError) {
-            qWarning() << "Error:" << err;
+        if (data.isEmpty()) {
+            qWarning() << "No data received";
             emit error();
-        } else if (code > 299 && code < 399) {
-            qWarning() << "Redirection received but unsupported";
-            emit error();
-        } else if (code > 299) {
-            qWarning() << "Unsupported response code:" << reply->error() << code << reason;
-            emit error();
-        } else {
-            auto data = reply->readAll();
-            if (data.isEmpty()) {
-                qWarning() << "No data received";
-                emit error();
-            } else {
-                Utils::writeToCacheFile(m_dirFilename, data, true);
-            }
+            return;
         }
 
-        reply->deleteLater();
+        Utils::writeToCacheFile(m_dirFilename, data, true);
+    }
 
-        m_refreshing = false;
-        emit refreshingChanged();
-        setBusy(false);
-
-        if (parseData())
-            updateModel();
-        else
-            emit error();
+    if (!parseData()) {
+        emit error();
+        Utils::removeFromCacheDir({m_dirFilename});
     }
 }
 
 void IcecastModel::refresh()
 {
-    if (!m_refreshing) {
-        setBusy(true);
-        m_refreshing = true;
-        emit refreshingChanged();
-
-        QNetworkRequest request;
-        request.setUrl(QUrl(m_dirUrl));
-        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        auto reply = Utils::instance()->nam->get(request);
-        QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-        connect(reply, &QNetworkReply::finished, this,
-                &IcecastModel::handleDataDownloadFinished, Qt::QueuedConnection);
-    } else {
-        qWarning() << "Refreshing already active";
-    }
+    Utils::removeFromCacheDir({m_dirFilename});
+    m_entries = {};
+    updateModel();
 }
 
 QVariantList IcecastModel::selectedItems()
@@ -125,13 +91,12 @@ QVariantList IcecastModel::selectedItems()
     foreach (const auto item, m_list) {
         const auto station = qobject_cast<IcecastItem*>(item);
         if (station->selected()) {
-            QVariantMap map;
-            map.insert("url", QVariant(station->url()));
-            map.insert("name", QVariant(station->name()));
-            map.insert("icon", QVariant(IconProvider::urlToNoResId("icon-icecast")));
-            map.insert("author", QVariant("Icecast"));
-            map.insert("app", "icecast");
-            list << map;
+            list << QVariantMap{
+                {"url", station->url()},
+                {"name", station->name()},
+                {"icon", IconProvider::urlToNoResId("icon-icecast")},
+                {"author", "Icecast"},
+                {"app", "icecast"}};
         }
     }
 
@@ -140,11 +105,14 @@ QVariantList IcecastModel::selectedItems()
 
 QList<ListItem*> IcecastModel::makeItems()
 {
+    if (m_entries.isEmpty())
+        downloadDir();
+
     QList<ListItem*> items;
 
     const auto& filter = getFilter();
 
-    int l = filter.isEmpty() ? 1000 : m_entries.length();
+    const int l = filter.isEmpty() ? 1000 : m_entries.length();
 
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
@@ -156,7 +124,7 @@ QList<ListItem*> IcecastModel::makeItems()
             if (!url.isEmpty() && !name.isEmpty()) {
                 if (name.contains(filter, Qt::CaseInsensitive) ||
                     genre.contains(filter, Qt::CaseInsensitive) ||
-                    QUrl(url).path().contains(filter, Qt::CaseInsensitive)) {
+                    QUrl{url}.path().contains(filter, Qt::CaseInsensitive)) {
 
                     auto mime = entry.elementsByTagName("server_type").at(0).toElement().text();
                     auto bitrate = entry.elementsByTagName("bitrate").at(0).toElement().text().toInt();
@@ -172,13 +140,13 @@ QList<ListItem*> IcecastModel::makeItems()
                                 (type.isEmpty() ? "" : type + " ")) +
                                 (bitrate > 0 ? QString::number(bitrate) + "kbps" : "");
 
-                    items << new IcecastItem(
+                    items << new IcecastItem{
                                     url, // id
                                     name, // name
                                     desc, // desc
                                     QUrl(url), // url
                                     ContentServer::typeFromMime(mime) // type
-                                );
+                                };
                 }
             }
         }
@@ -189,8 +157,8 @@ QList<ListItem*> IcecastModel::makeItems()
 
     // Sorting
     std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-        auto aa = dynamic_cast<IcecastItem*>(a);
-        auto bb = dynamic_cast<IcecastItem*>(b);
+        const auto aa = qobject_cast<IcecastItem*>(a);
+        const auto bb = qobject_cast<IcecastItem*>(b);
         return aa->name().compare(bb->name(), Qt::CaseInsensitive) < 0;
     });
 
@@ -240,6 +208,6 @@ QVariant IcecastItem::data(int role) const
     case SelectedRole:
         return selected();
     default:
-        return QVariant();
+        return {};
     }
 }

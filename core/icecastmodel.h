@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,9 +14,7 @@
 #include <QByteArray>
 #include <QVariant>
 #include <QUrl>
-#include <QDir>
 #include <QDomNodeList>
-#include <QNetworkReply>
 
 #include "contentserver.h"
 #include "listmodel.h"
@@ -61,33 +59,25 @@ private:
 class IcecastModel : public SelectableItemModel
 {
     Q_OBJECT
-    Q_PROPERTY (bool refreshing READ isRefreshing NOTIFY refreshingChanged)
-
 public:
     explicit IcecastModel(QObject *parent = nullptr);
-    bool isRefreshing();
+    ~IcecastModel();
     Q_INVOKABLE QVariantList selectedItems();
 
 public slots:
     void refresh();
 
 signals:
-    void refreshingChanged();
     void error();
 
-private slots:
-    void handleDataDownloadFinished();
-
 private:
-    static const QString m_dirUrl;
+    static const QUrl m_dirUrl;
     static const QString m_dirFilename;
-    static const int httpTimeout = 100000;
-
     QDomNodeList m_entries;
-    bool m_refreshing = false;
 
     QList<ListItem*> makeItems();
     bool parseData();
+    void downloadDir();
 };
 
 #endif // ICECASTMODEL_H

@@ -19,7 +19,7 @@ Downloader::Downloader(std::shared_ptr<QNetworkAccessManager> nam, QObject *pare
 {
 }
 
-QByteArray Downloader::downloadData(const QUrl &url)
+QByteArray Downloader::downloadData(const QUrl &url, int timeout)
 {
 #ifdef QT_DEBUG
     qDebug() << "Download data:" << url;
@@ -39,7 +39,7 @@ QByteArray Downloader::downloadData(const QUrl &url)
         reply = priv_nam->get(request);
     }
 
-    QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
+    QTimer::singleShot(timeout, reply, &QNetworkReply::abort);
 
     QEventLoop loop;
     connect(reply, &QNetworkReply::finished, this, [&loop] {
