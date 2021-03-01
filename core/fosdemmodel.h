@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,11 +14,8 @@
 #include <QByteArray>
 #include <QVariant>
 #include <QUrl>
-#include <QPair>
-#include <QDir>
 #include <QDomNodeList>
 #include <QDomElement>
-#include <QNetworkReply>
 
 #include "listmodel.h"
 #include "itemmodel.h"
@@ -48,7 +45,6 @@ public:
     inline QString name() const { return m_name; }
     inline QString track() const { return m_track; }
     inline QUrl url() const { return m_url; }
-    void refresh();
 private:
     QString m_id;
     QString m_name;
@@ -59,14 +55,12 @@ private:
 class FosdemModel : public SelectableItemModel
 {
     Q_OBJECT
-    Q_PROPERTY (int year READ getYear WRITE setYear NOTIFY yearChanged)
-    Q_PROPERTY (bool refreshing READ isRefreshing NOTIFY refreshingChanged)
+    Q_PROPERTY (int year READ year WRITE setYear NOTIFY yearChanged)
 public:
     explicit FosdemModel(QObject *parent = nullptr);
-    bool isRefreshing();
+    ~FosdemModel();
     Q_INVOKABLE QVariantList selectedItems();
-
-    int getYear();
+    int year() const;
     void setYear(int value);
 
 public slots:
@@ -74,27 +68,20 @@ public slots:
 
 signals:
     void yearChanged();
-    void refreshingChanged();
     void error();
-
-private slots:
-    void handleDataDownloadFinished();
 
 private:
     static const QString m_url;
     static const QString m_url_archive;
     static const QString m_filename;
-    static const int httpTimeout = 100000;
-
     int m_year = 2020;
     QDomNodeList m_entries;
     bool m_refreshing = false;
 
     QList<ListItem*> makeItems();
     bool parseData();
-    void refreshItem(const QString &id);
-    QUrl makeUrl();
-    void init();
+    void downloadDir();
+    QUrl makeUrl() const;
 };
 
 #endif // FOSDEMMODEL_H

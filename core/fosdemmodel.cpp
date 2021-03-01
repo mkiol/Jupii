@@ -1,31 +1,29 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "fosdemmodel.h"
+
 #include <QDebug>
 #include <QDate>
-#include <QFile>
-#include <QDir>
 #include <QList>
-#include <QTimer>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
-#include <QNetworkRequest>
 #include <memory>
 
-#include "fosdemmodel.h"
 #include "utils.h"
 #include "iconprovider.h"
+#include "downloader.h"
 
-const QString FosdemModel::m_url = "https://fosdem.org/%1/schedule/xml";
-const QString FosdemModel::m_url_archive = "https://archive.fosdem.org/%1/schedule/xml";
-const QString FosdemModel::m_filename = "fosdem%1.xml";
+const QString FosdemModel::m_url{"https://fosdem.org/%1/schedule/xml"};
+const QString FosdemModel::m_url_archive{"https://archive.fosdem.org/%1/schedule/xml"};
+const QString FosdemModel::m_filename{"fosdem%1.xml"};
 
 FosdemModel::FosdemModel(QObject *parent) :
     SelectableItemModel(new FosdemItem, parent),
@@ -33,15 +31,12 @@ FosdemModel::FosdemModel(QObject *parent) :
 {
 }
 
-void FosdemModel::init()
+FosdemModel::~FosdemModel()
 {
-    if (Utils::cacheFileExists(m_filename.arg(m_year)))
-        parseData();
-    else
-        refresh();
+    m_worker.reset();
 }
 
-int FosdemModel::getYear()
+int FosdemModel::year() const
 {
     return m_year;
 }
@@ -50,16 +45,16 @@ void FosdemModel::setYear(int value)
 {
     if (value != m_year) {
         m_year = value;
-        init();
         emit yearChanged();
+        updateModel();
     }
 }
 
-QUrl FosdemModel::makeUrl()
+QUrl FosdemModel::makeUrl() const
 {
     if (QDate::currentDate().year() == m_year)
-        return QUrl(m_url.arg(m_year));
-    return QUrl(m_url_archive.arg(m_year));
+        return QUrl{m_url.arg(m_year)};
+    return QUrl{m_url_archive.arg(m_year)};
 }
 
 bool FosdemModel::parseData()
@@ -79,66 +74,37 @@ bool FosdemModel::parseData()
     return false;
 }
 
-bool FosdemModel::isRefreshing()
+void FosdemModel::downloadDir()
 {
-    return m_refreshing;
-}
+    auto dirFilename = m_filename.arg(m_year);
 
-void FosdemModel::handleDataDownloadFinished()
-{
-    auto reply = qobject_cast<QNetworkReply*>(sender());
-    if (reply) {
-        auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        auto reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-        auto err = reply->error();
-        //qDebug() << "Response code:" << code << reason << err;
+    if (!Utils::cacheFileExists(dirFilename)) {
+        auto nam = std::make_shared<QNetworkAccessManager>();
+        auto data = Downloader{nam}.downloadData(makeUrl());
 
-        if (err != QNetworkReply::NoError) {
-            qWarning() << "Error:" << err;
+        if (QThread::currentThread()->isInterruptionRequested())
+            return;
+
+        if (data.isEmpty()) {
+            qWarning() << "No data received";
             emit error();
-        } else if (code > 299 && code < 399) {
-            qWarning() << "Redirection received but unsupported";
-            emit error();
-        } else if (code > 299) {
-            qWarning() << "Unsupported response code:" << reply->error() << code << reason;
-            emit error();
-        } else {
-            const auto data = reply->readAll();
-            if (data.isEmpty()) {
-                qWarning() << "No data received";
-                emit error();
-            } else {
-                Utils::writeToCacheFile(m_filename.arg(m_year), data, true);
-                if (!parseData()) {
-                    emit error();
-                }
-            }
+            return;
         }
-        reply->deleteLater();
-        m_refreshing = false;
-        emit refreshingChanged();
-        setBusy(false);
-        updateModel();
+
+        Utils::writeToCacheFile(dirFilename, data, true);
+    }
+
+    if (!parseData()) {
+        emit error();
+        Utils::removeFromCacheDir({dirFilename});
     }
 }
 
 void FosdemModel::refresh()
 {
-    if (!m_refreshing) {
-        setBusy(true);
-        m_refreshing = true;
-        emit refreshingChanged();
-
-        QNetworkRequest request;
-        request.setUrl(makeUrl());
-        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-        auto reply = Utils::instance()->nam->get(request);
-        QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-        connect(reply, &QNetworkReply::finished, this,
-                &FosdemModel::handleDataDownloadFinished, Qt::QueuedConnection);
-    } else {
-        qWarning() << "Refreshing already active";
-    }
+    Utils::removeFromCacheDir({m_filename.arg(m_year)});
+    m_entries = {};
+    updateModel();
 }
 
 QVariantList FosdemModel::selectedItems()
@@ -148,13 +114,12 @@ QVariantList FosdemModel::selectedItems()
     foreach (const auto item, m_list) {
         const auto event = qobject_cast<FosdemItem*>(item);
         if (event->selected()) {
-            QVariantMap map;
-            map.insert("url", QVariant(event->url()));
-            map.insert("name", QVariant(event->name()));
-            map.insert("icon", QVariant(IconProvider::urlToNoResId("icon-fosdem")));
-            map.insert("author", QVariant(QString("FOSDEM %1").arg(m_year)));
-            map.insert("app", "fosdem");
-            list << map;
+            list << QVariantMap{
+            {"url", event->url()},
+            {"name", event->name()},
+            {"icon", IconProvider::urlToNoResId("icon-fosdem")},
+            {"author", QString("FOSDEM %1").arg(m_year)},
+            {"app", "fosdem"}};
         }
     }
 
@@ -163,11 +128,14 @@ QVariantList FosdemModel::selectedItems()
 
 QList<ListItem*> FosdemModel::makeItems()
 {
+    if (m_entries.isEmpty())
+        downloadDir();
+
     QList<ListItem*> items;
 
     const auto& filter = getFilter();
 
-    int l = filter.isEmpty() ? 1000 : m_entries.length();
+    const int l = filter.isEmpty() ? 1000 : m_entries.length();
 
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
@@ -217,12 +185,12 @@ QList<ListItem*> FosdemModel::makeItems()
                 if (name.contains(filter, Qt::CaseInsensitive) ||
                     track.contains(filter, Qt::CaseInsensitive) ||
                     person.contains(filter, Qt::CaseInsensitive)) {
-                    items << new FosdemItem(
+                    items << new FosdemItem{
                                     id, // id
                                     name, // name
                                     track, // track
                                     QUrl(url) // url
-                                );
+                                 };
                 }
             }
         }
@@ -233,19 +201,12 @@ QList<ListItem*> FosdemModel::makeItems()
 
     // Sorting
     std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-        auto aa = qobject_cast<FosdemItem*>(a);
-        auto bb = qobject_cast<FosdemItem*>(b);
+        const auto aa = qobject_cast<FosdemItem*>(a);
+        const auto bb = qobject_cast<FosdemItem*>(b);
         return aa->name().compare(bb->name(), Qt::CaseInsensitive) < 0;
     });
 
     return items;
-}
-
-void FosdemModel::refreshItem(const QString &id)
-{
-    auto item = qobject_cast<FosdemItem*>(find(id));
-    if (item)
-        item->refresh();
 }
 
 FosdemItem::FosdemItem(const QString &id,
@@ -286,10 +247,6 @@ QVariant FosdemItem::data(int role) const
     case SelectedRole:
         return selected();
     default:
-        return QVariant();
+        return {};
     }
-}
-
-void FosdemItem::refresh()
-{
 }

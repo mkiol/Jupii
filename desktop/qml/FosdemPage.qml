@@ -24,9 +24,9 @@ Kirigami.ScrollablePage {
 
     title: "FOSDEM " + year
 
-    //refreshing: itemModel.busy || itemModel.refreshing
+    //refreshing: itemModel.busy
     Component.onCompleted: {
-        refreshing = Qt.binding(function() { return itemModel.busy || itemModel.refreshing })
+        refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()
     }
 
@@ -73,7 +73,6 @@ Kirigami.ScrollablePage {
             spacing: 0
             anchors.fill: parent
             Kirigami.SearchField {
-                enabled: !itemModel.refreshing
                 Layout.fillWidth: true
                 Layout.leftMargin: Kirigami.Units.smallSpacing
                 Layout.rightMargin: Kirigami.Units.smallSpacing
@@ -133,7 +132,7 @@ Kirigami.ScrollablePage {
         Kirigami.PlaceholderMessage {
             anchors.centerIn: parent
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
-            visible: itemList.count === 0 && !itemModel.busy && !itemModel.refreshing
+            visible: itemList.count === 0 && !itemModel.busy
             text: qsTr("No items")
             helpfulAction: Kirigami.Action {
                 iconName: "view-refresh"

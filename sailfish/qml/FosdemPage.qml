@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -58,8 +58,6 @@ Dialog {
             model: itemModel
             dialog: root
             view: listView
-            enabled: !itemModel.refreshing
-
             onActiveFocusChanged: {
                 listView.currentIndex = -1
             }
@@ -67,10 +65,10 @@ Dialog {
 
         PullDownMenu {
             id: menu
-            busy: itemModel.refreshing
+            busy: itemModel.busy
 
             MenuItem {
-                enabled: !itemModel.refreshing
+                enabled: !itemModel.busy
                 text: qsTr("Refresh")
                 onClicked: itemModel.refresh()
             }
@@ -106,14 +104,14 @@ Dialog {
         }
 
         ViewPlaceholder {
-            enabled: listView.count === 0 && !itemModel.busy && !itemModel.refreshing
+            enabled: listView.count === 0 && !itemModel.busy
             text: qsTr("No items")
         }
     }
 
     BusyIndicator {
         anchors.centerIn: parent
-        running: itemModel.busy || itemModel.refreshing
+        running: itemModel.busy
         size: BusyIndicatorSize.Large
     }
 
