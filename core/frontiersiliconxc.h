@@ -12,7 +12,6 @@
 #include <QString>
 #include <QByteArray>
 #include <QDomDocument>
-#include <QNetworkReply>
 
 #include "xc.h"
 
@@ -30,7 +29,7 @@ public:
 
 private:
     static const QString URL;
-    static const int TIMEOUT;
+    static const int timeout;
     QString sid;
 
     static QDomDocument parse(const QByteArray& data);
@@ -38,7 +37,6 @@ private:
     void handleActionCreateSession(const QByteArray &data, const QVariant& userData);
     void handleActionError(XC::Action action, QNetworkReply::NetworkError error, const QVariant& userData = {});
     bool init();
-    bool downloadDeviceDescription(QByteArray& data);
     bool parseDeviceDescription(const QByteArray& data);
     void createSession(Action action);
 };

@@ -12,15 +12,11 @@
 #include <QDomElement>
 #include <QDomNode>
 #include <QDomNodeList>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QEventLoop>
-#include <QTimer>
 
 #include "settings.h"
+#include "downloader.h"
 
 const QString FrontierSiliconXC::URL("http://%1:80/device"); // TODO: port & path should be provided via UI
-const int FrontierSiliconXC::TIMEOUT = 1000;
 
 FrontierSiliconXC::FrontierSiliconXC(const QString &deviceId, const QString &address, QObject *parent) :
     XC(deviceId, address, parent)
@@ -96,35 +92,6 @@ void FrontierSiliconXC::createSession(Action action)
     apiCall(ACTION_CREATE_SESSION, "/CREATE_SESSION", {{"pin", Settings::instance()->fsapiPin()}}, action);
 }
 
-bool FrontierSiliconXC::downloadDeviceDescription(QByteArray& data)
-{
-    QNetworkRequest request;
-    request.setUrl(QUrl(URL.arg(address)));
-    request.setAttribute(QNetworkRequest::Attribute::FollowRedirectsAttribute, true);
-
-    QNetworkAccessManager nam;
-    auto reply = nam.get(request);
-
-    QTimer::singleShot(TIMEOUT, reply, &QNetworkReply::abort);
-    QEventLoop loop;
-
-    connect(reply, &QNetworkReply::finished, this, [&loop, reply, &data] {
-        auto err = reply->error();
-        qDebug() << "FrontierSiliconXC finished";
-        if (err == QNetworkReply::NetworkError::NoError) {
-            data = reply->readAll();
-            reply->deleteLater();
-            loop.quit();
-        } else {
-            qWarning() << "FrontierSiliconXC error:" << err;
-            reply->deleteLater();
-            loop.exit(1);
-        }
-    });
-
-    return loop.exec() == 0;
-}
-
 QDomDocument FrontierSiliconXC::parse(const QByteArray& data)
 {
     QDomDocument doc;
@@ -158,9 +125,8 @@ bool FrontierSiliconXC::parseDeviceDescription(const QByteArray& data)
 
 bool FrontierSiliconXC::init()
 {
-    QByteArray data;
-
-    if (!downloadDeviceDescription(data)) {
+    QByteArray data = Downloader{}.downloadData(QUrl{URL.arg(address)}, 1000);
+    if (data.isEmpty()) {
         qWarning() << "Cannot download device description";
         return false;
     }
