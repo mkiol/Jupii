@@ -65,7 +65,7 @@ class SomafmModel : public SelectableItemModel
 public:
     explicit SomafmModel(QObject *parent = nullptr);
     ~SomafmModel();
-    Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE QVariantList selectedItems() override;
 
 public slots:
     void refresh();
@@ -79,7 +79,7 @@ private:
     static const QString m_imageFilename;
     QDomNodeList m_entries;
 
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     bool parseData();
     void downloadImages(std::shared_ptr<QNetworkAccessManager> nam);
     void downloadDir();

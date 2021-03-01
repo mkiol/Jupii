@@ -40,7 +40,7 @@ public:
     Q_ENUM(Types)
 
     explicit CDirModel(QObject *parent = nullptr);
-    Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE QVariantList selectedItems() override;
     void setCurrentId(const QString& id);
     QString getCurrentId();
     QString getCurrentTitle();
@@ -65,7 +65,7 @@ private:
     int m_queryType = 0;
     int m_musicQueryType = 0;
     int m_imageQueryType = 0;
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     QHash<QString, QString> idToTitle;
     QHash<QString, QString> idToPid;
     QHash<QString, Types> idToType;

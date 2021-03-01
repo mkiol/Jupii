@@ -50,7 +50,7 @@ signals:
 
 private:
     QDir m_dir;
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
 };
 
 #endif // DIRMODEL_H

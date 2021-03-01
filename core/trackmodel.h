@@ -95,7 +95,7 @@ public:
     QString getArtistId();
     void setPlaylistId(const QString& id);
     QString getPlaylistId();
-    Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE QVariantList selectedItems() override;
 
 signals:
     void albumIdChanged();
@@ -131,7 +131,7 @@ private:
     QHash<QUrl,TrackData> m_trackdata_by_id;
     QList<QUrl> m_ids;
 
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     TrackData makeTrackDataFromId(const QUrl& id) const;
     QList<ListItem*> makeTrackItemsFromTrackData();
     QList<ListItem*> processTrackerReplyForAlbumArtist(TrackerCursor& cursor);

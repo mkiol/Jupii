@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,8 +14,7 @@
 #include <QByteArray>
 #include <QVariant>
 #include <QUrl>
-#include <QDomDocument>
-#include <memory>
+#include <QDomNodeList>
 
 #include "listmodel.h"
 #include "itemmodel.h"
@@ -62,18 +61,15 @@ class TuneinModel : public SelectableItemModel
     Q_OBJECT
 public:
     explicit TuneinModel(QObject *parent = nullptr);
-    Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE QVariantList selectedItems() override;
 
 signals:
     void error();
 
 private:
-    static const int httpTimeout = 10000;
-
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     static QUrl makeSearchUrl(const QString &phrase);
-    static std::unique_ptr<QDomDocument> parseXmlData(const QByteArray &data);
-    QByteArray downloadData(const QUrl &url);
+    static QDomNodeList parseData(const QByteArray &data);
 };
 
 #endif // TUNEINMODEL_H

@@ -56,7 +56,7 @@ class RecModel : public SelectableItemModel
     Q_PROPERTY (int queryType READ getQueryType WRITE setQueryType NOTIFY queryTypeChanged)
 public:
     explicit RecModel(QObject *parent = nullptr);
-    Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE QVariantList selectedItems() override;
     Q_INVOKABLE void deleteSelected();
     int getQueryType();
     void setQueryType(int value);
@@ -77,7 +77,7 @@ private:
     };
     QList<Item> m_items;
     QDir m_dir;
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     int m_queryType = 0;
 };
 

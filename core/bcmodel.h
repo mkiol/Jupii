@@ -38,7 +38,7 @@ public:
     Q_ENUM(Type)
 
     explicit BcModel(QObject *parent = nullptr);
-    Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE QVariantList selectedItems() override;
 
     QUrl getAlbumUrl() const;
     void setAlbumUrl(const QUrl& albumUrl);
@@ -57,7 +57,7 @@ signals:
     void artistNameChanged();
 
 private:
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     QList<ListItem*> makeSearchItems();
     QList<ListItem*> makeAlbumItems();
     QList<ListItem*> makeArtistItems();

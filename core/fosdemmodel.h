@@ -59,7 +59,7 @@ class FosdemModel : public SelectableItemModel
 public:
     explicit FosdemModel(QObject *parent = nullptr);
     ~FosdemModel();
-    Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE QVariantList selectedItems() override;
     int year() const;
     void setYear(int value);
 
@@ -78,7 +78,7 @@ private:
     QDomNodeList m_entries;
     bool m_refreshing = false;
 
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     bool parseData();
     void downloadDir();
     QUrl makeUrl() const;

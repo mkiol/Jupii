@@ -62,7 +62,7 @@ class IcecastModel : public SelectableItemModel
 public:
     explicit IcecastModel(QObject *parent = nullptr);
     ~IcecastModel();
-    Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE QVariantList selectedItems() override;
 
 public slots:
     void refresh();
@@ -75,7 +75,7 @@ private:
     static const QString m_dirFilename;
     QDomNodeList m_entries;
 
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     bool parseData();
     void downloadDir();
 };

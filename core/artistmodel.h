@@ -67,7 +67,7 @@ public:
 private:
     static  const QString artistsQueryTemplate;
 
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     QList<ListItem*> processTrackerReply(
             const QStringList& varNames,
             const QByteArray& data);

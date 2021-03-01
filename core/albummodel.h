@@ -87,7 +87,7 @@ private:
 
     static const QString albumsQueryTemplate;
     int m_queryType = 0;
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     QList<ListItem*> processTrackerReply(
             const QStringList& varNames,
             const QByteArray& data);

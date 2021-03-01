@@ -1,9 +1,11 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
+#include "tuneinmodel.h"
 
 #include <QDebug>
 #include <QList>
@@ -13,15 +15,11 @@
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QUrlQuery>
-#include <QEventLoop>
-#include <memory>
 
-#include "tuneinmodel.h"
 #include "utils.h"
 #include "iconprovider.h"
+#include "downloader.h"
 
 TuneinModel::TuneinModel(QObject *parent) :
     SelectableItemModel(new TuneinItem, parent)
@@ -33,53 +31,23 @@ QUrl TuneinModel::makeSearchUrl(const QString &phrase)
     QUrlQuery qurl;
     qurl.addQueryItem("query", phrase);
     qurl.addQueryItem("filter", "s:mp3");
-    QUrl url("http://opml.radiotime.com/Search.ashx");
+    QUrl url{"http://opml.radiotime.com/Search.ashx"};
     url.setQuery(qurl);
     return url;
 }
 
-std::unique_ptr<QDomDocument> TuneinModel::parseXmlData(const QByteArray &data)
+QDomNodeList TuneinModel::parseData(const QByteArray &data)
 {
-    auto doc = std::make_unique<QDomDocument>();
-    QString error;
-    if (!doc->setContent(data, false, &error)) {
+    QDomNodeList entries;
+
+    QDomDocument doc;
+    if (QString error; !doc.setContent(data, false, &error)) {
         qWarning() << "Cannot parse XML data:" << error;
-        doc.reset();
+    } else {
+        entries = doc.elementsByTagName("body").item(0).toElement().elementsByTagName("outline");
     }
 
-    return doc;
-}
-
-QByteArray TuneinModel::downloadData(const QUrl &url)
-{
-    QByteArray data;
-
-    QNetworkRequest request;
-    request.setUrl(url);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-    QNetworkAccessManager nam;
-    auto reply = nam.get(request);
-    QTimer::singleShot(httpTimeout, reply, &QNetworkReply::abort);
-    QEventLoop loop;
-    connect(reply, &QNetworkReply::finished, this, [&loop, reply, &data] {
-        auto err = reply->error();
-        if (err == QNetworkReply::NoError) {
-            data = reply->readAll();
-            reply->deleteLater();
-            loop.quit();
-        } else {
-            qWarning() << "Error:" << err;
-            reply->deleteLater();
-            loop.exit(1);
-        }
-    });
-
-    if (loop.exec() == 1) {
-        qWarning() << "Cannot download data";
-        emit error();
-    }
-
-    return data;
+    return entries;
 }
 
 QVariantList TuneinModel::selectedItems()
@@ -111,7 +79,7 @@ QList<ListItem*> TuneinModel::makeItems()
         return items;
     }
 
-    auto data = downloadData(makeSearchUrl(filter));
+    auto data = Downloader{}.downloadData(makeSearchUrl(filter));
     if (data.isEmpty()) {
         qWarning() << "No data received";
         return items;
@@ -120,23 +88,12 @@ QList<ListItem*> TuneinModel::makeItems()
     if (QThread::currentThread()->isInterruptionRequested())
         return items;
 
-    auto doc = parseXmlData(data);
-
-    if (!doc) {
+    auto entries = parseData(data);
+    if (entries.isEmpty())
         return items;
-    }
 
-    auto bs = doc->elementsByTagName("body");
-    if (bs.isEmpty()) {
-        qWarning() << "No body element";
-        return items;
-    }
-
-    auto ols = bs.at(0).toElement().elementsByTagName("outline");
-
-    for (int i = 0; i < ols.size(); ++i) {
-        auto ol = ols.at(i).toElement();
-        if (ol.attribute("item") == "station") {
+    for (int i = 0; i < entries.size(); ++i) {
+        if (auto ol = entries.at(i).toElement(); ol.attribute("item") == "station") {
             const auto id = ol.attribute("preset_id");
             const auto url = QUrl{ol.attribute("URL")};
             const auto name = ol.attribute("text");
@@ -145,26 +102,18 @@ QList<ListItem*> TuneinModel::makeItems()
                 continue;
             }
 
-            auto icon = QUrl(ol.attribute("image"));
+            auto icon = QUrl{ol.attribute("image")};
             if (icon.isEmpty())
                 icon = IconProvider::urlToNoResId("icon-tunein"); // default icon
 
-            items << new TuneinItem(
+            items << new TuneinItem{
                            id,
                            name,
                            ol.attribute("subtext"),
                            url,
-                           icon
-                       );
+                           icon};
         }
     }
-
-    // Sorting
-    /*std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-        const auto aa = qobject_cast<TuneinItem*>(a);
-        const auto bb = qobject_cast<TuneinItem*>(b);
-        return aa->name().compare(bb->name(), Qt::CaseInsensitive) < 0;
-    });*/
 
     return items;
 }
@@ -212,6 +161,6 @@ QVariant TuneinItem::data(int role) const
     case SelectedRole:
         return selected();
     default:
-        return QVariant();
+        return {};
     }
 }

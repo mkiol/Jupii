@@ -40,7 +40,7 @@ public:
 
     explicit SoundcloudModel(QObject *parent = nullptr);
     ~SoundcloudModel();
-    Q_INVOKABLE QVariantList selectedItems();
+    Q_INVOKABLE QVariantList selectedItems() override;
 
     QUrl getAlbumUrl() const;
     void setAlbumUrl(const QUrl& albumUrl);
@@ -59,7 +59,7 @@ signals:
     void artistNameChanged();
 
 private:
-    QList<ListItem*> makeItems();
+    QList<ListItem*> makeItems() override;
     QList<ListItem*> makeSearchItems();
     QList<ListItem*> makeAlbumItems();
     QList<ListItem*> makeArtistItems();
