@@ -66,6 +66,7 @@ Dialog {
         PullDownMenu {
             id: menu
             busy: itemModel.busy
+            enabled: !itemModel.busy
 
             MenuItem {
                 enabled: !itemModel.busy

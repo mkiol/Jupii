@@ -64,8 +64,9 @@ Dialog {
         PullDownMenu {
             id: menu
 
-            enabled: itemModel.count !== 0
+            visible: itemModel.count !== 0
             busy: itemModel.busy
+            enabled: !itemModel.busy
 
             MenuItem {
                 text: itemModel.count === itemModel.selectedCount ?

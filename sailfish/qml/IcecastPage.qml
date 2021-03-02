@@ -67,6 +67,7 @@ Dialog {
         PullDownMenu {
             id: menu
             busy: itemModel.busy
+            enabled: !itemModel.busy
 
             MenuItem {
                 text: qsTr("Refresh")

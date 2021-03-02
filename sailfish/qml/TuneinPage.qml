@@ -68,6 +68,7 @@ Dialog {
         PullDownMenu {
             id: menu
             visible: itemModel.selectableCount > 0
+            enabled: !itemModel.busy
             busy: itemModel.busy
 
             MenuItem {

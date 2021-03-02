@@ -235,16 +235,6 @@ Page {
                         }
 
                         Spacer {}
-
-                        Button {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: qsTr("Reset tips and hints")
-                            onClicked: {
-                                remorse.execute(qsTr("Resetting tips and hints"), function() { settings.resetHints() } )
-                            }
-                        }
-
-                        Spacer {}
                         Spacer {}
                     }
                 }
@@ -407,6 +397,16 @@ Page {
                                                 .arg(utils.homeDirPath() + "/jupii.log")
                             onClicked: {
                                 settings.logToFile = !settings.logToFile
+                            }
+                        }
+
+                        Spacer {}
+
+                        Button {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: qsTr("Reset tips and hints")
+                            onClicked: {
+                                remorse.execute(qsTr("Resetting tips and hints"), function() { settings.resetHints() } )
                             }
                         }
 

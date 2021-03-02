@@ -77,6 +77,7 @@ Dialog {
             id: menu
             visible: itemModel.selectableCount > 0
             busy: itemModel.busy
+            enabled: !itemModel.busy
 
             MenuItem {
                 visible: itemModel.selectableCount > 0

@@ -11,7 +11,7 @@ import Sailfish.Silica 1.0
 FocusScope {
     id: root
 
-    property alias searchPlaceholderText: search.placeholderText
+    property alias searchPlaceholderText: searchField.placeholderText
     property int noSearchCount: 10
     property bool search: true
     property var model
@@ -42,7 +42,7 @@ FocusScope {
         }
 
         SearchField {
-            id: search
+            id: searchField
             width: parent.width
             visible: root.search && (model.filter.length !== 0 ||
                      model.count > root.noSearchCount)

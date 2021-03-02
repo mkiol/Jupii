@@ -44,7 +44,7 @@ Kirigami.ScrollablePage {
                           qsTr("Unselect all") : qsTr("Select all")
                 iconName: itemModel.count === itemModel.selectedCount ?
                               "dialog-cancel" : "checkbox"
-                enabled: cdir.inited && itemList.count !== 0
+                enabled: cdir.inited && itemModel.selectableCount > 0 && !itemModel.busy
                 visible: enabled
                 displayHint: Kirigami.Action.DisplayHint.AlwaysHide
                 onTriggered: {
