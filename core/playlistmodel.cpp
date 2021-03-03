@@ -30,28 +30,28 @@ PlaylistModel* PlaylistModel::m_instance = nullptr;
 PlaylistWorker::PlaylistWorker(const QList<UrlItem> &urls,
                                bool asAudio,
                                QObject *parent) :
-    QThread(parent),
-    urls(urls),
-    asAudio(asAudio),
-    urlIsId(false)
+    QThread{parent},
+    urls{urls},
+    asAudio{asAudio},
+    urlIsId{false}
 {
 }
 
 PlaylistWorker::PlaylistWorker(QList<UrlItem> &&urls,
                                bool asAudio,
                                QObject *parent) :
-    QThread(parent),
-    urls(urls),
-    asAudio(asAudio),
-    urlIsId(false)
+    QThread{parent},
+    urls{urls},
+    asAudio{asAudio},
+    urlIsId{false}
 {
 }
 
 PlaylistWorker::PlaylistWorker(QList<QUrl> &&ids, QObject *parent) :
-    QThread(parent),
-    ids(ids),
-    asAudio(false),
-    urlIsId(true)
+    QThread{parent},
+    ids{ids},
+    asAudio{false},
+    urlIsId{true}
 {
 }
 
@@ -87,7 +87,7 @@ void PlaylistWorker::run()
                     auto path = url.url.toLocalFile();
                     qDebug() << "File" << path << "is a playlist";
 
-                    QFile f(path);
+                    QFile f{path};
                     if (f.exists()) {
                         if (f.open(QIODevice::ReadOnly)) {
                             auto data = f.readAll();
@@ -141,8 +141,8 @@ void PlaylistWorker::run()
             bool play = purl.play;
 
             if (Utils::isUrlValid(url)) {
-                QUrl id(url);
-                QUrlQuery q(url);
+                QUrl id{url};
+                QUrlQuery q{url};
 
                 // cookie
                 if (q.hasQueryItem(Utils::cookieKey))
@@ -238,8 +238,7 @@ void PlaylistWorker::run()
         }
         qDebug() << "Calling makeItem:" << QThread::currentThreadId();
         emit progress(i, ids.size());
-        auto item = pl->makeItem(ids.at(i));
-        if (item) {
+        if (auto item = pl->makeItem(ids.at(i)); item) {
             itemToOrigId.insert(item, ids.at(i));
             items << item;
         }
@@ -256,7 +255,7 @@ PlaylistModel* PlaylistModel::instance(QObject *parent)
 }
 
 PlaylistModel::PlaylistModel(QObject *parent) :
-    ListModel(new PlaylistItem, parent)
+    ListModel{new PlaylistItem, parent}
 {
     auto s = Settings::instance();
     auto services = Services::instance();
@@ -320,6 +319,13 @@ PlaylistModel::PlaylistModel(QObject *parent) :
     m_trackEndedTimer.setInterval(1000);
     connect(&m_trackEndedTimer, &QTimer::timeout, this,
             &PlaylistModel::onTrackEnded, Qt::QueuedConnection);
+    m_refreshTimer.setTimerType(Qt::VeryCoarseTimer);
+    m_refreshTimer.setSingleShot(true);
+    m_refreshTimer.setInterval(refreshTimer);
+    connect(&m_refreshTimer, &QTimer::timeout, this,
+            &PlaylistModel::handleRefreshTimer, Qt::QueuedConnection);
+    connect(this, &PlaylistModel::refreshableChanged, this,
+            &PlaylistModel::updateRefreshTimer, Qt::QueuedConnection);
 }
 
 #ifdef SAILFISH
@@ -349,7 +355,7 @@ std::pair<int, QString> PlaylistModel::getDidlList(int max, const QString& didlI
 {
     std::pair<int, QString> ret;
 
-    QTextStream m(&ret.second);
+    QTextStream m{&ret.second};
     m << "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" ";
     m << "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ";
     m << "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" ";
@@ -533,8 +539,20 @@ void PlaylistModel::onTrackEnded()
     }
 }
 
+void PlaylistModel::updateRefreshTimer()
+{
+    if (isRefreshable()) {
+        if (Services::instance()->avTransport->getTransportState() == AVTransport::Playing) {
+            m_refreshTimer.start();
+        } else {
+            m_refreshTimer.stop();
+        }
+    }
+}
+
 void PlaylistModel::onAvStateChanged()
 {
+    updateRefreshTimer();
     doUpdate();
 #ifdef SAILFISH
     updateBackgroundActivity();
@@ -674,13 +692,13 @@ bool PlaylistModel::saveToFile(const QString& title)
     if (dir.isEmpty())
         return false;
 
-    QString name = title.trimmed();
+    QString name{title.trimmed()};
     if (name.isEmpty()) {
         qWarning() << "Name is empty, so using default name";
         name = tr("Playlist");
     }
 
-    const QString oname = name;
+    const QString oname{name};
 
     QString path;
     for (int i = 0; i < 10; ++i) {
@@ -710,7 +728,7 @@ bool PlaylistModel::saveToUrl(const QUrl& path)
 QByteArray PlaylistModel::makePlsData(const QString& name)
 {
     QByteArray data;
-    QTextStream sdata(&data);
+    QTextStream sdata{&data};
 
     sdata << "[playlist]" << endl;
     if (!name.isEmpty())
@@ -752,7 +770,7 @@ void PlaylistModel::load()
 
     auto ids = QUrl::fromStringList(Settings::instance()->getLastPlaylist());
 
-    m_add_worker = std::unique_ptr<PlaylistWorker>(new PlaylistWorker(std::move(ids)));
+    m_add_worker = std::make_unique<PlaylistWorker>(std::move(ids));
     connect(m_add_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::addWorkerDone, Qt::QueuedConnection);
     connect(m_add_worker.get(), &PlaylistWorker::progress, this, &PlaylistModel::progressUpdate, Qt::QueuedConnection);
     progressUpdate(0, 0);
@@ -961,7 +979,7 @@ void PlaylistModel::addItems(const QList<UrlItem>& urls, bool asAudio)
 
     setBusy(true);
 
-    m_add_worker = std::unique_ptr<PlaylistWorker>(new PlaylistWorker(urls, asAudio));
+    m_add_worker = std::make_unique<PlaylistWorker>(urls, asAudio);
     connect(m_add_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::addWorkerDone);
     connect(m_add_worker.get(), &PlaylistWorker::progress, this, &PlaylistModel::progressUpdate);
     progressUpdate(0, 0);
@@ -1216,7 +1234,7 @@ void PlaylistModel::setActiveId(const QString &id)
     bool active_found = false;
     bool new_active_found = false;
     for (int i = 0; i < len; ++i) {
-        auto fi = dynamic_cast<PlaylistItem*>(m_list.at(i));
+        auto fi = qobject_cast<PlaylistItem*>(m_list.at(i));
         bool new_active = meta && fi->cookie() == cookie;
         if (new_active)
             active_found = true;
@@ -1425,11 +1443,11 @@ bool PlaylistModel::remove(const QString &id)
 QString PlaylistModel::nextActiveId() const
 {
     if (m_activeItemIndex < 0)
-        return QString();
+        return {};
 
     int l = m_list.length();
     if (l == 0)
-        return QString();
+        return {};
 
     if (m_playMode == PM_RepeatOne)
         return m_list.at(m_activeItemIndex)->id();
@@ -1442,6 +1460,20 @@ QString PlaylistModel::nextActiveId() const
         return m_list.first()->id();
 
     return {};
+}
+
+std::optional<int> PlaylistModel::nextActiveIndex() const
+{
+    if (m_activeItemIndex >= 0 && m_list.length() > 0) {
+        if (m_playMode == PM_RepeatOne)
+            return m_activeItemIndex;
+        if (m_activeItemIndex + 1 < m_list.length())
+            return m_activeItemIndex + 1;
+        if (m_playMode == PM_RepeatAll)
+            return 0;
+    }
+
+    return std::nullopt;
 }
 
 QString PlaylistModel::prevActiveId() const
@@ -1631,26 +1663,30 @@ void PlaylistModel::cancelRefresh()
         return;
     }
 
-    qDebug() << "Cancel refresh";
     m_refresh_worker->cancel();
-    qDebug() << "Cancel refresh ended";
 }
 
 void PlaylistModel::cancelAdd()
 {
-    qDebug() << "Cancel add";
     m_add_worker->cancel();
-    qDebug() << "Cancel add ended";
 }
 
-void PlaylistModel::refresh()
+void PlaylistModel::handleRefreshTimer()
 {
-    QList<QUrl> ids;
-    foreach (const auto item, m_list) {
-        if (qobject_cast<PlaylistItem*>(item)->refreshable())
-            ids << QUrl(item->id());
+    if (!isRefreshing()) {
+        if (auto idx = nextActiveIndex(); idx) {
+            if (auto item = qobject_cast<PlaylistItem*>(m_list.at(idx.value())); item->refreshable()) {
+                qDebug() << "Refreshing next item";
+                refreshAndSetContent({}, item->id());
+            }
+        }
     }
 
+    updateRefreshTimer();
+}
+
+void PlaylistModel::refresh(QList<QUrl>&& ids)
+{
     if (ids.isEmpty()) {
         qWarning() << "No ids to refresh";
         return;
@@ -1661,7 +1697,7 @@ void PlaylistModel::refresh()
         return;
     }
 
-    m_refresh_worker = std::unique_ptr<PlaylistWorker>(new PlaylistWorker(std::move(ids)));
+    m_refresh_worker = std::make_unique<PlaylistWorker>(std::move(ids));
 
     connect(m_refresh_worker.get(), &PlaylistWorker::finished, this, [this] {
         qDebug() << "refresh_worker finished";
@@ -1680,6 +1716,17 @@ void PlaylistModel::refresh()
     emit refreshingChanged();
 
     qDebug() << "Refreshing started";
+}
+
+void PlaylistModel::refresh()
+{
+    QList<QUrl> ids;
+    foreach (const auto item, m_list) {
+        if (qobject_cast<PlaylistItem*>(item)->refreshable())
+            ids << QUrl{item->id()};
+    }
+
+    refresh(std::move(ids));
 }
 
 void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
@@ -1703,7 +1750,7 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
             return;
         }
         if (item1->refreshable())
-            ids << QUrl(id1);
+            ids << QUrl{id1};
         if (toBeActive)
             setToBeActiveId(id1);
     } else if (id1 == id2) {
@@ -1721,7 +1768,7 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
             item2 = nullptr;
         }
         if (item2 && item2->refreshable())
-            ids << QUrl(id2);
+            ids << QUrl{id2};
     }
 
     if (!item1 && !item2) {
@@ -1735,8 +1782,7 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
         av->setLocalContent(id1, id2);
         m_refresh_mutex.unlock();
     } else {
-        m_refresh_worker = std::unique_ptr<PlaylistWorker>(
-                    new PlaylistWorker(std::move(ids)));
+        m_refresh_worker = std::make_unique<PlaylistWorker>(std::move(ids));
 
         connect(m_refresh_worker.get(), &PlaylistWorker::finished, this, [this, id1, id2, toBeActive] {
             qDebug() << "refresh_worker finished";
@@ -1939,7 +1985,7 @@ QVariant PlaylistItem::data(int role) const
     case DescRole:
         return desc();
     default:
-        return QVariant();
+        return {};
     }
 }
 

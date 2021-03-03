@@ -25,6 +25,7 @@
 #include <QVariantList>
 #include <QTimer>
 #include <memory>
+#include <optional>
 
 #ifdef SAILFISH
 #include <keepalive/backgroundactivity.h>
@@ -210,11 +211,13 @@ private slots:
     void update();
     void updateActiveId();
     void doOnTrackEnded();
+    void handleRefreshTimer();
 #ifdef SAILFISH
     void handleBackgroundActivityStateChange();
 #endif
 
 private:
+    const static int refreshTimer = 30000; // 30s
     static PlaylistModel* m_instance;
 #ifdef SAILFISH
     BackgroundActivity *m_backgroundActivity;
@@ -230,6 +233,7 @@ private:
     QTimer m_updateTimer;
     QTimer m_updateActiveTimer;
     QTimer m_trackEndedTimer;
+    QTimer m_refreshTimer;
     QMutex m_refresh_mutex;
     int m_progressValue = 0;
     int m_progressTotal = 0;
@@ -242,7 +246,7 @@ private:
     bool addId(const QUrl& id);
     PlaylistItem* makeItem(const QUrl &id);
     void save();
-    QByteArray makePlsData(const QString& name = QString());
+    QByteArray makePlsData(const QString& name = {});
     void setBusy(bool busy);
     void updateNextSupported();
     void updatePrevSupported();
@@ -251,6 +255,9 @@ private:
     QList<ListItem*> handleRefreshWorker();
     void doUpdate();
     void doUpdateActiveId();
+    std::optional<int> nextActiveIndex() const;
+    void refresh(QList<QUrl>&& ids);
+    void updateRefreshTimer();
 #ifdef SAILFISH
     void updateBackgroundActivity();
 #endif
