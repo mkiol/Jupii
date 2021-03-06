@@ -57,9 +57,6 @@ Dialog {
 
         model: itemModel
 
-        /*title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
-               itemModel.artistName.length > 0 ? itemModel.artistName : "Bandcamp"*/
-
         header: SearchDialogHeader {
             search: !root.artistMode && !root.albumMode
             implicitWidth: root.width
@@ -77,10 +74,9 @@ Dialog {
             id: menu
             visible: itemModel.selectableCount > 0
             busy: itemModel.busy
-            enabled: !itemModel.busy
 
             MenuItem {
-                visible: itemModel.selectableCount > 0
+                enabled: itemModel.selectableCount > 0 && !itemModel.busy
 
                 text: itemModel.selectableCount === itemModel.selectedCount ?
                           qsTr("Unselect all") : qsTr("Select all")

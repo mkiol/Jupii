@@ -72,6 +72,8 @@ Page {
         }
 
         PullDownMenu {
+            busy: itemModel.busy
+
             MenuItem {
                 text: qsTr("Sort by: %1")
                         .arg(itemModel.queryType == 0 ? qsTr("Album") : qsTr("Artist"));

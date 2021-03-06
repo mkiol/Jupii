@@ -71,7 +71,6 @@ Page {
         PullDownMenu {
             id: menu
             busy: directory.busy
-            enabled: !directory.busy
 
             MenuItem {
                 text: qsTr("Find Media Servers")

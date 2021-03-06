@@ -63,11 +63,10 @@ Dialog {
         PullDownMenu {
             id: menu
             busy: itemModel.busy
-            visible: itemModel.count !== 0
-            enabled: !itemModel.busy
+            visible: itemModel.count > 0
 
             MenuItem {
-                visible: itemModel.selectedCount > 0
+                enabled: itemModel.selectedCount > 0 && !itemModel.busy
                 text: qsTr("Delete selected")
                 onClicked: {
                     Remorse.popupAction(root,
@@ -77,8 +76,7 @@ Dialog {
             }
 
             MenuItem {
-                visible: itemModel.count !== 0
-
+                enabled: !itemModel.busy
                 text: itemModel.count === itemModel.selectedCount ?
                           qsTr("Unselect all") :
                           qsTr("Select all")

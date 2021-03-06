@@ -31,7 +31,7 @@ Kirigami.ScrollablePage {
     actions {
         main: Kirigami.Action {
             text: itemModel.selectedCount > 0 ? qsTr("Add %n selected", "", itemModel.selectedCount) : qsTr("Add selected")
-            enabled: cdir.inited && itemModel.selectedCount > 0
+            enabled: cdir.inited && itemModel.selectedCount > 0 && !itemModel.busy
             iconName: "list-add"
             onTriggered: {
                 playlist.addItemUrls(itemModel.selectedItems())
@@ -45,7 +45,6 @@ Kirigami.ScrollablePage {
                 iconName: itemModel.count === itemModel.selectedCount ?
                               "dialog-cancel" : "checkbox"
                 enabled: cdir.inited && itemModel.selectableCount > 0 && !itemModel.busy
-                visible: enabled
                 displayHint: Kirigami.Action.DisplayHint.AlwaysHide
                 onTriggered: {
                     if (itemModel.count === itemModel.selectedCount)

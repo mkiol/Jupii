@@ -54,10 +54,9 @@ Dialog {
             id: menu
             busy: itemModel.busy
             visible: itemModel.count !== 0
-            enabled: !itemModel.busy
 
             MenuItem {
-                visible: itemModel.selectableCount !== 0
+                enabled: itemModel.selectableCount > 0 && !itemModel.busy
                 text: itemModel.selectableCount === itemModel.selectedCount ?
                           qsTr("Unselect all") :
                           qsTr("Select all")
@@ -70,6 +69,7 @@ Dialog {
             }
 
             MenuItem {
+                enabled: !itemModel.busy
                 text: {
                     // 0 - by title
                     // 1 - by album

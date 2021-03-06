@@ -64,11 +64,11 @@ Dialog {
         PullDownMenu {
             id: menu
 
-            visible: itemModel.count !== 0
+            visible: itemModel.count > 0
             busy: itemModel.busy
-            enabled: !itemModel.busy
 
             MenuItem {
+                enabled: !itemModel.busy
                 text: itemModel.count === itemModel.selectedCount ?
                           qsTr("Unselect all") :
                           qsTr("Select all")
