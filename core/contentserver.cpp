@@ -2151,7 +2151,7 @@ QString ContentServer::pathFromUrl(const QUrl &url) const
 
 std::optional<QUrl> ContentServer::idUrlFromUrl(const QUrl &url, bool* isFile) const
 {
-    QUrlQuery q1(url);
+    QUrlQuery q1{url};
     QString hash;
     if (q1.hasQueryItem(Utils::idKey)) {
         hash = q1.queryItemValue(Utils::idKey);
@@ -2169,12 +2169,12 @@ std::optional<QUrl> ContentServer::idUrlFromUrl(const QUrl &url, bool* isFile) c
     if (!id.isValid())
         return std::nullopt;
 
-    QUrlQuery q2(id);
+    QUrlQuery q2{id};
     if (!q2.hasQueryItem(Utils::cookieKey) || q2.queryItemValue(Utils::cookieKey).isEmpty())
         return std::nullopt;
 
     if (id.isLocalFile()) {
-        QFileInfo file(id.toLocalFile());
+        QFileInfo file{id.toLocalFile()};
         if (!file.exists() || !file.isFile())
             return std::nullopt;
         if (isFile)
@@ -2199,7 +2199,7 @@ QString ContentServer::idFromUrl(const QUrl &url) const
 QString ContentServer::urlFromUrl(const QUrl &url) const
 {
     if (auto id = idUrlFromUrl(url))
-        return Utils::urlFromId(*id).toString();
+        return Utils::urlFromId(id.value()).toString();
 
     return {};
 }
@@ -2490,7 +2490,7 @@ bool ContentServer::extractAudio(const QString& path,
 
     avformat_free_context(oc);
 
-    data.size = QFileInfo(data.path).size();
+    data.size = QFileInfo{data.path}.size();
 
     return true;
 }
@@ -2519,6 +2519,11 @@ const ContentServer::ItemMeta* ContentServer::getMeta(const QUrl &url,
     auto it = getMetaCacheIterator(url, createNew, origUrl, app, ytdl, img, refresh);
     auto meta = it == metaCache.cend() ? nullptr : &it.value();
     return meta;
+}
+
+bool ContentServer::metaExists(const QUrl &url) const
+{
+    return std::as_const(metaCache).find(url) != metaCache.cend();
 }
 
 const ContentServer::ItemMeta* ContentServer::getMetaForId(const QUrl &id, bool createNew)
@@ -3369,7 +3374,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         if (!meta.flagSet(MetaFlag_Refresh) && meta.flagSet(MetaFlag_YtDl)) {
             qDebug() << "ytdl broken URL";
             ytdl_broken = true;
-            meta.metaUpdateTime = QTime(); // null time to set meta as dummy
+            meta.metaUpdateTime = {}; // null time to set meta as dummy
         } else if (counter == 0 && meta.flagSet(MetaFlag_OrigUrl)) {
             qWarning() << "URL is invalid but origURL is provided => checking origURL instead";
             reply->deleteLater();
@@ -3447,11 +3452,11 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         return metaCache.cend();
     }
 
-    bool ranges = QString(reply->rawHeader("Accept-Ranges")).toLower().contains("bytes");
+    bool ranges = QString{reply->rawHeader("Accept-Ranges")}.toLower().contains("bytes");
     int size = reply->header(QNetworkRequest::ContentLengthHeader).toInt();
 
     meta.url = url;
-    meta.mime = ytdl_broken ? QString() : mime;
+    meta.mime = ytdl_broken ? QString{} : mime;
     meta.type = type;
     meta.size = ranges ? size : 0;
     meta.filename = url.fileName();
@@ -3465,7 +3470,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
         auto ext = m_imgMimeToExtMap.value(meta.mime);
         auto data = reply->readAll();
         if (!ext.isEmpty() && !data.isEmpty()) {
-            auto albumArt = QString("art_image_%1.%2")
+            auto albumArt = QString{"art_image_%1.%2"}
                     .arg(Utils::instance()->hash(meta.url.toString()), ext);
             Utils::writeToCacheFile(albumArt, data, true);
             meta.path = QString("%1/%2").arg(Settings::instance()->getCacheDir(), albumArt);
@@ -3485,7 +3490,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(const QUrl &url, ItemMeta &meta,
 
         if (meta.title.isEmpty()) {
             if (reply->hasRawHeader("icy-name"))
-                meta.title = QString(reply->rawHeader("icy-name"));
+                meta.title = QString{reply->rawHeader("icy-name")};
             else
                 meta.title = url.fileName();
         }

@@ -251,13 +251,14 @@ private:
     void updateNextSupported();
     void updatePrevSupported();
     bool autoPlay();
-    void refreshAndSetContent(const QString &id1, const QString &id2, bool toBeActive = false);
+    void refreshAndSetContent(const QString &id1, const QString &id2, bool toBeActive = false, bool setIfNotChanged = true);
     QList<ListItem*> handleRefreshWorker();
     void doUpdate();
     void doUpdateActiveId();
     std::optional<int> nextActiveIndex() const;
     void refresh(QList<QUrl>&& ids);
     void updateRefreshTimer();
+    QHash<QString, QUrl> cookieToUrl; // use for mapping: cookie => url => meta
 #ifdef SAILFISH
     void updateBackgroundActivity();
 #endif

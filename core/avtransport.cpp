@@ -81,14 +81,13 @@ void AVTransport::registerExternalConnections()
 
 QUrl AVTransport::getCurrentId()
 {
-    auto cs = ContentServer::instance();
-    return QUrl(cs->idFromUrl(QUrl(m_currentURI)));
+    return ContentServer::instance()->idUrlFromUrl(QUrl{m_currentURI}).value_or(QUrl{});
 }
 
 QUrl AVTransport::getCurrentOrigUrl()
 {
     const auto ai = PlaylistModel::instance()->getActiveItem();
-    return ai ? ai->origUrl() : QUrl(getCurrentURL());
+    return ai ? ai->origUrl() : QUrl{getCurrentURL()};
 }
 
 void AVTransport::changed(const QString& name, const QVariant& _value)
@@ -613,7 +612,8 @@ bool AVTransport::getPlayable()
            getPlaySupported() &&
            (m_transportState == Stopped ||
             m_transportState == PausedPlayback ||
-            m_transportState == PausedRecording);
+            m_transportState == PausedRecording) &&
+            !getCurrentTitle().isEmpty();
 
 #ifdef QT_DEBUG
     qDebug() << "playable:" << playable;

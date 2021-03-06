@@ -225,6 +225,7 @@ public:
                             bool ytdl = false, bool img = false, bool refresh = false);
     const ContentServer::ItemMeta* getMetaForImg(const QUrl &url, bool createNew);
     void removeMeta(const QUrl &url);
+    bool metaExists(const QUrl &url) const;
     const ItemMeta* getMetaForId(const QUrl &id, bool createNew);
     Q_INVOKABLE QString streamTitle(const QUrl &id) const;
     Q_INVOKABLE QStringList streamTitleHistory(const QUrl &id) const;

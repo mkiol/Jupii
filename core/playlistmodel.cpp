@@ -654,7 +654,10 @@ void PlaylistModel::update()
             qDebug() << "aid:" << aid;
             if (!aid.isEmpty()) {
                 auto av = Services::instance()->avTransport;
-                bool updateCurrent = av->getCurrentId() != QUrl(aid) &&
+                // do not update current url for RepeatOne mode because it
+                // resets playback when url gets changed after refresh
+                bool updateCurrent = m_playMode != PlayMode::PM_RepeatOne &&
+                        av->getCurrentId() != QUrl{aid} &&
                         av->getTransportState() == AVTransport::Playing;
                 refreshAndSetContent(updateCurrent ? aid : "", nextActiveId());
             }
@@ -1101,6 +1104,8 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
         return nullptr;
     }
 
+    cookieToUrl.insert(cookie, meta->url);
+
     auto finalId = id;
 
     if (!ytdl) {
@@ -1228,14 +1233,17 @@ void PlaylistModel::setActiveId(const QString &id)
 {
     qDebug() << "setActiveId" << id;
     const auto cookie = Utils::cookieFromId(id);
-    const auto meta = ContentServer::instance()->getMetaForId(QUrl(id), false);
+    bool metaExists = ContentServer::instance()->metaExists(Utils::urlFromId(id));
+    if (!metaExists && cookieToUrl.contains(cookie)) { // edge case: url was updated by refresh
+        metaExists = ContentServer::instance()->metaExists(cookieToUrl.value(cookie));
+    }
 
     const int len = m_list.length();
     bool active_found = false;
     bool new_active_found = false;
     for (int i = 0; i < len; ++i) {
         auto fi = qobject_cast<PlaylistItem*>(m_list.at(i));
-        bool new_active = meta && fi->cookie() == cookie;
+        bool new_active = metaExists && fi->cookie() == cookie;
         if (new_active)
             active_found = true;
         if (fi->active() != new_active) {
@@ -1284,8 +1292,8 @@ void PlaylistModel::setToBeActiveId(const QString &id)
 
 void PlaylistModel::setActiveUrl(const QUrl &url)
 {
-    qDebug() << "Set active URL:" << url;
     if (url.isEmpty()) {
+        qDebug() << "Set empty active URL";
         setActiveId({});
     } else {
         setActiveId(ContentServer::instance()->idFromUrl(url));
@@ -1607,8 +1615,7 @@ QList<ListItem*> PlaylistModel::handleRefreshWorker()
         for (auto& item : m_refresh_worker->items) {
             const auto id = m_refresh_worker->origId(item);
             qDebug() << "Refresh done for:" << id;
-            auto oldItem = qobject_cast<PlaylistItem*>(find(id));
-            if (oldItem) {
+            if (auto oldItem = qobject_cast<PlaylistItem*>(find(id))) {
                 auto newItem = qobject_cast<PlaylistItem*>(item);
                 if (newItem->id() == id) {
                     qDebug() << "No need to update item";
@@ -1648,8 +1655,7 @@ QList<ListItem*> PlaylistModel::handleRefreshWorker()
 
 void PlaylistModel::updateActiveId()
 {
-    auto av = Services::instance()->avTransport;
-    setActiveUrl(QUrl(av->getCurrentURI()));
+    setActiveUrl(QUrl{Services::instance()->avTransport->getCurrentURI()});
 }
 
 void PlaylistModel::doUpdateActiveId()
@@ -1677,7 +1683,7 @@ void PlaylistModel::handleRefreshTimer()
         if (auto idx = nextActiveIndex(); idx) {
             if (auto item = qobject_cast<PlaylistItem*>(m_list.at(idx.value())); item->refreshable()) {
                 qDebug() << "Refreshing next item";
-                refreshAndSetContent({}, item->id());
+                refreshAndSetContent({}, item->id(), false, false);
             }
         }
     }
@@ -1730,7 +1736,7 @@ void PlaylistModel::refresh()
 }
 
 void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
-                                         bool toBeActive)
+                                         bool toBeActive, bool setIfNotChanged)
 {
     if (!m_refresh_mutex.tryLock()) {
         qDebug() << "Other refreshing is ongoing";
@@ -1779,12 +1785,14 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
 
     if (ids.isEmpty()) { // no ids to refresh
         auto av = Services::instance()->avTransport;
-        av->setLocalContent(id1, id2);
+        if (setIfNotChanged)
+            av->setLocalContent(id1, id2);
         m_refresh_mutex.unlock();
     } else {
         m_refresh_worker = std::make_unique<PlaylistWorker>(std::move(ids));
 
-        connect(m_refresh_worker.get(), &PlaylistWorker::finished, this, [this, id1, id2, toBeActive] {
+        connect(m_refresh_worker.get(), &PlaylistWorker::finished, this,
+                [this, id1, id2, toBeActive, setIfNotChanged] {
             qDebug() << "refresh_worker finished";
 
             auto item1 = qobject_cast<PlaylistItem*>(find(id1));
@@ -1812,7 +1820,8 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
                             clearActive = true;
                         }
                     } else { // none items refreshed
-                        av->setLocalContent(id1, id2);
+                        if (setIfNotChanged)
+                            av->setLocalContent(id1, id2);
                     }
                 } else {
                     clearActive = true;
