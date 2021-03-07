@@ -366,7 +366,7 @@
         <location filename="../sailfish/qml/BcPage.qml" line="129"/>
         <location filename="../desktop/qml/BcPage.qml" line="168"/>
         <source>No albums</source>
-        <translation type="unfinished"/>
+        <translation>Ni albumov</translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="40"/>
@@ -508,7 +508,7 @@
         <location filename="../sailfish/qml/DeviceInfoPage.qml" line="103"/>
         <location filename="../desktop/qml/DeviceInfoPage.qml" line="144"/>
         <source>Extra API</source>
-        <translation type="unfinished"/>
+        <translation>Dodaten API</translation>
     </message>
 </context>
 <context>
@@ -516,7 +516,7 @@
     <message>
         <location filename="../core/devicemodel.cpp" line="88"/>
         <source>Invalid PIN for %1</source>
-        <translation type="unfinished"/>
+        <translation>Neveljaven PIN za %1</translation>
     </message>
 </context>
 <context>
@@ -596,7 +596,7 @@
         <location filename="../sailfish/qml/DevicesPage.qml" line="166"/>
         <location filename="../desktop/qml/DevicesPage.qml" line="136"/>
         <source>No network connection</source>
-        <translation type="unfinished"/>
+        <translation>Ni omrežne povezave</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/DevicesPage.qml" line="168"/>
@@ -1150,7 +1150,7 @@
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="117"/>
         <source>No network connection</source>
-        <translation type="unfinished"/>
+        <translation>Ni omrežne povezave</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="118"/>
@@ -1479,12 +1479,12 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="326"/>
         <source>Screen capture encoder</source>
-        <translation type="unfinished"/>
+        <translation>Kodirnik zajema zaslona</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="338"/>
         <source>Auto</source>
-        <translation type="unfinished"/>
+        <translation>Samodejno</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="181"/>
@@ -1554,7 +1554,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="395"/>
         <source>Enter Frontier Silicon PIN</source>
-        <translation type="unfinished"/>
+        <translation>Vnesite Frontier Silicon PIN</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="419"/>
@@ -1594,7 +1594,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="392"/>
         <source>Frontier Silicon PIN</source>
-        <translation type="unfinished"/>
+        <translation>Frontier Silicon PIN</translation>
     </message>
 </context>
 <context>
@@ -1651,59 +1651,59 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
         <source>Add %n selected</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Dodaj %n izbranega</numerusform><numerusform>Dodaj %n izbrana</numerusform><numerusform>Dodaj %n izbrane</numerusform><numerusform>Dodaj %n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
         <source>Add selected</source>
-        <translation type="unfinished"/>
+        <translation>Dodaj izbrano</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="85"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
         <source>Unselect all</source>
-        <translation type="unfinished"/>
+        <translation>Počisti vse</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="85"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
         <source>Select all</source>
-        <translation type="unfinished"/>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="47"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="91"/>
         <source>Error in getting data from soundcloud.com</source>
-        <translation type="unfinished"/>
+        <translation>Napaka pri prejemu podatkov iz soundcloud.com</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="111"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="123"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="112"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="124"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>Izvajalec</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="143"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"/>
+        <translation>Preklopi izbor</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="129"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="168"/>
         <source>Type the words to search</source>
-        <translation type="unfinished"/>
+        <translation>Za iskanje vnesi nekaj besed</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="129"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="168"/>
         <source>No items</source>
-        <translation type="unfinished"/>
+        <translation>Ni elementov</translation>
     </message>
 </context>
 <context>
@@ -1813,7 +1813,7 @@
         <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="120"/>
         <location filename="../desktop/qml/UpnpCDirDevicesPage.qml" line="108"/>
         <source>No network connection</source>
-        <translation type="unfinished"/>
+        <translation>Ni omrežne povezave</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/UpnpCDirDevicesPage.qml" line="122"/>
