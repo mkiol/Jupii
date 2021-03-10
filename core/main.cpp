@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,7 @@
 
 #ifdef KIRIGAMI
 #include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
@@ -139,16 +140,12 @@ int main(int argc, char *argv[])
 #ifdef KIRIGAMI
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    auto app = new QGuiApplication(argc, argv);
+    auto app = new QApplication{argc, argv};
     auto engine = new QQmlApplicationEngine();
     auto context = engine->rootContext();
     app->setApplicationName(Jupii::APP_ID);
     app->setOrganizationName(Jupii::ORG);
-#ifdef FLATPAK
-    QIcon::setThemeName(QStringLiteral("breeze"));
-#endif // FLATPAK
     QGuiApplication::setWindowIcon(QIcon::fromTheme(Jupii::APP_ID));
-    QQuickStyle::setFallbackStyle(QStringLiteral("org.kde.desktop"));
 #endif // KIRIGAMI
 
     registerTypes();

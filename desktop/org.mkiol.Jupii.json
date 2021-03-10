@@ -82,7 +82,7 @@
             "sources": [
                 {
                     "type": "svn",
-                    "url": "https://svn.code.sf.net/p/lame/svn/trunk/lame"
+                    "url": "svn://svn.code.sf.net/p/lame/svn/tags/RELEASE__3_100/lame"
                 },
                 {
                     "type": "patch",
@@ -421,8 +421,7 @@
                 {
                     "type": "git",
                     "url": "https://framagit.org/medoc92/npupnp.git",
-                    "branch": "master",
-                    "commit": "bad26d73fc13ebb60bf0e9a9d4a03646034f1aa7"
+                    "branch": "master"
                 },
                 {
                     "type": "patch",
@@ -448,8 +447,7 @@
                 {
                     "type": "git",
                     "url": "https://framagit.org/medoc92/libupnpp.git",
-                    "branch": "master",
-                    "commit": "3310a04f5cba362d91ab9bde608456b7b3516554"
+                    "branch": "master"
                 }
             ]
         },
@@ -481,11 +479,6 @@
             "build-commands": [
                 "mkdir -p build/flatpak",
                 "cd build/flatpak && qmake FLATPAK=1 PREFIX=$FLATPAK_DEST ../../desktop/jupii.pro && make && make install"
-            ],
-            "post-install": [
-                "mv $FLATPAK_DEST/bin/jupii $FLATPAK_DEST/bin/jupii_bin",
-                "echo \"QT_STYLE_OVERRIDE=breeze QT_QUICK_CONTROLS_FALLBACK_STYLE=org.kde.desktop jupii_bin\">$FLATPAK_DEST/bin/jupii",
-                "chmod +x $FLATPAK_DEST/bin/jupii" 
             ],
             "sources": [
                 {

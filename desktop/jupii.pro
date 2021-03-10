@@ -2,7 +2,7 @@ TARGET = jupii
 
 TEMPLATE = app
 
-QT += gui qml quick quickcontrols2
+QT += gui qml quick quickcontrols2 widgets
 
 PROJECTDIR = $${PWD}/..
 
