@@ -653,11 +653,8 @@ void PlaylistModel::update()
             auto aid = activeId();
             qDebug() << "aid:" << aid;
             if (!aid.isEmpty()) {
-                auto av = Services::instance()->avTransport;
-                // do not update current url for RepeatOne mode because it
-                // resets playback when url gets changed after refresh
-                bool updateCurrent = m_playMode != PlayMode::PM_RepeatOne &&
-                        av->getCurrentId() != QUrl{aid} &&
+                bool updateCurrent =
+                        Utils::cookieFromId(av->getCurrentId()) != activeCookie() &&
                         av->getTransportState() == AVTransport::Playing;
                 refreshAndSetContent(updateCurrent ? aid : "", nextActiveId());
             }
