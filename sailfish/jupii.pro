@@ -6,21 +6,25 @@ contains(QT_ARCH, i386){
    message("Compiling for x86")
    CONFIG += x86
    DEFINES += X86
+   ARCH_PREFIX = x86
 } else {
    contains(QT_ARCH, x86_64) {
        message("Compiling for amd64")
        CONFIG += amd64
        DEFINES += X86
+       ARCH_PREFIX = amd64
    } else {
        contains(QT_ARCH, arm){
            message("Compiling for arm")
            CONFIG += arm
            DEFINES += ARM
+           ARCH_PREFIX = arm
        } else {
             contains(QT_ARCH, arm64) {
                 message("Compiling for arm64")
                 CONFIG += arm64
                 DEFINES += ARM
+                ARCH_PREFIX = arm64
             }
        }
    }
@@ -30,6 +34,7 @@ PROJECTDIR = $$PWD/..
 
 INCLUDEPATH += /usr/include/c++/8.3.0
 arm: INCLUDEPATH += /usr/include/c++/8.3.0/armv7hl-meego-linux-gnueabi
+arm64: INCLUDEPATH += /usr/include/c++/8.3.0/aarch64-meego-linux-gnu
 
 CONFIG += sailfish screencast
 DEFINES += SAILFISH SCREENCAST

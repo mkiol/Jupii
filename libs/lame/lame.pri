@@ -15,28 +15,13 @@ INCLUDEPATH += $$LAME_ROOT/include
 HEADERS += $$LAME_ROOT/include/*.h
 
 sailfish {
-    x86 {
-        LIBS += -L$$LAME_ROOT/build/i486/ -l:libmp3lame.so.0
-        liblame.files = $$LAME_ROOT/build/i486/*
-    }
-
-    arm {
-        LIBS += -L$$LAME_ROOT/build/armv7hl/ -l:libmp3lame.so.0
-        liblame.files = $$LAME_ROOT/build/armv7hl/*
-    }
-
+    LIBS += -L$${LAME_ROOT}/build/sfos-$${ARCH_PREFIX}/ -l:libmp3lame.so.0
+    liblame.files = $${LAME_ROOT}/build/sfos-$${ARCH_PREFIX}/*
     liblame.path = /usr/share/$${TARGET}/lib
     INSTALLS += liblame
 }
 
 desktop {
-    amd64 {
-        LIBS += -L$$LAME_ROOT/build/amd64 \
-                -l:libmp3lame.a
-    }
-
-    arm64 {
-        LIBS += -L$$LAME_ROOT/build/arm64 \
-                -l:libmp3lame.a
-    }
+    LIBS += -L$${LAME_ROOT}/build/$${ARCH_PREFIX} \
+            -l:libmp3lame.a
 }

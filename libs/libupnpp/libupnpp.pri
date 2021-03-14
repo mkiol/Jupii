@@ -38,28 +38,13 @@ HEADERS += $$UPNPP_ROOT/include/libupnpp/control/*.hxx
 HEADERS += $$UPNPP_ROOT/include/libupnpp/device/*.hxx
 
 sailfish {
-    x86 {
-        LIBS += -L$$UPNPP_ROOT/build/i486 -l:libnpupnp.so.4 -l:libmicrohttpd.so.12 -l:libupnpp.so.9
-        upnpp.files = $$UPNPP_ROOT/build/i486/*
-    }
-
-    arm {
-        LIBS += -L$$UPNPP_ROOT/build/armv7hl -l:libnpupnp.so.4 -l:libmicrohttpd.so.12 -l:libupnpp.so.9
-        upnpp.files = $$UPNPP_ROOT/build/armv7hl/*
-    }
-
+    LIBS += -L$${UPNPP_ROOT}/build/sfos-$${ARCH_PREFIX} -l:libnpupnp.so.4 -l:libmicrohttpd.so.12 -l:libupnpp.so.11
+    upnpp.files = $${UPNPP_ROOT}/build/sfos-$${ARCH_PREFIX}/*
     upnpp.path = /usr/share/$${TARGET}/lib
     INSTALLS += upnpp
 }
 
 desktop {
-    amd64 {
-        LIBS += -L$$UPNPP_ROOT/build/amd64 \
-                -l:libupnpp.a -l:libupnpputil.a -l:libnpupnp.a -l:libmicrohttpd.a -l:libexpat.a -l:libcurl.a
-    }
-
-    arm64 {
-        LIBS += -L$$UPNPP_ROOT/build/arm64 \
-                -l:libupnpp.a -l:libupnpputil.a -l:libnpupnp.a -l:libmicrohttpd.a -l:libexpat.a -l:libcurl.a
-    }
+    LIBS += -L$${UPNPP_ROOT}/build/$${ARCH_PREFIX} \
+            -l:libupnpp.a -l:libupnpputil.a -l:libnpupnp.a -l:libmicrohttpd.a -l:libexpat.a -l:libcurl.a
 }

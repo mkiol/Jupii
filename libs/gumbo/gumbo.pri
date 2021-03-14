@@ -18,28 +18,13 @@ HEADERS += \
     $$GUMBO_ROOT/include/tag_enum.h
 
 sailfish {
-    x86 {
-        LIBS += -L$$GUMBO_ROOT/build/i486/ -l:libgumbo.so.1
-        gumbo.files = $$GUMBO_ROOT/build/i486/*
-    }
-
-    arm {
-        LIBS += -L$$GUMBO_ROOT/build/armv7hl/ -l:libgumbo.so.1
-        gumbo.files = $$GUMBO_ROOT/build/armv7hl/*
-    }
-
+    LIBS += -L$${GUMBO_ROOT}/build/sfos-$${ARCH_PREFIX}/ -l:libgumbo.so.1
+    gumbo.files = $$GUMBO_ROOT/build/sfos-$${ARCH_PREFIX}/*
     gumbo.path = /usr/share/$${TARGET}/lib
     INSTALLS += gumbo
 }
 
 desktop {
-    amd64 {
-        LIBS += -L$$GUMBO_ROOT/build/amd64 \
-                -l:libgumbo.a
-    }
-
-    arm64 {
-        LIBS += -L$$GUMBO_ROOT/build/arm64 \
-                -l:libgumbo.a
-    }
+    LIBS += -L$$GUMBO_ROOT/build/$${ARCH_PREFIX} \
+            -l:libgumbo.a
 }

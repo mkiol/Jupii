@@ -16,28 +16,13 @@ INCLUDEPATH += $$X264_ROOT/include
 LIBS += -ldl
 
 sailfish {
-    x86 {
-        LIBS += -L$$X264_ROOT/build/i486 -l:libx264.so.161
-        libx264.files = $$X264_ROOT/build/i486/*
-    }
-
-    arm {
-        LIBS += -L$$X264_ROOT/build/armv7hl -l:libx264.so.161
-        libx264.files = $$X264_ROOT/build/armv7hl/*
-    }
-
+    LIBS += -L$${X264_ROOT}/build/sfos-$${ARCH_PREFIX} -l:libx264.so.161
+    libx264.files = $${X264_ROOT}/build/sfos-$${ARCH_PREFIX}/*
     libx264.path = /usr/share/$${TARGET}/lib
     INSTALLS += libx264
 }
 
 desktop {     
-    amd64 {
-        LIBS += -L$$X264_ROOT/build/amd64 \
-                -l:libx264.a
-    }
-
-    arm64 {
-        LIBS += -L$$X264_ROOT/build/arm64 \
-                -l:libx264.a
-    }
+    LIBS += -L$${X264_ROOT}/build/$${ARCH_PREFIX} \
+            -l:libx264.a
 }

@@ -199,8 +199,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://ffmpeg.org/releases/ffmpeg-4.1.3.tar.bz2",
-                    "sha256": "29a679685bd7bc29158110f367edf67b31b451f2176f9d79d0f342b9e22d6a2a"
+                    "url": "https://ffmpeg.org/releases/ffmpeg-4.3.2.tar.gz",
+                    "sha1": "4b0dd79df70de2c324aefe88c07e50234657b456"
                 }
             ]
         },
@@ -291,8 +291,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://ffmpeg.org/releases/ffmpeg-4.1.3.tar.bz2",
-                    "sha256": "29a679685bd7bc29158110f367edf67b31b451f2176f9d79d0f342b9e22d6a2a"
+                    "url": "https://ffmpeg.org/releases/ffmpeg-4.3.2.tar.gz",
+                    "sha1": "4b0dd79df70de2c324aefe88c07e50234657b456"
                 }
             ]
         },
@@ -398,8 +398,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://curl.se/download/curl-7.74.0.tar.gz",
-                    "sha1": "cd7239cf9223b39ade86a14eb37fe68f5656eae9"
+                    "url": "https://curl.se/download/curl-7.75.0.tar.gz",
+                    "sha1": "fbd1e354a5e4e9a4ac07db3d1222d19f84a5e751"
                 }
             ]
         },
