@@ -10,7 +10,7 @@ Following features are implemented:
 - Remote control (Play, Pause, Next, Prev, Seek, Volume up/down)
 - Playing local content (Music, Video, Images) on Media Renderer devices
 - Playing gPodder's podcasts
-- Playing remote content (e.g. internet radio, SomaFM channels, Icecast streams)
+- Playing remote content (e.g. internet radio, SomaFM channels, Icecast streams, FOSDEM videos, Bandcamp, SoundCloud, TuneIn stations)
 - Playing items from Media Servers on Media Renderer devices
 - Streaming of local Microphone to Media Renderer devices
 - Streaming of audio playback of any local application (similar functionality to pulseaudio-dlna server)
@@ -30,8 +30,7 @@ It can be used to make integration with other applications.
 Jupii relies on following open source libraries:
 
 - [QHTTPServer](https://github.com/nikhilm/qhttpserver)
-- [Libupnpp](https://opensourceprojects.eu/p/libupnpp)
-- [Libupnp](http://upnp.sourceforge.net)
+- [Libupnpp](https://framagit.org/medoc92/libupnpp)
 - [TagLib](http://taglib.org/)
 - [FFmpeg](https://ffmpeg.org/)
 - [Lame](https://lame.sourceforge.io/)
@@ -41,7 +40,7 @@ Jupii relies on following open source libraries:
 ## Download
 
 - Sailfish OS: [OpenRepos](https://openrepos.net/content/mkiol/jupii)
-- Linux Desktop: [Flatpak package](https://github.com/mkiol/Jupii/tree/master/binaries).
+- Linux Desktop / Plasma Mobile: [Flatpak package](https://github.com/mkiol/Jupii/tree/master/binaries).
 
 ## Translations
 
