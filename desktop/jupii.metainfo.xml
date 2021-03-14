@@ -23,6 +23,7 @@
     <binary>jupii</binary>
   </provides>
   <releases>
+    <release version="2.9.1" date="2021-03-07" />
     <release version="2.9.0" date="2021-02-21" />
     <release version="2.8.2" date="2021-01-09" />
   </releases>

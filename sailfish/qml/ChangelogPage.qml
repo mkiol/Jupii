@@ -29,7 +29,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.9.0")
+                text: qsTr("Version %1").arg("2.9.1")
             }
 
             LogItem {
