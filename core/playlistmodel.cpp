@@ -1228,7 +1228,7 @@ bool PlaylistModel::addId(const QUrl &id)
 
 void PlaylistModel::setActiveId(const QString &id)
 {
-    qDebug() << "setActiveId" << id;
+    qDebug() << "setActiveId:" << id;
     const auto cookie = Utils::cookieFromId(id);
     bool metaExists = ContentServer::instance()->metaExists(Utils::urlFromId(id));
     if (!metaExists && cookieToUrl.contains(cookie)) { // edge case: url was updated by refresh
@@ -1516,7 +1516,7 @@ bool PlaylistModel::play(const QString &id)
         return false;
     }
 
-    if (activeId() == id) {
+    if (activeId() == id && av->getCurrentId().toString() == id) { // both checks are needed due to url change in refresh
         qDebug() << "Id is active id";
         if (av->getTransportState() != AVTransport::Playing) {
             dir->xcPowerOn(av->getDeviceId());
