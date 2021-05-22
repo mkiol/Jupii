@@ -182,8 +182,7 @@ const QString ContentServer::defaultItemClass = "object.item";
 
 const QString ContentServer::artCookie = "jupii_art";
 
-const QByteArray ContentServer::userAgent = QString("%1 %2")
-        .arg(Jupii::APP_NAME, Jupii::APP_VERSION).toLatin1();
+const QByteArray ContentServer::userAgent{"Mozilla/5.0 (X11; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0"};
 
 /* DLNA.ORG_OP flags:
  * 00 - no seeking allowed
