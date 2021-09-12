@@ -90,7 +90,9 @@ void ConnectivityDetector::update()
         } else {
 #ifdef SAILFISH
             // preferred WLAN
-            if (!wlanCandidates.isEmpty()) {
+            if (wlanCandidates.contains("tether")) {
+                newIfname = "tether";
+            } else if (!wlanCandidates.isEmpty()) {
                 newIfname = wlanCandidates.first();
             } else {
                 newIfname = ethCandidates.first();
@@ -139,7 +141,7 @@ bool ConnectivityDetector::selectNetworkIf(QString &ifname, QString &address) co
                     ha.protocol() == QAbstractSocket::IPv6Protocol) {
                     address = fixAddress(ha.toString());
 
-                    qDebug() << "Net interface:" << ifname << address;
+                    //qDebug() << "Net interface:" << ifname << address;
                     return true;
                 }
             }

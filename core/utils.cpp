@@ -103,7 +103,7 @@ bool Utils::ethNetworkInf(const QNetworkInterface& interface)
 bool Utils::wlanNetworkInf(const QNetworkInterface& interface)
 {
 #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-    return interface.name().startsWith('w');
+    return interface.name().startsWith('w') || interface.name().startsWith("tether");
 #else
     return interface.type() == QNetworkInterface::Wifi;
 #endif
