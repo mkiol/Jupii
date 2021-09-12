@@ -41,6 +41,7 @@ private:
     explicit ConnectivityDetector(QObject *parent = nullptr);
     void handleNetworkConfChanged(const QNetworkConfiguration &conf);
     static void selectIfnameCandidates(QStringList& eth, QStringList& wlan);
+    static QString fixAddress(const QString &address);
 };
 
 #endif // CONNECTIVITYDETECTOR_H

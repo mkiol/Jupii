@@ -113,6 +113,15 @@ void ConnectivityDetector::update()
     }
 }
 
+QString ConnectivityDetector::fixAddress(const QString &address)
+{
+    if (const auto idx = address.indexOf('%'); idx != -1) {
+        return address.left(idx);
+    }
+
+    return address;
+}
+
 bool ConnectivityDetector::selectNetworkIf(QString &ifname, QString &address) const
 {
     if (networkConnected()) {
@@ -128,8 +137,9 @@ bool ConnectivityDetector::selectNetworkIf(QString &ifname, QString &address) co
                 auto ha = a.ip();
                 if (ha.protocol() == QAbstractSocket::IPv4Protocol ||
                     ha.protocol() == QAbstractSocket::IPv6Protocol) {
-                    address = ha.toString();
-                    //qDebug() << "Net interface:" << ifname << address;
+                    address = fixAddress(ha.toString());
+
+                    qDebug() << "Net interface:" << ifname << address;
                     return true;
                 }
             }
