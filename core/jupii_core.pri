@@ -14,10 +14,9 @@ exists("$$QT_BIN_DIR/qdbusxml2cpp-qt5") {
 } else {
     QDBUSXML2CPP = "$$QT_BIN_DIR/qdbusxml2cpp"
 }
-system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.jupii.xml" -a $$CORE_DIR/dbus_jupii_adaptor)
-system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Tracker1.Steroids.xml" -p $$CORE_DIR/dbus_tracker_inf)
-system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.systemd1.Manager.xml" -p $$CORE_DIR/dbus_systemd_inf)
-system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/org.freedesktop.Notifications.xml" -p $$CORE_DIR/dbus_notifications_inf)
+system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/jupii.xml" -a $$CORE_DIR/dbus_jupii_adaptor)
+system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/tracker.xml" -p $$CORE_DIR/dbus_tracker_inf)
+system("$$QDBUSXML2CPP" "$$PROJECTDIR/dbus/notifications.xml" -p $$CORE_DIR/dbus_notifications_inf)
 
 OTHER_FILES += \
     $$PROJECTDIR/dbus/*.xml
@@ -82,7 +81,6 @@ HEADERS += \
     $$CORE_DIR/dbus_jupii_adaptor.h \
     $$CORE_DIR/dbus_tracker_inf.h \
     $$CORE_DIR/dbus_notifications_inf.h \
-    $$CORE_DIR/dbus_systemd_inf.h \
     $$CORE_DIR/utils.h \
     $$CORE_DIR/listmodel.h \
     $$CORE_DIR/devicemodel.h \
@@ -133,13 +131,13 @@ HEADERS += \
     $$CORE_DIR/soundcloudmodel.h \
     $$CORE_DIR/gumbotools.h \
     $$CORE_DIR/soundcloudapi.h \
-    $$CORE_DIR/downloader.h
+    $$CORE_DIR/downloader.h \
+    $$CORE_DIR/playlistparser.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
     $$CORE_DIR/dbus_tracker_inf.cpp \
     $$CORE_DIR/dbus_notifications_inf.cpp \
-    $$CORE_DIR/dbus_systemd_inf.cpp \
     $$CORE_DIR/main.cpp \
     $$CORE_DIR/utils.cpp \
     $$CORE_DIR/listmodel.cpp \
@@ -190,7 +188,8 @@ SOURCES += \
     $$CORE_DIR/soundcloudmodel.cpp \
     $$CORE_DIR/gumbotools.cpp \
     $$CORE_DIR/soundcloudapi.cpp \
-    $$CORE_DIR/downloader.cpp
+    $$CORE_DIR/downloader.cpp \
+    $$CORE_DIR/playlistparser.cpp
 
 screencast {
     HEADERS += \
@@ -199,3 +198,6 @@ screencast {
     SOURCES += \
         $$CORE_DIR/screencaster.cpp
 }
+
+DISTFILES += \
+    $$PWD/../dbus/org.freedesktop.Tracker3.Endpoint.xml

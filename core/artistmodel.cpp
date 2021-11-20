@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,18 +14,16 @@
 #include "artistmodel.h"
 #include "trackercursor.h"
 
-const QString ArtistModel::artistsQueryTemplate =
-        "SELECT ?artist nmm:artistName(?artist) AS ?artistName " \
-        "COUNT(?song) " \
-        "SUM(?length) " \
-        "WHERE { " \
-        "FILTER regex(nmm:artistName(?artist), \"%1\", \"i\") " \
-        "?song a nmm:MusicPiece; " \
-        "nfo:duration ?length; " \
-        "nmm:performer ?artist . } " \
-        "GROUP BY ?artist " \
-        "ORDER BY ?artistName " \
-        "LIMIT 1000";
+const QString ArtistModel::artistsQueryTemplate {
+    "SELECT ?artist nmm:artistName(?artist) AS ?artistName "
+    "COUNT(?song) "
+    "SUM(?length) "
+    "WHERE { "
+    "FILTER regex(nmm:artistName(?artist), \"%1\", \"i\") "
+    "?song a nmm:MusicPiece; "
+    "nfo:duration ?length; "
+    "%2 ?artist . } "
+    "GROUP BY ?artist ORDER BY ?artistName LIMIT 1000"};
 
 ArtistModel::ArtistModel(QObject *parent) :
     SelectableItemModel(new ArtistItem, parent)
@@ -34,9 +32,10 @@ ArtistModel::ArtistModel(QObject *parent) :
 
 QList<ListItem*> ArtistModel::makeItems()
 {
-    const auto query = artistsQueryTemplate.arg(getFilter());
     auto tracker = Tracker::instance();
-
+    const auto query = tracker->tracker3() ?
+               artistsQueryTemplate.arg(getFilter(), "nmm:artist") :
+               artistsQueryTemplate.arg(getFilter(), "nmm:performer");
     if (tracker->query(query, false)) {
         const auto result = tracker->getResult();
         return processTrackerReply(result.first, result.second);
@@ -69,7 +68,7 @@ QList<ListItem*> ArtistModel::processTrackerReply(
                 continue;
             }
 
-            items << new ArtistItem{
+            items << new ArtistItem {
                          id,
                          cursor.value(1).toString(),
                          QUrl(), // icon

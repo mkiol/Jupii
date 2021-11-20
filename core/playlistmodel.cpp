@@ -24,6 +24,7 @@
 #include "directory.h"
 #include "avtransport.h"
 #include "renderingcontrol.h"
+#include "playlistparser.h"
 
 PlaylistModel* PlaylistModel::m_instance = nullptr;
 
@@ -95,11 +96,9 @@ void PlaylistWorker::run()
                             if (!data.isEmpty()) {
                                 QFileInfo fi(f); auto dir = fi.absoluteDir().path();
                                 auto ptype = ContentServer::playlistTypeFromExtension(path);
-                                auto items = ptype == ContentServer::PlaylistPLS ?
-                                             ContentServer::parsePls(data, dir) :
-                                                ptype == ContentServer::PlaylistXSPF ?
-                                                ContentServer::parseXspf(data, dir) :
-                                                    ContentServer::parseM3u(data, dir);
+                                auto items = ptype == ContentServer::PlaylistPLS ? parsePls(data, dir) :
+                                             ptype == ContentServer::PlaylistXSPF ? parseXspf(data, dir) :
+                                             parseM3u(data, dir);
 
                                 if (items.isEmpty()) {
                                     qWarning() << "Playlist doesn't contain any valid items";

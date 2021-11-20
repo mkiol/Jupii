@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,62 +14,63 @@
 #include "trackmodel.h"
 #include "trackercursor.h"
 #include "utils.h"
+#include "playlistparser.h"
 
-const QString TrackModel::queryByAlbumTemplate =
-      "SELECT ?song " \
-      "nie:title(?song) " \
-      "nmm:artistName(nmm:performer(?song)) " \
-      "nie:title(nmm:musicAlbum(?song)) "
-      "nie:url(?song) " \
-      "nmm:trackNumber(?song) AS ?trackNumber " \
-      "nfo:duration(?song) " \
-      "nie:mimeType(?song) " \
-      "WHERE { " \
-      "?song a nmm:MusicPiece; " \
-      "nmm:musicAlbum \"%1\" . " \
-      "FILTER regex(nie:title(?song), \"%2\", \"i\") " \
-      "} " \
-      "ORDER BY ?trackNumber " \
-      "LIMIT 500";
+const QString TrackModel::queryByAlbumTemplate {
+    "SELECT ?song "
+    "nie:title(?song) "
+    "nmm:artistName(%3(?song)) "
+    "nie:title(nmm:musicAlbum(?song)) "
+    "nie:url(?url) "
+    "nmm:trackNumber(?song) AS ?trackNumber "
+    "nfo:duration(?song) "
+    "nie:mimeType(?song) "
+    "WHERE { "
+    "?song a nmm:MusicPiece; "
+    "nie:isStoredAs ?url; "
+    "nmm:musicAlbum \"%1\" . "
+    "FILTER regex(nie:title(?song), \"%2\", \"i\") "
+    "} "
+    "ORDER BY ?trackNumber "
+    "LIMIT 500"};
 
-const QString TrackModel::queryByArtistTemplate =
-      "SELECT ?song " \
-      "nie:title(?song) " \
-      "nmm:artistName(nmm:performer(?song)) " \
-      "nie:title(nmm:musicAlbum(?song)) AS ?albumTitle "
-      "nie:url(?song) " \
-      "nmm:trackNumber(?song) AS ?trackNumber " \
-      "nfo:duration(?song) " \
-      "nie:mimeType(?song) " \
-      "WHERE { " \
-      "?song a nmm:MusicPiece; " \
-      "nmm:performer \"%1\" . " \
-      "FILTER regex(nie:title(?song), \"%2\", \"i\") " \
-      "} " \
-      "ORDER BY ?albumTitle ?trackNumber " \
-      "LIMIT 500";
+const QString TrackModel::queryByArtistTemplate {
+    "SELECT ?song "
+    "nie:title(?song) "
+    "nmm:artistName(%3(?song)) "
+    "nie:title(nmm:musicAlbum(?song)) AS ?albumTitle "
+    "nie:url(?url) "
+    "nmm:trackNumber(?song) AS ?trackNumber "
+    "nfo:duration(?song) "
+    "nie:mimeType(?song) "
+    "WHERE { "
+    "?song a nmm:MusicPiece; "
+    "nie:isStoredAs ?url; "
+    "%4 \"%1\" . "
+    "FILTER regex(nie:title(?song), \"%2\", \"i\") "
+    "} "
+    "ORDER BY ?albumTitle ?trackNumber LIMIT 500"};
 
-const QString TrackModel::queryByPlaylistTemplate =
-        "SELECT nfo:hasMediaFileListEntry(?list) " \
-        "WHERE { ?list a nmm:Playlist . " \
-        "FILTER ( ?list in ( <%1> ) ) " \
-        "} " \
-        "LIMIT 1";
+const QString TrackModel::queryByPlaylistTemplate {
+    "SELECT nfo:hasMediaFileListEntry(?list) nie:url(?list) "
+    "WHERE { ?list a nmm:Playlist . "
+    "FILTER ( ?list in ( <%1> ) ) "
+    "} LIMIT 1"};
 
-const QString TrackModel::queryByEntriesTemplate =
-        "SELECT nfo:entryUrl(?song) " \
-        "WHERE { ?song a nfo:MediaFileListEntry . " \
-        "FILTER ( ?song in ( %1 )) } " \
-        "LIMIT 500";
+const QString TrackModel::queryByEntriesTemplate {
+    "SELECT nfo:entryUrl(?song) "
+    "WHERE { ?song a nfo:MediaFileListEntry . "
+    "FILTER ( ?song in ( %1 )) "
+    "} LIMIT 500"};
 
-const QString TrackModel::queryByUrlsTemplate =
-        "SELECT nie:url(?item) " \
-        "nie:mimeType(?item) " \
-        "nie:title(?item) " \
-        "nmm:artistName(nmm:performer(?item)) " \
-        "nie:title(nmm:musicAlbum(?item)) "
-        "WHERE { ?item a nmm:MusicPiece . " \
-        "FILTER ( nie:url(?item) in ( %1 ) ) }";
+const QString TrackModel::queryByUrlsTemplate {
+    "SELECT nie:url(?url) "
+    "nie:mimeType(?item) "
+    "nie:title(?item) "
+    "nmm:artistName(%2(?item)) "
+    "nie:title(nmm:musicAlbum(?item)) "
+    "WHERE { ?item a nmm:MusicPiece; nie:isStoredAs ?url . "
+    "FILTER ( nie:url(?url) in ( %1 ) ) }"};
 
 TrackModel::TrackModel(QObject *parent) :
     SelectableItemModel(new TrackItem, parent)
@@ -81,11 +82,14 @@ QList<ListItem*> TrackModel::makeItems()
     QString query;
     TrackerTasks task = TaskUnknown;
 
+    auto tracker = Tracker::instance();
+    const QString aattr = tracker->tracker3() ? "nmm:artist" : "nmm:performer";
+
     if (!m_albumId.isEmpty()) {
-        query = queryByAlbumTemplate.arg(m_albumId, getFilter());
+        query = queryByAlbumTemplate.arg(m_albumId, getFilter(), aattr);
         task = TaskAlbum;
     } else if (!m_artistId.isEmpty()) {
-        query = queryByArtistTemplate.arg(m_artistId, getFilter());
+        query = queryByArtistTemplate.arg(m_artistId, getFilter(), aattr, aattr);
         task = TaskArtist;
     } else if (!m_playlistId.isEmpty()) {
         query = queryByPlaylistTemplate.arg(m_playlistId);
@@ -95,7 +99,7 @@ QList<ListItem*> TrackModel::makeItems()
     }
 
     if (!query.isEmpty()) {
-        if (auto tracker = Tracker::instance(); tracker->query(query, false)) {
+        if (tracker->query(query, false)) {
             auto result = tracker->getResult();
             return processTrackerReply(task, result.first, result.second);
         } else {
@@ -163,15 +167,57 @@ TrackModel::TrackData TrackModel::makeTrackDataFromId(const QUrl& id) const
     return data;
 }
 
+QList<ListItem*> TrackModel::makeTrackItemsFromPlaylistFile(const QString& playlist)
+{
+    QList<ListItem*> items;
+
+    QByteArray data;
+    if (QFile f{playlist}; f.open(QIODevice::ReadOnly)) {
+        data = f.readAll();
+        f.close();
+    }
+
+    const auto list = parsePls(data);
+    const auto& filter = getFilter();
+
+    foreach (const auto& item, list) {
+        const auto title = item.title.isEmpty() ? item.url.fileName() : item.title;
+        if (filter.isEmpty() ||
+            title.contains(filter, Qt::CaseInsensitive)) {
+            items << new TrackItem {
+                item.url.toString(), // id
+                title, // title
+                {}, // artist
+                {}, // album
+                item.url, // url
+                {}, // icon
+                ContentServer::Type::TypeUnknown, // type
+                0, // number
+                0, // length
+                ContentServer::itemTypeFromUrl(item.url)
+            };
+        }
+    }
+
+    return items;
+}
+
 QList<ListItem*> TrackModel::processTrackerReplyForPlaylist(TrackerCursor& cursor)
 {
     QString entries;
     while(cursor.next()) {
-        auto list = cursor.value(0).toString().split(',');
-        list = list.mid(0, 50);
-        list.replaceInStrings(QRegExp("^(.*)$"), "<\\1>");
-        entries = list.join(',');
-        break;
+        if (cursor.value(0).isNull()) {
+            qWarning() << "Tracker reply for playlist's entries is null";
+            if (const auto url = cursor.value(1).toUrl(); url.isLocalFile()) {
+                return makeTrackItemsFromPlaylistFile(url.toLocalFile());
+            }
+        } else {
+            auto list = cursor.value(0).toString().split(',');
+            list = list.mid(0, 50);
+            list.replaceInStrings(QRegExp("^(.*)$"), "<\\1>");
+            entries = list.join(',');
+            break;
+        }
     }
 
     if (!entries.isEmpty()) {
@@ -203,7 +249,8 @@ QList<ListItem*> TrackModel::processTrackerReplyForEntries(TrackerCursor& cursor
 
     if (!fileUrls.isEmpty()) {
         auto tracker = Tracker::instance();
-        auto query = queryByUrlsTemplate.arg(fileUrls.join(","));
+        auto query = queryByUrlsTemplate.arg(fileUrls.join(","),
+                                             tracker->tracker3() ? "nmm:artist" : "nmm:performer");
         if (tracker->query(query, false)) {
             auto result = tracker->getResult();
             return processTrackerReply(TaskUrls, result.first, result.second);
@@ -292,7 +339,7 @@ QList<ListItem*> TrackModel::processTrackerReply(
     TrackerCursor cursor(varNames, data);
     int n = cursor.columnCount();
 
-    if (task == TaskPlaylist && n == 1) {
+    if (task == TaskPlaylist && n == 2) {
         return processTrackerReplyForPlaylist(cursor);
     } else if (task == TaskEntries && n == 1) {
         return processTrackerReplyForEntries(cursor);

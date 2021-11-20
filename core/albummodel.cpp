@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,21 +16,19 @@
 #include "trackercursor.h"
 #include "settings.h"
 
-const QString AlbumModel::albumsQueryTemplate =
-        "SELECT ?album " \
-        "nie:title(?album) AS ?title " \
-        "nmm:artistName(?artist) " \
-        "COUNT(?song) " \
-        "SUM(?length) " \
-        "WHERE { ?album a nmm:MusicAlbum . " \
-        "FILTER (regex(nie:title(?album), \"%1\", \"i\") || " \
-        "regex(nmm:artistName(?artist), \"%1\", \"i\")) " \
-        "?song nmm:musicAlbum ?album; " \
-        "nfo:duration ?length; " \
-        "nmm:performer ?artist . " \
-        "} GROUP BY ?album " \
-        "ORDER BY ?title " \
-        "LIMIT 1000";
+const QString AlbumModel::albumsQueryTemplate {
+    "SELECT ?album "
+    "nie:title(?album) AS ?title "
+    "nmm:artistName(?artist) "
+    "COUNT(?song) "
+    "SUM(?length) "
+    "WHERE { "
+    "?album a nmm:MusicAlbum; "
+    "nmm:albumArtist ?artist . "
+    "FILTER (regex(nie:title(?album), \"%1\", \"i\") || regex(nmm:artistName(?artist), \"%1\", \"i\")) "
+    "?song nmm:musicAlbum ?album; "
+    "nfo:duration ?length . "
+    "} GROUP BY ?album ORDER BY ?title LIMIT 1000"};
 
 AlbumModel::AlbumModel(QObject *parent) :
     SelectableItemModel(new AlbumItem, parent)
@@ -84,7 +82,7 @@ QList<ListItem*> AlbumModel::processTrackerReply(
             album.id = id;
             album.title = cursor.value(1).toString();
             album.artist = cursor.value(2).toString();
-            album.icon = QFileInfo{imgFilePath}.exists() ? QUrl{imgFilePath} : QUrl{};
+            album.icon = QFileInfo::exists(imgFilePath) ? QUrl{imgFilePath} : QUrl{};
             album.count = cursor.value(3).toInt();
             album.length = cursor.value(4).toInt();
         }

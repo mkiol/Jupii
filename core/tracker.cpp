@@ -19,7 +19,6 @@
 #include "tracker.h"
 #include "trackercursor.h"
 #include "settings.h"
-#include "dbus_systemd_inf.h"
 #include "utils.h"
 
 #include <fcntl.h>
@@ -27,14 +26,32 @@
 
 Tracker* Tracker::m_instance = nullptr;
 
-Tracker::Tracker(QObject *parent) :
-    QObject(parent),
-    m_cacheDir(QStandardPaths::writableLocation(
-                   QStandardPaths::GenericCacheLocation))
+struct Query
 {
-    if (!createTrackerInf()) {
-        qWarning() << "Cannot create Tracker Dbus interface";
+    const QString &m_query;
+    QDBusUnixFileDescriptor &m_qfd;
+
+    Query(const QString &query, QDBusUnixFileDescriptor &qfd) : m_query{query}, m_qfd{qfd} {}
+
+    auto operator()(OrgFreedesktopTracker1SteroidsInterface &dbus_inf) const {
+        return dbus_inf.Query(m_query, m_qfd);
     }
+
+    auto operator()(OrgFreedesktopTracker3EndpointInterface &dbus_inf) const {
+        return dbus_inf.Query(m_query, m_qfd, QVariantMap{});
+    }
+
+    auto operator()(std::monostate) {
+        return QDBusPendingReply<QStringList>{};
+    }
+};
+
+Tracker::Tracker(QObject *parent) : QObject{parent},
+    m_cacheDir{QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)}
+{
+   if (!createTrackerInf()) {
+       qWarning() << "Cannot create Tracker Dbus interface";
+   }
 }
 
 Tracker* Tracker::instance(QObject *parent)
@@ -63,14 +80,14 @@ bool Tracker::createUnixPipe(int &readFd, int &writeFd)
 
 bool Tracker::query(const QString &query, bool emitSignal)
 {
-    m_dbusReplyData.clear();
-    m_pipeData.clear();
-
-    if (!m_dbus_inf || !m_dbus_inf->isValid()) {
-        qWarning() << "Tracker Dbus interface is not created";
+    if (!valid()) {
+        qWarning() << "Tracker dbus interface is invalid";
         emit queryError();
         return false;
     }
+
+    m_dbusReplyData.clear();
+    m_pipeData.clear();
 
     int readFd, writeFd;
 
@@ -83,13 +100,13 @@ bool Tracker::query(const QString &query, bool emitSignal)
     QDBusUnixFileDescriptor qfd(writeFd);
     close(writeFd);
 
-    auto reply = m_dbus_inf->Query(query, qfd);
+    auto reply = std::visit(Query{query, qfd}, m_dbus_inf);
 
     reply.waitForFinished();
 
     close(qfd.fileDescriptor());
 
-    if (reply.isError()) {
+    if (reply.isError() || !reply.isValid()) {
         auto error = reply.error();
         qWarning() << "Dbus query failed:" << error.name() << error.message();
         close(readFd);
@@ -142,78 +159,50 @@ QString Tracker::genAlbumArtFile(const QString &albumName,
     return filepath;
 }
 
-bool Tracker::startTracker()
+bool Tracker::pingTracker1() const
 {
-    OrgFreedesktopSystemd1ManagerInterface dbus_inf(
-                QStringLiteral("org.freedesktop.systemd1"),
-                QStringLiteral("/org/freedesktop/systemd1"),
-                QDBusConnection::sessionBus());
+    OrgFreedesktopDBusPeerInterface dbus_inf{
+        "org.freedesktop.Tracker1", "/org/freedesktop/Tracker1/Steroids",
+        QDBusConnection::sessionBus()};
 
-    if (!dbus_inf.isValid()) {
-        qWarning() << "Systemd interface cannot be created";
+    auto resp = dbus_inf.Ping();
+    resp.waitForFinished();
+    if (resp.isError()) {
+        qWarning() << "Tracker1 ping error:" << resp.error().name() << resp.error().message();
         return false;
     }
 
-    auto reply = dbus_inf.StartUnit(
-                QStringLiteral("tracker-store.service"), QStringLiteral("replace"));
-
-    reply.waitForFinished();
-
-    if (reply.isError()) {
-        auto error = reply.error();
-        qWarning() << "Systemd error reply:" << error.name() << error.message();
-        return false;
-    }
-
-    const auto path = reply.value().path();
-
-    if (!dbus_inf.isValid() || path.isEmpty()) {
-        qWarning() << "Systemd job is invalid";
-        return false;
-    }
-
-    QEventLoop loop;
-    QTimer::singleShot(1000, &loop, &QEventLoop::quit); // timeout 1s
-    connect(&dbus_inf, &OrgFreedesktopSystemd1ManagerInterface::JobRemoved,
-            this, [&loop, &path](uint,
-                          const QDBusObjectPath &job,
-                          const QString&,
-                          const QString &result){
-        qDebug() << "JobRemoved:" << job.path() << result;
-        if (path == job.path()) {
-            loop.exit(1);
-        }
-    });
-
-    return loop.exec() == 1;
+    return true;
 }
 
-bool Tracker::createTrackerInf(bool startTrackerOnError)
+bool Tracker::pingTracker3() const
 {
-    if (!m_dbus_inf) {
-        auto bus = QDBusConnection::sessionBus();
-        auto cap = bus.connectionCapabilities();
+    OrgFreedesktopDBusPeerInterface dbus_inf{
+        "org.freedesktop.Tracker3.Miner.Files", "/org/freedesktop/Tracker3/Endpoint",
+        QDBusConnection::sessionBus()};
 
-        if (!cap.testFlag(QDBusConnection::UnixFileDescriptorPassing)) {
-            qWarning() << "Dbus doesn't support Unix File Descriptor";
-            return false;
-        }
-
-        m_dbus_inf = std::make_unique<OrgFreedesktopTracker1SteroidsInterface>(
-                    QStringLiteral("org.freedesktop.Tracker1"),
-                    QStringLiteral("/org/freedesktop/Tracker1/Steroids"),
-                    bus);
-
-        if (!m_dbus_inf->isValid() && startTrackerOnError) {
-            qWarning() << "Tracker interface unavailable but trying to start tracker-store";
-            m_dbus_inf.reset();
-            return startTracker() ? createTrackerInf(false) : false;
-        }
+    auto resp = dbus_inf.Ping();
+    resp.waitForFinished();
+    if (resp.isError()) {
+        qWarning() << "Tracker3 ping error:" << resp.error().name() << resp.error().message();
+        return false;
     }
 
-    if (!m_dbus_inf->isValid()) {
-        qWarning() << "Tracker interface cannot be created";
-        m_dbus_inf.reset();
+    return true;
+}
+
+bool Tracker::createTrackerInf()
+{
+    if (pingTracker3()) {
+        m_dbus_inf.emplace<OrgFreedesktopTracker3EndpointInterface>(
+            "org.freedesktop.Tracker3.Miner.Files", "/org/freedesktop/Tracker3/Endpoint",
+            QDBusConnection::sessionBus());
+    } else if (pingTracker1()) {
+        m_dbus_inf.emplace<OrgFreedesktopTracker1SteroidsInterface>(
+            "org.freedesktop.Tracker1", "/org/freedesktop/Tracker1/Steroids",
+            QDBusConnection::sessionBus());
+    } else {
+        qWarning() << "Cannot create Tracker interface";
         return false;
     }
 

@@ -39,7 +39,7 @@ bool YamahaXC::init(const QString &desc)
     }
 
     if (xml.hasError() || urlBase.isEmpty() || controlUrl.isEmpty()) {
-        qWarning() << "XML parsing error:" << desc;
+        //qWarning() << "XML parsing error:" << desc;
         return false;
     }
 

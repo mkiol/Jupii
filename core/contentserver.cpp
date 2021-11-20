@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2019 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -51,6 +51,7 @@
 #include "bcapi.h"
 #include "connectivitydetector.h"
 #include "soundcloudapi.h"
+#include "playlistparser.h"
 
 // TagLib
 #include "fileref.h"
@@ -80,18 +81,18 @@
 ContentServer* ContentServer::m_instance = nullptr;
 ContentServerWorker* ContentServerWorker::m_instance = nullptr;
 
-const QString ContentServer::queryTemplate =
-        "SELECT ?item " \
-        "nie:mimeType(?item) " \
-        "nie:title(?item) " \
-        "nie:comment(?item) " \
-        "nfo:duration(?item) " \
-        "nie:title(nmm:musicAlbum(?item)) " \
-        "nmm:artistName(nmm:performer(?item)) " \
-        "nfo:averageBitrate(?item) " \
-        "nfo:channels(?item) " \
-        "nfo:sampleRate(?item) " \
-        "WHERE { ?item nie:url \"%1\". }";
+const QString ContentServer::queryTemplate {
+    "SELECT ?item "
+    "nie:mimeType(?item) "
+    "nie:title(?item) "
+    "nie:comment(?item) "
+    "nfo:duration(?item) "
+    "nie:title(nmm:musicAlbum(?item)) "
+    "nmm:artistName(%2(?item)) "
+    "nfo:averageBitrate(?item) "
+    "nfo:channels(?item) "
+    "nfo:sampleRate(?item) "
+    "WHERE { ?item nie:isStoredAs ?url . ?url nie:url \"%1\". }"};
 
 const QHash<QString,QString> ContentServer::m_imgExtMap {
     {"jpg", "image/jpeg"},{"jpeg", "image/jpeg"},
@@ -1148,7 +1149,7 @@ void ContentServerWorker::proxyFinished()
             auto data = reply->readAll();
             if (!data.isEmpty()) {
                 // Resolving relative URLs in a playlist
-                ContentServer::resolveM3u(data, reply->url().toString());
+                resolveM3u(data, reply->url().toString());
                 item.resp->write(data);
             } else {
                 qWarning() << "Data is empty";
@@ -2573,9 +2574,10 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url)
 {
     const QString fileUrl = url.toString(QUrl::EncodeUnicode|QUrl::EncodeSpaces);
     const QString path = url.toLocalFile();
-    const QString query = queryTemplate.arg(fileUrl);
 
     auto tracker = Tracker::instance();
+    const QString query = queryTemplate.arg(fileUrl, tracker->tracker3() ? "nmm:artist" : "nmm:performer");
+
     if (!tracker->query(query, false)) {
         qWarning() << "Cannot get tracker data for url:" << fileUrl;
         return metaCache.cend();
@@ -3824,186 +3826,6 @@ void ContentServer::shoutcastMetadataHandler(const QUrl &id,
     }
 
     emit streamTitleChanged(id, stream.title);
-}
-
-QList<ContentServer::PlaylistItemMeta>
-ContentServer::parsePls(const QByteArray &data, const QString context)
-{
-    qDebug() << "Parsing PLS playlist";
-    QMap<int,ContentServer::PlaylistItemMeta> map;
-    int pos;
-
-    // urls
-    QRegExp rxFile("\\nFile(\\d\\d?)=([^\\n]*)", Qt::CaseInsensitive);
-    pos = 0;
-    while ((pos = rxFile.indexIn(data, pos)) != -1) {
-        const auto cap1 = rxFile.cap(1);
-        const auto cap2 = rxFile.cap(2);
-        //qDebug() << "cap:" << cap1 << cap2;
-
-        bool ok;
-        int n = cap1.toInt(&ok);
-        if (ok) {
-            auto url = Utils::urlFromText(cap2, context);
-            if (!url.isEmpty()) {
-                auto &item = map[n];
-                item.url = url;
-            } else {
-                qWarning() << "Playlist item url is invalid";
-            }
-        } else {
-            qWarning() << "Playlist item no is invalid";
-        }
-
-        pos += rxFile.matchedLength();
-    }
-
-    if (!map.isEmpty()) {
-        // titles
-        QRegExp rxTitle("\\nTitle(\\d\\d?)=([^\\n]*)", Qt::CaseInsensitive);
-        pos = 0;
-        while ((pos = rxTitle.indexIn(data, pos)) != -1) {
-            const auto cap1 = rxTitle.cap(1);
-            const auto cap2 = rxTitle.cap(2);
-            //qDebug() << "cap:" << cap1 << cap2;
-
-            bool ok;
-            int n = cap1.toInt(&ok);
-            if (ok && map.contains(n)) {
-                auto &item = map[n];
-                item.title = cap2;
-            }
-
-            pos += rxTitle.matchedLength();
-        }
-
-        // length
-        QRegExp rxLength("\\nLength(\\d\\d?)=([^\\n]*)", Qt::CaseInsensitive);
-        pos = 0;
-        while ((pos = rxLength.indexIn(data, pos)) != -1) {
-            const auto cap1 = rxLength.cap(1);
-            const auto cap2 = rxLength.cap(2);
-            //qDebug() << "cap:" << cap1 << cap2;
-
-            bool ok;
-            int n = cap1.toInt(&ok);
-            if (ok && map.contains(n)) {
-                bool ok;
-                int length = cap2.toInt(&ok);
-                if (ok) {
-                    auto &item = map[n];
-                    item.length = length < 0 ? 0 : length;
-                }
-            }
-
-            pos += rxLength.matchedLength();
-        }
-    } else {
-        qWarning() << "Playlist doesn't contain any URLs";
-    }
-
-    return map.values();
-}
-
-void ContentServer::resolveM3u(QByteArray &data, const QString context)
-{
-    QStringList lines;
-
-    QTextStream s(data, QIODevice::ReadOnly);
-    s.setAutoDetectUnicode(true);
-
-    while (!s.atEnd()) {
-        auto line = s.readLine();
-        if (!line.startsWith("#"))
-            lines << line;
-    }
-
-    foreach (const auto& line, lines) {
-        auto url = Utils::urlFromText(line, context);
-        if (!url.isEmpty())
-            data.replace(line.toUtf8(), url.toString().toUtf8());
-    }
-}
-
-QList<ContentServer::PlaylistItemMeta>
-ContentServer::parseM3u(const QByteArray &data, const QString context)
-{
-    qDebug() << "Parsing M3U playlist";
-
-    QList<ContentServer::PlaylistItemMeta> list;
-
-    QTextStream s(data, QIODevice::ReadOnly);
-    s.setAutoDetectUnicode(true);
-
-    while (!s.atEnd()) {
-        const auto line = s.readLine();
-        if (line.startsWith("#")) {
-            // TODO: read title from M3U playlist
-        } else {
-            auto url = Utils::urlFromText(line, context);
-            if (!url.isEmpty()) {
-                PlaylistItemMeta item;
-                item.url = url;
-                list.append(item);
-            }
-        }
-    }
-
-    return list;
-}
-
-QList<ContentServer::PlaylistItemMeta>
-ContentServer::parseXspf(const QByteArray &data, const QString context)
-{
-    qDebug() << "Parsing XSPF playlist";
-    QList<ContentServer::PlaylistItemMeta> list;
-
-    QDomDocument doc; QString error;
-    if (doc.setContent(data, false, &error)) {
-        auto tracks = doc.elementsByTagName("track");
-        int l = tracks.length();
-        for (int i = 0; i < l; ++i) {
-            auto track = tracks.at(i).toElement();
-            if (!track.isNull()) {
-                auto ls = track.elementsByTagName("location");
-                if (!ls.isEmpty()) {
-                    auto l = ls.at(0).toElement();
-                    if (!l.isNull()) {
-                        //qDebug() << "location:" << l.text();
-                        auto url = Utils::urlFromText(l.text(), context);
-                        if (!url.isEmpty()) {
-                            PlaylistItemMeta item;
-                            item.url = url;
-
-                            auto ts = track.elementsByTagName("title");
-                            if (!ts.isEmpty()) {
-                                auto t = ts.at(0).toElement();
-                                if (!t.isNull()) {
-                                    //qDebug() << "title:" << t.text();
-                                    item.title = t.text();
-                                }
-                            }
-
-                            auto ds = track.elementsByTagName("duration");
-                            if (!ds.isEmpty()) {
-                                auto d = ds.at(0).toElement();
-                                if (!d.isNull()) {
-                                    //qDebug() << "duration:" << d.text();
-                                    item.length = d.text().toInt();
-                                }
-                            }
-
-                            list.append(item);
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        qWarning() << "Playlist parse error:" << error << data;
-    }
-
-    return list;
 }
 
 void ContentServerWorker::adjustVolume(QByteArray* data, float factor, bool le)

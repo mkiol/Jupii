@@ -41,9 +41,9 @@ public:
                       int count,
                       int length,
                       QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    inline QString id() const { return m_id; }
+    QVariant data(int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+    inline QString id() const override { return m_id; }
     inline QString name() const { return m_name; }
     inline QUrl icon() const { return m_icon; }
     inline int count() const { return m_count; }
@@ -65,7 +65,7 @@ public:
     explicit ArtistModel(QObject *parent = nullptr);
 
 private:
-    static  const QString artistsQueryTemplate;
+    static const QString artistsQueryTemplate;
 
     QList<ListItem*> makeItems() override;
     QList<ListItem*> processTrackerReply(

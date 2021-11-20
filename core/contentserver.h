@@ -156,12 +156,6 @@ public:
         ItemMeta();
     };
 
-    struct PlaylistItemMeta {
-        QUrl url;
-        QString title;
-        int length = 0;
-    };
-
     static const QString artCookie;
 
     static const QString recDateTagName;
@@ -178,10 +172,6 @@ public:
     static Type getContentTypeByExtension(const QUrl &url);
     static PlaylistType playlistTypeFromMime(const QString &mime);
     static PlaylistType playlistTypeFromExtension(const QString &path);
-    static QList<PlaylistItemMeta> parsePls(const QByteArray &data, const QString context = QString());
-    static QList<PlaylistItemMeta> parseM3u(const QByteArray &data, const QString context = QString());
-    static QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString context = QString());
-    static void resolveM3u(QByteArray &data, const QString context);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
     static bool writeMetaUsingTaglib(const QString& path, const QString& title,
                                       const QString& artist = QString(),

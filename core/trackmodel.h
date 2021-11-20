@@ -134,6 +134,7 @@ private:
     QList<ListItem*> makeItems() override;
     TrackData makeTrackDataFromId(const QUrl& id) const;
     QList<ListItem*> makeTrackItemsFromTrackData();
+    QList<ListItem*> makeTrackItemsFromPlaylistFile(const QString& playlist);
     QList<ListItem*> processTrackerReplyForAlbumArtist(TrackerCursor& cursor);
     QList<ListItem*> processTrackerReplyForPlaylist(TrackerCursor& cursor);
     QList<ListItem*> processTrackerReplyForEntries(TrackerCursor& cursor);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,27 +13,24 @@
 #include "playlistfilemodel.h"
 #include "trackercursor.h"
 
-const QString PlaylistFileModel::playlistsQueryTemplate =
-        "SELECT ?list nie:title(?list) " \
-        "nie:url(?list) " \
-        "nfo:entryCounter(?list) " \
-        "nfo:hasMediaFileListEntry(?list) " \
-        "WHERE { ?list a nmm:Playlist . " \
-        "FILTER (regex(nie:title(?list), \"%1\", \"i\")) . " \
-        "} " \
-        "ORDER BY nie:title(?list) " \
-        "LIMIT 1000";
+const QString PlaylistFileModel::playlistsQueryTemplate {
+    "SELECT ?list nie:title(?list) "
+    "nie:url(?list) "
+    "nfo:entryCounter(?list) "
+    "nfo:hasMediaFileListEntry(?list) "
+    "WHERE { ?list a nmm:Playlist . "
+    "FILTER (regex(nie:title(?list), \"%1\", \"i\")) . "
+    "} "
+    "ORDER BY nie:title(?list) LIMIT 1000"};
 
-const QString PlaylistFileModel::playlistsQueryTemplateEx =
-        "SELECT ?list nie:title(?list) " \
-        "nie:url(?list) " \
-        "nfo:entryCounter(?list) " \
-        "WHERE { ?list a nmm:Playlist . " \
-        "FILTER (regex(nie:title(?list), \"%1\", \"i\") && " \
-        "?list != <%2>) . " \
-        "} " \
-        "ORDER BY nie:title(?list) " \
-        "LIMIT 1000";
+const QString PlaylistFileModel::playlistsQueryTemplateEx {
+    "SELECT ?list nie:title(?list) "
+    "nie:url(?list) "
+    "nfo:entryCounter(?list) "
+    "WHERE { ?list a nmm:Playlist . "
+    "FILTER (regex(nie:title(?list), \"%1\", \"i\") && ?list != <%2>) . "
+    "} "
+    "ORDER BY nie:title(?list) LIMIT 1000"};
 
 PlaylistFileModel::PlaylistFileModel(QObject *parent) :
     SelectableItemModel(new PlaylistFileItem, parent)
