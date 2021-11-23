@@ -8,6 +8,8 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
+import harbour.jupii.Settings 1.0
+
 Page {
     id: root
 
@@ -108,6 +110,17 @@ Page {
                     settings.audioBoost = value
                 }
             }*/
+
+            ComboBox {
+                label: qsTr("Open link")
+                currentIndex: settings.openUrlMode
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("Don't show") }
+                    MenuItem { text: qsTr("Show") }
+                }
+                onCurrentIndexChanged: settings.openUrlMode = currentIndex
+                description: qsTr("Show Jupii as an option in 'Open link' dialog.");
+            }
 
             ExpandingSectionGroup {
                 ExpandingSection {

@@ -29,10 +29,10 @@ ApplicationWindow {
     }
 
     function popToQueue() {
-        pageStack.pop(queuePage())
+        pageStack.pop(queuePage(), PageStackAction.Immediate)
     }
     function popToDevices() {
-        pageStack.pop(devicesPage())
+        pageStack.pop(devicesPage(), PageStackAction.Immediate)
     }
     function queuePage() {
         return pageStack.find(function(page){return page.objectName === "queue"})
@@ -108,6 +108,20 @@ ApplicationWindow {
                 pageStack.clear()
                 pageStack.completeAnimation()
                 pageStack.push(devPage, {}, PageStackAction.Immediate)
+            }
+        }
+    }
+
+    Connections {
+        target: dbus
+        onFocusRequested: {
+            if (pageStack.currentPage.objectName !== "queue") {
+                popToDevices()
+                if (pageStack.currentPage.forwardNavigation) {
+                    pageStack.navigateForward(PageStackAction.Immediate)
+                } else {
+                    pageStack.push(Qt.resolvedUrl("PlayQueuePage.qml"), {}, PageStackAction.Immediate)
+                }
             }
         }
     }

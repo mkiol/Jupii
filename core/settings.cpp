@@ -14,6 +14,9 @@
 #include <QUuid>
 #include <QSysInfo>
 #include <QFile>
+#include <QSysInfo>
+#include <QProcess>
+#include <QTimer>
 #include <limits>
 
 #include "settings.h"
@@ -27,23 +30,26 @@
 Settings* Settings::inst = nullptr;
 
 Settings::Settings(QObject *parent) :
-    QObject(parent),
-    TaskExecutor(parent),
-    settings(parent)
+    QObject{parent},
+    TaskExecutor{parent},
+    settings{parent},
+#ifdef SAILFISH
+    hwName{readHwInfo()}
+#else
+    hwName{QSysInfo::machineHostName()};
+#endif
 {
     removeLogFiles();
-    if (getLogToFile())
-        qInstallMessageHandler(qtLog);
+    if (getLogToFile()) qInstallMessageHandler(qtLog);
 
 #ifdef SAILFISH
-    hwName = readHwInfo();
-#else
-    hwName = QSysInfo::machineHostName();
+    initOpenUrlMode();
 #endif
+
     qDebug() << "HW name:" << hwName;
 }
 
-bool Settings::isDebug()
+bool Settings::isDebug() const
 {
 #ifdef QT_DEBUG
     return true;
@@ -55,22 +61,18 @@ bool Settings::isDebug()
 #ifdef SAILFISH
 QString Settings::readHwInfo()
 {
-    QFile f(HW_RELEASE_FILE);
+    QFile f{HW_RELEASE_FILE};
     if (f.open(QIODevice::ReadOnly)) {
-        auto d = f.readAll();
+        const auto d = f.readAll();
         f.close();
-        auto data = QString::fromUtf8(d).split(QRegExp("[\r\n]"), QString::SkipEmptyParts);
+        const auto data = QString::fromUtf8(d).split(QRegExp{"[\r\n]"}, QString::SkipEmptyParts);
         QRegExp rx("^NAME=\"?([^\"]*)\"?$", Qt::CaseInsensitive);
-        for (const auto& line: data) {
-            if (rx.indexIn(line) != -1)
-                return rx.cap(1);
-        }
+        for (const auto &line : data) if (rx.indexIn(line) != -1) return rx.cap(1);
     } else {
-        qWarning() << "Cannot open file" << f.fileName() <<
-                      "for reading (" + f.errorString() + ")";
+        qWarning() << "Cannot open file:" << f.fileName() << f.errorString();
     }
 
-    return QString();
+    return {};
 }
 #endif
 
@@ -83,10 +85,10 @@ Settings* Settings::instance()
     return Settings::inst;
 }
 
-QString Settings::prettyName()
+QString Settings::prettyName() const
 {
-    return hwName.isEmpty() ? QString(Jupii::APP_NAME) : QString("%1 (%2)")
-                              .arg(Jupii::APP_NAME, hwName);
+    return hwName.isEmpty() ? QString{Jupii::APP_NAME} :
+                            QString{"%1 (%2)"}.arg(Jupii::APP_NAME, hwName);
 }
 
 void Settings::setLogToFile(bool value)
@@ -106,7 +108,7 @@ void Settings::setLogToFile(bool value)
     }
 }
 
-bool Settings::getLogToFile()
+bool Settings::getLogToFile() const
 {
     return settings.value("logtofile", false).toBool();
 }
@@ -119,7 +121,7 @@ void Settings::setPort(int value)
     }
 }
 
-int Settings::getPort()
+int Settings::getPort() const
 {
     return settings.value("port", 9092).toInt();
 }
@@ -132,7 +134,7 @@ void Settings::setVolStep(int value)
     }
 }
 
-int Settings::getVolStep()
+int Settings::getVolStep() const
 {
     return settings.value("volstep", 5).toInt();
 }
@@ -150,7 +152,7 @@ void Settings::setForwardTime(int value)
     Q_UNUSED(value)
 }
 
-int Settings::getForwardTime()
+int Settings::getForwardTime() const
 {
     // disabled option
     //return settings.value("forwardtime", 10).toInt();
@@ -168,17 +170,17 @@ void Settings::setLastDevices(const QHash<QString,QVariant> &devs)
     settings.setValue("lastdevices", devs);
 }
 
-QHash<QString,QVariant> Settings::getLastDevices()
+QHash<QString,QVariant> Settings::getLastDevices() const
 {
     return settings.value("lastdevices",QHash<QString,QVariant>()).toHash();
 }
 
-QString Settings::getCacheDir()
+QString Settings::getCacheDir() const
 {
    return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 }
 
-QString Settings::getPlaylistDir()
+QString Settings::getPlaylistDir() const
 {
    const auto path = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
 
@@ -301,7 +303,7 @@ bool Settings::readDeviceXML(const QString &id, QByteArray& xml)
     return false;
 }
 
-QHash<QString,QVariant> Settings::getFavDevices()
+QHash<QString,QVariant> Settings::getFavDevices() const
 {
     return settings.value("favdevices",QHash<QString,QVariant>()).toHash();
 }
@@ -314,7 +316,7 @@ void Settings::setLastDir(const QString& value)
     }
 }
 
-QString Settings::getLastDir()
+QString Settings::getLastDir() const
 {
     return settings.value("lastdir", "").toString();
 }
@@ -361,7 +363,7 @@ void Settings::setPrefNetInf(const QString& value)
     }
 }
 
-QString Settings::getPrefNetInf()
+QString Settings::getPrefNetInf() const
 {
 #ifdef SAILFISH
     if (isDebug())
@@ -381,7 +383,7 @@ void Settings::setLastPlaylist(const QStringList& value)
     }
 }
 
-QStringList Settings::getLastPlaylist()
+QStringList Settings::getLastPlaylist() const
 {
     return settings.value("lastplaylist").toStringList();
 }
@@ -394,7 +396,7 @@ void Settings::setShowAllDevices(bool value)
     }
 }
 
-bool Settings::getShowAllDevices()
+bool Settings::getShowAllDevices() const
 {
     return settings.value("showalldevices", false).toBool();
 }
@@ -407,7 +409,7 @@ void Settings::setRec(bool value)
     }
 }
 
-bool Settings::getRec()
+bool Settings::getRec() const
 {
     return settings.value("rec", true).toBool();
 }
@@ -424,7 +426,7 @@ void Settings::setScreenSupported(bool value)
 #endif
 }
 
-bool Settings::getScreenSupported()
+bool Settings::getScreenSupported() const
 {
 #ifdef SAILFISH
     return settings.value("screensupported", false).toBool();
@@ -481,7 +483,7 @@ void Settings::setScreenEncoder(const QString &value)
     }
 }
 
-QString Settings::getScreenEncoder()
+QString Settings::getScreenEncoder() const
 {
 #ifdef SAILFISH
     if (isDebug()) {
@@ -515,7 +517,7 @@ void Settings::setScreenFramerate(int value)
     }
 }
 
-int Settings::getScreenFramerate()
+int Settings::getScreenFramerate() const
 {
 #ifdef SAILFISH
     // default 5 fps
@@ -537,7 +539,7 @@ void Settings::setScreenQuality(int value)
     }
 }
 
-int Settings::getScreenQuality()
+int Settings::getScreenQuality() const
 {
     return settings.value("screenquality", 3).toInt();
 }
@@ -554,7 +556,7 @@ void Settings::setUseHWVolume(bool value)
 #endif
 }
 
-bool Settings::getUseHWVolume()
+bool Settings::getUseHWVolume() const
 {
 #ifdef SAILFISH
     return settings.value("usehwvolume", true).toBool();
@@ -573,7 +575,7 @@ void Settings::setMicVolume(float value)
     }
 }
 
-float Settings::getMicVolume()
+float Settings::getMicVolume() const
 {
 #ifdef SAILFISH
     return settings.value("micvolume", 50.0).toFloat();
@@ -597,7 +599,7 @@ void Settings::setAudioBoost(float value)
 #endif
 }
 
-float Settings::getAudioBoost()
+float Settings::getAudioBoost() const
 {
 #ifdef SAILFISH
     //return settings.value("micvolume", 2.3f).toFloat();
@@ -642,7 +644,7 @@ void Settings::setRemoteContentMode(int value)
     }
 }
 
-int Settings::getRemoteContentMode()
+int Settings::getRemoteContentMode() const
 {
     // 0 - proxy for all
     // 1 - redirection for all
@@ -660,7 +662,7 @@ void Settings::setAlbumQueryType(int value)
     }
 }
 
-int Settings::getAlbumQueryType()
+int Settings::getAlbumQueryType() const
 {
     // 0 - by album title
     // 1 - by artist
@@ -675,7 +677,7 @@ void Settings::setRecQueryType(int value)
     }
 }
 
-int Settings::getRecQueryType()
+int Settings::getRecQueryType() const
 {
     // 0 - by rec date
     // 1 - by title
@@ -691,7 +693,7 @@ void Settings::setCDirQueryType(int value)
     }
 }
 
-int Settings::getCDirQueryType()
+int Settings::getCDirQueryType() const
 {
     // 0 - by title
     // 1 - by album
@@ -709,7 +711,7 @@ void Settings::setPlayMode(int value)
     }
 }
 
-int Settings::getPlayMode()
+int Settings::getPlayMode() const
 {
     /*PM_Normal = 0,
     PM_RepeatAll = 1,
@@ -734,21 +736,21 @@ void Settings::setContentDirSupported(bool value)
     }
 }
 
-bool Settings::getContentDirSupported()
+bool Settings::getContentDirSupported() const
 {
     return settings.value("contentdirsupported", true).toBool();
 }
 
-bool Settings::hintEnabled(Settings::Hint hint)
+bool Settings::hintEnabled(HintType hint) const
 {
     int hints = settings.value("hints", std::numeric_limits<int>::max()).toInt();
-    return hints & hint;
+    return hints & static_cast<int>(hint);
 }
 
-void Settings::disableHint(Settings::Hint hint)
+void Settings::disableHint(HintType hint)
 {
     int hints = settings.value("hints", std::numeric_limits<int>::max()).toInt();
-    hints &= ~hint;
+    hints &= ~static_cast<int>(hint);
     settings.setValue("hints", hints);
 }
 
@@ -765,7 +767,7 @@ void Settings::setColorScheme(int value)
     }
 }
 
-int Settings::getColorScheme()
+int Settings::getColorScheme() const
 {
     return m_colorScheme;
 }
@@ -803,4 +805,82 @@ void Settings::setGlobalYtdl(bool value)
 bool Settings::globalYtdl() const
 {
     return settings.value("globalytdl", true).toBool();
+}
+
+Settings::OpenUrlModeType Settings::openUrlMode() const
+{
+    return static_cast<OpenUrlModeType>(settings.value("openurlmode",
+                       static_cast<int>(OpenUrlModeType::OpenUrlMode_All)).toInt());
+}
+
+void Settings::setOpenUrlMode(OpenUrlModeType value)
+{
+    if (openUrlMode() != value) {
+        settings.setValue("openurlmode", static_cast<int>(value));
+        emit openUrlModeChanged();
+        initOpenUrlMode();
+    }
+}
+
+std::pair<int,int> Settings::sysVer()
+{
+    const auto ver = QSysInfo::productVersion().split(".");
+    if (ver.size() > 1) return {ver.value(0).toInt(), ver.value(1).toInt()};
+    return {0, 0}; // unknown version
+}
+
+static inline void updateDesktopDb()
+{
+    QProcess::startDetached("update-desktop-database " +
+        QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation));
+}
+static inline QFile desktopFile()
+{
+    return QFile{QString{"%1/%2-open-url.desktop"}.arg(
+        QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation), Jupii::APP_ID)};
+}
+
+void Settings::initOpenUrlMode()
+{
+    // code mostly borrowed from https://github.com/Wunderfitz/harbour-piepmatz project
+
+    const QDir dbusPath{QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/dbus-1/services"};
+    if (!dbusPath.exists()) dbusPath.mkpath(dbusPath.absolutePath());
+    if (QFile dbusServiceFile{dbusPath.absolutePath() + "/" + Jupii::DBUS_SERVICE + ".service"};
+        !dbusServiceFile.exists()) {
+        if (dbusServiceFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream s{&dbusServiceFile};
+            s.setCodec("UTF-8");
+            s << "[D-BUS Service]\n";
+            s << "Name=" << Jupii::DBUS_SERVICE << "\n";
+            s << "Exec=/usr/bin/invoker --type=silica-qt5 --id=" << Jupii::APP_ID << "--single-instance " << Jupii::APP_ID << "\n";
+            s.flush();
+        }
+    }
+
+    desktopFile().remove();
+    updateDesktopDb();
+
+    QTimer::singleShot(3000, this, [this] {
+        qDebug() << "Open URL mode:" << static_cast<int>(openUrlMode());
+            if (auto df{desktopFile()}; df.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                QTextStream s{&df};
+                s.setCodec("UTF-8");
+                s << "[Desktop Entry]\n";
+                s << "Type=Application\n";
+                s << "Name=" << Jupii::APP_NAME << "\n";
+                s << "Icon=" << Jupii::APP_ID << "\n";
+                s << "NoDisplay=true\n";
+                s << "MimeType=" << fileMimesForOpenWith.join(";");
+                if (openUrlMode() == OpenUrlModeType::OpenUrlMode_All) {
+                    s << ";" << urlMimesForOpenWith.join(";");
+                }
+                s << ";\n";
+                s << "X-Maemo-Service=" << Jupii::DBUS_SERVICE << "\n";
+                s << "X-Maemo-Method=" << Jupii::DBUS_SERVICE << ".Playlist.openUrl\n";
+                s.flush();
+                df.close();
+                updateDesktopDb();
+            }
+    });
 }

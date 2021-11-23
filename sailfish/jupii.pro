@@ -51,45 +51,9 @@ SOURCES += \
 
 OTHER_FILES += \
     translations/*.ts \
-    qml/main.qml \
-    qml/DevicesPage.qml \
-    qml/CoverPage.qml \
-    qml/Spacer.qml \
-    qml/DeviceInfoPage.qml \
-    qml/SettingsPage.qml \
-    qml/AboutPage.qml \
-    qml/PaddedLabel.qml \
-    qml/ChangelogPage.qml \
-    qml/LogItem.qml \
-    qml/PlayerPanel.qml \
-    qml/MediaInfoPage.qml \
-    qml/AddMediaPage.qml \
-    qml/AlbumsPage.qml \
-    qml/TracksPage.qml \
-    qml/DoubleListItem.qml \
-    qml/ArtistPage.qml \
-    qml/PlaylistPage.qml \
-    qml/SavePlaylistPage.qml \
-    qml/AddUrlPage.qml \
-    qml/Tip.qml \
-    qml/SomafmPage.qml \
-    qml/FosdemYearsPage.qml \
-    qml/FosdemPage.qml \
-    qml/GpodderEpisodesPage.qml \
-    qml/SearchPageHeader.qml \
-    qml/SearchDialogHeader.qml \
-    qml/IcecastPage.qml \
-    qml/DirPage.qml \
-    qml/RecPage.qml \
-    qml/SimpleFavListItem.qml \
-    qml/SimpleListItem.qml \
-    qml/UpnpCDirDevicesPage.qml \
-    qml/UpnpCDirPage.qml \
-    qml/PlayQueuePage.qml \
-    qml/BcPage.qml \
-    qml/TuneinPage.qml \
-    qml/InteractionHintLabel_.qml \
-    qml/SoundcloudPage.qml
+    qml/*.qml \
+    rpm/*.spec \
+    *.desktop
 
 ################
 # translations #

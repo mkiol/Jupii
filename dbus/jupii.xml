@@ -1,6 +1,18 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
+    <interface name="org.mkiol.jupii.Playlist">
+        <!--
+            openUrl:
+            @arguments: List od file URLs (image, music, video) or
+                        HTTP(S) URLs to media content (e.g. yooutube, bandcamp).
+
+            Adds @arguments to play queue.
+        -->
+        <method name="openUrl">
+            <arg name="arguments" type="as" direction="in"/>
+        </method>
+    </interface>
     <interface name="org.jupii.Player">
         <!--
             canControl:

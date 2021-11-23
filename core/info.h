@@ -33,6 +33,7 @@ static constexpr const char* PAGE = "https://github.com/mkiol/Jupii";
 static constexpr const char* LICENSE = "Mozilla Public License 2.0";
 static constexpr const char* LICENSE_URL = "http://mozilla.org/MPL/2.0/";
 static constexpr const char* LICENSE_SPDX = "MPL-2.0";
+static constexpr const char* DBUS_SERVICE = "org.mkiol.jupii";
 }
 
 #endif // INFO_H

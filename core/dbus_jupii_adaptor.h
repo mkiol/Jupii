@@ -125,4 +125,28 @@ Q_SIGNALS: // SIGNALS
     void PlayingPropertyChanged(bool playing);
 };
 
+/*
+ * Adaptor class for interface org.mkiol.jupii.Playlist
+ */
+class PlaylistAdaptor: public QDBusAbstractAdaptor
+{
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.mkiol.jupii.Playlist")
+    Q_CLASSINFO("D-Bus Introspection", ""
+"  <interface name=\"org.mkiol.jupii.Playlist\">\n"
+"    <method name=\"openUrl\">\n"
+"      <arg direction=\"in\" type=\"as\" name=\"arguments\"/>\n"
+"    </method>\n"
+"  </interface>\n"
+        "")
+public:
+    PlaylistAdaptor(QObject *parent);
+    virtual ~PlaylistAdaptor();
+
+public: // PROPERTIES
+public Q_SLOTS: // METHODS
+    void openUrl(const QStringList &arguments);
+Q_SIGNALS: // SIGNALS
+};
+
 #endif

@@ -129,3 +129,25 @@ void PlayerAdaptor::togglePlay()
     QMetaObject::invokeMethod(parent(), "togglePlay");
 }
 
+/*
+ * Implementation of adaptor class PlaylistAdaptor
+ */
+
+PlaylistAdaptor::PlaylistAdaptor(QObject *parent)
+    : QDBusAbstractAdaptor(parent)
+{
+    // constructor
+    setAutoRelaySignals(true);
+}
+
+PlaylistAdaptor::~PlaylistAdaptor()
+{
+    // destructor
+}
+
+void PlaylistAdaptor::openUrl(const QStringList &arguments)
+{
+    // handle method call org.mkiol.jupii.Playlist.openUrl
+    QMetaObject::invokeMethod(parent(), "openUrl", Q_ARG(QStringList, arguments));
+}
+

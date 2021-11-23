@@ -15,6 +15,8 @@
 #include <QVariant>
 #include <QSettings>
 #include <QByteArray>
+#include <QStringList>
+#include <utility>
 
 #include "taskexecutor.h"
 
@@ -50,15 +52,22 @@ class Settings:
     Q_PROPERTY (int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY colorSchemeChanged)
     Q_PROPERTY (QString fsapiPin READ fsapiPin WRITE setFsapiPin NOTIFY fsapiPinChanged)
     Q_PROPERTY (bool globalYtdl READ globalYtdl WRITE setGlobalYtdl NOTIFY globalYtdlChanged)
+    Q_PROPERTY (OpenUrlModeType openUrlMode READ openUrlMode WRITE setOpenUrlMode NOTIFY openUrlModeChanged)
 
-public:   
-    enum Hint {
+public:
+    enum class HintType {
         Hint_DeviceSwipeLeft =      1 << 0,
         Hint_NotConnectedTip =      1 << 1,
         Hint_ExpandPlayerPanelTip = 1 << 2,
         Hint_MediaInfoSwipeLeft =   1 << 3
     };
-    Q_ENUM(Hint)
+    Q_ENUM(HintType)
+
+    enum class OpenUrlModeType {
+        OpenUrlMode_None = 0,
+        OpenUrlMode_All = 1
+    };
+    Q_ENUM(OpenUrlModeType)
 
 #ifdef SAILFISH
     static constexpr const char* HW_RELEASE_FILE = "/etc/hw-release";
@@ -66,64 +75,47 @@ public:
     static Settings* instance();
 
     void setPort(int value);
-    int getPort();
-
+    int getPort() const;
     void setForwardTime(int value);
-    int getForwardTime();
-
+    int getForwardTime() const;
     void setVolStep(int value);
-    int getVolStep();
-
+    int getVolStep() const;
     void setShowAllDevices(bool value);
-    bool getShowAllDevices();
-
+    bool getShowAllDevices() const;
     void setRec(bool value);
-    bool getRec();
-
+    bool getRec() const;
     void setScreenSupported(bool value);
-    bool getScreenSupported();
-
+    bool getScreenSupported() const;
     void setScreenFramerate(int value);
-    int getScreenFramerate();
-
+    int getScreenFramerate() const;
     void setScreenQuality(int value);
-    int getScreenQuality();
-
+    int getScreenQuality() const;
     void setScreenCropTo169(int value);
     int getScreenCropTo169();
-
     void setScreenAudio(bool value);
     bool getScreenAudio();
-
     void setScreenEncoder(const QString &value);
-    QString getScreenEncoder();
-
+    QString getScreenEncoder() const;
     void setUseHWVolume(bool value);
-    bool getUseHWVolume();
-
+    bool getUseHWVolume() const;
     void setLogToFile(bool value);
-    bool getLogToFile();
-
+    bool getLogToFile() const;
     void setGlobalYtdl(bool value);
     bool globalYtdl() const;
-
     void setAlbumQueryType(int value);
-    int getAlbumQueryType();
+    int getAlbumQueryType() const;
     void setRecQueryType(int value);
-    int getRecQueryType();
+    int getRecQueryType() const;
     void setCDirQueryType(int value);
-    int getCDirQueryType();
-
+    int getCDirQueryType() const;
     void setPlayMode(int value);
-    int getPlayMode();
-
+    int getPlayMode() const;
     void setFsapiPin(const QString &value);
     QString fsapiPin() const;
-
     void setFavDevices(const QHash<QString,QVariant> &devs);
-    QHash<QString, QVariant> getFavDevices();
+    QHash<QString, QVariant> getFavDevices() const;
     void setLastDevices(const QHash<QString,QVariant> &devs);
-    QHash<QString, QVariant> getLastDevices();
+    QHash<QString, QVariant> getLastDevices() const;
     Q_INVOKABLE void addFavDevice(const QString &id);
     void addLastDevice(const QString &id);
     void addLastDevices(const QStringList &ids);
@@ -132,53 +124,42 @@ public:
     Q_INVOKABLE void asyncRemoveFavDevice(const QString &id);
     static bool readDeviceXML(const QString& id, QByteArray& xml);
     static bool writeDeviceXML(const QString& id, QString &url);
-
-    QString getLastDir();
-    void setLastDir(const QString& value);
-
+    QString getLastDir() const;
+    void setLastDir(const QString &value);
     QString getRecDir();
-    void setRecDir(const QString& value);
-
+    void setRecDir(const QString &value);
     void setMicVolume(float value);
-    float getMicVolume();
-
+    float getMicVolume() const;
     void setAudioBoost(float value);
-    float getAudioBoost();
-
-    QStringList getLastPlaylist();
-    void setLastPlaylist(const QStringList& value);
-
+    float getAudioBoost() const;
+    QStringList getLastPlaylist() const;
+    void setLastPlaylist(const QStringList &value);
     QByteArray getKey();
     QByteArray resetKey();
-
-    QString getCacheDir();
-    QString getPlaylistDir();
-
-    QString getPrefNetInf();
-    void setPrefNetInf(const QString& value);
-
+    QString getCacheDir() const;
+    QString getPlaylistDir() const;
+    QString getPrefNetInf() const;
+    void setPrefNetInf(const QString &value);
     void setRemoteContentMode(int value);
-    int getRemoteContentMode();
-
+    int getRemoteContentMode() const;
     void setContentDirSupported(bool value);
-    bool getContentDirSupported();
-
+    bool getContentDirSupported() const;
     void setColorScheme(int value);
-    int getColorScheme();
-
+    int getColorScheme() const;
     QString mediaServerDevUuid();
-    QString prettyName();
-    Q_INVOKABLE bool isDebug();
+    QString prettyName() const;
+    Q_INVOKABLE bool isDebug() const;
     Q_INVOKABLE void reset();
-
-    Q_INVOKABLE bool hintEnabled(Settings::Hint hint);
-    Q_INVOKABLE void disableHint(Settings::Hint hint);
+    Q_INVOKABLE bool hintEnabled(HintType hint) const;
+    Q_INVOKABLE void disableHint(HintType hint);
     Q_INVOKABLE void resetHints();
+    OpenUrlModeType openUrlMode() const;
+    void setOpenUrlMode(OpenUrlModeType value);
 
 signals:
     void portChanged();
     void favDevicesChanged();
-    void favDeviceChanged(const QString& id);
+    void favDeviceChanged(const QString &id);
     void lastDirChanged();
     void recDirChanged();
     void lastPlaylistChanged();
@@ -208,17 +189,28 @@ signals:
     void audioBoostChanged();
     void fsapiPinChanged();
     void globalYtdlChanged();
+    void openUrlModeChanged();
 
 private:
+    inline static const QStringList urlMimesForOpenWith = {
+        "x-scheme-handler/http",
+        "x-scheme-handler/https"
+    };
+    inline static const QStringList fileMimesForOpenWith = {
+        "audio/*",
+        "video/*"
+    };
     QSettings settings;
     static Settings* inst;
-    QString hwName;
+    const QString hwName;
     int m_colorScheme = 0;
 
     explicit Settings(QObject* parent = nullptr);
 #ifdef SAILFISH
-    QString readHwInfo();
+    static QString readHwInfo();
 #endif
+    static std::pair<int,int> sysVer();
+    void initOpenUrlMode();
 };
 
 #endif // SETTINGS_H

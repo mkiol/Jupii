@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
     auto devmodel = DeviceModel::instance();
     auto notifications = Notifications::instance();
     auto conn = ConnectivityDetector::instance();
-    new DbusProxy();
+    DbusProxy dbus;
 
     services->avTransport->registerExternalConnections();
     cserver->registerExternalConnections();
@@ -197,6 +197,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("devmodel", devmodel);
     context->setContextProperty("notifications", notifications);
     context->setContextProperty("conn", conn);
+    context->setContextProperty("dbus", &dbus);
 
 #ifdef SAILFISH
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
