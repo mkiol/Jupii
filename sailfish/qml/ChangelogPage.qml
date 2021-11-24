@@ -29,6 +29,28 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.10.0")
+            }
+
+            LogItem {
+                title: "Fixes for bugs discovered in SFOS 4.3"
+                description: "Due to Tracker upgrade in the recent SFOS release, Album and Artist browser did not work correctly. " +
+                             "This issue is now resolved."
+            }
+
+            LogItem {
+                title: "Fixes for SoundCloud integration"
+                description: "SoundCould API has been changed and therefore adding music from SoundCloud browser was broken. " +
+                             "This issue is now resolved."
+            }
+
+            LogItem {
+                title: "Jupii as an option in 'Open link' dialog"
+                description: "Jupii can open links and it appears in 'Open link' dialog when you click on the link in other applications. " +
+                             "If you don't like this feature, you can disable it in the Settings menu."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.9.1")
             }
 
