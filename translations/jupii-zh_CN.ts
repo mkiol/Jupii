@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_CN" sourcelanguage="en_US" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="zh_CN" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -265,32 +267,34 @@
         <translation>影集</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="76"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="78"/>
         <source>Sort by: %1</source>
         <translation>分类方式: %1</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="77"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="79"/>
         <source>Album</source>
         <translation>影集</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="77"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="79"/>
         <source>Artist</source>
         <translation>艺人</translation>
     </message>
     <message numerus="yes">
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="86"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="88"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n 首曲目</numerusform></translation>
+        <translation>
+            <numerusform>%n 首曲目</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="94"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="96"/>
         <source>Select tracks</source>
         <translation>选取曲目</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="108"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="110"/>
         <source>No albums</source>
         <translation>暂无影集</translation>
     </message>
@@ -305,7 +309,9 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/ArtistPage.qml" line="76"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n 首曲目</numerusform></translation>
+        <translation>
+            <numerusform>%n 首曲目</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../sailfish/qml/ArtistPage.qml" line="84"/>
@@ -322,49 +328,49 @@
     <name>BcPage</name>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="47"/>
-        <location filename="../desktop/qml/BcPage.qml" line="91"/>
+        <location filename="../desktop/qml/BcPage.qml" line="89"/>
         <source>Error in getting data from bandcamp.com</source>
         <translation>从 bandcamp.com 获取数据出错</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="85"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="82"/>
         <location filename="../desktop/qml/BcPage.qml" line="51"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="85"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="82"/>
         <location filename="../desktop/qml/BcPage.qml" line="51"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="111"/>
-        <location filename="../desktop/qml/BcPage.qml" line="123"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="108"/>
+        <location filename="../desktop/qml/BcPage.qml" line="121"/>
         <source>Album</source>
         <translation>影集</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="112"/>
-        <location filename="../desktop/qml/BcPage.qml" line="124"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="109"/>
+        <location filename="../desktop/qml/BcPage.qml" line="122"/>
         <source>Artist</source>
         <translation>艺人</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="129"/>
-        <location filename="../desktop/qml/BcPage.qml" line="168"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="126"/>
+        <location filename="../desktop/qml/BcPage.qml" line="166"/>
         <source>Type the words to search</source>
         <translation>输入词汇以搜索</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="129"/>
-        <location filename="../desktop/qml/BcPage.qml" line="168"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="126"/>
+        <location filename="../desktop/qml/BcPage.qml" line="166"/>
         <source>No items</source>
         <translation>暂无项目</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="129"/>
-        <location filename="../desktop/qml/BcPage.qml" line="168"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="126"/>
+        <location filename="../desktop/qml/BcPage.qml" line="166"/>
         <source>No albums</source>
         <translation>暂无影集</translation>
     </message>
@@ -376,10 +382,12 @@
     <message numerus="yes">
         <location filename="../desktop/qml/BcPage.qml" line="40"/>
         <source>Add %n selected</source>
-        <translation><numerusform>添加 %n 所选</numerusform></translation>
+        <translation>
+            <numerusform>添加 %n 所选</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/BcPage.qml" line="143"/>
+        <location filename="../desktop/qml/BcPage.qml" line="141"/>
         <source>Toggle selection</source>
         <translation>选择按钮</translation>
     </message>
@@ -393,12 +401,13 @@
     </message>
     <message>
         <location filename="../sailfish/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="64"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="100"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="110"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="170"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="226"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="313"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="54"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="86"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="122"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="132"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="192"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="248"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="335"/>
         <source>Version %1</source>
         <translation>版本 %1</translation>
     </message>
@@ -411,17 +420,17 @@
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="../core/contentserver.cpp" line="3066"/>
+        <location filename="../core/contentserver.cpp" line="3072"/>
         <source>Microphone</source>
         <translation>麦克风</translation>
     </message>
     <message>
-        <location filename="../core/contentserver.cpp" line="3085"/>
+        <location filename="../core/contentserver.cpp" line="3091"/>
         <source>Audio capture</source>
         <translation>音频采集</translation>
     </message>
     <message>
-        <location filename="../core/contentserver.cpp" line="3104"/>
+        <location filename="../core/contentserver.cpp" line="3110"/>
         <source>Screen capture</source>
         <translation>屏幕捕获</translation>
     </message>
@@ -636,32 +645,32 @@
     <name>FosdemPage</name>
     <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="43"/>
-        <location filename="../desktop/qml/FosdemPage.qml" line="90"/>
+        <location filename="../desktop/qml/FosdemPage.qml" line="88"/>
         <source>Cannot download or parse FOSDEM events</source>
         <translation>无法下载或解析 FOSDEM 事件</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="74"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="72"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="46"/>
-        <location filename="../desktop/qml/FosdemPage.qml" line="140"/>
+        <location filename="../desktop/qml/FosdemPage.qml" line="138"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="82"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="80"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="52"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="83"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="81"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="52"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="110"/>
-        <location filename="../desktop/qml/FosdemPage.qml" line="137"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="108"/>
+        <location filename="../desktop/qml/FosdemPage.qml" line="135"/>
         <source>No items</source>
         <translation>暂无项目</translation>
     </message>
@@ -673,10 +682,12 @@
     <message numerus="yes">
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation><numerusform>添加 %n 所选</numerusform></translation>
+        <translation>
+            <numerusform>添加 %n 所选</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/FosdemPage.qml" line="114"/>
+        <location filename="../desktop/qml/FosdemPage.qml" line="112"/>
         <source>Toggle selection</source>
         <translation>选择按钮</translation>
     </message>
@@ -693,17 +704,17 @@
 <context>
     <name>GpodderEpisodesPage</name>
     <message>
-        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="72"/>
+        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="73"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="73"/>
+        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="74"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="113"/>
+        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="114"/>
         <source>No episodes</source>
         <translation>没有剧集</translation>
     </message>
@@ -712,32 +723,32 @@
     <name>IcecastPage</name>
     <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="44"/>
-        <location filename="../desktop/qml/IcecastPage.qml" line="90"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="88"/>
         <source>Cannot download or parse Icecast directory</source>
         <translation>无法下载或解析 icecast 目录 </translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="74"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="72"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="46"/>
-        <location filename="../desktop/qml/IcecastPage.qml" line="151"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="149"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="83"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="80"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="52"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="84"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="81"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="52"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="122"/>
-        <location filename="../desktop/qml/IcecastPage.qml" line="148"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="119"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="146"/>
         <source>No stations</source>
         <translation>暂无电台</translation>
     </message>
@@ -749,10 +760,12 @@
     <message numerus="yes">
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation><numerusform>添加 %n 所选</numerusform></translation>
+        <translation>
+            <numerusform>添加 %n 所选</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/IcecastPage.qml" line="125"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="123"/>
         <source>Toggle selection</source>
         <translation>选择按钮</translation>
     </message>
@@ -1212,7 +1225,7 @@
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../core/playlistmodel.cpp" line="681"/>
+        <location filename="../core/playlistmodel.cpp" line="697"/>
         <source>Playlist</source>
         <translation>播放列表</translation>
     </message>
@@ -1227,7 +1240,9 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/PlaylistPage.qml" line="79"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n 首曲目</numerusform></translation>
+        <translation>
+            <numerusform>%n 首曲目</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="87"/>
@@ -1263,54 +1278,56 @@
     <name>RecPage</name>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="70"/>
-        <location filename="../desktop/qml/RecPage.qml" line="61"/>
-        <location filename="../desktop/qml/RecPage.qml" line="73"/>
+        <location filename="../desktop/qml/RecPage.qml" line="60"/>
+        <location filename="../desktop/qml/RecPage.qml" line="72"/>
         <source>Delete selected</source>
         <translation>删除选取</translation>
     </message>
     <message numerus="yes">
         <location filename="../sailfish/qml/RecPage.qml" line="73"/>
         <source>Deleting %n item(s)</source>
-        <translation><numerusform>正在删除 %n 个项目</numerusform></translation>
+        <translation>
+            <numerusform>正在删除 %n 个项目</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="82"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="81"/>
         <location filename="../desktop/qml/RecPage.qml" line="46"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="83"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="82"/>
         <location filename="../desktop/qml/RecPage.qml" line="46"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="93"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="92"/>
         <source>Sort by: %1</source>
         <translation>分类方式: %1</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="94"/>
-        <location filename="../desktop/qml/RecPage.qml" line="105"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="93"/>
+        <location filename="../desktop/qml/RecPage.qml" line="104"/>
         <source>Recording time</source>
         <translation>录音时长</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="95"/>
-        <location filename="../desktop/qml/RecPage.qml" line="106"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="94"/>
+        <location filename="../desktop/qml/RecPage.qml" line="105"/>
         <source>Title</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="95"/>
-        <location filename="../desktop/qml/RecPage.qml" line="107"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="94"/>
+        <location filename="../desktop/qml/RecPage.qml" line="106"/>
         <source>Author</source>
         <translation>作者</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="132"/>
-        <location filename="../desktop/qml/RecPage.qml" line="172"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="131"/>
+        <location filename="../desktop/qml/RecPage.qml" line="171"/>
         <source>No recordings</source>
         <translation>暂无录音</translation>
     </message>
@@ -1327,20 +1344,24 @@
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation><numerusform>添加 %n 所选</numerusform></translation>
+        <translation>
+            <numerusform>添加 %n 所选</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
-        <location filename="../desktop/qml/RecPage.qml" line="75"/>
+        <location filename="../desktop/qml/RecPage.qml" line="74"/>
         <source>Delete %n recording(s)?</source>
-        <translation><numerusform>是否删除 %n 条录音？</numerusform></translation>
+        <translation>
+            <numerusform>是否删除 %n 条录音？</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/RecPage.qml" line="98"/>
+        <location filename="../desktop/qml/RecPage.qml" line="97"/>
         <source>Sort by:</source>
         <translation>分类方式:</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/RecPage.qml" line="149"/>
+        <location filename="../desktop/qml/RecPage.qml" line="148"/>
         <source>Toggle selection</source>
         <translation>选择按钮</translation>
     </message>
@@ -1386,213 +1407,239 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="40"/>
         <source>%n selected</source>
-        <translation><numerusform>已选择 %n </numerusform></translation>
+        <translation>
+            <numerusform>已选择 %n </numerusform>
+        </translation>
     </message>
 </context>
 <context>
     <name>SettingsPage</name>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="28"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="30"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="114"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="127"/>
         <source>Experiments</source>
         <translation>实验功能</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="60"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="62"/>
         <source>Volume control with hardware keys</source>
         <translation>用实体按键控制音量</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="75"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="77"/>
         <source>Volume level step</source>
         <translation>音量调节步长</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="118"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="131"/>
         <source>Screen capture</source>
         <translation>屏幕捕获</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="141"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="154"/>
         <source>Enables Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
         <translation>开启投屏功能。捕捉视频功能尚处于测试阶段，所以无法保证最佳质量。</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="148"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="161"/>
         <source>Force screen 16:9 aspect ratio</source>
         <translation>强制屏幕显示 16:9 比例</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="123"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="136"/>
         <source>Disabled</source>
         <translation>禁用</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="34"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="36"/>
         <source>Share play queue items via UPnP Media Server</source>
         <translation>通过 UPnP 媒体服务器分享播放队列项目</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="35"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="37"/>
         <source>When enabled, items in play queue are accessible for other UPnP devices in your local network.</source>
         <translation>启用后，本地网络中的其它 UPnP 设备可以访问播放队列中的项目。</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="90"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="92"/>
         <source>Microphone sensitivity</source>
         <translation>耳机灵敏度</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="124"/>
+        <source>None</source>
+        <translation type="obsolete">无</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="137"/>
         <source>Enabled</source>
         <translation>启用</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="125"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="138"/>
         <source>Enabled with audio</source>
         <translation>同时开启音频</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="151"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="164"/>
         <source>Don&apos;t force</source>
         <translation>请勿强制</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="152"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="165"/>
         <source>Scale</source>
         <translation>比例</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="153"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="166"/>
         <source>Crop</source>
         <translation>剪裁</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="170"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="183"/>
         <source>Screen capture quality</source>
         <translation>屏幕捕获质量</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="326"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="329"/>
         <source>Screen capture encoder</source>
         <translation>屏幕捕获编码器</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="338"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="341"/>
         <source>Auto</source>
         <translation>自动</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="181"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="194"/>
         <source>Stream recorder</source>
         <translation>流媒体录制机</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="207"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="122"/>
+        <source>Show Jupii as an option in &apos;Open link&apos; dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="220"/>
         <source>Directory for recordings</source>
         <translation>录音文件目录</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="220"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="233"/>
         <source>Change</source>
         <translation>修改</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="229"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="242"/>
         <source>Set default</source>
         <translation>设为默认</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="241"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="420"/>
         <source>Reset tips and hints</source>
         <translation>重置技巧与提示</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="243"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="422"/>
         <source>Resetting tips and hints</source>
         <translation>重置技巧与提示</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="257"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="260"/>
         <source>Preferred network interface</source>
         <translation>首选网络接口</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="272"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="115"/>
+        <source>Open link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="118"/>
+        <source>Don&apos;t show</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="119"/>
+        <source>Show</source>
+        <translation type="unfinished">显示</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="275"/>
         <source>Stream relaying</source>
         <translation>流媒体中继</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="273"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="276"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation>​互联网流媒体通过 %1 中继到 UPnP 设备。推荐的你使用“总是”选项，因为它提供了最好的兼容性。当中继被禁用时(“绝不”选项)， Icecast 标题及流媒体录制器不可用。</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="295"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="298"/>
         <source>Always</source>
         <translation>总是</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="296"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="299"/>
         <source>Only Icecast</source>
         <translation>仅 Icecast</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="297"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="300"/>
         <source>Never</source>
         <translation>绝不</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="313"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="316"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>​所有类型的 UPnP 设备都会被侦测和显示，包括不受支持的设备，如家用路由器。对于不受支持的设备，仅有基本的描述信息可用。该选项可能对检查本地网络中的 UPnP 设备很有用。</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="395"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="398"/>
         <source>Enter Frontier Silicon PIN</source>
         <translation>输入 Frontier Silicon PIN</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="419"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="432"/>
         <source>Resetting settings</source>
         <translation>正在重置设置</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="312"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="315"/>
         <source>All devices visible</source>
         <translation>所有设备可见</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="182"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="195"/>
         <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
         <translation>从链接中加载录音。 如果超链接项为 Icecast 串流，则会录制串流中的单独曲目。 如果要录音，请使用底栏上的 &quot;录音 &quot;按钮。 当 &quot;录音 &quot;按钮在当前曲目播完前被激活时，整首曲目都将被保存到一个文件中。</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="405"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="408"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>用于排除故障。日志数据保存于 %1 文件。</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="404"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="407"/>
         <source>Enable logging</source>
         <translation>开启日志记录</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="417"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="430"/>
         <source>Reset settings</source>
         <translation>重置设置</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="253"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="256"/>
         <source>Advanced</source>
         <translation>高级</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="392"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="395"/>
         <source>Frontier Silicon PIN</source>
         <translation>Frontier Silicon PIN</translation>
     </message>
@@ -1601,32 +1648,32 @@
     <name>SomafmPage</name>
     <message>
         <location filename="../sailfish/qml/SomafmPage.qml" line="43"/>
-        <location filename="../desktop/qml/SomafmPage.qml" line="89"/>
+        <location filename="../desktop/qml/SomafmPage.qml" line="87"/>
         <source>Cannot download or parse SomaFM channels</source>
         <translation>无法下载或解析 SomaFM 频道</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="73"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="72"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="45"/>
-        <location filename="../desktop/qml/SomafmPage.qml" line="139"/>
+        <location filename="../desktop/qml/SomafmPage.qml" line="137"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="82"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="79"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="51"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="83"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="80"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="51"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="111"/>
-        <location filename="../desktop/qml/SomafmPage.qml" line="136"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="108"/>
+        <location filename="../desktop/qml/SomafmPage.qml" line="134"/>
         <source>No channels</source>
         <translation>暂无频道</translation>
     </message>
@@ -1638,10 +1685,12 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SomafmPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation><numerusform>添加 %n 所选</numerusform></translation>
+        <translation>
+            <numerusform>添加 %n 所选</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SomafmPage.qml" line="113"/>
+        <location filename="../desktop/qml/SomafmPage.qml" line="111"/>
         <source>Toggle selection</source>
         <translation>选择按钮</translation>
     </message>
@@ -1651,7 +1700,9 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
         <source>Add %n selected</source>
-        <translation><numerusform>添加 %n 个所选</numerusform></translation>
+        <translation>
+            <numerusform>添加 %n 个所选</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
@@ -1659,49 +1710,49 @@
         <translation>添加所选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="85"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="81"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="85"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="81"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="47"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="91"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="89"/>
         <source>Error in getting data from soundcloud.com</source>
         <translation>从 soundcloud.com 获取数据错误</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="111"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="123"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="107"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="121"/>
         <source>Album</source>
         <translation>影集</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="112"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="124"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="108"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="122"/>
         <source>Artist</source>
         <translation>艺人</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="143"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="141"/>
         <source>Toggle selection</source>
         <translation>选择按钮</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="129"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="168"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="125"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="166"/>
         <source>Type the words to search</source>
         <translation>输入词汇以进行搜索</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="129"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="168"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="125"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="166"/>
         <source>No items</source>
         <translation>暂无项目</translation>
     </message>
@@ -1709,17 +1760,17 @@
 <context>
     <name>TrackModel</name>
     <message>
-        <location filename="../core/trackmodel.cpp" line="154"/>
+        <location filename="../core/trackmodel.cpp" line="158"/>
         <source>Microphone</source>
         <translation>麦克风</translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="156"/>
+        <location filename="../core/trackmodel.cpp" line="160"/>
         <source>Audio capture</source>
         <translation>音频采集</translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="158"/>
+        <location filename="../core/trackmodel.cpp" line="162"/>
         <source>Screen capture</source>
         <translation>屏幕捕获</translation>
     </message>
@@ -1746,31 +1797,31 @@
     <name>TuneinPage</name>
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="43"/>
-        <location filename="../desktop/qml/TuneinPage.qml" line="83"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="81"/>
         <source>Cannot download or parse TuneIn stations</source>
         <translation>无法下载或解析 TuneIn 电台</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TuneinPage.qml" line="77"/>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="76"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="45"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TuneinPage.qml" line="78"/>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="77"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="45"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TuneinPage.qml" line="107"/>
-        <location filename="../desktop/qml/TuneinPage.qml" line="131"/>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="106"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="129"/>
         <source>No stations</source>
         <translation>暂无电台</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TuneinPage.qml" line="107"/>
-        <location filename="../desktop/qml/TuneinPage.qml" line="131"/>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="106"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="129"/>
         <source>Type the words to search</source>
         <translation>输入词汇以搜索</translation>
     </message>
@@ -1782,10 +1833,12 @@
     <message numerus="yes">
         <location filename="../desktop/qml/TuneinPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation><numerusform>添加 %n 所选</numerusform></translation>
+        <translation>
+            <numerusform>添加 %n 所选</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/TuneinPage.qml" line="107"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="105"/>
         <source>Toggle selection</source>
         <translation>选择按钮</translation>
     </message>
@@ -1861,43 +1914,43 @@
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="82"/>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="87"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="83"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="86"/>
         <source>Track number</source>
         <translation>曲目编号</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="84"/>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="84"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="85"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="83"/>
         <source>Title</source>
         <translation>标题</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="154"/>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="185"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="155"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="184"/>
         <source>No items</source>
         <translation>暂无项目</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="80"/>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="85"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="81"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="84"/>
         <source>Album</source>
         <translation>影辑</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="83"/>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="88"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="84"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="87"/>
         <source>Date</source>
         <translation>日期</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="81"/>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="86"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="82"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="85"/>
         <source>Artist</source>
         <translation>艺人</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="86"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="87"/>
         <source>Sort by: %1</source>
         <translation>分类方式: %1</translation>
     </message>
@@ -1914,15 +1967,17 @@
     <message numerus="yes">
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="33"/>
         <source>Add %n selected</source>
-        <translation><numerusform>添加 %n 所选</numerusform></translation>
+        <translation>
+            <numerusform>添加 %n 所选</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="77"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="76"/>
         <source>Sort by:</source>
         <translation>分类方式:</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="161"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="160"/>
         <source>Toggle selection</source>
         <translation>选择按钮</translation>
     </message>
@@ -1948,102 +2003,96 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="63"/>
-        <location filename="../desktop/qml/main.qml" line="187"/>
+        <location filename="../sailfish/qml/main.qml" line="62"/>
+        <location filename="../desktop/qml/main.qml" line="186"/>
         <source>Connected to %1</source>
         <translation>连接到 %1</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="71"/>
-        <location filename="../desktop/qml/main.qml" line="196"/>
+        <location filename="../sailfish/qml/main.qml" line="70"/>
+        <location filename="../desktop/qml/main.qml" line="195"/>
         <source>Cannot connect to device</source>
         <translation>无法连接到设备</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="75"/>
-        <location filename="../desktop/qml/main.qml" line="200"/>
+        <location filename="../sailfish/qml/main.qml" line="74"/>
+        <location filename="../desktop/qml/main.qml" line="199"/>
         <source>Device responded with an error</source>
         <translation>设备报错</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="79"/>
-        <location filename="../desktop/qml/main.qml" line="204"/>
+        <location filename="../sailfish/qml/main.qml" line="78"/>
+        <location filename="../desktop/qml/main.qml" line="203"/>
         <source>Cannot play the file</source>
         <translation>无法播放文件</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="92"/>
-        <location filename="../desktop/qml/main.qml" line="217"/>
+        <location filename="../sailfish/qml/main.qml" line="91"/>
+        <location filename="../desktop/qml/main.qml" line="216"/>
         <source>Track &quot;%1&quot; saved</source>
         <translation>已保存曲目 &quot;%1&quot; </translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="101"/>
-        <location filename="../desktop/qml/main.qml" line="227"/>
+        <location filename="../sailfish/qml/main.qml" line="100"/>
+        <location filename="../desktop/qml/main.qml" line="226"/>
         <source>Cannot connect to a local network</source>
         <translation>无法连接到一个本地网络</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="104"/>
-        <location filename="../desktop/qml/main.qml" line="230"/>
+        <location filename="../sailfish/qml/main.qml" line="103"/>
+        <location filename="../desktop/qml/main.qml" line="229"/>
         <source>An internal error occurred</source>
         <translation>发生了一个内部错误</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="121"/>
-        <location filename="../desktop/qml/main.qml" line="247"/>
         <source>Cannot download youtube-dl</source>
-        <translation>无法下载 youtube-dl</translation>
+        <translation type="vanished">无法下载 youtube-dl</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="124"/>
-        <location filename="../desktop/qml/main.qml" line="250"/>
         <source>Cannot update youtube-dl</source>
-        <translation>无法更新 youtube-dl</translation>
+        <translation type="vanished">无法更新 youtube-dl</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/main.qml" line="127"/>
-        <location filename="../desktop/qml/main.qml" line="253"/>
         <source>Cannot find URL with youtube-dl</source>
-        <translation>无法利用 youtube-dl 找到超链接</translation>
+        <translation type="vanished">无法利用 youtube-dl 找到超链接</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="37"/>
+        <location filename="../desktop/qml/main.qml" line="36"/>
         <source>Play queue</source>
         <translation>播放队列</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="45"/>
+        <location filename="../desktop/qml/main.qml" line="44"/>
         <source>Devices (connected to %1)</source>
         <translation>已连接到 %1 的设备</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="46"/>
+        <location filename="../desktop/qml/main.qml" line="45"/>
         <source>Devices</source>
         <translation>设备</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="55"/>
+        <location filename="../desktop/qml/main.qml" line="54"/>
         <source>Add items</source>
         <translation>添加项目</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="65"/>
+        <location filename="../desktop/qml/main.qml" line="64"/>
         <source>Track info</source>
         <translation>曲目信息</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="74"/>
+        <location filename="../desktop/qml/main.qml" line="73"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="82"/>
+        <location filename="../desktop/qml/main.qml" line="81"/>
         <source>About %1</source>
         <translation>关于 %1</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="89"/>
+        <location filename="../desktop/qml/main.qml" line="88"/>
         <source>Quit</source>
         <translation>退出</translation>
     </message>

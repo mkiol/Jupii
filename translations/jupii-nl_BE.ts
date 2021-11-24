@@ -1402,6 +1402,22 @@ Trekt omlaag voor me ’t lokaal netwerk te verbinden.</translation>
         <source>Enter Frontier Silicon PIN</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Open link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Don&apos;t show</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show</source>
+        <translation type="unfinished">Tonen</translation>
+    </message>
+    <message>
+        <source>Show Jupii as an option in &apos;Open link&apos; dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SomafmPage</name>
@@ -1746,18 +1762,6 @@ Trekt omlaag voor meer apparaten in uw netwerk te vinden.</translation>
     </message>
     <message>
         <source>Cannot connect to a local network</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot download youtube-dl</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot update youtube-dl</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot find URL with youtube-dl</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
