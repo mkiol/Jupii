@@ -41,12 +41,10 @@ bool XC::possible(const QString &deviceType)
 
 QUrl XC::makeApiCallUrl(const QString& path, const std::vector<param>& params) const
 {
-    if (params.empty())
-        return QUrl(urlBase + path);
+    if (params.empty()) return QUrl(urlBase + path);
 
     QUrlQuery query;
-    for (const auto& [key, value] : params)
-        query.addQueryItem(key, value);
+    for (const auto& [key, value] : params) query.addQueryItem(key, value);
 
     QUrl url(urlBase + path);
     url.setQuery(query);
@@ -56,7 +54,7 @@ QUrl XC::makeApiCallUrl(const QString& path, const std::vector<param>& params) c
 
 void XC::apiCall(XC::Action action, const QString& path, const std::vector<param>& params, const QVariant& userData, int timeout)
 {
-    auto url = makeApiCallUrl(path, params);
+    const auto url = makeApiCallUrl(path, params);
     qDebug() << "XC API call:" << url.toString();
 
     QNetworkRequest request(url);
@@ -73,8 +71,8 @@ void XC::apiCall(XC::Action action, const QString& path, const std::vector<param
 
 void XC::handleActionFinished()
 {
-    auto reply = qobject_cast<QNetworkReply*>(sender());
-    auto action = reply->property("action").value<XC::Action>();
+    const auto reply = qobject_cast<QNetworkReply*>(sender());
+    const auto action = reply->property("action").value<XC::Action>();
 
     qDebug() << "XC API call finished:" << reply->url().toString();
 
@@ -113,7 +111,6 @@ void XC::handleActionFinished()
     }
 
     reply->deleteLater();
-    reply = nullptr;
 }
 
 XC::Status XC::handleActionGetStatus(const QByteArray&, const QVariant&)
@@ -144,12 +141,14 @@ void XC::handleActionError(XC::Action, QNetworkReply::NetworkError, const QVaria
 std::shared_ptr<XC> XC::make_shared(const QString& deviceId, const QString &address, const QString& desc)
 {
     if (std::shared_ptr<XC> yxc = std::make_shared<YamahaXC>(deviceId, desc);
-            yxc->valid())
+        yxc->valid()) {
         return yxc;
+    }
 
     if (std::shared_ptr<XC> fsapi = std::make_shared<FrontierSiliconXC>(deviceId, address);
-            fsapi->valid())
+        fsapi->valid()) {
         return fsapi;
+    }
 
     return {};
 }
