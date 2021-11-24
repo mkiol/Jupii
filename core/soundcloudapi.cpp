@@ -23,16 +23,15 @@
 QString SoundcloudApi::clientId;
 
 SoundcloudApi::SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam, QObject *parent) :
-    QObject(parent), nam(nam),
-    locale(QLocale::system().bcp47Name().split('-').first())
+    QObject{parent}, nam{nam},
+    locale{QLocale::system().bcp47Name().split('-').first()}
 {
     discoverClientId();
 }
 
 void SoundcloudApi::discoverClientId()
 {
-    if (!clientId.isEmpty())
-        return;
+    if (!clientId.isEmpty()) return;
 
     auto output = downloadHtmlData(QUrl{"https://soundcloud.com"});
     if (!output) {
@@ -40,8 +39,7 @@ void SoundcloudApi::discoverClientId()
         return;
     }
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return;
+    if (QThread::currentThread()->isInterruptionRequested()) return;
 
     auto scripts = gumbo::search_for_tag(output->root, GUMBO_TAG_SCRIPT);
     for (auto script : scripts) {
@@ -56,8 +54,7 @@ void SoundcloudApi::discoverClientId()
                 }
             }
         }
-        if (QThread::currentThread()->isInterruptionRequested())
-            return;
+        if (QThread::currentThread()->isInterruptionRequested()) return;
     }
 
     qWarning() << "Cannot find clientId";
@@ -65,8 +62,7 @@ void SoundcloudApi::discoverClientId()
 
 bool SoundcloudApi::validUrl(const QUrl &url)
 {
-    auto str = url.host();
-    if (str.contains("soundcloud.com", Qt::CaseInsensitive)) {
+    if (url.host().contains("soundcloud.com", Qt::CaseInsensitive)) {
         return true;
     }
     return false;
@@ -76,7 +72,7 @@ QJsonDocument SoundcloudApi::parseJsonData(const QByteArray &data)
 {
     QJsonParseError err;
 
-    auto json = QJsonDocument::fromJson(data, &err);
+    const auto json = QJsonDocument::fromJson(data, &err);
 
     if (err.error != QJsonParseError::NoError) {
         qWarning() << "Error parsing json:" << err.errorString();
@@ -110,46 +106,40 @@ QJsonDocument SoundcloudApi::downloadJsonData(const QUrl &url)
 SoundcloudApi::Type SoundcloudApi::textToType(const QString &text)
 {
     if (text.size() > 0) {
-        if (text.at(0) == 'u')
-            return SoundcloudApi::Type::Type_User;
-        if (text.at(0) == 't')
-            return SoundcloudApi::Type::Type_Track;
-        if (text.at(0) == 'p')
-            return SoundcloudApi::Type::Type_Playlist;
+        if (text.at(0) == 'u') return SoundcloudApi::Type::User;
+        if (text.at(0) == 't') return SoundcloudApi::Type::Track;
+        if (text.at(0) == 'p') return SoundcloudApi::Type::Playlist;
     }
 
-    return SoundcloudApi::Type::Type_Unknown;
+    return SoundcloudApi::Type::Unknown;
 }
 
 QString SoundcloudApi::extractData(const QString &text)
 {
-    QRegExp rx("e\\.data\\.forEach\\(function\\(e\\)\\{n\\(e\\)\\}\\)\\}catch\\(e\\)\\{\\}\\}\\)\\}\\,(\\[.*\\])\\);$", Qt::CaseSensitive);
-    if (rx.indexIn(text) != -1)
-        return rx.cap(1);
+    //QRegExp rx("e\\.data\\.forEach\\(function\\(e\\)\\{n\\(e\\)\\}\\)\\}catch\\(e\\)\\{\\}\\}\\)\\}\\,(\\[.*\\])\\);$", Qt::CaseSensitive);
+    QRegExp rx("window\\.__sc_hydration\\s=\\s(.*);$", Qt::CaseSensitive);
+    if (rx.indexIn(text) != -1) return rx.cap(1);
     return {};
 }
 
 QString SoundcloudApi::extractClientId(const QString &text)
 {
     QRegExp rx(",client_id:\"([\\0-9a-zA-Z]+)\",", Qt::CaseSensitive);
-    if (rx.indexIn(text) != -1)
-        return rx.cap(1);
+    if (rx.indexIn(text) != -1) return rx.cap(1);
     return {};
 }
 
 QString SoundcloudApi::extractUserId(const QString &text)
 {
     QRegExp rx("soundcloud://users:([0-9]+)$", Qt::CaseSensitive);
-    if (rx.indexIn(text) != -1)
-        return rx.cap(1);
+    if (rx.indexIn(text) != -1) return rx.cap(1);
     return {};
 }
 
 QString SoundcloudApi::extractPlaylistId(const QString &text)
 {
     QRegExp rx("soundcloud://playlists:([0-9]+)$", Qt::CaseSensitive);
-    if (rx.indexIn(text) != -1)
-        return rx.cap(1);
+    if (rx.indexIn(text) != -1) return rx.cap(1);
     return {};
 }
 
@@ -181,22 +171,21 @@ QJsonArray SoundcloudApi::extractItems(const QUrl &url)
         return items;
     }
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return items;
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     QJsonArray chunks;
     auto scripts = gumbo::search_for_tag(output->root, GUMBO_TAG_SCRIPT);
     for (auto script : scripts) {
         if (auto data = extractData(gumbo::node_text(script)); !data.isEmpty()) {
-            auto json = parseJsonData(data.toUtf8());
-            if (json.isNull() || !json.isArray())
+            const auto json = parseJsonData(data.toUtf8());
+            if (json.isNull() || !json.isArray()) {
                 qWarning() << "Cannot parse JSON data";
-            else
+            } else {
                 chunks = json.array();
+            }
             break;
         }
-        if (QThread::currentThread()->isInterruptionRequested())
-            return items;
+        if (QThread::currentThread()->isInterruptionRequested()) return items;
     }
 
     if (chunks.isEmpty()) {
@@ -205,15 +194,8 @@ QJsonArray SoundcloudApi::extractItems(const QUrl &url)
     }
 
     for (int i = 0; i < chunks.size(); ++i) {
-        auto res = chunks.at(i).toObject().value("data").toArray();
-        if (res.isEmpty())
-            continue;
-
-        for (int i = 0; i < res.size(); ++i) {
-            auto elm = res.at(i).toObject();
-            if (!elm.value("kind").toString().isEmpty())
-                items.append(elm);
-        }
+        const auto elm = chunks.at(i).toObject().value("data").toObject();
+        if (!elm.value("kind").toString().isEmpty()) items.append(elm);
     }
 
     return items;
@@ -223,25 +205,23 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url)
 {
     Track track;
 
-    auto items = extractItems(url);
+    const auto items = extractItems(url);
     if (items.isEmpty()) {
         qWarning() << "No items";
         return track;
     }
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return track;
+    if (QThread::currentThread()->isInterruptionRequested()) return track;
 
     for (int i = 0; i < items.size(); ++i) {
         auto elm = items.at(i).toObject();
         auto type = textToType(elm.value("kind").toString());
-        if (type != Type_Track) {
+        if (type != Type::Track) {
             continue;
         }
 
-        auto media = elm.value("media").toObject().value("transcodings").toArray();
-        if (media.isEmpty())
-            return track;
+        const auto media = elm.value("media").toObject().value("transcodings").toArray();
+        if (media.isEmpty()) return track;
 
         for (int i = 0; i < media.size(); ++i) {
             auto m = media.at(i).toObject();
@@ -268,8 +248,7 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url)
             track.streamUrl = QUrl{json.object().value("url").toString()};
             track.duration = int(m.value("duration").toDouble() / 1000);
 
-            if (QThread::currentThread()->isInterruptionRequested())
-                return track;
+            if (QThread::currentThread()->isInterruptionRequested()) return track;
 
             break;
         }
@@ -304,8 +283,7 @@ bool SoundcloudApi::mediaOk(const QJsonArray &media)
             continue;
         }
 
-        if (m.value("url").toString().isEmpty())
-            continue;
+        if (m.value("url").toString().isEmpty()) continue;
 
         return true;
     }
@@ -323,8 +301,7 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url)
         return playlist;
     }
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return playlist;
+    if (QThread::currentThread()->isInterruptionRequested()) return playlist;
 
     QString playlistId;
 
@@ -332,8 +309,7 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url)
     for (auto meta : metas) {
         if (auto content = gumbo::attr_data(meta, "content"); !content.isEmpty()) {
             playlistId = extractPlaylistId(content);
-            if (!playlistId.isEmpty())
-                break;
+            if (!playlistId.isEmpty()) break;
         }
     }
 
@@ -348,8 +324,7 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url)
         return playlist;
     }
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return playlist;
+    if (QThread::currentThread()->isInterruptionRequested()) return playlist;
 
     auto pobj = json.object();
     playlist.title = pobj.value("title").toString();
@@ -365,14 +340,11 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url)
     for (int i = 0; i < tracks.size(); ++i) {
         auto elm = tracks.at(i).toObject();
         auto type = textToType(elm.value("kind").toString());
-        if (type != Type_Track)
-            continue;
-        if (!mediaOk(elm.value("media").toObject().value("transcodings").toArray()))
-            continue;
+        if (type != Type::Track) continue;
+        if (!mediaOk(elm.value("media").toObject().value("transcodings").toArray())) continue;
 
         QUrl webUrl{elm.value("permalink_url").toString()};
-        if (webUrl.isEmpty())
-            continue;
+        if (webUrl.isEmpty()) continue;
 
         PlaylistTrack track;
         track.imageUrl = QUrl{elm.value("artwork_url").toString()};
@@ -393,8 +365,7 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url)
 
 void SoundcloudApi::user(const QUrl &url, User &user, int count)
 {
-    if (count == 5)
-        return;
+    if (count == 5) return;
 
     auto json = downloadJsonData(url);
     if (json.isNull() || !json.isObject()) {
@@ -414,12 +385,11 @@ void SoundcloudApi::user(const QUrl &url, User &user, int count)
     for (int i = 0; i < items.size(); ++i) {
         auto elm = items.at(i).toObject();
         auto type = textToType(elm.value("type").toString());
-        if (type == Type_Playlist) {
+        if (type == Type::Playlist) {
             elm = elm.value("playlist").toObject();
 
             QUrl webUrl{elm.value("permalink_url").toString()};
-            if (webUrl.isEmpty())
-                continue;
+            if (webUrl.isEmpty()) continue;
 
             UserPlaylist playlist;
             playlist.imageUrl = QUrl{elm.value("artwork_url").toString()};
@@ -428,37 +398,32 @@ void SoundcloudApi::user(const QUrl &url, User &user, int count)
             playlist.artist = elm.value("user").toObject().value("username").toString();
 
             user.playlists.push_back(std::move(playlist));
-        } else if (type == Type_Track) {
+        } else if (type == Type::Track) {
             elm = elm.value("track").toObject();
 
-            if (!mediaOk(elm.value("media").toObject().value("transcodings").toArray()))
-                continue;
+            if (!mediaOk(elm.value("media").toObject().value("transcodings").toArray())) continue;
 
             QUrl webUrl{elm.value("permalink_url").toString()};
-            if (webUrl.isEmpty())
-                continue;
+            if (webUrl.isEmpty()) continue;
 
             UserTrack track;
             track.imageUrl = QUrl{elm.value("artwork_url").toString()};
             track.title = elm.value("title").toString();
             track.webUrl = std::move(webUrl);
             track.artist = elm.value("publisher_metadata").toObject().value("artist").toString();
-            if (track.artist.isEmpty())
-                track.artist = elm.value("user").toObject().value("username").toString();
+            if (track.artist.isEmpty()) track.artist = elm.value("user").toObject().value("username").toString();
 
             user.tracks.push_back(std::move(track));
         }
     }
 
     QUrl nextUrl{json.object().value("next_href").toString()};
-    if (nextUrl.isEmpty())
-        return;
+    if (nextUrl.isEmpty()) return;
 
-    json = QJsonDocument{};
-    items = QJsonArray{};
+    json = {};
+    items = {};
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return;
+    if (QThread::currentThread()->isInterruptionRequested()) return;
 
     addClientId(nextUrl);
     this->user(nextUrl, user, count + 1);
@@ -474,8 +439,7 @@ SoundcloudApi::User SoundcloudApi::user(const QUrl &url)
         return user;
     }
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return user;
+    if (QThread::currentThread()->isInterruptionRequested()) return user;
 
     QString userId;
 
@@ -483,8 +447,7 @@ SoundcloudApi::User SoundcloudApi::user(const QUrl &url)
     for (auto meta : metas) {
         if (auto content = gumbo::attr_data(meta, "content"); !content.isEmpty()) {
             userId = extractUserId(content);
-            if (!userId.isEmpty())
-                break;
+            if (!userId.isEmpty()) break;
         }
     }
 
@@ -594,36 +557,33 @@ std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::search(const QString
         return items;
     }
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return items;
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     auto res = json.object().value("collection").toArray();
 
     for (int i = 0; i < res.size(); ++i) {
         auto elm = res.at(i).toObject();
         auto type = textToType(elm.value("kind").toString());
-        if (type == Type_Unknown) {
+        if (type == Type::Unknown) {
             continue;
         }
 
         QUrl webUrl{elm.value("permalink_url").toString()};
-        if (webUrl.isEmpty())
-            continue;
+        if (webUrl.isEmpty()) continue;
 
         SearchResultItem item;
         item.type = type;
         item.webUrl = std::move(webUrl);
 
-        if (type == Type_Track) {
+        if (type == Type::Track) {
             item.imageUrl = QUrl{elm.value("artwork_url").toString()};
             item.title = elm.value("title").toString();
             item.artist = elm.value("publisher_metadata").toObject().value("artist").toString();
-            if (item.artist.isEmpty())
-                item.artist = elm.value("user").toObject().value("username").toString();
-        } else if (type == Type_User) {
+            if (item.artist.isEmpty()) item.artist = elm.value("user").toObject().value("username").toString();
+        } else if (type == Type::User) {
             item.imageUrl = QUrl{elm.value("avatar_url").toString()};
             item.artist = elm.value("username").toString();
-        } else if (type == Type_Playlist) {
+        } else if (type == Type::Playlist) {
             item.imageUrl = QUrl{elm.value("avatar_url").toString()};
             item.album = elm.value("title").toString();
             item.artist = elm.value("user").toObject().value("username").toString();

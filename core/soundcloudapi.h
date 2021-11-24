@@ -24,15 +24,15 @@ class SoundcloudApi : public QObject
 {
     Q_OBJECT
 public:
-    enum Type {
-        Type_Unknown = 0,
-        Type_User,
-        Type_Playlist,
-        Type_Track,
+    enum class Type {
+        Unknown = 0,
+        User,
+        Playlist,
+        Track,
     };
 
     struct SearchResultItem {
-        Type type = Type_Unknown;
+        Type type = Type::Unknown;
         QString title;
         QString artist; // or username
         QString album;
