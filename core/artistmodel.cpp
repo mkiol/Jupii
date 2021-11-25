@@ -15,7 +15,7 @@
 #include "trackercursor.h"
 
 const QString ArtistModel::artistsQueryTemplate {
-    "SELECT ?artist nmm:artistName(?artist) AS ?artistName "
+    "SELECT ?artist nmm:artistName(?artist) "
     "COUNT(?song) "
     "SUM(?length) "
     "WHERE { "
@@ -23,7 +23,7 @@ const QString ArtistModel::artistsQueryTemplate {
     "?song a nmm:MusicPiece; "
     "nfo:duration ?length; "
     "%2 ?artist . } "
-    "GROUP BY ?artist ORDER BY ?artistName LIMIT 1000"};
+    "GROUP BY ?artist ORDER BY nmm:artistName(?artist) LIMIT 1000"};
 
 ArtistModel::ArtistModel(QObject *parent) :
     SelectableItemModel(new ArtistItem, parent)

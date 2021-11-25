@@ -22,34 +22,33 @@ const QString TrackModel::queryByAlbumTemplate {
     "nmm:artistName(%3(?song)) "
     "nie:title(nmm:musicAlbum(?song)) "
     "nie:url(?url) "
-    "nmm:trackNumber(?song) AS ?trackNumber "
+    "nmm:trackNumber(?song) "
     "nfo:duration(?song) "
     "nie:mimeType(?song) "
     "WHERE { "
     "?song a nmm:MusicPiece; "
-    "nie:isStoredAs ?url; "
-    "nmm:musicAlbum \"%1\" . "
-    "FILTER regex(nie:title(?song), \"%2\", \"i\") "
+    "nie:isStoredAs ?url . "
+    "FILTER (regex(nie:title(?song), \"%2\", \"i\") && (nmm:musicAlbum(?song) in ( %1 ))) "
     "} "
-    "ORDER BY ?trackNumber "
+    "ORDER BY nmm:trackNumber(?song) "
     "LIMIT 500"};
 
 const QString TrackModel::queryByArtistTemplate {
     "SELECT ?song "
     "nie:title(?song) "
     "nmm:artistName(%3(?song)) "
-    "nie:title(nmm:musicAlbum(?song)) AS ?albumTitle "
+    "nie:title(nmm:musicAlbum(?song)) "
     "nie:url(?url) "
-    "nmm:trackNumber(?song) AS ?trackNumber "
+    "nmm:trackNumber(?song) "
     "nfo:duration(?song) "
     "nie:mimeType(?song) "
     "WHERE { "
     "?song a nmm:MusicPiece; "
     "nie:isStoredAs ?url; "
-    "%4 \"%1\" . "
+    "%3 \"%1\" . "
     "FILTER regex(nie:title(?song), \"%2\", \"i\") "
     "} "
-    "ORDER BY ?albumTitle ?trackNumber LIMIT 500"};
+    "ORDER BY nie:title(nmm:musicAlbum(?song)) nmm:trackNumber(?song) LIMIT 500"};
 
 const QString TrackModel::queryByPlaylistTemplate {
     "SELECT nfo:hasMediaFileListEntry(?list) nie:url(?list) "
@@ -89,7 +88,7 @@ QList<ListItem*> TrackModel::makeItems()
         query = queryByAlbumTemplate.arg(m_albumId, getFilter(), aattr);
         task = TaskAlbum;
     } else if (!m_artistId.isEmpty()) {
-        query = queryByArtistTemplate.arg(m_artistId, getFilter(), aattr, aattr);
+        query = queryByArtistTemplate.arg(m_artistId, getFilter(), aattr);
         task = TaskArtist;
     } else if (!m_playlistId.isEmpty()) {
         query = queryByPlaylistTemplate.arg(m_playlistId);

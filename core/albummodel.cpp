@@ -18,17 +18,19 @@
 
 const QString AlbumModel::albumsQueryTemplate {
     "SELECT ?album "
-    "nie:title(?album) AS ?title "
-    "nmm:artistName(?artist) "
+    "nie:title(?album) "
+    "nmm:artistName(nmm:albumArtist(?album)) "
+    "nmm:artistName(%2(?song)) "
     "COUNT(?song) "
     "SUM(?length) "
     "WHERE { "
-    "?album a nmm:MusicAlbum; "
-    "nmm:albumArtist ?artist . "
-    "FILTER (regex(nie:title(?album), \"%1\", \"i\") || regex(nmm:artistName(?artist), \"%1\", \"i\")) "
+    "?album a nmm:MusicAlbum . "
     "?song nmm:musicAlbum ?album; "
     "nfo:duration ?length . "
-    "} GROUP BY ?album ORDER BY ?title LIMIT 1000"};
+    "FILTER (regex(nie:title(?album), \"%1\", \"i\") || "
+    "regex(nmm:artistName(nmm:albumArtist(?album)), \"%1\", \"i\") || "
+    "regex(nmm:artistName(%2(?song)), \"%1\", \"i\")) "
+    "} GROUP BY ?album ORDER BY nie:title(?album) LIMIT 1000"};
 
 AlbumModel::AlbumModel(QObject *parent) :
     SelectableItemModel(new AlbumItem, parent)
@@ -38,8 +40,9 @@ AlbumModel::AlbumModel(QObject *parent) :
 
 QList<ListItem*> AlbumModel::makeItems()
 {
-    const auto query = albumsQueryTemplate.arg(getFilter());
     auto tracker = Tracker::instance();
+    const QString aattr = tracker->tracker3() ? "nmm:artist" : "nmm:performer";
+    const auto query = albumsQueryTemplate.arg(getFilter(), aattr);
     if (tracker->query(query, false)) {
         auto result = tracker->getResult();
         return processTrackerReply(result.first, result.second);
@@ -59,32 +62,34 @@ QList<ListItem*> AlbumModel::processTrackerReply(
     TrackerCursor cursor{varNames, data};
     int n = cursor.columnCount();
 
-    if (n > 4) {
+    if (n > 5) {
         QHash<QString, AlbumData> albums; // album id => album data
 
         while(cursor.next()) {
-            const auto id = cursor.value(0).toString();
+            auto title = cursor.value(1).toString();
+            auto artist = cursor.value(2).toString().isEmpty() ? cursor.value(3).toString() : cursor.value(2).toString();
+            const auto hid = title + artist;
 
-            if (albums.contains(id)) {
+            if (albums.contains(hid)) {
 #ifdef QT_DEBUG
-                qDebug() << "Duplicate album id, updating count, length and skiping";
+                qDebug() << "Duplicate album, updating count, length and skiping";
 #endif
-                auto& album = albums[id];
-                album.count += cursor.value(3).toInt();
-                album.length += cursor.value(4).toInt();
+                auto& album = albums[hid];
+                album.id += (",<" + cursor.value(0).toString() + ">"); // additional <album-id> after ,
+                album.count += cursor.value(4).toInt();
+                album.length += cursor.value(5).toInt();
 
                 continue;
             }
 
-            const auto imgFilePath = Tracker::genAlbumArtFile(cursor.value(1).toString(),
-                                                        cursor.value(2).toString());
-            auto& album = albums[id];
-            album.id = id;
-            album.title = cursor.value(1).toString();
-            album.artist = cursor.value(2).toString();
-            album.icon = QFileInfo::exists(imgFilePath) ? QUrl{imgFilePath} : QUrl{};
-            album.count = cursor.value(3).toInt();
-            album.length = cursor.value(4).toInt();
+            auto& album = albums[hid];
+            album.id = "<" + cursor.value(0).toString() + ">";
+            album.title = std::move(title);
+            album.artist = std::move(artist);
+            const auto imgFilePath = Tracker::genAlbumArtFile(album.title, album.artist);
+            if (QFileInfo::exists(imgFilePath)) album.icon = QUrl{imgFilePath};
+            album.count = cursor.value(4).toInt();
+            album.length = cursor.value(5).toInt();
         }
 
         auto end = albums.cend();
