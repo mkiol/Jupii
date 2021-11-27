@@ -404,13 +404,13 @@
     </message>
     <message>
         <location filename="../sailfish/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="54"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="86"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="122"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="132"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="192"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="248"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="335"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="59"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="91"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="127"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="137"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="197"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="253"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="340"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -526,7 +526,7 @@
 <context>
     <name>DeviceModel</name>
     <message>
-        <location filename="../core/devicemodel.cpp" line="88"/>
+        <location filename="../core/devicemodel.cpp" line="90"/>
         <source>Invalid PIN for %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1768,17 +1768,17 @@
 <context>
     <name>TrackModel</name>
     <message>
-        <location filename="../core/trackmodel.cpp" line="158"/>
+        <location filename="../core/trackmodel.cpp" line="157"/>
         <source>Microphone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="160"/>
+        <location filename="../core/trackmodel.cpp" line="159"/>
         <source>Audio capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="162"/>
+        <location filename="../core/trackmodel.cpp" line="161"/>
         <source>Screen capture</source>
         <translation type="unfinished"></translation>
     </message>

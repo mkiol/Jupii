@@ -410,13 +410,13 @@
     </message>
     <message>
         <location filename="../sailfish/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="54"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="86"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="122"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="132"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="192"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="248"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="335"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="59"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="91"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="127"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="137"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="197"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="253"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="340"/>
         <source>Version %1</source>
         <translation>Različica %1</translation>
     </message>
@@ -532,7 +532,7 @@
 <context>
     <name>DeviceModel</name>
     <message>
-        <location filename="../core/devicemodel.cpp" line="88"/>
+        <location filename="../core/devicemodel.cpp" line="90"/>
         <source>Invalid PIN for %1</source>
         <translation>Neveljaven PIN za %1</translation>
     </message>
@@ -1500,8 +1500,9 @@
         <translation>Občutljivost mikrofona</translation>
     </message>
     <message>
-        <source>None</source>
-        <translation type="obsolete">Nič</translation>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="122"/>
+        <source>Show Jupii as an option in &apos;Open link&apos; dialog.</source>
+        <translation>Prikaži Jupii kot možnost izbire v pogovornem oknu &quot;Odpri povezavo&quot;.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="137"/>
@@ -1549,11 +1550,6 @@
         <translation>Snemalnik pretoka</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="122"/>
-        <source>Show Jupii as an option in &apos;Open link&apos; dialog.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="220"/>
         <source>Directory for recordings</source>
         <translation>Mapa za posnetke</translation>
@@ -1586,17 +1582,17 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="115"/>
         <source>Open link</source>
-        <translation type="unfinished"></translation>
+        <translation>Odpri povezavo</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="118"/>
         <source>Don&apos;t show</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne prikaži</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="119"/>
         <source>Show</source>
-        <translation type="unfinished">Prikaži</translation>
+        <translation>Prikaži</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="275"/>
@@ -1796,17 +1792,17 @@
 <context>
     <name>TrackModel</name>
     <message>
-        <location filename="../core/trackmodel.cpp" line="158"/>
+        <location filename="../core/trackmodel.cpp" line="157"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="160"/>
+        <location filename="../core/trackmodel.cpp" line="159"/>
         <source>Audio capture</source>
         <translation>Zajem zvoka</translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="162"/>
+        <location filename="../core/trackmodel.cpp" line="161"/>
         <source>Screen capture</source>
         <translation>Posnetek zaslona</translation>
     </message>
@@ -2085,18 +2081,6 @@
         <location filename="../desktop/qml/main.qml" line="229"/>
         <source>An internal error occurred</source>
         <translation>Prišlo je do notranje napake</translation>
-    </message>
-    <message>
-        <source>Cannot download youtube-dl</source>
-        <translation type="vanished">Ne morem prenesti youtube-dl</translation>
-    </message>
-    <message>
-        <source>Cannot update youtube-dl</source>
-        <translation type="vanished">Ne morem posodobiti youtube-dl</translation>
-    </message>
-    <message>
-        <source>Cannot find URL with youtube-dl</source>
-        <translation type="vanished">youtube-dl ne najde URL</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="36"/>

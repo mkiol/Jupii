@@ -404,13 +404,13 @@
     </message>
     <message>
         <location filename="../sailfish/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="54"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="86"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="122"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="132"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="192"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="248"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="335"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="59"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="91"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="127"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="137"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="197"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="253"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="340"/>
         <source>Version %1</source>
         <translation>Versión %1</translation>
     </message>
@@ -526,7 +526,7 @@
 <context>
     <name>DeviceModel</name>
     <message>
-        <location filename="../core/devicemodel.cpp" line="88"/>
+        <location filename="../core/devicemodel.cpp" line="90"/>
         <source>Invalid PIN for %1</source>
         <translation>PIN no válido para %1</translation>
     </message>
@@ -1480,8 +1480,9 @@
         <translation>Sensibilidad del micrófono</translation>
     </message>
     <message>
-        <source>None</source>
-        <translation type="obsolete">Ninguno</translation>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="122"/>
+        <source>Show Jupii as an option in &apos;Open link&apos; dialog.</source>
+        <translation>Mostrar Jupii como opción en el menú &apos;Abrir con&apos;.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="137"/>
@@ -1529,11 +1530,6 @@
         <translation>Grabar transmisión</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="122"/>
-        <source>Show Jupii as an option in &apos;Open link&apos; dialog.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="220"/>
         <source>Directory for recordings</source>
         <translation>Directorio de grabaciones</translation>
@@ -1566,17 +1562,17 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="115"/>
         <source>Open link</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir enlace</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="118"/>
         <source>Don&apos;t show</source>
-        <translation type="unfinished"></translation>
+        <translation>No mostrar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="119"/>
         <source>Show</source>
-        <translation type="unfinished">Mostrar</translation>
+        <translation>Mostrar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="275"/>
@@ -1760,7 +1756,7 @@
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="125"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="166"/>
         <source>Type the words to search</source>
-        <translation>Escribe las palabras de búsqueda</translation>
+        <translation>Escribe palabras para buscar</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="125"/>
@@ -1772,17 +1768,17 @@
 <context>
     <name>TrackModel</name>
     <message>
-        <location filename="../core/trackmodel.cpp" line="158"/>
+        <location filename="../core/trackmodel.cpp" line="157"/>
         <source>Microphone</source>
         <translation>Micrófono</translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="160"/>
+        <location filename="../core/trackmodel.cpp" line="159"/>
         <source>Audio capture</source>
         <translation>Captura de audio</translation>
     </message>
     <message>
-        <location filename="../core/trackmodel.cpp" line="162"/>
+        <location filename="../core/trackmodel.cpp" line="161"/>
         <source>Screen capture</source>
         <translation>Captura de pantalla</translation>
     </message>
@@ -2057,18 +2053,6 @@
         <location filename="../desktop/qml/main.qml" line="229"/>
         <source>An internal error occurred</source>
         <translation>Ha ocurrido un error interno</translation>
-    </message>
-    <message>
-        <source>Cannot download youtube-dl</source>
-        <translation type="vanished">No es posible descargar youtube-dl</translation>
-    </message>
-    <message>
-        <source>Cannot update youtube-dl</source>
-        <translation type="vanished">No es posible actualizar youtube-dl</translation>
-    </message>
-    <message>
-        <source>Cannot find URL with youtube-dl</source>
-        <translation type="vanished">No es posible buscar URL con youtube-dl</translation>
     </message>
     <message>
         <location filename="../desktop/qml/main.qml" line="36"/>

@@ -82,7 +82,7 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "Åke Engelbrektson \nCarlos Gonzalez \nd9h20f " +
+                text: "Åke Engelbrektson \nAtlochowski \nCarlos Gonzalez \nd9h20f " +
                       "\nВячеслав Диконов \ndrosjesjaafoer \nRui Kon " +
                       "\nBoštjan Štrumbelj \njgibbon \nFra \nPetr Tsymbarovich " +
                       "\nCarmen Fernández B."
