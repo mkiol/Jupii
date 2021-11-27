@@ -51,6 +51,10 @@ public:
     static bool isOHInfoService(const std::string& st);
     virtual bool serviceTypeMatch(const std::string& tp);
 
+    int counters(int *trackcount, int *detailscount, int *metatextcount);
+    int track(std::string *uri, UPnPDirObject *dirent);
+    int details(int *duration, int *bitrate, int *bitdepth, int *samplerate,
+                bool *lossless, std::string *codecname);
     int metatext(UPnPDirObject *dirent);
 
 protected:

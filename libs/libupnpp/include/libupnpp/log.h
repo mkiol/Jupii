@@ -48,7 +48,7 @@ public:
      * output. Creates the singleton logger object. Only the first
      * call changes the state, further ones just return the Logger
      * pointer. */
-    static Logger *getTheLog(const std::string& fn);
+    static Logger *getTheLog(const std::string& fn = std::string());
 
     /** Close and reopen the output file. For rotating the log: rename
      * then reopen. */
@@ -79,6 +79,14 @@ public:
     /** @brief Retrieve the current log level */
     int getloglevel() const {
         return m_loglevel;
+    }
+    /** @brief Retrieve current log file name */
+    const std::string& getlogfilename() const {
+        return m_fn;
+    }
+    /** @brief Logging to stderr ? */
+    bool logisstderr() const {
+        return m_tocerr;
     }
 
     /** @brief turn date logging on or off (default is off) */
@@ -121,11 +129,11 @@ private:
     Logger& operator=(const Logger &);
 };
 
-#define LOGGER_PRT (Logger::getTheLog("")->getstream())
+#define LOGGER_PRT (Logger::getTheLog()->getstream())
 
 #if LOGGER_THREADSAFE
 #define LOGGER_LOCK                                                     \
-    std::unique_lock<std::recursive_mutex> lock(Logger::getTheLog("")->getmutex())
+    std::unique_lock<std::recursive_mutex> lock(Logger::getTheLog()->getmutex())
 #else
 #define LOGGER_LOCK
 #endif
@@ -134,11 +142,11 @@ private:
 #define LOGGER_LOCAL_LOGINC 0
 #endif
 
-#define LOGGER_LEVEL (Logger::getTheLog("")->getloglevel() +    \
+#define LOGGER_LEVEL (Logger::getTheLog()->getloglevel() +    \
                       LOGGER_LOCAL_LOGINC)
 
-#define LOGGER_DATE (Logger::getTheLog("")->loggingdate() ? \
-                     Logger::getTheLog("")->datestring() : "")
+#define LOGGER_DATE (Logger::getTheLog()->loggingdate() ? \
+                     Logger::getTheLog()->datestring() : "")
 
 #define LOGGER_DOLOG(L,X) LOGGER_PRT << LOGGER_DATE << ":" << L << ":" << \
                              __FILE__ << ":" << __LINE__ << "::" << X \

@@ -25,8 +25,8 @@
 
 /** Version components. */
 #define LIBUPNPP_VERSION_MAJOR 0
-#define LIBUPNPP_VERSION_MINOR 20
-#define LIBUPNPP_VERSION_REVISION 2
+#define LIBUPNPP_VERSION_MINOR 21
+#define LIBUPNPP_VERSION_REVISION 0
 /// Got this from Xapian...
 #define LIBUPNPP_AT_LEAST(A,B,C)                                        \
     (LIBUPNPP_VERSION_MAJOR > (A) ||                                    \
@@ -84,34 +84,46 @@ public:
                                const std::string ip = std::string(),
                                unsigned short port = 0);
 
+    /** Configuration flags for the initialisation call */
     enum InitFlags {
         UPNPPINIT_FLAG_NONE = 0,
+        /** Disable IPV6 support */
         UPNPPINIT_FLAG_NOIPV6 = 1,
+        /** Do not initialize the client side (we are a device) */
         UPNPPINIT_FLAG_SERVERONLY = 2,
     };
 
+    /** Options for the initialisation call. Each option argument may be 
+     * followed by specific parameters. */
     enum InitOption {
         /** Terminate the VARARGs list. */
         UPNPPINIT_OPTION_END = 0,
-        /** Names of the interfaces to use. Space-separated list. If not
-         * set, we will use the first interface. If set to '*', will use
-         * all. const std::string* follows. */
+        /** Names of the interfaces to use. A const std::string* follows. 
+         * This is a space-separated list. If not
+         * set, we will use the first interface. If set to '*', we will use
+         * all possible interfaces. */
         UPNPPINIT_OPTION_IFNAMES,
-        /** Use single IPV4 address. This is incompatible with OPTION_IFNAMES. 
-         * const std::string* address in dot notation follows. */
+        /** Use single IPV4 address. A const std::string* address in 
+         * dot notation follows. This is incompatible with OPTION_IFNAMES. */
         UPNPPINIT_OPTION_IPV4,
-        /** IP Port to use. The lower lib default is 49152. 
-         * int follows */
+        /** IP Port to use. An int parameter follows. The lower lib default 
+         * is 49152. */
         UPNPPINIT_OPTION_PORT,
-        /** Control: subscription timeout in seconds. int follows */
+        /** Control: subscription timeout in seconds. An int param. follows. */
         UPNPPINIT_OPTION_SUBSCRIPTION_TIMEOUT,
+        /** Control: product name to set in user-agent strings.
+         * A const std::string* follows. */
+        UPNPPINIT_OPTION_CLIENT_PRODUCT,
+        /** Control: product version to set in user-agent strings.
+         * A const std::string* follows. */
+        UPNPPINIT_OPTION_CLIENT_VERSION,
     };
 
     /** Initialize the library.
      *
      * On success you will then call getLibUPnP() to access the object instance.
-     * @param flags OR'd InitFlags.
-     * @param ... A list of InitOption and values, ended by UPNPPINIT_OPTION_END.
+     * @param flags A bitfield of @ref InitFlags values.
+     * @param ... A list of @ref InitOption and values, ended by UPNPPINIT_OPTION_END.
      * @return false for failure, true for success. 
      */
     static bool init(unsigned int flags, ...);

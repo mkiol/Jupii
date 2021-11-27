@@ -16,7 +16,7 @@ INCLUDEPATH += $$X264_ROOT/include
 LIBS += -ldl
 
 sailfish {
-    LIBS += -L$${X264_ROOT}/build/sfos-$${ARCH_PREFIX} -l:libx264.so.161
+    LIBS += -L$${X264_ROOT}/build/sfos-$${ARCH_PREFIX} -l:libx264.so.163
     libx264.files = $${X264_ROOT}/build/sfos-$${ARCH_PREFIX}/*
     libx264.path = /usr/share/$${TARGET}/lib
     INSTALLS += libx264

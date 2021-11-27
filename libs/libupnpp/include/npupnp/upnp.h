@@ -47,11 +47,18 @@
 #include "UpnpGlobal.h"
 
 /** Array size for some fixed sized character arrays in API structures */
-#define LINE_SIZE  (size_t)180
+#define LINE_SIZE  size_t(180)
 /** Array size for some fixed sized character arrays in API structures */
-#define NAME_SIZE  (size_t)256
+#define NAME_SIZE  size_t(256)
 /** Value indicating a non-limited specification in some calls (e.g. timeout) */
 #define UPNP_INFINITE        -1
+/** This can be set in the file_length field of a File_Info structure
+ *  to indicate that the web server should use chunked encoding. In npupnp practise,
+ *  we set the length to -1 and let microhttpd do its thing.
+ */
+#define UPNP_USING_CHUNKED -3
+/** I don't think that this is actually used in the API, but define it for compatibility */
+#define UPNP_UNTIL_CLOSE -4
 
 
 /**
@@ -407,9 +414,14 @@ typedef enum Upnp_DescType_e {
 typedef enum {
     UPNP_FLAG_NONE = 0,
     /** Accept IPV4+IPV6 operation, run with IPV4 only if IPV6 not available */
-    UPNP_FLAG_IPV6 = 1,
+    UPNP_FLAG_IPV6 = 0x1,
     /** Same but fail if IPV6 is not available. */
-    UPNP_FLAG_IPV6_REQUIRED = 2,
+    UPNP_FLAG_IPV6_REQUIRED = 0x2,
+    /** Do not validate HOST headers (preserve compatibility with old versions) */
+    UPNP_FLAG_NO_HOST_VALIDATE = 0x4,
+    /** Reject Web requests with a host name (non-numeric) value in the HOST header, 
+     * instead of redirecting them. */
+    UPNP_FLAG_REJECT_HOSTNAMES = 0x8,
 } Upnp_InitFlag;
 
 /** Values for the @ref UpnpInitWithOptions vararg options list */
@@ -900,10 +912,23 @@ EXPORT_SPEC unsigned short UpnpGetServerPort(void);
  *    \li On error: 0 is returned if @ref UpnpInit has not succeeded.
  */
 EXPORT_SPEC unsigned short UpnpGetServerPort6(void);
+
+/*!
+ * \brief Returns the internal server IPv6 ULA or GUA UPnP listening port.
+ *
+ * If '0' is used as the port number in \b UpnpInit2, then this function can be
+ * used to retrieve the actual port allocated to the SDK.
+ *
+ * \return
+ * 	\li On success: The port on which an internal server is listening for
+ *		IPv6 ULA or GUA UPnP related requests.
+ * 	\li On error: 0 is returned if \b UpnpInit2 has not succeeded.
+ */
+EXPORT_SPEC unsigned short UpnpGetServerUlaGuaPort6(void);
 #endif
 
 /**
- * @brief Returns the local IPv4 listening ip address.
+ * @brief Returns a local IPv4 listening ip address.
  *
  * If \c NULL is used as the IPv4 address in @ref UpnpInit, then this function can
  * be used to retrieve the actual interface address on which device is running.
@@ -917,7 +942,7 @@ EXPORT_SPEC const char *UpnpGetServerIpAddress(void);
 
 #ifdef UPNP_ENABLE_IPV6
 /**
- * @brief Returns the link-local IPv6 listening address.
+ * @brief Returns a link-local IPv6 listening address.
  *
  * If \c NULL is used as the IPv6 address in @ref UpnpInit, then this
  * function can be used to retrieve the actual interface address on
@@ -1127,6 +1152,22 @@ EXPORT_SPEC int UpnpRegisterRootDevice4(
     const char *LowerDescUrl);
 
 /**
+ * @brief Set the product information part of the SERVER header sent with 
+ *  some network requests.
+ * @return An integer representing one of the following:
+ *     \li \c UPNP_E_SUCCESS: The operation completed successfully.
+ *     \li \c UPNP_E_INVALID_HANDLE: The handle is not a valid device handle.
+ *     \li \c UPNP_E_INVALID_PARAM: null or empty product or version.
+ */
+EXPORT_SPEC int UpnpDeviceSetProduct(
+    /** [in] The handle of the control point instance to unregister. */
+    UpnpDevice_Handle Hnd,
+    /** [in] The product name, e.g. "MyAwsomeProduct" */
+    const char *product,
+    /** [in] The product version, e.g: "1.1" */
+    const char *version);
+
+/**
  * @brief Unregisters a root device.
  *
  * After this call, the @ref UpnpDevice_Handle is no longer valid. For all
@@ -1204,6 +1245,18 @@ EXPORT_SPEC int UpnpRegisterClient(
     UpnpClient_Handle *Hnd);
 
 /**
+ * @brief Set the product information part of the User-Agent header sent with 
+ *  some network requests.
+ */
+EXPORT_SPEC void UpnpClientSetProduct(
+    /** [in] The handle of the control point instance to unregister. */
+    UpnpClient_Handle Hnd,
+    /** [in] The product name, e.g. "MyAwsomeProduct" */
+    const char *product,
+    /** [in] The product version, e.g: "1.1" */
+    const char *version);
+
+/**
  * @brief Unregisters a control point application, unsubscribing all active
  * subscriptions.
  *
@@ -1217,7 +1270,8 @@ EXPORT_SPEC int UpnpRegisterClient(
  *
  * @return An integer representing one of the following:
  *     \li \c UPNP_E_SUCCESS: The operation completed successfully.
- *     \li \c UPNP_E_INVALID_HANDLE: The handle is not a valid control point handle.
+ *     \li \c UPNP_E_INVALID_HANDLE: The handle is not a valid control
+ *       point handle.
  */
 EXPORT_SPEC int UpnpUnRegisterClient(
     /** [in] The handle of the control point instance to unregister. */
@@ -1773,6 +1827,42 @@ EXPORT_SPEC int UpnpIsWebserverEnabled(void);
 EXPORT_SPEC int UpnpSetWebServerRootDir( 
     /** [in] Path of the root directory of the web server. */
     const char *rootDir);
+
+/**
+ * @brief return an URL host:port string suitable for the passed-in client address.
+ *
+ * We chose a host address on the same subnet or the same link (for an
+ * IPV6 link-local client address), and the appropriate server port
+ * (as would be returned by UpnpGetServerPort[6](). Example of
+ * returned values: "192.168.0.4:49152",
+ * "[e80::4da9:6cfc:df0c:6700]:59152".
+ * The client address would typically be obtained from the
+ * CtrlPtIPAddr field of an Upnp_Action_Request structure.
+ * @return the appropriate host:port string or an empty string if no
+ *  appropriate value can be found.
+ */
+EXPORT_SPEC std::string UpnpGetUrlHostPortForClient(const struct sockaddr_storage*);
+
+/*
+ * @brief Callback for validating HTTP requests HOST header values.
+ *
+ * This is called when a GET/POST/HEAD request to the Web server contains a host
+ * name (instead of a numeric address) in the HOST header. The client code can chose
+ * to authorize the request. Else it will be either redirected to a numeric
+ * address or rejected depending on the UPNP_FLAG_REJECT_HOSTNAMES
+ * option. Specific UPnP (SOAP/SUBSCRIBE...) requests are always checked to
+ * contain a numeric address and will not trigger the callback.
+ *
+ * @param hostname the value in the request HOST header.
+ * @return An integer representing one of the following:
+ *     \li \c UPNP_E_SUCCESS: a request with the HOST header set to hostname should be processed.
+ *     \li \c UPNP_E_BAD_HTTPMSG the request should be redirected or rejected.
+ */
+typedef int (*WebCallback_HostValidate)(const char *hostname, void *cookie);
+
+EXPORT_SPEC int UpnpSetWebRequestHostValidateCallback(
+    WebCallback_HostValidate callback, void *cookie);
+
 
 /** Handle returned by the @ref VDCallback_Open virtual directory function. */
 typedef void *UpnpWebFileHandle;

@@ -40,21 +40,26 @@
  ***************************************************************************/ 
 
 /** The library version (string) e.g. "1.3.0" */
-#define NPUPNP_VERSION_STRING "4.0.14"
+#define NPUPNP_VERSION_STRING "4.1.5"
 
 /** Major version of the library */
 #define NPUPNP_VERSION_MAJOR 4
 
 /** Minor version of the library */
-#define NPUPNP_VERSION_MINOR 0
+#define NPUPNP_VERSION_MINOR 1
 
 /** Patch version of the library */
-#define NPUPNP_VERSION_PATCH 14
+#define NPUPNP_VERSION_PATCH 5
 
 /** The library version (numeric) e.g. 10300 means version 1.3.0 */
 #define NPUPNP_VERSION    \
   ((NPUPNP_VERSION_MAJOR*100 + NPUPNP_VERSION_MINOR)*100 + NPUPNP_VERSION_PATCH)
 
+#define NPUPNP_AT_LEAST(A,B,C)                                          \
+    (NPUPNP_VERSION_MAJOR > (A) ||                                      \
+     (NPUPNP_VERSION_MAJOR == (A) &&                                    \
+      (NPUPNP_VERSION_MINOR > (B) ||                                    \
+       (NPUPNP_VERSION_MINOR == (B) && NPUPNP_VERSION_PATCH >= (C)))))
 
 /***************************************************************************
  * Library optional features

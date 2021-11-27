@@ -64,8 +64,10 @@ public:
     /** @brief Build from textual representation (e.g. 192.168.4.4) */
     explicit IPAddr(const std::string& s)
         : IPAddr(s.c_str()) {}
-    /** @brief Build from binary address in network byte order */
-    explicit IPAddr(const struct sockaddr *sa);
+    /** @brief Build from binary address in network byte order. 
+     *  @param unmapv4 if true we test for a v6 mapped v4 address and, if found, store it as v4 
+     */
+    explicit IPAddr(const struct sockaddr *sa, bool unmapv4=true);
 
     IPAddr(const IPAddr&);
     IPAddr& operator=(const IPAddr&);
@@ -73,6 +75,8 @@ public:
 
     /** @brief Check constructor success */
     bool ok() const;
+    /** Set the scopeidx from other address. Only does anything for ipv6 link-local addresses */
+    bool setScopeIdx(const IPAddr& other);
     /** @brief Returns the address family */
     Family family() const;
     /** @brief Returns the scope type of IPV6 address */
@@ -87,8 +91,11 @@ public:
     /** @brief Get reference to the internal binary address */
     const struct sockaddr_storage& getaddr() const;
     
-    /** @brief Convert to textual representation */
+    /** @brief Convert to textual representation. */
     std::string straddr() const;
+    /** @brief Convert to textual representation. 
+     * Possibly add scope id, possibly url-encode it. */
+    std::string straddr(bool setscope, bool forurl) const;
     
     friend class Interface;
     class Internal;

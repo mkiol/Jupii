@@ -9,6 +9,11 @@
 
 #ifdef _WIN32
 
+/* When building with mingw, libtool sets DLL_EXPORT for a sharedlib/dll */
+#ifdef DLL_EXPORT
+#define LIBUPNP_EXPORTS
+#endif
+
 #  ifdef UPNP_STATIC_LIB
 #    define EXPORT_SPEC
 #  else /* UPNP_STATIC_LIB */
