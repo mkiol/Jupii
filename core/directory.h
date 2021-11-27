@@ -50,6 +50,7 @@ public:
     static Directory* instance(QObject *parent = nullptr);
     Directory(const Directory&) = delete;
     Directory& operator= (const Directory&) = delete;
+    ~Directory();
 
     bool getBusy();
     bool getInited();
@@ -69,6 +70,7 @@ public:
 
 signals:
     void discoveryReady();
+    void deviceFound(const QString &did);
     void discoveryFavReady();
     void discoveryLastReady();
     void busyChanged();
@@ -87,20 +89,24 @@ private:
     static Directory* m_instance;
     bool m_busy = false;
     bool m_inited = false;
+    unsigned int m_visitorCallbackId = 0;
     UPnPP::LibUPnP* m_lib = nullptr;
     UPnPClient::UPnPDeviceDirectory* m_directory;
     QHash<QString,UPnPClient::UPnPServiceDesc> m_servsdesc;
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_devsdesc;
     QHash<QString,UPnPClient::UPnPDeviceDesc> m_last_devsdesc;
     QHash<QString,std::shared_ptr<XC>> m_xcs;
+    QHash<QString,bool> m_xcs_status;
 
     explicit Directory(QObject *parent = nullptr);
-    ~Directory();
     void setBusy(bool busy);
     void setInited(bool inited);
     bool handleError(int ret);
     void clearLists(bool all);
     void refreshXC();
+    void discoverStatic(const QHash<QString,QVariant> &devs, QHash<QString, UPnPClient::UPnPDeviceDesc> &map);
+    void checkXcs(const UPnPClient::UPnPDeviceDesc &ddesc);
+    bool visitorCallback(const UPnPClient::UPnPDeviceDesc &ddesc, const UPnPClient::UPnPServiceDesc &sdesc);
 };
 
 #endif // DIRECTORY_H

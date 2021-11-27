@@ -41,7 +41,9 @@ DeviceModel* DeviceModel::instance(QObject *parent)
 DeviceModel::DeviceModel(QObject *parent) :
     ListModel(new DeviceItem, parent)
 {
-    connect(Directory::instance(), &Directory::discoveryReady,
+//    connect(Directory::instance(), &Directory::discoveryReady,
+//            this, &DeviceModel::updateModel);
+    connect(Directory::instance(), &Directory::deviceFound,
             this, &DeviceModel::updateModel);
     connect(Directory::instance(), &Directory::initedChanged,
             this, &DeviceModel::updateModel);

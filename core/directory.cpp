@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "directory.h"
+
 #include <QThreadPool>
 #include <QDebug>
 #include <QList>
@@ -28,7 +30,6 @@
 
 #include "settings.h"
 #include "utils.h"
-#include "directory.h"
 #include "device.h"
 #include "log.h"
 #include "xc.h"
@@ -37,8 +38,8 @@
 Directory* Directory::m_instance = nullptr;
 
 Directory::Directory(QObject *parent) :
-    QObject(parent),
-    TaskExecutor(parent)
+    QObject{parent},
+    TaskExecutor{parent}
 {
     connect(this, &Directory::busyChanged, this, &Directory::handleBusyChanged);
     connect(this, &Directory::initedChanged, this,
@@ -51,12 +52,12 @@ Directory::Directory(QObject *parent) :
 
 Directory::~Directory()
 {
+    UPnPClient::UPnPDeviceDirectory::terminate();
 }
 
 void Directory::handleBusyChanged()
 {
-    if (!m_busy)
-        refreshXC();
+    if (!m_busy) refreshXC();
 }
 
 void Directory::refreshXC()
@@ -77,10 +78,11 @@ void Directory::handleInitedChanged()
 
 void Directory::restartMediaServer()
 {
-    if (m_inited && Settings::instance()->getContentDirSupported())
+    if (m_inited && Settings::instance()->getContentDirSupported()) {
         msdev = std::make_unique<MediaServerDevice>();
-    else
+    } else {
         msdev.reset();
+    }
 }
 
 void Directory::init()
@@ -117,8 +119,8 @@ void Directory::init()
 
     std::string logFile;
     if (Settings::instance()->getLogToFile()) {
-        logFile = QDir{QStandardPaths::writableLocation(QStandardPaths::HomeLocation)}
-                .filePath(UPNPP_LOG_FILE).toLatin1().toStdString();
+        logFile.assign(QDir{QStandardPaths::writableLocation(QStandardPaths::HomeLocation)}
+                .filePath(UPNPP_LOG_FILE).toLatin1().toStdString());
     }
 //#ifdef QT_DEBUG
 //   m_lib->setLogFileName(logFile, UPnPP::LibUPnP::LogLevelDebug);
@@ -157,12 +159,80 @@ Directory* Directory::instance(QObject *parent)
     return Directory::m_instance;
 }
 
+bool Directory::visitorCallback(const UPnPClient::UPnPDeviceDesc &ddesc, const UPnPClient::UPnPServiceDesc &sdesc)
+{
+    const auto did = QString::fromStdString(ddesc.UDN);
+    const auto sid = did + QString::fromStdString(sdesc.serviceId);
+
+    if (!this->m_servsdesc.contains(sid)) {
+        qDebug() << "==> new service found";
+        qDebug() << "Device| type:" << QString::fromStdString(ddesc.deviceType)
+                 << "friendly name:" << QString::fromStdString(ddesc.friendlyName);
+#ifdef QT_DEBUG
+        qDebug() << "  UDN:" << did;
+        qDebug() << "  model name:" << QString::fromStdString(ddesc.modelName);
+        qDebug() << "  URL base:" << QString::fromStdString(ddesc.URLBase);
+#endif
+        qDebug() << "Service| type:" << QString::fromStdString(sdesc.serviceType);
+#ifdef QT_DEBUG
+        qDebug() << "  controlURL:" << QString::fromStdString(sdesc.controlURL);
+        qDebug() << "  eventSubURL:" << QString::fromStdString(sdesc.eventSubURL);
+        qDebug() << "  SCPDURL:" << QString::fromStdString(sdesc.SCPDURL);
+        qDebug() << "  serviceId:" << QString::fromStdString(sdesc.serviceId);
+        qDebug() << "  ddesc.XMLText:" << QString::fromStdString(ddesc.XMLText);
+#endif
+        this->m_servsdesc.insert(sid, sdesc);
+
+        if (!this->m_devsdesc.contains(did)) {
+            this->m_devsdesc.insert(did, ddesc);
+            checkXcs(ddesc);
+            emit deviceFound(did);
+        }
+    }
+
+    return true;
+}
+
+void Directory::checkXcs(const UPnPClient::UPnPDeviceDesc &ddesc)
+{
+    const auto did = QString::fromStdString(ddesc.UDN);
+    if (!m_xcs_status.contains(did) && XC::possible(QString::fromStdString(ddesc.deviceType))) {
+        m_xcs_status[did] = true;
+
+        auto xc = XC::make_shared(did, QUrl(QString::fromStdString(ddesc.URLBase)).host(),
+                                  QString::fromStdString(ddesc.XMLText));
+        if (xc) {
+            qDebug() << "Valid" << xc->name() << "for" << did;
+            xc->moveToThread(QCoreApplication::instance()->thread());
+            this->m_xcs.insert(did, std::move(xc));
+        }
+    }
+}
+
 void Directory::clearLists(bool all)
 {
     m_devsdesc.clear();
     m_servsdesc.clear();
-    if (all)
-        m_last_devsdesc.clear();
+    if (all) m_last_devsdesc.clear();
+}
+
+void Directory::discoverStatic(const QHash<QString,QVariant> &devs, QHash<QString,UPnPClient::UPnPDeviceDesc> &map)
+{
+    for (auto it = devs.cbegin(); it != devs.cend(); ++it) {
+        const auto& id = it.key();
+
+        QByteArray xml;
+        if (!Settings::readDeviceXML(id, xml)) continue;
+
+        UPnPClient::UPnPDeviceDesc ddesc{it.value().toString().toStdString(), xml.toStdString()};
+
+        const auto did = QString::fromStdString(ddesc.UDN);
+        for (const auto& sdesc : ddesc.services) {
+            this->m_servsdesc.insert(did + QString::fromStdString(sdesc.serviceId), sdesc);
+        }
+
+        map.insert(did, ddesc);
+    }
 }
 
 void Directory::discover()
@@ -194,132 +264,29 @@ void Directory::discover()
 
     setBusy(true);
 
-    // last devices
-    auto s = Settings::instance();
-    auto last = s->getLastDevices();
-    //qDebug() << "Adding last devices:" << last.size();
+    UPnPClient::UPnPDeviceDirectory::delCallback(m_visitorCallbackId);
 
-    for (auto it = last.cbegin(); it != last.cend(); ++it) {
-        const auto& id = it.key();
-
-        QByteArray xml;
-        if (!Settings::readDeviceXML(id, xml))
-            continue;
-
-        UPnPClient::UPnPDeviceDesc ddesc{it.value().toString().toStdString(), xml.toStdString()};
-
-        auto did = QString::fromStdString(ddesc.UDN);
-        for (const auto& sdesc : ddesc.services) {
-            this->m_servsdesc.insert(did + QString::fromStdString(sdesc.serviceId), sdesc);
-        }
-
-        this->m_last_devsdesc.insert(did, ddesc);
-    }
-
+    discoverStatic(Settings::instance()->getLastDevices(), this->m_last_devsdesc);
     emit discoveryLastReady();
 
-    startTask([this](){
+    startTask([this]() {
         clearLists(false);
-        QHash<QString,bool> xcs;
-        auto s = Settings::instance();
 
-        // favs
-
-        auto favs = s->getFavDevices();
-        //qDebug() << "Adding fav devices:" << favs.size();
-
-        for (auto it = favs.cbegin(); it != favs.cend(); ++it) {
-            const auto& id = it.key();
-
-            QByteArray xml;
-            if (!Settings::readDeviceXML(id, xml))
-                continue;
-
-            UPnPClient::UPnPDeviceDesc ddesc(it.value().toString().toStdString(), xml.toStdString());
-
-            auto did = QString::fromStdString(ddesc.UDN);
-            for (const auto& sdesc : ddesc.services) {
-                this->m_servsdesc.insert(did + QString::fromStdString(sdesc.serviceId), sdesc);
-            }
-
-            this->m_devsdesc.insert(did, ddesc);
-
-            if (!xcs.contains(did) && XC::possible(QString::fromStdString(ddesc.deviceType))) {
-                xcs[did] = true;
-
-                auto xc = XC::make_shared(did, QUrl(QString::fromStdString(ddesc.URLBase)).host(),
-                                          xml);
-                if (xc) {
-                    qDebug() << "Valid" << xc->name() << "for" << did;
-                    xc->moveToThread(QCoreApplication::instance()->thread());
-                    this->m_xcs.insert(did, std::move(xc));
-                }
-            }
-        }
-
+        discoverStatic(Settings::instance()->getFavDevices(), this->m_devsdesc);
         emit discoveryFavReady();
 
         // discovery
 
-        bool found = false;
-        auto traverseFun = [this, &found, debug = s->isDebug(), &xcs]
-                (const UPnPClient::UPnPDeviceDesc& ddesc, const UPnPClient::UPnPServiceDesc& sdesc) {
-            qDebug() << "==> Visitor|"
-                     << "device type:" << QString::fromStdString(ddesc.deviceType)
-                     << "friendly name:" << QString::fromStdString(ddesc.friendlyName);
-#ifdef QT_DEBUG
-            qDebug() << "  UDN:" << QString::fromStdString(ddesc.UDN);
-            qDebug() << "  model name:" << QString::fromStdString(ddesc.modelName);
-            qDebug() << "  URL base:" << QString::fromStdString(ddesc.URLBase);
-#endif
-            qDebug() << "Service| serviceType:" << QString::fromStdString(sdesc.serviceType);
-#ifdef QT_DEBUG
-            qDebug() << "  controlURL:" << QString::fromStdString(sdesc.controlURL);
-            qDebug() << "  eventSubURL:" << QString::fromStdString(sdesc.eventSubURL);
-            qDebug() << "  SCPDURL:" << QString::fromStdString(sdesc.SCPDURL);
-            qDebug() << "  serviceId:" << QString::fromStdString(sdesc.serviceId);
-            qDebug() << "  ddesc.XMLText:" << QString::fromStdString(ddesc.XMLText);
-#endif
-            const auto did = QString::fromStdString(ddesc.UDN);
+        m_directory->traverse(std::bind(&Directory::visitorCallback, this, std::placeholders::_1, std::placeholders::_2));
 
-            this->m_devsdesc.insert(did, ddesc);
-            this->m_servsdesc.insert(did + QString::fromStdString(sdesc.serviceId), sdesc);
-
-            if (!xcs.contains(did) && XC::possible(QString::fromStdString(ddesc.deviceType))) {
-                xcs[did] = true;
-
-                auto xc = XC::make_shared(did, QUrl(QString::fromStdString(ddesc.URLBase)).host(),
-                                          QString::fromStdString(ddesc.XMLText));
-                if (xc) {
-                    qDebug() << "Valid" << xc->name() << "for" << did;
-                    xc->moveToThread(QCoreApplication::instance()->thread());
-                    this->m_xcs.insert(did, std::move(xc));
-                }
-            }
-
-            found = true;
-
-            return true;
-        };
-
-        for (int i = 0; i < 5; ++i) {
-            if (!m_directory) {
-                qWarning() << "Directory not initialized";
-                setInited(false);
-                emit error(3);
-                return;
-            }
-
-            m_directory->traverse(traverseFun);
-            if (found)
-                break;
-        }
-
-        //qDebug() << "traverse end";
+        qDebug() << "traverse end:" << m_devsdesc.size();
 
         emit discoveryReady();
 
         setBusy(false);
+
+        m_visitorCallbackId = UPnPClient::UPnPDeviceDirectory::addCallback(
+                    std::bind(&Directory::visitorCallback, this, std::placeholders::_1, std::placeholders::_2));
     });
 }
 

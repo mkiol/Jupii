@@ -36,7 +36,7 @@ Settings::Settings(QObject *parent) :
 #ifdef SAILFISH
     hwName{readHwInfo()}
 #else
-    hwName{QSysInfo::machineHostName()};
+    hwName{QSysInfo::machineHostName()}
 #endif
 {
     removeLogFiles();
