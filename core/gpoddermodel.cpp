@@ -1,9 +1,11 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
+#include "gpoddermodel.h"
 
 #include <QDebug>
 #include <QFile>
@@ -14,11 +16,10 @@
 #include <QLatin1String>
 #include <QStandardPaths>
 
-#include "gpoddermodel.h"
 #include "iconprovider.h"
 
 QString Gpodder::conName = "qt_sql_jupii_connection";
-QSqlDatabase Gpodder::m_db = QSqlDatabase();
+QSqlDatabase Gpodder::m_db = QSqlDatabase{};
 
 bool Gpodder::enabled()
 {
@@ -27,26 +28,23 @@ bool Gpodder::enabled()
 
 QDir Gpodder::dataDir()
 {
-    QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation));
+    QDir dir{QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)};
     dir.cd("harbour-org.gpodder.sailfish");
     return dir;
 }
 
 QSqlDatabase Gpodder::db()
 {
-    if (m_db.open())
-        return m_db;
+    if (m_db.open()) return m_db;
 
-    auto dir = dataDir();
-    auto file = dir.filePath("Database.minidb");
+    const auto file = dataDir().filePath("Database.minidb");
 
     if (QFile::exists(file)) {
         m_db = QSqlDatabase::addDatabase("QSQLITE", conName);
         m_db.setConnectOptions(QLatin1String("QSQLITE_OPEN_READONLY"));
         m_db.setDatabaseName(file);
-        m_db.open();
         if (m_db.open()) {
-            QSqlQuery query(m_db);
+            QSqlQuery query{m_db};
             query.exec("PRAGMA journal_mode = MEMORY");
             query.exec("PRAGMA synchronous = OFF");
             return m_db;
@@ -55,13 +53,13 @@ QSqlDatabase Gpodder::db()
 
     qWarning() << "Cannot open gpodder db";
 
-    return QSqlDatabase();
+    return {};
 }
 
 GpodderEpisodeModel::GpodderEpisodeModel(QObject *parent) :
-    SelectableItemModel(new GpodderEpisodeItem, parent)
+    SelectableItemModel(new GpodderEpisodeItem, parent),
+    m_dir{Gpodder::dataDir()}
 {
-    m_dir = Gpodder::dataDir();
 }
 
 QList<ListItem*> GpodderEpisodeModel::makeItems()
@@ -75,7 +73,7 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
         return items;
     }
 
-    QSqlQuery query(db);
+    QSqlQuery query{db};
     query.prepare("SELECT PodcastEpisode.id, PodcastEpisode.title, "
                   "PodcastEpisode.subtitle, PodcastEpisode.published, "
                   "PodcastEpisode.download_filename, PodcastEpisode.total_time, "
@@ -96,36 +94,38 @@ QList<ListItem*> GpodderEpisodeModel::makeItems()
 
     if (query.exec()) {
         while(query.next()) {
-            auto dir(m_dir);
-            auto folder = query.value(9).toString();
-            auto icon = query.value(10).toUrl();
+            auto dir{m_dir};
 
-            dir.cd(folder);
+            dir.cd(query.value(9).toString());
             if (!dir.exists()) {
                 qWarning() << "Dir" << m_dir.absolutePath() << "doesn't exist";
                 continue;
             }
 
-            if (icon.isEmpty())
-                icon = IconProvider::urlToNoResId("icon-gpodder");
-            else if (dir.exists(icon.fileName()))
-                icon = QUrl::fromLocalFile(dir.absoluteFilePath(icon.fileName()));
+            auto icon = query.value(10).toUrl();
 
-            auto filename = query.value(4).toString();
+            if (icon.isEmpty()) {
+                icon = IconProvider::urlToNoResId("icon-gpodder");
+            } else if (dir.exists(icon.fileName())) {
+                icon = QUrl::fromLocalFile(dir.absoluteFilePath(icon.fileName()));
+            } else {
+                icon = IconProvider::urlToNoResId("icon-gpodder");
+            }
+
+            const auto filename = query.value(4).toString();
             if (dir.exists(filename)) {
-                auto type = ContentServer::typeFromMime(query.value(7).toString());
-                items << new GpodderEpisodeItem(
+                items << new GpodderEpisodeItem{
                                 query.value(0).toString(), // id
                                 query.value(1).toString(), // title
-                                QString(), // query.value(2).toString(), // desc
+                                {}, // desc
                                 query.value(8).toString(), // podcast title
                                 QUrl::fromLocalFile(dir.absoluteFilePath(filename)), // url
                                 query.value(5).toInt(), // duration
                                 query.value(6).toInt(), // position
-                                type, // type
+                                ContentServer::typeFromMime(query.value(7).toString()), // type
                                 query.value(3).toUInt(), // published
                                 icon // icon
-                             );
+                        };
             } else {
                 qWarning() << "Episode file doesn't exist:" << dir.absoluteFilePath(filename);
             }
@@ -230,6 +230,6 @@ QVariant GpodderEpisodeItem::data(int role) const
     case PodcastTitleRole:
         return podcastTitle();
     default:
-        return QVariant();
+        return {};
     }
 }

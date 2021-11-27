@@ -64,9 +64,9 @@ public:
                       uint published,
                       const QUrl &icon,
                       QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    inline QString id() const { return m_id; }
+    QVariant data(int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+    inline QString id() const override { return m_id; }
     inline QString title() const { return m_title; }
     inline QString description() const { return m_description; }
     inline QString podcastTitle() const { return m_ptitle; }
