@@ -104,7 +104,7 @@ private:
     bool handleError(int ret);
     void clearLists(bool all);
     void refreshXC();
-    void discoverStatic(const QHash<QString,QVariant> &devs, QHash<QString, UPnPClient::UPnPDeviceDesc> &map);
+    void discoverStatic(const QHash<QString,QVariant> &devs, QHash<QString, UPnPClient::UPnPDeviceDesc> &map, bool xcs);
     void checkXcs(const UPnPClient::UPnPDeviceDesc &ddesc);
     bool visitorCallback(const UPnPClient::UPnPDeviceDesc &ddesc, const UPnPClient::UPnPServiceDesc &sdesc);
 };

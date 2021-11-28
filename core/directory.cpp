@@ -199,7 +199,7 @@ void Directory::checkXcs(const UPnPClient::UPnPDeviceDesc &ddesc)
     if (!m_xcs_status.contains(did) && XC::possible(QString::fromStdString(ddesc.deviceType))) {
         m_xcs_status[did] = true;
 
-        auto xc = XC::make_shared(did, QUrl(QString::fromStdString(ddesc.URLBase)).host(),
+        auto xc = XC::make_shared(did, QUrl{QString::fromStdString(ddesc.URLBase)}.host(),
                                   QString::fromStdString(ddesc.XMLText));
         if (xc) {
             qDebug() << "Valid" << xc->name() << "for" << did;
@@ -216,7 +216,7 @@ void Directory::clearLists(bool all)
     if (all) m_last_devsdesc.clear();
 }
 
-void Directory::discoverStatic(const QHash<QString,QVariant> &devs, QHash<QString,UPnPClient::UPnPDeviceDesc> &map)
+void Directory::discoverStatic(const QHash<QString,QVariant> &devs, QHash<QString,UPnPClient::UPnPDeviceDesc> &map, bool xcs)
 {
     for (auto it = devs.cbegin(); it != devs.cend(); ++it) {
         const auto& id = it.key();
@@ -232,6 +232,7 @@ void Directory::discoverStatic(const QHash<QString,QVariant> &devs, QHash<QStrin
         }
 
         map.insert(did, ddesc);
+        if (xcs) checkXcs(ddesc);
     }
 }
 
@@ -266,13 +267,13 @@ void Directory::discover()
 
     UPnPClient::UPnPDeviceDirectory::delCallback(m_visitorCallbackId);
 
-    discoverStatic(Settings::instance()->getLastDevices(), this->m_last_devsdesc);
+    discoverStatic(Settings::instance()->getLastDevices(), this->m_last_devsdesc, false);
     emit discoveryLastReady();
 
     startTask([this]() {
         clearLists(false);
 
-        discoverStatic(Settings::instance()->getFavDevices(), this->m_devsdesc);
+        discoverStatic(Settings::instance()->getFavDevices(), this->m_devsdesc, true);
         emit discoveryFavReady();
 
         // discovery
@@ -343,20 +344,19 @@ QString Directory::deviceNameFromId(const QString& deviceId)
 
     qWarning() << "Cannot find device name:" << deviceId;
 
-    return QString();
+    return {};
 }
 
 bool Directory::xcExists(const QString& deviceId)
 {
-    auto it = m_xcs.constFind(deviceId);
+    const auto it = m_xcs.constFind(deviceId);
     return it != m_xcs.cend() && (*it)->valid();
 }
 
 std::optional<std::reference_wrapper<const std::shared_ptr<XC>>> Directory::xc(const QString& deviceId)
 {
-    auto it = m_xcs.constFind(deviceId);
-    if (it == m_xcs.cend())
-        return std::nullopt;
+    const auto it = m_xcs.constFind(deviceId);
+    if (it == m_xcs.cend()) return std::nullopt;
     return m_xcs.constFind(deviceId).value();
 }
 
@@ -368,30 +368,21 @@ bool Directory::getBusy()
 void Directory::xcTogglePower(const QString& deviceId)
 {
     auto it = m_xcs.find(deviceId);
-
-    if (it == m_xcs.end())
-        return;
-
+    if (it == m_xcs.end()) return;
     (*it)->powerToggle();
 }
 
 void Directory::xcGetStatus(const QString& deviceId)
 {
     auto it = m_xcs.find(deviceId);
-
-    if (it == m_xcs.end())
-        return;
-
+    if (it == m_xcs.end()) return;
     (*it)->getStatus();
 }
 
 void Directory::xcPowerOn(const QString& deviceId)
 {
     auto it = m_xcs.find(deviceId);
-
-    if (it == m_xcs.end())
-        return;
-
+    if (it == m_xcs.end()) return;
     (*it)->powerOn();
 }
 
@@ -413,8 +404,7 @@ void Directory::setInited(bool inited)
     if (inited != m_inited) {
         m_inited = inited;
         qDebug() << "Directory inited:" << m_inited;
-        if (!m_inited)
-            clearLists(true);
+        if (!m_inited) clearLists(true);
         emit initedChanged();
     }
 }
@@ -451,5 +441,5 @@ QUrl Directory::getDeviceIconUrl(const UPnPClient::UPnPDeviceDesc& ddesc)
         return {};
     }
 
-    return QUrl(QString::fromStdString(ddesc.URLBase)).resolved(QUrl(max_url));
+    return QUrl{QString::fromStdString(ddesc.URLBase)}.resolved(QUrl(max_url));
 }
