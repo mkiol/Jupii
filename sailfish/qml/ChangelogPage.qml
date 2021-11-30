@@ -29,13 +29,13 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.10.1")
+                text: qsTr("Version %1").arg("2.10.2")
             }
 
             LogItem {
                 title: "Fixes for bugs discovered in SFOS 4.3"
                 description: "Due to Tracker upgrade in SFOS 4.3, Album and Artist browser did not work correctly. " +
-                             "This issue is now resolved."
+                             "Hopefully this issue is now resolved."
             }
 
             LogItem {
@@ -46,7 +46,7 @@ Page {
 
             LogItem {
                 title: "Jupii as an option in 'Open link' dialog"
-                description: "Jupii can open links and it appears in 'Open link' dialog when you click on the link in other application. " +
+                description: "Jupii can open links. It now appears in 'Open link' dialog when you click on the link in other application. " +
                              "If you don't like this feature, you can disable it in the Settings menu."
             }
 
