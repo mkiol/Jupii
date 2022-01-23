@@ -18,7 +18,7 @@ void FileMetaData::clear() {
     size = 0;
     date.clear();
     icon.clear();
-    type = ContentServer::TypeUnknown;
+    type = ContentServer::Type::Unknown;
 }
 
 bool FileMetaData::empty() const

@@ -40,7 +40,9 @@ Settings::Settings(QObject *parent) :
 #endif
 {
     removeLogFiles();
-    if (getLogToFile()) qInstallMessageHandler(qtLog);
+    qInstallMessageHandler(qtLog);
+    //if (getLogToFile()) qInstallMessageHandler(qtLog);
+    if (getLogToFile()) ::logToFile = true;
 
 #ifdef SAILFISH
     initOpenUrlMode();

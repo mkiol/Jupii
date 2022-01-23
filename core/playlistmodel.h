@@ -238,6 +238,7 @@ private:
     int m_progressValue = 0;
     int m_progressTotal = 0;
     int m_refreshable_count = 0;
+    QHash<QString, QUrl> cookieToUrl; // use for mapping: cookie => url => meta
 
     PlaylistModel(QObject *parent = nullptr);
     void addItems(const QList<QUrl>& urls, bool asAudio);
@@ -252,13 +253,13 @@ private:
     void updatePrevSupported();
     bool autoPlay();
     void refreshAndSetContent(const QString &id1, const QString &id2, bool toBeActive = false, bool setIfNotChanged = true);
+    void setContent(const QString &id1, const QString &id2);
     QList<ListItem*> handleRefreshWorker();
     void doUpdate();
     void doUpdateActiveId();
     std::optional<int> nextActiveIndex() const;
     void refresh(QList<QUrl>&& ids);
     void updateRefreshTimer();
-    QHash<QString, QUrl> cookieToUrl; // use for mapping: cookie => url => meta
 #ifdef SAILFISH
     void updateBackgroundActivity();
 #endif

@@ -22,6 +22,7 @@ extern "C" {
 #include "settings.h"
 #include "pulseaudiosource.h"
 #include "contentserver.h"
+#include "contentserverworker.h"
 
 AudioCaster::AudioCaster(QObject *parent) : QObject(parent)
 {

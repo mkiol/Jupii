@@ -84,7 +84,7 @@ private:
     QUrl m_url;
     int m_duration;
     int m_position;
-    ContentServer::Type m_type = ContentServer::TypeUnknown;
+    ContentServer::Type m_type = ContentServer::Type::Unknown;
     uint m_published;
     QUrl m_icon;
 };

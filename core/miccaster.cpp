@@ -19,6 +19,7 @@ extern "C" {
 }
 
 #include "contentserver.h"
+#include "contentserverworker.h"
 #include "settings.h"
 
 MicCaster::MicCaster(QObject *parent) : QIODevice(parent)

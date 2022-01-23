@@ -204,7 +204,7 @@ QVariant IcecastItem::data(int role) const
     case UrlRole:
         return url();
     case TypeRole:
-        return type();
+        return static_cast<int>(type());
     case SelectedRole:
         return selected();
     default:

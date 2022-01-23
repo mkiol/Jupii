@@ -69,10 +69,7 @@ sailfish {
     include($$PROJECTDIR/libs/lame/lame.pri)
     include($$PROJECTDIR/libs/gumbo/gumbo.pri)
     #include($$PROJECTDIR/libs/omx/omx.pri)
-
-    screencast {
-        include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
-    }
+    include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
 }
 
 INCLUDEPATH += $$CORE_DIR
@@ -132,7 +129,9 @@ HEADERS += \
     $$CORE_DIR/gumbotools.h \
     $$CORE_DIR/soundcloudapi.h \
     $$CORE_DIR/downloader.h \
-    $$CORE_DIR/playlistparser.h
+    $$CORE_DIR/playlistparser.h \
+    $$CORE_DIR/contentserverworker.h \
+    $$CORE_DIR/screencaster.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -189,15 +188,9 @@ SOURCES += \
     $$CORE_DIR/gumbotools.cpp \
     $$CORE_DIR/soundcloudapi.cpp \
     $$CORE_DIR/downloader.cpp \
-    $$CORE_DIR/playlistparser.cpp
-
-screencast {
-    HEADERS += \
-        $$CORE_DIR/screencaster.h
-
-    SOURCES += \
-        $$CORE_DIR/screencaster.cpp
-}
+    $$CORE_DIR/playlistparser.cpp \
+    $$CORE_DIR/contentserverworker.cpp \
+    $$CORE_DIR/screencaster.cpp
 
 DISTFILES += \
     $$PWD/../dbus/org.freedesktop.Tracker3.Endpoint.xml

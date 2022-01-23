@@ -190,7 +190,7 @@ QList<ListItem*> TrackModel::makeTrackItemsFromPlaylistFile(const QString& playl
                 {}, // album
                 item.url, // url
                 {}, // icon
-                ContentServer::Type::TypeUnknown, // type
+                ContentServer::Type::Unknown, // type
                 0, // number
                 0, // length
                 ContentServer::itemTypeFromUrl(item.url)
@@ -277,7 +277,7 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
                 data.author = id_data.author;
             if (!id_data.icon.isEmpty())
                 data.icon = id_data.icon;
-            if (id_data.type != ContentServer::TypeUnknown)
+            if (id_data.type != ContentServer::Type::Unknown)
                 data.type = id_data.type;
         } else {
             m_trackdata_by_id.insert(id, id_data);
@@ -491,7 +491,7 @@ QVariant TrackItem::data(int role) const
     case LengthRole:
         return length();
     case TypeRole:
-        return type();
+        return static_cast<int>(type());
     case ItemTypeRole:
         return itemType();
     case SelectedRole:

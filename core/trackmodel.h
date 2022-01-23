@@ -73,7 +73,7 @@ private:
     QString m_album;
     QUrl m_url;
     QUrl m_icon;
-    ContentServer::Type m_type = ContentServer::TypeUnknown;
+    ContentServer::Type m_type = ContentServer::Type::Unknown;
     int m_number = 0;
     int m_length = 0;
     ContentServer::ItemType m_item_type = ContentServer::ItemType_Unknown;
@@ -116,7 +116,7 @@ private:
         QString title;
         QString author;
         QUrl icon;
-        ContentServer::Type type = ContentServer::TypeUnknown;
+        ContentServer::Type type = ContentServer::Type::Unknown;
     };
 
     static const QString queryByAlbumTemplate;

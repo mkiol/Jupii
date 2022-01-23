@@ -350,7 +350,7 @@ Rectangle {
 
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
-                checkable: true
+                checkable: false
                 checked: recordActive
                 icon.name: "media-record"
                 text: qsTr("Toggle Record")
@@ -403,7 +403,7 @@ Rectangle {
                 visible: !root.narrowMode
 
                 enabled: rc.inited && !rc.busy
-                checkable: true
+                checkable: false
                 checked: rc.mute
                 icon.name: "audio-volume-muted"
                 text: qsTr("Toggle Mute")
@@ -441,7 +441,7 @@ Rectangle {
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
                 enabled: rc.inited && !rc.busy
-                checkable: true
+                checkable: false
                 checked: rc.mute
                 icon.name: "audio-volume-muted"
                 text: qsTr("Toggle Mute")

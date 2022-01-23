@@ -34,6 +34,7 @@
 #include <QTranslator>
 #include <QTextCodec>
 #include <QProcess>
+#include <QFile>
 #include <iostream>
 
 #include <libupnpp/control/discovery.hxx>
@@ -108,6 +109,8 @@ void registerTypes()
     qRegisterMetaType<QList<ListItem*>>("QListOfListItem");
     qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
     qRegisterMetaType<XC::ErrorType>("XcErrorType");
+
+    qRegisterMetaType<std::shared_ptr<QFile>>("std::shared_ptr<QFile>");
 }
 
 void installTranslator(QGuiApplication* app)

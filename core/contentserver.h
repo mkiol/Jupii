@@ -10,71 +10,51 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QByteArray>
 #include <QUrl>
 #include <QHash>
-#include <QMutex>
 #include <QThread>
+#include <QMutex>
 #include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QFile>
-#include <QIODevice>
 #include <QTime>
 #include <QDateTime>
+#include <QSet>
 #include <memory>
-#include <qhttpserver.h>
+#include <optional>
+
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
-#include <optional>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libswscale/swscale.h>
-#include <libswresample/swresample.h>
-#include <libavutil/dict.h>
-#include <libavutil/mathematics.h>
-#include <libavdevice/avdevice.h>
-#include <libavutil/imgutils.h>
-#include <libavutil/timestamp.h>
-#include <libavutil/time.h>
-#include <libavutil/log.h>
 }
-
-#include "taskexecutor.h"
-#include "pulseaudiosource.h"
-#include "audiocaster.h"
-#include "miccaster.h"
-#ifdef SCREENCAST
-#include "screencaster.h"
-#endif
 
 namespace UPnPClient {
 class UPnPDirObject;
 }
+
 class ContentServerWorker;
 
-class ContentServer :
-        public QThread
+class ContentServer : public QThread
 {
-friend class ContentServerWorker;
     Q_OBJECT
+    friend class ContentServerWorker;
 public:
-    enum Type {
-        TypeUnknown = 0,
-        TypeImage = 1,
-        TypeMusic = 2,
-        TypeVideo = 4,
-        TypeDir = 128,
-        TypePlaylist = 256
+    enum class Type {
+        Unknown = 0,
+        Image = 1,
+        Music = 2,
+        Video = 4,
+        Dir = 128,
+        Playlist = 256
     };
 
-    enum PlaylistType {
-        PlaylistUnknown,
-        PlaylistPLS,
-        PlaylistM3U,
-        PlaylistXSPF
+    enum class PlaylistType {
+        Unknown,
+        PLS,
+        M3U,
+        XSPF
     };
 
     enum ItemType {
@@ -89,17 +69,17 @@ public:
     };
     Q_ENUM(ItemType)
 
-    enum MetaFlag {
-        MetaFlag_Unknown        = 0,
-        MetaFlag_Valid          = 1 << 0,
-        MetaFlag_IceCast        = 1 << 1,
-        MetaFlag_Local          = 1 << 2,
-        MetaFlag_YtDl           = 1 << 3,
-        MetaFlag_OrigUrl        = 1 << 4,
-        MetaFlag_Seek           = 1 << 5,
-        MetaFlag_PlaylistProxy  = 1 << 6,
-        MetaFlag_Refresh        = 1 << 7,
-        MetaFlag_Art            = 1 << 8
+    enum class MetaFlag {
+        Unknown        = 0,
+        Valid          = 1 << 0,
+        IceCast        = 1 << 1,
+        Local          = 1 << 2,
+        YtDl           = 1 << 3,
+        OrigUrl        = 1 << 4,
+        Seek           = 1 << 5,
+        PlaylistProxy  = 1 << 6,
+        Refresh        = 1 << 7,
+        Art            = 1 << 8
     };
 
     struct ItemMeta {
@@ -116,8 +96,8 @@ public:
         QString artist;
         QString didl;
         QString upnpDevId;
-        Type type = TypeUnknown;
-        ItemType itemType = ItemType_Unknown;
+        Type type{Type::Unknown};
+        ItemType itemType{ItemType_Unknown};
         int duration = 0;
         double bitrate = 0.0;
         double sampleRate = 0.0;
@@ -125,31 +105,34 @@ public:
         int64_t size = 0;
         QString recUrl;
         QDateTime recDate;
-        QTime metaUpdateTime = QTime::currentTime();
+        QTime metaUpdateTime{QTime::currentTime()};
         QString app;
         int flags = 0;
 
         inline bool flagSet(MetaFlag flag) const {
-            return (this->flags & flag) != 0;
+            return (this->flags & static_cast<int>(flag)) != 0;
         }
 
         inline void setFlags(int flags, bool set = true) {
-            if (set)
-                this->flags |= flags;
-            else
-                this->flags &= ~flags;
+            if (set) this->flags |= flags;
+            else this->flags &= ~flags;
+        }
+
+        inline void setFlags(MetaFlag flag, bool set = true) {
+            if (set) this->flags |= static_cast<int>(flag);
+            else this->flags &= ~static_cast<int>(flag);
         }
 
         inline bool expired() const {
-            if (metaUpdateTime.isNull())
-                return true;
-            if (flagSet(MetaFlag_YtDl)) // ytdl meta is expired after 60s
+            if (metaUpdateTime.isNull()) return true;
+            if (flagSet(MetaFlag::YtDl)) { // ytdl meta is expired after 60s
                 return metaUpdateTime.addSecs(60) < QTime::currentTime();
+            }
             return metaUpdateTime.addSecs(180) < QTime::currentTime();
         }
 
         inline bool dummy() const {
-            return flagSet(MetaFlag_YtDl) ? metaUpdateTime.isNull() : false;
+            return flagSet(MetaFlag::YtDl) ? metaUpdateTime.isNull() : false;
         }
 
         ItemMeta(const ItemMeta *meta);
@@ -173,21 +156,21 @@ public:
     static PlaylistType playlistTypeFromMime(const QString &mime);
     static PlaylistType playlistTypeFromExtension(const QString &path);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
-    static bool writeMetaUsingTaglib(const QString& path, const QString& title,
-                                      const QString& artist = QString(),
-                                      const QString& album = QString(),
-                                      const QString& comment = QString(),
-                                      const QString& recUrl = QString(),
-                                      const QDateTime& recDate = QDateTime(),
-                                      const QString& artPath = QString());
-    static bool readMetaUsingTaglib(const QString& path,
-                                    QString& title,
-                                    QString& artist,
-                                    QString& album,
-                                    QString& comment,
-                                    QString& recUrl,
-                                    QDateTime& recDate,
-                                    QString& artPath,
+    static bool writeMetaUsingTaglib(const QString &path, const QString& title,
+                                     const QString &artist = {},
+                                      const QString &album = {},
+                                      const QString &comment = {},
+                                      const QString &recUrl = {},
+                                      const QDateTime &recDate = {},
+                                      const QString &artPath = {});
+    static bool readMetaUsingTaglib(const QString &path,
+                                    QString &title,
+                                    QString &artist,
+                                    QString &album,
+                                    QString &comment,
+                                    QString &recUrl,
+                                    QDateTime &recDate,
+                                    QString &artPath,
                                     int *duration = nullptr,
                                     double *bitrate = nullptr,
                                     double *sampleRate = nullptr,
@@ -203,15 +186,15 @@ public:
     Q_INVOKABLE QString urlFromUrl(const QUrl &url) const;
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(const QUrl &url,
                                                                      bool createNew = true,
-                                                                     const QUrl &origUrl = QUrl(),
-                                                                     const QString &app = QString(),
+                                                                     const QUrl &origUrl = {},
+                                                                     const QString &app = {},
                                                                      bool ytdl = false, bool img = false,
                                                                      bool refresh = false);
     const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(const QUrl &id,
                                                                           bool createNew = true);
     const QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
     const ItemMeta* getMeta(const QUrl &url, bool createNew,
-                            const QUrl &origUrl = QUrl(), const QString &app = QString(),
+                            const QUrl &origUrl = QUrl(), const QString &app = {},
                             bool ytdl = false, bool img = false, bool refresh = false);
     const ContentServer::ItemMeta* getMetaForImg(const QUrl &url, bool createNew);
     void removeMeta(const QUrl &url);
@@ -220,30 +203,34 @@ public:
     Q_INVOKABLE QString streamTitle(const QUrl &id) const;
     Q_INVOKABLE QStringList streamTitleHistory(const QUrl &id) const;
     Q_INVOKABLE void setStreamToRecord(const QUrl &id, bool value);
-    Q_INVOKABLE bool isStreamToRecord(const QUrl &id);
+    Q_INVOKABLE bool isStreamToRecord(const QUrl &id) const;
     Q_INVOKABLE bool isStreamRecordable(const QUrl &id);
     bool getContentMetaItem(const QString &id, QString &meta, bool includeDummy = true);
     bool getContentMetaItemByDidlId(const QString &didlId, QString &meta);
-    std::optional<QUrl> idUrlFromUrl(const QUrl &url, bool* isFile = nullptr) const;
-    bool makeUrl(const QString& id, QUrl& url, bool relay = true);
+    std::optional<QUrl> idUrlFromUrl(const QUrl &url, bool *isFile = nullptr) const;
+    bool makeUrl(const QString &id, QUrl &url, bool relay = true);
+    bool startProxy(const QUrl &id);
 
 signals:
-    void streamRecordError(const QString& title);
-    void streamRecorded(const QString& title, const QString& filename);
+    void streamRecordError(const QString &title);
+    void streamRecorded(const QString &title, const QString &filename);
     void streamTitleChanged(const QUrl &id, const QString &title);
     void requestStreamToRecord(const QUrl &id, bool value);
     void streamToRecordChanged(const QUrl &id, bool value);
     void streamRecordableChanged(const QUrl &id, bool value);
+    void streamToRecordRequested(const QUrl &id);
+    void streamRecordableRequested(const QUrl &id);
     void displayStatusChanged(bool status);
     void fullHashesUpdated();
+    void startProxyRequested(const QUrl &id);
 
 public slots:
     void displayStatusChangeHandler(QString state);
 
 private slots:
-    void streamRecordedHandler(const QString& title, const QString& path);
+    void streamRecordedHandler(const QString &title, const QString &path);
     void streamToRecordChangedHandler(const QUrl &id, bool value);
-    void streamRecordableChangedHandler(const QUrl &id, bool value, const QString& tmpFile);
+    void streamRecordableChangedHandler(const QUrl &id, bool value, const QString &tmpFile);
     void shoutcastMetadataHandler(const QUrl &id, const QByteArray &metadata);
     void pulseStreamNameHandler(const QUrl &id, const QString &name);
     void itemAddedHandler(const QUrl &id);
@@ -316,20 +303,21 @@ private:
     static const qint64 recMaxSize = 500000000;
     static const qint64 recMinSize = 100000;
 
-    QHash<QUrl, ItemMeta> metaCache; // url => ItemMeta
-    QHash<QString, QString> metaIdx; // DIDL-lite id => id
-    QHash<QUrl, StreamData> streams; // id => StreamData
-    QHash<QString, QString> fullHashes; // truncated hash => full hash
-    QHash<QUrl, QString> tmpRecs; // id => tmp rec file
-    QMutex metaCacheMutex;
-    QString pulseStreamName;
+    QHash<QUrl, ItemMeta> m_metaCache; // url => ItemMeta
+    QHash<QString, QString> m_metaIdx; // DIDL-lite id => id
+    QHash<QUrl, StreamData> m_streams; // id => StreamData
+    QHash<QString, QString> m_fullHashes; // truncated hash => full hash
+    QHash<QUrl, QString> m_tmpRecs; // id => tmp rec file
+    QSet<QUrl> m_streamToRecord; // id => stream should be recorded
+    QString m_pulseStreamName;
+    QMutex m_metaCacheMutex;
 
-    static QByteArray encrypt(const QByteArray& data);
-    static QByteArray decrypt(const QByteArray& data);
+    static QByteArray encrypt(const QByteArray &data);
+    static QByteArray decrypt(const QByteArray &data);
     static QString dlnaOrgFlagsForFile();
     static QString dlnaOrgFlagsForStreaming();
-    static QString dlnaOrgPnFlags(const QString& mime);
-    static QString dlnaContentFeaturesHeader(const QString& mime, bool seek = true,
+    static QString dlnaOrgPnFlags(const QString &mime);
+    static QString dlnaContentFeaturesHeader(const QString &mime, bool seek = true,
                                              bool flags = true);
     static QString getContentMimeByExtension(const QString &path);
     static QString getContentMimeByExtension(const QUrl &url);
@@ -341,8 +329,8 @@ private:
     bool getContentMeta(const QString &id, const QUrl &url, QString &meta, const ItemMeta* item);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(const QUrl &url,
-                                                             const QUrl &origUrl = QUrl(),
-                                                             const QString &app = QString(),
+                                                             const QUrl &origUrl = {},
+                                                             const QString &app = {},
                                                              bool ytdl = false,
                                                              bool art = false,
                                                              bool refresh = false);
@@ -352,8 +340,8 @@ private:
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(const QUrl &url,
-                                                                             const QUrl &origUrl = QUrl(),
-                                                                             const QString &app = QString(),
+                                                                             const QUrl &origUrl = {},
+                                                                             const QString &app = {},
                                                                              bool ytdl = false,
                                                                              bool refresh = false,
                                                                              bool art = false);
@@ -375,144 +363,13 @@ private:
             int counter = 0);
     const QHash<QUrl, ItemMeta>::const_iterator makeUpnpItemMeta(const QUrl &url);
     const QHash<QUrl, ItemMeta>::const_iterator makeMetaUsingExtension(const QUrl &url);
-    void run();
+    void run() override;
     static bool extractAudio(const QString& path, ContentServer::AvData& data);
     static bool fillAvDataFromCodec(const AVCodecParameters* codec, const QString &videoPath, AvData &data);
     static QString extractItemFromDidl(const QString &didl);
     bool saveTmpRec(const QString &path);
     static QString readTitleUsingTaglib(const QString &path);
     void updateMetaAlbumArt(ItemMeta &meta) const;
-};
-
-class ContentServerWorker :
-        public QObject
-{
-    Q_OBJECT
-    friend MicCaster;
-    friend PulseAudioSource;
-    friend AudioCaster;
-#ifdef SCREENCAST
-    friend ScreenCaster;
-#endif
-public:
-    static ContentServerWorker* instance(QObject *parent = nullptr);
-    QNetworkAccessManager* nam;
-    QHttpServer* server;
-    static void adjustVolume(QByteArray *data, float factor, bool le = true);
-    [[nodiscard]] bool streamToRecord(const QUrl &id);
-    [[nodiscard]] bool streamRecordable(const QUrl &id);
-
-signals:
-    void streamRecorded(const QString& title, const QString& path);
-    void streamToRecordChanged(const QUrl &id, bool value);
-    void streamRecordableChanged(const QUrl &id, bool value, const QString& tmpFile);
-    void shoutcastMetadataUpdated(const QUrl &id, const QByteArray &metadata);
-    void pulseStreamUpdated(const QUrl &id, const QString& name);
-    void itemAdded(const QUrl &id);
-    void itemRemoved(const QUrl &id);
-    void contSeqWriteData(QFile* file, qint64 size, QHttpResponse *resp);
-
-public slots:
-    void setStreamToRecord(const QUrl &id, bool value);
-    void setDisplayStatus(bool status);
-
-private slots:
-    void proxyMetaDataChanged();
-    void proxyRedirected(const QUrl &url);
-    void proxyFinished();
-    void proxyReadyRead();
-    //void startMic();
-    //void stopMic();
-    void responseForMicDone();
-    void responseForAudioCaptureDone();
-#ifdef SCREENCAST
-    void responseForScreenCaptureDone();
-    void screenErrorHandler();
-#endif
-    void audioErrorHandler();
-    void micErrorHandler();
-    void responseForUrlDone();
-    void seqWriteData(QFile* file, qint64 size, QHttpResponse *resp);
-
-private:
-    struct ProxyItem {
-        QHttpRequest* req = nullptr;
-        QHttpResponse* resp = nullptr;
-        QNetworkReply* reply = nullptr;
-        QUrl id;
-        bool seek = false;
-        int state = 0;
-        bool meta = false; // shoutcast metadata requested by client
-        int metaint = 0; // shoutcast metadata interval received from server
-        int metacounter = 0; // bytes couter reseted every metaint
-        QByteArray data;
-        QByteArray metadata;
-        // modes:
-        // 0 - stream proxy (default)
-        // 1 - playlist proxy (e.g. for HLS playlists)
-        int mode = 0;
-        bool head = false;
-        std::shared_ptr<QFile> recFile;
-        bool saveRec = false;
-        QString title;
-        QString author;
-        QString recExt;
-        QString artPath;
-        bool finished = false;
-        QUrl origUrl;
-        ~ProxyItem();
-    };
-
-    struct ConnectionItem {
-        QUrl id;
-        QHttpRequest* req = nullptr;
-        QHttpResponse* resp = nullptr;
-    };
-
-    static ContentServerWorker* m_instance;
-
-    std::unique_ptr<MicCaster> micCaster;
-    std::unique_ptr<PulseAudioSource> pulseSource;
-    std::unique_ptr<AudioCaster> audioCaster;
-#ifdef SCREENCAST
-    std::unique_ptr<ScreenCaster> screenCaster;
-#endif
-
-    QHash<QNetworkReply*, ProxyItem> proxyItems;
-    QHash<QHttpResponse*, QNetworkReply*> responseToReplyMap;
-    QList<ConnectionItem> micItems;
-    QList<ConnectionItem> audioCaptureItems;
-    QList<ConnectionItem> screenCaptureItems;
-    QMutex proxyItemsMutex;
-    bool displayStatus = true;
-    float volumeBoost = 1.0f;
-
-    ContentServerWorker(QObject *parent = nullptr);
-    void streamFile(const QString& path, const QString &mime, QHttpRequest *req, QHttpResponse *resp);
-    void streamFileRange(QFile *file, QHttpRequest *req, QHttpResponse *resp);
-    void streamFileNoRange(QFile *file, QHttpRequest *req, QHttpResponse *resp);
-    void requestHandler(QHttpRequest *req, QHttpResponse *resp);
-    void requestForFileHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
-    void requestForUrlHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
-    void requestForUrlHandlerFallback(const QUrl &id, const QUrl &origUrl, QHttpRequest *req, QHttpResponse *resp);
-    void requestForMicHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
-    void requestForAudioCaptureHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
-    void requestForScreenCaptureHandler(const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req, QHttpResponse *resp);
-    void sendEmptyResponse(QHttpResponse *resp, int code);
-    void sendResponse(QHttpResponse *resp, int code, const QByteArray &data = QByteArray());
-    void sendRedirection(QHttpResponse *resp, const QString &location);
-    void processShoutcastMetadata(QByteArray &data, ProxyItem &item);
-    void updatePulseStreamName(const QString& name);
-    void dispatchPulseData(const void *data, int size);
-    void sendScreenCaptureData(const void *data, int size);
-    void sendAudioCaptureData(const void *data, int size);
-    void sendMicData(const void *data, int size);
-    static void removePoints(const QList<QPair<int,int>> &rpoints, QByteArray &data);
-    void openRecFile(ProxyItem &item);
-    void saveRecFile(ProxyItem &item);
-    void endRecFile(ProxyItem &item);
-    void closeRecFile(ProxyItem &item);
-    static void cleanCacheFiles();
 };
 
 #endif // CONTENTSERVER_H

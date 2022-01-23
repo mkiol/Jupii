@@ -81,7 +81,7 @@ void ItemModel::workerDone()
         if (old_l != m_list.length())
             emit countChanged();
 
-        m_worker.reset(nullptr);
+        m_worker.reset();
     }
 
     setBusy(false);

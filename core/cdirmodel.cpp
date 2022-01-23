@@ -45,11 +45,11 @@ void CDirModel::handleContentDirectoryInited()
 CDirModel::Types CDirModel::typeFromItemClass(const QString &upnpClass)
 {
     switch (ContentServer::typeFromUpnpClass(upnpClass)) {
-    case ContentServer::TypeMusic:
+    case ContentServer::Type::Music:
         return AudioType;
-    case ContentServer::TypeVideo:
+    case ContentServer::Type::Video:
         return VideoType;
-    case ContentServer::TypeImage:
+    case ContentServer::Type::Image:
         return ImageType;
     default:
         return UnknownType;

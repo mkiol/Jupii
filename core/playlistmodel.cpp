@@ -83,7 +83,7 @@ void PlaylistWorker::run()
 
             if (url.url.isLocalFile()) {
                 auto type = ContentServer::getContentTypeByExtension(url.url.path());
-                if (type == ContentServer::TypePlaylist) {
+                if (type == ContentServer::Type::Playlist) {
                     isPlaylist = true;
                     auto path = url.url.toLocalFile();
                     qDebug() << "File" << path << "is a playlist";
@@ -96,8 +96,8 @@ void PlaylistWorker::run()
                             if (!data.isEmpty()) {
                                 QFileInfo fi(f); auto dir = fi.absoluteDir().path();
                                 auto ptype = ContentServer::playlistTypeFromExtension(path);
-                                auto items = ptype == ContentServer::PlaylistPLS ? parsePls(data, dir) :
-                                             ptype == ContentServer::PlaylistXSPF ? parseXspf(data, dir) :
+                                auto items = ptype == ContentServer::PlaylistType::PLS ? parsePls(data, dir) :
+                                             ptype == ContentServer::PlaylistType::XSPF ? parseXspf(data, dir) :
                                              parseM3u(data, dir);
 
                                 if (items.isEmpty()) {
@@ -167,7 +167,7 @@ void PlaylistWorker::run()
                 if (asAudio) {
                     if (q.hasQueryItem(Utils::typeKey))
                         q.removeQueryItem(Utils::typeKey);
-                    q.addQueryItem(Utils::typeKey, QString::number(ContentServer::TypeMusic));
+                    q.addQueryItem(Utils::typeKey, QString::number(static_cast<int>(ContentServer::Type::Music)));
                 }
 
                 // icon
@@ -566,13 +566,13 @@ void PlaylistModel::onAvInitedChanged()
 
     qDebug() << "onAvInitedChanged:" << inited << busy;
 
+    resetToBeActive();
+
     if (inited) {
         if (!busy) {
             updateActiveId();
             doUpdate();
         }
-    } else {
-        resetToBeActive();
     }
 
 #ifdef SAILFISH
@@ -736,8 +736,8 @@ QByteArray PlaylistModel::makePlsData(const QString& name)
 
     int l = m_list.size();
     for (int i = 0; i < l; ++i) {
-        auto pitem = dynamic_cast<PlaylistItem*>(m_list.at(i));
-        auto url = Utils::bestUrlFromId(QUrl(pitem->id())).toString();
+        const auto pitem = qobject_cast<PlaylistItem*>(m_list.at(i));
+        const auto url = Utils::bestUrlFromId(QUrl(pitem->id())).toString();
         auto name = Utils::nameFromId(pitem->id());
         if (name.isEmpty()) {
             if (pitem->artist().isEmpty())
@@ -762,8 +762,7 @@ void PlaylistModel::load()
         return;
     }
 
-    if (!m_list.isEmpty())
-        return;
+    if (!m_list.isEmpty()) return;
 
     setBusy(true);
 
@@ -1105,7 +1104,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     auto finalId = id;
 
     if (!ytdl) {
-        if (meta->flagSet(ContentServer::MetaFlag_YtDl)) { // add ytdl to url
+        if (meta->flagSet(ContentServer::MetaFlag::YtDl)) { // add ytdl to url
             QUrlQuery q{finalId};
             if (q.hasQueryItem(Utils::ytdlKey))
                 q.removeQueryItem(Utils::ytdlKey);
@@ -1127,12 +1126,12 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     }
 
     auto type = static_cast<ContentServer::Type>(t);
-    if (type == ContentServer::TypeUnknown) {
-        if (meta->flagSet(ContentServer::MetaFlag_YtDl)) { // add type to url for ytdl content
+    if (type == ContentServer::Type::Unknown) {
+        if (meta->flagSet(ContentServer::MetaFlag::YtDl)) { // add type to url for ytdl content
             QUrlQuery q{finalId};
             if (q.hasQueryItem(Utils::typeKey))
                 q.removeQueryItem(Utils::typeKey);
-            q.addQueryItem(Utils::typeKey, QString::number(meta->type));
+            q.addQueryItem(Utils::typeKey, QString::number(static_cast<int>(meta->type)));
             finalId.setQuery(q);
         }
         type = meta->type;
@@ -1140,7 +1139,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
 
     if (name.isEmpty()) {
         name = ContentServer::bestName(*meta);
-        if (meta->flagSet(ContentServer::MetaFlag_YtDl)) { // add discovered name to url for ytdl content
+        if (meta->flagSet(ContentServer::MetaFlag::YtDl)) { // add discovered name to url for ytdl content
             QUrlQuery q{finalId};
             if (q.hasQueryItem(Utils::nameKey))
                 q.removeQueryItem(Utils::nameKey);
@@ -1163,7 +1162,7 @@ PlaylistItem* PlaylistModel::makeItem(const QUrl &id)
     QUrl iconUrl;
     if (ficon.isEmpty()) {
         if (meta->albumArt.isEmpty()) {
-            iconUrl = type == ContentServer::TypeImage ? meta->url : QUrl();
+            iconUrl = type == ContentServer::Type::Image ? meta->url : QUrl();
         } else if (QFileInfo::exists(meta->albumArt)) {
             iconUrl = QUrl::fromLocalFile(meta->albumArt);
         } else {
@@ -1229,34 +1228,27 @@ void PlaylistModel::setActiveId(const QString &id)
 {
     qDebug() << "setActiveId:" << id;
     const auto cookie = Utils::cookieFromId(id);
-    bool metaExists = ContentServer::instance()->metaExists(Utils::urlFromId(id));
+    auto metaExists = ContentServer::instance()->metaExists(Utils::urlFromId(id));
     if (!metaExists && cookieToUrl.contains(cookie)) { // edge case: url was updated by refresh
         metaExists = ContentServer::instance()->metaExists(cookieToUrl.value(cookie));
     }
 
-    const int len = m_list.length();
+    const auto len = m_list.length();
     bool active_found = false;
-    bool new_active_found = false;
     for (int i = 0; i < len; ++i) {
         auto fi = qobject_cast<PlaylistItem*>(m_list.at(i));
-        bool new_active = metaExists && fi->cookie() == cookie;
-        if (new_active)
-            active_found = true;
+        const auto new_active = metaExists && fi->cookie() == cookie;
+        if (new_active) active_found = true;
         if (fi->active() != new_active) {
             fi->setActive(new_active);
-            if(new_active) {
-                setActiveItemIndex(i);
-                new_active_found = true;
-            }
+            if(new_active) setActiveItemIndex(i);
             emit activeItemChanged();
         }
     }
 
-    if (new_active_found)
-        resetToBeActive();
+    resetToBeActive();
 
-    if (!active_found)
-        setActiveItemIndex(-1);
+    if (!active_found) setActiveItemIndex(-1);
 }
 
 void PlaylistModel::resetToBeActive()
@@ -1518,11 +1510,16 @@ bool PlaylistModel::play(const QString &id)
     if (activeId() == id && av->getCurrentId().toString() == id) { // both checks are needed due to url change in refresh
         qDebug() << "Id is active id";
         if (av->getTransportState() != AVTransport::Playing) {
-            dir->xcPowerOn(av->getDeviceId());
-            av->setSpeed(1);
-            av->play();
+            if (av->getCurrentTrackDuration() > 0 && av->getRelativeTimePosition() > 0) {
+                dir->xcPowerOn(av->getDeviceId());
+                av->setSpeed(1);
+                av->play();
+            } else {
+                av->stop();
+            }
+        } else {
+            return true;
         }
-        return true;
     }
 
     if (isBusy() || isRefreshing()) {
@@ -1551,7 +1548,7 @@ void PlaylistModel::togglePlay() {
 
     if (av->getTransportState() != AVTransport::Playing) {
         auto aid = activeId();
-        if (aid.isEmpty() || av->getRelativeTimePosition() > 0) {
+        if (aid.isEmpty() || (av->getCurrentTrackDuration() > 0 && av->getRelativeTimePosition() > 0)) {
             av->setSpeed(1);
             av->play();
         } else {
@@ -1724,11 +1721,27 @@ void PlaylistModel::refresh()
 {
     QList<QUrl> ids;
     foreach (const auto item, m_list) {
-        if (qobject_cast<PlaylistItem*>(item)->refreshable())
-            ids << QUrl{item->id()};
+        if (qobject_cast<PlaylistItem*>(item)->refreshable()) ids << QUrl{item->id()};
     }
 
     refresh(std::move(ids));
+}
+
+void PlaylistModel::setContent(const QString &id1, const QString &id2)
+{
+    qDebug() << "setContent";
+
+    if (!id1.isEmpty()) {
+        const auto item = qobject_cast<PlaylistItem*>(find(id1));
+        if (item && item->itemType() == ContentServer::ItemType_Url) {
+            if (!ContentServer::instance()->startProxy(QUrl{id1})) {
+                qWarning() << "Proxy did not start";
+                return;
+            }
+        }
+    }
+
+    Services::instance()->avTransport->setLocalContent(id1, id2);
 }
 
 void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
@@ -1751,10 +1764,8 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
             m_refresh_mutex.unlock();
             return;
         }
-        if (item1->refreshable())
-            ids << QUrl{id1};
-        if (toBeActive)
-            setToBeActiveId(id1);
+        if (item1->refreshable()) ids << QUrl{id1};
+        if (toBeActive) setToBeActiveId(id1);
     } else if (id1 == id2) {
         qWarning() << "Cannot find:" << id1;
         m_refresh_mutex.unlock();
@@ -1769,8 +1780,7 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
             qWarning() << "File2 doesn't exist:" << item2->path();
             item2 = nullptr;
         }
-        if (item2 && item2->refreshable())
-            ids << QUrl{id2};
+        if (item2 && item2->refreshable()) ids << QUrl{id2};
     }
 
     if (!item1 && !item2) {
@@ -1780,9 +1790,7 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
     }
 
     if (ids.isEmpty()) { // no ids to refresh
-        auto av = Services::instance()->avTransport;
-        if (setIfNotChanged)
-            av->setLocalContent(id1, id2);
+        if (setIfNotChanged) setContent(id1, id2);
         m_refresh_mutex.unlock();
     } else {
         m_refresh_worker = std::make_unique<PlaylistWorker>(std::move(ids));
@@ -1799,36 +1807,23 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
             if (item1 || item2) {
                 if (m_refresh_worker) {
                     auto newItems = handleRefreshWorker();
-
-                    auto av = Services::instance()->avTransport;
-
                     if (newItems.size() == 2) { // both item refreshed
-                        av->setLocalContent(newItems.at(0)->id(), newItems.at(1)->id());
+                        setContent(newItems.at(0)->id(), newItems.at(1)->id());
                     } else if (newItems.size() == 1) {
-                        if (id1 == id2)
-                            av->setLocalContent(newItems.at(0)->id(), newItems.at(0)->id());
-                        else if (m_refresh_worker->origId(newItems.at(0)) == id1)
-                            av->setLocalContent(newItems.at(0)->id(), id2);
-                        else if (m_refresh_worker->origId(newItems.at(0)) == id2)
-                            av->setLocalContent(id1, newItems.at(0)->id());
+                        if (id1 == id2) setContent(newItems.at(0)->id(), newItems.at(0)->id());
+                        else if (m_refresh_worker->origId(newItems.at(0)) == id1) setContent(newItems.at(0)->id(), id2);
+                        else if (m_refresh_worker->origId(newItems.at(0)) == id2) setContent(id1, newItems.at(0)->id());
                         else {
                             qWarning() << "Refreshed item doesn't match";
                             clearActive = true;
                         }
                     } else { // none items refreshed
-                        if (setIfNotChanged)
-                            av->setLocalContent(id1, id2);
+                        if (setIfNotChanged) setContent(id1, id2);
                     }
-                } else {
-                    clearActive = true;
-                }
-            } else {
-                clearActive = true;
-            }
+                } else clearActive = true;
+            } else clearActive = true;
 
-            if (clearActive && item1 && toBeActive) {
-                setToBeActiveId("");
-            }
+            if (clearActive && item1 && toBeActive) setToBeActiveId("");
 
             m_refresh_mutex.unlock();
             if (m_refresh_worker) {
@@ -1847,22 +1842,17 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
 
 QString PlaylistModel::nextId(const QString &id) const
 {
-    if (m_list.isEmpty())
-        return {};
+    if (m_list.isEmpty()) return {};
 
-    if (m_playMode == PM_RepeatOne)
-        return id;
+    if (m_playMode == PM_RepeatOne) return id;
 
     bool nextFound = false;
     for (auto li : m_list) {
-        if (nextFound)
-            return li->id();
-        if (li->id() == id)
-            nextFound = true;
+        if (nextFound) return li->id();
+        if (li->id() == id) nextFound = true;
     }
 
-    if (nextFound && m_playMode == PM_RepeatAll)
-        return m_list.first()->id();
+    if (nextFound && m_playMode == PM_RepeatAll) return m_list.first()->id();
 
     return {};
 }
@@ -1958,7 +1948,7 @@ QVariant PlaylistItem::data(int role) const
     case OrigUrlRole:
         return origUrl();
     case TypeRole:
-        return type();
+        return static_cast<int>(type());
     case ContentTypeRole:
         return ctype();
     case ArtistRole:

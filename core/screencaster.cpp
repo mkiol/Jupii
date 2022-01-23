@@ -34,6 +34,7 @@ extern "C" {
 #include "pulseaudiosource.h"
 #include "utils.h"
 #include "contentserver.h"
+#include "contentserverworker.h"
 
 #ifdef DESKTOP
 #include <X11/Xlib.h>

@@ -12,6 +12,7 @@
 
 #include "info.h"
 #include "contentserver.h"
+#include "contentserverworker.h"
 
 const char* PulseAudioSource::nullSink = "sink.null";
 const char* PulseAudioSource::nullSinkMonitor = "sink.null.monitor";

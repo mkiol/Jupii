@@ -224,7 +224,7 @@ QVariant GpodderEpisodeItem::data(int role) const
     case SelectedRole:
         return selected();
     case TypeRole:
-        return type();
+        return static_cast<int>(type());
     case PublishedRole:
         return published();
     case PodcastTitleRole:

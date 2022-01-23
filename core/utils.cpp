@@ -311,7 +311,7 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl& id,
                                      int *duration)
 {
     if (!id.isValid()) {
-        //qWarning() << "FromId: Id is invalid:" << id.toString();
+        qWarning() << "Id is invalid:" << id.toString();
         return false;
     }
 
