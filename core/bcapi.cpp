@@ -319,91 +319,11 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
     return items;
 }
 
-/*std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query)
-{
-    std::vector<SearchResultItem> items;
-
-    auto data = downloadHtmlData(makeSearchUrl(query));
-
-    if (data.isEmpty()) {
-        qWarning() << "No data received";
-        return items;
-    }
-
-    auto output = gumbo::parseHtmlData(data);
-
-    if (!output) {
-        qWarning() << "Cannot parse data";
-        return items;
-    }
-
-    auto srs = gumbo::search_for_class(output->root, "searchresult");
-
-    for (auto sr : srs) {
-        auto ri = search_for_class_one(sr, "result-info");
-        if (!ri) {
-            break;
-        }
-
-        auto type = textToType(gumbo::node_text(gumbo::search_for_class_one(ri, "itemtype")));
-        if (type == Type_Unknown) {
-            break;
-        }
-
-        SearchResultItem item;
-        item.type = type;
-
-        auto img = gumbo::search_for_tag_one(gumbo::search_for_class_one(sr, "art"), GUMBO_TAG_IMG);
-        if (img) {
-            if (auto src = gumbo::gumbo_get_attribute(&img->v.element.attributes, "src")) {
-                item.imageUrl = QUrl(QString::fromUtf8(src->value));
-            }
-        }
-
-        item.name = gumbo::node_text(gumbo::search_for_tag_one(search_for_class_one(ri, "heading"), GUMBO_TAG_A));
-        if (item.name.isEmpty()) {
-            break;
-        }
-
-        auto subhead = gumbo::search_for_class_one(ri, "subhead");
-        if (!subhead) {
-            break;
-        }
-
-        item.webUrl = QUrl(gumbo::node_text(gumbo::search_for_tag_one(search_for_class_one(ri, "itemurl"), GUMBO_TAG_A)));
-        if (item.webUrl.isEmpty()) {
-            break;
-        }
-
-        if (type == Type_Track) {
-            auto sh = node_text(subhead);
-
-            int fi = sh.indexOf("from ");
-            int bi = sh.indexOf("by ");
-
-            item.album = sh.mid(fi + 5, bi - fi - 6);
-            item.artist = sh.mid(bi + 3, sh.size() - bi - 3);
-        } else if (type == Type_Album) {
-            auto sh = node_text(subhead);
-
-            int bi = sh.indexOf("by ");
-
-            item.artist = sh.mid(bi + 3, sh.size() - bi - 3);
-            item.album = item.name;
-        }
-
-        items.push_back(std::move(item));
-    }
-
-    return items;
-}*/
-
 QUrl BcApi::makeSearchUrl(const QString &phrase)
 {
     QUrlQuery qurl;
     qurl.addQueryItem("q", phrase);
-    //QUrl url("https://bandcamp.com/search");
-    QUrl url{"https://bandcamp.com/api/fuzzysearch/1/mobile_autocomplete"};
+    QUrl url{"https://bandcamp.com/api/fuzzysearch/1/autocomplete"};
     url.setQuery(qurl);
     return url;
 }
