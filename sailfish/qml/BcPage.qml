@@ -22,6 +22,8 @@ Dialog {
     property alias artistPage: itemModel.artistUrl
     readonly property bool albumMode: albumPage && albumPage.toString().length > 0
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
+    readonly property bool searchMode: !albumMode && !artistMode
+    readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://bc-notable"
 
     canAccept: itemModel.selectedCount > 0
     acceptDestination: app.queuePage()
@@ -46,6 +48,14 @@ Dialog {
         onError: {
             notifications.show(qsTr("Error in getting data from bandcamp.com"))
         }
+        onProgressChanged: {
+            if (total == 0) {
+                progressLabel.visible = false
+            } else {
+                progressLabel.text = "" + n + "/" + total
+                progressLabel.visible = true
+            }
+        }
     }
 
     SilicaListView {
@@ -57,8 +67,21 @@ Dialog {
 
         model: itemModel
 
+        footer: Item {
+            visible: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
+            height: Theme.itemSizeMedium
+            width: parent.width
+            Button {
+                anchors.centerIn: parent
+                text: qsTr("Show more New and Notable")
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: "jupii://bc-notable"})
+                }
+            }
+        }
+
         header: SearchDialogHeader {
-            search: !root.artistMode && !root.albumMode
+            search: root.searchMode
             implicitWidth: root.width
             noSearchCount: -1
             model: itemModel
@@ -131,6 +154,14 @@ Dialog {
         anchors.centerIn: parent
         running: itemModel.busy
         size: BusyIndicatorSize.Large
+
+        Label {
+            id: progressLabel
+            visible: false
+            anchors.centerIn: parent
+            font.pixelSize: Theme.fontSizeMedium
+            color: parent.color
+        }
     }
 
     VerticalScrollDecorator {

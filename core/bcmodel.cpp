@@ -10,14 +10,13 @@
 #include <vector>
 
 #include "bcmodel.h"
-#include "bcapi.h"
 #include "utils.h"
 #include "iconprovider.h"
+#include "bcapi.h"
 
 BcModel::BcModel(QObject *parent) :
     SelectableItemModel(new BcItem, parent)
-{
-}
+{}
 
 QUrl BcModel::getAlbumUrl() const
 {
@@ -95,8 +94,40 @@ QVariantList BcModel::selectedItems()
 
 QList<ListItem*> BcModel::makeItems()
 {
-    return albumUrl.isEmpty() && artistUrl.isEmpty() ? makeSearchItems() :
-           artistUrl.isEmpty() ? makeAlbumItems() : makeArtistItems();
+    if (albumUrl.isEmpty() && artistUrl.isEmpty()) return makeSearchItems();
+    if (artistUrl.isEmpty()) return makeAlbumItems();
+    if (artistUrl == QUrl{"jupii://bc-notable"}) return makeNotableItems();
+    return makeArtistItems();
+}
+
+QList<ListItem*> BcModel::makeNotableItems()
+{
+    QList<ListItem*> items;
+
+    BcApi api;
+    connect(&api, &BcApi::progressChanged, this, [this](int n, int total){ emit progressChanged(n, total); });
+
+    const auto results = api.notableItems();
+
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
+
+    setArtistName({});
+
+    for (const auto& result : results) {
+        items << new BcItem{result.webUrl.toString(),
+                            result.title,
+                            result.artist,
+                            result.album,
+                            result.webUrl,
+                            {},
+                            result.imageUrl,
+                            0,
+                            BcModel::Type(result.type)};
+    }
+
+    emit progressChanged(0, 0);
+
+    return items;
 }
 
 QList<ListItem*> BcModel::makeSearchItems()
@@ -105,25 +136,23 @@ QList<ListItem*> BcModel::makeSearchItems()
 
     const auto phrase = getFilter().simplified();
 
+    const auto results = phrase.isEmpty() ? BcApi{}.notableItemsFirstPage() : BcApi{}.search(phrase);
+
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
+
+    for (const auto& result : results) {
+        items << new BcItem{result.webUrl.toString(),
+                            result.title,
+                            result.artist,
+                            result.album,
+                            result.webUrl,
+                            {},
+                            result.imageUrl,
+                            0,
+                            BcModel::Type(result.type)};
+    }
+
     if (!phrase.isEmpty()) {
-        const auto results = BcApi{}.search(phrase);
-
-        if (QThread::currentThread()->isInterruptionRequested())
-            return items;
-
-        for (const auto& result : results) {
-            items << new BcItem{result.webUrl.toString(),
-                                result.title,
-                                result.artist,
-                                result.album,
-                                result.webUrl,
-                                {},
-                                result.imageUrl,
-                                0,
-                                BcModel::Type(result.type)};
-        }
-
-        // Sorting
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
             const auto aa = qobject_cast<BcItem*>(a);
             const auto bb = qobject_cast<BcItem*>(b);
@@ -141,8 +170,7 @@ QList<ListItem*> BcModel::makeAlbumItems()
 
     const auto album = BcApi{}.album(albumUrl);
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return items;
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     setAlbumTitle(album.title);
 
@@ -167,8 +195,7 @@ QList<ListItem*> BcModel::makeArtistItems()
 
     const auto artist = BcApi{}.artist(artistUrl);
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return items;
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     setArtistName(artist.name);
 

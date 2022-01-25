@@ -20,6 +20,8 @@ Kirigami.ScrollablePage {
     property alias artistPage: itemModel.artistUrl
     readonly property bool albumMode: albumPage && albumPage.toString().length > 0
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
+    readonly property bool searchMode: !albumMode && !artistMode
+    readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://bc-notable"
 
     leftPadding: 0
     rightPadding: 0
@@ -27,7 +29,7 @@ Kirigami.ScrollablePage {
     topPadding: 0
 
     title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
-           itemModel.artistName.length > 0 ? itemModel.artistName : "Bandcamp"
+           notableMode ? qsTr("New and Notable") : itemModel.artistName.length > 0 ? itemModel.artistName : "Bandcamp"
 
     //refreshing: itemModel.busy
     Component.onCompleted: {
@@ -156,6 +158,15 @@ Kirigami.ScrollablePage {
         delegate: Kirigami.DelegateRecycler {
             width: parent.width
             sourceComponent: listItemComponent
+        }
+
+        footer: Controls.Button {
+            visible: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
+            text: qsTr("Show more New and Notable")
+            onClicked: {
+                pageStack.pop(root)
+                pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: "jupii://bc-notable"})
+            }
         }
 
         Kirigami.PlaceholderMessage {

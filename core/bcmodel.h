@@ -41,10 +41,10 @@ public:
     Q_INVOKABLE QVariantList selectedItems() override;
 
     QUrl getAlbumUrl() const;
-    void setAlbumUrl(const QUrl& albumUrl);
+    void setAlbumUrl(const QUrl &albumUrl);
 
     QUrl getArtistUrl() const;
-    void setArtistUrl(const QUrl& artistUrl);
+    void setArtistUrl(const QUrl &artistUrl);
 
     QString getAlbumTitle() const;
     QString getArtistName() const;
@@ -55,14 +55,16 @@ signals:
     void albumTitleChanged();
     void artistUrlChanged();
     void artistNameChanged();
+    void progressChanged(int n, int total);
 
 private:
     QList<ListItem*> makeItems() override;
     QList<ListItem*> makeSearchItems();
     QList<ListItem*> makeAlbumItems();
     QList<ListItem*> makeArtistItems();
-    void setAlbumTitle(const QString& albumTitle);
-    void setArtistName(const QString& artistName);
+    QList<ListItem*> makeNotableItems();
+    void setAlbumTitle(const QString &albumTitle);
+    void setArtistName(const QString &artistName);
     QUrl albumUrl;
     QString albumTitle;
     QUrl artistUrl;

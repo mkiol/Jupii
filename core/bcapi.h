@@ -16,22 +16,23 @@
 #include <QJsonDocument>
 #include <memory>
 #include <vector>
+#include <optional>
 
-class BcApi : QObject
+class BcApi : public QObject
 {
     Q_OBJECT
 public:
-    enum Type {
-        Type_Unknown = 0,
-        Type_Artist,
-        Type_Album,
-        Type_Track,
-        Type_Label,
-        Type_Fan,
+    enum class Type {
+        Unknown = 0,
+        Artist,
+        Album,
+        Track,
+        Label,
+        Fan,
     };
 
     struct SearchResultItem {
-        Type type = Type_Unknown;
+        Type type = Type::Unknown;
         QString title;
         QString album;
         QString artist;
@@ -75,20 +76,35 @@ public:
         std::vector<ArtistAlbum> albums;
     };
 
-    BcApi(std::shared_ptr<QNetworkAccessManager> nam = std::shared_ptr<QNetworkAccessManager>(), QObject *parent = nullptr);
-    std::vector<SearchResultItem> search(const QString &query);
-    Track track(const QUrl &url);
-    Album album(const QUrl &url);
-    Artist artist(const QUrl &url);
+    BcApi(std::shared_ptr<QNetworkAccessManager> nam = {}, QObject *parent = nullptr);
+    std::vector<SearchResultItem> search(const QString &query) const;
+    std::vector<SearchResultItem> notableItems();
+    std::vector<SearchResultItem> notableItemsFirstPage();
+    Track track(const QUrl &url) const;
+    Album album(const QUrl &url) const;
+    Artist artist(const QUrl &url) const;
     static bool validUrl(const QUrl &url);
 
+signals:
+    void progressChanged(int n, int total);
+
 private:
-    static const int httpTimeout = 10000;
+    static const int httpTimeout;
+    static const int maxNotable;
+    static const int maxNotableFirstPage;
+    static std::vector<BcApi::SearchResultItem> m_notableItems;
+    static bool m_notableItemsDone;
+    static std::vector<double> m_notableIds;
     std::shared_ptr<QNetworkAccessManager> nam;
 
+    std::optional<QJsonDocument> parseDataBlob() const;
+    std::optional<SearchResultItem> notableItem(const double id) const;
+    SearchResultItem notableItem(const QJsonObject &obj) const;
+    inline static QUrl artUrl(const QString &id);
     static QUrl makeSearchUrl(const QString &phrase);
     static QJsonDocument parseJsonData(const QByteArray &data);
     static Type textToType(const QString &text);
+    void storeNotableIds(const QJsonObject &obj);
 };
 
 #endif // BCAPI_H
