@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2021 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -89,7 +89,6 @@ signals:
     void progressChanged(int n, int total);
 
 private:
-    static const int httpTimeout;
     static const int maxNotable;
     static const int maxNotableFirstPage;
     static std::vector<BcApi::SearchResultItem> m_notableItems;
@@ -98,7 +97,7 @@ private:
     std::shared_ptr<QNetworkAccessManager> nam;
 
     std::optional<QJsonDocument> parseDataBlob() const;
-    std::optional<SearchResultItem> notableItem(const double id) const;
+    std::optional<SearchResultItem> notableItem(double id) const;
     SearchResultItem notableItem(const QJsonObject &obj) const;
     inline static QUrl artUrl(const QString &id);
     static QUrl makeSearchUrl(const QString &phrase);

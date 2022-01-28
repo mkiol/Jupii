@@ -551,6 +551,9 @@ void PlaylistModel::updateRefreshTimer()
 
 void PlaylistModel::onAvStateChanged()
 {
+    if (Services::instance()->avTransport->getTransportState() == AVTransport::Playing) {
+        resetToBeActive();
+    }
     updateRefreshTimer();
     doUpdate();
 #ifdef SAILFISH

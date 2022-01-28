@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -100,33 +100,56 @@ QVariantList SoundcloudModel::selectedItems()
 
 QList<ListItem*> SoundcloudModel::makeItems()
 {
-    return albumUrl.isEmpty() && artistUrl.isEmpty() ? makeSearchItems() :
-           artistUrl.isEmpty() ? makeAlbumItems() : makeArtistItems();
+    if (albumUrl.isEmpty() && artistUrl.isEmpty()) return makeSearchItems();
+    if (artistUrl.isEmpty()) return makeAlbumItems();
+    if (artistUrl == QUrl{"jupii://soundcloud-featured"}) return makeFeaturedItems();
+    return makeArtistItems();
 }
 
-QList<ListItem*> SoundcloudModel::makeSearchItems()
+QList<ListItem*> SoundcloudModel::makeFeaturedItems()
+{
+    QList<ListItem*> items;
+
+    const auto results = SoundcloudApi{}.featuredItems();
+
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
+
+    setArtistName({});
+
+    for (const auto& result : results) {
+        items << new SoundcloudItem{result.webUrl.toString(),
+                            result.title,
+                            result.artist,
+                            result.album,
+                            result.webUrl,
+                            result.imageUrl,
+                            SoundcloudModel::Type(result.type)};
+    }
+
+    return items;
+}
+
+QList<ListItem*> SoundcloudModel::makeSearchItems() const
 {
     QList<ListItem*> items;
 
     const auto phrase = getFilter().simplified();
 
+    const auto results = phrase.isEmpty() ? SoundcloudApi{}.featuredItemsFirstPage() : SoundcloudApi{}.search(phrase);
+
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
+
+    for (const auto& result : results) {
+        items << new SoundcloudItem{result.webUrl.toString(),
+                            result.title,
+                            result.artist,
+                            result.album,
+                            result.webUrl,
+                            result.imageUrl,
+                            SoundcloudModel::Type(result.type)};
+    }
+
     if (!phrase.isEmpty()) {
-        const auto results = SoundcloudApi{}.search(phrase);
-
-        if (QThread::currentThread()->isInterruptionRequested())
-            return items;
-
-        for (const auto& result : results) {
-            items << new SoundcloudItem{result.webUrl.toString(),
-                                result.title,
-                                result.artist,
-                                result.album,
-                                result.webUrl,
-                                result.imageUrl,
-                                SoundcloudModel::Type(result.type)};
-        }
-
-        // Sorting
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
             const auto aa = qobject_cast<SoundcloudItem*>(a);
             const auto bb = qobject_cast<SoundcloudItem*>(b);
@@ -171,8 +194,7 @@ QList<ListItem*> SoundcloudModel::makeArtistItems()
         setArtistName(lastArtist->name);
     }
 
-    if (QThread::currentThread()->isInterruptionRequested())
-        return items;
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     const auto phrase = getFilter().simplified();
 

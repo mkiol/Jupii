@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -60,11 +60,12 @@ signals:
 
 private:
     QList<ListItem*> makeItems() override;
-    QList<ListItem*> makeSearchItems();
+    QList<ListItem*> makeSearchItems() const;
+    QList<ListItem*> makeFeaturedItems();
     QList<ListItem*> makeAlbumItems();
     QList<ListItem*> makeArtistItems();
-    void setAlbumTitle(const QString& albumTitle);
-    void setArtistName(const QString& artistName);
+    void setAlbumTitle(const QString &albumTitle);
+    void setArtistName(const QString &artistName);
     QUrl albumUrl;
     QString albumTitle;
     QUrl artistUrl;
@@ -97,9 +98,9 @@ public:
                       const QUrl &icon,
                       SoundcloudModel::Type type,
                       QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    inline QString id() const { return m_id; }
+    QVariant data(int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+    inline QString id() const override { return m_id; }
     inline QString name() const { return m_name; }
     inline QString artist() const { return m_artist; }
     inline QString album() const { return m_album; }
@@ -114,7 +115,7 @@ private:
     QString m_album;
     QUrl m_url;
     QUrl m_icon;
-    SoundcloudModel::Type m_type;
+    SoundcloudModel::Type m_type = SoundcloudModel::Type::Type_Unknown;
 };
 
 #endif // SOUNDCLOUDMODEL_H

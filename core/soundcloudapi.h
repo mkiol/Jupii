@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,7 @@
 #include <QJsonArray>
 #include <memory>
 #include <functional>
+#include <optional>
 
 #include "gumbotools.h"
 
@@ -88,23 +89,26 @@ public:
         std::vector<UserTrack> tracks;
     };
 
-    explicit SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam = {},
-                           QObject *parent = nullptr);
-    std::vector<SearchResultItem> search(const QString &query);
+    SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam = {}, QObject *parent = nullptr);
+    std::vector<SearchResultItem> search(const QString &query) const;
+    std::vector<SearchResultItem> featuredItems(int max = maxFeatured) const;
+    std::vector<SearchResultItem> featuredItemsFirstPage() const;
     Track track(const QUrl &url);
     User user(const QUrl &url);
     Playlist playlist(const QUrl &url);
     static bool validUrl(const QUrl &url);
 
 private:
-    static const int httpTimeout = 10000;
     static QString clientId;
+    static const int maxFeatured;
+    static const int maxFeaturedFirstPage;
     std::shared_ptr<QNetworkAccessManager> nam;
     QString locale;
 
     void discoverClientId();
-    QJsonDocument downloadJsonData(const QUrl &url);
-    gumbo::GumboOutput_ptr downloadHtmlData(const QUrl &url);
+    std::optional<SearchResultItem> searchItem(const QJsonObject &obj) const;
+    QJsonDocument downloadJsonData(const QUrl &url) const;
+    gumbo::GumboOutput_ptr downloadHtmlData(const QUrl &url) const;
     static QJsonDocument parseJsonData(const QByteArray &data);
     static Type textToType(const QString &text);
     QUrl makeSearchUrl(const QString &phrase) const;
@@ -112,15 +116,16 @@ private:
     QUrl makePlaylistUrl(const QString &id) const;
     QUrl makeUserStreamUrl(const QString &id) const;
     QUrl makeTrackUrl(const QString &id) const;
+    QUrl makeFeaturedTracksUrl(int limit = maxFeatured) const;
     static QString extractData(const QString &text);
     static QString extractClientId(const QString &text);
     static QString extractUserId(const QString &text);
     static QString extractPlaylistId(const QString &text);
     static QString extractUsernameFromTitle(const QString &text);
     static bool mediaOk(const QJsonArray &media);
-    QJsonArray extractItems(const QUrl &url);
-    void addClientId(QUrl &url) const;
-    void user(const QUrl &url, User &user, int count = 0);
+    QJsonArray extractItems(const QUrl &url) const;
+    void addClientId(QUrl *url) const;
+    void user(const QUrl &url, User *user, int count = 0) const;
 };
 
 #endif // SOUNDCLOUDAPI_H
