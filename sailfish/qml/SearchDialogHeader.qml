@@ -12,11 +12,13 @@ FocusScope {
     id: root
 
     property alias searchPlaceholderText: searchField.placeholderText
+    property alias sectionHeaderText: sectionHeader.text
+    property var recentSearches: []
     property int noSearchCount: 10
     property bool search: true
-    property var model
     property var dialog
     property var view
+    signal removeSearchHistoryClicked(string value)
 
     height: column.height
 
@@ -29,6 +31,7 @@ FocusScope {
     Column {
         id: column
         width: parent.width
+        Behavior on width { FadeAnimation {} }
 
         DialogHeader {
             id: header
@@ -36,7 +39,7 @@ FocusScope {
             spacing: 0
 
             acceptText: {
-                var count = model.selectedCount
+                var count = root.view.model.selectedCount
                 return count > 0 ? qsTr("%n selected", "", count) : header.defaultAcceptText
             }
         }
@@ -44,18 +47,69 @@ FocusScope {
         SearchField {
             id: searchField
             width: parent.width
-            visible: root.search && (model.filter.length !== 0 ||
-                     model.count > root.noSearchCount)
-            text: model.filter
+            opacity: (root.search && (root.view.model.filter.length !== 0 ||
+                     root.view.model.count > root.noSearchCount)) ? 1.0 : 0.0
+            visible: opacity > 0.0
+            Behavior on opacity { FadeAnimation {} }
+            text: root.view.model.filter
 
             onActiveFocusChanged: {
-                if (activeFocus)
-                    root.view.currentIndex = -1
+                if (activeFocus) root.view.currentIndex = -1
             }
 
             onTextChanged: {
-                model.filter = text.trim()
+                root.view.model.filter = text.trim()
             }
+
+            Connections {
+                target: root.view.model
+                onFilterChanged: searchField.text = root.view.model.filter
+            }
+        }
+
+        SectionHeader {
+            visible: root.search && root.recentSearches.length > 0
+            text: qsTr("Recent searches")
+        }
+
+        Repeater {
+            model: recentSearches
+            Behavior on width { FadeAnimation {} }
+            delegate: Component {
+                ListItem {
+                    menu: contextMenu
+                    contentHeight: Theme.itemSizeExtraSmall
+                    Label {
+                        font.pixelSize: Theme.fontSizeSmall
+                        truncationMode: TruncationMode.Fade
+                        text: modelData
+                        anchors {
+                            left: parent.left; right: parent.right
+                            leftMargin: Theme.horizontalPageMargin
+                            rightMargin: Theme.horizontalPageMargin
+                            verticalCenter: parent.verticalCenter
+                        }
+                        color: root.highlighted ? Theme.highlightColor : Theme.primaryColor
+                    }
+                    onClicked: root.view.model.filter = modelData
+                    Component {
+                        id: contextMenu
+                        ContextMenu {
+                            MenuItem {
+                                text: qsTr("Remove")
+                                onClicked: root.removeSearchHistoryClicked(modelData)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        SectionHeader {
+            id: sectionHeader
+            opacity: (text.length > 0) ? 1.0 : 0.0
+            visible: opacity > 0.0
+            Behavior on opacity { FadeAnimation {} }
         }
     }
 }

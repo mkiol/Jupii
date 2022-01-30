@@ -51,7 +51,6 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
-            model: itemModel
             dialog: root
             view: listView
 
@@ -116,7 +115,7 @@ Dialog {
                 if (author.length > 0)
                     return author
             }
-            enabled: !itemModel.busy
+            enabled: !itemModel.busy && listView.count > 0
             icon.source: model.icon
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
 

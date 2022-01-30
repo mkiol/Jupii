@@ -14,7 +14,6 @@ FocusScope {
     property alias title: header.title
     property alias searchPlaceholderText: search.placeholderText
     property int noSearchCount: 10
-    property var model
     property var view
 
     implicitHeight: column.height
@@ -31,8 +30,8 @@ FocusScope {
 
         SearchField {
             id: search
-            visible: model.filter.length !== 0 ||
-                     model.count > root.noSearchCount
+            visible: view.model.filter.length !== 0 ||
+                     view.model.count > root.noSearchCount
             width: root.width
 
             onActiveFocusChanged: {
@@ -41,7 +40,7 @@ FocusScope {
             }
 
             onTextChanged: {
-                model.filter = text.toLowerCase().trim()
+                view.model.filter = text.toLowerCase().trim()
             }
         }
     }

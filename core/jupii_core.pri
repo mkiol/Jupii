@@ -1,5 +1,6 @@
 CONFIG += c++1z json no_lflags_merge
 QT += gui network dbus sql multimedia xml
+QMAKE_CXXFLAGS += -Wpedantic
 
 CORE_DIR = ../core
 

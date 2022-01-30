@@ -21,7 +21,7 @@ ListItem {
     readonly property bool _iconDisabled: _icon.status !== Image.Ready &&
                                          _dicon.status !== Image.Ready
 
-    opacity: enabled ? 1.0 : 0.0
+    opacity: enabled && _icon.status !== Image.Loading ? 1.0 : 0.0
     visible: opacity > 0.0
     Behavior on opacity { FadeAnimation {} }
 

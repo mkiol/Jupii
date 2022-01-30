@@ -23,15 +23,16 @@ Dialog {
     readonly property bool albumMode: albumPage && albumPage.toString().length > 0
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
-    readonly property bool featuredMode: artistPage && artistPage.toString() == "jupii://soundcloud-featured"
+    readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://soundcloud-featured"
+    readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0 && listView.count > 0
 
     canAccept: itemModel.selectedCount > 0
     acceptDestination: app.queuePage()
     acceptDestinationAction: PageStackAction.Pop
 
-    onAccepted: {
-        playlist.addItemUrls(itemModel.selectedItems())
-    }
+    onAccepted: playlist.addItemUrls(itemModel.selectedItems())
+
+    Component.onDestruction: addHistory()
 
     // Hack to update model after all transitions
     property bool _completed: false
@@ -40,6 +41,13 @@ Dialog {
         if (status === PageStatus.Active && _completed) {
             _completed = false
             itemModel.updateModel()
+        }
+    }
+
+    function addHistory() {
+        if (searchMode) {
+            var filter = itemModel.filter
+            if (filter.length > 0) settings.addSoundcloudSearchHistory(filter)
         }
     }
 
@@ -59,30 +67,23 @@ Dialog {
 
         model: itemModel
 
-        footer: Item {
-            visible: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
-            height: Theme.itemSizeMedium
-            width: parent.width
-            Button {
-                anchors.centerIn: parent
-                text: qsTr("Show more trending tracks")
-                onClicked: {
-                    pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: "jupii://soundcloud-featured"})
-                }
+        footer: ShowMoreItem {
+            enabled: featureMode
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: "jupii://soundcloud-featured"})
             }
         }
 
         header: SearchDialogHeader {
-            search: !root.albumMode && !root.featuredMode
+            search: !root.albumMode && !root.notableMode
             implicitWidth: root.width
             noSearchCount: -1
-            model: itemModel
             dialog: root
             view: listView
-
-            onActiveFocusChanged: {
-                listView.currentIndex = -1
-            }
+            recentSearches: root.searchMode && itemModel.filter.length === 0 ? settings.soundcloudSearchHistory : []
+            sectionHeaderText: root.featureMode ? qsTr("Trending tracks") : ""
+            onActiveFocusChanged: listView.currentIndex = -1
+            onRemoveSearchHistoryClicked: settings.removeSoundcloudSearchHistory(value)
         }
 
         PullDownMenu {
@@ -112,7 +113,7 @@ Dialog {
                         model.type === SoundcloudModel.Type_Artist ? model.artist : ""
             subtitle.text: model.type === SoundcloudModel.Type_Track ||
                            model.type === SoundcloudModel.Type_Album ? model.artist : ""
-            enabled: !itemModel.busy
+            enabled: !itemModel.busy && listView.count > 0
             defaultIcon.source: model.type === SoundcloudModel.Type_Album ?
                                     "image://theme/icon-m-media-albums?" + primaryColor :
                                 model.type === SoundcloudModel.Type_Artist ?

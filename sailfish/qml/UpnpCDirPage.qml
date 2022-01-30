@@ -41,7 +41,6 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
-            model: itemModel
             dialog: root
             view: listView
 
@@ -116,7 +115,7 @@ Dialog {
                 return ""
             }
 
-            enabled: !itemModel.busy
+            enabled: !itemModel.busy && listView.count > 0
 
             onClicked: {
                 if (model.selectable) {

@@ -47,7 +47,6 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
-            model: itemModel
             dialog: root
             view: listView
 
@@ -85,7 +84,7 @@ Dialog {
             title.text: model.title
             subtitle.text: root.albumId.length !== 0 || root.playlistId.length !== 0 ?
                                model.artist : model.album
-            enabled: !itemModel.busy
+            enabled: !itemModel.busy && listView.count > 0
             icon.source: model.icon
             defaultIcon.source: {
                 if (isMic)

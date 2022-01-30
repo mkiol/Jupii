@@ -22,9 +22,9 @@ Dialog {
     acceptDestination: app.queuePage()
     acceptDestinationAction: PageStackAction.Pop
 
-    onAccepted: {
-        playlist.addItemUrls(itemModel.selectedItems())
-    }
+    onAccepted: playlist.addItemUrls(itemModel.selectedItems())
+
+    Component.onDestruction: addHistory()
 
     // Hack to update model after all transitions
     property bool _completed: false
@@ -34,6 +34,11 @@ Dialog {
             _completed = false
             itemModel.updateModel()
         }
+    }
+
+    function addHistory() {
+        var filter = itemModel.filter
+        if (filter.length > 0) settings.addTuneinSearchHistory(filter)
     }
 
     TuneinModel {
@@ -56,13 +61,12 @@ Dialog {
         header: SearchDialogHeader {
             implicitWidth: root.width
             noSearchCount: -1
-            model: itemModel
             dialog: root
             view: listView
-
-            onActiveFocusChanged: {
-                listView.currentIndex = -1
-            }
+            recentSearches: itemModel.filter.length === 0 ? settings.tuneinSearchHistory : []
+            sectionHeaderText: listView.count > 0 && recentSearches.length > 0 ? qsTr("Radio stations") : ""
+            onActiveFocusChanged: listView.currentIndex = -1
+            onRemoveSearchHistoryClicked: settings.removeTuneinSearchHistory(value)
         }
 
         PullDownMenu {
@@ -90,7 +94,7 @@ Dialog {
             highlighted: down || model.selected
             title.text: model.name
             subtitle.text: model.description
-            enabled: !itemModel.busy
+            enabled: !itemModel.busy && listView.count > 0
             icon.source: model.icon
             defaultIcon.source: "image://icons/icon-m-browser?" + primaryColor
 

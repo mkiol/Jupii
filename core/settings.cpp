@@ -18,6 +18,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <limits>
+#include <algorithm>
 
 #include "settings.h"
 #include "directory.h"
@@ -885,4 +886,104 @@ void Settings::initOpenUrlMode()
                 updateDesktopDb();
             }
     });
+}
+
+QStringList Settings::bcSearchHistory() const
+{
+    return settings.value("bcsearchhistory", {}).toStringList();
+}
+
+void Settings::addBcSearchHistory(const QString &value)
+{
+    auto v = value.toLower();
+    auto list = bcSearchHistory();
+    list.removeOne(v);
+    list.push_front(v);
+    if (list.size() > maxSearchHistory) list.removeLast();
+    settings.setValue("bcsearchhistory", list);
+    emit bcSearchHistoryChanged();
+}
+
+void Settings::removeBcSearchHistory(const QString &value)
+{
+    auto list = bcSearchHistory();
+    if (list.removeOne(value.toLower())) {
+        settings.setValue("bcsearchhistory", list);
+        emit bcSearchHistoryChanged();
+    }
+}
+
+QStringList Settings::soundcloudSearchHistory() const
+{
+    return settings.value("soundcloudsearchhistory", {}).toStringList();
+}
+
+void Settings::addSoundcloudSearchHistory(const QString &value)
+{
+    auto v = value.toLower();
+    auto list = soundcloudSearchHistory();
+    list.removeOne(v);
+    list.push_front(v);
+    if (list.size() > maxSearchHistory) list.removeLast();
+    settings.setValue("soundcloudsearchhistory", list);
+    emit soundcloudSearchHistoryChanged();
+}
+
+void Settings::removeSoundcloudSearchHistory(const QString &value)
+{
+    auto list = soundcloudSearchHistory();
+    if (list.removeOne(value.toLower())) {
+        settings.setValue("soundcloudsearchhistory", list);
+        emit soundcloudSearchHistoryChanged();
+    }
+}
+
+QStringList Settings::icecastSearchHistory() const
+{
+    return settings.value("icecastsearchhistory", {}).toStringList();
+}
+
+void Settings::addIcecastSearchHistory(const QString &value)
+{
+    auto v = value.toLower();
+    auto list = icecastSearchHistory();
+    list.removeOne(v);
+    list.push_front(v);
+    if (list.size() > maxSearchHistory) list.removeLast();
+    settings.setValue("icecastsearchhistory", list);
+    emit icecastSearchHistoryChanged();
+}
+
+void Settings::removeIcecastSearchHistory(const QString &value)
+{
+    auto list = icecastSearchHistory();
+    if (list.removeOne(value.toLower())) {
+        settings.setValue("icecastsearchhistory", list);
+        emit icecastSearchHistoryChanged();
+    }
+}
+
+QStringList Settings::tuneinSearchHistory() const
+{
+    return settings.value("tuneinsearchhistory", {}).toStringList();
+}
+
+void Settings::addTuneinSearchHistory(const QString &value)
+{
+    auto v = value.toLower();
+    auto list = tuneinSearchHistory();
+    list.removeOne(v);
+    list.push_front(v);
+    if (list.size() > maxSearchHistory) list.removeLast();
+    settings.setValue("tuneinsearchhistory", list);
+    emit tuneinSearchHistoryChanged();
+}
+
+void Settings::removeTuneinSearchHistory(const QString &value)
+{
+    auto list = tuneinSearchHistory();
+    if (list.removeOne(value.toLower())) {
+        settings.setValue("tuneinsearchhistory", list);
+        emit tuneinSearchHistoryChanged();
+    }
 }

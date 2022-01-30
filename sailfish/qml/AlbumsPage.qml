@@ -67,7 +67,6 @@ Page {
         header: SearchPageHeader {
             implicitWidth: root.width
             title: qsTr("Albums")
-            model: itemModel
             view: listView
         }
 
@@ -86,7 +85,7 @@ Page {
         delegate: DoubleListItem {
             title.text: model.title
             subtitle.text: model.artist + " · " + qsTr("%n track(s)", "", model.count)
-            enabled: !itemModel.busy
+            enabled: !itemModel.busy && listView.count > 0
             icon.source: model.icon
             defaultIcon.source: "image://theme/graphic-grid-playlist?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)

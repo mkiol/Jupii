@@ -53,6 +53,10 @@ class Settings:
     Q_PROPERTY (QString fsapiPin READ fsapiPin WRITE setFsapiPin NOTIFY fsapiPinChanged)
     Q_PROPERTY (bool globalYtdl READ globalYtdl WRITE setGlobalYtdl NOTIFY globalYtdlChanged)
     Q_PROPERTY (OpenUrlModeType openUrlMode READ openUrlMode WRITE setOpenUrlMode NOTIFY openUrlModeChanged)
+    Q_PROPERTY (QStringList bcSearchHistory READ bcSearchHistory NOTIFY bcSearchHistoryChanged)
+    Q_PROPERTY (QStringList soundcloudSearchHistory READ soundcloudSearchHistory NOTIFY soundcloudSearchHistoryChanged)
+    Q_PROPERTY (QStringList icecastSearchHistory READ icecastSearchHistory NOTIFY icecastSearchHistoryChanged)
+    Q_PROPERTY (QStringList tuneinSearchHistory READ tuneinSearchHistory NOTIFY tuneinSearchHistoryChanged)
 
 public:
     enum class HintType {
@@ -155,6 +159,18 @@ public:
     Q_INVOKABLE void resetHints();
     OpenUrlModeType openUrlMode() const;
     void setOpenUrlMode(OpenUrlModeType value);
+    QStringList bcSearchHistory() const;
+    Q_INVOKABLE void addBcSearchHistory(const QString &value);
+    Q_INVOKABLE void removeBcSearchHistory(const QString &value);
+    QStringList soundcloudSearchHistory() const;
+    Q_INVOKABLE void addSoundcloudSearchHistory(const QString &value);
+    Q_INVOKABLE void removeSoundcloudSearchHistory(const QString &value);
+    QStringList icecastSearchHistory() const;
+    Q_INVOKABLE void addIcecastSearchHistory(const QString &value);
+    Q_INVOKABLE void removeIcecastSearchHistory(const QString &value);
+    QStringList tuneinSearchHistory() const;
+    Q_INVOKABLE void addTuneinSearchHistory(const QString &value);
+    Q_INVOKABLE void removeTuneinSearchHistory(const QString &value);
 
 signals:
     void portChanged();
@@ -190,6 +206,10 @@ signals:
     void fsapiPinChanged();
     void globalYtdlChanged();
     void openUrlModeChanged();
+    void bcSearchHistoryChanged();
+    void soundcloudSearchHistoryChanged();
+    void icecastSearchHistoryChanged();
+    void tuneinSearchHistoryChanged();
 
 private:
     inline static const QStringList urlMimesForOpenWith = {
@@ -200,6 +220,7 @@ private:
         "audio/*",
         "video/*"
     };
+    static const int maxSearchHistory = 3;
     QSettings settings;
     static Settings* inst;
     const QString hwName;

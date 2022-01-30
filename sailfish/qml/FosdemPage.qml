@@ -55,7 +55,6 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
-            model: itemModel
             dialog: root
             view: listView
             onActiveFocusChanged: {
@@ -94,7 +93,7 @@ Dialog {
             highlighted: down || model.selected
             title.text: model.name
             subtitle.text: model.track
-            enabled: !itemModel.busy
+            enabled: !itemModel.busy && listView.count > 0
             icon.source: "image://theme/icon-m-file-video?" + primaryColor
 
             onClicked: {

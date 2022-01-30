@@ -29,7 +29,33 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.10.2")
+                text: qsTr("Version %1").arg("2.11")
+            }
+
+            LogItem {
+                title: "Fixes for Bandcamp integration"
+                description: "Bandcamp API was changed and therefore adding music from Bandcamp browser was broken. " +
+                             "This issue is now resolved."
+            }
+
+            LogItem {
+                title: "Recent searches"
+                description: "Bandcamp, Icecast, SoundCloud and TuneIn browsers display the most recent searched phrases."
+            }
+
+            LogItem {
+                title: "Featured content"
+                description: "Bandcamp and SoundCloud browsers have an option to show 'New and Notable' albums (Bandcamp) and 'Featured tracks' (SoundCloud)."
+            }
+
+            LogItem {
+                title: "Remote content playback improvements"
+                description: "Before playback, URL-based content from the Internet is cached to improve streaming stability. " +
+                             "This might resolve some issues observed on TV devices (e.g. Samsung TV)."
+            }
+
+            SectionHeader {
+                text: qsTr("Version %1").arg("2.10")
             }
 
             LogItem {
@@ -56,7 +82,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.9.1")
+                text: qsTr("Version %1").arg("2.9")
             }
 
             LogItem {
@@ -88,7 +114,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.8.2")
+                text: qsTr("Version %1").arg("2.8")
             }
 
             LogItem {
@@ -124,17 +150,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.7.3")
-            }
-
-            LogItem {
-                title: "DBus API update"
-                description: "DBus API has been updated to provide better " +
-                             "integration with other apps (e.g. Microtube)."
-            }
-
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.7.2")
+                text: qsTr("Version %1").arg("2.7")
             }
 
             LogItem {
@@ -193,8 +209,14 @@ Page {
                              "and Rui Kon for providing updated translations."
             }
 
+            LogItem {
+                title: "DBus API update"
+                description: "DBus API has been updated to provide better " +
+                             "integration with other apps (e.g. Microtube)."
+            }
+
             SectionHeader {
-                text: qsTr("Version %1").arg("2.6.2")
+                text: qsTr("Version %1").arg("2.6")
             }
 
             LogItem {
@@ -249,8 +271,8 @@ Page {
                              "for providing updated translations."
             }
 
-            SectionHeader {
-                text: qsTr("Version %1").arg("2.5.2")
+            /*SectionHeader {
+                text: qsTr("Version %1").arg("2.5")
             }
 
             LogItem {
@@ -337,7 +359,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg("2.2.2")
+                text: qsTr("Version %1").arg("2.2")
             }
 
             LogItem {
@@ -391,7 +413,7 @@ Page {
                              "providing Chinese and Slovenian translations."
             }
 
-            /*SectionHeader {
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.0.0")
             }
 

@@ -732,10 +732,9 @@ QByteArray PlaylistModel::makePlsData(const QString& name)
     QByteArray data;
     QTextStream sdata{&data};
 
-    sdata << "[playlist]" << endl;
-    if (!name.isEmpty())
-        sdata << "X-GNOME-Title=" << name << endl;
-    sdata << "NumberOfEntries=" << m_list.size() << endl;
+    sdata << "[playlist]\n";
+    if (!name.isEmpty()) sdata << "X-GNOME-Title=" << name << "\n";
+    sdata << "NumberOfEntries=" << m_list.size() << "\n";
 
     int l = m_list.size();
     for (int i = 0; i < l; ++i) {
@@ -748,9 +747,9 @@ QByteArray PlaylistModel::makePlsData(const QString& name)
             else
                 name = pitem->artist() + " - " + pitem->name();
         }
-        sdata << "File" << i + 1 << "=" << url << endl;
+        sdata << "File" << i + 1 << "=" << url << "\n";
         if (!name.isEmpty())
-            sdata << "Title" << i + 1 << "=" << name << endl;
+            sdata << "Title" << i + 1 << "=" << name << "\n";
     }
 
     return data;

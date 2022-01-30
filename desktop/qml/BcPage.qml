@@ -22,6 +22,7 @@ Kirigami.ScrollablePage {
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
     readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://bc-notable"
+    readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
 
     leftPadding: 0
     rightPadding: 0
@@ -161,8 +162,8 @@ Kirigami.ScrollablePage {
         }
 
         footer: Controls.Button {
-            visible: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
-            text: qsTr("Show more New and Notable")
+            visible: root.featureMode
+            text: qsTr("Show more")
             onClicked: {
                 pageStack.pop(root)
                 pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: "jupii://bc-notable"})

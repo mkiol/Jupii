@@ -21,7 +21,8 @@ Kirigami.ScrollablePage {
     readonly property bool albumMode: albumPage && albumPage.toString().length > 0
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
-    readonly property bool featuredMode: artistPage && artistPage.toString() == "jupii://soundcloud-featured"
+    readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://soundcloud-featured"
+    readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
 
     leftPadding: 0
     rightPadding: 0
@@ -29,7 +30,7 @@ Kirigami.ScrollablePage {
     topPadding: 0
 
     title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
-           featuredMode ? qsTr("Trending tracks") : itemModel.artistName.length > 0 ? itemModel.artistName : "SoundCloud"
+           notableMode ? qsTr("Trending tracks") : itemModel.artistName.length > 0 ? itemModel.artistName : "SoundCloud"
 
     //refreshing: itemModel.busy
     Component.onCompleted: {
@@ -161,8 +162,8 @@ Kirigami.ScrollablePage {
         }
 
         footer: Controls.Button {
-            visible: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
-            text: qsTr("Show more trending tracks")
+            visible: root.featureMode
+            text: qsTr("Show more")
             onClicked: {
                 pageStack.pop(root)
                 pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: "jupii://soundcloud-featured"})

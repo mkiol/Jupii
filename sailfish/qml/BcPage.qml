@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,14 +24,15 @@ Dialog {
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
     readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://bc-notable"
+    readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0 && listView.count > 0
 
     canAccept: itemModel.selectedCount > 0
     acceptDestination: app.queuePage()
     acceptDestinationAction: PageStackAction.Pop
 
-    onAccepted: {
-        playlist.addItemUrls(itemModel.selectedItems())
-    }
+    onAccepted: playlist.addItemUrls(itemModel.selectedItems())
+
+    Component.onDestruction: addHistory()
 
     // Hack to update model after all transitions
     property bool _completed: false
@@ -43,6 +44,13 @@ Dialog {
         }
     }
 
+    function addHistory() {
+        if (searchMode) {
+            var filter = itemModel.filter
+            if (filter.length > 0) settings.addBcSearchHistory(filter)
+        }
+    }
+
     BcModel {
         id: itemModel
         onError: {
@@ -50,10 +58,10 @@ Dialog {
         }
         onProgressChanged: {
             if (total == 0) {
-                progressLabel.visible = false
+                progressLabel.enabled = false
             } else {
                 progressLabel.text = "" + n + "/" + total
-                progressLabel.visible = true
+                progressLabel.enabled = true
             }
         }
     }
@@ -67,16 +75,10 @@ Dialog {
 
         model: itemModel
 
-        footer: Item {
-            visible: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
-            height: Theme.itemSizeMedium
-            width: parent.width
-            Button {
-                anchors.centerIn: parent
-                text: qsTr("Show more New and Notable")
-                onClicked: {
-                    pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: "jupii://bc-notable"})
-                }
+        footer: ShowMoreItem {
+            enabled: featureMode
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: "jupii://bc-notable"})
             }
         }
 
@@ -84,13 +86,12 @@ Dialog {
             search: root.searchMode
             implicitWidth: root.width
             noSearchCount: -1
-            model: itemModel
             dialog: root
             view: listView
-
-            onActiveFocusChanged: {
-                listView.currentIndex = -1
-            }
+            recentSearches: root.searchMode && itemModel.filter.length === 0 ? settings.bcSearchHistory : []
+            sectionHeaderText: root.featureMode ? qsTr("New and Notable") : ""
+            onActiveFocusChanged: listView.currentIndex = -1
+            onRemoveSearchHistoryClicked: settings.removeBcSearchHistory(value)
         }
 
         PullDownMenu {
@@ -121,7 +122,7 @@ Dialog {
                         model.type === BcModel.Type_Artist ? model.artist : ""
             subtitle.text: model.type === BcModel.Type_Track ||
                            model.type === BcModel.Type_Album ? model.artist : ""
-            enabled: !itemModel.busy
+            enabled: !itemModel.busy && listView.count > 0
             defaultIcon.source: model.type === BcModel.Type_Album ?
                                     "image://theme/icon-m-media-albums?" + primaryColor :
                                 model.type === BcModel.Type_Artist ?
@@ -157,7 +158,10 @@ Dialog {
 
         Label {
             id: progressLabel
-            visible: false
+            enabled: false
+            opacity: enabled ? 1.0 : 0.0
+            visible: opacity > 0.0
+            Behavior on opacity { FadeAnimation {} }
             anchors.centerIn: parent
             font.pixelSize: Theme.fontSizeMedium
             color: parent.color
