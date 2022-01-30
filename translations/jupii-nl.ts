@@ -12,10 +12,6 @@
         <translation>Versie %1</translation>
     </message>
     <message>
-        <source>Changelog</source>
-        <translation type="vanished">Wijzigingslog</translation>
-    </message>
-    <message>
         <source>Project website</source>
         <translation type="unfinished"></translation>
     </message>
@@ -58,21 +54,6 @@
     <message>
         <source>Play audio, video and images on UPnP/DLNA devices</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>AddDevicePage</name>
-    <message>
-        <source>Add</source>
-        <translation type="vanished">Toevoegen</translation>
-    </message>
-    <message>
-        <source>Enter IP address</source>
-        <translation type="vanished">Voer IP-adres in</translation>
-    </message>
-    <message>
-        <source>IP address</source>
-        <translation type="vanished">IP-adres</translation>
     </message>
 </context>
 <context>
@@ -251,16 +232,6 @@
     </message>
 </context>
 <context>
-    <name>AlternativeDialogHeader</name>
-    <message numerus="yes">
-        <source>%n selected</source>
-        <translation type="obsolete">
-            <numerusform>%n geselecteerd</numerusform>
-            <numerusform>%n geselecteerd</numerusform>
-        </translation>
-    </message>
-</context>
-<context>
     <name>ArtistPage</name>
     <message numerus="yes">
         <source>%n track(s)</source>
@@ -293,16 +264,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No tracks</source>
-        <translation type="obsolete">Geen nummers</translation>
-    </message>
-    <message>
         <source>Error in getting data from bandcamp.com</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search tracks</source>
-        <translation type="obsolete">Nummers zoeken</translation>
     </message>
     <message>
         <source>No items</source>
@@ -339,20 +302,17 @@
         <source>No albums</source>
         <translation type="unfinished">Geen albums</translation>
     </message>
-</context>
-<context>
-    <name>CDirModel</name>
     <message>
-        <source>Unknown</source>
-        <translation type="obsolete">Onbekend</translation>
+        <source>New and Notable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show more</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ChangelogPage</name>
-    <message>
-        <source>Changelog</source>
-        <translation type="vanished">Wijzigingslog</translation>
-    </message>
     <message>
         <source>Version %1</source>
         <translation>Versie %1</translation>
@@ -406,10 +366,6 @@
         <translation>XML-beschrijving kopiëren</translation>
     </message>
     <message>
-        <source>Description copied to the clipboard</source>
-        <translation type="vanished">Beschrijving gekopieerd naar klembord</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Naam</translation>
     </message>
@@ -456,24 +412,12 @@
 <context>
     <name>DevicesPage</name>
     <message>
-        <source>An internal error occurred</source>
-        <translation type="vanished">Er trad een interne fout op</translation>
-    </message>
-    <message>
         <source>Devices</source>
         <translation>Apparaten</translation>
     </message>
     <message>
-        <source>About</source>
-        <translation type="vanished">Over</translation>
-    </message>
-    <message>
         <source>Settings</source>
         <translation>Instellingen</translation>
-    </message>
-    <message>
-        <source>Add device manually</source>
-        <translation type="vanished">Apparaat handmatig toevoegen</translation>
     </message>
     <message>
         <source>Find devices</source>
@@ -488,28 +432,12 @@
         <translation>Beschrijving tonen</translation>
     </message>
     <message>
-        <source>No devices found. 
-Pull down to find more devices in your network.</source>
-        <translation type="vanished">Geen apparaten gevonden.
-Trek omlaag om meer apparaten in je netwerk te vinden.</translation>
-    </message>
-    <message>
-        <source>Not connected. 
-Pull down to connect to the local network.</source>
-        <translation type="vanished">Niet verbonden.
-Trek omlaag om met het lokale netwerk te verbinden.</translation>
-    </message>
-    <message>
         <source>Remove from favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Add to favorites</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Playlist</source>
-        <translation type="obsolete">Afspeellijst</translation>
     </message>
     <message>
         <source>Power Off</source>
@@ -660,6 +588,10 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
             <numerusform></numerusform>
         </translation>
     </message>
+    <message>
+        <source>Radio stations</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MediaInfoPage</name>
@@ -789,53 +721,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
 </context>
 <context>
-    <name>MediaRendererPage</name>
-    <message>
-        <source>Playlist</source>
-        <translation type="vanished">Afspeellijst</translation>
-    </message>
-    <message>
-        <source>Empty</source>
-        <translation type="vanished">Leeg</translation>
-    </message>
-    <message>
-        <source>Not connected</source>
-        <translation type="vanished">Niet verbonden</translation>
-    </message>
-    <message>
-        <source>Save playlist</source>
-        <translation type="vanished">Afspeellijst opslaan</translation>
-    </message>
-    <message>
-        <source>Clear playlist</source>
-        <translation type="vanished">Afspeellijst wissen</translation>
-    </message>
-    <message>
-        <source>Add item</source>
-        <translation type="vanished">Item toevoegen</translation>
-    </message>
-    <message>
-        <source>Play</source>
-        <translation type="vanished">Afspelen</translation>
-    </message>
-    <message>
-        <source>Show</source>
-        <translation type="vanished">Tonen</translation>
-    </message>
-    <message>
-        <source>Pause</source>
-        <translation type="vanished">Pauzeren</translation>
-    </message>
-    <message>
-        <source>Remove</source>
-        <translation type="vanished">Verwijderen</translation>
-    </message>
-    <message>
-        <source>Unknown</source>
-        <translation type="obsolete">Onbekend</translation>
-    </message>
-</context>
-<context>
     <name>PlayButton</name>
     <message>
         <source>Play</source>
@@ -863,18 +748,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     <message>
         <source>Unknown error</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Empty</source>
-        <translation type="obsolete">Leeg</translation>
-    </message>
-    <message>
-        <source>Save playlist</source>
-        <translation type="obsolete">Afspeellijst opslaan</translation>
-    </message>
-    <message>
-        <source>Add item</source>
-        <translation type="obsolete">Item toevoegen</translation>
     </message>
     <message>
         <source>Show</source>
@@ -1170,10 +1043,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
 <context>
     <name>SavePlaylistPage</name>
     <message>
-        <source>Playlist was saved</source>
-        <translation type="vanished">Afspeellijst opgeslagen</translation>
-    </message>
-    <message>
         <source>Save</source>
         <translation>Opslaan</translation>
     </message>
@@ -1199,6 +1068,14 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
             <numerusform>%n geselecteerd</numerusform>
         </translation>
     </message>
+    <message>
+        <source>Recent searches</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished">Verwijderen</translation>
+    </message>
 </context>
 <context>
     <name>SettingsPage</name>
@@ -1207,40 +1084,8 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation>Instellingen</translation>
     </message>
     <message>
-        <source>Start with last playlist</source>
-        <translation type="vanished">Beginnen met laatste afspeellijst</translation>
-    </message>
-    <message>
         <source>Volume control with hardware keys</source>
         <translation>Volumebesturing met hardwareknoppen</translation>
-    </message>
-    <message>
-        <source>Change volume level using phone hardware volume keys. The volume level of the media device will be set to be the same as the volume level of the ringing alert on the phone.</source>
-        <translation type="vanished">Pas het volume aan met de volumeknoppen van je telefoon. Het volume van het media-apparaat wordt automatisch gelijkgesteld aan het oproepvolume van je telefoon.</translation>
-    </message>
-    <message>
-        <source>Playing images on UPnP devices doesn&apos;t work well right now. There are few minor issues that have not been resolved yet. This option forces %1 to play images despite the fact it could cause some issues.</source>
-        <translation type="vanished">Afbeeldingen afspelen op UPnP-apparaten werkt momenteel niet zo goed. Er zijn enkele kleine probleempjes die nog niet opgelost zijn. Deze optie dwingt %1 om afbeeldingen toch af te spelen.</translation>
-    </message>
-    <message>
-        <source>%1 supports only Media Renderer devices. With this option enabled, all UPnP devices will be shown, including unsupported devices like home routers or Media Servers. For unsupported devices %1 is able to show only basic description information. This option could be useful for auditing UPnP devices in your local network.</source>
-        <translation type="vanished">%1 ondersteunt enkel Media Renderer-apparaten. Met deze optie ingeschakeld worden alle UPnP-apparaten getoond, inclusief niet-ondersteunde apparaten zoals thuisrouters of Media Servers. Van niet-ondersteunde apparaten kan %1 enkel basisbeschrijvingen tonen. Deze optie kan nuttig zijn om UPnP-apparaten in je lokale netwerk te controleren.</translation>
-    </message>
-    <message>
-        <source>Adding devices manually</source>
-        <translation type="vanished">Apparaten handmatig toevoegen</translation>
-    </message>
-    <message>
-        <source>If %1 fails to discover a device (e.g. because it is in a different LAN), you can add it manually with IP address. When enabled, pull down menu contains additional option to add device manually. Make sure that your device is not behind a NAT or a firewall.</source>
-        <translation type="vanished">Als %1 een apparaat niet kan ontdekken (bijv. wanneer het zich in een ander LAN-netwerk bevindt), kan je het handmatig toevoegen met het IP-adres. Indien ingeschakeld, bevat het uittrekmenu een extra optie om apparaten handmatig toe te voegen. Zorg dat je apparaat zich niet achter een NAT of firewall bevindt.</translation>
-    </message>
-    <message>
-        <source>Forward/backward time-step interval</source>
-        <translation type="vanished">Stapinterval voor door-/terugspoelen</translation>
-    </message>
-    <message>
-        <source>Image content</source>
-        <translation type="vanished">Afbeeldingsinhoud</translation>
     </message>
     <message>
         <source>All devices visible</source>
@@ -1420,6 +1265,13 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     </message>
 </context>
 <context>
+    <name>ShowMoreItem</name>
+    <message>
+        <source>Show more</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SomafmPage</name>
     <message>
         <source>No channels</source>
@@ -1503,8 +1355,12 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No albums</source>
-        <translation type="obsolete">Geen albums</translation>
+        <source>Trending tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show more</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1524,10 +1380,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
 </context>
 <context>
     <name>TracksPage</name>
-    <message>
-        <source>Search tracks</source>
-        <translation type="vanished">Nummers zoeken</translation>
-    </message>
     <message>
         <source>No tracks</source>
         <translation>Geen nummers</translation>
@@ -1578,24 +1430,16 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
             <numerusform></numerusform>
         </translation>
     </message>
+    <message>
+        <source>Radio stations</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UpnpCDirDevicesPage</name>
     <message>
-        <source>An internal error occurred</source>
-        <translation type="obsolete">Er trad een interne fout op</translation>
-    </message>
-    <message>
-        <source>Devices</source>
-        <translation type="obsolete">Apparaten</translation>
-    </message>
-    <message>
         <source>Find devices</source>
         <translation type="unfinished">Apparaten zoeken</translation>
-    </message>
-    <message>
-        <source>Connect</source>
-        <translation type="obsolete">Verbinden</translation>
     </message>
     <message>
         <source>Remove from favorites</source>
@@ -1604,12 +1448,6 @@ Trek omlaag om met het lokale netwerk te verbinden.</translation>
     <message>
         <source>Add to favorites</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No devices found. 
-Pull down to find more devices in your network.</source>
-        <translation type="obsolete">Geen apparaten gevonden.
-Trek omlaag om meer apparaten in je netwerk te vinden.</translation>
     </message>
     <message>
         <source>Media Servers</source>
@@ -1643,20 +1481,12 @@ Trek omlaag om meer apparaten in je netwerk te vinden.</translation>
 <context>
     <name>UpnpCDirPage</name>
     <message>
-        <source>Search tracks</source>
-        <translation type="obsolete">Nummers zoeken</translation>
-    </message>
-    <message>
         <source>Unselect all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Select all</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No tracks</source>
-        <translation type="obsolete">Geen nummers</translation>
     </message>
     <message>
         <source>Track number</source>
@@ -1708,31 +1538,6 @@ Trek omlaag om meer apparaten in je netwerk te vinden.</translation>
             <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
-    </message>
-</context>
-<context>
-    <name>UpnpDirPage</name>
-    <message>
-        <source>An internal error occurred</source>
-        <translation type="obsolete">Er trad een interne fout op</translation>
-    </message>
-    <message>
-        <source>Devices</source>
-        <translation type="obsolete">Apparaten</translation>
-    </message>
-    <message>
-        <source>Find devices</source>
-        <translation type="obsolete">Apparaten zoeken</translation>
-    </message>
-    <message>
-        <source>Connect</source>
-        <translation type="obsolete">Verbinden</translation>
-    </message>
-    <message>
-        <source>No devices found. 
-Pull down to find more devices in your network.</source>
-        <translation type="obsolete">Geen apparaten gevonden.
-Trek omlaag om meer apparaten in je netwerk te vinden.</translation>
     </message>
 </context>
 <context>

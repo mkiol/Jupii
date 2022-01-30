@@ -267,22 +267,22 @@
         <translation>Albumy</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="78"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="77"/>
         <source>Sort by: %1</source>
         <translation>Sortuj po: %1</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="79"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="78"/>
         <source>Album</source>
         <translation>Albumie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="79"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="78"/>
         <source>Artist</source>
         <translation>Artyście</translation>
     </message>
     <message numerus="yes">
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="88"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="87"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n utwór</numerusform>
@@ -291,12 +291,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="96"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="95"/>
         <source>Select tracks</source>
         <translation>Wybierz utwory</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/AlbumsPage.qml" line="110"/>
+        <location filename="../sailfish/qml/AlbumsPage.qml" line="109"/>
         <source>No albums</source>
         <translation>Brak albumów</translation>
     </message>
@@ -309,7 +309,7 @@
         <translation>Artyści</translation>
     </message>
     <message numerus="yes">
-        <location filename="../sailfish/qml/ArtistPage.qml" line="76"/>
+        <location filename="../sailfish/qml/ArtistPage.qml" line="75"/>
         <source>%n track(s)</source>
         <translation>
             <numerusform>%n utwór</numerusform>
@@ -318,12 +318,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/ArtistPage.qml" line="84"/>
+        <location filename="../sailfish/qml/ArtistPage.qml" line="83"/>
         <source>Select tracks</source>
         <translation>Wybierz utwory</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/ArtistPage.qml" line="98"/>
+        <location filename="../sailfish/qml/ArtistPage.qml" line="97"/>
         <source>No artists</source>
         <translation>Brak artystów</translation>
     </message>
@@ -331,60 +331,66 @@
 <context>
     <name>BcPage</name>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="47"/>
-        <location filename="../desktop/qml/BcPage.qml" line="89"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="57"/>
+        <location filename="../desktop/qml/BcPage.qml" line="92"/>
         <source>Error in getting data from bandcamp.com</source>
         <translation>Błąd przy pobieraniu danych z bandcamp.com</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="82"/>
-        <location filename="../desktop/qml/BcPage.qml" line="51"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="106"/>
+        <location filename="../desktop/qml/BcPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="82"/>
-        <location filename="../desktop/qml/BcPage.qml" line="51"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="106"/>
+        <location filename="../desktop/qml/BcPage.qml" line="54"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="108"/>
-        <location filename="../desktop/qml/BcPage.qml" line="121"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="132"/>
+        <location filename="../desktop/qml/BcPage.qml" line="124"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="109"/>
-        <location filename="../desktop/qml/BcPage.qml" line="122"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="133"/>
+        <location filename="../desktop/qml/BcPage.qml" line="125"/>
         <source>Artist</source>
         <translation>Artysta</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="126"/>
-        <location filename="../desktop/qml/BcPage.qml" line="166"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="150"/>
+        <location filename="../desktop/qml/BcPage.qml" line="178"/>
         <source>Type the words to search</source>
         <translation>Wpisz słowa aby wyszukać</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="126"/>
-        <location filename="../desktop/qml/BcPage.qml" line="166"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="150"/>
+        <location filename="../desktop/qml/BcPage.qml" line="178"/>
         <source>No items</source>
         <translation>Brak elementów</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/BcPage.qml" line="126"/>
-        <location filename="../desktop/qml/BcPage.qml" line="166"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="150"/>
+        <location filename="../desktop/qml/BcPage.qml" line="178"/>
         <source>No albums</source>
         <translation>Brak albumów</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/BcPage.qml" line="40"/>
+        <location filename="../sailfish/qml/BcPage.qml" line="92"/>
+        <location filename="../desktop/qml/BcPage.qml" line="33"/>
+        <source>New and Notable</source>
+        <translation>Nowe albumy</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/BcPage.qml" line="43"/>
         <source>Add selected</source>
         <translation>Dodaj wybrane</translation>
     </message>
     <message numerus="yes">
-        <location filename="../desktop/qml/BcPage.qml" line="40"/>
+        <location filename="../desktop/qml/BcPage.qml" line="43"/>
         <source>Add %n selected</source>
         <translation>
             <numerusform>Dodaj %n wybrany</numerusform>
@@ -393,9 +399,14 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/BcPage.qml" line="141"/>
+        <location filename="../desktop/qml/BcPage.qml" line="144"/>
         <source>Toggle selection</source>
         <translation>Zaznacz/Odznacz</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/BcPage.qml" line="166"/>
+        <source>Show more</source>
+        <translation>Pokaż więcej</translation>
     </message>
 </context>
 <context>
@@ -407,13 +418,11 @@
     </message>
     <message>
         <location filename="../sailfish/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="59"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="91"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="127"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="137"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="197"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="253"/>
-        <location filename="../sailfish/qml/ChangelogPage.qml" line="340"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="58"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="85"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="117"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="153"/>
+        <location filename="../sailfish/qml/ChangelogPage.qml" line="219"/>
         <source>Version %1</source>
         <translation>Wersja %1</translation>
     </message>
@@ -421,22 +430,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../core/contentserver.cpp" line="2068"/>
+        <location filename="../core/contentserver.cpp" line="770"/>
         <source>Unknown</source>
         <translation>Nieznany</translation>
     </message>
     <message>
-        <location filename="../core/contentserver.cpp" line="3072"/>
+        <location filename="../core/contentserver.cpp" line="1772"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../core/contentserver.cpp" line="3091"/>
+        <location filename="../core/contentserver.cpp" line="1791"/>
         <source>Audio capture</source>
         <translation>Przechwytywanie dźwięku</translation>
     </message>
     <message>
-        <location filename="../core/contentserver.cpp" line="3110"/>
+        <location filename="../core/contentserver.cpp" line="1810"/>
         <source>Screen capture</source>
         <translation>Przechwytywanie ekranu</translation>
     </message>
@@ -656,26 +665,26 @@
         <translation>Nie można pobrać lub przetworzyć danych FOSDEM</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="72"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="71"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="46"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="138"/>
         <source>Refresh</source>
         <translation>Odśwież</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="80"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="79"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="52"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="81"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="80"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="52"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="108"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="107"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="135"/>
         <source>No items</source>
         <translation>Brak elementów</translation>
@@ -712,17 +721,17 @@
 <context>
     <name>GpodderEpisodesPage</name>
     <message>
-        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="73"/>
+        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="72"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="74"/>
+        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="73"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="114"/>
+        <location filename="../sailfish/qml/GpodderEpisodesPage.qml" line="113"/>
         <source>No episodes</source>
         <translation>Brak odcinków</translation>
     </message>
@@ -730,32 +739,37 @@
 <context>
     <name>IcecastPage</name>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="44"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="49"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="88"/>
         <source>Cannot download or parse Icecast directory</source>
         <translation>Nie można pobrać lub przetworzyć katalogu Icecast</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="72"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="67"/>
+        <source>Radio stations</source>
+        <translation>Stacje radiowe</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="77"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="46"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="149"/>
         <source>Refresh</source>
         <translation>Odśwież</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="80"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="85"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="52"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="81"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="86"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="52"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="119"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="124"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="146"/>
         <source>No stations</source>
         <translation>Brak stacji</translation>
@@ -1235,7 +1249,7 @@
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../core/playlistmodel.cpp" line="697"/>
+        <location filename="../core/playlistmodel.cpp" line="700"/>
         <source>Playlist</source>
         <translation>List odtwarzania</translation>
     </message>
@@ -1289,14 +1303,14 @@
 <context>
     <name>RecPage</name>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="70"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="69"/>
         <location filename="../desktop/qml/RecPage.qml" line="60"/>
         <location filename="../desktop/qml/RecPage.qml" line="72"/>
         <source>Delete selected</source>
         <translation>Usuń zaznaczone</translation>
     </message>
     <message numerus="yes">
-        <location filename="../sailfish/qml/RecPage.qml" line="73"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="72"/>
         <source>Deleting %n item(s)</source>
         <translation>
             <numerusform>Usuwanie 1 nagrania</numerusform>
@@ -1305,42 +1319,42 @@
         </translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="81"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="80"/>
         <location filename="../desktop/qml/RecPage.qml" line="46"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="82"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="81"/>
         <location filename="../desktop/qml/RecPage.qml" line="46"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="92"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="91"/>
         <source>Sort by: %1</source>
         <translation>Sortuj po: %1</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="93"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="92"/>
         <location filename="../desktop/qml/RecPage.qml" line="104"/>
         <source>Recording time</source>
         <translation>Dacie nagrania</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="94"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="93"/>
         <location filename="../desktop/qml/RecPage.qml" line="105"/>
         <source>Title</source>
         <translation>Tytule</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="94"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="93"/>
         <location filename="../desktop/qml/RecPage.qml" line="106"/>
         <source>Author</source>
         <translation>Autor</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/RecPage.qml" line="131"/>
+        <location filename="../sailfish/qml/RecPage.qml" line="130"/>
         <location filename="../desktop/qml/RecPage.qml" line="171"/>
         <source>No recordings</source>
         <translation>Brak plików z nagraniami</translation>
@@ -1423,13 +1437,23 @@
 <context>
     <name>SearchDialogHeader</name>
     <message numerus="yes">
-        <location filename="../sailfish/qml/SearchDialogHeader.qml" line="40"/>
+        <location filename="../sailfish/qml/SearchDialogHeader.qml" line="43"/>
         <source>%n selected</source>
         <translation>
             <numerusform>%n wybrany</numerusform>
             <numerusform>%n wybrane</numerusform>
             <numerusform>%n wybranych</numerusform>
         </translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SearchDialogHeader.qml" line="72"/>
+        <source>Recent searches</source>
+        <translation>Ostatnie wyszukiwania</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SearchDialogHeader.qml" line="99"/>
+        <source>Remove</source>
+        <translation>Usuń</translation>
     </message>
 </context>
 <context>
@@ -1661,6 +1685,14 @@
     </message>
 </context>
 <context>
+    <name>ShowMoreItem</name>
+    <message>
+        <location filename="../sailfish/qml/ShowMoreItem.qml" line="23"/>
+        <source>Show more</source>
+        <translation>Pokaż więcej</translation>
+    </message>
+</context>
+<context>
     <name>SomafmPage</name>
     <message>
         <location filename="../sailfish/qml/SomafmPage.qml" line="43"/>
@@ -1669,26 +1701,26 @@
         <translation>Nie można pobrać listy kanałów SomaFM</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="72"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="71"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="45"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="137"/>
         <source>Refresh</source>
         <translation>Odśwież</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="79"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="78"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="51"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="80"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="79"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="51"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="108"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="107"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="134"/>
         <source>No channels</source>
         <translation>Brak kanałów</translation>
@@ -1715,8 +1747,14 @@
 </context>
 <context>
     <name>SoundcloudPage</name>
+    <message>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="84"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="33"/>
+        <source>Trending tracks</source>
+        <translation>Popularne utwory</translation>
+    </message>
     <message numerus="yes">
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="43"/>
         <source>Add %n selected</source>
         <translation>
             <numerusform>Dodaj %n wybrany</numerusform>
@@ -1725,54 +1763,59 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="40"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="43"/>
         <source>Add selected</source>
         <translation>Dodaj wybrane</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="81"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="166"/>
+        <source>Show more</source>
+        <translation>Pokaż więcej</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="97"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="81"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="51"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="97"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="54"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="47"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="89"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="57"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="92"/>
         <source>Error in getting data from soundcloud.com</source>
         <translation>Błąd przy pobieraniu danych z soundcloud.com</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="107"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="121"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="123"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="124"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="108"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="122"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="124"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="125"/>
         <source>Artist</source>
         <translation>Artysta</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="141"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="144"/>
         <source>Toggle selection</source>
         <translation>Zaznacz/Odznacz</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="125"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="166"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="141"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="178"/>
         <source>Type the words to search</source>
         <translation>Wpisz słowa aby wyszukać</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SoundcloudPage.qml" line="125"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="166"/>
+        <location filename="../sailfish/qml/SoundcloudPage.qml" line="141"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="178"/>
         <source>No items</source>
         <translation>Brak elementów</translation>
     </message>
@@ -1798,17 +1841,17 @@
 <context>
     <name>TracksPage</name>
     <message>
-        <location filename="../sailfish/qml/TracksPage.qml" line="67"/>
+        <location filename="../sailfish/qml/TracksPage.qml" line="66"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TracksPage.qml" line="68"/>
+        <location filename="../sailfish/qml/TracksPage.qml" line="67"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TracksPage.qml" line="121"/>
+        <location filename="../sailfish/qml/TracksPage.qml" line="120"/>
         <source>No tracks</source>
         <translation>Brak utworów</translation>
     </message>
@@ -1816,31 +1859,36 @@
 <context>
     <name>TuneinPage</name>
     <message>
-        <location filename="../sailfish/qml/TuneinPage.qml" line="43"/>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="48"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="81"/>
         <source>Cannot download or parse TuneIn stations</source>
         <translation>Błąd przy pobieraniu danych z serwisu TuneIn</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TuneinPage.qml" line="76"/>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="67"/>
+        <source>Radio stations</source>
+        <translation>Stacje radiowe</translation>
+    </message>
+    <message>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="80"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="45"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TuneinPage.qml" line="77"/>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="81"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="45"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TuneinPage.qml" line="106"/>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="110"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="129"/>
         <source>No stations</source>
         <translation>Brak stacji</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/TuneinPage.qml" line="106"/>
+        <location filename="../sailfish/qml/TuneinPage.qml" line="110"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="129"/>
         <source>Type the words to search</source>
         <translation>Wpisz słowa aby wyszukać</translation>
@@ -1924,55 +1972,55 @@
 <context>
     <name>UpnpCDirPage</name>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="61"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="60"/>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="44"/>
         <source>Unselect all</source>
         <translation>Wyczyść zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="62"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="61"/>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="44"/>
         <source>Select all</source>
         <translation>Zaznacz wszystkie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="83"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="82"/>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="86"/>
         <source>Track number</source>
         <translation>Numerze utworu</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="85"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="84"/>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="83"/>
         <source>Title</source>
         <translation>Tytule</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="155"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="154"/>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="184"/>
         <source>No items</source>
         <translation>Brak elementów</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="81"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="80"/>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="84"/>
         <source>Album</source>
         <translation>Albumie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="84"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="83"/>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="87"/>
         <source>Date</source>
         <translation>Dacie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="82"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="81"/>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="85"/>
         <source>Artist</source>
         <translation>Artyście</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="87"/>
+        <location filename="../sailfish/qml/UpnpCDirPage.qml" line="86"/>
         <source>Sort by: %1</source>
         <translation>Sortuj po: %1</translation>
     </message>
