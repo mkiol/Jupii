@@ -64,7 +64,7 @@ TRANSLATION_SOURCE_DIRS += $${PROJECTDIR}/core \
                            $${PROJECTDIR}/sailfish/src \
                            $${PROJECTDIR}/desktop/qml \
                            $${PROJECTDIR}/desktop/src
-CONFIG += sailfishapp_i18n_include_obsolete
+#CONFIG += sailfishapp_i18n_include_obsolete
 TRANSLATIONS_DIR = $${PROJECTDIR}/translations
 TRANSLATIONS += \
     $${TRANSLATIONS_DIR}/jupii-en.ts \

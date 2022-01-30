@@ -45,7 +45,7 @@ Page {
 
             LogItem {
                 title: "Featured content"
-                description: "Bandcamp and SoundCloud browsers have an option to show 'New and Notable' albums (Bandcamp) and 'Featured tracks' (SoundCloud)."
+                description: "Bandcamp and SoundCloud browsers have an option to show 'New and Notable' albums (Bandcamp) and 'Trending tracks' (SoundCloud)."
             }
 
             LogItem {
