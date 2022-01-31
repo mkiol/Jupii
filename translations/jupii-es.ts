@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="es" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="es" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -284,10 +282,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/AlbumsPage.qml" line="87"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n pista</numerusform>
-            <numerusform>%n pistas</numerusform>
-        </translation>
+        <translation><numerusform>%n pista</numerusform><numerusform>%n pistas</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AlbumsPage.qml" line="95"/>
@@ -310,10 +305,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/ArtistPage.qml" line="75"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n pista</numerusform>
-            <numerusform>%n pistas</numerusform>
-        </translation>
+        <translation><numerusform>%n pista</numerusform><numerusform>%n pistas</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/ArtistPage.qml" line="83"/>
@@ -380,7 +372,7 @@
         <location filename="../sailfish/qml/BcPage.qml" line="92"/>
         <location filename="../desktop/qml/BcPage.qml" line="33"/>
         <source>New and Notable</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuevo y notable</translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="43"/>
@@ -390,10 +382,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/BcPage.qml" line="43"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="144"/>
@@ -403,7 +392,7 @@
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="166"/>
         <source>Show more</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar más</translation>
     </message>
 </context>
 <context>
@@ -694,10 +683,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/FosdemPage.qml" line="112"/>
@@ -743,7 +729,7 @@
     <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="67"/>
         <source>Radio stations</source>
-        <translation type="unfinished"></translation>
+        <translation>Estaciones de radio</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="77"/>
@@ -778,10 +764,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/IcecastPage.qml" line="123"/>
@@ -1259,10 +1242,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/PlaylistPage.qml" line="79"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n pista</numerusform>
-            <numerusform>%n pistas</numerusform>
-        </translation>
+        <translation><numerusform>%n pista</numerusform><numerusform>%n pistas</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="87"/>
@@ -1306,10 +1286,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/RecPage.qml" line="72"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Borrando %n elemento</numerusform>
-            <numerusform>Borrando %n elementos</numerusform>
-        </translation>
+        <translation><numerusform>Borrando %n elemento</numerusform><numerusform>Borrando %n elementos</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="80"/>
@@ -1365,18 +1342,12 @@
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="74"/>
         <source>Delete %n recording(s)?</source>
-        <translation>
-            <numerusform>¿Borrar %n grabación?</numerusform>
-            <numerusform>¿Borrar %n grabaciones?</numerusform>
-        </translation>
+        <translation><numerusform>¿Borrar %n grabación?</numerusform><numerusform>¿Borrar %n grabaciones?</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="97"/>
@@ -1430,20 +1401,17 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="43"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n seleccionado</numerusform>
-            <numerusform>%n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>%n seleccionado</numerusform><numerusform>%n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="72"/>
         <source>Recent searches</source>
-        <translation type="unfinished"></translation>
+        <translation>Búsquedas recientes</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="99"/>
         <source>Remove</source>
-        <translation type="unfinished">Borrar</translation>
+        <translation>Borrar</translation>
     </message>
 </context>
 <context>
@@ -1679,7 +1647,7 @@
     <message>
         <location filename="../sailfish/qml/ShowMoreItem.qml" line="23"/>
         <source>Show more</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar más</translation>
     </message>
 </context>
 <context>
@@ -1723,10 +1691,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SomafmPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SomafmPage.qml" line="111"/>
@@ -1740,15 +1705,12 @@
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="84"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="33"/>
         <source>Trending tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Pistas de tendencia</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/SoundcloudPage.qml" line="43"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="43"/>
@@ -1758,7 +1720,7 @@
     <message>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="166"/>
         <source>Show more</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar más</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="97"/>
@@ -1855,7 +1817,7 @@
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="67"/>
         <source>Radio stations</source>
-        <translation type="unfinished"></translation>
+        <translation>Estaciones de radio</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="80"/>
@@ -1889,10 +1851,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/TuneinPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/TuneinPage.qml" line="105"/>
@@ -2024,10 +1983,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="33"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Añadir %n seleccionado</numerusform>
-            <numerusform>Añadir %n seleccionados</numerusform>
-        </translation>
+        <translation><numerusform>Añadir %n seleccionado</numerusform><numerusform>Añadir %n seleccionados</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="76"/>
