@@ -67,7 +67,6 @@ Page {
         header: SearchPageHeader {
             implicitWidth: root.width
             title: qsTr("Playlists")
-            model: itemModel
             view: listView
         }
 
@@ -77,7 +76,7 @@ Page {
                                          Theme.highlightColor : Theme.primaryColor
             title.text: model.title
             subtitle.text: qsTr("%n track(s)", "", model.count)
-            enabled: !itemModel.busy
+            enabled: !itemModel.busy && listView.count > 0
             icon.source: model.icon
             defaultIcon.source: "image://theme/icon-m-media-playlists?" + primaryColor
             ListView.onRemove: animateRemoval(listItem)
