@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2019-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,9 +15,24 @@
 #include <cstdlib>
 #include <libavutil/log.h>
 
-FILE * logFile = nullptr;
-FILE * ffmpegLogFile = nullptr;
+FILE *logFile = nullptr;
+FILE *ffmpegLogFile = nullptr;
 bool logToFile = false;
+
+void configureLogToFile(bool enable)
+{
+    if (logFile) {
+        fclose(logFile);
+        logFile = nullptr;
+    }
+
+    if (ffmpegLogFile) {
+        fclose(ffmpegLogFile);
+        ffmpegLogFile = nullptr;
+    }
+
+    logToFile = enable;
+}
 
 void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {

@@ -20,6 +20,7 @@ extern FILE * logFile;
 extern FILE * ffmpegLogFile;
 extern bool logToFile;
 
+void configureLogToFile(bool enable);
 void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 void ffmpegLog(void *ptr, int level, const char *fmt, va_list vargs);
 void removeLogFiles();

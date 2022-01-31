@@ -42,8 +42,7 @@ Settings::Settings(QObject *parent) :
 {
     removeLogFiles();
     qInstallMessageHandler(qtLog);
-    //if (getLogToFile()) qInstallMessageHandler(qtLog);
-    if (getLogToFile()) ::logToFile = true;
+    ::configureLogToFile(getLogToFile());
 
 #ifdef SAILFISH
     initOpenUrlMode();
@@ -100,12 +99,10 @@ void Settings::setLogToFile(bool value)
         settings.setValue("logtofile", value);
         if (value) {
             qDebug() << "Logging to file enabled";
-            qInstallMessageHandler(qtLog);
-            qDebug() << "Logging to file enabled";
+            ::configureLogToFile(true);
         } else {
             qDebug() << "Logging to file disabled";
-            qInstallMessageHandler(nullptr);
-            qDebug() << "Logging to file disabled";
+            ::configureLogToFile(false);
         }
         emit logToFileChanged();
     }
