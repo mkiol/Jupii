@@ -120,6 +120,7 @@ Dialog {
         }
 
         ViewPlaceholder {
+            verticalOffset: listView.headerItem.height / 2
             enabled: listView.count === 0 && !itemModel.busy
             text: qsTr("No stations")
         }

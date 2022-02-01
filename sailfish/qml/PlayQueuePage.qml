@@ -127,9 +127,7 @@ Page {
                 text: qsTr("Save queue")
                 visible: !playlist.refreshing && !playlist.busy && listView.count > 0
                 onClicked: {
-                    pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"), {
-                                       playlist: playlist
-                                   })
+                    pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"), { playlist: playlist })
                 }
             }
 
@@ -143,10 +141,8 @@ Page {
                 text: playlist.refreshing ? qsTr("Cancel") : qsTr("Refresh items")
                 visible: playlist.refreshable && !playlist.busy && listView.count > 0
                 onClicked: {
-                    if (playlist.refreshing)
-                        playlist.cancelRefresh()
-                    else
-                        playlist.refresh()
+                    if (playlist.refreshing) playlist.cancelRefresh()
+                    else playlist.refresh()
                 }
             }
 
@@ -184,8 +180,8 @@ Page {
                                          Theme.secondaryHighlightColor : Theme.secondaryColor
             property bool isImage: model.type === AVTransport.T_Image
 
-            enabled: !playlist.busy && !av.busy && !rc.busy && !playlist.refreshing
-            opacity: enabled ? 1.0 : 0.8
+            dimmed: playlist.busy || av.busy || rc.busy || playlist.refreshing
+            enabled: !dimmed && listView.count > 0
 
             defaultIcon.source: {
                 if (model.itemType === ContentServer.ItemType_Mic)
@@ -194,7 +190,7 @@ Page {
                     return "image://theme/icon-m-speaker?" + primaryColor
                 else if (model.itemType === ContentServer.ItemType_ScreenCapture)
                     return "image://theme/icon-m-display?" + primaryColor
-                else
+                else {
                     switch (model.type) {
                     case AVTransport.T_Image:
                         return "image://theme/icon-m-file-image?" + primaryColor
@@ -205,6 +201,7 @@ Page {
                     default:
                         return "image://theme/icon-m-file-other?" + primaryColor
                     }
+                }
             }
             attachedIcon.source: model.itemType === ContentServer.ItemType_Url ?
                                      ("image://icons/icon-s-browser?" + primaryColor) :
@@ -225,17 +222,13 @@ Page {
             subtitle.color: secondaryColor
 
             onClicked: {
-                if (!listItem.enabled)
-                    return;
-                if (!directory.inited)
-                    return;
+                if (!listItem.enabled) return;
+                if (!directory.inited) return;
                 if (root.devless) {
                     listItem.openMenu()
                 } else {
-                    if (model.active)
-                        playlist.togglePlay()
-                    else
-                        playlist.play(model.id)
+                    if (model.active) playlist.togglePlay()
+                    else playlist.play(model.id)
                 }
             }
 
@@ -295,10 +288,34 @@ Page {
         }
     }
 
+//    OpacityRampEffect {
+//        sourceItem: listView
+//        direction: OpacityRamp.TopToBottom
+//        offset: 0.97
+//        slope: 30
+//    }
+
+    BusyIndicatorWithLabel {
+        running: playlist.busy || av.busy || rc.busy
+        text: (playlist.busy || playlist.refreshing) ?
+                  "" + (playlist.progressValue + 1) + "/" + playlist.progressTotal : ""
+    }
+
     BusyIndicator {
         anchors.centerIn: parent
         running: playlist.busy || av.busy || rc.busy
         size: BusyIndicatorSize.Large
+
+        Label {
+            enabled: playlist.busy || playlist.refreshing
+            opacity: enabled ? 1.0 : 0.0
+            visible: opacity > 0.0
+            Behavior on opacity { FadeAnimation {} }
+            anchors.centerIn: parent
+            font.pixelSize: Theme.fontSizeMedium
+            color: parent.color
+            text: "" + (playlist.progressValue + 1) + "/" + playlist.progressTotal
+        }
     }
 
     PlayerPanel {

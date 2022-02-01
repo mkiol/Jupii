@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,10 @@ ListItem {
                                          _dicon.status !== Image.Ready
 
     signal favClicked
+
+    opacity: enabled && _icon.status !== Image.Loading ? 1.0 : 0.0
+    visible: opacity > 0.0
+    Behavior on opacity { FadeAnimation {} }
 
     contentHeight: Theme.itemSizeMedium
 

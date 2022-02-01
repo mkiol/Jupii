@@ -17,11 +17,12 @@ ListItem {
     property alias defaultIcon: _dicon
     property alias attachedIcon: _aicon
     property alias extra: extraLabel.text
+    property bool dimmed: false
 
     readonly property bool _iconDisabled: _icon.status !== Image.Ready &&
                                          _dicon.status !== Image.Ready
 
-    opacity: enabled && _icon.status !== Image.Loading ? 1.0 : 0.0
+    opacity: enabled && _icon.status !== Image.Loading ? 1.0 : dimmed ? 0.8 : 0.0
     visible: opacity > 0.0
     Behavior on opacity { FadeAnimation {} }
 

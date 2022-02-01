@@ -37,7 +37,7 @@ Page {
     }
 
     function createPlaylistPage() {
-        if (pageStack.currentPage === root && !forwardNavigation) {
+        if (pageStack.currentPage == root && !forwardNavigation) {
             pageStack.pushAttached(Qt.resolvedUrl("PlayQueuePage.qml"))
         }
     }
@@ -95,20 +95,18 @@ Page {
             icon.source: model.icon
             active: model.active
             fav: model.fav
+            enabled: listView.count > 0
             defaultIcon.source: "image://icons/icon-m-device?" +
                                 (highlighted || model.active ?
                                 Theme.highlightColor : Theme.primaryColor)
 
             onFavClicked: {
-                if (model.fav)
-                    settings.removeFavDevice(model.id)
-                else
-                    settings.addFavDevice(model.id)
+                if (model.fav) settings.removeFavDevice(model.id)
+                else settings.addFavDevice(model.id)
             }
 
             onMenuOpenChanged: {
-                if (menuOpen)
-                    directory.xcGetStatus(model.id)
+                if (menuOpen) directory.xcGetStatus(model.id)
             }
 
             menu: ContextMenu {
@@ -116,10 +114,8 @@ Page {
                     text: model.active ? qsTr("Disconnect") : qsTr("Connect")
                     visible: model.supported
                     onClicked: {
-                        if (model.active)
-                            disconnectDevice()
-                        else
-                            connectDevice(model.id)
+                        if (model.active) disconnectDevice()
+                        else connectDevice(model.id)
                     }
                 }
 
@@ -142,10 +138,8 @@ Page {
                 MenuItem {
                     text: model.fav ? qsTr("Remove from favorites") : qsTr("Add to favorites")
                     onClicked: {
-                        if (model.fav)
-                            settings.removeFavDevice(model.id)
-                        else
-                            settings.addFavDevice(model.id)
+                        if (model.fav) settings.removeFavDevice(model.id)
+                        else settings.addFavDevice(model.id)
                     }
                 }
             }
@@ -161,7 +155,7 @@ Page {
         }
 
         ViewPlaceholder {
-            enabled: !directory.busy && (listView.count == 0 || !directory.inited)
+            enabled: !directory.busy && (listView.count === 0 || !directory.inited)
             text: directory.inited ?
                       qsTr("No devices") : qsTr("No network connection")
             hintText: directory.inited ?

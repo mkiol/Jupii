@@ -57,12 +57,7 @@ Dialog {
             notifications.show(qsTr("Error in getting data from bandcamp.com"))
         }
         onProgressChanged: {
-            if (total == 0) {
-                progressLabel.enabled = false
-            } else {
-                progressLabel.text = "" + n + "/" + total
-                progressLabel.enabled = true
-            }
+            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
         }
     }
 
@@ -145,27 +140,16 @@ Dialog {
         }
 
         ViewPlaceholder {
+            verticalOffset: listView.headerItem.height / 2
             enabled: listView.count === 0 && !itemModel.busy
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : root.artistMode ? qsTr("No albums") : qsTr("No items")
         }
     }
 
-    BusyIndicator {
-        anchors.centerIn: parent
+    BusyIndicatorWithLabel {
+        id: busyIndicator
         running: itemModel.busy
-        size: BusyIndicatorSize.Large
-
-        Label {
-            id: progressLabel
-            enabled: false
-            opacity: enabled ? 1.0 : 0.0
-            visible: opacity > 0.0
-            Behavior on opacity { FadeAnimation {} }
-            anchors.centerIn: parent
-            font.pixelSize: Theme.fontSizeMedium
-            color: parent.color
-        }
     }
 
     VerticalScrollDecorator {

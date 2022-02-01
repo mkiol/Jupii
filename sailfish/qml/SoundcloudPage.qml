@@ -136,6 +136,7 @@ Dialog {
         }
 
         ViewPlaceholder {
+            verticalOffset: listView.headerItem.height / 2
             enabled: listView.count === 0 && !itemModel.busy
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : qsTr("No items")
