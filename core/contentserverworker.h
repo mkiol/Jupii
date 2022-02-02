@@ -184,6 +184,7 @@ private:
         void writeNotSent(QNetworkReply *reply, QHttpResponse *resp);
         void writeNotSentAll(QNetworkReply *reply);
         void endAll();
+        void endSinks(QNetworkReply *reply);
         void sendEmptyResponseAll(QNetworkReply *reply, int code);
         void sendResponseAll(QNetworkReply *reply, int code, const QByteArray &data = {});
         void sendRedirectionAll(QNetworkReply *reply, const QString &location);

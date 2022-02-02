@@ -1170,6 +1170,7 @@ void ContentServerWorker::proxyFinished()
     } else {
         qDebug() << "Source finished but before cache limit";
         checkCachedCondition(proxy);
+        proxy.endSinks(reply);
         return;
     }
 
@@ -1967,26 +1968,34 @@ void ContentServerWorker::Proxy::Source::resetCacheTimer()
 
 void ContentServerWorker::Proxy::endAll()
 {
-    for (auto& r : sinks) r.resp->end();
+    for (auto &r : sinks) r.resp->end();
+}
+
+void ContentServerWorker::Proxy::endSinks(QNetworkReply *reply)
+{
+    const auto matchedSinks = sourceToSinkMap.values(reply);
+    for (auto &r : matchedSinks) {
+        if (!r->isFinished()) r->end();
+    }
 }
 
 void ContentServerWorker::Proxy::sendEmptyResponseAll(QNetworkReply *reply, int code)
 {
-    for (auto& resp : sourceToSinkMap.values(reply)) {
+    for (auto &resp : sourceToSinkMap.values(reply)) {
         ContentServerWorker::sendEmptyResponse(resp, code);
     }
 }
 
 void ContentServerWorker::Proxy::sendResponseAll(QNetworkReply *reply, int code, const QByteArray &data)
 {
-    for (auto& resp : sourceToSinkMap.values(reply)) {
+    for (auto &resp : sourceToSinkMap.values(reply)) {
         ContentServerWorker::sendResponse(resp, code, data);
     }
 }
 
 void ContentServerWorker::Proxy::sendRedirectionAll(QNetworkReply *reply, const QString &location)
 {
-    for (auto& resp : sourceToSinkMap.values(reply)) {
+    for (auto &resp : sourceToSinkMap.values(reply)) {
         ContentServerWorker::sendRedirection(resp, location);
     }
 }
