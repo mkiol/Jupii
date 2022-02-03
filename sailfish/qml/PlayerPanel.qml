@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,12 +19,12 @@ DockedPanel_ {
     property bool full: false
     property bool controlable: true
     property int playMode: PlayListModel.PM_Normal
-    property alias nextEnabled: nextButton.enabled
-    property alias prevEnabled: prevButton.enabled
-    property alias forwardEnabled: forwardButton.enabled
-    property alias backwardEnabled: backwardButton.enabled
-    property alias playmodeEnabled: playmodeButton.enabled
-    property alias recordEnabled: recordButton.enabled
+    property bool nextEnabled: false
+    property bool prevEnabled: false
+    property bool forwardEnabled: false
+    property bool backwardEnabled: false
+    property bool playmodeEnabled: false
+    property bool recordEnabled: false
     property bool recordActive: false
     property bool isPortrait: pageStack.currentPage.isPortrait
     property bool isLandscape: pageStack.currentPage.isLandscape
@@ -49,8 +49,7 @@ DockedPanel_ {
     dock: Dock.Bottom
 
     onOpenChanged: {
-        if (open)
-            full = false
+        if (open) full = false
     }
 
     onRequestCompact: {
@@ -62,10 +61,8 @@ DockedPanel_ {
     }
 
     function update() {
-        if (rc.inited)
-            volumeSlider.updateValue(rc.volume)
-        else
-            volumeSlider.updateValue(0)
+        if (rc.inited) volumeSlider.updateValue(rc.volume)
+        else volumeSlider.updateValue(0)
     }
 
     Connections {
@@ -74,33 +71,24 @@ DockedPanel_ {
         onInitedChanged: update()
     }
 
+    Handle {
+        id: handle
+        width: Theme.itemSizeLarge
+        enabled: root.pressed || root.dragging
+    }
+
     Column {
         id: column
 
         width: parent.width
+        y: trackPositionSlider.visible ? -Theme.paddingSmall : 0
+        spacing: root.isPortrait ? Theme.paddingSmall : 0
 
         Column {
             width: parent.width
 
-            Label {
-                // Time position when track duration is unknown
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    bottomMargin: Theme.paddingMedium + Theme.paddingSmall
-                    topMargin: Theme.paddingMedium + Theme.paddingSmall
-                }
-                font.pixelSize: root.isPortrait ? Theme.fontSizeHuge : Theme.fontSizeExtraLarge
-                horizontalAlignment: Text.AlignHCenter
-                visible: av.currentType !== AVTransport.T_Image &&
-                         root.full &&
-                         av.currentTrackDuration === 0
-                text: utils.secToStr(av.relativeTimePosition)
-            }
-
             Slider {
                 id: trackPositionSlider
-
                 visible: root.full && av.currentTrackDuration > 0
 
                 property bool blockValueChangedSignal: false
@@ -114,8 +102,7 @@ DockedPanel_ {
                 valueText: utils.secToStr(value > 0 ? value : 0)
 
                 onValueChanged: {
-                    if (!blockValueChangedSignal)
-                        av.seek(value)
+                    if (!blockValueChangedSignal) av.seek(value)
                 }
 
                 Component.onCompleted: {
@@ -138,36 +125,22 @@ DockedPanel_ {
 
             Item {
                 id: lbi
-                property int imgSize: root.isPortrait ? Theme.itemSizeLarge : 0.8 * Theme.itemSizeLarge
                 width: parent.width
-                height: imgSize + 2 *
-                        (root.full ? (root.isPortrait ? Theme.paddingMedium : 0) : Theme.paddingMedium)
+                height: Theme.itemSizeLarge
 
                 Image {
                     id: image
                     visible: _image.status !== Image.Ready
-                    width: lbi.imgSize
-                    height: lbi.imgSize
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        left: parent.left
-                        leftMargin: Theme.horizontalPageMargin
-                    }
+                    width: Theme.itemSizeLarge
+                    height: Theme.itemSizeLarge
+                    anchors.left: parent.left
                     source: "image://theme/graphic-grid-playlist?" + Theme.primaryColor
                 }
 
                 Image {
                     id: _image
-                    width: lbi.imgSize
-                    height: lbi.imgSize
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        left: parent.left
-                        leftMargin: Theme.horizontalPageMargin
-                    }
-                    sourceSize.width: lbi.imgSize
-                    sourceSize.height: lbi.imgSize
-                    fillMode: Image.PreserveAspectCrop
+                    anchors.fill: image
+                    sourceSize: Qt.size(Theme.itemSizeLarge, Theme.itemSizeLarge)
                     source: av.currentAlbumArtURI
                 }
 
@@ -208,7 +181,7 @@ DockedPanel_ {
                         verticalCenter: parent.verticalCenter
                         left: _image.status !== Image.Ready ? image.right : _image.right
                         leftMargin: Theme.paddingLarge
-                        right: playButton.visible ? playButton.left : parent.right
+                        right: playerButtons.visible ? playerButtons.left : playButton.visible ? playButton.left : parent.right
                         rightMargin: Theme.paddingLarge
                     }
 
@@ -241,6 +214,31 @@ DockedPanel_ {
                     }
                 }
 
+                PlayerButtons {
+                    id: playerButtons
+
+                    visible: root.full && root.isLandscape
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        right: playButton.left
+                        rightMargin: Theme.paddingMedium
+                    }
+
+                    prevEnabled: root.prevEnabled
+                    backwardEnabled: root.backwardEnabled
+                    forwardEnabled: root.forwardEnabled
+                    nextEnabled: root.nextEnabled
+                    recordEnabled: root.recordEnabled
+                    playMode: root.playMode
+
+                    onPrevClicked: root.prevClicked()
+                    onBackwardClicked: root.backwardClicked()
+                    onForwardClicked: root.forwardClicked()
+                    onNextClicked: root.nextClicked()
+                    onRecordClicked: root.recordClicked()
+                    onRepeatClicked: root.repeatClicked()
+                }
+
                 IconButton {
                     id: playButton
 
@@ -271,94 +269,37 @@ DockedPanel_ {
             }
         }
 
-        Row {
-            visible: root.full
-
-            property real size: Theme.itemSizeSmall
-
-            height: size + (root.isPortrait ? Theme.paddingMedium : Theme.paddingSmall)
-            spacing: {
-                var count = 0
-                if (prevButton.visible)
-                    count++
-                if (backwardButton.visible)
-                    count++
-                if (forwardButton.visible)
-                    count++
-                if (nextButton.visible)
-                    count++
-                if (recordButton.visible)
-                    count++
-                if (playmodeButton.visible)
-                    count++
-                return count > 1 ? (parent.width - count * size - 2 * Theme.horizontalPageMargin)/(count-1) : 0
-            }
+        PlayerButtons {
+            visible: root.full && root.isPortrait
             anchors.horizontalCenter: parent.horizontalCenter
 
-            IconButton {
-                id: prevButton
-                width: parent.size; height: parent.size
-                anchors.bottom: parent.bottom
-                icon.source: "image://theme/icon-m-previous"
-                onClicked: prevClicked()
-            }
+            prevEnabled: root.prevEnabled
+            backwardEnabled: root.backwardEnabled
+            forwardEnabled: root.forwardEnabled
+            nextEnabled: root.nextEnabled
+            recordEnabled: root.recordEnabled
+            playMode: root.playMode
 
-            IconButton {
-                id: backwardButton
-                width: parent.size; height: parent.size
-                anchors.bottom: parent.bottom
-                icon.source: "image://icons/icon-m-backward"
-                onClicked: backwardClicked()
-            }
-
-            IconButton {
-                id: forwardButton
-                width: parent.size; height: parent.size
-                anchors.bottom: parent.bottom
-                icon.source: "image://icons/icon-m-forward"
-                onClicked: forwardClicked()
-            }
-
-            IconButton {
-                id: nextButton
-                width: parent.size; height: parent.size
-                anchors.bottom: parent.bottom
-                icon.source: "image://theme/icon-m-next"
-                onClicked: nextClicked()
-            }
-
-            IconButton {
-                id: recordButton
-                width: parent.size; height: parent.size
-                anchors.bottom: parent.bottom
-                icon.source: recordActive ? "image://icons/icon-m-record-active" : "image://icons/icon-m-record"
-                onClicked: recordClicked()
-                visible: enabled
-            }
-
-            IconButton {
-                id: playmodeButton
-                width: parent.size; height: parent.size
-                anchors.bottom: parent.bottom
-                icon.source: root.playMode === PlayListModel.PM_RepeatAll ? "image://theme/icon-m-repeat" :
-                             root.playMode === PlayListModel.PM_RepeatOne ? "image://theme/icon-m-repeat-single" :
-                                                                            "image://icons/icon-m-norepeat"
-                onClicked: repeatClicked()
-            }
+            onPrevClicked: root.prevClicked()
+            onBackwardClicked: root.backwardClicked()
+            onForwardClicked: root.forwardClicked()
+            onNextClicked: root.nextClicked()
+            onRecordClicked: root.recordClicked()
+            onRepeatClicked: root.repeatClicked()
         }
 
         Item {
             visible: root.full && rc.inited && !rc.busy
             width: parent.width
-            height: volumeSlider.height + Theme.paddingSmall
+            height: volumeSlider.height + (root.isLandscape ? -Theme.paddingMedium : 0)
 
             Slider {
                 id: volumeSlider
+                y: root.isLandscape ? -(Theme.paddingLarge) : -Theme.paddingMedium
 
                 property bool blockValueChangedSignal: false
 
                 anchors {
-                    verticalCenter: parent.verticalCenter
                     left: parent.left
                     rightMargin: muteButt.width/1.5
                     right: parent.right

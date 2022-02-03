@@ -40,9 +40,12 @@ SilicaFlickable {
 
     readonly property bool expanded: open || horizontalAnimation.running || verticalAnimation.running
     readonly property bool running: horizontalAnimation.running || verticalAnimation.running
+    readonly property bool moving: horizontalAnimation.running || verticalAnimation.running || mouseArea.drag.active
+    readonly property bool dragging: mouseArea.drag.active
+    readonly property alias pressed: mouseArea.pressed
 
     property bool open
-    readonly property bool moving: horizontalAnimation.running || verticalAnimation.running || mouseArea.drag.active
+
     property int dock: Dock.Bottom
     property bool modal
     property int animationDuration: 500
@@ -109,6 +112,13 @@ SilicaFlickable {
         _immediate = true
         _managedDock = dock
         _immediate = false
+    }
+
+    function reportRequest() {
+        if (!running) {
+            if (full) panel.requestCompact()
+            else panel.requestFull()
+        }
     }
 
     InverseMouseArea {
@@ -196,42 +206,20 @@ SilicaFlickable {
 
         anchors.fill: parent
 
-        /*drag {
+        drag {
             target: panel
-            minimumX: !panel._isVertical ? mouseArea.drag.maximumX - panel.width : 0
-            maximumX: _managedDock == Dock.Right && panel.parent ? panel.parent.width : 0
-            minimumY: panel._isVertical ? mouseArea.drag.maximumY - panel.height : 0
-            maximumY: _managedDock == Dock.Bottom && panel.parent ? panel.parent.height : 0
-            axis: panel._isVertical ? Drag.YAxis : Drag.XAxis
-            filterChildren: true
+            axis: Drag.YAxis
+            minimumY: panel.parent.height - panel.height -
+                      (panel.full ? 0 : Theme.paddingLarge)
+            maximumY: panel.parent.height - panel.height +
+                      (panel.full ? Theme.paddingLarge : 0)
             onActiveChanged: {
-                if (!drag.active
-                        &&((panel._managedDock == Dock.Left   && panel.x < -panel._threshold && panel._direction <= 0)
-                        || (panel._managedDock == Dock.Top    && panel.y < -panel._threshold && panel._direction <= 0)
-                        || (panel._managedDock == Dock.Right  && panel.x - drag.minimumX >  panel._threshold && panel._direction >= 0)
-                        || (panel._managedDock == Dock.Bottom && panel.y - drag.minimumY >  panel._threshold && panel._direction >= 0))) {
-                    //panel.open = false
-                    panel.requestCompact()
-                }
+                if (mouseArea.drag.active) panel.reportRequest()
             }
-        }*/
-
-        /*onPressed: {
-            panel._direction = 0
-            panel._lastPos = panel._isVertical ? panel.y : panel.x
-        }*/
-
-        onClicked: {
-            if (full)
-                panel.requestCompact()
-            else
-                panel.requestFull()
         }
 
-        /*onPositionChanged: {
-            var pos = panel._isVertical ? panel.y : panel.x
-            panel._direction = (_direction + pos - _lastPos) / 2
-            panel._lastPos = panel.y
-        }*/
+        onClicked: {
+            panel.reportRequest()
+        }
     }
 }

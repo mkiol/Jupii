@@ -95,7 +95,7 @@ Page {
             icon.source: model.icon
             active: model.active
             fav: model.fav
-            enabled: listView.count > 0
+            enabled: directory.inited && listView.count > 0
             defaultIcon.source: "image://icons/icon-m-device?" +
                                 (highlighted || model.active ?
                                 Theme.highlightColor : Theme.primaryColor)
@@ -169,7 +169,7 @@ Page {
         opacity: enabled ? 1.0 : 0.0
         Behavior on opacity { FadeAnimation {} }
         text: qsTr("Connect to a device or flick left to access play queue")
-        enabled: settings.hintEnabled(Settings.Hint_DeviceSwipeLeft) && pageStack.currentPage === root && forwardNavigation && !menu.active
+        enabled: settings.hintEnabled(Settings.Hint_DeviceSwipeLeft) && pageStack.currentPage == root && forwardNavigation && !menu.active
         onEnabledChanged: enabled ? hint.start() : hint.stop()
     }
     TouchInteractionHint {
