@@ -204,7 +204,7 @@ public:
     Q_INVOKABLE QStringList streamTitleHistory(const QUrl &id) const;
     Q_INVOKABLE void setStreamToRecord(const QUrl &id, bool value);
     Q_INVOKABLE bool isStreamToRecord(const QUrl &id) const;
-    Q_INVOKABLE bool isStreamRecordable(const QUrl &id);
+    Q_INVOKABLE bool isStreamRecordable(const QUrl &id) const;
     bool getContentMetaItem(const QString &id, QString &meta, bool includeDummy = true);
     bool getContentMetaItemByDidlId(const QString &didlId, QString &meta);
     std::optional<QUrl> idUrlFromUrl(const QUrl &url, bool *isFile = nullptr) const;
@@ -309,6 +309,7 @@ private:
     QHash<QString, QString> m_fullHashes; // truncated hash => full hash
     QHash<QUrl, QString> m_tmpRecs; // id => tmp rec file
     QSet<QUrl> m_streamToRecord; // id => stream should be recorded
+    QSet<QUrl> m_streamRecordable; // id => stream recordable
     QString m_pulseStreamName;
     QMutex m_metaCacheMutex;
 

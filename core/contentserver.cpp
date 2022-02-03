@@ -2331,10 +2331,6 @@ void ContentServer::run()
             &ContentServer::streamRecordableChangedHandler);
     connect(worker, &ContentServerWorker::streamRecorded, this,
             &ContentServer::streamRecordedHandler);
-    connect(this, &ContentServer::streamToRecordRequested, worker,
-            &ContentServerWorker::streamToRecord);
-    connect(this, &ContentServer::streamRecordableRequested, worker,
-            &ContentServerWorker::streamRecordable);
     connect(this, &ContentServer::displayStatusChanged, worker,
             &ContentServerWorker::setDisplayStatus);
     connect(this, &ContentServer::startProxyRequested, worker,
@@ -2372,36 +2368,21 @@ QString ContentServer::streamTitle(const QUrl &id) const
 
 QStringList ContentServer::streamTitleHistory(const QUrl &id) const
 {
-    if (m_streams.contains(id)) {
-        return m_streams.value(id).titleHistory;
-    }
-
+    if (m_streams.contains(id)) return m_streams.value(id).titleHistory;
     return {};
 }
 
 bool ContentServer::isStreamToRecord(const QUrl &id) const
 {
-    qDebug() << id << ":" << (id.isEmpty() || !m_streamToRecord.contains(id) ? false : true);
     if (id.isEmpty()) return false;
     return m_streamToRecord.contains(id);
 }
 
-bool ContentServer::isStreamRecordable(const QUrl &id)
+bool ContentServer::isStreamRecordable(const QUrl &id) const
 {
     if (id.isEmpty()) return false;
-
-    if (m_tmpRecs.contains(id)) {
-        return true;
-    } else {
-        QEventLoop loop;
-        QMetaObject::Connection conn;
-        bool ret = false;
-        const auto ok = [&](const QUrl &pid, bool value) { if (pid == id) { QObject::disconnect(conn); ret = value; loop.quit(); } };
-        conn = connect(ContentServerWorker::instance(), &ContentServerWorker::streamRecordableReady, this, ok);
-        emit streamRecordableRequested(id);
-        loop.exec();
-        return m_tmpRecs.contains(id) || ret;
-    }
+    if (m_tmpRecs.contains(id)) return true;
+    return m_streamRecordable.contains(id);
 }
 
 bool ContentServer::saveTmpRec(const QString &path)
@@ -2464,7 +2445,6 @@ void ContentServer::setStreamToRecord(const QUrl &id, bool value)
 
 void ContentServer::streamToRecordChangedHandler(const QUrl &id, bool value)
 {
-    //qDebug() << id << ":" << m_streamToRecord.contains(id) << "=>" << value;
     if (m_streamToRecord.contains(id)) {
         if (!value) {
             m_streamToRecord.remove(id);
@@ -2481,14 +2461,19 @@ void ContentServer::streamToRecordChangedHandler(const QUrl &id, bool value)
 void ContentServer::streamRecordableChangedHandler(const QUrl &id, bool value,
                                                    const QString& tmpFile)
 {
-    //qDebug() << id << ":" << value << tmpFile;
     if (tmpFile.isEmpty()) {
         if (m_tmpRecs.contains(id)) QFile::remove(m_tmpRecs.value(id));
         m_tmpRecs.remove(id);
+        if (value) {
+            m_streamRecordable.insert(id);
+        } else {
+            m_streamRecordable.remove(id);
+        }
         emit streamRecordableChanged(id, value);
     } else {
         if (m_tmpRecs.contains(id)) QFile::remove(m_tmpRecs.value(id));
         m_tmpRecs.insert(id, tmpFile);
+        m_streamRecordable.remove(id);
         emit streamRecordableChanged(id, true);
     }
 }

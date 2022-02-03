@@ -57,34 +57,6 @@ ContentServerWorker::ContentServerWorker(QObject *parent) :
     cleanCacheFiles();
 }
 
-bool ContentServerWorker::streamToRecord(const QUrl &id)
-{
-    bool ret = false;
-    foreach (const auto &item, proxies) {
-        if (item.id == id) {
-            ret = item.saveRec;
-            break;
-        }
-    }
-
-    emit streamToRecordReady(id, ret);
-    return ret;
-}
-
-bool ContentServerWorker::streamRecordable(const QUrl &id)
-{
-    bool ret = false;
-    foreach (const auto &proxy, proxies) {
-        if (proxy.id == id) {
-            ret = proxy.recordable();
-            break;
-        }
-    }
-
-    emit streamRecordableReady(id, ret);
-    return ret;
-}
-
 void ContentServerWorker::closeRecFile(Proxy &proxy)
 {
     if (proxy.closeRecFile()) {

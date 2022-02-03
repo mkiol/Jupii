@@ -78,8 +78,6 @@ public:
     QNetworkAccessManager *nam;
     QHttpServer *server;
     static void adjustVolume(QByteArray *data, float factor, bool le = true);
-    bool streamToRecord(const QUrl &id);
-    bool streamRecordable(const QUrl &id);
     void startProxy(const QUrl &id);
 
 signals:
@@ -93,8 +91,6 @@ signals:
     void contSeqWriteData(std::shared_ptr<QFile> file, qint64 size, QHttpResponse *resp);
     void proxyConnected(const QUrl &id);
     void proxyError(const QUrl &id);
-    void streamToRecordReady(const QUrl &id, bool value);
-    void streamRecordableReady(const QUrl &id, bool value);
     void proxyRequested(const QUrl &id, const bool first, const CacheLimit cacheLimit,
                         const QByteArray &range, QHttpRequest *req, QHttpResponse *resp);
 
