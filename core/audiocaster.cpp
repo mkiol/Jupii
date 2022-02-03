@@ -34,10 +34,10 @@ AudioCaster::~AudioCaster()
 {
     if (out_format_ctx) {
         if (out_format_ctx->pb) {
-            if (out_format_ctx->pb->buffer) {
-                av_free(out_format_ctx->pb->buffer);
-                out_format_ctx->pb->buffer = nullptr;
-            }
+//            if (out_format_ctx->pb->buffer) {
+//                av_free(out_format_ctx->pb->buffer);
+//                out_format_ctx->pb->buffer = nullptr;
+//            }
             avio_context_free(&out_format_ctx->pb);
             out_format_ctx->pb = nullptr;
         }
