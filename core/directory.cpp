@@ -127,12 +127,11 @@ void Directory::init()
         logFile.assign(QDir{QStandardPaths::writableLocation(QStandardPaths::HomeLocation)}
                 .filePath(UPNPP_LOG_FILE).toLatin1().toStdString());
     }
-//#ifdef QT_DEBUG
-//   m_lib->setLogFileName(logFile, UPnPP::LibUPnP::LogLevelDebug);
-//#else
-//    m_lib->setLogFileName(logFile, UPnPP::LibUPnP::LogLevelError);
-//#endif
+#ifdef QT_DEBUG
+   m_lib->setLogFileName(logFile, UPnPP::LibUPnP::LogLevelDebug);
+#else
     m_lib->setLogFileName(logFile, UPnPP::LibUPnP::LogLevelError);
+#endif
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(5);
 
     if (!m_directory) {
