@@ -508,11 +508,11 @@ bool ScreenCaster::initScaler()
 {
     //TODO: Use HW-based scaler
 
-    int nbytes = av_image_get_buffer_size(out_video_codec_ctx->pix_fmt,
+    auto nbytes = av_image_get_buffer_size(out_video_codec_ctx->pix_fmt,
                                           out_video_codec_ctx->width,
                                           out_video_codec_ctx->height, 32);
 
-    video_outbuf = new uint8_t[nbytes];
+    video_outbuf = static_cast<uint8_t*>(av_malloc(nbytes));
     if (!video_outbuf) {
         qWarning() << "Unable to allocate memory";
         return false;
