@@ -155,16 +155,3 @@ install_license.path = $$PREFIX/share/$${TARGET}
 install_license.files = $$PROJECTDIR/LICENSE
 
 INSTALLS += install_bin install_desktop install_icons install_appstream install_license
-
-DISTFILES += \
-    ../translations/jupii-de.ts \
-    ../translations/jupii-en.ts \
-    ../translations/jupii-es.ts \
-    ../translations/jupii-it.ts \
-    ../translations/jupii-nl.ts \
-    ../translations/jupii-nl_BE.ts \
-    ../translations/jupii-pl.ts \
-    ../translations/jupii-ru.ts \
-    ../translations/jupii-sl_SI.ts \
-    ../translations/jupii-sv.ts \
-    ../translations/jupii-zh_CN.ts

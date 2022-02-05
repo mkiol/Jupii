@@ -69,9 +69,6 @@ Kirigami.ScrollablePage {
     header: Controls.ToolBar {
         visible: !root.albumMode
         height: visible ? implicitHeight : 0
-        background: Rectangle {
-            color: Kirigami.Theme.buttonBackgroundColor
-        }
         RowLayout {
             spacing: 0
             anchors.fill: parent

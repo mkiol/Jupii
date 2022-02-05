@@ -22,7 +22,6 @@
         <file>images/jupii.svg</file>
         <file>qml/PlayerPanel.qml</file>
         <file>qml/FlatButtonWithToolTip.qml</file>
-        <file>qml/ImageWithFallback.qml</file>
         <file>qml/LabelWithToolTip.qml</file>
         <file>qml/CircularProgressBar.qml</file>
         <file>qml/PlayButton.qml</file>
@@ -67,5 +66,6 @@
         <file>translations/jupii-sl_SI.qm</file>
         <file>translations/jupii-sv.qm</file>
         <file>qml/SoundcloudPage.qml</file>
+        <file>qml/BasicListItemWithArrow.qml</file>
     </qresource>
 </RCC>

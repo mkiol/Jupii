@@ -111,10 +111,9 @@ Rectangle {
             Layout.leftMargin: Kirigami.Units.largeSpacing
             Layout.rightMargin: Kirigami.Units.largeSpacing
             visible: !root.inited && !root.open
-            icon.source: "network-offline"     
+            icon.source: "network-offline"
             text: {
-                if (!directory.inited)
-                    return qsTr("No network connection")
+                if (!directory.inited) return qsTr("No network connection")
                 return qsTr("Not connected") + ". " + qsTr("Connect to a device to control playback using %1.").arg(APP_NAME) +
                        (settings.contentDirSupported ? " " + qsTr("Without connection, all items in play queue are still accessible on other devices in your local network.") :
                                                        "");
@@ -199,32 +198,41 @@ Rectangle {
 
                 onClicked: root.iconClicked()
 
-                ImageWithFallback {
+                Image {
                     anchors.fill: parent
                     sourceSize.width: Kirigami.Units.iconSizes.huge
                     sourceSize.height: Kirigami.Units.iconSizes.huge
                     fillMode: Image.PreserveAspectCrop
 
                     source: {
-                        if (itemType === ContentServer.ItemType_Mic)
-                            return "image://icon/audio-input-microphone"
-                        else if (itemType === ContentServer.ItemType_AudioCapture)
-                            return "image://icon/player-volume"
-                        else if (itemType === ContentServer.ItemType_ScreenCapture)
-                            return "image://icon/computer"
+                        if (itemType === ContentServer.ItemType_Mic ||
+                            itemType === ContentServer.ItemType_AudioCapture ||
+                            itemType === ContentServer.ItemType_ScreenCapture) {
+                            return ""
+                        }
                         return av.currentAlbumArtURI
                     }
-                    fallback: {
-                        switch (av.currentType) {
-                        case AVTransport.T_Image:
-                            return "image://icon/image-x-generic"
-                        case AVTransport.T_Audio:
-                            return "image://icon/audio-x-generic"
-                        case AVTransport.T_Video:
-                            return "image://icon/video-x-generic"
-                        default:
-                            return "image://icon/view-media-album-cover"
+
+                    Kirigami.Icon {
+                        anchors.fill: parent
+                        source: {
+                            if (itemType === ContentServer.ItemType_Mic)
+                                return "audio-input-microphone"
+                            else if (itemType === ContentServer.ItemType_AudioCapture)
+                                return "player-volume"
+                            else if (itemType === ContentServer.ItemType_ScreenCapture)
+                                return "computer"
+                            switch (av.currentType) {
+                            case AVTransport.T_Image:
+                                return "image-x-generic"
+                            case AVTransport.T_Audio:
+                                return "audio-x-generic"
+                            case AVTransport.T_Video:
+                                return "video-x-generic"
+                            }
+                            return "view-media-album-cover"
                         }
+                        visible: parent.status !== Image.Ready
                     }
 
                     Item { // attached icon

@@ -69,9 +69,6 @@ Kirigami.ScrollablePage {
     header: Controls.ToolBar {
         visible: !root.albumMode && !root.artistMode
         height: visible ? implicitHeight : 0
-        background: Rectangle {
-            color: Kirigami.Theme.buttonBackgroundColor
-        }
         RowLayout {
             spacing: 0
             anchors.fill: parent
@@ -157,7 +154,7 @@ Kirigami.ScrollablePage {
         model: itemModel
 
         delegate: Kirigami.DelegateRecycler {
-            width: parent.width
+            anchors.left: parent.left; anchors.right: parent.right
             sourceComponent: listItemComponent
         }
 

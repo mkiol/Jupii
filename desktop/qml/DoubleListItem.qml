@@ -28,7 +28,7 @@ Kirigami.SwipeListItem {
 
     activeTextColor: Kirigami.Theme.activeTextColor
 
-    width: parent ? parent.width : implicitWidth
+    //width: parent ? parent.width : implicitWidth
     implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
 
     contentItem: Item {
@@ -37,94 +37,96 @@ Kirigami.SwipeListItem {
         implicitHeight: layout.implicitHeight
 
         RowLayout {
-        id: layout
-        anchors.left: contItem.left
-        anchors.leftMargin: root.leadingPadding
-        anchors.right: contItem.right
-        anchors.rightMargin: root.trailingPadding
+            id: layout
+            anchors.left: contItem.left
+            anchors.leftMargin: root.leadingPadding
+            anchors.right: contItem.right
+            anchors.rightMargin: root.trailingPadding
 
-        Controls.BusyIndicator {
-            id: busyIndicator
-            running: false
-            visible: running
-            Layout.minimumHeight: root.iconSize
-            Layout.maximumHeight: root.iconSize
-            Layout.minimumWidth: root.iconSize
-            Layout.maximumWidth: root.iconSize
-        }
-        Kirigami.Icon {
-            id: iconItem
-            //Layout.alignment: Qt.AlignVCenter
-            property int size: Kirigami.Units.iconSizes.smallMedium
-            source: iconSource.length == 0 ? defaultIconSource : iconSource
-            Layout.minimumHeight: size
-            Layout.maximumHeight: size
-            Layout.minimumWidth: size
-            Layout.maximumWidth: size
-            visible: !root.busy && source != undefined
-            //placeholder: defaultIconSource
+            Controls.BusyIndicator {
+                id: busyIndicator
+                running: false
+                visible: running
+                Layout.minimumHeight: root.iconSize
+                Layout.maximumHeight: root.iconSize
+                Layout.minimumWidth: root.iconSize
+                Layout.maximumWidth: root.iconSize
+            }
+            Kirigami.Icon {
+                id: iconItem
+                //Layout.alignment: Qt.AlignVCenter
+                property int size: Kirigami.Units.iconSizes.smallMedium
+                source: iconSource.length == 0 ? defaultIconSource : iconSource
+                Layout.minimumHeight: size
+                Layout.maximumHeight: size
+                Layout.minimumWidth: size
+                Layout.maximumWidth: size
+                visible: !root.busy && typeof source !== "undefined"
 
-            Item {
-                visible: attachedIconName != undefined && attachedIconName.length > 0
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                width: Kirigami.Units.iconSizes.small
-                height: Kirigami.Units.iconSizes.small
-                Rectangle {
-                    anchors.fill: parent
-                    color: Kirigami.Theme.backgroundColor
+                Item {
+                    visible: typeof attachedIconName !== "undefined" && attachedIconName.length > 0
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    width: Kirigami.Units.iconSizes.small
+                    height: Kirigami.Units.iconSizes.small
+                    Rectangle {
+                        anchors.fill: parent
+                        color: Kirigami.Theme.backgroundColor
+                        opacity: 0.7
+                    }
+                    Kirigami.Icon {
+                        id: attachedIcon
+                        anchors.fill: parent
+                    }
+                }
+            }
+            ColumnLayout {
+                spacing: 0
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                Controls.Label {
+                    id: labelItem
+                    text: root.text
+                    Layout.fillWidth: true
+                    color: iconItem.selected || root.active ? root.activeTextColor : root.textColor
+                    elide: Text.ElideRight
+                }
+                Controls.Label {
+                    id: subtitleItem
+                    Layout.fillWidth: true
+                    color: iconItem.selected || root.active ? root.activeTextColor : root.textColor
+                    elide: Text.ElideRight
+                    font: Kirigami.Theme.smallFont
                     opacity: 0.7
-                }
-                Kirigami.Icon {
-                    id: attachedIcon
-                    anchors.fill: parent
+                    visible: text.length > 0
                 }
             }
-        }
-        ColumnLayout {
-            spacing: 0
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
-            Controls.Label {
-                id: labelItem
-                text: root.text
-                Layout.fillWidth: true
-                color: iconItem.selected || root.active ? root.activeTextColor : root.textColor
-                elide: Text.ElideRight
+            Rectangle {
+                Layout.minimumWidth: extraLabel.implicitWidth + 2 * Kirigami.Units.smallSpacing
+                Layout.minimumHeight: extraLabel.implicitHeight + Kirigami.Units.smallSpacing
+                Layout.alignment: Qt.AlignVCenter
+                visible: extraLabel.text.length > 0
+                color: "transparent"
+                border.color: Kirigami.Theme.disabledTextColor
+                radius: 3
+                Controls.Label {
+                    id: extraLabel
+                    color: Kirigami.Theme.disabledTextColor
+                    anchors.centerIn: parent
+                }
             }
-            Controls.Label {
-                id: subtitleItem
-                Layout.fillWidth: true
-                color: iconItem.selected || root.active ? root.activeTextColor : root.textColor
-                elide: Text.ElideRight
-                font: Kirigami.Theme.smallFont
+            Kirigami.Icon {
+                id: nextIcon
+                visible: false
+                Layout.alignment: Qt.AlignVCenter
+                Layout.preferredHeight: Kirigami.Units.iconSizes.small
                 opacity: 0.7
-                visible: text.length > 0
+                source: (LayoutMirroring.enabled ? "go-next-symbolic-rtl" : "go-next-symbolic")
+                Layout.minimumHeight: root.iconSize
+                Layout.maximumHeight: root.iconSize
+                Layout.minimumWidth: root.iconSize
+                Layout.preferredWidth: root.iconSize
             }
         }
-        Rectangle {
-            Layout.minimumWidth: extraLabel.implicitWidth + 2 * Kirigami.Units.smallSpacing
-            Layout.minimumHeight: extraLabel.implicitHeight + Kirigami.Units.smallSpacing
-            Layout.alignment: Qt.AlignVCenter
-            visible: extraLabel.text.length > 0
-            color: "transparent"
-            border.color: Kirigami.Theme.disabledTextColor
-            radius: 3
-            Controls.Label {
-                id: extraLabel
-                color: Kirigami.Theme.disabledTextColor
-                anchors.centerIn: parent
-            }
-        }
-        Kirigami.Icon {
-            id: nextIcon
-            visible: false
-            Layout.alignment: Qt.AlignVCenter
-            source: "go-next"
-            Layout.minimumHeight: root.iconSize
-            Layout.maximumHeight: root.iconSize
-            Layout.minimumWidth: root.iconSize
-        }
-    }
     }
 }

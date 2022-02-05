@@ -58,9 +58,6 @@ Kirigami.ScrollablePage {
     }
 
     header: Controls.ToolBar {
-        background: Rectangle {
-            color: Kirigami.Theme.buttonBackgroundColor
-        }
         RowLayout {
             spacing: 0
             anchors.fill: parent

@@ -75,13 +75,12 @@ Kirigami.ScrollablePage {
             }
         }
 
-        DoubleListItem {
+        BasicListItemWithArrow {
             Layout.fillWidth: true
             visible: settings.rec
             label: qsTr("Recordings")
-            iconSource: "media-record"
+            icon: "media-record"
             highlighted: rightPage ? rightPage.objectName === "rec" : false
-            next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("RecPage.qml"))
             }
@@ -102,11 +101,10 @@ Kirigami.ScrollablePage {
             }
         }
 
-        DoubleListItem {
+        BasicListItemWithArrow {
             Layout.fillWidth: true
             label: qsTr("Media Server")
-            iconSource: "network-server"
-            next: true
+            icon: "network-server"
             highlighted: rightPage ? rightPage.objectName === "cdir" : false
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("UpnpCDirDevicesPage.qml"))
@@ -156,79 +154,72 @@ Kirigami.ScrollablePage {
             text: qsTr("Apps & services")
         }
 
-        DoubleListItem {
+        BasicListItemWithArrow {
             Layout.fillWidth: true
             label: "Bandcamp"
-            iconSource: "qrc:/images/bandcamp.svg"
+            icon: "qrc:/images/bandcamp.svg"
             highlighted: rightPage ? rightPage.objectName === "bc" : false
-            next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("BcPage.qml"))
             }
         }
 
-        DoubleListItem {
+        BasicListItemWithArrow {
             Layout.fillWidth: true
             label: "FOSDEM"
-            iconSource: "qrc:/images/fosdem.svg"
+            icon: "qrc:/images/fosdem.svg"
             highlighted: rightPage ? rightPage.objectName === "fosdem" : false
-            next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("FosdemYearsPage.qml"))
             }
         }
 
-        DoubleListItem {
+        BasicListItemWithArrow {
             Layout.fillWidth: true
             visible: utils.isGpodderAvailable()
             label: "gPodder"
-            iconSource: "qrc:/images/gpodder.svg"
+            icon: "qrc:/images/gpodder.svg"
             highlighted: rightPage ? rightPage.objectName === "gpodder" : false
-            next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("GpodderPage.qml"))
             }
         }
 
-        DoubleListItem {
+        BasicListItemWithArrow {
             Layout.fillWidth: true
             text: "Icecast"
-            iconSource: "qrc:/images/icecast.svg"
+            icon: "qrc:/images/icecast.svg"
             highlighted: rightPage ? rightPage.objectName === "icecast" : false
-            next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("IcecastPage.qml"))
             }
         }
 
-        DoubleListItem {
+        BasicListItemWithArrow {
             Layout.fillWidth: true
             label: "SomaFM"
-            iconSource: "qrc:/images/somafm.svg"
+            icon: "qrc:/images/somafm.svg"
             highlighted: rightPage ? rightPage.objectName === "somafm" : false
-            next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("SomafmPage.qml"))
             }
         }
 
-        DoubleListItem {
+        BasicListItemWithArrow {
             Layout.fillWidth: true
             label: "SoundCloud"
-            iconSource: "qrc:/images/soundcloud.svg"
+            icon: "qrc:/images/soundcloud.svg"
             highlighted: rightPage ? rightPage.objectName === "soundcloud" : false
-            next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"))
             }
         }
 
-        DoubleListItem {
+        BasicListItemWithArrow {
             Layout.fillWidth: true
             label: "TuneIn"
-            iconSource: "qrc:/images/tunein.svg"
+            icon: "qrc:/images/tunein.svg"
             highlighted: rightPage ? rightPage.objectName === "tunein" : false
-            next: true
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("TuneinPage.qml"))
             }

@@ -58,9 +58,6 @@ Kirigami.ScrollablePage {
 
     header: Controls.ToolBar {
         enabled: cdir.inited
-        background: Rectangle {
-            color: Kirigami.Theme.buttonBackgroundColor
-        }
         RowLayout {
             anchors.fill: parent
             Kirigami.SearchField {
