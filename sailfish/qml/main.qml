@@ -107,7 +107,7 @@ ApplicationWindow {
             if (!directory.inited) {
                 pageStack.clear()
                 pageStack.completeAnimation()
-                pageStack.push(devPage, {}, PageStackAction.Immediate)
+                pageStack.push(devPage, {booted: true}, PageStackAction.Immediate)
             }
         }
     }

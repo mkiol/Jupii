@@ -59,8 +59,7 @@ void IcecastModel::downloadDir()
     if (!Utils::cacheFileExists(m_dirFilename)) {
         auto data = Downloader{}.downloadData(m_dirUrl, 30000);
 
-        if (QThread::currentThread()->isInterruptionRequested())
-            return;
+        if (QThread::currentThread()->isInterruptionRequested()) return;
 
         if (data.isEmpty()) {
             qWarning() << "No data received";
@@ -110,9 +109,9 @@ QList<ListItem*> IcecastModel::makeItems()
 
     QList<ListItem*> items;
 
-    const auto& filter = getFilter();
+    const auto &filter = getFilter();
 
-    const int l = filter.isEmpty() ? 1000 : m_entries.length();
+    int l = filter.isEmpty() ? 1000 : m_entries.length();
 
     for (int i = 0; i < l; ++i) {
         auto entry = m_entries.at(i).toElement();
@@ -151,8 +150,7 @@ QList<ListItem*> IcecastModel::makeItems()
             }
         }
 
-        if (items.length() > 999)
-            break;
+        if (items.length() > 999) break;
     }
 
     // Sorting

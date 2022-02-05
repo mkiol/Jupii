@@ -91,7 +91,6 @@ void ResourceHandler::handleSettingsChange()
     auto rc = Services::instance()->renderingControl.get();
     auto s = Settings::instance();
 
-    qDebug() << "rc->getInited:" << rc->getInited();
     m_enabled = s->getUseHWVolume() && rc->getInited();
 
     if (m_enabled) {

@@ -89,10 +89,13 @@ void Directory::init()
 {
     qDebug() << "Directory init";
 
+    setBusy(true);
+
     QString ifname, addr;
     if (!ConnectivityDetector::instance()->selectNetworkIf(ifname, addr)) {
         qWarning() << "Cannot find valid network interface";
         setInited(false);
+        setBusy(false);
         emit error(1);
         return;
     }
@@ -106,6 +109,7 @@ void Directory::init()
     if (!m_lib) {
         qWarning() << "Cannot initialize UPnPP lib (lib == nullptr)";
         setInited(false);
+        setBusy(false);
         emit error(2);
         return;
     }
@@ -113,6 +117,7 @@ void Directory::init()
     if (!m_lib->ok()) {
         qWarning() << "Cannot initialize UPnPP lib (lib != ok)";
         setInited(false);
+        setBusy(false);
         emit error(2);
         return;
     }
@@ -133,6 +138,7 @@ void Directory::init()
     if (!m_directory) {
         qWarning() << "Cannot initialize UPnPP directory (dir == nullptr)";
         setInited(false);
+        setBusy(false);
         emit error(3);
         return;
     }
@@ -140,6 +146,7 @@ void Directory::init()
     if (!m_directory->ok()) {
         qWarning() << "Cannot initialize UPnPP directory (dir != ok)";
         setInited(false);
+        setBusy(false);
         m_directory = nullptr;
         emit error(2);
         return;
@@ -242,23 +249,27 @@ void Directory::discover()
 
     if (!m_inited) {
         qWarning() << "Directory not inited.";
+        setBusy(false);
         return;
     }
 
     if (!ConnectivityDetector::instance()->networkConnected()) {
         qWarning() << "Cannot find valid network interface";
         setInited(false);
+        setBusy(false);
         return;
     }
 
     if (taskActive()) {
         qWarning() << "Task is active. Skipping adding new task";
+        setBusy(false);
         return;
     }
 
     if (!m_directory) {
         qWarning() << "Directory not initialized";
         setInited(false);
+        setBusy(false);
         emit error(3);
         return;
     }

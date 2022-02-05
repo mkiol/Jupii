@@ -53,9 +53,15 @@ Page {
         }
     }
 
+    property bool booted: false
     Connections {
         target: directory
-        onInitedChanged: createPlaylistPage()
+        onInitedChanged: {
+            createPlaylistPage()
+        }
+        onBusyChanged: {
+            if (!root.booted && directory.busy) root.booted = true
+        }
     }
 
     SilicaListView {
@@ -155,7 +161,7 @@ Page {
         }
 
         ViewPlaceholder {
-            enabled: !directory.busy && (listView.count === 0 || !directory.inited)
+            enabled: root.booted && !directory.busy && (listView.count === 0 || !directory.inited)
             text: directory.inited ?
                       qsTr("No devices") : qsTr("No network connection")
             hintText: directory.inited ?

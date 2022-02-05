@@ -19,15 +19,16 @@ ConnectivityDetector* ConnectivityDetector::m_instance = nullptr;
 ConnectivityDetector* ConnectivityDetector::instance(QObject *parent)
 {
     if (ConnectivityDetector::m_instance == nullptr) {
-        ConnectivityDetector::m_instance = new ConnectivityDetector(parent);
+        ConnectivityDetector::m_instance = new ConnectivityDetector{parent};
     }
 
     return ConnectivityDetector::m_instance;
 }
 
 ConnectivityDetector::ConnectivityDetector(QObject *parent) :
-    QObject(parent),
-    ncm(std::make_unique<QNetworkConfigurationManager>())
+    QObject{parent},
+    ncm{std::make_unique<QNetworkConfigurationManager>()},
+    ifname{"invalid"}
 {
     connect(ncm.get(), &QNetworkConfigurationManager::configurationAdded,
             this, &ConnectivityDetector::handleNetworkConfChanged);
