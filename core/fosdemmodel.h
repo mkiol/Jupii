@@ -39,9 +39,9 @@ public:
                       const QString &track,
                       const QUrl &url,
                       QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    inline QString id() const { return m_id; }
+    QVariant data(int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+    inline QString id() const override { return m_id; }
     inline QString name() const { return m_name; }
     inline QString track() const { return m_track; }
     inline QUrl url() const { return m_url; }
@@ -74,7 +74,7 @@ private:
     static const QString m_url;
     static const QString m_url_archive;
     static const QString m_filename;
-    int m_year = 2020;
+    int m_year = 2022;
     QDomNodeList m_entries;
     bool m_refreshing = false;
 

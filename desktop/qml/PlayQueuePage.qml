@@ -110,6 +110,30 @@ Kirigami.ScrollablePage {
         onItemsAdded: root.showLastItem()
         onItemsLoaded: root.showActiveItem()
         onActiveItemChanged: root.showActiveItem()
+        onBcMainUrlAdded: {
+            pageStack.pop(root)
+            pageStack.push(Qt.resolvedUrl("BcPage.qml"))
+        }
+        onBcAlbumUrlAdded: {
+            pageStack.pop(root)
+            pageStack.push(Qt.resolvedUrl("BcPage.qml"), {albumPage: url})
+        }
+        onBcArtistUrlAdded: {
+            pageStack.pop(root)
+            pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: url})
+        }
+        onSoundcloudMainUrlAdded: {
+            pageStack.pop(root)
+            pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"))
+        }
+        onSoundcloudAlbumUrlAdded: {
+            pageStack.pop(root)
+            pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {albumPage: url})
+        }
+        onSoundcloudArtistUrlAdded: {
+            pageStack.pop(root)
+            pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: url})
+        }
 
         onBusyChanged: {
             refreshing = playlist.busy

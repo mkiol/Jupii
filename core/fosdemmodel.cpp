@@ -10,6 +10,8 @@
 #include <QDebug>
 #include <QDate>
 #include <QList>
+#include <QFileInfo>
+#include <QDateTime>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
@@ -27,7 +29,7 @@ const QString FosdemModel::m_filename{"fosdem%1.xml"};
 
 FosdemModel::FosdemModel(QObject *parent) :
     SelectableItemModel(new FosdemItem, parent),
-    m_year(0)
+    m_year{0}
 {
 }
 
@@ -45,6 +47,14 @@ void FosdemModel::setYear(int value)
 {
     if (value != m_year) {
         m_year = value;
+        if (QDate::currentDate().year() == m_year) { // refresh items for current year only
+            auto file = m_filename.arg(m_year);
+            if (QFileInfo{Utils::pathToCacheFile(file)}.created()
+                    .daysTo(QDateTime::currentDateTime()) > 0) {
+                qDebug() << "cache expired";
+                Utils::removeFromCacheDir({file});
+            }
+        }
         emit yearChanged();
         updateModel();
     }
@@ -52,8 +62,7 @@ void FosdemModel::setYear(int value)
 
 QUrl FosdemModel::makeUrl() const
 {
-    if (QDate::currentDate().year() == m_year)
-        return QUrl{m_url.arg(m_year)};
+    if (QDate::currentDate().year() == m_year) return QUrl{m_url.arg(m_year)};
     return QUrl{m_url_archive.arg(m_year)};
 }
 
@@ -82,8 +91,7 @@ void FosdemModel::downloadDir()
         auto nam = std::make_shared<QNetworkAccessManager>();
         auto data = Downloader{nam}.downloadData(makeUrl());
 
-        if (QThread::currentThread()->isInterruptionRequested())
-            return;
+        if (QThread::currentThread()->isInterruptionRequested()) return;
 
         if (data.isEmpty()) {
             qWarning() << "No data received";
@@ -115,11 +123,11 @@ QVariantList FosdemModel::selectedItems()
         const auto event = qobject_cast<FosdemItem*>(item);
         if (event->selected()) {
             list << QVariantMap{
-            {"url", event->url()},
-            {"name", event->name()},
-            {"icon", IconProvider::urlToNoResId("icon-fosdem")},
-            {"author", QString("FOSDEM %1").arg(m_year)},
-            {"app", "fosdem"}};
+                {"url", event->url()},
+                {"name", event->name()},
+                {"icon", IconProvider::urlToNoResId("icon-fosdem")},
+                {"author", QString{"FOSDEM %1"}.arg(m_year)},
+                {"app", "fosdem"}};
         }
     }
 
@@ -128,8 +136,7 @@ QVariantList FosdemModel::selectedItems()
 
 QList<ListItem*> FosdemModel::makeItems()
 {
-    if (m_entries.isEmpty())
-        downloadDir();
+    if (m_entries.isEmpty()) downloadDir();
 
     QList<ListItem*> items;
 
