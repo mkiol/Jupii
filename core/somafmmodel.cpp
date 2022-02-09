@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QList>
+#include <QDateTime>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
@@ -28,6 +29,11 @@ const QString SomafmModel::m_imageFilename{"somafm_image_"};
 SomafmModel::SomafmModel(QObject *parent) :
     SelectableItemModel(new SomafmItem, parent)
 {
+    if (QFileInfo{Utils::pathToCacheFile(m_dirFilename)}.created()
+            .daysTo(QDateTime::currentDateTime()) > 30) {
+        qDebug() << "cache expired";
+        Utils::removeFromCacheDir({m_dirFilename});
+    }
 }
 
 SomafmModel::~SomafmModel()

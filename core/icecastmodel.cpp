@@ -9,9 +9,11 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
 #include <QDir>
 #include <QList>
 #include <QTimer>
+#include <QDateTime>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
@@ -28,6 +30,11 @@ const QString IcecastModel::m_dirFilename{"icecast.xml"};
 IcecastModel::IcecastModel(QObject *parent) :
     SelectableItemModel(new IcecastItem, parent)
 {
+    if (QFileInfo{Utils::pathToCacheFile(m_dirFilename)}.created()
+            .daysTo(QDateTime::currentDateTime()) > 0) {
+        qDebug() << "cache expired";
+        Utils::removeFromCacheDir({m_dirFilename});
+    }
 }
 
 IcecastModel::~IcecastModel()
