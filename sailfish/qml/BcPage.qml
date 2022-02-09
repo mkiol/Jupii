@@ -13,6 +13,8 @@ import harbour.jupii.BcModel 1.0
 Dialog {
     id: root
 
+    objectName: "bc"
+
     allowedOrientations: Orientation.All
 
     property real preferredItemHeight: root && root.isLandscape ?

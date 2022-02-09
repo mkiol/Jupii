@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,7 +19,7 @@ ApplicationWindow {
     initialPage: devPage
 
     Component.onCompleted: {
-        console.log(">>>>>>>>>>> QML ApplicationWindow completed <<<<<<<<<<<");
+        console.log("QML completed");
         conn.update()
     }
 
@@ -39,6 +39,27 @@ ApplicationWindow {
     }
     function devicesPage() {
         return pageStack.find(function(page){return page.objectName === "devices"})
+    }
+    function showQueue(force) {
+        if (pageStack.busy) {
+            console.log("pageStack busy")
+            return false
+        }
+
+        var cname = pageStack.currentPage.objectName
+
+        if (!force && (cname === "bc" || cname === "souncloud")) return false
+
+        if (cname !== "queue") {
+            popToDevices()
+            if (pageStack.currentPage.forwardNavigation) {
+                pageStack.navigateForward(PageStackAction.Immediate)
+            } else {
+                pageStack.push(Qt.resolvedUrl("PlayQueuePage.qml"), {}, PageStackAction.Immediate)
+            }
+        }
+
+        return true
     }
 
     // -- stream --
@@ -114,15 +135,29 @@ ApplicationWindow {
 
     Connections {
         target: dbus
-        onFocusRequested: {
-            if (pageStack.currentPage.objectName !== "queue") {
-                popToDevices()
-                if (pageStack.currentPage.forwardNavigation) {
-                    pageStack.navigateForward(PageStackAction.Immediate)
-                } else {
-                    pageStack.push(Qt.resolvedUrl("PlayQueuePage.qml"), {}, PageStackAction.Immediate)
-                }
-            }
+        onFocusRequested: showQueue(false)
+    }
+
+    Connections {
+        target: playlist
+
+        onBcMainUrlAdded: {
+            if (showQueue(true)) pageStack.push(Qt.resolvedUrl("BcPage.qml"))
+        }
+        onBcAlbumUrlAdded: {
+            if (showQueue(true)) pageStack.push(Qt.resolvedUrl("BcPage.qml"), {albumPage: url})
+        }
+        onBcArtistUrlAdded: {
+            if (showQueue(true)) pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: url})
+        }
+        onSoundcloudMainUrlAdded: {
+            if (showQueue(true)) pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"))
+        }
+        onSoundcloudAlbumUrlAdded: {
+            if (showQueue(true)) pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {albumPage: url})
+        }
+        onSoundcloudArtistUrlAdded: {
+            if (showQueue(true)) pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: url})
         }
     }
 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,6 +25,9 @@
 #include "avtransport.h"
 #include "renderingcontrol.h"
 #include "playlistparser.h"
+#include "dnscontentdeterminator.h"
+#include "bcapi.h"
+#include "soundcloudapi.h"
 
 PlaylistModel* PlaylistModel::m_instance = nullptr;
 
@@ -770,10 +773,17 @@ void PlaylistModel::load()
 
     auto ids = QUrl::fromStringList(Settings::instance()->getLastPlaylist());
 
+    progressUpdate(0, 0);
+
+    if (ids.isEmpty()) {
+        setBusy(false);
+        emit itemsLoaded();
+        return;
+    }
+
     m_add_worker = std::make_unique<PlaylistWorker>(std::move(ids));
     connect(m_add_worker.get(), &PlaylistWorker::finished, this, &PlaylistModel::addWorkerDone, Qt::QueuedConnection);
     connect(m_add_worker.get(), &PlaylistWorker::progress, this, &PlaylistModel::progressUpdate, Qt::QueuedConnection);
-    progressUpdate(0, 0);
     m_add_worker->start();
 }
 
@@ -874,25 +884,134 @@ void PlaylistModel::addItemUrls(const QVariantList &urls)
     addItems(items, false);
 }
 
-void PlaylistModel::addItemUrl(const QUrl& url,
+PlaylistModel::UrlType PlaylistModel::determineUrlType(QUrl *url)
+{
+    const auto host = url->host();
+    const auto path = url->path();
+
+    auto cleanUrl = [url, &host]() {
+        if (host.size() > 2 && host.startsWith("m.")) {
+            url->setHost(host.mid(2));
+        }
+        url->setQuery(QString{});
+        url->setFragment(QString{});
+    };
+
+    if (host.compare("soundcloud.com", Qt::CaseInsensitive) == 0) {
+        if (path.isEmpty() || path == "/") {
+            cleanUrl();
+            return UrlType::SoundcloudMain;
+        }
+    }
+
+    if (host.contains("soundcloud.com", Qt::CaseInsensitive)) {
+        cleanUrl();
+        auto ps = path.split('/');
+        if (ps.size() == 3) {
+            const auto &last = ps.last();
+            if (last.compare("popular-tracks", Qt::CaseInsensitive) == 0 ||
+                last.compare("tracks", Qt::CaseInsensitive) == 0 ||
+                last.compare("albums", Qt::CaseInsensitive) == 0 ||
+                last.compare("playlist", Qt::CaseInsensitive) == 0 ||
+                last.compare("reposts", Qt::CaseInsensitive) == 0) {
+                url->setPath("/" + ps.at(1));
+                return UrlType::SoundcloudArtist;
+            }
+            return UrlType::SoundcloudTrack;
+        }
+        if (path.contains("/sets/", Qt::CaseInsensitive)) return UrlType::SoundcloudAlbum;
+        if (ps.size() == 2 && !ps.last().isEmpty()) return UrlType::SoundcloudArtist;
+
+        *url = QUrl{"https://soundcloud.com"};
+        return UrlType::SoundcloudMain;
+    }
+
+    if (host.compare("bandcamp.com", Qt::CaseInsensitive) == 0) {
+        cleanUrl();
+        if (path.isEmpty() || path == "/") return UrlType::BcMain;
+    }
+
+    if (host.contains("bandcamp.com", Qt::CaseInsensitive) || DnsDeterminator::type(*url) == DnsDeterminator::Type::Bc) {
+        cleanUrl();
+        auto ps = path.split('/');
+        if (path.contains("/album/", Qt::CaseInsensitive)) return UrlType::BcAlbum;
+        if (path.contains("/track/", Qt::CaseInsensitive)) return UrlType::BcTrack;
+
+        if (path.isEmpty() || path == "/" ||
+            path.contains("/music/", Qt::CaseInsensitive) ||
+            path.contains("/merch/", Qt::CaseInsensitive) ||
+            path.contains("/community/", Qt::CaseInsensitive) ||
+            path.contains("/concerts/", Qt::CaseInsensitive)) {
+            url->setPath("");
+            return UrlType::BcArtist;
+        }
+
+        if (host.compare("bandcamp.com", Qt::CaseInsensitive) == 0) {
+            *url = QUrl{"https://bandcamp.com"};
+            return UrlType::BcMain;
+        }
+
+        url->setPath("");
+        return UrlType::BcArtist;
+    }
+
+    return UrlType::Unknown;
+}
+
+void PlaylistModel::addItemUrl(QUrl url,
                                const QString& name,
                                const QUrl& origUrl,
                                const QString& author,
                                const QUrl &icon,
                                const QString& desc,
-                               const QString& app,
+                               QString app,
                                bool play)
 {
+    if (app.isEmpty() && origUrl.isEmpty()) {
+        auto type = determineUrlType(&url);
+        if (type == UrlType::BcTrack) {
+            qDebug() << "url type: BcTrack";
+            app = "bc";
+        } else if (type == UrlType::SoundcloudTrack) {
+            qDebug() << "url type: SoundcloudTrack";
+            app = "soundcloud";
+        } else if (type == UrlType::BcMain) {
+            qDebug() << "url type: BcMain";
+            emit bcMainUrlAdded();
+            return;
+        } else if (type == UrlType::BcAlbum) {
+            qDebug() << "url type: BcAlbum";
+            emit bcAlbumUrlAdded(url);
+            return;
+        } else if (type == UrlType::BcArtist) {
+            qDebug() << "url type: BcArtist";
+            emit bcArtistUrlAdded(url);
+            return;
+        } else if (type == UrlType::SoundcloudMain) {
+            qDebug() << "url type: SoundcloudMain";
+            emit soundcloudMainUrlAdded();
+            return;
+        } else if (type == UrlType::SoundcloudAlbum) {
+            qDebug() << "url type: SoundcloudAlbum";
+            emit soundcloudAlbumUrlAdded(url);
+            return;
+        } else if (type == UrlType::SoundcloudArtist) {
+            qDebug() << "url type: SoundcloudArtist";
+            emit soundcloudArtistUrlAdded(url);
+            return;
+        }
+    }
+
     QList<UrlItem> urls;
     UrlItem ui;
-    ui.url = url;
+    ui.url = std::move(url);
     Utils::fixUrl(ui.url);
     ui.origUrl = origUrl;
     ui.name = name;
     ui.author = author;
     ui.icon = icon;
     ui.desc = desc;
-    ui.app = app;
+    ui.app = std::move(app);
     ui.play = play;
     urls << ui;
     addItems(urls, false);
@@ -1024,33 +1143,26 @@ void PlaylistModel::addWorkerDone()
     if (m_add_worker) {
         if (m_add_worker->items.length() != m_add_worker->ids.length()) {
             qWarning() << "Some urls are invalid and cannot be added to the playlist";
-            if (m_add_worker->ids.length() == 1)
-                emit error(E_ItemNotAdded);
-            else if (m_add_worker->items.length() == 0)
-                emit error(E_AllItemsNotAdded);
-            else
-                emit error(E_SomeItemsNotAdded);
+            if (m_add_worker->ids.length() == 1) emit error(E_ItemNotAdded);
+            else if (m_add_worker->items.length() == 0) emit error(E_AllItemsNotAdded);
+            else emit error(E_SomeItemsNotAdded);
         }
 
         if (!m_add_worker->items.isEmpty()) {
             int old_refreshable = m_refreshable_count;
             foreach (const auto item, m_add_worker->items) {
-                if (qobject_cast<PlaylistItem*>(item)->refreshable())
-                    ++m_refreshable_count;
+                if (qobject_cast<PlaylistItem*>(item)->refreshable()) ++m_refreshable_count;
             }
 
             appendRows(m_add_worker->items);
 
-            if (!m_add_worker->urlIsId)
-                emit itemsAdded();
-            else
-                emit itemsLoaded();
+            if (!m_add_worker->urlIsId) emit itemsAdded();
+            else emit itemsLoaded();
 
             // saving last play queue
             save();
 
-            if (old_refreshable == 0 && m_refreshable_count > 0)
-                emit refreshableChanged();
+            if (old_refreshable == 0 && m_refreshable_count > 0) emit refreshableChanged();
         } else {
             qWarning() << "No items to add to playlist";
         }

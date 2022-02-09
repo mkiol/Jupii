@@ -148,7 +148,7 @@ public:
     bool playPath(const QString& path);
     bool urlExists(const QUrl& url);
     bool playUrl(const QUrl& url);
-    std::pair<int,QString> getDidlList(int max = 0, const QString &didlId = QString());
+    std::pair<int,QString> getDidlList(int max = 0, const QString &didlId = {});
     inline int getProgressValue() { return m_progressValue; }
     inline int getProgressTotal() { return m_progressTotal; }
     inline bool isRefreshable() { return m_refreshable_count > 0; }
@@ -168,23 +168,29 @@ signals:
     void prevSupportedChanged();
     void progressChanged();
     void refreshableChanged();
+    void bcMainUrlAdded();
+    void bcAlbumUrlAdded(const QUrl &url);
+    void bcArtistUrlAdded(const QUrl &url);
+    void soundcloudMainUrlAdded();
+    void soundcloudAlbumUrlAdded(const QUrl &url);
+    void soundcloudArtistUrlAdded(const QUrl &url);
 
 public slots:
     void load();
     void addItemPaths(const QStringList& paths);
     void addItemPath(const QString& path,
-                     const QString &name = QString(),
+                     const QString &name = {},
                      bool autoPlay = false);
     void addItemUrls(const QList<UrlItem>& urls);
     void addItemFileUrls(const QList<QUrl>& urls);
     void addItemUrls(const QVariantList& urls);
-    void addItemUrl(const QUrl& url,
-                    const QString& name = QString(),
-                    const QUrl& origUrl = QUrl(),
-                    const QString &author = QString(),
-                    const QUrl& icon = QUrl(),
-                    const QString& desc = QString(),
-                    const QString& app = QString(),
+    void addItemUrl(QUrl url,
+                    const QString& name = {},
+                    const QUrl& origUrl = {},
+                    const QString &author = {},
+                    const QUrl& icon = {},
+                    const QString& desc = {},
+                    QString app = {},
                     bool autoPlay = false);
     void addItemPathsAsAudio(const QStringList& paths);
     void setActiveId(const QString &id);
@@ -217,6 +223,18 @@ private slots:
 #endif
 
 private:
+    enum class UrlType {
+        Unknown,
+        BcMain,
+        BcTrack,
+        BcAlbum,
+        BcArtist,
+        SoundcloudMain,
+        SoundcloudTrack,
+        SoundcloudAlbum,
+        SoundcloudArtist
+    };
+
     const static int refreshTimer = 30000; // 30s
     static PlaylistModel* m_instance;
 #ifdef SAILFISH
@@ -260,6 +278,7 @@ private:
     std::optional<int> nextActiveIndex() const;
     void refresh(QList<QUrl>&& ids);
     void updateRefreshTimer();
+    static UrlType determineUrlType(QUrl *url);
 #ifdef SAILFISH
     void updateBackgroundActivity();
 #endif

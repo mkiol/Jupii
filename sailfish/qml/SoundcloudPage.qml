@@ -13,6 +13,8 @@ import harbour.jupii.SoundcloudModel 1.0
 Dialog {
     id: root
 
+    objectName: "soundcloud"
+
     allowedOrientations: Orientation.All
 
     property real preferredItemHeight: root && root.isLandscape ?

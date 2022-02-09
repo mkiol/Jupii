@@ -132,7 +132,8 @@ HEADERS += \
     $$CORE_DIR/downloader.h \
     $$CORE_DIR/playlistparser.h \
     $$CORE_DIR/contentserverworker.h \
-    $$CORE_DIR/screencaster.h
+    $$CORE_DIR/screencaster.h \
+    $$CORE_DIR/dnscontentdeterminator.h
 
 SOURCES += \
     $$CORE_DIR/dbus_jupii_adaptor.cpp \
@@ -191,7 +192,8 @@ SOURCES += \
     $$CORE_DIR/downloader.cpp \
     $$CORE_DIR/playlistparser.cpp \
     $$CORE_DIR/contentserverworker.cpp \
-    $$CORE_DIR/screencaster.cpp
+    $$CORE_DIR/screencaster.cpp \
+    $$CORE_DIR/dnscontentdeterminator.cpp
 
 DISTFILES += \
     $$PWD/../dbus/org.freedesktop.Tracker3.Endpoint.xml

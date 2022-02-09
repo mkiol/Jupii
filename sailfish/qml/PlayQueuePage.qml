@@ -35,10 +35,8 @@ Page {
     }
 
     function doPop() {
-        if (pageStack.busy)
-            _doPop = true;
-        else
-            pageStack.pop(pageStack.previousPage(root))
+        if (pageStack.busy) _doPop = true;
+        else pageStack.pop(pageStack.previousPage(root))
     }
 
     function showActiveItem() {
@@ -70,6 +68,7 @@ Page {
             if (!pageStack.busy && root._doPop) {
                 root._doPop = false
                 pageStack.pop(pageStack.pop())
+                return;
             }
         }
     }
@@ -84,6 +83,34 @@ Page {
 
         onItemsAdded: root.showLastItem()
         onItemsLoaded: root.showActiveItem()
+//        onBcMainUrlAdded: {
+//            pageStack.pop(root, PageStackAction.Immediate)
+//            pageStack.push(Qt.resolvedUrl("BcPage.qml"))
+//        }
+//        onBcAlbumUrlAdded: {
+//            pageStack.pop(root, PageStackAction.Immediate)
+//            pageStack.push(Qt.resolvedUrl("BcPage.qml"), {albumPage: url})
+//        }
+//        onBcArtistUrlAdded: {
+////            if (pageStack.currentPage !== root) {
+////                pageStack.pop(root, PageStackAction.Immediate)
+////            }
+//            if (pageStack.busy)
+//            replaceAbove(root, Qt.resolvedUrl("BcPage.qml"), {artistPage: url})
+//            //pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: url})
+//        }
+//        onSoundcloudMainUrlAdded: {
+//            pageStack.pop(root, PageStackAction.Immediate)
+//            pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"))
+//        }
+//        onSoundcloudAlbumUrlAdded: {
+//            pageStack.pop(root, PageStackAction.Immediate)
+//            pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {albumPage: url})
+//        }
+//        onSoundcloudArtistUrlAdded: {
+//            pageStack.pop(root, PageStackAction.Immediate)
+//            pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: url})
+//        }
 
         onError: {
             if (code === PlayListModel.E_FileExists)
