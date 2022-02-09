@@ -74,53 +74,24 @@ DockedPanel_ {
     Handle {
         id: handle
         width: Theme.itemSizeLarge
-        enabled: root.pressed || root.dragging
+        enabled: !root.full || root.pressed || root.dragging
     }
 
     Column {
         id: column
 
         width: parent.width
-        y: trackPositionSlider.visible ? -Theme.paddingSmall : 0
+        y: trackSlider.visible ? -Theme.paddingSmall : 0
         spacing: root.isPortrait ? Theme.paddingSmall : 0
 
         Column {
             width: parent.width
 
-            Slider {
-                id: trackPositionSlider
-                visible: root.full && av.currentTrackDuration > 0
-
-                property bool blockValueChangedSignal: false
-
+            TrackSlider {
+                id: trackSlider
+                visible: root.isPortrait && root.full && av.currentTrackDuration > 0
+                enabled: root.controlable && av.seekSupported
                 width: parent.width
-                minimumValue: 0
-                maximumValue: av.currentTrackDuration
-                stepSize: 1
-                handleVisible: av.seekSupported
-                enabled: av.seekSupported && root.controlable
-                valueText: utils.secToStr(value > 0 ? value : 0)
-
-                onValueChanged: {
-                    if (!blockValueChangedSignal) av.seek(value)
-                }
-
-                Component.onCompleted: {
-                    trackPositionSlider.updateValue(av.relativeTimePosition)
-                }
-
-                Connections {
-                    target: av
-                    onRelativeTimePositionChanged: {
-                        trackPositionSlider.updateValue(av.relativeTimePosition)
-                    }
-                }
-
-                function updateValue(_value) {
-                    blockValueChangedSignal = true
-                    value = _value
-                    blockValueChangedSignal = false
-                }
             }
 
             Item {
@@ -291,16 +262,25 @@ DockedPanel_ {
         Item {
             visible: root.full && rc.inited && !rc.busy
             width: parent.width
-            height: volumeSlider.height + (root.isLandscape ? -Theme.paddingMedium : 0)
+            height: volumeSlider.height -Theme.paddingMedium
+
+            TrackSlider {
+                id: trackSliderL
+                y: -Theme.paddingLarge
+                x: Theme.itemSizeExtraSmall
+                visible: root.isLandscape && av.currentTrackDuration > 0
+                enabled: root.controlable && av.seekSupported
+                width: parent.width * 0.60
+            }
 
             Slider {
                 id: volumeSlider
-                y: root.isLandscape ? -(Theme.paddingLarge) : -Theme.paddingMedium
+                y: -Theme.paddingLarge
 
                 property bool blockValueChangedSignal: false
 
                 anchors {
-                    left: parent.left
+                    left: trackSliderL.visible ? trackSliderL.right : parent.left
                     rightMargin: muteButt.width/1.5
                     right: parent.right
                 }

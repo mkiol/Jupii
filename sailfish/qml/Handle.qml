@@ -9,9 +9,9 @@ import QtQuick 2.4
 import Sailfish.Silica 1.0
 
 Rectangle {
-    color: opacity < 0.4 ? Theme.highlightColor : Theme.primaryColor
+    color: opacity < 0.3 ? Theme.highlightColor : Theme.primaryColor
     enabled: false
-    opacity: enabled ? 0.4 : 0.0
+    opacity: enabled ? 0.3 : 0.0
     visible: opacity > 0.0
     Behavior on opacity { FadeAnimation {} }
     width: Theme.itemSizeMedium
