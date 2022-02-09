@@ -49,7 +49,7 @@ public:
         static const int INF_SIZE;
         static const int DEFAULT_DELTA;
         static inline CacheLimit fromType(const ContentServer::Type type, int delta = DEFAULT_DELTA) {
-            if (type == ContentServer::Type::Video) return { INF_SIZE, INF_SIZE, 10, delta };
+            if (type == ContentServer::Type::Video) return { INF_SIZE, INF_SIZE, 5, delta };
             if (type == ContentServer::Type::Music) return { INF_SIZE, INF_SIZE, 2, delta };
             return { INF_SIZE, INF_SIZE, 0, delta };
         }
@@ -203,6 +203,7 @@ private:
         bool maxCacheReached();
         void resetCacheTimer();
         void recordData(QNetworkReply *reply, const QByteArray &data);
+        void updateRageLength(const Source &source);
     };
     struct ConnectionItem {
         QUrl id;

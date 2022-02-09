@@ -1062,6 +1062,8 @@ void ContentServerWorker::processNewSource(Proxy& proxy, Proxy::Source& source)
 
     qDebug() << "Content full length:" << source.length;
 
+    proxy.updateRageLength(source);
+
     logProxySources(proxy);
 
     if (source.state == Proxy::State::Streaming) {
@@ -1142,6 +1144,7 @@ void ContentServerWorker::proxyFinished()
     } else {
         qDebug() << "Source finished but before cache limit";
         checkCachedCondition(proxy);
+        proxy.writeNotSentAll(reply);
         proxy.endSinks(reply);
         return;
     }
@@ -1359,6 +1362,8 @@ void ContentServerWorker::proxyReadyRead()
         return;
     }
 
+    //qDebug() << "proxyReadyRead:" << reply << reply->bytesAvailable();
+
     dispatchProxyData(proxy, reply, reply->readAll());
 }
 
@@ -1556,6 +1561,7 @@ void ContentServerWorker::dispatchPulseData(const void *data, int size)
     if (audioCaptureEnabled || screenCaptureAudioEnabled) {
         QByteArray d;
         if (data) {
+            //qDebug() << "writing data:" << size << volumeBoost;
             if (volumeBoost > 1.0f) { // increasing volume level
                 d = QByteArray(static_cast<const char*>(data), size); // deep copy
                 adjustVolume(&d, volumeBoost, true);
@@ -2239,4 +2245,17 @@ QDebug operator<<(QDebug debug, const ContentServerWorker::Range &range)
     QDebugStateSaver saver{debug};
     debug.nospace() << "Range(" << QString{"%1-%2/%3"}.arg(range.start).arg(range.end).arg(range.length) << ")";
     return debug;
+}
+
+void ContentServerWorker::Proxy::updateRageLength(const Source &source)
+{
+    if (source.length < 0) return;
+    if (!sourceToSinkMap.contains(source.reply)) return;
+
+    for (auto it = sourceToSinkMap.cbegin(); it != sourceToSinkMap.cend(); ++it) {
+        if (it.key() == source.reply && sinks.contains(it.value())) {
+            auto &sink = sinks[it.value()];
+            if (sink.range) sink.range->updateLength(source.length);
+        }
+    }
 }
