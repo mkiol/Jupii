@@ -74,7 +74,8 @@ DockedPanel_ {
     Handle {
         id: handle
         width: Theme.itemSizeLarge
-        enabled: !root.full || root.pressed || root.dragging
+        enabled: true
+        highlighted: root.pressed || root.dragging
     }
 
     Column {

@@ -9,25 +9,17 @@ import QtQuick 2.4
 import Sailfish.Silica 1.0
 
 Rectangle {
-    color: opacity < 0.3 ? Theme.highlightColor : Theme.primaryColor
+    property bool highlighted: false
+
+    color: highlighted ? Theme.highlightColor : Theme.primaryColor
+    Behavior on color { FadeAnimation { duration: 200 } }
     enabled: false
-    opacity: enabled ? 0.3 : 0.0
+    opacity: enabled ? highlighted ? 0.5 : 0.2 : 0.0
     visible: opacity > 0.0
-    Behavior on opacity { FadeAnimation {} }
+    Behavior on opacity { FadeAnimation { duration: 100 } }
     width: Theme.itemSizeMedium
     height: Theme.paddingMedium
     anchors.horizontalCenter: parent.horizontalCenter
     y: -height/2
     radius: 20
-
-    Timer {
-        id: timer
-        interval: 500
-        onTriggered: parent.enabled = false
-    }
-
-    function trigger() {
-        enabled = true;
-        timer.start()
-    }
 }
