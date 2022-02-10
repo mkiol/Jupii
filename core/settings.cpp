@@ -846,16 +846,14 @@ void Settings::initOpenUrlMode()
 
     const QDir dbusPath{QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/dbus-1/services"};
     if (!dbusPath.exists()) dbusPath.mkpath(dbusPath.absolutePath());
-    if (QFile dbusServiceFile{dbusPath.absolutePath() + "/" + Jupii::DBUS_SERVICE + ".service"};
-        !dbusServiceFile.exists()) {
-        if (dbusServiceFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QTextStream s{&dbusServiceFile};
-            s.setCodec("UTF-8");
-            s << "[D-BUS Service]\n";
-            s << "Name=" << Jupii::DBUS_SERVICE << "\n";
-            s << "Exec=/usr/bin/invoker --type=silica-qt5 --id=" << Jupii::APP_ID << "--single-instance " << Jupii::APP_ID << "\n";
-            s.flush();
-        }
+    QFile dbusServiceFile{dbusPath.absolutePath() + "/" + Jupii::DBUS_SERVICE + ".service"};
+    if (dbusServiceFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream s{&dbusServiceFile};
+        s.setCodec("UTF-8");
+        s << "[D-BUS Service]\n";
+        s << "Name=" << Jupii::DBUS_SERVICE << "\n";
+        s << "Exec=/usr/bin/invoker --type=silica-qt5 --single-instance " << Jupii::APP_ID << "\n";
+        s.flush();
     }
 
     desktopFile().remove();
