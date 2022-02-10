@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -33,7 +33,14 @@ Page {
             }
 
             LogItem {
-                title: "Fixes for Bandcamp integration"
+                title: "FOSDEM 2022 browser"
+                description: "FOSDEM is a conference centered on free and open-source " +
+                             "software development. It is well known for having excellent video recordings. " +
+                             "Now you can browse and add videos from FOSDEM 2022."
+            }
+
+            LogItem {
+                title: "Fixes for Bandcamp browser"
                 description: "Bandcamp API was changed and therefore adding music from Bandcamp browser was broken. " +
                              "This issue is now resolved."
             }
@@ -52,6 +59,16 @@ Page {
                 title: "Remote content playback improvements"
                 description: "Before playback, URL-based content from the Internet is cached to improve streaming stability. " +
                              "This might resolve some issues observed on TV devices (e.g. Samsung TV)."
+            }
+
+            LogItem {
+                title: "Album and artist URLs detection in 'Open link'"
+                description: "When you open URL pointing to Bandcamp/SoundCloud's album or artist web page, browser page will be shown."
+            }
+
+            LogItem {
+                title: "Visual improvements"
+                description: "Few UI glitches were fixed. Landscape view of Player panel looks better now."
             }
 
             SectionHeader {
