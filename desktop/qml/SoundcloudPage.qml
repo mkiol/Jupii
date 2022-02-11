@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -158,13 +158,10 @@ Kirigami.ScrollablePage {
             sourceComponent: listItemComponent
         }
 
-        footer: Controls.Button {
+        footer: ShowmoreItem {
             visible: root.featureMode
-            text: qsTr("Show more")
-            onClicked: {
-                pageStack.pop(root)
-                pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: "jupii://soundcloud-featured"})
-            }
+            targetPage: "SoundcloudPage.qml"
+            artistUrl: "jupii://soundcloud-featured"
         }
 
         Kirigami.PlaceholderMessage {
