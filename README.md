@@ -22,7 +22,7 @@ Following features are implemented:
 
 ## D-Bus API
 
-Jupii exposes simple [D-Bus service](https://github.com/mkiol/Jupii/blob/master/dbus/org.jupii.xml). 
+Jupii exposes simple [D-Bus service](https://github.com/mkiol/Jupii/blob/master/dbus/jupii.xml).
 It can be used to make integration with other applications.
 
 ## Libraries
@@ -40,7 +40,6 @@ Jupii relies on following open source libraries:
 ## Download
 
 - Sailfish OS: [OpenRepos](https://openrepos.net/content/mkiol/jupii)
-- Linux Desktop / Plasma Mobile: [Flatpak package](https://github.com/mkiol/Jupii/tree/master/binaries).
 
 ## Translations
 
