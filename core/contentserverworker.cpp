@@ -338,7 +338,7 @@ void ContentServerWorker::requestForUrlHandlerFallback(const QUrl &id,
     requestForUrlHandler(finalId, req, resp);
 }
 
-QNetworkReply* ContentServerWorker::makeRequest(const QUrl &id, QHttpRequest *req)
+QNetworkReply* ContentServerWorker::makeRequest(const QUrl &id, const QHttpRequest *req)
 {
     if (req && req->headers().contains("range")) {
         return makeRequest(id, req->headers().value("range").toLatin1());
@@ -1661,6 +1661,11 @@ void ContentServerWorker::sendScreenCaptureData(const void *data, int size)
 
 std::optional<QNetworkReply*> ContentServerWorker::Proxy::matchSource(QHttpResponse *resp)
 {
+    if (matchedSinkExists(resp)) {
+        qWarning() << "Sink already has matched source";
+        return std::nullopt;
+    }
+
     if (!sinks.contains(resp)) throw std::runtime_error("No sink for resp");
 
     auto &sink = sinks[resp];
@@ -1691,20 +1696,29 @@ bool ContentServerWorker::Proxy::matchedSourceExists(const QByteArray &range)
     return false;
 }
 
+bool ContentServerWorker::Proxy::matchedSinkExists(const QHttpResponse *resp) const
+{
+    for (auto it = sourceToSinkMap.cbegin(); it != sourceToSinkMap.cend(); ++it) {
+        if (it.value() == resp) return true;
+    }
+    return false;
+}
+
 bool ContentServerWorker::matchedSourceExists(const QUrl &id, const QByteArray &range)
 {
     if (!proxies.contains(id)) return false;
     return proxies[id].matchedSourceExists(range);
 }
 
-
 std::optional<QNetworkReply*> ContentServerWorker::Proxy::unmatchSink(QHttpResponse *resp)
 {
+    logProxySourceToSinks(*this);
     auto it = sourceToSinkMap.begin();
     while (it != sourceToSinkMap.end()) {
         if (it.value() == resp) {
             auto reply = it.key();
-            sourceToSinkMap.erase(it);
+            sourceToSinkMap.remove(reply, resp);
+            logProxySourceToSinks(*this);
             return reply;
         }
         ++it;
@@ -1733,7 +1747,7 @@ QList<QHttpResponse*> ContentServerWorker::Proxy::matchSinks(QNetworkReply *repl
 
     for (auto it = sinks.begin(); it != sinks.end(); ++it) {
         auto &sink = it.value();
-        if (sourceMatchesSink(source, sink)) {
+        if (!matchedSinkExists(sink.resp) && sourceMatchesSink(source, sink)) {
             if (!sourceToSinkMap.contains(source.reply, sink.resp)) {
                 sourceToSinkMap.insert(source.reply, sink.resp);
             }

@@ -197,6 +197,7 @@ private:
         void unmatchSource(QNetworkReply *reply);
         bool matchedSourceExists(QNetworkReply *reply) const;
         bool matchedSourceExists(const QByteArray &range);
+        bool matchedSinkExists(const QHttpResponse *resp) const;
         static bool sourceMatchesSink(Source &source, Sink &sink);
         static MatchType sourceMatchesRange(Source &source, const std::optional<Range> &range);
         bool minCacheReached() const;
@@ -276,7 +277,7 @@ private:
     void micErrorHandler();
     void responseForUrlDone();
     void seqWriteData(std::shared_ptr<QFile> file, qint64 size, QHttpResponse *resp);
-    QNetworkReply* makeRequest(const QUrl &id, QHttpRequest *req);
+    QNetworkReply* makeRequest(const QUrl &id, const QHttpRequest *req);
     QNetworkReply* makeRequest(const QUrl &id, const QByteArray &range = {});
     void dispatchProxyData(Proxy &proxy, QNetworkReply *reply, const QByteArray &data);
     void removeDeadProxies();
