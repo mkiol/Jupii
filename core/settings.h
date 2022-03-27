@@ -52,7 +52,6 @@ class Settings:
     Q_PROPERTY (int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY colorSchemeChanged)
     Q_PROPERTY (QString fsapiPin READ fsapiPin WRITE setFsapiPin NOTIFY fsapiPinChanged)
     Q_PROPERTY (bool globalYtdl READ globalYtdl WRITE setGlobalYtdl NOTIFY globalYtdlChanged)
-    Q_PROPERTY (OpenUrlModeType openUrlMode READ openUrlMode WRITE setOpenUrlMode NOTIFY openUrlModeChanged)
     Q_PROPERTY (QStringList bcSearchHistory READ bcSearchHistory NOTIFY bcSearchHistoryChanged)
     Q_PROPERTY (QStringList soundcloudSearchHistory READ soundcloudSearchHistory NOTIFY soundcloudSearchHistoryChanged)
     Q_PROPERTY (QStringList icecastSearchHistory READ icecastSearchHistory NOTIFY icecastSearchHistoryChanged)
@@ -66,12 +65,6 @@ public:
         Hint_MediaInfoSwipeLeft =   1 << 3
     };
     Q_ENUM(HintType)
-
-    enum class OpenUrlModeType {
-        OpenUrlMode_None = 0,
-        OpenUrlMode_All = 1
-    };
-    Q_ENUM(OpenUrlModeType)
 
 #ifdef SAILFISH
     static constexpr const char* HW_RELEASE_FILE = "/etc/hw-release";
@@ -157,8 +150,6 @@ public:
     Q_INVOKABLE bool hintEnabled(HintType hint) const;
     Q_INVOKABLE void disableHint(HintType hint);
     Q_INVOKABLE void resetHints();
-    OpenUrlModeType openUrlMode() const;
-    void setOpenUrlMode(OpenUrlModeType value);
     QStringList bcSearchHistory() const;
     Q_INVOKABLE void addBcSearchHistory(const QString &value);
     Q_INVOKABLE void removeBcSearchHistory(const QString &value);
@@ -205,21 +196,12 @@ signals:
     void audioBoostChanged();
     void fsapiPinChanged();
     void globalYtdlChanged();
-    void openUrlModeChanged();
     void bcSearchHistoryChanged();
     void soundcloudSearchHistoryChanged();
     void icecastSearchHistoryChanged();
     void tuneinSearchHistoryChanged();
 
 private:
-    inline static const QStringList urlMimesForOpenWith = {
-        "x-scheme-handler/http",
-        "x-scheme-handler/https"
-    };
-    inline static const QStringList fileMimesForOpenWith = {
-        "audio/*",
-        "video/*"
-    };
     inline static const QString settingsFileName = "settings.config";
     static const int maxSearchHistory = 3;
 
@@ -233,7 +215,6 @@ private:
     static QString readHwInfo();
 #endif
     static std::pair<int,int> sysVer();
-    void initOpenUrlMode();
     static QString settingsFilePath();
 };
 

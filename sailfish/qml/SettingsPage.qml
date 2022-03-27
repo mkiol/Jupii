@@ -111,17 +111,6 @@ Page {
                 }
             }*/
 
-            ComboBox {
-                label: qsTr("Open link")
-                currentIndex: settings.openUrlMode
-                menu: ContextMenu {
-                    MenuItem { text: qsTr("Don't show") }
-                    MenuItem { text: qsTr("Show") }
-                }
-                onCurrentIndexChanged: settings.openUrlMode = currentIndex
-                description: qsTr("Show Jupii as an option in 'Open link' dialog.");
-            }
-
             ExpandingSectionGroup {
                 ExpandingSection {
                     title: qsTr("Experiments")
