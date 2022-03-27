@@ -44,7 +44,7 @@ target.path = /usr/bin
     INSTALLS += qml
 }
 
-desktop.files = $${TARGET}.desktop
+desktop.files = $${TARGET}.desktop $${TARGET}-open-url.desktop
 desktop.path = /usr/share/applications
 
 INSTALLS += target desktop
