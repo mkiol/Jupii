@@ -11,9 +11,9 @@
 namespace Jupii {
 static constexpr const char* APP_NAME = "Jupii";
 #ifdef QT_DEBUG
-static constexpr const char* APP_VERSION = "2.11.3 (debug)";
+static constexpr const char* APP_VERSION = "2.12.0 (debug)";
 #else
-static constexpr const char* APP_VERSION = "2.11.3";
+static constexpr const char* APP_VERSION = "2.12.0";
 #endif // QT_DEBUG
 #ifdef FLATPAK
 static constexpr const char* APP_ID = "org.mkiol.Jupii";

@@ -29,6 +29,20 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.12")
+            }
+
+            LogItem {
+                title: "Explicit app permissions"
+                description: "Jupii requests for following permissions: Internet, Audio, Microphone, RemovableMedia, UserDirs, MediaIndexing."
+            }
+
+            LogItem {
+                title: "Screen capture disabled"
+                description: "Due to sandboxing, 'Screen capture' feature was broken and is therefore disabled from now on."
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.11")
             }
 
@@ -278,7 +292,7 @@ Page {
                 title: "Option to turn on logging to file"
                 description: "Needed for diagnostic purposes only. " +
                              "When enabled log data is stored in %1/jupii.log file."
-                .arg(utils.homeDirPath())
+                .arg(settings.getCacheDir())
             }
 
             LogItem {

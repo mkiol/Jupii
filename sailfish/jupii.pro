@@ -105,3 +105,4 @@ include(sailfishapp.pri)
 #%define __provides_exclude_from ^%{_datadir}/.*$
 #%define __requires_exclude ^libgumbo.*|libomx*|libx264.*|libavdevice.*|libavcodec.*|libavformat.*|libavutil.*|libswresample.*|libswscale.*|libmp3lame.*|libtag.*|libnpupnp.*|libmicrohttpd.*|libupnpp.*$
 # << macros
+
