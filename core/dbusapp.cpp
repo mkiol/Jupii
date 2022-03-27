@@ -36,10 +36,6 @@ DbusProxy::DbusProxy(QObject *parent) : QObject(parent),
         if (con.lastError().type() == QDBusError::AddressInUse) throw std::runtime_error("dbus address in use");
         return;
     }
-    if (!con.registerService("org.jupii")) { // deprecated
-        qWarning() << "Dbus org.jupii service registration failed:" << con.lastError().message();
-        return;
-    }
 
     auto av = Services::instance()->avTransport;
     if (av) {

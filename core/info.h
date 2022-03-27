@@ -15,15 +15,11 @@ static constexpr const char* APP_VERSION = "2.11.3 (debug)";
 #else
 static constexpr const char* APP_VERSION = "2.11.3";
 #endif // QT_DEBUG
-#ifdef SAILFISH
-static constexpr const char* APP_ID = "harbour-jupii";
-#else
 #ifdef FLATPAK
 static constexpr const char* APP_ID = "org.mkiol.Jupii";
 #else
 static constexpr const char* APP_ID = "jupii";
 #endif // FLATPAK
-#endif // SAILFISH
 static constexpr const char* ORG = "org.mkiol";
 static constexpr const char* AUTHOR = "Michal Kosciesza";
 static constexpr const char* AUTHOR_EMAIL = "michal@mkiol.net";
@@ -34,6 +30,7 @@ static constexpr const char* LICENSE = "Mozilla Public License 2.0";
 static constexpr const char* LICENSE_URL = "http://mozilla.org/MPL/2.0/";
 static constexpr const char* LICENSE_SPDX = "MPL-2.0";
 static constexpr const char* DBUS_SERVICE = "org.mkiol.jupii";
+static constexpr const char* DBUS_INTERFACE = "org.mkiol.jupii";
 }
 
 #endif // INFO_H

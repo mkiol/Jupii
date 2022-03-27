@@ -147,10 +147,12 @@ int main(int argc, char *argv[])
     auto app = new QApplication{argc, argv};
     auto engine = new QQmlApplicationEngine();
     auto context = engine->rootContext();
-    app->setApplicationName(Jupii::APP_ID);
-    app->setOrganizationName(Jupii::ORG);
     QGuiApplication::setWindowIcon(QIcon::fromTheme(Jupii::APP_ID));
 #endif
+    app->setApplicationName(Jupii::APP_ID);
+    app->setOrganizationName(Jupii::ORG);
+    app->setApplicationDisplayName(Jupii::APP_NAME);
+    app->setApplicationVersion(Jupii::APP_VERSION);
 
     registerTypes();
 
@@ -167,9 +169,6 @@ int main(int argc, char *argv[])
     context->setContextProperty(QStringLiteral("LICENSE"), Jupii::LICENSE);
     context->setContextProperty(QStringLiteral("LICENSE_URL"), Jupii::LICENSE_URL);
     context->setContextProperty(QStringLiteral("LICENSE_SPDX"), Jupii::LICENSE_SPDX);
-
-    app->setApplicationDisplayName(Jupii::APP_NAME);
-    app->setApplicationVersion(Jupii::APP_VERSION);
 
     installTranslator(app);
 

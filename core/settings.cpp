@@ -30,14 +30,29 @@
 
 Settings* Settings::inst = nullptr;
 
-Settings::Settings(QObject *parent) :
-    QObject{parent},
-    TaskExecutor{parent},
-    settings{parent},
+QString Settings::settingsFilePath() {
+    QDir confDir{
+        QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)};
+    confDir.mkpath(QCoreApplication::organizationName() + "/" +
+                   QCoreApplication::applicationName());
+    return confDir.absolutePath() + QDir::separator() +
+           QCoreApplication::organizationName() + QDir::separator() +
+           QCoreApplication::applicationName() + QDir::separator() +
+           settingsFileName;
+}
+
+Settings::Settings(QObject *parent)
+    : QObject{parent},
+      TaskExecutor{parent},
+      settings{settingsFilePath(), QSettings::NativeFormat, parent},
 #ifdef SAILFISH
-    hwName{readHwInfo()}
+      hwName {
+    readHwInfo()
+}
 #else
-    hwName{QSysInfo::machineHostName()}
+      hwName {
+    QSysInfo::machineHostName()
+}
 #endif
 {
     removeLogFiles();
@@ -49,6 +64,16 @@ Settings::Settings(QObject *parent) :
 #endif
 
     qDebug() << "HW name:" << hwName;
+    qDebug() << "app:" << Jupii::ORG << Jupii::APP_ID;
+    qDebug() << "config location:"
+             << QStandardPaths::writableLocation(
+                    QStandardPaths::ConfigLocation);
+    qDebug() << "data location:"
+             << QStandardPaths::writableLocation(
+                    QStandardPaths::AppDataLocation);
+    qDebug() << "cache location:"
+             << QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    qDebug() << "settings file:" << settings.fileName();
 }
 
 bool Settings::isDebug() const
@@ -842,17 +867,22 @@ static inline QFile desktopFile()
 
 void Settings::initOpenUrlMode()
 {
-    // code mostly borrowed from https://github.com/Wunderfitz/harbour-piepmatz project
+    // code mostly borrowed from https://github.com/Wunderfitz/harbour-piepmatz
+    // project
 
-    const QDir dbusPath{QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/dbus-1/services"};
+    const QDir dbusPath{
+        QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
+        "/dbus-1/services"};
     if (!dbusPath.exists()) dbusPath.mkpath(dbusPath.absolutePath());
-    QFile dbusServiceFile{dbusPath.absolutePath() + "/" + Jupii::DBUS_SERVICE + ".service"};
+    QFile dbusServiceFile{dbusPath.absolutePath() + "/" + Jupii::DBUS_SERVICE +
+                          ".service"};
     if (dbusServiceFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream s{&dbusServiceFile};
         s.setCodec("UTF-8");
         s << "[D-BUS Service]\n";
         s << "Name=" << Jupii::DBUS_SERVICE << "\n";
-        s << "Exec=/usr/bin/invoker --type=silica-qt5 --single-instance " << Jupii::APP_ID << "\n";
+        s << "Exec=/usr/bin/invoker --type=silica-qt5 --single-instance "
+          << Jupii::APP_ID << "\n";
         s.flush();
     }
 
@@ -861,25 +891,27 @@ void Settings::initOpenUrlMode()
 
     QTimer::singleShot(3000, this, [this] {
         qDebug() << "Open URL mode:" << static_cast<int>(openUrlMode());
-            if (auto df{desktopFile()}; df.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                QTextStream s{&df};
-                s.setCodec("UTF-8");
-                s << "[Desktop Entry]\n";
-                s << "Type=Application\n";
-                s << "Name=" << Jupii::APP_NAME << "\n";
-                s << "Icon=" << Jupii::APP_ID << "\n";
-                s << "NoDisplay=true\n";
-                s << "MimeType=" << fileMimesForOpenWith.join(";");
-                if (openUrlMode() == OpenUrlModeType::OpenUrlMode_All) {
-                    s << ";" << urlMimesForOpenWith.join(";");
-                }
-                s << ";\n";
-                s << "X-Maemo-Service=" << Jupii::DBUS_SERVICE << "\n";
-                s << "X-Maemo-Method=" << Jupii::DBUS_SERVICE << ".Playlist.openUrl\n";
-                s.flush();
-                df.close();
-                updateDesktopDb();
+        if (auto df{desktopFile()};
+            df.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream s{&df};
+            s.setCodec("UTF-8");
+            s << "[Desktop Entry]\n";
+            s << "Type=Application\n";
+            s << "Name=" << Jupii::APP_NAME << "\n";
+            s << "Icon=" << Jupii::APP_ID << "\n";
+            s << "NoDisplay=true\n";
+            s << "MimeType=" << fileMimesForOpenWith.join(";");
+            if (openUrlMode() == OpenUrlModeType::OpenUrlMode_All) {
+                s << ";" << urlMimesForOpenWith.join(";");
             }
+            s << ";\n";
+            s << "X-Maemo-Service=" << Jupii::DBUS_SERVICE << "\n";
+            s << "X-Maemo-Method=" << Jupii::DBUS_INTERFACE
+              << ".Playlist.openUrl\n";
+            s.flush();
+            df.close();
+            updateDesktopDb();
+        }
     });
 }
 

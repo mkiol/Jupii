@@ -220,7 +220,9 @@ private:
         "audio/*",
         "video/*"
     };
+    inline static const QString settingsFileName = "settings.config";
     static const int maxSearchHistory = 3;
+
     QSettings settings;
     static Settings* inst;
     const QString hwName;
@@ -232,6 +234,7 @@ private:
 #endif
     static std::pair<int,int> sysVer();
     void initOpenUrlMode();
+    static QString settingsFilePath();
 };
 
 #endif // SETTINGS_H
