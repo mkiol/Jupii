@@ -450,7 +450,9 @@ void Settings::setScreenSupported(bool value)
 bool Settings::getScreenSupported() const
 {
 #ifdef SAILFISH
-    return settings.value("screensupported", false).toBool();
+    // Sreen Capture does not work with sandboxing
+    // return settings.value("screensupported", false).toBool();
+    return false;
 #else
     return true;
 #endif

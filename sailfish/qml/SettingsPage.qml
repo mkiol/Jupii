@@ -116,7 +116,7 @@ Page {
                     title: qsTr("Experiments")
 
                     content.sourceComponent: Column {
-                        ComboBox {
+                        /*ComboBox {
                             label: qsTr("Screen capture")
                             currentIndex: settings.screenSupported ?
                                               settings.screenAudio ? 2 : 1 : 0
@@ -174,7 +174,7 @@ Page {
                             onValueChanged: {
                                 settings.screenQuality = value
                             }
-                        }
+                        }*/
 
                         TextSwitch {
                             automaticCheck: false
@@ -313,7 +313,7 @@ Page {
                             }
                         }
 
-                        ComboBox {
+                        /*ComboBox {
                             visible: settings.isDebug() && settings.screenSupported
                             label: qsTr("Screen capture encoder")
                             currentIndex: {
@@ -375,7 +375,7 @@ Page {
                                     settings.screenFramerate = 5;
                                 }
                             }
-                        }
+                        }*/
 
                         TextField {
                             anchors {
