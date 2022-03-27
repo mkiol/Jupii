@@ -216,6 +216,7 @@ private:
 #endif
     static std::pair<int,int> sysVer();
     static QString settingsFilePath();
+    static void initOpenUrlMode();
 };
 
 #endif // SETTINGS_H

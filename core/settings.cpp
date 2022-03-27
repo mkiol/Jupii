@@ -55,6 +55,7 @@ Settings::Settings(QObject *parent)
 }
 #endif
 {
+    initOpenUrlMode();
     getCacheDir();
     removeLogFiles();
     qInstallMessageHandler(qtLog);
@@ -938,4 +939,30 @@ void Settings::removeTuneinSearchHistory(const QString &value)
         settings.setValue("tuneinsearchhistory", list);
         emit tuneinSearchHistoryChanged();
     }
+}
+
+static inline QFile desktopFile() {
+    return QFile{QString{"%1/%2-open-url.desktop"}.arg(
+        QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation),
+        Jupii::APP_BINARY_ID)};
+}
+
+void Settings::initOpenUrlMode() {
+    const QDir dbusPath{
+        QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
+        "/dbus-1/services"};
+    if (!dbusPath.exists()) dbusPath.mkpath(dbusPath.absolutePath());
+    QFile dbusServiceFile{dbusPath.absolutePath() + "/" + Jupii::DBUS_SERVICE +
+                          ".service"};
+    if (dbusServiceFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream s{&dbusServiceFile};
+        s.setCodec("UTF-8");
+        s << "[D-BUS Service]\n";
+        s << "Name=" << Jupii::DBUS_SERVICE << "\n";
+        s << "Exec=/usr/bin/invoker --type=silica-qt5 --single-instance "
+          << Jupii::APP_BINARY_ID << "\n";
+        s.flush();
+    }
+
+    desktopFile().remove();
 }
