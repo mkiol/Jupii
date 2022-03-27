@@ -52,7 +52,6 @@ Utils* Utils::m_instance = nullptr;
 Utils::Utils(QObject *parent) : QObject(parent),
     nam(new QNetworkAccessManager())
 {
-    createCacheDir();
 }
 
 Utils* Utils::instance(QObject *parent)
@@ -62,11 +61,6 @@ Utils* Utils::instance(QObject *parent)
     }
 
     return Utils::m_instance;
-}
-
-QString Utils::homeDirPath() const
-{
-    return QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 }
 
 QString Utils::secToStr(int value) const
@@ -188,20 +182,6 @@ bool Utils::writeToFile(const QString &path, const QByteArray &data, bool del)
     } else {
         qDebug() << "File already exists:" << f.fileName();
         return false;
-    }
-
-    return true;
-}
-
-bool Utils::createCacheDir()
-{
-    const auto dir = Settings::instance()->getCacheDir();
-
-    if (!QFile::exists(dir)) {
-        if (!QDir::root().mkpath(dir)) {
-            qWarning() << "Unable to create cache dir!";
-            return false;
-        }
     }
 
     return true;

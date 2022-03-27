@@ -55,6 +55,7 @@ Settings::Settings(QObject *parent)
 }
 #endif
 {
+    getCacheDir();
     removeLogFiles();
     qInstallMessageHandler(qtLog);
     ::configureLogToFile(getLogToFile());
@@ -198,7 +199,9 @@ QHash<QString,QVariant> Settings::getLastDevices() const
 
 QString Settings::getCacheDir() const
 {
-   return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    auto path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    if (!QFile::exists(path)) QDir::root().mkpath(path);
+    return path;
 }
 
 QString Settings::getPlaylistDir() const

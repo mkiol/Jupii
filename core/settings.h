@@ -133,7 +133,7 @@ public:
     void setLastPlaylist(const QStringList &value);
     QByteArray getKey();
     QByteArray resetKey();
-    QString getCacheDir() const;
+    Q_INVOKABLE QString getCacheDir() const;
     QString getPlaylistDir() const;
     QString getPrefNetInf() const;
     void setPrefNetInf(const QString &value);

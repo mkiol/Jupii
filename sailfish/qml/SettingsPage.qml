@@ -396,7 +396,7 @@ Page {
                             text: qsTr("Enable logging")
                             description: qsTr("Needed for troubleshooting purposes. " +
                                               "The log data is stored in %1 file.")
-                                                .arg(utils.homeDirPath() + "/jupii.log")
+                                                .arg(settings.getCacheDir() + "/jupii.log")
                             onClicked: {
                                 settings.logToFile = !settings.logToFile
                             }

@@ -53,7 +53,6 @@ public:
     void activateWindow();
 #endif
     Q_INVOKABLE QString secToStr(int value) const;
-    Q_INVOKABLE QString homeDirPath() const;
     Q_INVOKABLE bool isUrlOk(const QUrl &url) const;
     Q_INVOKABLE bool isGpodderAvailable() const;
     Q_INVOKABLE bool isIdMic(const QUrl &id) const;
@@ -127,7 +126,6 @@ public:
     static QString deviceIconFileName(QString id, const QString &ext);
     static QString deviceIconFilePath(const QString& id);
 
-    bool createCacheDir();
     bool createPlaylistDir();
 
 private:

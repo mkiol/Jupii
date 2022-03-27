@@ -37,8 +37,10 @@ void configureLogToFile(bool enable)
 void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     if (logToFile && !logFile) {
-        QDir home(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-        auto file = home.filePath(LOG_FILE).toLatin1();
+        auto file = QDir{QStandardPaths::writableLocation(
+                             QStandardPaths::CacheLocation)}
+                        .filePath(LOG_FILE)
+                        .toLatin1();
         logFile = fopen(file.data(), "w");
     }
 
@@ -75,8 +77,10 @@ void qtLog(QtMsgType type, const QMessageLogContext &context, const QString &msg
 void ffmpegLog(void *, int level, const char *fmt, va_list vargs)
 {
     if (!ffmpegLogFile) {
-        QDir home(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-        auto file = home.filePath(FFMPEG_LOG_FILE).toLatin1();
+        auto file = QDir{QStandardPaths::writableLocation(
+                             QStandardPaths::CacheLocation)}
+                        .filePath(FFMPEG_LOG_FILE)
+                        .toLatin1();
         ffmpegLogFile = fopen(file.data(), "w");
     }
 
@@ -95,8 +99,8 @@ void ffmpegLog(void *, int level, const char *fmt, va_list vargs)
 
 void removeLogFiles()
 {
-    QDir home(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
-    home.remove(LOG_FILE);
-    home.remove(FFMPEG_LOG_FILE);
-    home.remove(UPNPP_LOG_FILE);
+    QDir cache{QStandardPaths::writableLocation(QStandardPaths::CacheLocation)};
+    cache.remove(LOG_FILE);
+    cache.remove(FFMPEG_LOG_FILE);
+    cache.remove(UPNPP_LOG_FILE);
 }
