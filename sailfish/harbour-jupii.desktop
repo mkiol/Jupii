@@ -4,3 +4,8 @@ X-Nemo-Application-Type=silica-qt5
 Icon=harbour-jupii
 Exec=harbour-jupii
 Name=Jupii
+
+[X-Sailjail]
+Permissions=Internet;Audio;Microphone;RemovableMedia;UserDirs;MediaIndexing
+OrganizationName=org.mkiol
+ApplicationName=jupii
