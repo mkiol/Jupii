@@ -89,7 +89,7 @@ bool Notifications::show(const QString& summary, const QString& body, const QStr
 #ifdef SAILFISH
     timeout = 5;
     hints.insert("urgency", 1);
-    hints.insert("x-nemo-owner", Jupii::APP_ID);
+    hints.insert("x-nemo-owner", Jupii::APP_BINARY_ID);
     hints.insert("x-nemo-max-content-lines", 10);
     if (!body.isEmpty())
         hints.insert("x-nemo-preview-body", body);
@@ -99,16 +99,10 @@ bool Notifications::show(const QString& summary, const QString& body, const QStr
         hints.insert("x-nemo-icon", iconPath);
 #endif
 
-    auto reply = m_dbus_inf->Notify(
-                Jupii::APP_NAME,
-                0,
-                iconPath.isEmpty() ? Jupii::APP_ID : iconPath,
-                summary,
-                body,
-                {},
-                hints,
-                timeout
-                );
+    auto reply =
+        m_dbus_inf->Notify(Jupii::APP_NAME, 0,
+                           iconPath.isEmpty() ? Jupii::APP_BINARY_ID : iconPath,
+                           summary, body, {}, hints, timeout);
 
     return !reply.isError();
 }

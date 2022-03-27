@@ -18,6 +18,11 @@ static constexpr const char* APP_VERSION = "2.11.3";
 #ifdef FLATPAK
 static constexpr const char* APP_ID = "org.mkiol.Jupii";
 #else
+#ifdef SAILFISH
+static constexpr const char* APP_BINARY_ID = "harbour-jupii";
+#else
+static constexpr const char* APP_BINARY_ID = "jupii";
+#endif
 static constexpr const char* APP_ID = "jupii";
 #endif // FLATPAK
 static constexpr const char* ORG = "org.mkiol";
