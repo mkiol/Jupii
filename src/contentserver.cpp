@@ -36,17 +36,28 @@
 #include "contentserverworker.h"
 
 extern "C" {
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libswscale/swscale.h>
-#include <libswresample/swresample.h>
-#include <libavutil/dict.h>
-#include <libavutil/mathematics.h>
-#include <libavdevice/avdevice.h>
-#include <libavutil/imgutils.h>
-#include <libavutil/timestamp.h>
-#include <libavutil/time.h>
-#include <libavutil/log.h>
+//#include <libavcodec/avcodec.h>
+//#include <libavformat/avformat.h>
+//#include <libswscale/swscale.h>
+//#include <libswresample/swresample.h>
+//#include <libavutil/dict.h>
+//#include <libavutil/mathematics.h>
+//#include <libavdevice/avdevice.h>
+//#include <libavutil/imgutils.h>
+//#include <libavutil/timestamp.h>
+//#include <libavutil/time.h>
+//#include <libavutil/log.h>
+#include "libavcodec/avcodec.h"
+#include "libavdevice/avdevice.h"
+#include "libavformat/avformat.h"
+#include "libavutil/dict.h"
+#include "libavutil/imgutils.h"
+#include "libavutil/log.h"
+#include "libavutil/mathematics.h"
+#include "libavutil/time.h"
+#include "libavutil/timestamp.h"
+#include "libswresample/swresample.h"
+#include "libswscale/swscale.h"
 }
 
 // TagLib
@@ -244,7 +255,6 @@ ContentServer::ContentServer(QObject *parent) :
     av_register_all();
     avcodec_register_all();
     avdevice_register_all();
-
     // starting worker
     start(QThread::NormalPriority);
 /*

@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -201,8 +201,9 @@ signals:
     void icecastSearchHistoryChanged();
     void tuneinSearchHistoryChanged();
 
-private:
-    inline static const QString settingsFileName = "settings.config";
+   private:
+    inline static const QString settingsFilename =
+        QStringLiteral("settings.config");
     static const int maxSearchHistory = 3;
 
     QSettings settings;
@@ -215,7 +216,7 @@ private:
     static QString readHwInfo();
 #endif
     static std::pair<int,int> sysVer();
-    static QString settingsFilePath();
+    static QString settingsFilepath();
     static void initOpenUrlMode();
 };
 

@@ -39,7 +39,7 @@ arm64: INCLUDEPATH += /usr/include/c++/8.3.0/aarch64-meego-linux-gnu
 CONFIG += sailfish screencast
 DEFINES += SAILFISH SCREENCAST
 
-include($${PROJECTDIR}/core/jupii_core.pri)
+include($${PROJECTDIR}/src/jupii.pri)
 
 INCLUDEPATH += src
 
@@ -59,7 +59,7 @@ OTHER_FILES += \
 # translations #
 ################
 
-TRANSLATION_SOURCE_DIRS += $${PROJECTDIR}/core \
+TRANSLATION_SOURCE_DIRS += $${PROJECTDIR}/src \
                            $${PROJECTDIR}/sailfish/qml \
                            $${PROJECTDIR}/sailfish/src \
                            $${PROJECTDIR}/desktop/qml \
@@ -100,9 +100,3 @@ PKGCONFIG += \
 LIBS += -ldl
 
 include(sailfishapp.pri)
-
-# >> macros
-#%define __provides_exclude_from ^%{_datadir}/.*$
-#%define __requires_exclude ^libgumbo.*|libomx*|libx264.*|libavdevice.*|libavcodec.*|libavformat.*|libavutil.*|libswresample.*|libswscale.*|libmp3lame.*|libtag.*|libnpupnp.*|libmicrohttpd.*|libupnpp.*$
-# << macros
-

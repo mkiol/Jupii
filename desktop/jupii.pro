@@ -44,7 +44,7 @@ equals(FLATPAK, 1) {
     DEFINES += FLATPAK
 }
 
-include($${PROJECTDIR}/core/jupii_core.pri)
+include($${PROJECTDIR}/src/jupii.pri)
 
 OTHER_FILES += \
     $${PROJECTDIR}/dbus/org.jupii.xml \
@@ -56,7 +56,7 @@ OTHER_FILES += \
 # translations #
 ################
 
-TRANSLATION_SOURCE_DIRS += $${PROJECTDIR}/core \
+TRANSLATION_SOURCE_DIRS += $${PROJECTDIR}/src \
                            $${PROJECTDIR}/sailfish/qml \
                            $${PROJECTDIR}/sailfish/src \
                            $${PROJECTDIR}/desktop/qml \
