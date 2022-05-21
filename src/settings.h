@@ -8,22 +8,22 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QObject>
-#include <QString>
-#include <QList>
-#include <QHash>
-#include <QVariant>
-#include <QSettings>
 #include <QByteArray>
+#include <QHash>
+#include <QList>
+#include <QObject>
+#include <QSettings>
+#include <QString>
 #include <QStringList>
+#include <QVariant>
 #include <utility>
 
+#include "singleton.h"
 #include "taskexecutor.h"
 
-class Settings:
-        public QObject,
-        public TaskExecutor
-{
+class Settings : public QSettings,
+                 public TaskExecutor,
+                 public Singleton<Settings> {
     Q_OBJECT
     Q_PROPERTY (int port READ getPort WRITE setPort NOTIFY portChanged)
     Q_PROPERTY (QString lastDir READ getLastDir WRITE setLastDir NOTIFY lastDirChanged)
@@ -69,8 +69,7 @@ public:
 #ifdef SAILFISH
     static constexpr const char* HW_RELEASE_FILE = "/etc/hw-release";
 #endif
-    static Settings* instance();
-
+    Settings();
     void setPort(int value);
     int getPort() const;
     void setForwardTime(int value);
@@ -206,12 +205,9 @@ signals:
         QStringLiteral("settings.config");
     static const int maxSearchHistory = 3;
 
-    QSettings settings;
-    static Settings* inst;
-    const QString hwName;
+    QString hwName;
     int m_colorScheme = 0;
 
-    explicit Settings(QObject* parent = nullptr);
 #ifdef SAILFISH
     static QString readHwInfo();
 #endif

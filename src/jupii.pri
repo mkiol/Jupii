@@ -133,7 +133,8 @@ HEADERS += \
     $$ROOT_DIR/playlistparser.h \
     $$ROOT_DIR/contentserverworker.h \
     $$ROOT_DIR/screencaster.h \
-    $$ROOT_DIR/dnscontentdeterminator.h
+    $$ROOT_DIR/dnscontentdeterminator.h \
+    $$ROOT_DIR/singleton.h
 
 SOURCES += \
     $$ROOT_DIR/dbus_jupii_adaptor.cpp \

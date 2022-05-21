@@ -14,17 +14,19 @@ static constexpr const char* APP_NAME = "Jupii";
 static constexpr const char* APP_VERSION = "2.12.0 (debug)";
 #else
 static constexpr const char* APP_VERSION = "2.12.0";
-#endif // QT_DEBUG
+#endif  // QT_DEBUG
 #ifdef FLATPAK
 static constexpr const char* APP_ID = "org.mkiol.Jupii";
+static constexpr const char* APP_BINARY_ID = "jupii";
 #else
 #ifdef SAILFISH
 static constexpr const char* APP_BINARY_ID = "harbour-jupii";
+static constexpr const char* APP_BINARY_ID = "jupii";
 #else
+static constexpr const char* APP_ID = "jupii";
 static constexpr const char* APP_BINARY_ID = "jupii";
 #endif
-static constexpr const char* APP_ID = "jupii";
-#endif // FLATPAK
+#endif  // FLATPAK
 static constexpr const char* ORG = "org.mkiol";
 static constexpr const char* AUTHOR = "Michal Kosciesza";
 static constexpr const char* AUTHOR_EMAIL = "michal@mkiol.net";
@@ -36,6 +38,6 @@ static constexpr const char* LICENSE_URL = "http://mozilla.org/MPL/2.0/";
 static constexpr const char* LICENSE_SPDX = "MPL-2.0";
 static constexpr const char* DBUS_SERVICE = "org.mkiol.jupii";
 static constexpr const char* DBUS_INTERFACE = "org.mkiol.jupii";
-}
+}  // namespace Jupii
 
-#endif // INFO_H
+#endif  // INFO_H

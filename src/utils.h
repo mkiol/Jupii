@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,23 +8,24 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <QString>
-#include <QPair>
-#include <QObject>
 #include <QByteArray>
-#include <QStringList>
 #include <QNetworkAccessManager>
-#include <QThread>
 #include <QNetworkInterface>
+#include <QObject>
+#include <QPair>
+#include <QString>
+#include <QStringList>
+#include <QThread>
 #include <memory>
 #ifdef SAILFISH
 #include <QQuickItem>
 #endif
 
-class Utils : public QObject
-{
+#include "singleton.h"
+
+class Utils : public QObject, public Singleton<Utils> {
     Q_OBJECT
-public:
+   public:
     static const QString typeKey;
     static const QString cookieKey;
     static const QString nameKey;
@@ -38,18 +39,18 @@ public:
     static const QString appKey;
     static const QString durKey;
 
-    static Utils* instance(QObject *parent = nullptr);
     std::unique_ptr<QNetworkAccessManager> nam;
 
-    static bool ethNetworkInf(const QNetworkInterface& interface);
-    static bool wlanNetworkInf(const QNetworkInterface& interface);
+    Utils(QObject *parent = nullptr);
+    static bool ethNetworkInf(const QNetworkInterface &interface);
+    static bool wlanNetworkInf(const QNetworkInterface &interface);
     Q_INVOKABLE QStringList networkInfs(bool onlyUp = true);
     Q_INVOKABLE int prefNetworkInfIndex();
     Q_INVOKABLE void setPrefNetworkInfIndex(int idx) const;
     static QString escapeName(const QString &filename);
 
 #ifdef SAILFISH
-    void setQmlRootItem(QQuickItem* rootItem);
+    void setQmlRootItem(QQuickItem *rootItem);
     void activateWindow();
 #endif
     Q_INVOKABLE QString secToStr(int value) const;
@@ -78,7 +79,8 @@ public:
     static bool isUrlPulse(const QUrl &url);
     static bool isUrlScreen(const QUrl &url);
     static bool isUrlUpnp(const QUrl &url);
-    static QUrl urlFromText(const QString &text, const QString &context = QString());
+    static QUrl urlFromText(const QString &text,
+                            const QString &context = QString());
     static QString pathFromId(const QString &id);
     static QString pathFromId(const QUrl &id);
     static int typeFromId(const QString &id);
@@ -97,23 +99,19 @@ public:
     static QUrl bestUrlFromId(const QUrl &id);
     static QUrl cleanId(const QUrl &id);
     static QUrl iconFromId(const QUrl &id);
-    static bool pathTypeNameCookieIconFromId(const QUrl &id,
-                                        QString* path = nullptr,
-                                        int* type = nullptr,
-                                        QString *name = nullptr,
-                                        QString* cookie = nullptr,
-                                        QUrl *icon = nullptr,
-                                        QString *desc = nullptr,
-                                        QString *author = nullptr,
-                                        QUrl *origUrl = nullptr,
-                                        bool *ytdl = nullptr,
-                                        bool *play = nullptr,
-                                        QString *app = nullptr,
-                                        int *duration = nullptr);
+    static bool pathTypeNameCookieIconFromId(
+        const QUrl &id, QString *path = nullptr, int *type = nullptr,
+        QString *name = nullptr, QString *cookie = nullptr,
+        QUrl *icon = nullptr, QString *desc = nullptr,
+        QString *author = nullptr, QUrl *origUrl = nullptr,
+        bool *ytdl = nullptr, bool *play = nullptr, QString *app = nullptr,
+        int *duration = nullptr);
     QString randString(int len = 5);
     static void removeFile(const QString &path);
-    static bool writeToCacheFile(const QString &filename, const QByteArray &data, bool del = false);
-    static bool writeToFile(const QString &path, const QByteArray &data, bool del = false);
+    static bool writeToCacheFile(const QString &filename,
+                                 const QByteArray &data, bool del = false);
+    static bool writeToFile(const QString &path, const QByteArray &data,
+                            bool del = false);
     static void removeFromCacheDir(const QStringList &filter);
     static bool readFromCacheFile(const QString &filename, QByteArray &data);
     static QString pathToCacheFile(const QString &filename);
@@ -122,22 +120,18 @@ public:
     static QString friendlyDate(const QDateTime &date);
     static QString parseArtist(const QString &artist);
     static QDateTime parseDate(const QString &date);
-
     static QString deviceIconFileName(QString id, const QString &ext);
-    static QString deviceIconFilePath(const QString& id);
+    static QString deviceIconFilePath(const QString &id);
+    static bool createPlaylistDir();
 
-    bool createPlaylistDir();
-
-private:
-    static Utils* m_instance;
-    QHash<QThread*,bool> seedDone;
+   private:
+    QHash<QThread *, bool> seedDone;
     QStringList lastNetIfs;
 #ifdef SAILFISH
     qint32 notifId = 0;
-    //Notification notif;
-    QQuickItem* qmlRootItem = nullptr;
+    // Notification notif;
+    QQuickItem *qmlRootItem = nullptr;
 #endif
-    explicit Utils(QObject *parent = nullptr);
 };
 
-#endif // UTILS_H
+#endif  // UTILS_H

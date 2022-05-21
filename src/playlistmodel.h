@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,21 +9,21 @@
 #define PLAYLISTMODEL_H
 
 #include <QAbstractListModel>
-#include <QString>
-#include <QStringList>
+#include <QByteArray>
+#include <QDebug>
+#include <QHash>
 #include <QList>
 #include <QMap>
-#include <QMutex>
-#include <QHash>
-#include <QDebug>
-#include <QByteArray>
 #include <QModelIndex>
+#include <QMutex>
+#include <QPair>
+#include <QString>
+#include <QStringList>
+#include <QThread>
+#include <QTimer>
 #include <QUrl>
 #include <QVariant>
-#include <QThread>
-#include <QPair>
 #include <QVariantList>
-#include <QTimer>
 #include <memory>
 #include <optional>
 
@@ -33,6 +33,7 @@
 
 #include "contentserver.h"
 #include "listmodel.h"
+#include "singleton.h"
 
 class PlaylistItem;
 class PlaylistModel;
@@ -49,55 +50,55 @@ struct UrlItem {
     bool play = false;
 };
 
-class PlaylistWorker :
-        public QThread
-{
+class PlaylistWorker : public QThread {
     Q_OBJECT
 
-friend class PlaylistModel;
+    friend class PlaylistModel;
 
-public:
-    QList<ListItem*> items;
-    PlaylistWorker(const QList<UrlItem> &urls,
-                   bool asAudio = false,
-                   QObject *parent = nullptr);
-    PlaylistWorker(QList<UrlItem> &&urls,
-                   bool asAudio = false,
-                   QObject *parent = nullptr);
-    PlaylistWorker(QList<QUrl> &&ids, QObject *parent = nullptr);
-    inline QString origId(ListItem* item) { return itemToOrigId.value(item).toString(); }
+   public:
+    QList<ListItem *> items;
+    explicit PlaylistWorker(const QList<UrlItem> &urls, bool asAudio = false,
+                            QObject *parent = nullptr);
+    explicit PlaylistWorker(QList<UrlItem> &&urls, bool asAudio = false,
+                            QObject *parent = nullptr);
+    explicit PlaylistWorker(QList<QUrl> &&ids, QObject *parent = nullptr);
+    inline QString origId(ListItem *item) {
+        return itemToOrigId.value(item).toString();
+    }
     ~PlaylistWorker();
     void cancel();
 
-signals:
+   signals:
     void progress(int value, int total);
 
-private:
+   private:
     QList<UrlItem> urls;
     QList<QUrl> ids;
-    QHash<ListItem*, QUrl> itemToOrigId;
+    QHash<ListItem *, QUrl> itemToOrigId;
     bool asAudio;
     bool urlIsId;
-    void run();
+    void run() override;
 };
 
-class PlaylistModel :
-        public ListModel
-{
+class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     Q_OBJECT
-    Q_PROPERTY (int activeItemIndex READ getActiveItemIndex NOTIFY activeItemIndexChanged)
-    Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
-    Q_PROPERTY (bool busy READ isBusy NOTIFY busyChanged)
-    Q_PROPERTY (bool refreshing READ isRefreshing NOTIFY refreshingChanged)
-    Q_PROPERTY (bool nextSupported READ isNextSupported NOTIFY nextSupportedChanged)
-    Q_PROPERTY (bool prevSupported READ isPrevSupported NOTIFY prevSupportedChanged)
-    Q_PROPERTY (int progressValue READ getProgressValue NOTIFY progressChanged)
-    Q_PROPERTY (int progressTotal READ getProgressTotal NOTIFY progressChanged)
-    Q_PROPERTY (bool refreshable READ isRefreshable NOTIFY refreshableChanged)
+    Q_PROPERTY(int activeItemIndex READ getActiveItemIndex NOTIFY
+                   activeItemIndexChanged)
+    Q_PROPERTY(
+        int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY(bool busy READ isBusy NOTIFY busyChanged)
+    Q_PROPERTY(bool refreshing READ isRefreshing NOTIFY refreshingChanged)
+    Q_PROPERTY(
+        bool nextSupported READ isNextSupported NOTIFY nextSupportedChanged)
+    Q_PROPERTY(
+        bool prevSupported READ isPrevSupported NOTIFY prevSupportedChanged)
+    Q_PROPERTY(int progressValue READ getProgressValue NOTIFY progressChanged)
+    Q_PROPERTY(int progressTotal READ getProgressTotal NOTIFY progressChanged)
+    Q_PROPERTY(bool refreshable READ isRefreshable NOTIFY refreshableChanged)
 
-friend class PlaylistWorker;
+    friend class PlaylistWorker;
 
-public:
+   public:
     enum ErrorType {
         E_Unknown,
         E_FileExists,
@@ -107,15 +108,10 @@ public:
     };
     Q_ENUM(ErrorType)
 
-    enum PlayMode {
-        PM_Normal = 0,
-        PM_RepeatAll,
-        PM_RepeatOne
-    };
+    enum PlayMode { PM_Normal = 0, PM_RepeatAll, PM_RepeatOne };
     Q_ENUM(PlayMode)
 
-    static PlaylistModel* instance(QObject *parent = nullptr);
-
+    PlaylistModel(QObject *parent = nullptr);
     Q_INVOKABLE void clear(bool save = true, bool deleteItems = true);
     Q_INVOKABLE QString firstId() const;
     Q_INVOKABLE QString secondId() const;
@@ -126,7 +122,7 @@ public:
     Q_INVOKABLE QString nextActiveId() const;
     Q_INVOKABLE QString prevActiveId() const;
     Q_INVOKABLE QString nextId(const QString &id) const;
-    Q_INVOKABLE bool saveToFile(const QString& title);
+    Q_INVOKABLE bool saveToFile(const QString &title);
     Q_INVOKABLE bool saveToUrl(const QUrl &path);
     Q_INVOKABLE void next();
     Q_INVOKABLE void prev();
@@ -139,21 +135,26 @@ public:
     Q_INVOKABLE void cancelAdd();
 
     int getActiveItemIndex() const;
-    const PlaylistItem* getActiveItem() const;
+    const PlaylistItem *getActiveItem() const;
     int getPlayMode() const;
     void setPlayMode(int value);
-    bool isNextSupported();
-    bool isPrevSupported();
-    bool pathExists(const QString& path);
-    bool playPath(const QString& path);
-    bool urlExists(const QUrl& url);
-    bool playUrl(const QUrl& url);
-    std::pair<int,QString> getDidlList(int max = 0, const QString &didlId = {});
-    inline int getProgressValue() { return m_progressValue; }
-    inline int getProgressTotal() { return m_progressTotal; }
-    inline bool isRefreshable() { return m_refreshable_count > 0; }
+    inline auto isNextSupported() const { return m_nextSupported; }
+    inline auto isPrevSupported() const { return m_prevSupported; }
+    bool pathExists(const QString &path);
+    bool playPath(const QString &path);
+    bool urlExists(const QUrl &url);
+    bool playUrl(const QUrl &url);
+    std::pair<int, QString> getDidlList(int max = 0,
+                                        const QString &didlId = {});
+    inline int getProgressValue() const { return m_progressValue; }
+    inline int getProgressTotal() const { return m_progressTotal; }
+    inline bool isRefreshable() const { return m_refreshable_count > 0; }
+    inline bool isBusy() const { return m_busy; }
+    inline bool isRefreshing() const {
+        return static_cast<bool>(m_refresh_worker);
+    }
 
-signals:
+   signals:
     void itemsRemoved();
     void itemsAdded();
     void itemsLoaded();
@@ -175,54 +176,27 @@ signals:
     void soundcloudAlbumUrlAdded(const QUrl &url);
     void soundcloudArtistUrlAdded(const QUrl &url);
 
-public slots:
+   public slots:
     void load();
-    void addItemPaths(const QStringList& paths);
-    void addItemPath(const QString& path,
-                     const QString &name = {},
+    void addItemPaths(const QStringList &paths);
+    void addItemPath(const QString &path, const QString &name = {},
                      bool autoPlay = false);
-    void addItemUrls(const QList<UrlItem>& urls);
-    void addItemFileUrls(const QList<QUrl>& urls);
-    void addItemUrls(const QVariantList& urls);
-    void addItemUrl(QUrl url,
-                    const QString& name = {},
-                    const QUrl& origUrl = {},
-                    const QString &author = {},
-                    const QUrl& icon = {},
-                    const QString& desc = {},
-                    QString app = {},
-                    bool autoPlay = false);
-    void addItemPathsAsAudio(const QStringList& paths);
+    void addItemUrls(const QList<UrlItem> &urls);
+    void addItemFileUrls(const QList<QUrl> &urls);
+    void addItemUrls(const QVariantList &urls);
+    void addItemUrl(QUrl url, const QString &name = {},
+                    const QUrl &origUrl = {}, const QString &author = {},
+                    const QUrl &icon = {}, const QString &desc = {},
+                    QString app = {}, bool autoPlay = false);
+    void addItemPathsAsAudio(const QStringList &paths);
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
     void setToBeActiveIndex(int index);
-    void setToBeActiveId(const QString& id);
+    void setToBeActiveId(const QString &id);
     void resetToBeActive();
     void togglePlayMode();
-    bool isBusy();
-    bool isRefreshing();
 
-private slots:
-    void addWorkerDone();
-    void progressUpdate(int value, int total);
-    void onItemsAdded();
-    void onItemsLoaded();
-    void onItemsRemoved();
-    void onAvCurrentURIChanged();
-    void onAvNextURIChanged();
-    void onTrackEnded();
-    void onAvStateChanged();
-    void onAvInitedChanged();
-    void onSupportedChanged();
-    void update();
-    void updateActiveId();
-    void doOnTrackEnded();
-    void handleRefreshTimer();
-#ifdef SAILFISH
-    void handleBackgroundActivityStateChange();
-#endif
-
-private:
+   private:
     enum class UrlType {
         Unknown,
         BcMain,
@@ -235,8 +209,7 @@ private:
         SoundcloudArtist
     };
 
-    const static int refreshTimer = 30000; // 30s
-    static PlaylistModel* m_instance;
+    const static int refreshTimer = 30000;  // 30s
 #ifdef SAILFISH
     BackgroundActivity *m_backgroundActivity;
 #endif
@@ -256,27 +229,46 @@ private:
     int m_progressValue = 0;
     int m_progressTotal = 0;
     int m_refreshable_count = 0;
-    QHash<QString, QUrl> cookieToUrl; // use for mapping: cookie => url => meta
+    QHash<QString, QUrl> cookieToUrl;  // use for mapping: cookie => url => meta
 
-    PlaylistModel(QObject *parent = nullptr);
-    void addItems(const QList<QUrl>& urls, bool asAudio);
+    void addWorkerDone();
+    void progressUpdate(int value, int total);
+    void onItemsAdded();
+    void onItemsLoaded();
+    void onItemsRemoved();
+    void onAvCurrentURIChanged();
+    void onAvNextURIChanged();
+    void onTrackEnded();
+    void onAvStateChanged();
+    void onAvInitedChanged();
+    void onSupportedChanged();
+    void update();
+    void updateActiveId();
+    void doOnTrackEnded();
+    void handleRefreshTimer();
+#ifdef SAILFISH
+    void handleBackgroundActivityStateChange();
+#endif
+    void addItems(const QList<QUrl> &urls, bool asAudio);
     void addItems(const QList<UrlItem> &urls, bool asAudio);
     void setActiveItemIndex(int index);
-    bool addId(const QUrl& id);
-    PlaylistItem* makeItem(const QUrl &id);
+    bool addId(const QUrl &id);
+    PlaylistItem *makeItem(const QUrl &id);
     void save();
-    QByteArray makePlsData(const QString& name = {});
+    QByteArray makePlsData(const QString &name = {});
     void setBusy(bool busy);
     void updateNextSupported();
     void updatePrevSupported();
     bool autoPlay();
-    void refreshAndSetContent(const QString &id1, const QString &id2, bool toBeActive = false, bool setIfNotChanged = true);
+    void refreshAndSetContent(const QString &id1, const QString &id2,
+                              bool toBeActive = false,
+                              bool setIfNotChanged = true);
     void setContent(const QString &id1, const QString &id2);
-    QList<ListItem*> handleRefreshWorker();
+    QList<ListItem *> handleRefreshWorker();
     void doUpdate();
     void doUpdateActiveId();
     std::optional<int> nextActiveIndex() const;
-    void refresh(QList<QUrl>&& ids);
+    void refresh(QList<QUrl> &&ids);
     void updateRefreshTimer();
     static UrlType determineUrlType(QUrl *url);
 #ifdef SAILFISH
@@ -284,11 +276,9 @@ private:
 #endif
 };
 
-class PlaylistItem :
-        public ListItem
-{
+class PlaylistItem : public ListItem {
     Q_OBJECT
-public:
+   public:
     enum Roles {
         NameRole = Qt::DisplayRole,
         ForegroundRole = Qt::ForegroundRole,
@@ -313,64 +303,55 @@ public:
         DescRole
     };
 
-public:
-    PlaylistItem(QObject *parent = nullptr): ListItem(parent) {}
-    explicit PlaylistItem(const QUrl &id,
-                      const QString &name,
-                      const QUrl &url,
-                      const QUrl &origUrl,
-                      ContentServer::Type type,
-                      const QString &ctype,
-                      const QString &artist,
-                      const QString &album,
-                      const QString &date,
-                      const int duration,
-                      const qint64 size,
-                      const QUrl &icon,
-                      bool ytdl,
-                      bool play, // auto play after adding
-                      const QString &desc,
-                      const QDateTime &recDate,
-                      const QString &recUrl,
-                      ContentServer::ItemType itemType,
-                      const QString &devId,
-                      QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
+   public:
+    PlaylistItem(QObject *parent = nullptr) : ListItem{parent} {}
+    PlaylistItem(const QUrl &id, const QString &name, const QUrl &url,
+                 const QUrl &origUrl, ContentServer::Type type,
+                 const QString &ctype, const QString &artist,
+                 const QString &album, const QString &date, int duration,
+                 qint64 size, const QUrl &icon, bool ytdl,
+                 bool play,  // auto play after adding
+                 const QString &desc, const QDateTime &recDate,
+                 const QString &recUrl, ContentServer::ItemType itemType,
+                 const QString &devId, QObject *parent = nullptr);
+    QVariant data(int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
     QString path() const;
-    inline QString id() const { return m_id.toString(); }
-    inline QString cookie() const { return m_cookie; }
-    inline QString name() const { return m_name; }
-    inline QUrl url() const { return m_url; }
-    inline QUrl origUrl() const { return m_origUrl.isEmpty() ? m_url : m_origUrl; }
-    inline ContentServer::Type type() const { return m_type; }
-    inline QString ctype() const { return m_ctype; }
-    inline QString artist() const { return m_artist; }
-    inline QString album() const { return m_album; }
-    inline QString date() const { return m_date; }
-    inline int duration() const { return m_duration; }
-    inline qint64 size() const { return m_size; }
-    inline QUrl icon() const { return m_icon; }
-    inline bool ytdl() const { return m_ytdl; }
-    inline bool active() const { return m_active; }
-    inline bool toBeActive() const { return m_tobeactive; }
-    inline bool play() const { return m_play; }
-    inline QString desc() const { return m_desc; }
-    inline QString recUrl() const { return m_recUrl; }
-    inline ContentServer::ItemType itemType() const { return m_item_type; }
-    inline QString devId() const { return m_devid; }
+    inline QString id() const override { return m_id.toString(); }
+    inline auto cookie() const { return m_cookie; }
+    inline auto name() const { return m_name; }
+    inline auto url() const { return m_url; }
+    inline auto origUrl() const {
+        return m_origUrl.isEmpty() ? m_url : m_origUrl;
+    }
+    inline auto type() const { return m_type; }
+    inline auto ctype() const { return m_ctype; }
+    inline auto artist() const { return m_artist; }
+    inline auto album() const { return m_album; }
+    inline auto date() const { return m_date; }
+    inline auto duration() const { return m_duration; }
+    inline auto size() const { return m_size; }
+    inline auto icon() const { return m_icon; }
+    inline auto ytdl() const { return m_ytdl; }
+    inline auto active() const { return m_active; }
+    inline auto toBeActive() const { return m_tobeactive; }
+    inline auto play() const { return m_play; }
+    inline auto desc() const { return m_desc; }
+    inline auto recUrl() const { return m_recUrl; }
+    inline auto itemType() const { return m_item_type; }
+    inline auto devId() const { return m_devid; }
     void setActive(bool value);
     void setToBeActive(bool value);
     void setPlay(bool value);
     inline bool refreshable() const { return m_ytdl; }
     QString friendlyRecDate() const;
 
-private:
+   private:
     QUrl m_id;
     QString m_name;
     QUrl m_url;
     QUrl m_origUrl;
-    ContentServer::Type m_type;
+    ContentServer::Type m_type{};
     QString m_ctype;
     QString m_artist;
     QString m_album;
@@ -390,4 +371,4 @@ private:
     QString m_devid;
 };
 
-#endif // PLAYLISTMODEL_H
+#endif  // PLAYLISTMODEL_H

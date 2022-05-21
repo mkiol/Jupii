@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,22 +9,22 @@
 #define DEVICEMODEL_H
 
 #include <QAbstractListModel>
-#include <QString>
+#include <QByteArray>
+#include <QDebug>
+#include <QHash>
 #include <QList>
 #include <QMap>
-#include <QHash>
-#include <QDebug>
-#include <QByteArray>
 #include <QModelIndex>
+#include <QString>
 #include <QUrl>
 
 #include "listmodel.h"
+#include "singleton.h"
 #include "xc.h"
 
-class DeviceItem : public ListItem
-{
+class DeviceItem : public ListItem {
     Q_OBJECT
-public:
+   public:
     enum Roles {
         TitleRole = Qt::DisplayRole,
         TypeRole = Qt::ToolTipRole,
@@ -39,33 +39,27 @@ public:
         PowerRole
     };
 
-    DeviceItem(QObject *parent = nullptr): ListItem(parent) {}
-    explicit DeviceItem(const QString &id,
-                      const QString &title,
-                      const QString &type,
-                      const QString &model,
-                      const QUrl &icon,
-                      bool supported,
-                      bool active,
-                      bool jxc,
-                      QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    inline QString id() const { return m_id; }
-    inline QString title() const { return m_title; }
-    inline QString type() const { return m_type; }
-    inline QString model() const { return m_model; }
-    inline QUrl icon() const { return m_icon; }
-    inline bool supported() const { return m_supported; }
-    inline bool active() const { return m_active; }
-    inline bool xc() const { return m_xc; }
-    inline bool power() const { return m_power; }
+    DeviceItem(QObject *parent = nullptr) : ListItem(parent) {}
+    DeviceItem(const QString &id, const QString &title, const QString &type,
+               const QString &model, const QUrl &icon, bool supported,
+               bool active, bool jxc, QObject *parent = nullptr);
+    QVariant data(int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+    inline QString id() const override { return m_id; }
+    inline auto title() const { return m_title; }
+    inline auto type() const { return m_type; }
+    inline auto model() const { return m_model; }
+    inline auto icon() const { return m_icon; }
+    inline auto supported() const { return m_supported; }
+    inline auto active() const { return m_active; }
+    inline auto xc() const { return m_xc; }
+    inline auto power() const { return m_power; }
     bool isFav() const;
     void setActive(bool value);
     void setPower(bool value);
     void setIcon(const QUrl &icon);
 
-private:
+   private:
     QString m_id;
     QString m_title;
     QString m_type;
@@ -77,36 +71,30 @@ private:
     bool m_power = false;
 };
 
-class DeviceModel : public ListModel
-{
+class DeviceModel : public ListModel, public Singleton<DeviceModel> {
     Q_OBJECT
-    Q_PROPERTY (DeviceType deviceType READ getDeviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
-public:
-    enum DeviceType {
-        AnyType,
-        MediaRendererType,
-        MediaServerType
-    };
+    Q_PROPERTY(DeviceType deviceType READ getDeviceType WRITE setDeviceType
+                   NOTIFY deviceTypeChanged)
+   public:
+    enum DeviceType { AnyType, MediaRendererType, MediaServerType };
     Q_ENUM(DeviceType)
 
-    static DeviceModel* instance(QObject *parent = nullptr);
+    DeviceModel(QObject *parent = nullptr);
     void clear();
     void updatePower(const QString &id, bool value);
-    DeviceType getDeviceType();
+    inline auto getDeviceType() const { return m_deviceType; }
     void setDeviceType(DeviceType value);
 
-signals:
+   signals:
     void deviceTypeChanged();
 
-public slots:
+   public slots:
     void updateModel();
     void serviceInitedHandler();
 
-private:
-    static DeviceModel* m_instance;
+   private:
     DeviceType m_deviceType = AnyType;
-    explicit DeviceModel(QObject *parent = nullptr);
     void handleXcError(XC::ErrorType code);
 };
 
-#endif // DEVICEMODEL_H
+#endif  // DEVICEMODEL_H

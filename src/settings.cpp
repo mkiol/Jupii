@@ -28,8 +28,6 @@
 #include "log.h"
 #include "utils.h"
 
-Settings *Settings::inst = nullptr;
-
 QString Settings::settingsFilepath() {
     QDir confDir{
         QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)};
@@ -41,10 +39,8 @@ QString Settings::settingsFilepath() {
            settingsFilename;
 }
 
-Settings::Settings(QObject *parent)
-    : QObject{parent},
-      TaskExecutor{parent},
-      settings{settingsFilepath(), QSettings::NativeFormat},
+Settings::Settings()
+    : QSettings{settingsFilepath(), QSettings::NativeFormat},
 #ifdef SAILFISH
       hwName {
     readHwInfo()
@@ -71,7 +67,7 @@ Settings::Settings(QObject *parent)
                     QStandardPaths::AppDataLocation);
     qDebug() << "cache location:"
              << QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    qDebug() << "settings file:" << settings.fileName();
+    qDebug() << "settings file:" << fileName();
 }
 
 bool Settings::isDebug() const {
@@ -101,14 +97,6 @@ QString Settings::readHwInfo() {
 }
 #endif
 
-Settings *Settings::instance() {
-    if (Settings::inst == nullptr) {
-        Settings::inst = new Settings();
-    }
-
-    return Settings::inst;
-}
-
 QString Settings::prettyName() const {
     return hwName.isEmpty() ? QString{Jupii::APP_NAME}
                             : QString{"%1 (%2)"}.arg(Jupii::APP_NAME, hwName);
@@ -116,7 +104,7 @@ QString Settings::prettyName() const {
 
 void Settings::setLogToFile(bool value) {
     if (getLogToFile() != value) {
-        settings.setValue("logtofile", value);
+        setValue("logtofile", value);
         if (value) {
             qDebug() << "Logging to file enabled";
             ::configureLogToFile(true);
@@ -129,28 +117,26 @@ void Settings::setLogToFile(bool value) {
 }
 
 bool Settings::getLogToFile() const {
-    return settings.value("logtofile", false).toBool();
+    return value("logtofile", false).toBool();
 }
 
 void Settings::setPort(int value) {
     if (getPort() != value) {
-        settings.setValue("port", value);
+        setValue("port", value);
         emit portChanged();
     }
 }
 
-int Settings::getPort() const { return settings.value("port", 9092).toInt(); }
+int Settings::getPort() const { return value("port", 9092).toInt(); }
 
 void Settings::setVolStep(int value) {
     if (getVolStep() != value) {
-        settings.setValue("volstep", value);
+        setValue("volstep", value);
         emit volStepChanged();
     }
 }
 
-int Settings::getVolStep() const {
-    return settings.value("volstep", 5).toInt();
-}
+int Settings::getVolStep() const { return value("volstep", 5).toInt(); }
 
 void Settings::setForwardTime([[maybe_unused]] int value) {
     // disabled option
@@ -158,28 +144,28 @@ void Settings::setForwardTime([[maybe_unused]] int value) {
         return; // incorrect value
 
     if (getForwardTime() != value) {
-        settings.setValue("forwardtime", value);
+        setValue("forwardtime", value);
         emit forwardTimeChanged();
     }*/
 }
 
 int Settings::getForwardTime() const {
     // disabled option
-    // return settings.value("forwardtime", 10).toInt();
+    // return value("forwardtime", 10).toInt();
     return 10;
 }
 
 void Settings::setFavDevices(const QHash<QString, QVariant> &devs) {
-    settings.setValue("favdevices", devs);
+    setValue("favdevices", devs);
     emit favDevicesChanged();
 }
 
 void Settings::setLastDevices(const QHash<QString, QVariant> &devs) {
-    settings.setValue("lastdevices", devs);
+    setValue("lastdevices", devs);
 }
 
 QHash<QString, QVariant> Settings::getLastDevices() const {
-    return settings.value("lastdevices", QHash<QString, QVariant>()).toHash();
+    return value("lastdevices", QHash<QString, QVariant>()).toHash();
 }
 
 QString Settings::getCacheDir() const {
@@ -293,23 +279,21 @@ bool Settings::readDeviceXML(const QString &id, QByteArray &xml) {
 }
 
 QHash<QString, QVariant> Settings::getFavDevices() const {
-    return settings.value("favdevices", QHash<QString, QVariant>()).toHash();
+    return value("favdevices", QHash<QString, QVariant>()).toHash();
 }
 
 void Settings::setLastDir(const QString &value) {
     if (getLastDir() != value) {
-        settings.setValue("lastdir", value);
+        setValue("lastdir", value);
         emit lastDirChanged();
     }
 }
 
-QString Settings::getLastDir() const {
-    return settings.value("lastdir", "").toString();
-}
+QString Settings::getLastDir() const { return value("lastdir", "").toString(); }
 
 void Settings::setRecDir(const QString &value) {
     if (getRecDir() != value) {
-        settings.setValue("recdir", QDir(value).exists() ? value : "");
+        setValue("recdir", QDir(value).exists() ? value : "");
         emit recDirChanged();
     }
 }
@@ -318,11 +302,11 @@ QString Settings::getRecDir() {
     auto defDir =
         QStandardPaths::writableLocation(QStandardPaths::MusicLocation) +
         "/JupiiRecordings";
-    auto recDir = settings.value("recdir", defDir).toString();
+    auto recDir = value("recdir", defDir).toString();
     QDir d(recDir);
     if (recDir.isEmpty()) {
         d.mkpath(defDir);
-        settings.setValue("recdir", defDir);
+        setValue("recdir", defDir);
         emit recDirChanged();
         return defDir;
     }
@@ -331,7 +315,7 @@ QString Settings::getRecDir() {
         if (!d.mkpath(recDir)) {
             qWarning() << "Cannot create recording dir";
             d.mkpath(defDir);
-            settings.setValue("recdir", defDir);
+            setValue("recdir", defDir);
             emit recDirChanged();
             return defDir;
         }
@@ -341,56 +325,55 @@ QString Settings::getRecDir() {
 
 void Settings::setPrefNetInf(const QString &value) {
     if (getPrefNetInf() != value) {
-        settings.setValue("prefnetinf", value);
+        setValue("prefnetinf", value);
         emit prefNetInfChanged();
     }
 }
 
 QString Settings::getPrefNetInf() const {
 #ifdef SAILFISH
-    if (isDebug())
-        return settings.value("prefnetinf", "").toString();
+    if (isDebug()) return value("prefnetinf", "").toString();
     return {};
 #else
-    return settings.value("prefnetinf", "").toString();
+    return value("prefnetinf", "").toString();
 #endif
 }
 
 void Settings::setLastPlaylist(const QStringList &value) {
     if (getLastPlaylist() != value) {
-        settings.setValue("lastplaylist", value);
+        setValue("lastplaylist", value);
         emit lastPlaylistChanged();
     }
 }
 
 QStringList Settings::getLastPlaylist() const {
-    return settings.value("lastplaylist").toStringList();
+    return value("lastplaylist").toStringList();
 }
 
 void Settings::setShowAllDevices(bool value) {
     if (getShowAllDevices() != value) {
-        settings.setValue("showalldevices", value);
+        setValue("showalldevices", value);
         emit showAllDevicesChanged();
     }
 }
 
 bool Settings::getShowAllDevices() const {
-    return settings.value("showalldevices", false).toBool();
+    return value("showalldevices", false).toBool();
 }
 
 void Settings::setRec(bool value) {
     if (getRec() != value) {
-        settings.setValue("rec", value);
+        setValue("rec", value);
         emit recChanged();
     }
 }
 
-bool Settings::getRec() const { return settings.value("rec", true).toBool(); }
+bool Settings::getRec() const { return value("rec", true).toBool(); }
 
 void Settings::setScreenSupported([[maybe_unused]] bool value) {
 #ifdef SAILFISH
     if (getScreenSupported() != value) {
-        settings.setValue("screensupported", value);
+        setValue("screensupported", value);
         emit screenSupportedChanged();
     }
 #endif
@@ -399,7 +382,7 @@ void Settings::setScreenSupported([[maybe_unused]] bool value) {
 bool Settings::getScreenSupported() const {
 #ifdef SAILFISH
     // Sreen Capture does not work with sandboxing
-    // return settings.value("screensupported", false).toBool();
+    // return value("screensupported", false).toBool();
     return false;
 #else
     return true;
@@ -411,7 +394,7 @@ void Settings::setScreenCropTo169(int value) {
     // 1 - scale
     // 2 - crop
     if (getScreenCropTo169() != value) {
-        settings.setValue("screencrop169", value);
+        setValue("screencrop169", value);
         emit screenCropTo169Changed();
     }
 }
@@ -421,30 +404,30 @@ int Settings::getScreenCropTo169() {
     // 1 - scale
     // 2 - crop
 #ifdef SAILFISH
-    return settings.value("screencrop169", 1).toInt();
+    return value("screencrop169", 1).toInt();
 #else
-    return settings.value("screencrop169", 2).toInt();
+    return value("screencrop169", 2).toInt();
 #endif
 }
 
 void Settings::setScreenAudio(bool value) {
     if (getScreenAudio() != value) {
-        settings.setValue("screenaudio", value);
+        setValue("screenaudio", value);
         emit screenAudioChanged();
     }
 }
 
 bool Settings::getScreenAudio() {
 #ifdef SAILFISH
-    return settings.value("screenaudio", false).toBool();
+    return value("screenaudio", false).toBool();
 #else
-    return settings.value("screenaudio", true).toBool();
+    return value("screenaudio", true).toBool();
 #endif
 }
 
 void Settings::setScreenEncoder(const QString &value) {
     if (getScreenEncoder() != value) {
-        settings.setValue("screenencoder", value);
+        setValue("screenencoder", value);
         emit screenEncoderChanged();
     }
 }
@@ -453,7 +436,7 @@ QString Settings::getScreenEncoder() const {
 #ifdef SAILFISH
     if (isDebug()) {
         // valid encoders: libx264, libx264rgb, h264_omx
-        auto enc_name = settings.value("screenencoder").toString();
+        auto enc_name = value("screenencoder").toString();
         if (enc_name == "libx264" || enc_name == "libx264rgb" ||
             enc_name == "h264_omx")
             return enc_name;
@@ -462,7 +445,7 @@ QString Settings::getScreenEncoder() const {
     return {};
 #else
     // valid encoders: libx264, libx264rgb, h264_nvenc
-    auto enc_name = settings.value("screenencoder").toString();
+    auto enc_name = value("screenencoder").toString();
     if (enc_name == "libx264" || enc_name == "libx264rgb" ||
         enc_name == "h264_nvenc" || enc_name == "h264_omx")
         return enc_name;
@@ -473,7 +456,7 @@ QString Settings::getScreenEncoder() const {
 
 void Settings::setScreenFramerate(int value) {
     if (getScreenFramerate() != value) {
-        settings.setValue("screenframerate", value);
+        setValue("screenframerate", value);
         emit screenFramerateChanged();
     }
 }
@@ -481,29 +464,29 @@ void Settings::setScreenFramerate(int value) {
 int Settings::getScreenFramerate() const {
 #ifdef SAILFISH
     // default 5 fps
-    if (isDebug()) return settings.value("screenframerate", 5).toInt();
+    if (isDebug()) return value("screenframerate", 5).toInt();
     return 5;
 #else
     // default 15 fps
-    return settings.value("screenframerate", 15).toInt();
+    return value("screenframerate", 15).toInt();
 #endif
 }
 
 void Settings::setScreenQuality(int value) {
     if (getScreenQuality() != value) {
-        settings.setValue("screenquality", value);
+        setValue("screenquality", value);
         emit screenQualityChanged();
     }
 }
 
 int Settings::getScreenQuality() const {
-    return settings.value("screenquality", 3).toInt();
+    return value("screenquality", 3).toInt();
 }
 
 void Settings::setUseHWVolume(bool value) {
 #ifdef SAILFISH
     if (getUseHWVolume() != value) {
-        settings.setValue("usehwvolume", value);
+        setValue("usehwvolume", value);
         emit useHWVolumeChanged();
     }
 #else
@@ -513,7 +496,7 @@ void Settings::setUseHWVolume(bool value) {
 
 bool Settings::getUseHWVolume() const {
 #ifdef SAILFISH
-    return settings.value("usehwvolume", true).toBool();
+    return value("usehwvolume", true).toBool();
 #else
     return false;
 #endif
@@ -523,16 +506,16 @@ void Settings::setMicVolume(float value) {
     value = value < 1 ? 1 : value > 100 ? 100 : value;
 
     if (getMicVolume() > value || getMicVolume() < value) {
-        settings.setValue("micvolume", value);
+        setValue("micvolume", value);
         emit micVolumeChanged();
     }
 }
 
 float Settings::getMicVolume() const {
 #ifdef SAILFISH
-    return settings.value("micvolume", 50.0).toFloat();
+    return value("micvolume", 50.0).toFloat();
 #else
-    return settings.value("micvolume", 1.0).toFloat();
+    return value("micvolume", 1.0).toFloat();
 #endif
 }
 
@@ -542,7 +525,7 @@ void Settings::setAudioBoost([[maybe_unused]] float value) {
     value = value < 1 ? 1 : value > 10 ? 10 : value;
 
     if (getAudioBoost() > value || getAudioBoost() < value) {
-        settings.setValue("audioboost", value);
+        setValue("audioboost", value);
         emit audioBoostChanged();
     }
 #endif
@@ -550,10 +533,10 @@ void Settings::setAudioBoost([[maybe_unused]] float value) {
 
 float Settings::getAudioBoost() const {
 #ifdef SAILFISH
-    // return settings.value("micvolume", 2.3f).toFloat();
+    // return value("micvolume", 2.3f).toFloat();
     return 2.3f;
 #else
-    return settings.value("audioboost", 1.0f).toFloat();
+    return value("audioboost", 1.0f).toFloat();
 #endif
 }
 
@@ -566,13 +549,13 @@ QByteArray Settings::resetKey() {
     // key is 10 random chars
     for (uint i = 0; i < 10; ++i) key.append(static_cast<char>(qrand()));
 
-    settings.setValue("key", key);
+    setValue("key", key);
 
     return key;
 }
 
 QByteArray Settings::getKey() {
-    QByteArray key = settings.value("key").toByteArray();
+    QByteArray key = value("key").toByteArray();
 
     if (key.isEmpty()) {
         key = resetKey();
@@ -583,7 +566,7 @@ QByteArray Settings::getKey() {
 
 void Settings::setRemoteContentMode(int value) {
     if (getRemoteContentMode() != value) {
-        settings.setValue("remotecontentmode2", value);
+        setValue("remotecontentmode2", value);
         emit remoteContentModeChanged();
     }
 }
@@ -594,12 +577,12 @@ int Settings::getRemoteContentMode() const {
     // 2 - none for all
     // 3 - proxy for shoutcast, redirection for others
     // 4 - proxy for shoutcast, none for others
-    return settings.value("remotecontentmode2", 0).toInt();
+    return value("remotecontentmode2", 0).toInt();
 }
 
 void Settings::setAlbumQueryType(int value) {
     if (getAlbumQueryType() != value) {
-        settings.setValue("albumquerytype", value);
+        setValue("albumquerytype", value);
         emit albumQueryTypeChanged();
     }
 }
@@ -607,12 +590,12 @@ void Settings::setAlbumQueryType(int value) {
 int Settings::getAlbumQueryType() const {
     // 0 - by album title
     // 1 - by artist
-    return settings.value("albumquerytype", 0).toInt();
+    return value("albumquerytype", 0).toInt();
 }
 
 void Settings::setRecQueryType(int value) {
     if (getRecQueryType() != value) {
-        settings.setValue("recquerytype", value);
+        setValue("recquerytype", value);
         emit recQueryTypeChanged();
     }
 }
@@ -621,12 +604,12 @@ int Settings::getRecQueryType() const {
     // 0 - by rec date
     // 1 - by title
     // 2 - by author
-    return settings.value("recquerytype", 0).toInt();
+    return value("recquerytype", 0).toInt();
 }
 
 void Settings::setCDirQueryType(int value) {
     if (getCDirQueryType() != value) {
-        settings.setValue("cdirquerytype", value);
+        setValue("cdirquerytype", value);
         emit cdirQueryTypeChanged();
     }
 }
@@ -637,12 +620,12 @@ int Settings::getCDirQueryType() const {
     // 2 - by artist
     // 3 - by track number
     // 4 - by date
-    return settings.value("cdirquerytype", 0).toInt();
+    return value("cdirquerytype", 0).toInt();
 }
 
 void Settings::setPlayMode(int value) {
     if (getPlayMode() != value) {
-        settings.setValue("playmode", value);
+        setValue("playmode", value);
         emit playModeChanged();
     }
 }
@@ -651,43 +634,41 @@ int Settings::getPlayMode() const {
     /*PM_Normal = 0,
     PM_RepeatAll = 1,
     PM_RepeatOne = 2*/
-    int pm = settings.value("playmode", 1).toInt();
+    int pm = value("playmode", 1).toInt();
     return pm == 2 ? pm : 1;
 }
 
 QString Settings::mediaServerDevUuid() {
     auto defaultUUID = QUuid::createUuid().toString().mid(1, 36);
-    if (!settings.contains("mediaserverdevuuid"))
-        settings.setValue("mediaserverdevuuid", defaultUUID);
-    return settings.value("mediaserverdevuuid", defaultUUID).toString();
+    if (!contains("mediaserverdevuuid"))
+        setValue("mediaserverdevuuid", defaultUUID);
+    return value("mediaserverdevuuid", defaultUUID).toString();
 }
 
 void Settings::setContentDirSupported(bool value) {
     if (getContentDirSupported() != value) {
-        settings.setValue("contentdirsupported", value);
+        setValue("contentdirsupported", value);
         emit contentDirSupportedChanged();
     }
 }
 
 bool Settings::getContentDirSupported() const {
-    return settings.value("contentdirsupported", true).toBool();
+    return value("contentdirsupported", true).toBool();
 }
 
 bool Settings::hintEnabled(HintType hint) const {
-    int hints =
-        settings.value("hints", std::numeric_limits<int>::max()).toInt();
+    int hints = value("hints", std::numeric_limits<int>::max()).toInt();
     return hints & static_cast<int>(hint);
 }
 
 void Settings::disableHint(HintType hint) {
-    int hints =
-        settings.value("hints", std::numeric_limits<int>::max()).toInt();
+    int hints = value("hints", std::numeric_limits<int>::max()).toInt();
     hints &= ~static_cast<int>(hint);
-    settings.setValue("hints", hints);
+    setValue("hints", hints);
 }
 
 void Settings::resetHints() {
-    settings.setValue("hints", std::numeric_limits<int>::max());
+    setValue("hints", std::numeric_limits<int>::max());
 }
 
 void Settings::setColorScheme(int value) {
@@ -702,32 +683,30 @@ int Settings::getColorScheme() const { return m_colorScheme; }
 void Settings::reset() {
     qDebug() << "Resetting settings";
 
-    if (!QFile::remove(settings.fileName())) {
-        qWarning() << "Cannot remove file:" << settings.fileName();
+    if (!QFile::remove(fileName())) {
+        qWarning() << "Cannot remove file:" << fileName();
     }
 }
 
 void Settings::setFsapiPin(const QString &value) {
     if (fsapiPin() != value) {
-        settings.setValue("fsapipin", value);
+        setValue("fsapipin", value);
         emit fsapiPinChanged();
     }
 }
 
 QString Settings::fsapiPin() const {
-    return settings.value("fsapipin", "1234").toString();
+    return value("fsapipin", "1234").toString();
 }
 
 void Settings::setGlobalYtdl(bool value) {
     if (globalYtdl() != value) {
-        settings.setValue("globalytdl", value);
+        setValue("globalytdl", value);
         emit globalYtdlChanged();
     }
 }
 
-bool Settings::globalYtdl() const {
-    return settings.value("globalytdl", true).toBool();
-}
+bool Settings::globalYtdl() const { return value("globalytdl", true).toBool(); }
 
 std::pair<int, int> Settings::sysVer() {
     const auto ver = QSysInfo::productVersion().split(".");
@@ -736,7 +715,7 @@ std::pair<int, int> Settings::sysVer() {
 }
 
 QStringList Settings::bcSearchHistory() const {
-    return settings.value("bcsearchhistory", {}).toStringList();
+    return value("bcsearchhistory", {}).toStringList();
 }
 
 void Settings::addBcSearchHistory(const QString &value) {
@@ -745,20 +724,20 @@ void Settings::addBcSearchHistory(const QString &value) {
     list.removeOne(v);
     list.push_front(v);
     if (list.size() > maxSearchHistory) list.removeLast();
-    settings.setValue("bcsearchhistory", list);
+    setValue("bcsearchhistory", list);
     emit bcSearchHistoryChanged();
 }
 
 void Settings::removeBcSearchHistory(const QString &value) {
     auto list = bcSearchHistory();
     if (list.removeOne(value.toLower())) {
-        settings.setValue("bcsearchhistory", list);
+        setValue("bcsearchhistory", list);
         emit bcSearchHistoryChanged();
     }
 }
 
 QStringList Settings::soundcloudSearchHistory() const {
-    return settings.value("soundcloudsearchhistory", {}).toStringList();
+    return value("soundcloudsearchhistory", {}).toStringList();
 }
 
 void Settings::addSoundcloudSearchHistory(const QString &value) {
@@ -767,20 +746,20 @@ void Settings::addSoundcloudSearchHistory(const QString &value) {
     list.removeOne(v);
     list.push_front(v);
     if (list.size() > maxSearchHistory) list.removeLast();
-    settings.setValue("soundcloudsearchhistory", list);
+    setValue("soundcloudsearchhistory", list);
     emit soundcloudSearchHistoryChanged();
 }
 
 void Settings::removeSoundcloudSearchHistory(const QString &value) {
     auto list = soundcloudSearchHistory();
     if (list.removeOne(value.toLower())) {
-        settings.setValue("soundcloudsearchhistory", list);
+        setValue("soundcloudsearchhistory", list);
         emit soundcloudSearchHistoryChanged();
     }
 }
 
 QStringList Settings::icecastSearchHistory() const {
-    return settings.value("icecastsearchhistory", {}).toStringList();
+    return value("icecastsearchhistory", {}).toStringList();
 }
 
 void Settings::addIcecastSearchHistory(const QString &value) {
@@ -789,20 +768,20 @@ void Settings::addIcecastSearchHistory(const QString &value) {
     list.removeOne(v);
     list.push_front(v);
     if (list.size() > maxSearchHistory) list.removeLast();
-    settings.setValue("icecastsearchhistory", list);
+    setValue("icecastsearchhistory", list);
     emit icecastSearchHistoryChanged();
 }
 
 void Settings::removeIcecastSearchHistory(const QString &value) {
     auto list = icecastSearchHistory();
     if (list.removeOne(value.toLower())) {
-        settings.setValue("icecastsearchhistory", list);
+        setValue("icecastsearchhistory", list);
         emit icecastSearchHistoryChanged();
     }
 }
 
 QStringList Settings::tuneinSearchHistory() const {
-    return settings.value("tuneinsearchhistory", {}).toStringList();
+    return value("tuneinsearchhistory", {}).toStringList();
 }
 
 void Settings::addTuneinSearchHistory(const QString &value) {
@@ -811,14 +790,14 @@ void Settings::addTuneinSearchHistory(const QString &value) {
     list.removeOne(v);
     list.push_front(v);
     if (list.size() > maxSearchHistory) list.removeLast();
-    settings.setValue("tuneinsearchhistory", list);
+    setValue("tuneinsearchhistory", list);
     emit tuneinSearchHistoryChanged();
 }
 
 void Settings::removeTuneinSearchHistory(const QString &value) {
     auto list = tuneinSearchHistory();
     if (list.removeOne(value.toLower())) {
-        settings.setValue("tuneinsearchhistory", list);
+        setValue("tuneinsearchhistory", list);
         emit tuneinSearchHistoryChanged();
     }
 }

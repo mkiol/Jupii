@@ -85,8 +85,6 @@ extern "C" {
 #include "iconprovider.h"
 #endif
 
-ContentServer* ContentServer::m_instance{nullptr};
-
 const QString ContentServer::queryTemplate{
     "SELECT ?item "
     "nie:mimeType(?item) "
@@ -242,9 +240,7 @@ ContentServer::ItemMeta::ItemMeta(const ItemMeta *meta) :
 {
 }
 
-ContentServer::ContentServer(QObject *parent) :
-    QThread{parent}
-{
+ContentServer::ContentServer(QObject *parent) : QThread{parent} {
     // FFMPEG stuff
 #ifdef QT_DEBUG
     av_log_set_level(AV_LOG_DEBUG);
@@ -266,15 +262,6 @@ ContentServer::ContentServer(QObject *parent) :
                 this, SLOT(displayStatusChangeHandler(QString)));
 #endif
 */
-}
-
-ContentServer* ContentServer::instance(QObject *parent)
-{
-    if (ContentServer::m_instance == nullptr) {
-        ContentServer::m_instance = new ContentServer(parent);
-    }
-
-    return ContentServer::m_instance;
 }
 
 void ContentServer::displayStatusChangeHandler(QString state)
