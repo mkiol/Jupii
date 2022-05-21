@@ -2,7 +2,7 @@
     "id": "org.mkiol.Jupii",
     "default-branch": "stable",
     "runtime": "org.kde.Platform",
-    "runtime-version": "5.15",
+    "runtime-version": "5.15-21.08",
     "sdk": "org.kde.Sdk",
     "rename-desktop-file": "jupii.desktop",
     "rename-icon": "jupii",
@@ -16,7 +16,9 @@
         "--socket=pulseaudio",
         "--filesystem=home",
         "--talk-name=org.freedesktop.Tracker1.Steroids",
-        "--talk-name=org.freedesktop.Notifications"
+        "--talk-name=org.freedesktop.Tracker3.Endpoint",
+        "--talk-name=org.freedesktop.Notifications",
+        "--env=QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
     ],
     "command": "jupii",
     "modules": [
@@ -36,8 +38,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://github.com/taglib/taglib/archive/v1.11.1.tar.gz",
-                    "sha256": "b6d1a5a610aae6ff39d93de5efd0fdc787aa9e9dc1e7026fa4c961b26563526b"
+                    "url": "https://github.com/taglib/taglib/releases/download/v1.12/taglib-1.12.tar.gz",
+                    "sha256": "7fccd07669a523b07a15bd24c8da1bbb92206cb19e9366c3692af3d79253b703"
                 }
             ]
         },
@@ -59,7 +61,7 @@
                 {
                     "type": "git",
                     "url": "https://code.videolan.org/videolan/x264.git",
-                    "branch": "master"
+                    "branch": "stable"
                 }
             ]
         },
@@ -199,8 +201,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://ffmpeg.org/releases/ffmpeg-4.3.2.tar.gz",
-                    "sha1": "4b0dd79df70de2c324aefe88c07e50234657b456"
+                    "url": "https://ffmpeg.org/releases/ffmpeg-4.4.1.tar.gz",
+                    "sha256": "82c98f74777f623710b72f9a3389fd38c1ed93bc661107e65df19234e395f6b9"
                 }
             ]
         },
@@ -291,8 +293,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://ffmpeg.org/releases/ffmpeg-4.3.2.tar.gz",
-                    "sha1": "4b0dd79df70de2c324aefe88c07e50234657b456"
+                    "url": "https://ffmpeg.org/releases/ffmpeg-4.4.1.tar.gz",
+                    "sha256": "82c98f74777f623710b72f9a3389fd38c1ed93bc661107e65df19234e395f6b9"
                 }
             ]
         },
@@ -421,7 +423,7 @@
                 {
                     "type": "git",
                     "url": "https://framagit.org/medoc92/npupnp.git",
-                    "branch": "master"
+                    "tag": "libnpupnp-v4.1.5"
                 },
                 {
                     "type": "patch",
@@ -447,7 +449,7 @@
                 {
                     "type": "git",
                     "url": "https://framagit.org/medoc92/libupnpp.git",
-                    "branch": "master"
+                    "tag": "libupnpp-v0.21.0"
                 }
             ]
         },

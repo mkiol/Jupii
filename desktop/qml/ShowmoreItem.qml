@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,7 +23,6 @@ Item {
         anchors.centerIn: parent
         text: qsTr("Show more")
         onClicked: {
-            pageStack.pop(root)
             pageStack.push(Qt.resolvedUrl(root.targetPage), {artistPage: root.artistUrl})
         }
     }
