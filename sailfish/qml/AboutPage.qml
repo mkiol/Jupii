@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,9 @@ Page {
 
             Image {
                 anchors.horizontalCenter: parent.horizontalCenter
-                source: "image://icons/icon-i-jupii"
+                height: root.isPortrait ? Theme.itemSizeHuge : Theme.iconSizeLarge
+                width: root.isPortrait ? Theme.itemSizeHuge : Theme.iconSizeLarge
+                source: settings.appIcon()
             }
 
             InfoLabel {
@@ -44,16 +46,17 @@ Page {
                 text: qsTr("Version %1").arg(APP_VERSION);
             }
 
-            Button {
-                text: qsTr("Changes")
+            Flow {
                 anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: pageStack.push(Qt.resolvedUrl("ChangelogPage.qml"))
-            }
-
-            Button {
-                text: qsTr("Project website")
-                anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: Qt.openUrlExternally(PAGE)
+                spacing: Theme.paddingLarge
+                Button {
+                    text: qsTr("Project website")
+                    onClicked: Qt.openUrlExternally(PAGE)
+                }
+                Button {
+                    text: qsTr("Changes")
+                    onClicked: pageStack.push(Qt.resolvedUrl("ChangelogPage.qml"))
+                }
             }
 
             SectionHeader {
@@ -82,10 +85,10 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "Åke Engelbrektson \nAtlochowski \nCarlos Gonzalez \nd9h20f " +
-                      "\nВячеслав Диконов \ndrosjesjaafoer \nRui Kon " +
-                      "\nBoštjan Štrumbelj \njgibbon \nFra \nPetr Tsymbarovich " +
-                      "\nCarmen Fernández B."
+                text: "Åke Engelbrektson · Atlochowski · Carlos Gonzalez · d9h20f · " +
+                      "Вячеслав Диконов · drosjesjaafoer · Rui Kon · " +
+                      "Boštjan Štrumbelj · jgibbon · Fra · Petr Tsymbarovich · " +
+                      "Carmen Fernández B."
             }
 
             SectionHeader {
@@ -94,7 +97,7 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "QHTTPServer \nLibupnpp \nTagLib \nFFmpeg \nLAME \nx264 \nGumbo"
+                text: "QHTTPServer · Libupnpp · TagLib · FFmpeg · LAME · x264 · Gumbo"
             }
 
             Spacer {}

@@ -137,13 +137,13 @@ Kirigami.ApplicationWindow {
 
     function removePagesAfterPlayQueue() {
         var page = mainPagePool.pageForUrl(Qt.resolvedUrl("PlayQueuePage.qml"))
-        if (page && pageStack.columnView.containsItem(page))
+        if (page !== undefined && pageStack.columnView.containsItem(page))
             pageStack.pop(page)
     }
 
     function removePagesAfterAddMedia() {
         var page = mainPagePool.pageForUrl(Qt.resolvedUrl("AddMediaPage.qml"))
-        if (page && pageStack.columnView.containsItem(page)) {
+        if (page !== undefined && pageStack.columnView.containsItem(page)) {
             pageStack.pop(page)
             pageStack.flickBack()
         } else { // fallback
@@ -153,7 +153,7 @@ Kirigami.ApplicationWindow {
 
     function removePagesAfter(idx) {
         var page = pageStack.get(idx)
-        if (page)
+        if (page !== undefined)
             pageStack.pop(page)
     }
 

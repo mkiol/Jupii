@@ -36,6 +36,7 @@ contains(QT_ARCH, i386){
 
 CONFIG(debug, debug|release) {
     CONFIG += sanitizer sanitize_address sanitize_undefined
+    #CONFIG += sanitizer sanitize_thread
 }
 
 CONFIG += desktop link_pkgconfig qtquickcompiler

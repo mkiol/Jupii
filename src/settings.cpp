@@ -827,3 +827,9 @@ void Settings::initOpenUrlMode() {
 
     desktopFile().remove();
 }
+
+QUrl Settings::appIcon() const {
+    return QUrl::fromLocalFile(
+        QStringLiteral("/usr/share/icons/hicolor/172x172/apps/%1.png")
+            .arg(Jupii::APP_BINARY_ID));
+}

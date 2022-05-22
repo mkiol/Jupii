@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,7 +15,7 @@ Kirigami.ScrollablePage {
 
     Kirigami.Theme.colorSet: Kirigami.Theme.Window
 
-    title: qsTr("About")
+    title: qsTr("About %1").arg(APP_NAME)
 
     ColumnLayout {
         spacing: Kirigami.Units.largeSpacing
@@ -120,10 +120,10 @@ Kirigami.ScrollablePage {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignLeft
-            text: "Åke Engelbrektson \nCarlos Gonzalez \nd9h20f " +
-                  "\nВячеслав Диконов \ndrosjesjaafoer \nRui Kon " +
-                  "\nBoštjan Štrumbelj \njgibbon \nFra \nPetr Tsymbarovich " +
-                  "\nCarmen Fernández B."
+            text: "Åke Engelbrektson · Atlochowski · Carlos Gonzalez · d9h20f · " +
+                  "Вячеслав Диконов · drosjesjaafoer · Rui Kon · " +
+                  "Boštjan Štrumbelj · jgibbon · Fra · Petr Tsymbarovich · " +
+                  "Carmen Fernández B."
         }
 
         Kirigami.Heading {
@@ -135,7 +135,7 @@ Kirigami.ScrollablePage {
         Controls.Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: "QHTTPServer \nLibupnpp \nTagLib \nFFmpeg \nLAME \nx264 \nGumbo"
+            text: "QHTTPServer · Libupnpp · TagLib · FFmpeg · LAME · x264 · Gumbo"
         }
     }
 }

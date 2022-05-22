@@ -15,6 +15,7 @@
 #include <QSettings>
 #include <QString>
 #include <QStringList>
+#include <QUrl>
 #include <QVariant>
 #include <utility>
 
@@ -25,49 +26,78 @@ class Settings : public QSettings,
                  public TaskExecutor,
                  public Singleton<Settings> {
     Q_OBJECT
-    Q_PROPERTY (int port READ getPort WRITE setPort NOTIFY portChanged)
-    Q_PROPERTY (QString lastDir READ getLastDir WRITE setLastDir NOTIFY lastDirChanged)
-    Q_PROPERTY (bool showAllDevices READ getShowAllDevices WRITE setShowAllDevices NOTIFY showAllDevicesChanged)
-    Q_PROPERTY (int forwardTime READ getForwardTime WRITE setForwardTime NOTIFY forwardTimeChanged)
-    Q_PROPERTY (QStringList lastPlaylist READ getLastPlaylist WRITE setLastPlaylist NOTIFY lastPlaylistChanged)
-    Q_PROPERTY (bool useHWVolume READ getUseHWVolume WRITE setUseHWVolume NOTIFY useHWVolumeChanged)
-    Q_PROPERTY (QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY prefNetInfChanged)
-    Q_PROPERTY (float micVolume READ getMicVolume WRITE setMicVolume NOTIFY micVolumeChanged)
-    Q_PROPERTY (float audioBoost READ getAudioBoost WRITE setAudioBoost NOTIFY audioBoostChanged)
-    Q_PROPERTY (QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
-    Q_PROPERTY (bool rec READ getRec WRITE setRec NOTIFY recChanged)
-    Q_PROPERTY (int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
-    Q_PROPERTY (int screenFramerate READ getScreenFramerate WRITE setScreenFramerate NOTIFY screenFramerateChanged)
-    Q_PROPERTY (int screenCropTo169 READ getScreenCropTo169 WRITE setScreenCropTo169 NOTIFY screenCropTo169Changed)
-    Q_PROPERTY (bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY screenAudioChanged)
-    Q_PROPERTY (bool screenSupported READ getScreenSupported WRITE setScreenSupported NOTIFY screenSupportedChanged)
-    Q_PROPERTY (int screenQuality READ getScreenQuality WRITE setScreenQuality NOTIFY screenQualityChanged)
-    Q_PROPERTY (QString screenEncoder READ getScreenEncoder WRITE setScreenEncoder NOTIFY screenEncoderChanged)
-    Q_PROPERTY (int remoteContentMode READ getRemoteContentMode WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
-    Q_PROPERTY (int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType NOTIFY albumQueryTypeChanged)
-    Q_PROPERTY (int albumRecQueryType READ getRecQueryType WRITE setRecQueryType NOTIFY recQueryTypeChanged)
-    Q_PROPERTY (int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
-    Q_PROPERTY (bool contentDirSupported READ getContentDirSupported WRITE setContentDirSupported NOTIFY contentDirSupportedChanged)
-    Q_PROPERTY (bool logToFile READ getLogToFile WRITE setLogToFile NOTIFY logToFileChanged)
-    Q_PROPERTY (int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY colorSchemeChanged)
-    Q_PROPERTY (QString fsapiPin READ fsapiPin WRITE setFsapiPin NOTIFY fsapiPinChanged)
-    Q_PROPERTY (bool globalYtdl READ globalYtdl WRITE setGlobalYtdl NOTIFY globalYtdlChanged)
-    Q_PROPERTY (QStringList bcSearchHistory READ bcSearchHistory NOTIFY bcSearchHistoryChanged)
-    Q_PROPERTY (QStringList soundcloudSearchHistory READ soundcloudSearchHistory NOTIFY soundcloudSearchHistoryChanged)
-    Q_PROPERTY (QStringList icecastSearchHistory READ icecastSearchHistory NOTIFY icecastSearchHistoryChanged)
-    Q_PROPERTY (QStringList tuneinSearchHistory READ tuneinSearchHistory NOTIFY tuneinSearchHistoryChanged)
+    Q_PROPERTY(int port READ getPort WRITE setPort NOTIFY portChanged)
+    Q_PROPERTY(
+        QString lastDir READ getLastDir WRITE setLastDir NOTIFY lastDirChanged)
+    Q_PROPERTY(bool showAllDevices READ getShowAllDevices WRITE
+                   setShowAllDevices NOTIFY showAllDevicesChanged)
+    Q_PROPERTY(int forwardTime READ getForwardTime WRITE setForwardTime NOTIFY
+                   forwardTimeChanged)
+    Q_PROPERTY(QStringList lastPlaylist READ getLastPlaylist WRITE
+                   setLastPlaylist NOTIFY lastPlaylistChanged)
+    Q_PROPERTY(bool useHWVolume READ getUseHWVolume WRITE setUseHWVolume NOTIFY
+                   useHWVolumeChanged)
+    Q_PROPERTY(QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY
+                   prefNetInfChanged)
+    Q_PROPERTY(float micVolume READ getMicVolume WRITE setMicVolume NOTIFY
+                   micVolumeChanged)
+    Q_PROPERTY(float audioBoost READ getAudioBoost WRITE setAudioBoost NOTIFY
+                   audioBoostChanged)
+    Q_PROPERTY(
+        QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
+    Q_PROPERTY(bool rec READ getRec WRITE setRec NOTIFY recChanged)
+    Q_PROPERTY(
+        int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
+    Q_PROPERTY(int screenFramerate READ getScreenFramerate WRITE
+                   setScreenFramerate NOTIFY screenFramerateChanged)
+    Q_PROPERTY(int screenCropTo169 READ getScreenCropTo169 WRITE
+                   setScreenCropTo169 NOTIFY screenCropTo169Changed)
+    Q_PROPERTY(bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY
+                   screenAudioChanged)
+    Q_PROPERTY(bool screenSupported READ getScreenSupported WRITE
+                   setScreenSupported NOTIFY screenSupportedChanged)
+    Q_PROPERTY(int screenQuality READ getScreenQuality WRITE setScreenQuality
+                   NOTIFY screenQualityChanged)
+    Q_PROPERTY(QString screenEncoder READ getScreenEncoder WRITE
+                   setScreenEncoder NOTIFY screenEncoderChanged)
+    Q_PROPERTY(int remoteContentMode READ getRemoteContentMode WRITE
+                   setRemoteContentMode NOTIFY remoteContentModeChanged)
+    Q_PROPERTY(int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType
+                   NOTIFY albumQueryTypeChanged)
+    Q_PROPERTY(int albumRecQueryType READ getRecQueryType WRITE setRecQueryType
+                   NOTIFY recQueryTypeChanged)
+    Q_PROPERTY(
+        int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY(bool contentDirSupported READ getContentDirSupported WRITE
+                   setContentDirSupported NOTIFY contentDirSupportedChanged)
+    Q_PROPERTY(bool logToFile READ getLogToFile WRITE setLogToFile NOTIFY
+                   logToFileChanged)
+    Q_PROPERTY(int colorScheme READ getColorScheme WRITE setColorScheme NOTIFY
+                   colorSchemeChanged)
+    Q_PROPERTY(
+        QString fsapiPin READ fsapiPin WRITE setFsapiPin NOTIFY fsapiPinChanged)
+    Q_PROPERTY(bool globalYtdl READ globalYtdl WRITE setGlobalYtdl NOTIFY
+                   globalYtdlChanged)
+    Q_PROPERTY(QStringList bcSearchHistory READ bcSearchHistory NOTIFY
+                   bcSearchHistoryChanged)
+    Q_PROPERTY(QStringList soundcloudSearchHistory READ soundcloudSearchHistory
+                   NOTIFY soundcloudSearchHistoryChanged)
+    Q_PROPERTY(QStringList icecastSearchHistory READ icecastSearchHistory NOTIFY
+                   icecastSearchHistoryChanged)
+    Q_PROPERTY(QStringList tuneinSearchHistory READ tuneinSearchHistory NOTIFY
+                   tuneinSearchHistoryChanged)
 
-public:
+   public:
     enum class HintType {
-        Hint_DeviceSwipeLeft =      1 << 0,
-        Hint_NotConnectedTip =      1 << 1,
+        Hint_DeviceSwipeLeft = 1 << 0,
+        Hint_NotConnectedTip = 1 << 1,
         Hint_ExpandPlayerPanelTip = 1 << 2,
-        Hint_MediaInfoSwipeLeft =   1 << 3
+        Hint_MediaInfoSwipeLeft = 1 << 3
     };
     Q_ENUM(HintType)
 
 #ifdef SAILFISH
-    static constexpr const char* HW_RELEASE_FILE = "/etc/hw-release";
+    static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
 #endif
     Settings();
     void setPort(int value);
@@ -108,9 +138,9 @@ public:
     int getPlayMode() const;
     void setFsapiPin(const QString &value);
     QString fsapiPin() const;
-    void setFavDevices(const QHash<QString,QVariant> &devs);
+    void setFavDevices(const QHash<QString, QVariant> &devs);
     QHash<QString, QVariant> getFavDevices() const;
-    void setLastDevices(const QHash<QString,QVariant> &devs);
+    void setLastDevices(const QHash<QString, QVariant> &devs);
     QHash<QString, QVariant> getLastDevices() const;
     Q_INVOKABLE void addFavDevice(const QString &id);
     void addLastDevice(const QString &id);
@@ -118,8 +148,8 @@ public:
     Q_INVOKABLE void removeFavDevice(const QString &id);
     Q_INVOKABLE void asyncAddFavDevice(const QString &id);
     Q_INVOKABLE void asyncRemoveFavDevice(const QString &id);
-    static bool readDeviceXML(const QString& id, QByteArray& xml);
-    static bool writeDeviceXML(const QString& id, QString &url);
+    static bool readDeviceXML(const QString &id, QByteArray &xml);
+    static bool writeDeviceXML(const QString &id, QString &url);
     QString getLastDir() const;
     void setLastDir(const QString &value);
     QString getRecDir();
@@ -161,8 +191,9 @@ public:
     QStringList tuneinSearchHistory() const;
     Q_INVOKABLE void addTuneinSearchHistory(const QString &value);
     Q_INVOKABLE void removeTuneinSearchHistory(const QString &value);
+    Q_INVOKABLE QUrl appIcon() const;
 
-signals:
+   signals:
     void portChanged();
     void favDevicesChanged();
     void favDeviceChanged(const QString &id);
@@ -211,9 +242,9 @@ signals:
 #ifdef SAILFISH
     static QString readHwInfo();
 #endif
-    static std::pair<int,int> sysVer();
+    static std::pair<int, int> sysVer();
     static QString settingsFilepath();
     static void initOpenUrlMode();
 };
 
-#endif // SETTINGS_H
+#endif  // SETTINGS_H

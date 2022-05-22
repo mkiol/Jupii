@@ -20,8 +20,8 @@ static constexpr const char* APP_ID = "org.mkiol.Jupii";
 static constexpr const char* APP_BINARY_ID = "jupii";
 #else
 #ifdef SAILFISH
+static constexpr const char* APP_ID = "jupii";
 static constexpr const char* APP_BINARY_ID = "harbour-jupii";
-static constexpr const char* APP_BINARY_ID = "jupii";
 #else
 static constexpr const char* APP_ID = "jupii";
 static constexpr const char* APP_BINARY_ID = "jupii";
