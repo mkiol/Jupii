@@ -30,6 +30,9 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(keepalive)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(expat)
+BuildRequires:  pkgconfig(python3)
+BuildRequires:  pkgconfig(liblzma)
+BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  bzip2-devel
 BuildRequires:  gcc-c++
 BuildRequires:  libstdc++-devel

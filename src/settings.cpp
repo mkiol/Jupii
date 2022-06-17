@@ -699,15 +699,6 @@ QString Settings::fsapiPin() const {
     return value("fsapipin", "1234").toString();
 }
 
-void Settings::setGlobalYtdl(bool value) {
-    if (globalYtdl() != value) {
-        setValue("globalytdl", value);
-        emit globalYtdlChanged();
-    }
-}
-
-bool Settings::globalYtdl() const { return value("globalytdl", true).toBool(); }
-
 std::pair<int, int> Settings::sysVer() {
     const auto ver = QSysInfo::productVersion().split(".");
     if (ver.size() > 1) return {ver.value(0).toInt(), ver.value(1).toInt()};

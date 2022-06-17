@@ -151,19 +151,18 @@ bool Utils::writeToFile(const QString &path, const QByteArray &data, bool del) {
 
     if (del && f.exists()) f.remove();
 
-    if (!f.exists()) {
-        if (f.open(QIODevice::WriteOnly)) {
-            f.write(data);
-            f.close();
-        } else {
-            qWarning() << "Cannot open file for writing:" << f.fileName()
-                       << f.errorString();
-            return false;
-        }
-    } else {
-        qDebug() << "File already exists:" << f.fileName();
+    if (f.exists()) {
+        qDebug() << "file already exists:" << f.fileName();
         return false;
     }
+
+    if (!f.open(QIODevice::WriteOnly)) {
+        qWarning() << "cannot open file for writing:" << f.fileName()
+                   << f.errorString();
+        return false;
+    }
+
+    f.write(data);
 
     return true;
 }

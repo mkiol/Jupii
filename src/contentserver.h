@@ -172,9 +172,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static ItemType itemTypeFromUrl(const QUrl &url);
 
     ContentServer(QObject *parent = nullptr);
-    void registerExternalConnections();
+    void registerExternalConnections() const;
     bool getContentUrl(const QString &id, QUrl &url, QString &meta,
-                       QString cUrl = "");
+                       QString cUrl = {});
     Q_INVOKABLE QStringList getExtensions(int type) const;
     Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString pathFromUrl(const QUrl &url) const;
@@ -222,18 +222,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     void startProxyRequested(const QUrl &id);
 
    public slots:
-    void displayStatusChangeHandler(QString state);
-
-   private slots:
-    void streamRecordedHandler(const QString &title, const QString &path);
-    void streamToRecordChangedHandler(const QUrl &id, bool value);
-    void streamRecordableChangedHandler(const QUrl &id, bool value,
-                                        const QString &tmpFile);
-    void shoutcastMetadataHandler(const QUrl &id, const QByteArray &metadata);
-    void pulseStreamNameHandler(const QUrl &id, const QString &name);
-    void itemAddedHandler(const QUrl &id);
-    void itemRemovedHandler(const QUrl &id);
-    void cleanTmpRec();
+    void displayStatusChangeHandler(const QString &state);
 
    private:
     enum DLNA_ORG_FLAGS {
@@ -308,6 +297,16 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     QSet<QUrl> m_streamRecordable;         // id => stream recordable
     QString m_pulseStreamName;
     QMutex m_metaCacheMutex;
+
+    void streamRecordedHandler(const QString &title, const QString &path);
+    void streamToRecordChangedHandler(const QUrl &id, bool value);
+    void streamRecordableChangedHandler(const QUrl &id, bool value,
+                                        const QString &tmpFile);
+    void shoutcastMetadataHandler(const QUrl &id, const QByteArray &metadata);
+    void pulseStreamNameHandler(const QUrl &id, const QString &name);
+    void itemAddedHandler(const QUrl &id);
+    void itemRemovedHandler(const QUrl &id);
+    void cleanTmpRec();
 
     static QByteArray encrypt(const QByteArray &data);
     static QByteArray decrypt(const QByteArray &data);

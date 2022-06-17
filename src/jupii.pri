@@ -58,6 +58,11 @@ desktop {
         include($$PROJECTDIR/libs/x264/x264.pri)
         include($$PROJECTDIR/libs/lame/lame.pri)
 #    }
+
+    # ytdl
+    PKGCONFIG += python3
+    LIBS += -lpython3.10 -llzma -larchive
+    INCLUDEPATH += $$PROJECTDIR/external/pybind11/include
 }
 
 sailfish {
@@ -71,6 +76,14 @@ sailfish {
     include($$PROJECTDIR/libs/gumbo/gumbo.pri)
     #include($$PROJECTDIR/libs/omx/omx.pri)
     include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
+
+    # ytdl
+    PKGCONFIG += python3
+    LIBS += -lpython3.8 -llzma -larchive
+    INCLUDEPATH += $$PROJECTDIR/external/pybind11/include
+    python.files = $$PROJECTDIR/libs/python/sfos-$${ARCH_PREFIX}/python.tar.xz
+    python.path = /usr/share/$${TARGET}/lib
+    INSTALLS += python
 }
 
 INCLUDEPATH += $$ROOT_DIR
@@ -134,7 +147,8 @@ HEADERS += \
     $$ROOT_DIR/contentserverworker.h \
     $$ROOT_DIR/screencaster.h \
     $$ROOT_DIR/dnscontentdeterminator.h \
-    $$ROOT_DIR/singleton.h
+    $$ROOT_DIR/singleton.h \
+    $$ROOT_DIR/ytmusic.h
 
 SOURCES += \
     $$ROOT_DIR/dbus_jupii_adaptor.cpp \
@@ -194,7 +208,8 @@ SOURCES += \
     $$ROOT_DIR/playlistparser.cpp \
     $$ROOT_DIR/contentserverworker.cpp \
     $$ROOT_DIR/screencaster.cpp \
-    $$ROOT_DIR/dnscontentdeterminator.cpp
+    $$ROOT_DIR/dnscontentdeterminator.cpp \
+    $$ROOT_DIR/ytmusic.cpp
 
 DISTFILES += \
     $$PWD/../dbus/org.freedesktop.Tracker3.Endpoint.xml

@@ -42,6 +42,7 @@
 #include <iostream>
 #include <libupnpp/control/description.hxx>
 #include <libupnpp/control/discovery.hxx>
+#include <variant>
 
 #include "albummodel.h"
 #include "artistmodel.h"

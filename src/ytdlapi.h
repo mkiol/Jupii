@@ -1,47 +1,47 @@
-/* Copyright (C) 2020-2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef YOUTUBEDL_H
-#define YOUTUBEDL_H
+#ifndef YTDLAPI_H
+#define YTDLAPI_H
 
+#include <ytmusic.h>
+
+#include <QByteArray>
 #include <QObject>
 #include <QString>
 #include <QUrl>
-#include <QByteArray>
-#include <QNetworkAccessManager>
 #include <memory>
+#include <optional>
 
-class YtdlApi: public QObject
-{
+class YtdlApi : public QObject {
     Q_OBJECT
-public:
+   public:
     struct Track {
         QString title;
         QUrl webUrl;
         QUrl streamUrl;
+        QUrl streamAudioUrl;
+        QUrl image;
     };
 
-    explicit YtdlApi(std::shared_ptr<QNetworkAccessManager> nam = {},
-                       QObject* parent = nullptr);
-    [[nodiscard]] bool ok() const;
-    Track track(const QUrl &url);
-    bool init();
+    YtdlApi(QObject* parent = nullptr);
+    std::optional<Track> track(const QUrl& url) const;
+    static bool init();
 
-private:
-    static const int httpTimeout = 10000;
-    static const int timeout = 100000;
-    static bool enabled;
-    static QString binPath;
-    std::shared_ptr<QNetworkAccessManager> nam;
-
-    bool downloadBin();
-    bool checkBin(const QString& binPath);
-    void update();
-    QString defaultBinPath() const;
+   private:
+    enum class State { Unknown, Disabled, Enabled };
+    static State state;
+#ifdef SAILFISH
+    const static QString pythonArchivePath;
+#endif
+    static bool unpack();
+    static bool check();
+    static QUrl bestAudioUrl(const std::vector<video_info::Format>& formats);
+    static QUrl bestVideoUrl(const std::vector<video_info::Format>& formats);
 };
 
-#endif // YOUTUBEDL_H
+#endif  // YTDLAPI_H

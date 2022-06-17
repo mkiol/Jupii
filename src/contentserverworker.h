@@ -209,7 +209,7 @@ class ContentServerWorker : public QObject,
                        const CacheLimit cacheLimit);
         void removeSource(QNetworkReply *reply);
         void removeSources();
-        void writeAll(QNetworkReply *reply, const QByteArray &data);
+        void writeAll(const QNetworkReply *reply, const QByteArray &data);
         void writeAll(QNetworkReply *reply, const QByteArray &data,
                       const QByteArray &dataWithoutMeta);
         void writeNotSent(QNetworkReply *reply, QHttpResponse *resp);
@@ -239,7 +239,7 @@ class ContentServerWorker : public QObject,
         bool matchedSinkExists(const QHttpResponse *resp) const;
         static bool sourceMatchesSink(Source &source, Sink &sink);
         static MatchType sourceMatchesRange(Source &source,
-                                            const std::optional<Range> &range);
+                                            std::optional<Range> range);
         bool minCacheReached() const;
         bool maxCacheReached();
         void resetCacheTimer();

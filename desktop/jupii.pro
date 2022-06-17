@@ -34,10 +34,9 @@ contains(QT_ARCH, i386){
    }
 }
 
-CONFIG(debug, debug|release) {
-    CONFIG += sanitizer sanitize_address sanitize_undefined
-    #CONFIG += sanitizer sanitize_thread
-}
+#CONFIG(debug, debug|release) {
+#    CONFIG += sanitizer sanitize_address sanitize_undefined
+#}
 
 CONFIG += desktop link_pkgconfig qtquickcompiler
 DEFINES += DESKTOP KIRIGAMI SCREENCAST QT_NO_URL_CAST_FROM_STRING

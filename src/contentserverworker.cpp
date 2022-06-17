@@ -155,7 +155,7 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
     if (req->method() != QHttpRequest::HTTP_GET &&
         req->method() != QHttpRequest::HTTP_HEAD) {
         qWarning() << "Request method is unsupported";
-        resp->setHeader("Allow", "HEAD, GET");
+        resp->setHeader(QStringLiteral("Allow"), QStringLiteral("HEAD, GET"));
         sendEmptyResponse(resp, 405);
         return;
     }
@@ -285,7 +285,7 @@ void ContentServerWorker::requestForFileHandler(
     const auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
     if (meta->type == ContentServer::Type::Video &&
         type == ContentServer::Type::Music) {
-        if (id.scheme() == "qrc") {
+        if (id.scheme() == QStringLiteral("qrc")) {
             qWarning() << "Unable to extract audio stream from qrc";
             sendEmptyResponse(resp, 500);
             return;
@@ -329,8 +329,9 @@ void ContentServerWorker::requestForUrlHandlerFallback(const QUrl &id,
 
 QNetworkReply *ContentServerWorker::makeRequest(const QUrl &id,
                                                 const QHttpRequest *req) {
-    if (req && req->headers().contains("range")) {
-        return makeRequest(id, req->headers().value("range").toLatin1());
+    if (req && req->headers().contains(QStringLiteral("range"))) {
+        return makeRequest(
+            id, req->headers().value(QStringLiteral("range")).toLatin1());
     }
 
     return makeRequest(id);
@@ -341,22 +342,26 @@ QNetworkReply *ContentServerWorker::makeRequest(const QUrl &id,
     QNetworkRequest request;
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     request.setUrl(Utils::urlFromId(id));
-    request.setRawHeader("Icy-MetaData", "1");
-    request.setRawHeader("Connection", "close");
-    request.setRawHeader("User-Agent", ContentServer::userAgent);
+    request.setRawHeader(QByteArrayLiteral("Icy-MetaData"),
+                         QByteArrayLiteral("1"));
+    request.setRawHeader(QByteArrayLiteral("Connection"),
+                         QByteArrayLiteral("close"));
+    request.setRawHeader(QByteArrayLiteral("User-Agent"),
+                         ContentServer::userAgent);
 
     if (range.isEmpty()) {
-        request.setRawHeader("Range", makeRangeHeader(0));
+        request.setRawHeader(QByteArrayLiteral("Range"), makeRangeHeader(0));
     } else {
-        request.setRawHeader("Range", range);
+        request.setRawHeader(QByteArrayLiteral("Range"), range);
     }
 
     return nam->get(request);
 }
 
 QByteArray ContentServerWorker::makeRangeHeader(int start, int end) {
-    if (end > 0) return QString{"bytes=%1-%2"}.arg(start, end).toLatin1();
-    return QString{"bytes=%1-"}.arg(start).toLatin1();
+    if (end > 0)
+        return QStringLiteral("bytes=%1-%2").arg(start, end).toLatin1();
+    return QStringLiteral("bytes=%1-").arg(start).toLatin1();
 }
 
 void ContentServerWorker::makeProxy(const QUrl &id, const bool first,
@@ -470,9 +475,9 @@ void ContentServerWorker::startProxy(const QUrl &id) {
     }
 
     if (meta->flagSet(ContentServer::MetaFlag::Seek)) {
-        requestAdditionalSource(id, meta->size, meta->type);
+        requestAdditionalSource(id, static_cast<int>(meta->size), meta->type);
     }
-    requestFullSource(id, meta->size, meta->type);
+    requestFullSource(id, static_cast<int>(meta->size), meta->type);
 }
 
 void ContentServerWorker::logProxies() const {
@@ -606,40 +611,50 @@ void ContentServerWorker::handleHeadRequest(const ContentServer::ItemMeta *meta,
 
     const auto seekSupported = meta->flagSet(ContentServer::MetaFlag::Seek);
 
-    resp->setHeader("Content-Type", meta->mime);
-    resp->setHeader("Connection", "close");
-    resp->setHeader("Cache-Control", "no-cache, no-store");
-    resp->setHeader("transferMode.dlna.org", "Streaming");
+    resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
+    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
+    resp->setHeader(QStringLiteral("Cache-Control"),
+                    QStringLiteral("no-cache, no-store"));
+    resp->setHeader(QStringLiteral("transferMode.dlna.org"),
+                    QStringLiteral("Streaming"));
     resp->setHeader(
-        "contentFeatures.dlna.org",
+        QStringLiteral("contentFeatures.dlna.org"),
         ContentServer::dlnaContentFeaturesHeader(meta->mime, seekSupported));
 
     if (seekSupported) {
-        resp->setHeader("Accept-Ranges", "bytes");
+        resp->setHeader(QStringLiteral("Accept-Ranges"),
+                        QStringLiteral("bytes"));
     } else {
-        resp->setHeader("Accept-Ranges", "none");
+        resp->setHeader(QStringLiteral("Accept-Ranges"),
+                        QStringLiteral("none"));
     }
 
-    if (req->headers().contains("range") && meta->size > 0 && seekSupported) {
-        const auto range =
-            Range::fromRange(req->headers().value("range"), meta->size);
+    if (req->headers().contains(QStringLiteral("range")) && meta->size > 0 &&
+        seekSupported) {
+        const auto range = Range::fromRange(
+            req->headers().value(QStringLiteral("range")), meta->size);
         if (!range) {
             qWarning() << "Unable to read or invalid Range header";
             sendEmptyResponse(resp, 416);
             return;
         }
 
-        resp->setHeader("Content-Length",
+        resp->setHeader(QStringLiteral("Content-Length"),
                         QString::number(range->rangeLength()));
-        resp->setHeader("Content-Range", "bytes " +
-                                             QString::number(range->start) +
-                                             "-" + QString::number(range->end) +
-                                             "/" + QString::number(meta->size));
+        resp->setHeader(QStringLiteral("Content-Range"),
+                        QStringLiteral("bytes ") +
+                            QString::number(range->start) + "-" +
+                            QString::number(range->end) + "/" +
+                            QString::number(meta->size));
         sendResponse(resp, 206);
         return;
-    } else if (meta->size > 0) {
-        resp->setHeader("Content-Length", QString::number(meta->size));
     }
+
+    if (meta->size > 0) {
+        resp->setHeader(QStringLiteral("Content-Length"),
+                        QString::number(meta->size));
+    }
+
     sendResponse(resp, 200);
 }
 
@@ -659,14 +674,15 @@ void ContentServerWorker::requestForMicHandler(
         }
     }
 
-    resp->setHeader("Content-Type", meta->mime);
-    resp->setHeader("Connection", "close");
-    resp->setHeader("transferMode.dlna.org", "Streaming");
+    resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
+    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
+    resp->setHeader(QStringLiteral("transferMode.dlna.org"),
+                    QStringLiteral("Streaming"));
     resp->setHeader(
-        "contentFeatures.dlna.org",
+        QStringLiteral("contentFeatures.dlna.org"),
         ContentServer::dlnaContentFeaturesHeader(
             meta->mime, meta->flagSet(ContentServer::MetaFlag::Seek)));
-    resp->setHeader("Accept-Ranges", "none");
+    resp->setHeader(QStringLiteral("Accept-Ranges"), QStringLiteral("none"));
 
     ConnectionItem item;
     item.id = id;
@@ -704,14 +720,15 @@ void ContentServerWorker::requestForAudioCaptureHandler(
     }
 
     qDebug() << "Sending 200 response and starting streaming";
-    resp->setHeader("Content-Type", meta->mime);
-    resp->setHeader("Connection", "close");
-    resp->setHeader("transferMode.dlna.org", "Streaming");
+    resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
+    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
+    resp->setHeader(QStringLiteral("transferMode.dlna.org"),
+                    QStringLiteral("Streaming"));
     resp->setHeader(
-        "contentFeatures.dlna.org",
+        QStringLiteral("contentFeatures.dlna.org"),
         ContentServer::dlnaContentFeaturesHeader(
             meta->mime, meta->flagSet(ContentServer::MetaFlag::Seek)));
-    resp->setHeader("Accept-Ranges", "none");
+    resp->setHeader(QStringLiteral("Accept-Ranges"), QStringLiteral("none"));
     resp->writeHead(200);
 
     ConnectionItem item;
@@ -772,14 +789,15 @@ void ContentServerWorker::requestForScreenCaptureHandler(
         }
     }
 
-    resp->setHeader("Content-Type", meta->mime);
-    resp->setHeader("Connection", "close");
-    resp->setHeader("transferMode.dlna.org", "Streaming");
+    resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
+    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
+    resp->setHeader(QStringLiteral("transferMode.dlna.org"),
+                    QStringLiteral("Streaming"));
     resp->setHeader(
-        "contentFeatures.dlna.org",
+        QStringLiteral("contentFeatures.dlna.org"),
         ContentServer::dlnaContentFeaturesHeader(
             meta->mime, meta->flagSet(ContentServer::MetaFlag::Seek)));
-    resp->setHeader("Accept-Ranges", "none");
+    resp->setHeader(QStringLiteral("Accept-Ranges"), QStringLiteral("none"));
     resp->writeHead(200);
 
     PulseAudioSource::discoverStream();
@@ -818,7 +836,7 @@ void ContentServerWorker::seqWriteData(std::shared_ptr<QFile> file, qint64 size,
 
 void ContentServerWorker::sendEmptyResponse(QHttpResponse *resp, int code) {
     qDebug() << "sendEmptyResponse:" << resp << code;
-    resp->setHeader("Content-Length", "0");
+    resp->setHeader(QStringLiteral("Content-Length"), QStringLiteral("0"));
     resp->writeHead(code);
     resp->end();
 }
@@ -833,9 +851,9 @@ void ContentServerWorker::sendResponse(QHttpResponse *resp, int code,
 void ContentServerWorker::sendRedirection(QHttpResponse *resp,
                                           const QString &location) {
     qDebug() << "sendRedirection:" << resp << location;
-    resp->setHeader("Location", location);
-    resp->setHeader("Content-Length", "0");
-    resp->setHeader("Connection", "close");
+    resp->setHeader(QStringLiteral("Location"), location);
+    resp->setHeader(QStringLiteral("Content-Length"), QStringLiteral("0"));
+    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
     resp->writeHead(302);
     resp->end();
 }
@@ -942,19 +960,18 @@ void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
         source.reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
             .toInt();
 
-    resp->setHeader("Content-Type", mime);
-    resp->setHeader("Connection", "close");
-    resp->setHeader("Cache-Control", "no-cache, no-store");
-    resp->setHeader("transferMode.dlna.org", "Streaming");
-    resp->setHeader("contentFeatures.dlna.org",
+    resp->setHeader(QStringLiteral("Content-Type"), mime);
+    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
+    resp->setHeader(QStringLiteral("Cache-Control"),
+                    QStringLiteral("no-cache, no-store"));
+    resp->setHeader(QStringLiteral("transferMode.dlna.org"),
+                    QStringLiteral("Streaming"));
+    resp->setHeader(QStringLiteral("contentFeatures.dlna.org"),
                     ContentServer::dlnaContentFeaturesHeader(mime, proxy.seek));
 
-    //    if (source.reply->hasRawHeader("Accept-Ranges")) {
-    //        resp->setHeader("Accept-Ranges", "bytes");
-    //    }
-
     if (source.length > 0) {
-        resp->setHeader("Accept-Ranges", "bytes");
+        resp->setHeader(QStringLiteral("Accept-Ranges"),
+                        QStringLiteral("bytes"));
     }
 
     if (code > 199 && code < 299) {
@@ -972,22 +989,27 @@ void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
         }
 
         if (length > -1) {
-            resp->setHeader("Content-Length", QString::number(length));
+            resp->setHeader(QStringLiteral("Content-Length"),
+                            QString::number(length));
         }
 
         if (sink.range && length > 0) {
-            resp->setHeader("Content-Range",
-                            "bytes " + QString::number(sink.range->start) +
-                                "-" + QString::number(sink.range->end) + "/" +
+            resp->setHeader(QStringLiteral("Content-Range"),
+                            QStringLiteral("bytes ") +
+                                QString::number(sink.range->start) + "-" +
+                                QString::number(sink.range->end) + "/" +
                                 QString::number(source.length));
             code = 206;
+        } else {
+            code = 200;
         }
     }
 
     const auto &headers = source.reply->rawHeaderPairs();
     for (const auto &h : headers) {
         if (h.first.toLower().startsWith("icy-"))
-            resp->setHeader(h.first, h.second);
+            resp->setHeader(QString::fromLatin1(h.first),
+                            QString::fromLatin1(h.second));
     }
 
     qDebug() << "Sending resp:" << code;
@@ -1095,9 +1117,9 @@ void ContentServerWorker::processNewSource(Proxy &proxy,
             .toInt();
     if (!source.range || source.range->full()) {
         source.length = length;
-    } else if (source.reply->hasRawHeader("Content-Range")) {
-        const auto range =
-            Range::fromContentRange(source.reply->rawHeader("Content-Range"));
+    } else if (source.reply->hasRawHeader(QByteArrayLiteral("Content-Range"))) {
+        const auto range = Range::fromContentRange(
+            source.reply->rawHeader(QByteArrayLiteral("Content-Range")));
         if (range) source.length = range->length;
         source.range = range;
     }
@@ -1109,8 +1131,10 @@ void ContentServerWorker::processNewSource(Proxy &proxy,
     logProxySources(proxy);
 
     if (source.state == Proxy::State::Streaming) {
-        if (source.reply->hasRawHeader("icy-metaint")) {
-            source.metaint = source.reply->rawHeader("icy-metaint").toInt();
+        if (source.reply->hasRawHeader(QByteArrayLiteral("icy-metaint"))) {
+            source.metaint =
+                source.reply->rawHeader(QByteArrayLiteral("icy-metaint"))
+                    .toInt();
         }
     }
 
@@ -1325,8 +1349,8 @@ void ContentServerWorker::updatePulseStreamName(const QString &name) {
 }
 
 ContentServerWorker::Proxy::MatchType
-ContentServerWorker::Proxy::sourceMatchesRange(
-    Source &source, const std::optional<Range> &range) {
+ContentServerWorker::Proxy::sourceMatchesRange(Source &source,
+                                               std::optional<Range> range) {
     ContentServerWorker::Proxy::MatchType type = MatchType::Not;
 
     const auto cacheState = source.maxCacheReached();
@@ -1494,7 +1518,8 @@ void ContentServerWorker::dispatchProxyData(Proxy &proxy, QNetworkReply *reply,
 
 std::optional<ContentServerWorker::Range> ContentServerWorker::Range::fromRange(
     const QString &rangeHeader, int length) {
-    QRegExp rx{"bytes[\\s]*=[\\s]*([\\d]+)-([\\d]*)"};
+    static const QRegExp rx{
+        QStringLiteral("bytes[\\s]*=[\\s]*([\\d]+)-([\\d]*)")};
 
     if (rx.indexIn(rangeHeader) >= 0) {
         Range range{rx.cap(1).toInt(), rx.cap(2).toInt(), length};
@@ -1522,7 +1547,8 @@ std::optional<ContentServerWorker::Range> ContentServerWorker::Range::fromRange(
 std::optional<ContentServerWorker::Range>
 ContentServerWorker::Range::fromContentRange(
     const QString &contentRangeHeader) {
-    QRegExp rx{"bytes[\\s]*([\\d]+)-([\\d]+)/([\\d]+)"};
+    static const QRegExp rx{
+        QStringLiteral("bytes[\\s]*([\\d]+)-([\\d]+)/([\\d]+)")};
     if (rx.indexIn(contentRangeHeader) >= 0) {
         Range range{rx.cap(1).toInt(), rx.cap(2).toInt(), rx.cap(3).toInt()};
         if (range.length <= 0) range.length = -1;
@@ -1539,16 +1565,19 @@ void ContentServerWorker::streamFileRange(std::shared_ptr<QFile> file,
                                           QHttpRequest *req,
                                           QHttpResponse *resp) {
     const auto length = file->bytesAvailable();
-    const auto range = Range::fromRange(req->headers().value("range"), length);
+    const auto range =
+        Range::fromRange(req->headers().value(QStringLiteral("range")), length);
     if (!range) {
         qWarning() << "Unable to read on invalid Range header";
         sendEmptyResponse(resp, 416);
     }
 
-    resp->setHeader("Content-Length", QString::number(range->rangeLength()));
-    resp->setHeader("Content-Range", "bytes " + QString::number(range->start) +
-                                         "-" + QString::number(range->end) +
-                                         "/" + QString::number(length));
+    resp->setHeader(QStringLiteral("Content-Length"),
+                    QString::number(range->rangeLength()));
+    resp->setHeader(QStringLiteral("Content-Range"),
+                    QStringLiteral("bytes ") + QString::number(range->start) +
+                        "-" + QString::number(range->end) + "/" +
+                        QString::number(length));
 
     resp->writeHead(206);
     file->seek(range->start);
@@ -1560,7 +1589,7 @@ void ContentServerWorker::streamFileNoRange(std::shared_ptr<QFile> file,
                                             QHttpResponse *resp) {
     const auto length = file->bytesAvailable();
 
-    resp->setHeader("Content-Length", QString::number(length));
+    resp->setHeader(QStringLiteral("Content-Length"), QString::number(length));
 
     resp->writeHead(200);
     seqWriteData(file, length, resp);
@@ -1578,15 +1607,17 @@ void ContentServerWorker::streamFile(const QString &path, const QString &mime,
 
     const auto &headers = req->headers();
 
-    resp->setHeader("Content-Type", mime);
-    resp->setHeader("Accept-Ranges", "bytes");
-    resp->setHeader("Connection", "close");
-    resp->setHeader("Cache-Control", "no-cache");
-    resp->setHeader("TransferMode.DLNA.ORG", "Streaming");
-    resp->setHeader("contentFeatures.DLNA.ORG",
+    resp->setHeader(QStringLiteral("Content-Type"), mime);
+    resp->setHeader(QStringLiteral("Accept-Ranges"), QStringLiteral("bytes"));
+    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
+    resp->setHeader(QStringLiteral("Cache-Control"),
+                    QStringLiteral("no-cache"));
+    resp->setHeader(QStringLiteral("TransferMode.DLNA.ORG"),
+                    QStringLiteral("Streaming"));
+    resp->setHeader(QStringLiteral("contentFeatures.DLNA.ORG"),
                     ContentServer::dlnaContentFeaturesHeader(mime));
 
-    if (headers.contains("range")) {
+    if (headers.contains(QStringLiteral("range"))) {
         streamFileRange(file, req, resp);
     } else {
         streamFileNoRange(file, req, resp);
@@ -1751,7 +1782,7 @@ std::optional<QNetworkReply *> ContentServerWorker::Proxy::matchSource(
 }
 
 bool ContentServerWorker::Proxy::matchedSourceExists(const QByteArray &range) {
-    const auto r = Range::fromRange(range);
+    const auto r = Range::fromRange(QString::fromLatin1(range));
     for (auto &source : sources) {
         if (sourceMatchesRange(source, r) != MatchType::Not) {
             return true;
@@ -1853,7 +1884,7 @@ void ContentServerWorker::Proxy::addSink(QHttpRequest *req,
     Sink s;
     s.req = req;
     s.resp = resp;
-    s.range = Range::fromRange(req->header("range"));
+    s.range = Range::fromRange(req->header(QStringLiteral("range")));
 
     sinks.insert(resp, s);
 
@@ -1892,7 +1923,8 @@ void ContentServerWorker::Proxy::addSource(QNetworkReply *reply,
 
     Source s;
     s.reply = reply;
-    s.range = Range::fromRange(reply->request().rawHeader("range"));
+    s.range = Range::fromRange(
+        reply->request().rawHeader(QByteArrayLiteral("range")));
     s.cacheLimit = cacheLimit;
     s.first = first;
 
@@ -1947,7 +1979,7 @@ void ContentServerWorker::Proxy::writeAll(QNetworkReply *reply,
     }
 }
 
-void ContentServerWorker::Proxy::writeAll(QNetworkReply *reply,
+void ContentServerWorker::Proxy::writeAll(const QNetworkReply *reply,
                                           const QByteArray &data) {
     for (auto it = sourceToSinkMap.cbegin(); it != sourceToSinkMap.cend();
          ++it) {
@@ -2164,9 +2196,10 @@ bool ContentServerWorker::Proxy::Source::openRecFile() {
             reply->header(QNetworkRequest::ContentTypeHeader).toString();
         const auto recDir =
             QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-        const auto recFilePath = QDir{recDir}.filePath(QString{"rec-%1.%2"}.arg(
-            Utils::instance()->randString(),
-            ContentServer::getExtensionFromAudioContentType(mime)));
+        const auto recFilePath = QDir{recDir}.filePath(
+            QStringLiteral("rec-%1.%2")
+                .arg(Utils::instance()->randString(),
+                     ContentServer::getExtensionFromAudioContentType(mime)));
         qDebug() << "Opening file for recording:" << recFilePath;
         recFile->setFileName(recFilePath);
         if (recFile->open(QIODevice::WriteOnly)) return true;

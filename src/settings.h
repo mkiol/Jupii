@@ -76,8 +76,6 @@ class Settings : public QSettings,
                    colorSchemeChanged)
     Q_PROPERTY(
         QString fsapiPin READ fsapiPin WRITE setFsapiPin NOTIFY fsapiPinChanged)
-    Q_PROPERTY(bool globalYtdl READ globalYtdl WRITE setGlobalYtdl NOTIFY
-                   globalYtdlChanged)
     Q_PROPERTY(QStringList bcSearchHistory READ bcSearchHistory NOTIFY
                    bcSearchHistoryChanged)
     Q_PROPERTY(QStringList soundcloudSearchHistory READ soundcloudSearchHistory
@@ -126,8 +124,6 @@ class Settings : public QSettings,
     bool getUseHWVolume() const;
     void setLogToFile(bool value);
     bool getLogToFile() const;
-    void setGlobalYtdl(bool value);
-    bool globalYtdl() const;
     void setAlbumQueryType(int value);
     int getAlbumQueryType() const;
     void setRecQueryType(int value);
@@ -225,7 +221,6 @@ class Settings : public QSettings,
     void colorSchemeChanged();
     void audioBoostChanged();
     void fsapiPinChanged();
-    void globalYtdlChanged();
     void bcSearchHistoryChanged();
     void soundcloudSearchHistoryChanged();
     void icecastSearchHistoryChanged();
