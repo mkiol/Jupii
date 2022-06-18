@@ -17,6 +17,7 @@ Controls.Dialog {
     property bool ok: utils.isUrlOk(urlField.text.trim())
     property alias url: urlField.text
     property alias name: urlNameField.text
+    property alias asAudio: audioSwitch.checked
 
     modal: true
     focus: true
@@ -70,6 +71,12 @@ Controls.Dialog {
                 else
                     urlField.forceActiveFocus()
             }
+        }
+
+        Controls.Switch {
+            id: audioSwitch
+            Layout.fillWidth: true
+            text: qsTr("Add audio-only stream if possible")
         }
     }
 }

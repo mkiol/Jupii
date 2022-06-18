@@ -885,10 +885,18 @@ PlaylistModel::UrlType PlaylistModel::determineUrlType(QUrl *url) {
     return UrlType::Unknown;
 }
 
+void PlaylistModel::addItemUrlAsAudio(const QUrl &url, const QString &name,
+                                      const QUrl &origUrl,
+                                      const QString &author, const QUrl &icon,
+                                      const QString &desc, const QString &app,
+                                      bool play) {
+    addItemUrl(url, name, origUrl, author, icon, desc, app, play, true);
+}
+
 void PlaylistModel::addItemUrl(QUrl url, const QString &name,
                                const QUrl &origUrl, const QString &author,
                                const QUrl &icon, const QString &desc,
-                               QString app, bool play) {
+                               QString app, bool play, bool asAudio) {
     if (app.isEmpty() && origUrl.isEmpty()) {
         auto type = determineUrlType(&url);
         if (type == UrlType::BcTrack) {
@@ -936,7 +944,7 @@ void PlaylistModel::addItemUrl(QUrl url, const QString &name,
     ui.app = std::move(app);
     ui.play = play;
     urls << ui;
-    addItems(urls, false);
+    addItems(urls, asAudio);
 }
 
 void PlaylistModel::addItemPath(const QString &path, const QString &name,
@@ -1117,18 +1125,29 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
 
     const ContentServer::ItemMeta *meta;
     if (!origUrl.isEmpty() && origUrl != url) {
-        meta = ContentServer::instance()->getMeta(url, false);
+        meta = ContentServer::instance()->getMeta(/*url=*/url,
+                                                  /*createNew=*/false);
         if (meta && meta->expired()) {
             qDebug() << "Meta exipred";
-            meta = ContentServer::instance()->getMeta(url, true, origUrl, app,
-                                                      ytdl, false, true);
+            meta = ContentServer::instance()->getMeta(
+                /*url=*/url, /*createNew=*/true, /*origUrl=*/origUrl,
+                /*app=*/app, /*ytdl=*/ytdl, /*img=*/false, /*refresh=*/true,
+                /*asAudio=*/static_cast<ContentServer::Type>(t) ==
+                    ContentServer::Type::Music);
         } else {
-            meta = ContentServer::instance()->getMeta(url, true, origUrl, app,
-                                                      ytdl);
+            meta = ContentServer::instance()->getMeta(
+                /*url=*/url, /*createNew=*/true, /*origUrl=*/origUrl,
+                /*app=*/app,
+                /*ytdl=*/ytdl, /*img=*/false, /*refresh=*/false,
+                /*asAudio=*/static_cast<ContentServer::Type>(t) ==
+                    ContentServer::Type::Music);
         }
     } else {
-        meta =
-            ContentServer::instance()->getMeta(url, true, origUrl, app, ytdl);
+        meta = ContentServer::instance()->getMeta(
+            /*url=*/url, /*createNew=*/true, /*origUrl=*/origUrl, /*app=*/app,
+            /*ytdl=*/ytdl, /*img=*/false, /*refresh=*/false,
+            /*asAudio=*/static_cast<ContentServer::Type>(t) ==
+                ContentServer::Type::Music);
     }
     if (!meta) {
         qWarning() << "No meta item found";

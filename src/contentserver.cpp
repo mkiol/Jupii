@@ -1160,12 +1160,13 @@ const ContentServer::ItemMeta *ContentServer::getMetaForImg(const QUrl &url,
 
 const ContentServer::ItemMeta *ContentServer::getMeta(
     const QUrl &url, bool createNew, const QUrl &origUrl, const QString &app,
-    bool ytdl, bool img, bool refresh) {
+    bool ytdl, bool img, bool refresh, bool asAudio) {
 #ifdef QT_DEBUG
-    qDebug() << "getMeta:" << url << createNew << ytdl << img << refresh;
+    qDebug() << "getMeta:" << url << createNew << ytdl << img << refresh
+             << asAudio;
 #endif
-    auto it =
-        getMetaCacheIterator(url, createNew, origUrl, app, ytdl, img, refresh);
+    auto it = getMetaCacheIterator(url, createNew, origUrl, app, ytdl, img,
+                                   refresh, asAudio);
     if (it == m_metaCache.cend()) {
         return nullptr;
     }
@@ -1184,7 +1185,8 @@ const ContentServer::ItemMeta *ContentServer::getMetaForId(const QUrl &id,
 QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
                                     const QUrl &origUrl, const QString &app,
-                                    bool ytdl, bool img, bool refresh) {
+                                    bool ytdl, bool img, bool refresh,
+                                    bool asAudio) {
     if (url.isEmpty()) return m_metaCache.cend();
 
     if (refresh) removeMeta(url);
@@ -1194,7 +1196,7 @@ ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
     if (i == m_metaCache.cend()) {
         qDebug() << "Meta data for" << url << "not cached";
         if (createNew)
-            return makeItemMeta(url, origUrl, app, ytdl, img, refresh);
+            return makeItemMeta(url, origUrl, app, ytdl, img, refresh, asAudio);
         return m_metaCache.cend();
     }
 
@@ -1798,7 +1800,8 @@ ContentServer::makeItemMetaUsingYtdlApi(
     meta.app = QStringLiteral("ytdl");
     meta.setFlags(MetaFlag::YtDl);
 
-    auto newUrl = std::move(track->streamUrl);
+    auto newUrl = meta.type == Type::Music ? std::move(track->streamAudioUrl)
+                                           : std::move(track->streamUrl);
     Utils::fixUrl(newUrl);
 
     return makeItemMetaUsingHTTPRequest2(newUrl, meta, std::move(nam),
@@ -1873,12 +1876,16 @@ QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                                             const QUrl &origUrl,
                                             const QString &app, bool ytdl,
-                                            bool refresh, bool art) {
+                                            bool refresh, bool art,
+                                            bool asAudio) {
     ItemMeta meta;
     meta.setFlags(MetaFlag::YtDl, ytdl);
     meta.setFlags(MetaFlag::Refresh, refresh);  // meta refreshing
     meta.setFlags(MetaFlag::Art, art);
     meta.app = app;
+    if (asAudio) {
+        meta.type = ContentServer::Type::Music;
+    }
 
     QUrl fixed_url(url);
     QUrl fixed_origUrl(origUrl);
@@ -2234,7 +2241,7 @@ ContentServer::makeMetaUsingExtension(const QUrl &url) {
 QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
                             const QString &app, bool ytdl, bool art,
-                            bool refresh) {
+                            bool refresh, bool asAudio) {
     m_metaCacheMutex.lock();
 
     QHash<QUrl, ContentServer::ItemMeta>::const_iterator it;
@@ -2273,8 +2280,8 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
         it = makeUpnpItemMeta(url);
     } else if (itemType == ItemType_Url) {
         qDebug() << "Geting meta using HTTP request";
-        it =
-            makeItemMetaUsingHTTPRequest(url, origUrl, app, ytdl, refresh, art);
+        it = makeItemMetaUsingHTTPRequest(url, origUrl, app, ytdl, refresh, art,
+                                          /*asAudio=*/asAudio);
     } else if (url.scheme() == QStringLiteral("jupii")) {
         qDebug() << "Unsupported Jupii URL detected";
         it = m_metaCache.cend();

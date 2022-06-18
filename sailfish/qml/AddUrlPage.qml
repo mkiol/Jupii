@@ -21,7 +21,11 @@ Dialog {
 
     onDone: {
         if (result === DialogResult.Accepted) {
-            playlist.addItemUrl(url, name);
+            if (audioSwitch.checked) {
+                playlist.addItemUrlAsAudio(url, name);
+            } else {
+                playlist.addItemUrl(url, name);
+            }
             app.popToQueue()
         }
     }
@@ -74,6 +78,12 @@ Dialog {
                     else
                         urlField.forceActiveFocus()
                 }
+            }
+
+            TextSwitch {
+                id: audioSwitch
+                width: parent.width
+                text: qsTr("Add audio-only stream if possible")
             }
 
             Tip {

@@ -182,14 +182,15 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(
         const QUrl &url, bool createNew = true, const QUrl &origUrl = {},
         const QString &app = {}, bool ytdl = false, bool img = false,
-        bool refresh = false);
+        bool refresh = false, bool asAudio = false);
     QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(
         const QUrl &id, bool createNew = true);
     QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
     const ItemMeta *getMeta(const QUrl &url, bool createNew,
                             const QUrl &origUrl = QUrl(),
                             const QString &app = {}, bool ytdl = false,
-                            bool img = false, bool refresh = false);
+                            bool img = false, bool refresh = false,
+                            bool asAudio = false);
     const ContentServer::ItemMeta *getMetaForImg(const QUrl &url,
                                                  bool createNew);
     void removeMeta(const QUrl &url);
@@ -328,7 +329,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
     QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(
         const QUrl &url, const QUrl &origUrl = {}, const QString &app = {},
-        bool ytdl = false, bool art = false, bool refresh = false);
+        bool ytdl = false, bool art = false, bool refresh = false,
+        bool asAudio = false);
     QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
     QHash<QUrl, ItemMeta>::const_iterator makeAudioCaptureItemMeta(
         const QUrl &url);
@@ -340,7 +342,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         const QUrl &url);
     QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(
         const QUrl &url, const QUrl &origUrl = {}, const QString &app = {},
-        bool ytdl = false, bool refresh = false, bool art = false);
+        bool ytdl = false, bool refresh = false, bool art = false,
+        bool asAudio = false);
     QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest2(
         const QUrl &url, ItemMeta &meta,
         std::shared_ptr<QNetworkAccessManager> nam =

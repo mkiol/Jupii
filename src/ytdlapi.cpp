@@ -273,6 +273,7 @@ bool YtdlApi::unpack() {
 }
 
 bool YtdlApi::check() {
+#ifdef SAILFISH
     if (auto oldChecksum = Settings::instance()->pythonChecksum();
         !oldChecksum.isEmpty()) {
         if (oldChecksum != make_checksum(pythonArchivePath)) {
@@ -280,7 +281,7 @@ bool YtdlApi::check() {
             return false;
         }
     }
-
+#endif
     using namespace pybind11;
     scoped_interpreter guard{};
 

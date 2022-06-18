@@ -49,8 +49,10 @@ Kirigami.ScrollablePage {
         anchors.centerIn: parent
         width: parent.width - 8 * Kirigami.Units.largeSpacing
         onAccepted: {
-            if (ok)
-                playlist.addItemUrl(url, name)
+            if (ok) {
+                if (asAudio) playlist.addItemUrlAsAudio(url, name)
+                else playlist.addItemUrl(url, name)
+            }
             pageStack.flickBack()
         }
     }

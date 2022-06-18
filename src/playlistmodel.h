@@ -187,7 +187,12 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     void addItemUrl(QUrl url, const QString &name = {},
                     const QUrl &origUrl = {}, const QString &author = {},
                     const QUrl &icon = {}, const QString &desc = {},
-                    QString app = {}, bool autoPlay = false);
+                    QString app = {}, bool autoPlay = false,
+                    bool asAudio = false);
+    void addItemUrlAsAudio(const QUrl &url, const QString &name = {},
+                           const QUrl &origUrl = {}, const QString &author = {},
+                           const QUrl &icon = {}, const QString &desc = {},
+                           const QString &app = {}, bool autoPlay = false);
     void addItemPathsAsAudio(const QStringList &paths);
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
