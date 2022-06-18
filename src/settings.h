@@ -188,6 +188,8 @@ class Settings : public QSettings,
     Q_INVOKABLE void addTuneinSearchHistory(const QString &value);
     Q_INVOKABLE void removeTuneinSearchHistory(const QString &value);
     Q_INVOKABLE QUrl appIcon() const;
+    QString pythonChecksum() const;
+    void setPythonChecksum(const QString &value);
 
    signals:
     void portChanged();

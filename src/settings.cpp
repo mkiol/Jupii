@@ -824,3 +824,13 @@ QUrl Settings::appIcon() const {
         QStringLiteral("/usr/share/icons/hicolor/172x172/apps/%1.png")
             .arg(Jupii::APP_BINARY_ID));
 }
+
+void Settings::setPythonChecksum(const QString &value) {
+    if (value != pythonChecksum()) {
+        setValue("pythonchecksum", value);
+    }
+}
+
+QString Settings::pythonChecksum() const {
+    return value("pythonchecksum").toString();
+}

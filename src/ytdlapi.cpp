@@ -7,9 +7,12 @@
 
 #include "ytdlapi.h"
 
+#ifdef SAILFISH
 #include <archive.h>
 #include <archive_entry.h>
 #include <lzma.h>
+#include <zlib.h>
+#endif
 #undef slots
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
@@ -25,6 +28,7 @@
 #include <QTimer>
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 
 #include "downloader.h"
 #include "info.h"
@@ -39,6 +43,29 @@ const QString YtdlApi::pythonArchivePath =
 
 inline static QString pythonUnpackDir() {
     return QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+}
+
+static QString make_checksum(const QString& file) {
+    QString hex;
+
+    if (std::ifstream input{file.toStdString(),
+                            std::ios::in | std::ifstream::binary}) {
+        auto checksum = crc32(0L, Z_NULL, 0);
+        char buff[std::numeric_limits<unsigned short>::max()];
+        while (input) {
+            input.read(buff, sizeof buff);
+            checksum = crc32(checksum, reinterpret_cast<unsigned char*>(buff),
+                             static_cast<unsigned int>(input.gcount()));
+        }
+        std::stringstream ss;
+        ss << std::hex << checksum;
+        hex = QString::fromStdString(ss.str());
+        qDebug() << "crc checksum:" << hex << file;
+        return hex;
+    }
+    qWarning() << "cannot open file:" << file;
+
+    return hex;
 }
 
 static bool xz_decode(const QString& file_in, const QString& file_out) {
@@ -223,14 +250,18 @@ bool YtdlApi::unpack() {
 
     if (!xz_decode(pythonArchivePath, unpackPath)) {
         qWarning() << "cannot extract python archive";
+        Settings::instance()->setPythonChecksum({});
         return false;
     }
 
     if (!tar_decode(unpackPath, pythonUnpackDir())) {
         qWarning() << "cannot extract python tar archive";
         QFile::remove(unpackPath);
+        Settings::instance()->setPythonChecksum({});
         return false;
     }
+
+    Settings::instance()->setPythonChecksum(make_checksum(pythonArchivePath));
 
     QFile::remove(unpackPath);
 
@@ -242,6 +273,14 @@ bool YtdlApi::unpack() {
 }
 
 bool YtdlApi::check() {
+    if (auto oldChecksum = Settings::instance()->pythonChecksum();
+        !oldChecksum.isEmpty()) {
+        if (oldChecksum != make_checksum(pythonArchivePath)) {
+            qDebug() << "python modules checksum is invalid => need to unpack";
+            return false;
+        }
+    }
+
     using namespace pybind11;
     scoped_interpreter guard{};
 
