@@ -179,13 +179,13 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString pathFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString urlFromUrl(const QUrl &url) const;
-    const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(
+    QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(
         const QUrl &url, bool createNew = true, const QUrl &origUrl = {},
         const QString &app = {}, bool ytdl = false, bool img = false,
         bool refresh = false);
-    const QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(
+    QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(
         const QUrl &id, bool createNew = true);
-    const QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
+    QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
     const ItemMeta *getMeta(const QUrl &url, bool createNew,
                             const QUrl &origUrl = QUrl(),
                             const QString &app = {}, bool ytdl = false,
@@ -326,45 +326,43 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     bool getContentMeta(const QString &id, const QUrl &url, QString &meta,
                         const ItemMeta *item);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(
+    QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(
         const QUrl &url, const QUrl &origUrl = {}, const QString &app = {},
         bool ytdl = false, bool art = false, bool refresh = false);
-    const QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(
+    QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::const_iterator makeAudioCaptureItemMeta(
         const QUrl &url);
-    const QHash<QUrl, ItemMeta>::const_iterator makeAudioCaptureItemMeta(
+    QHash<QUrl, ItemMeta>::const_iterator makeScreenCaptureItemMeta(
         const QUrl &url);
-    const QHash<QUrl, ItemMeta>::const_iterator makeScreenCaptureItemMeta(
+    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(
         const QUrl &url);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(
+    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(
         const QUrl &url);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(
-        const QUrl &url);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(
+    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(
         const QUrl &url, const QUrl &origUrl = {}, const QString &app = {},
         bool ytdl = false, bool refresh = false, bool art = false);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest2(
+    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest2(
         const QUrl &url, ItemMeta &meta,
         std::shared_ptr<QNetworkAccessManager> nam =
             std::shared_ptr<QNetworkAccessManager>(),
         int counter = 0);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingYtdlApi(
+    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingYtdlApi(
         const QUrl &url, ItemMeta &meta,
         std::shared_ptr<QNetworkAccessManager> nam =
             std::shared_ptr<QNetworkAccessManager>(),
         int counter = 0);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingBcApi(
+    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingBcApi(
         const QUrl &url, ItemMeta &meta,
         std::shared_ptr<QNetworkAccessManager> nam =
             std::shared_ptr<QNetworkAccessManager>(),
         int counter = 0);
-    const QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingSoundcloudApi(
+    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingSoundcloudApi(
         const QUrl &url, ItemMeta &meta,
         std::shared_ptr<QNetworkAccessManager> nam =
             std::shared_ptr<QNetworkAccessManager>(),
         int counter = 0);
-    const QHash<QUrl, ItemMeta>::const_iterator makeUpnpItemMeta(
-        const QUrl &url);
-    const QHash<QUrl, ItemMeta>::const_iterator makeMetaUsingExtension(
+    QHash<QUrl, ItemMeta>::const_iterator makeUpnpItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::const_iterator makeMetaUsingExtension(
         const QUrl &url);
     void run() override;
     static bool extractAudio(const QString &path, ContentServer::AvData &data);

@@ -87,10 +87,12 @@ const QString ContentServer::queryTemplate = QStringLiteral(
     "nfo:sampleRate(?item) "
     "WHERE { ?item nie:isStoredAs ?url . ?url nie:url \"%1\". }");
 
-const QHash<QString, QString> ContentServer::m_imgExtMap{{"jpg", "image/jpeg"},
-                                                         {"jpeg", "image/jpeg"},
-                                                         {"png", "image/png"},
-                                                         {"gif", "image/gif"}};
+const QHash<QString, QString> ContentServer::m_imgExtMap{
+    {"jpg", "image/jpeg"},
+    {"jpeg", "image/jpeg"},
+    {"png", "image/png"},
+    {"gif", "image/gif"},
+    {"webp", "image/webp"}};
 
 const QHash<QString, QString> ContentServer::m_musicExtMap{
     {"mp3", "audio/mpeg"},       {"m4a", "audio/mp4"},
@@ -117,7 +119,10 @@ const QHash<QString, QString> ContentServer::m_musicMimeToExtMap{
     {"audio/x-aiff", "aiff"}};
 
 const QHash<QString, QString> ContentServer::m_imgMimeToExtMap{
-    {"image/jpeg", "jpg"}, {"image/png", "png"}, {"image/gif", "gif"}};
+    {"image/jpeg", "jpg"},
+    {"image/png", "png"},
+    {"image/gif", "gif"},
+    {"image/webp", "webp"}};
 
 const QHash<QString, QString> ContentServer::m_videoExtMap{
     {"mkv", "video/x-matroska"}, {"webm", "video/webm"},
@@ -666,8 +671,7 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         return false;
     }
 
-    auto s = Settings::instance();
-    int relay = s->getRemoteContentMode();
+    int relay = Settings::instance()->getRemoteContentMode();
 
     if (item->itemType == ItemType_Upnp) {
         qDebug() << "Item is upnp and relaying is disabled";
@@ -1162,8 +1166,10 @@ const ContentServer::ItemMeta *ContentServer::getMeta(
 #endif
     auto it =
         getMetaCacheIterator(url, createNew, origUrl, app, ytdl, img, refresh);
-    auto meta = it == m_metaCache.cend() ? nullptr : &it.value();
-    return meta;
+    if (it == m_metaCache.cend()) {
+        return nullptr;
+    }
+    return &it.value();
 }
 
 bool ContentServer::metaExists(const QUrl &url) const {
@@ -1172,11 +1178,10 @@ bool ContentServer::metaExists(const QUrl &url) const {
 
 const ContentServer::ItemMeta *ContentServer::getMetaForId(const QUrl &id,
                                                            bool createNew) {
-    auto url = Utils::urlFromId(id);
-    return getMeta(url, createNew);
+    return getMeta(Utils::urlFromId(id), createNew);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
                                     const QUrl &origUrl, const QString &app,
                                     bool ytdl, bool img, bool refresh) {
@@ -1196,23 +1201,22 @@ ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
     return i;
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::getMetaCacheIteratorForId(const QUrl &id, bool createNew) {
-    auto url = Utils::urlFromId(id);
-    return getMetaCacheIterator(url, createNew);
+    return getMetaCacheIterator(Utils::urlFromId(id), createNew);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::metaCacheIteratorEnd() {
     return m_metaCache.cend();
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingTracker(const QUrl &url) {
     auto fileUrl = url.toString(QUrl::EncodeUnicode | QUrl::EncodeSpaces);
     auto path = url.toLocalFile();
 
-    auto tracker = Tracker::instance();
+    auto *tracker = Tracker::instance();
     auto query = queryTemplate.arg(
         fileUrl, tracker->tracker3() ? "nmm:artist" : "nmm:performer");
 
@@ -1282,7 +1286,7 @@ QString ContentServer::readTitleUsingTaglib(const QString &path) {
     TagLib::FileRef f(path.toUtf8().constData(), false);
 
     if (!f.isNull()) {
-        auto tag = f.tag();
+        auto *tag = f.tag();
         if (tag) {
             return QString::fromWCharArray(tag->title().toCWString());
         }
@@ -1301,7 +1305,7 @@ bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
 
     TagLib::FileRef f(path.toUtf8().constData(), readAudioProperties);
     if (!f.isNull()) {
-        auto tag = f.tag();
+        auto *tag = f.tag();
         if (tag) {
             title = QString::fromWCharArray(tag->title().toCWString());
             artist = QString::fromWCharArray(tag->artist().toCWString());
@@ -1331,7 +1335,7 @@ bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
             }
 
             if (readAudioProperties) {
-                auto prop = f.audioProperties();
+                auto *prop = f.audioProperties();
                 if (prop) {
                     if (duration) *duration = prop->length();
                     if (bitrate) *bitrate = prop->bitrate();
@@ -1348,7 +1352,7 @@ bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
             } else if (QFileInfo::exists(albumArt + "png")) {
                 artPath = albumArt + "png";
             } else {
-                auto mf = dynamic_cast<TagLib::MPEG::File *>(f.file());
+                auto *mf = dynamic_cast<TagLib::MPEG::File *>(f.file());
                 if (mf) {
                     auto *tag = mf->ID3v2Tag(true);
                     auto fl = tag->frameList("APIC");
@@ -1400,13 +1404,13 @@ bool ContentServer::writeMetaUsingTaglib(
     const QDateTime &recDate, const QString &artPath) {
     TagLib::FileRef f(path.toUtf8().constData(), false);
     if (!f.isNull()) {
-        auto mf = dynamic_cast<TagLib::MPEG::File *>(f.file());
+        auto *mf = dynamic_cast<TagLib::MPEG::File *>(f.file());
         if (mf) {
             // qDebug() << "MPEG tag";
             mf->strip();  // remove old tags
             mf->save();
 
-            auto tag = mf->ID3v2Tag(true);
+            auto *tag = mf->ID3v2Tag(true);
 
             if (!title.isEmpty()) tag->setTitle(title.toStdWString());
             if (!artist.isEmpty()) tag->setArtist(artist.toStdWString());
@@ -1415,13 +1419,13 @@ bool ContentServer::writeMetaUsingTaglib(
 
             // Rec additional tags
             if (!recUrl.isEmpty()) {
-                auto frame = TagLib::ID3v2::Frame::createTextualFrame(
+                auto *frame = TagLib::ID3v2::Frame::createTextualFrame(
                     ContentServer::recUrlTagName.toStdString(),
                     {recUrl.toStdString()});
                 tag->addFrame(frame);
             }
             if (!recDate.isNull()) {
-                auto frame = TagLib::ID3v2::Frame::createTextualFrame(
+                auto *frame = TagLib::ID3v2::Frame::createTextualFrame(
                     ContentServer::recDateTagName.toStdString(),
                     {recDate.toString(Qt::ISODate).toStdString()});
                 tag->addFrame(frame);
@@ -1435,7 +1439,7 @@ bool ContentServer::writeMetaUsingTaglib(
                         auto bytes = art.readAll();
                         art.close();
                         if (!bytes.isEmpty()) {
-                            auto apf =
+                            auto *apf =
                                 new TagLib::ID3v2::AttachedPictureFrame();
                             apf->setPicture(TagLib::ByteVector(
                                 bytes.constData(), uint32_t(bytes.size())));
@@ -1453,7 +1457,7 @@ bool ContentServer::writeMetaUsingTaglib(
             return true;
         }
 
-        auto tag = f.tag();
+        auto *tag = f.tag();
         if (tag) {
             // qDebug() << "Generic tag";
             if (!title.isEmpty()) tag->setTitle(title.toStdWString());
@@ -1463,7 +1467,7 @@ bool ContentServer::writeMetaUsingTaglib(
 
             if (!recUrl.isEmpty() ||
                 !recDate.isNull()) {  // Rec additional tags
-                auto file = f.file();
+                auto *file = f.file();
                 auto tags = file->properties();
 
                 if (!recUrl.isEmpty()) {
@@ -1543,7 +1547,7 @@ ContentServer::ItemType ContentServer::itemTypeFromUrl(const QUrl &url) {
     return ItemType_Unknown;
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingTaglib(const QUrl &url) {
     auto path = url.toLocalFile();
     QFileInfo file{path};
@@ -1583,7 +1587,7 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url) {
     return m_metaCache.insert(url, meta);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeUpnpItemMeta(const QUrl &url) {
     qDebug() << "makeUpnpItemMeta:" << url;
 
@@ -1687,7 +1691,7 @@ ContentServer::makeUpnpItemMeta(const QUrl &url) {
     return m_metaCache.insert(url, meta);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeMicItemMeta(const QUrl &url) {
     ItemMeta meta;
     meta.url = url;
@@ -1708,7 +1712,7 @@ ContentServer::makeMicItemMeta(const QUrl &url) {
     return m_metaCache.insert(url, meta);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeAudioCaptureItemMeta(const QUrl &url) {
     ItemMeta meta;
     meta.url = url;
@@ -1727,7 +1731,7 @@ ContentServer::makeAudioCaptureItemMeta(const QUrl &url) {
     return m_metaCache.insert(url, meta);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeScreenCaptureItemMeta(const QUrl &url) {
     ItemMeta meta;
     meta.url = url;
@@ -1772,7 +1776,7 @@ bool ContentServer::hlsPlaylist(const QByteArray &data) {
     return data.contains("#EXT-X-");
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingYtdlApi(
     const QUrl &url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> nam,
     int counter) {
@@ -1801,7 +1805,7 @@ ContentServer::makeItemMetaUsingYtdlApi(
                                          counter + 1);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingBcApi(
     const QUrl &url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> nam,
     int counter) {
@@ -1833,7 +1837,7 @@ ContentServer::makeItemMetaUsingBcApi(
     return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingSoundcloudApi(
     const QUrl &url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> nam,
     int counter) {
@@ -1865,7 +1869,7 @@ ContentServer::makeItemMetaUsingSoundcloudApi(
     return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
                                             const QUrl &origUrl,
                                             const QString &app, bool ytdl,
@@ -1891,7 +1895,7 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     return makeItemMetaUsingHTTPRequest2(fixed_url, meta);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMetaUsingHTTPRequest2(
     const QUrl &url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> nam,
     int counter) {
@@ -1917,7 +1921,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
 
     if (!nam) nam = std::make_shared<QNetworkAccessManager>();
 
-    auto reply = nam->get(request);
+    auto *reply = nam->get(request);
 
     bool art = meta.flagSet(MetaFlag::Art);
     QEventLoop loop;
@@ -2057,22 +2061,22 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
                               false);
                 reply->deleteLater();
                 return m_metaCache.insert(url, meta);
-            } else {
-                auto items = ptype == PlaylistType::PLS
-                                 ? parsePls(data, reply->url().toString())
-                             : ptype == PlaylistType::XSPF
-                                 ? parseXspf(data, reply->url().toString())
-                                 : parseM3u(data, reply->url().toString());
-                if (!items.isEmpty()) {
-                    QUrl url = items.first().url;
-                    Utils::fixUrl(url);
-                    qDebug() << "Trying get meta data for first item in the "
-                                "playlist:"
-                             << url;
-                    reply->deleteLater();
-                    return makeItemMetaUsingHTTPRequest2(url, meta, nam,
-                                                         counter + 1);
-                }
+            }
+
+            auto items = ptype == PlaylistType::PLS
+                             ? parsePls(data, reply->url().toString())
+                         : ptype == PlaylistType::XSPF
+                             ? parseXspf(data, reply->url().toString())
+                             : parseM3u(data, reply->url().toString());
+            if (!items.isEmpty()) {
+                QUrl url = items.first().url;
+                Utils::fixUrl(url);
+                qDebug() << "Trying get meta data for first item in the "
+                            "playlist:"
+                         << url;
+                reply->deleteLater();
+                return makeItemMetaUsingHTTPRequest2(url, meta, nam,
+                                                     counter + 1);
             }
         }
 
@@ -2204,7 +2208,7 @@ void ContentServer::updateMetaAlbumArt(ItemMeta &meta) const {
     }
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeMetaUsingExtension(const QUrl &url) {
     bool isFile = url.isLocalFile();
     bool isQrc = url.scheme() == QStringLiteral("qrc");
@@ -2227,7 +2231,7 @@ ContentServer::makeMetaUsingExtension(const QUrl &url) {
     return m_metaCache.insert(url, meta);
 }
 
-const QHash<QUrl, ContentServer::ItemMeta>::const_iterator
+QHash<QUrl, ContentServer::ItemMeta>::const_iterator
 ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
                             const QString &app, bool ytdl, bool art,
                             bool refresh) {
@@ -2258,8 +2262,7 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
         it = makeAudioCaptureItemMeta(url);
     } else if (itemType == ItemType_ScreenCapture) {
         qDebug() << "Screen url detected";
-        auto s = Settings::instance();
-        if (s->getScreenSupported()) {
+        if (Settings::instance()->getScreenSupported()) {
             it = makeScreenCaptureItemMeta(url);
         } else {
             qWarning() << "Screen capturing is not supported";
@@ -2285,7 +2288,7 @@ ContentServer::makeItemMeta(const QUrl &url, const QUrl &origUrl,
 }
 
 void ContentServer::run() {
-    auto worker = ContentServerWorker::instance();
+    auto *worker = ContentServerWorker::instance();
     connect(worker, &ContentServerWorker::shoutcastMetadataUpdated, this,
             &ContentServer::shoutcastMetadataHandler);
     connect(worker, &ContentServerWorker::pulseStreamUpdated, this,
