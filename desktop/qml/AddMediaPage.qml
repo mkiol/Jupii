@@ -78,7 +78,7 @@ Kirigami.ScrollablePage {
         BasicListItemWithArrow {
             Layout.fillWidth: true
             visible: settings.rec
-            label: qsTr("Recordings")
+            label: qsTr("Recording")
             icon: "media-record"
             highlighted: rightPage ? rightPage.objectName === "rec" : false
             onClicked: {

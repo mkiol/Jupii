@@ -85,7 +85,7 @@ Page {
 
                 MenuItem {
                     visible: av.currentYtdl
-                    text: qsTr("Open URL in browser")
+                    text: qsTr("Open URL")
                     onClicked: Qt.openUrlExternally(av.currentOrigURL)
                 }
 

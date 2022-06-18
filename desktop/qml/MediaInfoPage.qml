@@ -24,7 +24,7 @@ Kirigami.ScrollablePage {
 
     actions {
         main: Kirigami.Action {
-            text: qsTr("Open URL in browser")
+            text: qsTr("Open URL")
             iconName: "globe"
             enabled: av.currentYtdl
             visible: enabled
