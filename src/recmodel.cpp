@@ -66,9 +66,10 @@ QList<ListItem*> RecModel::makeItems()
             Item item;
             item.path = file.absoluteFilePath();
 
-            if (!ContentServer::readMetaUsingTaglib(item.path,
-                                item.title, item.author, item.album, item.comment,
-                                item.recUrl, item.recDate, item.iconPath)) {
+            if (!ContentServer::readMetaUsingTaglib(
+                    item.path, &item.title, &item.author, &item.album,
+                    &item.comment, &item.recUrl, &item.recDate,
+                    &item.iconPath)) {
                 qWarning() << "Cannot read meta with TagLib";
                 continue;
             }

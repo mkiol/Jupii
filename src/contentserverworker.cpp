@@ -409,8 +409,11 @@ void ContentServerWorker::makeProxy(const QUrl &id, const bool first,
             proxy.artPath = icon.toLocalFile();
         }
     } else if (meta && !meta->albumArt.isEmpty()) {
+        qDebug() << "meta->albumArt:" << meta->albumArt;
         if (QFileInfo::exists(meta->albumArt)) {
             proxy.artPath = meta->albumArt;
+        } else if (meta->albumArt.startsWith("qrc:")) {  // remove 'qrc'
+            proxy.artPath = meta->albumArt.right(meta->albumArt.size() - 3);
         } else {
             auto artMeta =
                 ContentServer::instance()->getMeta(QUrl{meta->albumArt}, false);
@@ -2215,7 +2218,7 @@ std::optional<QString> ContentServerWorker::Proxy::Source::endRecFile(
 
     recFile->close();
 
-    const auto title =
+    auto title =
         hasMeta()
             ? ContentServer::streamTitleFromShoutcastMetadata(proxy.metadata)
             : proxy.title;
@@ -2233,11 +2236,12 @@ std::optional<QString> ContentServerWorker::Proxy::Source::endRecFile(
         return std::nullopt;
     }
 
-    const auto mime =
-        reply->header(QNetworkRequest::ContentTypeHeader).toString();
-    const auto tmpFile = QString{"%1.tmp.%2"}.arg(
-        recFile->fileName(),
-        ContentServer::getExtensionFromAudioContentType(mime));
+    auto tmpFile =
+        QStringLiteral("%1.tmp.%2")
+            .arg(recFile->fileName(),
+                 ContentServer::getExtensionFromAudioContentType(
+                     reply->header(QNetworkRequest::ContentTypeHeader)
+                         .toString()));
 
     if (!recFile->copy(tmpFile)) {
         qWarning() << "Cannot copy file:" << recFile->fileName() << tmpFile;
@@ -2247,21 +2251,22 @@ std::optional<QString> ContentServerWorker::Proxy::Source::endRecFile(
 
     recFile->remove();
 
-    const auto url = proxy.origUrl.isEmpty()
-                         ? Utils::urlFromId(proxy.id).toString()
-                         : proxy.origUrl.toString();
+    auto url = proxy.origUrl.isEmpty() ? Utils::urlFromId(proxy.id).toString()
+                                       : proxy.origUrl.toString();
 
-    ContentServer::writeMetaUsingTaglib(
-        tmpFile,                                   // path
-        title,                                     // title
-        metaint > 0 ? proxy.title : proxy.author,  // author
-        ContentServer::recAlbumName,               // album
-        {},                                        // comment
-        url,                                       // URL
-        QDateTime::currentDateTime(),              // time of recording
-        proxy.artPath);
+    if (!ContentServer::writeMetaUsingTaglib(
+            tmpFile,                                   // path
+            title,                                     // title
+            metaint > 0 ? proxy.title : proxy.author,  // author
+            ContentServer::recAlbumName,               // album
+            {},                                        // comment
+            url,                                       // URL
+            QDateTime::currentDateTime(),              // time of recording
+            proxy.artPath)) {
+        qWarning() << "cannot write meta using taglib";
+    };
 
-    return tmpFile;
+    return std::make_optional(std::move(tmpFile));
 }
 
 std::optional<std::pair<QString, QString>>
@@ -2275,7 +2280,7 @@ ContentServerWorker::Proxy::Source::saveRecFile(const Proxy &proxy) {
         return std::nullopt;
     }
 
-    const auto title =
+    auto title =
         hasMeta()
             ? ContentServer::streamTitleFromShoutcastMetadata(proxy.metadata)
             : proxy.title;
@@ -2293,13 +2298,13 @@ ContentServerWorker::Proxy::Source::saveRecFile(const Proxy &proxy) {
         return std::nullopt;
     }
 
-    const auto mime =
-        reply->header(QNetworkRequest::ContentTypeHeader).toString();
-    const auto recFilePath = QDir{Settings::instance()->getRecDir()}.filePath(
-        QString{"%1.%2.%3.%4"}.arg(
-            Utils::escapeName(title), Utils::instance()->randString(),
-            "jupii_rec",
-            ContentServer::getExtensionFromAudioContentType(mime)));
+    auto recFilePath = QDir{Settings::instance()->getRecDir()}.filePath(
+        QStringLiteral("%1.%2.%3.%4")
+            .arg(Utils::escapeName(title), Utils::instance()->randString(),
+                 "jupii_rec",
+                 ContentServer::getExtensionFromAudioContentType(
+                     reply->header(QNetworkRequest::ContentTypeHeader)
+                         .toString())));
 
     if (!recFile->copy(recFilePath)) {
         qWarning() << "Cannot copy file:" << recFile->fileName() << recFilePath;
@@ -2309,19 +2314,20 @@ ContentServerWorker::Proxy::Source::saveRecFile(const Proxy &proxy) {
 
     recFile->remove();
 
-    const auto url = proxy.origUrl.isEmpty()
-                         ? Utils::urlFromId(proxy.id).toString()
-                         : proxy.origUrl.toString();
+    auto url = proxy.origUrl.isEmpty() ? Utils::urlFromId(proxy.id).toString()
+                                       : proxy.origUrl.toString();
 
-    ContentServer::writeMetaUsingTaglib(
-        recFilePath,                               // path
-        title,                                     // title
-        metaint > 0 ? proxy.title : proxy.author,  // author
-        ContentServer::recAlbumName,               // album
-        {},                                        // comment
-        url,                                       // URL
-        QDateTime::currentDateTime(),              // time of recording
-        proxy.artPath);
+    if (!ContentServer::writeMetaUsingTaglib(
+            recFilePath,                               // path
+            title,                                     // title
+            metaint > 0 ? proxy.title : proxy.author,  // author
+            ContentServer::recAlbumName,               // album
+            {},                                        // comment
+            url,                                       // URL
+            QDateTime::currentDateTime(),              // time of recording
+            proxy.artPath)) {
+        qWarning() << "cannot write meta using taglib";
+    };
 
     return std::pair{title, recFilePath};
 }

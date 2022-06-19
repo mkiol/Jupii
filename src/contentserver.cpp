@@ -57,6 +57,7 @@ extern "C" {
 #include "id3v2frame.h"
 #include "id3v2tag.h"
 #include "mp4file.h"
+#include "mp4item.h"
 #include "mp4properties.h"
 #include "mp4tag.h"
 #include "mpegfile.h"
@@ -189,6 +190,7 @@ const QString ContentServer::recUrlTagName = QStringLiteral("Recording URL");
 const QString ContentServer::recUrlTagName2 = QStringLiteral("Station URL");
 const QString ContentServer::recAlbumName =
     QStringLiteral("Recordings by Jupii");
+const char *const ContentServer::recMp4TagPrefix = "----:org.mkiol.jupii:";
 
 ContentServer::ItemMeta::ItemMeta()
     : flags(static_cast<int>(MetaFlag::Unknown) |
@@ -513,7 +515,7 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
     auto didlId = Utils::hash(id);
     m_metaIdx[didlId] = id;
 
-    QTextStream m(&meta);
+    QTextStream m{&meta};
     m << "<item id=\"" << didlId << "\" parentID=\"0\" restricted=\"1\">";
 
     switch (item->type) {
@@ -527,7 +529,7 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
             if (!icon.isEmpty() || !item->albumArt.isEmpty()) {
                 auto artUrl = QFileInfo::exists(item->albumArt)
                                   ? QUrl::fromLocalFile(item->albumArt)
-                                  : QUrl(item->albumArt);
+                                  : QUrl{item->albumArt};
                 auto id =
                     Utils::idFromUrl(icon.isEmpty() ? artUrl : icon, artCookie);
                 if (makeUrl(id, artUrl))
@@ -919,13 +921,10 @@ bool ContentServer::extractAudio(const QString &path,
                         ic->streams[aidx]->side_data[i].size);
         qDebug() << "data:" << data;
     }
-    // --
-
     qDebug() << "Audio codec:";
     qDebug() << "codec_id:" << ic->streams[aidx]->codecpar->codec_id;
     qDebug() << "codec_channels:" << ic->streams[aidx]->codecpar->channels;
     qDebug() << "codec_tag:" << ic->streams[aidx]->codecpar->codec_tag;
-    // --
 #endif
 
     if (!fillAvDataFromCodec(ic->streams[aidx]->codecpar, path, data)) {
@@ -1031,15 +1030,6 @@ bool ContentServer::extractAudio(const QString &path,
 
     if (oc->oformat->flags & AVFMT_GLOBALHEADER)
         ast->codec->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-
-    /*qDebug() << "ast->codec->sample_fmt:" << ast->codec->sample_fmt;
-    qDebug() << "ast->codec->bit_rate:" << ast->codec->bit_rate;
-    qDebug() << "ast->codec->sample_rate:" << ast->codec->sample_rate;
-    qDebug() << "ast->codec->channels:" << ast->codec->channels;
-    qDebug() << "ast->codecpar->codec_tag:" << ast->codecpar->codec_tag;
-    qDebug() << "ic->streams[aidx]->codecpar->codec_id:" <<
-    ic->streams[aidx]->codecpar->codec_id; qDebug() <<
-    "ast->codecpar->codec_id:" << ast->codecpar->codec_id;*/
 
     qDebug() << "Extracted audio file:" << data.path;
 
@@ -1270,9 +1260,10 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url) {
 
             // Recording meta
             if (meta.album == recAlbumName) {
-                if (!readMetaUsingTaglib(path, meta.title, meta.artist,
-                                         meta.album, meta.comment, meta.recUrl,
-                                         meta.recDate, meta.albumArt)) {
+                if (!readMetaUsingTaglib(path, &meta.title, &meta.artist,
+                                         &meta.album, &meta.comment,
+                                         &meta.recUrl, &meta.recDate,
+                                         &meta.albumArt)) {
                     qWarning() << "Cannot read meta with TagLib";
                 }
             }
@@ -1297,207 +1288,402 @@ QString ContentServer::readTitleUsingTaglib(const QString &path) {
     return {};
 }
 
-bool ContentServer::readMetaUsingTaglib(const QString &path, QString &title,
-                                        QString &artist, QString &album,
-                                        QString &comment, QString &recUrl,
-                                        QDateTime &recDate, QString &artPath,
-                                        int *duration, double *bitrate,
-                                        double *sampleRate, int *channels) {
-    bool readAudioProperties = duration || bitrate || sampleRate || channels;
+inline static auto wStr2qStr(const TagLib::String &str) {
+    return QString::fromWCharArray(str.toCWString());
+};
 
-    TagLib::FileRef f(path.toUtf8().constData(), readAudioProperties);
-    if (!f.isNull()) {
-        auto *tag = f.tag();
-        if (tag) {
-            title = QString::fromWCharArray(tag->title().toCWString());
-            artist = QString::fromWCharArray(tag->artist().toCWString());
-            album = QString::fromWCharArray(tag->album().toCWString());
-            comment = QString::fromWCharArray(tag->comment().toCWString());
+bool ContentServer::readMP4MetaUsingTaglib(const TagLib::FileRef &file,
+                                           QString *recUrl, QDateTime *recDate,
+                                           const QString &albumArtPrefix,
+                                           QString *artPath) {
+    using namespace TagLib;
 
-            if (album == ContentServer::recAlbumName) {  // Rec additional tags
-                auto tags = f.file()->properties();
-                auto it =
-                    tags.find(ContentServer::recDateTagName.toStdString());
-                if (it != tags.end())
-                    recDate = QDateTime::fromString(
-                        QString::fromWCharArray(
-                            it->second.toString().toCWString()),
-                        Qt::ISODate);
-                it = tags.find(ContentServer::recUrlTagName.toStdString());
-                if (it != tags.end()) {
-                    recUrl = QString::fromWCharArray(
-                        it->second.toString().toCWString());
-                } else {  // old rec url tag
-                    it = tags.find(ContentServer::recUrlTagName2.toStdString());
-                    if (it != tags.end()) {
-                        recUrl = QString::fromWCharArray(
-                            it->second.toString().toCWString());
-                    }
-                }
+    auto *mf = dynamic_cast<MP4::File *>(file.file());
+    if (!mf) return false;
+
+    auto *tag = mf->tag();
+    if (!tag) return false;
+
+#ifdef QT_DEBUG
+    qDebug() << "reading MP4 tag";
+#endif
+
+    if (recUrl || recDate) {
+        auto tags = file.file()->properties();
+        if (recDate) {
+            auto item = tag->item(recMp4TagPrefix +
+                                  ContentServer::recDateTagName.toStdString());
+            if (item.isValid()) {
+                *recDate = QDateTime::fromString(
+                    wStr2qStr(item.toStringList().toString()), Qt::ISODate);
             }
-
-            if (readAudioProperties) {
-                auto *prop = f.audioProperties();
-                if (prop) {
-                    if (duration) *duration = prop->length();
-                    if (bitrate) *bitrate = prop->bitrate();
-                    if (sampleRate) *sampleRate = prop->sampleRate();
-                    if (channels) *channels = prop->channels();
-                }
+        }
+        if (recUrl) {
+            auto item = tag->item(recMp4TagPrefix +
+                                  ContentServer::recUrlTagName.toStdString());
+            if (item.isValid()) {
+                *recUrl = wStr2qStr(item.toStringList().toString());
             }
-
-            const auto albumArt = QStringLiteral("%1/art_image_%2.")
-                                      .arg(Settings::instance()->getCacheDir(),
-                                           Utils::hash(path));
-            if (QFileInfo::exists(albumArt + "jpg")) {
-                artPath = albumArt + "jpg";
-            } else if (QFileInfo::exists(albumArt + "png")) {
-                artPath = albumArt + "png";
-            } else {
-                auto *mf = dynamic_cast<TagLib::MPEG::File *>(f.file());
-                if (mf) {
-                    auto *tag = mf->ID3v2Tag(true);
-                    auto fl = tag->frameList("APIC");
-
-                    if (!fl.isEmpty()) {
-                        auto *frame =
-                            dynamic_cast<TagLib::ID3v2::AttachedPictureFrame *>(
-                                fl.front());
-                        if (frame) {
-                            auto ext =
-                                m_imgMimeToExtMap.value(QString::fromStdString(
-                                    frame->mimeType().to8Bit()));
-                            if (!ext.isEmpty()) {
-                                if (Utils::writeToFile(
-                                        albumArt + ext,
-                                        QByteArray::fromRawData(
-                                            frame->picture().data(),
-                                            static_cast<int>(
-                                                frame->picture().size())))) {
-                                    artPath = albumArt + ext;
-                                } else {
-                                    qWarning() << "Cannot write art file:"
-                                               << (albumArt + ext);
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    qWarning() << "Cannot extract art because file is not MPEG";
-                }
-            }
-
-            /*qDebug() << "-- TAG (properties) --";
-            for(TagLib::PropertyMap::ConstIterator it = tags.begin(); it !=
-            tags.end(); ++it) { qDebug() <<
-            QString::fromWCharArray(it->first.toCWString());
-            }*/
-
-            return true;
         }
     }
 
-    return false;
+    if (artPath && !albumArtPrefix.isEmpty()) {
+        auto item = tag->item("covr");
+        if (item.isValid()) {
+            auto covers = item.toCoverArtList();
+            if (!covers.isEmpty()) {
+                const auto &cover = covers.front();
+                auto path = [&albumArtPrefix](MP4::CoverArt::Format format) {
+                    switch (format) {
+                        case MP4::CoverArt::Format::PNG:
+                            return albumArtPrefix + "png";
+                        case MP4::CoverArt::Format::JPEG:
+                            return albumArtPrefix + "jpg";
+                        case MP4::CoverArt::Format::GIF:
+                            return albumArtPrefix + "gif";
+                        case MP4::CoverArt::Format::BMP:
+                            return albumArtPrefix + "bmp";
+                        case MP4::CoverArt::Format::Unknown:
+                            return QString{};
+                    }
+                }(cover.format());
+
+                if (!path.isEmpty()) {
+                    if (Utils::writeToFile(
+                            path,
+                            QByteArray::fromRawData(
+                                cover.data().data(),
+                                static_cast<const int>(cover.data().size())))) {
+                        *artPath = path;
+                    } else {
+                        qWarning() << "cannot write art file:" << path;
+                    }
+                } else {
+                    qWarning()
+                        << "cannot read art file, unknown format:" << path;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool ContentServer::readID3MetaUsingTaglib(const TagLib::FileRef &file,
+                                           QString *recUrl, QDateTime *recDate,
+                                           const QString &albumArtPrefix,
+                                           QString *artPath) {
+    using namespace TagLib;
+
+    auto *mf = dynamic_cast<MPEG::File *>(file.file());
+    if (!mf) return false;
+
+#ifdef QT_DEBUG
+    qDebug() << "reading ID3 tag";
+#endif
+
+    if (recUrl || recDate) {
+        auto tags = mf->properties();
+        if (recDate) {
+            auto it = tags.find(ContentServer::recDateTagName.toStdString());
+            if (it != tags.end())
+                *recDate = QDateTime::fromString(
+                    wStr2qStr(it->second.toString()), Qt::ISODate);
+        }
+        if (recUrl) {
+            auto it = tags.find(ContentServer::recUrlTagName.toStdString());
+            if (it != tags.end()) {
+                *recUrl = wStr2qStr(it->second.toString());
+            } else {  // old rec url tag
+                it = tags.find(ContentServer::recUrlTagName2.toStdString());
+                if (it != tags.end()) {
+                    *recUrl = wStr2qStr(it->second.toString());
+                }
+            }
+        }
+    }
+
+    if (artPath && !albumArtPrefix.isEmpty()) {
+        auto *tag = mf->ID3v2Tag(true);
+        auto fl = tag->frameList("APIC");
+
+        if (!fl.isEmpty()) {
+            auto *frame =
+                dynamic_cast<ID3v2::AttachedPictureFrame *>(fl.front());
+            if (frame) {
+                auto ext = m_imgMimeToExtMap.value(
+                    QString::fromStdString(frame->mimeType().to8Bit()));
+                if (!ext.isEmpty()) {
+                    if (auto path = albumArtPrefix + ext; Utils::writeToFile(
+                            path,
+                            QByteArray::fromRawData(
+                                frame->picture().data(),
+                                static_cast<int>(frame->picture().size())))) {
+                        *artPath = path;
+                    } else {
+                        qWarning() << "cannot write art file:" << path;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool ContentServer::readMetaUsingTaglib(const QString &path, QString *title,
+                                        QString *artist, QString *album,
+                                        QString *comment, QString *recUrl,
+                                        QDateTime *recDate, QString *artPath,
+                                        int *duration, double *bitrate,
+                                        double *sampleRate, int *channels) {
+    using namespace TagLib;
+
+    bool readAudioProperties = duration || bitrate || sampleRate || channels;
+
+    FileRef file{path.toUtf8().constData(), readAudioProperties};
+
+    if (file.isNull()) {
+        qWarning() << "cannot read meta from file:" << path;
+        return false;
+    }
+
+    auto *tag = file.tag();
+    if (!tag) {
+        qWarning() << "cannot read tag from file:" << path;
+        return false;
+    }
+
+    if (title) *title = wStr2qStr(tag->title());
+    if (artist) *artist = wStr2qStr(tag->artist());
+    if (album) *album = wStr2qStr(tag->album());
+    if (comment) *comment = wStr2qStr(tag->comment());
+
+    if (readAudioProperties) {
+        auto *prop = file.audioProperties();
+        if (prop) {
+            if (duration) *duration = prop->length();
+            if (bitrate) *bitrate = prop->bitrate();
+            if (sampleRate) *sampleRate = prop->sampleRate();
+            if (channels) *channels = prop->channels();
+        }
+    }
+
+    auto albumArtPrefix =
+        QStringLiteral("%1/art_image_%2.")
+            .arg(Settings::instance()->getCacheDir(), Utils::hash(path));
+    if (artPath) {
+        if (QFileInfo::exists(albumArtPrefix + "jpg")) {
+            *artPath = albumArtPrefix + "jpg";
+        } else if (QFileInfo::exists(albumArtPrefix + "png")) {
+            *artPath = albumArtPrefix + "png";
+        } else if (QFileInfo::exists(albumArtPrefix + "bmp")) {
+            *artPath = albumArtPrefix + "bmp";
+        }
+    }
+
+    if (!readID3MetaUsingTaglib(
+            file, recUrl, recDate, albumArtPrefix,
+            artPath && artPath->isEmpty() ? artPath : nullptr)) {
+        readMP4MetaUsingTaglib(
+            file, recUrl, recDate, albumArtPrefix,
+            artPath && artPath->isEmpty() ? artPath : nullptr);
+    }
+
+    return true;
+}
+
+bool ContentServer::writeID3MetaUsingTaglib(
+    TagLib::FileRef &file, const QString &title, const QString &artist,
+    const QString &album, const QString &comment, const QString &recUrl,
+    const QDateTime &recDate, const QString &artPath) {
+    auto *mf = dynamic_cast<TagLib::MPEG::File *>(file.file());
+    if (!mf) return false;
+
+    mf->strip();  // remove old tags
+    mf->save();
+
+    auto *tag = mf->ID3v2Tag(true);
+
+    qDebug() << "writing ID3 tag";
+
+    if (!title.isEmpty()) tag->setTitle(title.toStdWString());
+    if (!artist.isEmpty()) tag->setArtist(artist.toStdWString());
+    if (!album.isEmpty()) tag->setAlbum(album.toStdWString());
+    if (!comment.isEmpty()) tag->setComment(comment.toStdWString());
+
+    // Rec additional tags
+    if (!recUrl.isEmpty()) {
+        auto *frame = TagLib::ID3v2::Frame::createTextualFrame(
+            ContentServer::recUrlTagName.toStdString(), {recUrl.toStdString()});
+        tag->addFrame(frame);
+    }
+    if (!recDate.isNull()) {
+        auto *frame = TagLib::ID3v2::Frame::createTextualFrame(
+            ContentServer::recDateTagName.toStdString(),
+            {recDate.toString(Qt::ISODate).toStdString()});
+        tag->addFrame(frame);
+    }
+
+    if (!artPath.isEmpty() && artPath.contains('.')) {
+        if (auto mime = m_imgExtMap.value(artPath.split('.').last());
+            !mime.isEmpty()) {
+            if (QFile art{artPath}; art.open(QIODevice::ReadOnly)) {
+                if (auto bytes = art.readAll(); !bytes.isEmpty()) {
+                    auto *apf = new TagLib::ID3v2::AttachedPictureFrame();
+                    apf->setPicture(TagLib::ByteVector(bytes.constData(),
+                                                       uint32_t(bytes.size())));
+                    apf->setType(
+                        TagLib::ID3v2::AttachedPictureFrame::FrontCover);
+                    apf->setMimeType(mime.toStdString());
+                    apf->setDescription("Cover");
+                    tag->addFrame(apf);
+                }
+            } else {
+                qWarning() << "cannot open:" << artPath;
+            }
+        }
+    }
+
+    mf->save(TagLib::MPEG::File::ID3v2);
+
+    return true;
+}
+
+bool ContentServer::writeMP4MetaUsingTaglib(
+    TagLib::FileRef &file, const QString &title, const QString &artist,
+    const QString &album, const QString &comment, const QString &recUrl,
+    const QDateTime &recDate, const QString &artPath) {
+    using namespace TagLib;
+
+    auto *mf = dynamic_cast<MP4::File *>(file.file());
+    if (!mf) return false;
+
+    auto *tag = mf->tag();
+    if (!tag) return false;
+
+    qDebug() << "writing MP4 tag";
+
+    if (!title.isEmpty()) tag->setTitle(title.toStdWString());
+    if (!artist.isEmpty()) tag->setArtist(artist.toStdWString());
+    if (!album.isEmpty()) tag->setAlbum(album.toStdWString());
+    if (!comment.isEmpty()) tag->setComment(comment.toStdWString());
+
+    // Rec additional tags
+    if (!recUrl.isEmpty()) {
+        tag->setItem(
+            recMp4TagPrefix + ContentServer::recUrlTagName.toStdString(),
+            {String{recUrl.toStdString(), String::Type::UTF8}});
+    }
+    if (!recDate.isNull()) {
+        tag->setItem(
+            recMp4TagPrefix + ContentServer::recDateTagName.toStdString(),
+            {String{recDate.toString(Qt::ISODate).toStdString(),
+                    String::Type::UTF8}});
+    }
+
+    if (!artPath.isEmpty() && artPath.contains('.')) {
+        auto mapPathToFormat = [](const QString &path) {
+            auto ext = path.split('.').last();
+            if (ext.compare(QStringLiteral("png"), Qt::CaseInsensitive) == 0)
+                return MP4::CoverArt::Format::PNG;
+            if (ext.compare(QStringLiteral("jpg"), Qt::CaseInsensitive) == 0 ||
+                ext.compare(QStringLiteral("jpeg"), Qt::CaseInsensitive))
+                return MP4::CoverArt::Format::JPEG;
+            if (ext.compare(QStringLiteral("gif"), Qt::CaseInsensitive) == 0)
+                return MP4::CoverArt::Format::GIF;
+            if (ext.compare(QStringLiteral("bmp"), Qt::CaseInsensitive) == 0)
+                return MP4::CoverArt::Format::BMP;
+            return MP4::CoverArt::Format::Unknown;
+        };
+
+        if (QFile art{artPath}; art.open(QIODevice::ReadOnly)) {
+            auto bytes = art.readAll();
+            if (!bytes.isEmpty()) {
+                List<MP4::CoverArt> covers{};
+                covers.append({mapPathToFormat(artPath),
+                               {bytes.constData(),
+                                static_cast<unsigned int>(bytes.size())}});
+                tag->setItem("covr", {covers});
+            }
+        } else {
+            qWarning() << "cannot open:" << artPath;
+        }
+    }
+
+    mf->save();
+
+    return true;
+}
+
+bool ContentServer::writeGenericMetaUsingTaglib(
+    TagLib::FileRef &file, const QString &title, const QString &artist,
+    const QString &album, const QString &comment, const QString &recUrl,
+    const QDateTime &recDate) {
+    auto *tag = file.tag();
+
+    if (!tag) return false;
+
+    qDebug() << "writing generic tag";
+
+    if (!title.isEmpty()) tag->setTitle(title.toStdWString());
+    if (!artist.isEmpty()) tag->setArtist(artist.toStdWString());
+    if (!album.isEmpty()) tag->setAlbum(album.toStdWString());
+    if (!comment.isEmpty()) tag->setComment(comment.toStdWString());
+
+    if (!recUrl.isEmpty() || !recDate.isNull()) {  // Rec additional tags
+        auto *f = file.file();
+        auto tags = f->properties();
+
+        if (!recUrl.isEmpty()) {
+            auto url_key = ContentServer::recUrlTagName.toStdString();
+            auto url_val = TagLib::StringList(recUrl.toStdString());
+            auto it = tags.find(url_key);
+            if (it != tags.end())
+                it->second = url_val;
+            else
+                tags.insert(url_key, url_val);
+        }
+        if (!recDate.isNull()) {
+            auto date_key = ContentServer::recDateTagName.toStdString();
+            auto date_val =
+                TagLib::StringList(recDate.toString(Qt::ISODate).toStdString());
+            auto it = tags.find(date_key);
+            if (it != tags.end())
+                it->second = date_val;
+            else
+                tags.insert(date_key, date_val);
+        }
+
+        f->setProperties(tags);
+    }
+
+    file.save();
+
+    return true;
 }
 
 bool ContentServer::writeMetaUsingTaglib(
     const QString &path, const QString &title, const QString &artist,
     const QString &album, const QString &comment, const QString &recUrl,
     const QDateTime &recDate, const QString &artPath) {
-    TagLib::FileRef f(path.toUtf8().constData(), false);
-    if (!f.isNull()) {
-        auto *mf = dynamic_cast<TagLib::MPEG::File *>(f.file());
-        if (mf) {
-            // qDebug() << "MPEG tag";
-            mf->strip();  // remove old tags
-            mf->save();
+    TagLib::FileRef file(path.toUtf8().constData(), false);
 
-            auto *tag = mf->ID3v2Tag(true);
+    if (file.isNull()) return false;
 
-            if (!title.isEmpty()) tag->setTitle(title.toStdWString());
-            if (!artist.isEmpty()) tag->setArtist(artist.toStdWString());
-            if (!album.isEmpty()) tag->setAlbum(album.toStdWString());
-            if (!comment.isEmpty()) tag->setComment(comment.toStdWString());
+    if (writeID3MetaUsingTaglib(file, title, artist, album, comment, recUrl,
+                                recDate, artPath)) {
+        return true;
+    }
 
-            // Rec additional tags
-            if (!recUrl.isEmpty()) {
-                auto *frame = TagLib::ID3v2::Frame::createTextualFrame(
-                    ContentServer::recUrlTagName.toStdString(),
-                    {recUrl.toStdString()});
-                tag->addFrame(frame);
-            }
-            if (!recDate.isNull()) {
-                auto *frame = TagLib::ID3v2::Frame::createTextualFrame(
-                    ContentServer::recDateTagName.toStdString(),
-                    {recDate.toString(Qt::ISODate).toStdString()});
-                tag->addFrame(frame);
-            }
+    if (writeMP4MetaUsingTaglib(file, title, artist, album, comment, recUrl,
+                                recDate, artPath)) {
+        return true;
+    }
 
-            if (!artPath.isEmpty()) {
-                auto mime = m_imgExtMap.value(artPath.split('.').last());
-                if (!mime.isEmpty()) {
-                    QFile art(artPath);
-                    if (art.open(QIODevice::ReadOnly)) {
-                        auto bytes = art.readAll();
-                        art.close();
-                        if (!bytes.isEmpty()) {
-                            auto *apf =
-                                new TagLib::ID3v2::AttachedPictureFrame();
-                            apf->setPicture(TagLib::ByteVector(
-                                bytes.constData(), uint32_t(bytes.size())));
-                            apf->setType(TagLib::ID3v2::AttachedPictureFrame::
-                                             FrontCover);
-                            apf->setMimeType(mime.toStdString());
-                            apf->setDescription("Cover");
-                            tag->addFrame(apf);
-                        }
-                    }
-                }
-            }
-
-            mf->save(TagLib::MPEG::File::ID3v2);
-            return true;
-        }
-
-        auto *tag = f.tag();
-        if (tag) {
-            // qDebug() << "Generic tag";
-            if (!title.isEmpty()) tag->setTitle(title.toStdWString());
-            if (!artist.isEmpty()) tag->setArtist(artist.toStdWString());
-            if (!album.isEmpty()) tag->setAlbum(album.toStdWString());
-            if (!comment.isEmpty()) tag->setComment(comment.toStdWString());
-
-            if (!recUrl.isEmpty() ||
-                !recDate.isNull()) {  // Rec additional tags
-                auto *file = f.file();
-                auto tags = file->properties();
-
-                if (!recUrl.isEmpty()) {
-                    auto url_key = ContentServer::recUrlTagName.toStdString();
-                    auto url_val = TagLib::StringList(recUrl.toStdString());
-                    auto it = tags.find(url_key);
-                    if (it != tags.end())
-                        it->second = url_val;
-                    else
-                        tags.insert(url_key, url_val);
-                }
-                if (!recDate.isNull()) {
-                    auto date_key = ContentServer::recDateTagName.toStdString();
-                    auto date_val = TagLib::StringList(
-                        recDate.toString(Qt::ISODate).toStdString());
-                    auto it = tags.find(date_key);
-                    if (it != tags.end())
-                        it->second = date_val;
-                    else
-                        tags.insert(date_key, date_val);
-                }
-
-                file->setProperties(tags);
-            }
-
-            f.save();
-            return true;
-        }
+    if (writeGenericMetaUsingTaglib(file, title, artist, album, comment, recUrl,
+                                    recDate)) {
+        return true;
     }
 
     return false;
@@ -1570,10 +1756,11 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url) {
     } else {
         meta.setFlags(MetaFlag::Seek);
 
-        if (!readMetaUsingTaglib(meta.path, meta.title, meta.artist, meta.album,
-                                 meta.comment, meta.recUrl, meta.recDate,
-                                 meta.albumArt, &meta.duration, &meta.bitrate,
-                                 &meta.sampleRate, &meta.channels)) {
+        if (!readMetaUsingTaglib(meta.path, &meta.title, &meta.artist,
+                                 &meta.album, &meta.comment, &meta.recUrl,
+                                 &meta.recDate, &meta.albumArt, &meta.duration,
+                                 &meta.bitrate, &meta.sampleRate,
+                                 &meta.channels)) {
             qWarning() << "Cannot read meta with TagLib";
         }
 

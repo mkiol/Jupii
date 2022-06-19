@@ -36,6 +36,10 @@ namespace UPnPClient {
 class UPnPDirObject;
 }
 
+namespace TagLib {
+class FileRef;
+}
+
 class ContentServerWorker;
 
 class ContentServer : public QThread, public Singleton<ContentServer> {
@@ -146,6 +150,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static const QString recUrlTagName;
     static const QString recUrlTagName2;
     static const QString recAlbumName;
+    static const char *const recMp4TagPrefix;
 
     static Type typeFromMime(const QString &mime);
     static QString extFromMime(const QString &mime);
@@ -156,6 +161,18 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static PlaylistType playlistTypeFromMime(const QString &mime);
     static PlaylistType playlistTypeFromExtension(const QString &path);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
+    static bool writeID3MetaUsingTaglib(
+        TagLib::FileRef &file, const QString &title, const QString &artist,
+        const QString &album, const QString &comment, const QString &recUrl,
+        const QDateTime &recDate, const QString &artPath);
+    static bool writeMP4MetaUsingTaglib(
+        TagLib::FileRef &file, const QString &title, const QString &artist,
+        const QString &album, const QString &comment, const QString &recUrl,
+        const QDateTime &recDate, const QString &artPath);
+    static bool writeGenericMetaUsingTaglib(
+        TagLib::FileRef &file, const QString &title, const QString &artist,
+        const QString &album, const QString &comment, const QString &recUrl,
+        const QDateTime &recDate);
     static bool writeMetaUsingTaglib(const QString &path, const QString &title,
                                      const QString &artist = {},
                                      const QString &album = {},
@@ -163,9 +180,17 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
                                      const QString &recUrl = {},
                                      const QDateTime &recDate = {},
                                      const QString &artPath = {});
+    static bool readID3MetaUsingTaglib(const TagLib::FileRef &file,
+                                       QString *recUrl, QDateTime *recDate,
+                                       const QString &albumArtPrefix,
+                                       QString *artPath);
+    static bool readMP4MetaUsingTaglib(const TagLib::FileRef &file,
+                                       QString *recUrl, QDateTime *recDate,
+                                       const QString &albumArtPrefix,
+                                       QString *artPath);
     static bool readMetaUsingTaglib(
-        const QString &path, QString &title, QString &artist, QString &album,
-        QString &comment, QString &recUrl, QDateTime &recDate, QString &artPath,
+        const QString &path, QString *title, QString *artist, QString *album,
+        QString *comment, QString *recUrl, QDateTime *recDate, QString *artPath,
         int *duration = nullptr, double *bitrate = nullptr,
         double *sampleRate = nullptr, int *channels = nullptr);
     static QString minResUrl(const UPnPClient::UPnPDirObject &item);
