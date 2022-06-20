@@ -6,7 +6,7 @@ Exec=harbour-jupii
 Name=Jupii
 
 [X-Sailjail]
-Permissions=Internet;Audio;Microphone;RemovableMedia;UserDirs;MediaIndexing
+Permissions=Internet;Audio;Microphone;RemovableMedia;UserDirs;MediaIndexing;JupiiGpodder
 OrganizationName=org.mkiol
 ApplicationName=jupii
 ExecDBus=harbour-jupii

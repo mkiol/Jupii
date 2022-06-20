@@ -90,6 +90,14 @@ images.files = images/*
 images.path = /usr/share/$${TARGET}/images
 INSTALLS += images
 
+############
+# sailjail #
+############
+
+sailjail.files = sailjail/*
+sailjail.path = /etc/sailjail/permissions
+INSTALLS += sailjail
+
 DEPENDPATH += $$INCLUDEPATH
 
 PKGCONFIG += \

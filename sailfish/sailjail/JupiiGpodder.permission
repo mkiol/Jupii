@@ -1,0 +1,9 @@
+# -*- mode: sh -*-
+
+# x-sailjail-translation-catalog = sailjail-permissions
+# x-sailjail-translation-key-description = permission-la-gpodder
+# x-sailjail-description = gPodder
+# x-sailjail-translation-key-long-description = permission-la-gpodder_description
+# x-sailjail-long-description = Access to gPodder files
+
+whitelist   ${HOME}/.local/share/harbour-org.gpodder.sailfish
