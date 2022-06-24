@@ -50,7 +50,8 @@ SOURCES += \
     src/resourcehandler.cpp
 
 OTHER_FILES += \
-    translations/*.ts \
+    sailjail/*.permissions \
+    ../translations/*.ts \
     qml/*.qml \
     rpm/*.spec \
     *.desktop

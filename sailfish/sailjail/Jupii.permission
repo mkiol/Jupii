@@ -1,0 +1,10 @@
+# -*- mode: sh -*-
+
+# x-sailjail-translation-catalog = sailjail-permissions
+# x-sailjail-translation-key-description = permission-la-jupii
+# x-sailjail-description = Jupii
+# x-sailjail-translation-key-long-description = permission-la-jupii_description
+# x-sailjail-long-description = Start and control Jupii application
+
+dbus-user.talk org.mkiol.jupii
+dbus-user.broadcast org.mkiol.jupii=*@/*
