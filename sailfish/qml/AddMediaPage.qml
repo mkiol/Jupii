@@ -148,7 +148,7 @@ Page {
             }
 
             SimpleListItem {
-                title.text: qsTr("Audio from Video")
+                title.text: qsTr("Audio from video")
                 icon.source: "image://theme/icon-m-file-audio?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {

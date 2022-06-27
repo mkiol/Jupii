@@ -32,13 +32,18 @@ Kirigami.ScrollablePage {
 
     FileDialog {
         id: fileDialog
+        property bool asAudio: false
         title: qsTr("Choose a file")
         selectMultiple: true
         selectFolder: false
         selectExisting: true
         folder: shortcuts.music
         onAccepted: {
-            playlist.addItemFileUrls(fileDialog.fileUrls)
+            if (asAudio) {
+                playlist.addItemFileUrlsAsAudio(fileDialog.fileUrls)
+            } else {
+                playlist.addItemFileUrls(fileDialog.fileUrls)
+            }
             pageStack.flickBack()
         }
     }
@@ -73,6 +78,18 @@ Kirigami.ScrollablePage {
             icon: "folder-open"
             highlighted: fileDialog.visible
             onClicked: {
+                fileDialog.asAudio = false
+                fileDialog.open()
+            }
+        }
+
+        Kirigami.BasicListItem {
+            Layout.fillWidth: true
+            label: qsTr("Audio from video file")
+            icon: "folder-open"
+            highlighted: fileDialog.visible
+            onClicked: {
+                fileDialog.asAudio = true
                 fileDialog.open()
             }
         }
