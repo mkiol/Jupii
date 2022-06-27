@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2019-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,49 +8,48 @@
 #ifndef SCREENCASTER_H
 #define SCREENCASTER_H
 
-#include <QObject>
 #include <QByteArray>
-#include <QTimer>
-#include <QImage>
 #include <QEvent>
+#include <QImage>
+#include <QObject>
 #include <QSize>
+#include <QTimer>
 #include <memory>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
+#include <libswscale/swscale.h>
 }
 
 #ifdef SAILFISH
 #include "recorder.h"
 #endif
 
-class ScreenCaster : public QObject
-{
+class ScreenCaster : public QObject {
     Q_OBJECT
-public:
-    ScreenCaster(QObject *parent = nullptr);
+   public:
+    ScreenCaster(QObject* parent = nullptr);
     ~ScreenCaster();
     bool init();
     void start();
-    bool audioEnabled();
+    bool audioEnabled() const;
     void writeAudioData(const QByteArray& data);
 
-signals:
+   signals:
 #ifdef DESKTOP
     void readNextVideoData();
 #endif
     void error();
 
-private slots:
+   private slots:
     void writeVideoData();
 #ifdef SAILFISH
     void repaint();
 #endif
 
-private:
+   private:
     enum Encoder {
         ENC_UNKNOWN,
         ENC_H264_X264,
@@ -67,11 +66,11 @@ private:
     int currImgTransform = 0;
     int64_t currImgTimestamp = 0;
     QImage makeCurrImg();
-    bool event(QEvent *e);
+    bool event(QEvent* e);
 #endif
     bool havePrevVideoPkt = false;
-    AVPacket video_out_pkt;
-    AVPacket audio_out_pkt;
+    AVPacket* video_out_pkt = nullptr;
+    AVPacket* audio_out_pkt = nullptr;
     AVFormatContext* in_video_format_ctx = nullptr;
     AVCodecContext* in_video_codec_ctx = nullptr;
     AVCodecContext* out_video_codec_ctx = nullptr;
@@ -80,7 +79,7 @@ private:
     AVFrame* in_frame_s = nullptr;
     SwsContext* video_sws_ctx = nullptr;
     uint8_t* video_outbuf = nullptr;
-    uint64_t audio_frame_size = 0; // 0 => audio disabled for screen casting
+    uint64_t audio_frame_size = 0;  // 0 => audio disabled for screen casting
     int video_framerate = 0;
     QSize video_size;
     int xoff;
@@ -99,16 +98,15 @@ private:
     AVCodecContext* in_audio_codec_ctx = nullptr;
     AVCodecContext* out_audio_codec_ctx = nullptr;
     SwrContext* audio_swr_ctx = nullptr;
-    QByteArray audio_outbuf; // pulse audio data buf
+    QByteArray audio_outbuf;  // pulse audio data buf
     int skipped_frames_max = 0;
     int skipped_frames = 0;
     Encoder encoder;
 
-    //static int read_packet_callback(void *opaque, uint8_t *buf, int buf_size);
-    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
+    static int write_packet_callback(void* opaque, uint8_t* buf, int buf_size);
     void tuneQuality();
     void initVideoSize();
-    bool initVideoEncoder(const char *name);
+    bool initVideoEncoder(const char* name);
     bool initVideoEncoder();
     bool writeAudioData2();
     bool writeAudioData3();
@@ -119,7 +117,7 @@ private:
     bool initOutAudio();
     bool initScaler();
     bool scalingNeeded();
-    static void fixSize(QSize &size, int *xoff = nullptr, int *yoff = nullptr);
+    static void fixSize(QSize& size, int* xoff = nullptr, int* yoff = nullptr);
 };
 
-#endif // SCREENCASTER_H
+#endif  // SCREENCASTER_H

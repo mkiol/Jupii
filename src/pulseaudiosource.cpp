@@ -430,7 +430,7 @@ bool PulseAudioSource::blocked(const char* name)
 #else // SAILFISH
     if (!strncmp(name, "speech-dispatcher", 17)
 #ifdef QT_DEBUG
-        || !strcmp(name, "Kodi")
+        || !strcmp(name, "Kodi") || !strcmp(name, "KodiSink")
 #endif
     ) {
         return true;

@@ -16,21 +16,21 @@ sailfish {
     LIBS += -lbz2
     CONFIG(debug, debug|release) {
         LIBS += -L$${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX}-debug \
-                -l:libavutil.so.56 \
-                -l:libavcodec.so.58 \
-                -l:libavformat.so.58 \
-                -l:libavdevice.so.58 \
-                -l:libswresample.so.3 \
-                -l:libswscale.so.5
+                -l:libavutil.so.57 \
+                -l:libavcodec.so.59 \
+                -l:libavformat.so.59 \
+                -l:libavdevice.so.59 \
+                -l:libswresample.so.4 \
+                -l:libswscale.so.6
         libffmpeg.files = $${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX}-debug/*
     } else {
         LIBS += -L$${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX} \
-                -l:libavutil.so.56 \
-                -l:libavcodec.so.58 \
-                -l:libavformat.so.58 \
-                -l:libavdevice.so.58 \
-                -l:libswresample.so.3 \
-                -l:libswscale.so.5
+                -l:libavutil.so.57 \
+                -l:libavcodec.so.59 \
+                -l:libavformat.so.59 \
+                -l:libavdevice.so.59 \
+                -l:libswresample.so.4 \
+                -l:libswscale.so.6
         libffmpeg.files = $${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX}/*
     }
 

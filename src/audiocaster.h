@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2019-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,39 +8,38 @@
 #ifndef AUDIOCASTER_H
 #define AUDIOCASTER_H
 
-#include <QObject>
 #include <QByteArray>
+#include <QObject>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
+#include <libswscale/swscale.h>
 }
 
-class AudioCaster : public QObject
-{
+class AudioCaster : public QObject {
     Q_OBJECT
-public:
-    AudioCaster(QObject *parent = nullptr);
+   public:
+    AudioCaster(QObject* parent = nullptr);
     ~AudioCaster();
     bool init();
     void writeAudioData(const QByteArray& data);
 
-signals:
+   signals:
     void error();
 
-private:
-    AVPacket audio_out_pkt;
+   private:
+    AVPacket* audio_out_pkt = nullptr;
     AVCodecContext* out_video_codec_ctx = nullptr;
     AVFormatContext* out_format_ctx = nullptr;
     AVFrame* in_frame = nullptr;
-    static int write_packet_callback(void *opaque, uint8_t *buf, int buf_size);
+    static int write_packet_callback(void* opaque, uint8_t* buf, int buf_size);
     uint64_t audio_frame_size = 0;
     AVCodecContext* in_audio_codec_ctx = nullptr;
     AVCodecContext* out_audio_codec_ctx = nullptr;
     SwrContext* audio_swr_ctx = nullptr;
-    QByteArray audio_outbuf; // pulse audio data buf
+    QByteArray audio_outbuf;  // pulse audio data buf
     int64_t audio_pkt_time = 0;
     int64_t audio_pkt_duration = 0;
     bool writeAudioData2();
@@ -48,4 +47,4 @@ private:
     void errorHandler();
 };
 
-#endif // AUDIOCASTER_H
+#endif  // AUDIOCASTER_H

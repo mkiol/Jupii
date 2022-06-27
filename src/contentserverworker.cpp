@@ -12,6 +12,7 @@
 #include <QStandardPaths>
 
 #include "settings.h"
+#include "transcoder.h"
 #include "utils.h"
 
 const int ContentServerWorker::CacheLimit::INF_TIME = -1;
@@ -292,13 +293,13 @@ void ContentServerWorker::requestForFileHandler(
         }
         qDebug()
             << "Video content and type is audio => extracting audio stream";
-        ContentServer::AvData data;
-        if (!ContentServer::extractAudio(meta->path, data)) {
+        auto avData = Transcoder::extractAudio(meta->path);
+        if (!avData) {
             qWarning() << "Unable to extract audio stream";
             sendEmptyResponse(resp, 404);
             return;
         }
-        streamFile(data.path, data.mime, req, resp);
+        streamFile(avData->path, avData->mime, req, resp);
     } else {
         streamFile(meta->path, meta->mime, req, resp);
     }

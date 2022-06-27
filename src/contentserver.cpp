@@ -15,6 +15,7 @@
 #include <QNetworkRequest>
 #include <QRegExp>
 #include <QTimer>
+#include <optional>
 
 #include "bcapi.h"
 #include "connectivitydetector.h"
@@ -32,6 +33,7 @@
 #include "soundcloudapi.h"
 #include "tracker.h"
 #include "trackercursor.h"
+#include "transcoder.h"
 #include "utils.h"
 #include "ytdlapi.h"
 
@@ -224,15 +226,12 @@ ContentServer::ItemMeta::ItemMeta(const ItemMeta *meta)
       flags(meta->flags) {}
 
 ContentServer::ContentServer(QObject *parent) : QThread{parent} {
-    // FFMPEG stuff
 #ifdef QT_DEBUG
     av_log_set_level(AV_LOG_DEBUG);
 #else
     av_log_set_level(AV_LOG_ERROR);
 #endif
     if (Settings::instance()->getLogToFile()) av_log_set_callback(ffmpegLog);
-    av_register_all();
-    avcodec_register_all();
     avdevice_register_all();
     // starting worker
     start(QThread::NormalPriority);
@@ -503,13 +502,14 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
     bool audioType =
         static_cast<Type>(t) == Type::Music;  // extract audio stream from video
 
-    AvData data;
+    std::optional<AvData> avData;
     if (audioType && item->flagSet(MetaFlag::Local)) {
-        if (!extractAudio(path, data)) {
+        avData = Transcoder::extractAudio(path);
+        if (!avData) {
             qWarning() << "Cannot extract audio stream";
             return false;
         }
-        qDebug() << "Audio stream extracted to" << data.path;
+        qDebug() << "Audio stream extracted to" << avData->path;
     }
 
     auto didlId = Utils::hash(id);
@@ -580,13 +580,12 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
 
     m << "<res ";
 
-    if (audioType &&
-        item->flagSet(MetaFlag::Local)) {  // extract audio from video
+    if (avData) {  // extract audio from video
         // puting audio stream info instead video file
-        if (data.size > 0)
-            m << "size=\"" << QString::number(data.size) << "\" ";
-        m << "protocolInfo=\"http-get:*:" << data.mime << ":"
-          << dlnaContentFeaturesHeader(data.mime, true, true) << "\" ";
+        if (avData->size > 0)
+            m << "size=\"" << QString::number(avData->size) << "\" ";
+        m << "protocolInfo=\"http-get:*:" << avData->mime << ":"
+          << dlnaContentFeaturesHeader(avData->mime, true, true) << "\" ";
     } else {
         if (item->size > 0)
             m << "size=\"" << QString::number(item->size) << "\" ";
@@ -610,14 +609,14 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
         m << "duration=\"" << durationStr << "\" ";
     }
 
-    if (audioType && item->flagSet(MetaFlag::Local)) {
-        if (data.bitrate > 0)
-            m << "bitrate=\"" << QString::number(data.bitrate) << "\" ";
+    if (avData) {
+        if (avData->bitrate > 0)
+            m << "bitrate=\"" << QString::number(avData->bitrate) << "\" ";
         if (item->sampleRate > 0)
             m << "sampleFrequency=\"" << QString::number(item->sampleRate)
               << "\" ";
-        if (data.channels > 0)
-            m << "nrAudioChannels=\"" << QString::number(data.channels)
+        if (avData->channels > 0)
+            m << "nrAudioChannels=\"" << QString::number(avData->channels)
               << "\" ";
     } else {
         if (item->bitrate > 0)
@@ -853,293 +852,296 @@ QString ContentServer::urlFromUrl(const QUrl &url) const {
     return {};
 }
 
-bool ContentServer::fillAvDataFromCodec(const AVCodecParameters *codec,
-                                        const QString &videoPath,
-                                        AvData &data) {
-    switch (codec->codec_id) {
-        case AV_CODEC_ID_MP2:
-        case AV_CODEC_ID_MP3:
-            data.mime = QStringLiteral("audio/mpeg");
-            data.type = QStringLiteral("mp3");
-            data.extension = QStringLiteral("mp3");
-            break;
-        case AV_CODEC_ID_VORBIS:
-            data.mime = QStringLiteral("audio/ogg");
-            data.type = QStringLiteral("oga");
-            data.extension = QStringLiteral("oga");
-            break;
-        default:
-            data.mime = QStringLiteral("audio/mp4");
-            data.type = QStringLiteral("mp4");
-            data.extension = QStringLiteral("m4a");
-    }
+// bool ContentServer::fillAvDataFromCodec(const AVCodecParameters *codec,
+//                                         const QString &videoPath,
+//                                         AvData &data) {
+//     switch (codec->codec_id) {
+//         case AV_CODEC_ID_MP2:
+//         case AV_CODEC_ID_MP3:
+//             data.mime = QStringLiteral("audio/mpeg");
+//             data.type = QStringLiteral("mp3");
+//             data.extension = QStringLiteral("mp3");
+//             break;
+//         case AV_CODEC_ID_VORBIS:
+//             data.mime = QStringLiteral("audio/ogg");
+//             data.type = QStringLiteral("oga");
+//             data.extension = QStringLiteral("oga");
+//             break;
+//         default:
+//             data.mime = QStringLiteral("audio/mp4");
+//             data.type = QStringLiteral("mp4");
+//             data.extension = QStringLiteral("m4a");
+//     }
 
-    data.path = videoPath + ".audio-extracted." + data.extension;
-    data.bitrate = int(codec->bit_rate);
-    data.channels = codec->channels;
+//    data.path = videoPath + ".audio-extracted." + data.extension;
+//    data.bitrate = int(codec->bit_rate);
+//    data.channels = codec->channels;
 
-    return true;
-}
+//    return true;
+//}
 
-bool ContentServer::extractAudio(const QString &path,
-                                 ContentServer::AvData &data) {
-    auto f = path.toUtf8();
-    const char *file = f.data();
+// bool ContentServer::extractAudio(const QString &path,
+//                                  ContentServer::AvData &data) {
+//     auto f = path.toUtf8();
+//     const char *file = f.data();
 
-    qDebug() << "Extracting audio from file:" << file;
+//    qDebug() << "Extracting audio from file:" << file;
 
-    AVFormatContext *ic = nullptr;
-    if (avformat_open_input(&ic, file, nullptr, nullptr) < 0) {
-        qWarning() << "avformat_open_input error";
-        return false;
-    }
+//    AVFormatContext *ic = nullptr;
+//    if (avformat_open_input(&ic, file, nullptr, nullptr) < 0) {
+//        qWarning() << "avformat_open_input error";
+//        return false;
+//    }
 
-    if ((avformat_find_stream_info(ic, nullptr)) < 0) {
-        qWarning() << "Could not find stream info";
-        avformat_close_input(&ic);
-        return false;
-    }
+//    if ((avformat_find_stream_info(ic, nullptr)) < 0) {
+//        qWarning() << "Could not find stream info";
+//        avformat_close_input(&ic);
+//        return false;
+//    }
 
-    int aidx = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, nullptr, 0);
-    if (aidx < 0) {
-        qWarning() << "No audio stream found";
-        avformat_close_input(&ic);
-        return false;
-    }
+//    int aidx = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, nullptr,
+//    0); if (aidx < 0) {
+//        qWarning() << "No audio stream found";
+//        avformat_close_input(&ic);
+//        return false;
+//    }
 
-#ifdef QT_DEBUG
-    // Debug: audio stream side data
-    qDebug() << "nb_streams:" << ic->nb_streams;
-    qDebug() << "audio stream index is:" << aidx;
-    qDebug() << "audio stream nb_side_data:" << ic->streams[aidx]->nb_side_data;
-    for (int i = 0; i < ic->streams[aidx]->nb_side_data; ++i) {
-        qDebug() << "-- audio stream side data --";
-        qDebug() << "type:" << ic->streams[aidx]->side_data[i].type;
-        qDebug() << "size:" << ic->streams[aidx]->side_data[i].size;
-        QByteArray data(reinterpret_cast<const char *>(
-                            ic->streams[aidx]->side_data[i].data),
-                        ic->streams[aidx]->side_data[i].size);
-        qDebug() << "data:" << data;
-    }
-    qDebug() << "Audio codec:";
-    qDebug() << "codec_id:" << ic->streams[aidx]->codecpar->codec_id;
-    qDebug() << "codec_channels:" << ic->streams[aidx]->codecpar->channels;
-    qDebug() << "codec_tag:" << ic->streams[aidx]->codecpar->codec_tag;
-#endif
+//#ifdef QT_DEBUG
+//    // Debug: audio stream side data
+//    qDebug() << "nb_streams:" << ic->nb_streams;
+//    qDebug() << "audio stream index is:" << aidx;
+//    qDebug() << "audio stream nb_side_data:" <<
+//    ic->streams[aidx]->nb_side_data; for (int i = 0; i <
+//    ic->streams[aidx]->nb_side_data; ++i) {
+//        qDebug() << "-- audio stream side data --";
+//        qDebug() << "type:" << ic->streams[aidx]->side_data[i].type;
+//        qDebug() << "size:" << ic->streams[aidx]->side_data[i].size;
+//        QByteArray data(reinterpret_cast<const char *>(
+//                            ic->streams[aidx]->side_data[i].data),
+//                        ic->streams[aidx]->side_data[i].size);
+//        qDebug() << "data:" << data;
+//    }
+//    qDebug() << "Audio codec:";
+//    qDebug() << "codec_id:" << ic->streams[aidx]->codecpar->codec_id;
+//    qDebug() << "codec_channels:" << ic->streams[aidx]->codecpar->channels;
+//    qDebug() << "codec_tag:" << ic->streams[aidx]->codecpar->codec_tag;
+//#endif
 
-    if (!fillAvDataFromCodec(ic->streams[aidx]->codecpar, path, data)) {
-        qWarning() << "Unable to find correct mime for the codec:"
-                   << ic->streams[aidx]->codecpar->codec_id;
-        avformat_close_input(&ic);
-        return false;
-    }
+//    if (!fillAvDataFromCodec(ic->streams[aidx]->codecpar, path, data)) {
+//        qWarning() << "Unable to find correct mime for the codec:"
+//                   << ic->streams[aidx]->codecpar->codec_id;
+//        avformat_close_input(&ic);
+//        return false;
+//    }
 
-    qDebug() << "Audio stream content type" << data.mime;
-    qDebug() << "Audio stream bitrate" << data.bitrate;
-    qDebug() << "Audio stream channels" << data.channels;
+//    qDebug() << "Audio stream content type" << data.mime;
+//    qDebug() << "Audio stream bitrate" << data.bitrate;
+//    qDebug() << "Audio stream channels" << data.channels;
 
-    AVOutputFormat *of = nullptr;
-    auto t = data.type.toLatin1();
-    of = av_guess_format(t.data(), nullptr, nullptr);
-    if (!of) {
-        qWarning() << "av_guess_format error";
-        avformat_close_input(&ic);
-        return false;
-    }
+//    AVOutputFormat *of = nullptr;
+//    auto t = data.type.toLatin1();
+//    of = av_guess_format(t.data(), nullptr, nullptr);
+//    if (!of) {
+//        qWarning() << "av_guess_format error";
+//        avformat_close_input(&ic);
+//        return false;
+//    }
 
-    AVFormatContext *oc = nullptr;
-    oc = avformat_alloc_context();
-    if (!oc) {
-        qWarning() << "avformat_alloc_context error";
-        avformat_close_input(&ic);
-        return false;
-    }
+//    AVFormatContext *oc = nullptr;
+//    oc = avformat_alloc_context();
+//    if (!oc) {
+//        qWarning() << "avformat_alloc_context error";
+//        avformat_close_input(&ic);
+//        return false;
+//    }
 
-    if (ic->metadata) {
-        // Debug: metadata
-        AVDictionaryEntry *tag = nullptr;
-        while (
-            (tag = av_dict_get(ic->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
-            qDebug() << tag->key << "=" << tag->value;
+//    if (ic->metadata) {
+//        // Debug: metadata
+//        AVDictionaryEntry *tag = nullptr;
+//        while (
+//            (tag = av_dict_get(ic->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
+//            qDebug() << tag->key << "=" << tag->value;
 
-        if (av_dict_copy(&oc->metadata, ic->metadata, 0) < 0) {
-            qWarning() << "oc->metadata av_dict_copy error";
-            avformat_close_input(&ic);
-            avformat_free_context(oc);
-            return false;
-        }
-    } else {
-        qDebug() << "No metadata found";
-    }
+//        if (av_dict_copy(&oc->metadata, ic->metadata, 0) < 0) {
+//            qWarning() << "oc->metadata av_dict_copy error";
+//            avformat_close_input(&ic);
+//            avformat_free_context(oc);
+//            return false;
+//        }
+//    } else {
+//        qDebug() << "No metadata found";
+//    }
 
-    oc->oformat = of;
+//    oc->oformat = of;
 
-    AVStream *ast = nullptr;
-    ast = avformat_new_stream(oc, ic->streams[aidx]->codec->codec);
-    if (!ast) {
-        qWarning() << "avformat_new_stream error";
-        avformat_close_input(&ic);
-        avformat_free_context(oc);
-        return false;
-    }
+//    AVStream *ast = nullptr;
+//    ast = avformat_new_stream(oc, ic->streams[aidx]->codec->codec);
+//    if (!ast) {
+//        qWarning() << "avformat_new_stream error";
+//        avformat_close_input(&ic);
+//        avformat_free_context(oc);
+//        return false;
+//    }
 
-    ast->id = 0;
+//    ast->id = 0;
 
-    if (ic->streams[aidx]->metadata) {
-        // Debug: audio stream metadata, codec
-        AVDictionaryEntry *tag = nullptr;
-        while ((tag = av_dict_get(ic->streams[aidx]->metadata, "", tag,
-                                  AV_DICT_IGNORE_SUFFIX)))
-            qDebug() << tag->key << "=" << tag->value;
+//    if (ic->streams[aidx]->metadata) {
+//        // Debug: audio stream metadata, codec
+//        AVDictionaryEntry *tag = nullptr;
+//        while ((tag = av_dict_get(ic->streams[aidx]->metadata, "", tag,
+//                                  AV_DICT_IGNORE_SUFFIX)))
+//            qDebug() << tag->key << "=" << tag->value;
 
-        if (av_dict_copy(&ast->metadata, ic->streams[aidx]->metadata, 0) < 0) {
-            qWarning() << "av_dict_copy error";
-            avformat_close_input(&ic);
-            avformat_free_context(oc);
-            return false;
-        }
-    } else {
-        qDebug() << "No metadata in audio stream";
-    }
+//        if (av_dict_copy(&ast->metadata, ic->streams[aidx]->metadata, 0) < 0)
+//        {
+//            qWarning() << "av_dict_copy error";
+//            avformat_close_input(&ic);
+//            avformat_free_context(oc);
+//            return false;
+//        }
+//    } else {
+//        qDebug() << "No metadata in audio stream";
+//    }
 
-    // Copy codec params
-    AVCodecParameters *t_cpara = avcodec_parameters_alloc();
-    if (avcodec_parameters_from_context(t_cpara, ic->streams[aidx]->codec) <
-        0) {
-        qWarning() << "avcodec_parameters_from_context error";
-        avformat_close_input(&ic);
-        avformat_free_context(oc);
-        return false;
-    }
-    if (avcodec_parameters_copy(ast->codecpar, t_cpara) < 0) {
-        qWarning() << "avcodec_parameters_copy error";
-        avformat_close_input(&ic);
-        avformat_free_context(oc);
-        return false;
-    }
-    if (avcodec_parameters_to_context(ast->codec, t_cpara) < 0) {
-        qWarning() << "avcodec_parameters_to_context error";
-        avformat_close_input(&ic);
-        avformat_free_context(oc);
-        return false;
-    }
-    avcodec_parameters_free(&t_cpara);
+//    // Copy codec params
+//    AVCodecParameters *t_cpara = avcodec_parameters_alloc();
+//    if (avcodec_parameters_from_context(t_cpara, ic->streams[aidx]->codec) <
+//        0) {
+//        qWarning() << "avcodec_parameters_from_context error";
+//        avformat_close_input(&ic);
+//        avformat_free_context(oc);
+//        return false;
+//    }
+//    if (avcodec_parameters_copy(ast->codecpar, t_cpara) < 0) {
+//        qWarning() << "avcodec_parameters_copy error";
+//        avformat_close_input(&ic);
+//        avformat_free_context(oc);
+//        return false;
+//    }
+//    if (avcodec_parameters_to_context(ast->codec, t_cpara) < 0) {
+//        qWarning() << "avcodec_parameters_to_context error";
+//        avformat_close_input(&ic);
+//        avformat_free_context(oc);
+//        return false;
+//    }
+//    avcodec_parameters_free(&t_cpara);
 
-    ast->codecpar->codec_tag = av_codec_get_tag(
-        oc->oformat->codec_tag, ic->streams[aidx]->codecpar->codec_id);
+//    ast->codecpar->codec_tag = av_codec_get_tag(
+//        oc->oformat->codec_tag, ic->streams[aidx]->codecpar->codec_id);
 
-    if (oc->oformat->flags & AVFMT_GLOBALHEADER)
-        ast->codec->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+//    if (oc->oformat->flags & AVFMT_GLOBALHEADER)
+//        ast->codec->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 
-    qDebug() << "Extracted audio file:" << data.path;
+//    qDebug() << "Extracted audio file:" << data.path;
 
-    QFile audioFile(data.path);
-    if (audioFile.exists()) {
-        qDebug() << "Extracted audio stream already exists";
-        data.size = QFileInfo(data.path).size();
-        avformat_close_input(&ic);
-        avformat_free_context(oc);
-        return true;
-    }
+//    QFile audioFile(data.path);
+//    if (audioFile.exists()) {
+//        qDebug() << "Extracted audio stream already exists";
+//        data.size = QFileInfo(data.path).size();
+//        avformat_close_input(&ic);
+//        avformat_free_context(oc);
+//        return true;
+//    }
 
-    auto bapath = data.path.toUtf8();
-    if (avio_open(&oc->pb, bapath.data(), AVIO_FLAG_WRITE) < 0) {
-        qWarning() << "avio_open error";
-        avformat_close_input(&ic);
-        avformat_free_context(oc);
-        return false;
-    }
+//    auto bapath = data.path.toUtf8();
+//    if (avio_open(&oc->pb, bapath.data(), AVIO_FLAG_WRITE) < 0) {
+//        qWarning() << "avio_open error";
+//        avformat_close_input(&ic);
+//        avformat_free_context(oc);
+//        return false;
+//    }
 
-    if (avformat_write_header(oc, nullptr) < 0) {
-        qWarning() << "avformat_write_header error";
-        avformat_close_input(&ic);
-        avio_close(oc->pb);
-        avformat_free_context(oc);
-        audioFile.remove();
-        return false;
-    }
+//    if (avformat_write_header(oc, nullptr) < 0) {
+//        qWarning() << "avformat_write_header error";
+//        avformat_close_input(&ic);
+//        avio_close(oc->pb);
+//        avformat_free_context(oc);
+//        audioFile.remove();
+//        return false;
+//    }
 
-    AVPacket pkt = {};
-    av_init_packet(&pkt);
+//    AVPacket pkt = {};
+//    av_init_packet(&pkt);
 
-    while (!av_read_frame(ic, &pkt)) {
-        // Only processing audio stream packets
-        if (pkt.stream_index == aidx) {
-#ifdef QT_DEBUG
-            // Debug: audio stream packet side data
-            for (int i = 0; i < pkt.side_data_elems; ++i) {
-                qDebug() << "Audio stream packet side data:";
-                qDebug() << "type:" << pkt.side_data[i].type;
-                qDebug() << "size:" << pkt.side_data[i].size;
-                QByteArray data(
-                    reinterpret_cast<const char *>(pkt.side_data[i].data),
-                    pkt.side_data[i].size);
-                qDebug() << "data:" << data;
-            }
-#endif
+//    while (!av_read_frame(ic, &pkt)) {
+//        // Only processing audio stream packets
+//        if (pkt.stream_index == aidx) {
+//#ifdef QT_DEBUG
+//            // Debug: audio stream packet side data
+//            for (int i = 0; i < pkt.side_data_elems; ++i) {
+//                qDebug() << "Audio stream packet side data:";
+//                qDebug() << "type:" << pkt.side_data[i].type;
+//                qDebug() << "size:" << pkt.side_data[i].size;
+//                QByteArray data(
+//                    reinterpret_cast<const char *>(pkt.side_data[i].data),
+//                    pkt.side_data[i].size);
+//                qDebug() << "data:" << data;
+//            }
+//#endif
 
-            /*qDebug() << "------ orig -----";
-            qDebug() << "duration:" << pkt.duration;
-            qDebug() << "dts:" << pkt.dts;
-            qDebug() << "pts:" << pkt.pts;
-            qDebug() << "pos:" << pkt.pos;
+//            /*qDebug() << "------ orig -----";
+//            qDebug() << "duration:" << pkt.duration;
+//            qDebug() << "dts:" << pkt.dts;
+//            qDebug() << "pts:" << pkt.pts;
+//            qDebug() << "pos:" << pkt.pos;
 
-            qDebug() << "------ time base -----";
-            qDebug() << "ast->codec->time_base:" << ast->codec->time_base.num <<
-            ast->codec->time_base.den; qDebug() << "ast->time_base:" <<
-            ast->time_base.num << ast->time_base.den; qDebug() <<
-            "ic->streams[aidx]->codec->time_base:" <<
-            ic->streams[aidx]->codec->time_base.num <<
-            ic->streams[aidx]->codec->time_base.den; qDebug() <<
-            "ic->streams[aidx]->time_base:" << ic->streams[aidx]->time_base.num
-            << ic->streams[aidx]->time_base.den;*/
+//            qDebug() << "------ time base -----";
+//            qDebug() << "ast->codec->time_base:" << ast->codec->time_base.num
+//            << ast->codec->time_base.den; qDebug() << "ast->time_base:" <<
+//            ast->time_base.num << ast->time_base.den; qDebug() <<
+//            "ic->streams[aidx]->codec->time_base:" <<
+//            ic->streams[aidx]->codec->time_base.num <<
+//            ic->streams[aidx]->codec->time_base.den; qDebug() <<
+//            "ic->streams[aidx]->time_base:" <<
+//            ic->streams[aidx]->time_base.num
+//            << ic->streams[aidx]->time_base.den;*/
 
-            av_packet_rescale_ts(&pkt, ic->streams[aidx]->time_base,
-                                 ast->time_base);
+//            av_packet_rescale_ts(&pkt, ic->streams[aidx]->time_base,
+//                                 ast->time_base);
 
-            /*qDebug() << "------ after rescale -----";
-            qDebug() << "duration:" << pkt.duration;
-            qDebug() << "dts:" << pkt.dts;
-            qDebug() << "pts:" << pkt.pts;
-            qDebug() << "pos:" << pkt.pos;*/
+//            /*qDebug() << "------ after rescale -----";
+//            qDebug() << "duration:" << pkt.duration;
+//            qDebug() << "dts:" << pkt.dts;
+//            qDebug() << "pts:" << pkt.pts;
+//            qDebug() << "pos:" << pkt.pos;*/
 
-            pkt.stream_index = ast->index;
+//            pkt.stream_index = ast->index;
 
-            if (av_write_frame(oc, &pkt) != 0) {
-                qWarning() << "Error while writing audio frame";
-                av_packet_unref(&pkt);
-                avformat_close_input(&ic);
-                avio_close(oc->pb);
-                avformat_free_context(oc);
-                audioFile.remove();
-                return false;
-            }
-        }
+//            if (av_write_frame(oc, &pkt) != 0) {
+//                qWarning() << "Error while writing audio frame";
+//                av_packet_unref(&pkt);
+//                avformat_close_input(&ic);
+//                avio_close(oc->pb);
+//                avformat_free_context(oc);
+//                audioFile.remove();
+//                return false;
+//            }
+//        }
 
-        av_packet_unref(&pkt);
-    }
+//        av_packet_unref(&pkt);
+//    }
 
-    if (av_write_trailer(oc) < 0) {
-        qWarning() << "av_write_trailer error";
-        avformat_close_input(&ic);
-        avio_close(oc->pb);
-        avformat_free_context(oc);
-        audioFile.remove();
-        return false;
-    }
+//    if (av_write_trailer(oc) < 0) {
+//        qWarning() << "av_write_trailer error";
+//        avformat_close_input(&ic);
+//        avio_close(oc->pb);
+//        avformat_free_context(oc);
+//        audioFile.remove();
+//        return false;
+//    }
 
-    avformat_close_input(&ic);
+//    avformat_close_input(&ic);
 
-    if (avio_close(oc->pb) < 0) {
-        qWarning() << "avio_close error";
-    }
+//    if (avio_close(oc->pb) < 0) {
+//        qWarning() << "avio_close error";
+//    }
 
-    avformat_free_context(oc);
+//    avformat_free_context(oc);
 
-    data.size = QFileInfo{data.path}.size();
+//    data.size = QFileInfo{data.path}.size();
 
-    return true;
-}
+//    return true;
+//}
 
 void ContentServer::removeMeta(const QUrl &url) { m_metaCache.remove(url); }
 

@@ -775,6 +775,16 @@ void PlaylistModel::addItemFileUrls(const QList<QUrl> &urls) {
     addItems(items, false);
 }
 
+void PlaylistModel::addItemFileUrlsAsAudio(const QList<QUrl> &urls) {
+    QList<UrlItem> items;
+    foreach (const auto &url, urls) {
+        UrlItem ui;
+        ui.url = url;
+        items << ui;
+    }
+    addItems(items, true);
+}
+
 void PlaylistModel::addItemUrls(const QList<UrlItem> &urls) {
     addItems(urls, false);
 }

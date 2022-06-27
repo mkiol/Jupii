@@ -49,19 +49,19 @@ desktop {
 
     INCLUDEPATH += $$PROJECTDIR/libs/ffmpeg/include
 
-#    packagesExist(libavformat libavcodec libswscale libswresample libavdevice libavutil x264 lame) {
-#        PKGCONFIG += x264 lame libavformat libavcodec libswscale \
-#                     libswresample libavdevice libavutil
-#    } else {
+    packagesExist(libavformat libavcodec libswscale libswresample libavdevice libavutil x264 lame) {
+        PKGCONFIG += x264 lame libavformat libavcodec libswscale \
+                     libswresample libavdevice libavutil
+    } else {
         message(Using static ffmpeg x264 lame)
         include($$PROJECTDIR/libs/ffmpeg/ffmpeg.pri)
         include($$PROJECTDIR/libs/x264/x264.pri)
         include($$PROJECTDIR/libs/lame/lame.pri)
-#    }
+    }
 
     # ytdl
     PKGCONFIG += python3
-    LIBS += -lpython3.10 -llzma -larchive
+    LIBS += -lutil -lpython3.10 -llzma -larchive
     INCLUDEPATH += $$PROJECTDIR/external/pybind11/include
 }
 
@@ -89,6 +89,7 @@ sailfish {
 INCLUDEPATH += $$ROOT_DIR
 
 HEADERS += \
+    $$PWD/transcoder.h \
     $$ROOT_DIR/dbus_jupii_adaptor.h \
     $$ROOT_DIR/dbus_tracker_inf.h \
     $$ROOT_DIR/dbus_notifications_inf.h \
@@ -151,6 +152,7 @@ HEADERS += \
     $$ROOT_DIR/ytmusic.h
 
 SOURCES += \
+    $$PWD/transcoder.cpp \
     $$ROOT_DIR/dbus_jupii_adaptor.cpp \
     $$ROOT_DIR/dbus_tracker_inf.cpp \
     $$ROOT_DIR/dbus_notifications_inf.cpp \

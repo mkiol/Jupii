@@ -267,15 +267,15 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         DLNA_ORG_FLAG_DLNA_V15 = (1U << 20)
     };
 
-    struct AvData {
-        QString path;
-        QString mime;
-        QString type;
-        QString extension;
-        int bitrate;
-        int channels;
-        int64_t size;
-    };
+    //    struct AvData {
+    //        QString path;
+    //        QString mime;
+    //        QString type;
+    //        QString extension;
+    //        int bitrate;
+    //        int channels;
+    //        int64_t size;
+    //    };
 
     struct StreamData {
         QUrl id;
@@ -393,9 +393,11 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     QHash<QUrl, ItemMeta>::const_iterator makeMetaUsingExtension(
         const QUrl &url);
     void run() override;
-    static bool extractAudio(const QString &path, ContentServer::AvData &data);
-    static bool fillAvDataFromCodec(const AVCodecParameters *codec,
-                                    const QString &videoPath, AvData &data);
+    // static bool extractAudio(const QString &path, ContentServer::AvData
+    // &data);
+    //    static bool fillAvDataFromCodec(const AVCodecParameters *codec,
+    //                                    const QString &videoPath, AvData
+    //                                    &data);
     static QString extractItemFromDidl(const QString &didl);
     bool saveTmpRec(const QString &path);
     static QString readTitleUsingTaglib(const QString &path);
