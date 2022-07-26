@@ -261,6 +261,13 @@ Page {
                         }
                     }
                 }*/
+
+                DetailItem {
+                    label: qsTr("Cached")
+                    value: cserver.idCached(av.currentId) ? qsTr("Yes") : qsTr("No")
+                    visible: itemType == ContentServer.ItemType_Url
+
+                }
             }
 
             Column {

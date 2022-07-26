@@ -380,7 +380,7 @@ void Settings::setScreenSupported([[maybe_unused]] bool value) {
 }
 
 bool Settings::getScreenSupported() const {
-#ifdef SAILFISH
+#if defined(SAILFISH) && !defined(QT_DEBUG)
     // Sreen Capture does not work with sandboxing
     // return value("screensupported", false).toBool();
     return false;
@@ -833,4 +833,28 @@ void Settings::setPythonChecksum(const QString &value) {
 
 QString Settings::pythonChecksum() const {
     return value("pythonchecksum").toString();
+}
+
+void Settings::setCacheType(CacheType value) {
+    if (value != cacheType()) {
+        setValue("cachetype", static_cast<int>(value));
+    }
+}
+
+Settings::CacheType Settings::cacheType() const {
+    return static_cast<CacheType>(
+        value("cachetype", static_cast<int>(CacheType::Cache_Auto)).toInt());
+}
+
+void Settings::setCacheCleaningType(CacheCleaningType value) {
+    if (value != cacheCleaningType()) {
+        setValue("cachecleaningtype", static_cast<int>(value));
+    }
+}
+
+Settings::CacheCleaningType Settings::cacheCleaningType() const {
+    return static_cast<CacheCleaningType>(
+        value("cachecleaningtype",
+              static_cast<int>(CacheCleaningType::CacheCleaning_Auto))
+            .toInt());
 }

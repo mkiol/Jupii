@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,27 +11,12 @@ import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.14 as Kirigami
 import QtQuick.Dialogs 1.1
 
+import harbour.jupii.Settings 1.0
+
 Kirigami.ScrollablePage {
     id: root
 
     title: qsTr("Settings")
-
-    actions {
-        main: Kirigami.Action {
-            iconName: "documentinfo"
-            text: qsTr("Info")
-            checkable: true
-            onCheckedChanged: infoSheet.sheetOpen = checked;
-            shortcut: "Alt+I"
-        }
-    }
-
-    onBackRequested: {
-        if (infoSheet.sheetOpen) {
-            event.accepted = true;
-            infoSheet.close();
-        }
-    }
 
     FileDialog {
         id: fileDialog
@@ -43,50 +28,6 @@ Kirigami.ScrollablePage {
         onAccepted: {
             fileDialog.fileUrls.forEach(
                         url => _settings.recDir = utils.urlToPath(url))
-        }
-    }
-
-    Kirigami.OverlaySheet {
-        id: infoSheet
-
-        onSheetOpenChanged: root.actions.main.checked = sheetOpen
-        header: Kirigami.Heading {
-            text: qsTr("Settings options")
-        }
-        Controls.Label {
-            textFormat: Text.StyledText
-            text: "<h4>" + qsTr("Share play queue items via UPnP Media Server") + "</h4>" +
-                  "<p>" + qsTr("When enabled, items in play queue are accessible " +
-                               "for other UPnP devices in your local network.") + "</p>" +
-                  "<br/>" +
-                  "<h4>" + qsTr("Stream recorder") + "</h4>" +
-                  "<p>" + qsTr("Enables audio recording from URL items. " +
-                               "If URL item is a Icecast stream, individual tracks " +
-                               "from a stream will be recorded. " +
-                               "To enable recording use 'Record' button located on the bottom bar. " +
-                               "When the 'Record' button is activated before " +
-                               "the end of currently played track, the whole track is saved to a file.") + "</p>" +
-                  "<br/>" +
-                  "<h4>" + qsTr("Stream relaying") + "</h4>" +
-                  "<p>" + qsTr("Internet streams are relayed to UPnP device through %1. " +
-                               "Recommended option is 'Always' because it provides best " +
-                               "compatibility. When relaying is disabled ('Never' option), " +
-                               "Icecast titles and Stream recorder " +
-                               "are not available.").arg(APP_NAME) + "</p>" +
-                  "<br/>" +
-                  "<h4>" + qsTr("All devices visible") + "</h4>" +
-                  "<p>" + qsTr("All types of UPnP devices are detected " +
-                               "and shown, including unsupported devices like " +
-                               "home routers. For unsupported devices only " +
-                               "basic description information is available. " +
-                               "This option might be useful for auditing UPnP devices " +
-                               "in your local network.") + "</p>" +
-                  "<br/>" +
-                  "<h4>" + qsTr("Enable logging") + "</h4>" +
-                  "<p>" + qsTr("Needed for troubleshooting purposes. " +
-                               "The log data is stored in %1 file.")
-                                 .arg(utils.homeDirPath() + "/jupii.log") + "</p>"
-            wrapMode: Text.WordWrap
         }
     }
 
@@ -402,6 +343,87 @@ Kirigami.ScrollablePage {
                         settings.remoteContentMode = 2
                 }
             }
+
+            Item {
+                Kirigami.FormData.isSection: true
+            }
+
+            Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Caching")
+                currentIndex: {
+                    if (settings.cacheType === Settings.Cache_Auto)
+                        return 0
+                    if (settings.cacheType === Settings.Cache_Always)
+                        return 1
+                    if (settings.cacheType === Settings.Cache_Never)
+                        return 2
+                    return 0
+                }
+
+                model: [
+                    qsTr("Auto"),
+                    qsTr("Always"),
+                    qsTr("Never")
+                ]
+
+                onCurrentIndexChanged: {
+                    if (currentIndex == 0)
+                        settings.cacheType = Settings.Cache_Auto
+                    else if (currentIndex == 1)
+                        settings.cacheType = Settings.Cache_Always
+                    else if (currentIndex == 2)
+                        settings.cacheType = Settings.Cache_Never
+                    else
+                        settings.cacheType = Settings.Cache_Auto
+                }
+            }
+
+            Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Cache cleaning")
+                currentIndex: {
+                    if (settings.cacheCleaningType === Settings.CacheCleaning_Auto)
+                        return 0
+                    if (settings.cacheCleaningType === Settings.CacheCleaning_Always)
+                        return 1
+                    if (settings.cacheCleaningType === Settings.CacheCleaning_Never)
+                        return 2
+                    return 0
+                }
+
+                model: [
+                    qsTr("Auto"),
+                    qsTr("Always"),
+                    qsTr("Never")
+                ]
+
+                onCurrentIndexChanged: {
+                    if (currentIndex == 0)
+                        settings.cacheCleaningType = Settings.CacheCleaning_Auto
+                    else if (currentIndex == 1)
+                        settings.cacheCleaningType = Settings.CacheCleaning_Always
+                    else if (currentIndex == 2)
+                        settings.cacheCleaningType = Settings.CacheCleaning_Never
+                    else
+                        settings.cacheCleaningType = Settings.CacheCleaning_Auto
+                }
+            }
+
+            RowLayout {
+                Kirigami.FormData.label: qsTr("Cache size")
+                Controls.Label {
+                    id: sizeLabel
+                    text: cserver.cacheSizeString()
+                    Connections {
+                        target: cserver
+                        onCacheSizeChanged: sizeLabel.text = cserver.cacheSizeString()
+                    }
+                }
+                Controls.Button {
+                    text: qsTr("Delete cache")
+                    onClicked: cserver.cleanCache()
+                }
+            }
+
 
             Item {
                 Kirigami.FormData.isSection: true

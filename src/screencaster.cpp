@@ -448,8 +448,7 @@ bool ScreenCaster::initOutAudio() {
     out_audio_codec_ctx->time_base.num = 1;
     out_audio_codec_ctx->time_base.den = in_audio_codec_ctx->sample_rate;
 
-    auto *out_audio_stream =
-        avformat_new_stream(out_format_ctx, out_audio_codec);
+    auto *out_audio_stream = avformat_new_stream(out_format_ctx, nullptr);
     if (!out_audio_stream) {
         qWarning() << "error in avformat_new_stream for audio";
         return false;

@@ -41,7 +41,7 @@ Controls.Dialog {
             Layout.rightMargin: Kirigami.Units.largeSpacing
             Layout.bottomMargin: Kirigami.Units.largeSpacing
             visible: true
-            text: qsTr("Only HTTP URLs are supported. If URL points to a playlist file, " +
+            text: qsTr("Only HTTP/HTTPS URLs are supported. If URL points to a playlist file, " +
                        "first playlist item will be added. If URL doesn't point to any media content, " +
                        "youtube-dl will be used to find a direct media URL.")
         }
@@ -76,7 +76,7 @@ Controls.Dialog {
         Controls.Switch {
             id: audioSwitch
             Layout.fillWidth: true
-            text: qsTr("Add audio-only stream if possible")
+            text: qsTr("Add only audio stream")
         }
     }
 }

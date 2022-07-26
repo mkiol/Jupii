@@ -26,6 +26,7 @@
 #include <memory>
 #include <optional>
 
+#include "downloader.h"
 #include "singleton.h"
 
 extern "C" {
@@ -42,19 +43,34 @@ class FileRef;
 
 class ContentServerWorker;
 
+struct AvMeta {
+    QString path;
+    QString mime;
+    QString type;
+    QString extension;
+    int64_t bitrate = 0;
+    int channels = 0;
+    int64_t size = 0;
+};
+
 class ContentServer : public QThread, public Singleton<ContentServer> {
     Q_OBJECT
     friend class ContentServerWorker;
 
+    Q_PROPERTY(bool caching READ caching NOTIFY cachingChanged)
+    Q_PROPERTY(QString cacheProgressString READ cacheProgressString NOTIFY
+                   cacheProgressChanged)
+
    public:
     enum class Type {
-        Unknown = 0,
-        Image = 1,
-        Music = 2,
-        Video = 4,
-        Dir = 128,
-        Playlist = 256
+        Type_Unknown = 0,
+        Type_Image = 1,
+        Type_Music = 2,
+        Type_Video = 4,
+        Type_Dir = 128,
+        Type_Playlist = 256
     };
+    Q_ENUM(Type)
 
     enum class PlaylistType { Unknown, PLS, M3U, XSPF };
 
@@ -80,8 +96,12 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         Seek = 1 << 5,
         PlaylistProxy = 1 << 6,
         Refresh = 1 << 7,
-        Art = 1 << 8
+        Art = 1 << 8,
+        Mp4AudioNotIsom = 1 << 9,
+        MadeFromCache = 1 << 10
     };
+
+    enum class ProxyError { NoError, Canceled, Error };
 
     struct ItemMeta {
         QString trackerId;
@@ -97,7 +117,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         QString artist;
         QString didl;
         QString upnpDevId;
-        Type type{Type::Unknown};
+        std::optional<AvMeta> audioAvMeta;
+        Type type{Type::Type_Unknown};
         ItemType itemType{ItemType_Unknown};
         int duration = 0;
         double bitrate = 0.0;
@@ -150,6 +171,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static const QString recUrlTagName;
     static const QString recUrlTagName2;
     static const QString recAlbumName;
+    static const QString typeTagName;
     static const char *const recMp4TagPrefix;
 
     static Type typeFromMime(const QString &mime);
@@ -162,65 +184,80 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static PlaylistType playlistTypeFromExtension(const QString &path);
     static QString streamTitleFromShoutcastMetadata(const QByteArray &metadata);
     static bool writeID3MetaUsingTaglib(
-        TagLib::FileRef &file, const QString &title, const QString &artist,
-        const QString &album, const QString &comment, const QString &recUrl,
-        const QDateTime &recDate, const QString &artPath);
+        TagLib::FileRef &file, bool removeExistingTags, const QString &title,
+        const QString &artist, const QString &album, const QString &comment,
+        const QString &recUrl, const QDateTime &recDate, const QString &artPath,
+        Type otype = Type::Type_Unknown);
     static bool writeMP4MetaUsingTaglib(
-        TagLib::FileRef &file, const QString &title, const QString &artist,
-        const QString &album, const QString &comment, const QString &recUrl,
-        const QDateTime &recDate, const QString &artPath);
+        TagLib::FileRef &file, bool removeExistingTags, const QString &title,
+        const QString &artist, const QString &album, const QString &comment,
+        const QString &recUrl, const QDateTime &recDate, const QString &artPath,
+        Type otype = Type::Type_Unknown);
     static bool writeGenericMetaUsingTaglib(
         TagLib::FileRef &file, const QString &title, const QString &artist,
         const QString &album, const QString &comment, const QString &recUrl,
-        const QDateTime &recDate);
-    static bool writeMetaUsingTaglib(const QString &path, const QString &title,
-                                     const QString &artist = {},
-                                     const QString &album = {},
-                                     const QString &comment = {},
-                                     const QString &recUrl = {},
-                                     const QDateTime &recDate = {},
-                                     const QString &artPath = {});
+        const QDateTime &recDate, Type otype = Type::Type_Unknown);
+    static bool writeMetaUsingTaglib(
+        const QString &path, bool removeExistingTags, const QString &title,
+        const QString &artist = {}, const QString &album = {},
+        const QString &comment = {}, const QString &recUrl = {},
+        const QDateTime &recDate = {}, QString artPath = {},
+        Type otype = Type::Type_Unknown);
     static bool readID3MetaUsingTaglib(const TagLib::FileRef &file,
                                        QString *recUrl, QDateTime *recDate,
+                                       Type *otype,
                                        const QString &albumArtPrefix,
                                        QString *artPath);
     static bool readMP4MetaUsingTaglib(const TagLib::FileRef &file,
                                        QString *recUrl, QDateTime *recDate,
+                                       Type *otype,
                                        const QString &albumArtPrefix,
                                        QString *artPath);
     static bool readMetaUsingTaglib(
-        const QString &path, QString *title, QString *artist, QString *album,
-        QString *comment, QString *recUrl, QDateTime *recDate, QString *artPath,
-        int *duration = nullptr, double *bitrate = nullptr,
-        double *sampleRate = nullptr, int *channels = nullptr);
+        const QString &path, QString *title = nullptr,
+        QString *artist = nullptr, QString *album = nullptr,
+        QString *comment = nullptr, QString *recUrl = nullptr,
+        QDateTime *recDate = nullptr, QString *artPath = nullptr,
+        Type *otype = nullptr, int *duration = nullptr,
+        double *bitrate = nullptr, double *sampleRate = nullptr,
+        int *channels = nullptr);
+    static Type readOtypeFromCachedFile(const QString &filename);
     static QString minResUrl(const UPnPClient::UPnPDirObject &item);
     static ItemType itemTypeFromUrl(const QUrl &url);
+    static QString albumArtCacheName(const QString &path, const QString &ext);
+    static QString extractedAudioCachePath(const QString &path,
+                                           const QString &ext);
+    static QString contentCachePath(const QString &path, const QString &ext);
+    static bool pathIsCachedFile(const QString &path);
+    static std::optional<QString> pathToCachedContent(
+        const ItemMeta &meta, bool mustExists, Type = Type::Type_Unknown);
+    static QString localArtPathIfExists(const QString &artPath);
+    static QUrl artUrl(const QString &artPath);
 
     ContentServer(QObject *parent = nullptr);
     void registerExternalConnections() const;
     bool getContentUrl(const QString &id, QUrl &url, QString &meta,
-                       QString cUrl = {});
+                       const QString &cUrl = {});
     Q_INVOKABLE QStringList getExtensions(int type) const;
     Q_INVOKABLE QString idFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString pathFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString urlFromUrl(const QUrl &url) const;
-    QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIterator(
+    static QStringList extensionsForType(Type type);
+    QHash<QUrl, ItemMeta>::iterator getMetaCacheIterator(
         const QUrl &url, bool createNew = true, const QUrl &origUrl = {},
         const QString &app = {}, bool ytdl = false, bool img = false,
-        bool refresh = false, bool asAudio = false);
-    QHash<QUrl, ItemMeta>::const_iterator getMetaCacheIteratorForId(
+        bool refresh = false, Type type = Type::Type_Unknown);
+    QHash<QUrl, ItemMeta>::iterator getMetaCacheIteratorForId(
         const QUrl &id, bool createNew = true);
-    QHash<QUrl, ItemMeta>::const_iterator metaCacheIteratorEnd();
-    const ItemMeta *getMeta(const QUrl &url, bool createNew,
-                            const QUrl &origUrl = QUrl(),
-                            const QString &app = {}, bool ytdl = false,
-                            bool img = false, bool refresh = false,
-                            bool asAudio = false);
-    const ContentServer::ItemMeta *getMetaForImg(const QUrl &url,
-                                                 bool createNew);
+    QHash<QUrl, ItemMeta>::iterator metaCacheIteratorEnd();
+    ItemMeta *getMeta(const QUrl &url, bool createNew, const QUrl &origUrl,
+                      const QString &app, bool ytdl, bool img, bool refresh,
+                      Type type);
+    ItemMeta *getMetaForImg(const QUrl &url, bool createNew);
     void removeMeta(const QUrl &url);
     bool metaExists(const QUrl &url) const;
-    const ItemMeta *getMetaForId(const QUrl &id, bool createNew);
+    ItemMeta *getMetaForId(const QUrl &id, bool createNew);
+    ItemMeta *getMetaForId(const QString &id, bool createNew);
     Q_INVOKABLE QString streamTitle(const QUrl &id) const;
     Q_INVOKABLE QStringList streamTitleHistory(const QUrl &id) const;
     Q_INVOKABLE void setStreamToRecord(const QUrl &id, bool value);
@@ -232,7 +269,14 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     std::optional<QUrl> idUrlFromUrl(const QUrl &url,
                                      bool *isFile = nullptr) const;
     bool makeUrl(const QString &id, QUrl &url, bool relay = true);
-    bool startProxy(const QUrl &id);
+    ProxyError startProxy(const QUrl &id);
+    Q_INVOKABLE void cleanCache();
+    Q_INVOKABLE QString cacheSizeString() const;
+    void cancelCaching();
+    inline auto caching() const { return m_caching; }
+    double cacheProgress() const;
+    inline auto cacheProgressString() const { return m_cacheProgressString; };
+    Q_INVOKABLE bool idCached(const QUrl &id);
 
    signals:
     void streamRecordError(const QString &title);
@@ -246,6 +290,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     void displayStatusChanged(bool status);
     void fullHashesUpdated();
     void startProxyRequested(const QUrl &id);
+    void cacheSizeChanged();
+    void cachingChanged();
+    void cacheProgressChanged();
 
    public slots:
     void displayStatusChangeHandler(const QString &state);
@@ -267,15 +314,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         DLNA_ORG_FLAG_DLNA_V15 = (1U << 20)
     };
 
-    //    struct AvData {
-    //        QString path;
-    //        QString mime;
-    //        QString type;
-    //        QString extension;
-    //        int bitrate;
-    //        int channels;
-    //        int64_t size;
-    //    };
+    enum class CacheDecision { Cached, NoCacheDoStreming, NoCacheAbort };
 
     struct StreamData {
         QUrl id;
@@ -288,6 +327,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static const QHash<QString, QString> m_musicExtMap;
     static const QHash<QString, QString> m_musicMimeToExtMap;
     static const QHash<QString, QString> m_imgMimeToExtMap;
+    static const QHash<QString, QString> m_videoMimeToExtMap;
     static const QHash<QString, QString> m_videoExtMap;
     static const QHash<QString, QString> m_playlistExtMap;
     static const QStringList m_m3u_mimes;
@@ -309,10 +349,11 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static const QByteArray userAgent;
     static const qint64 qlen = 100000;
     static const int threadWait = 1;
-    static const int maxRedirections = 5;
+    static const int maxRedirections = 6;
     static const int httpTimeout = 20000;
     static const qint64 recMaxSize = 500000000;
     static const qint64 recMinSize = 100000;
+    static const qint64 maxSizeForCaching = 50000000;
 
     QHash<QUrl, ItemMeta> m_metaCache;     // url => ItemMeta
     QHash<QString, QString> m_metaIdx;     // DIDL-lite id => id
@@ -323,6 +364,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     QSet<QUrl> m_streamRecordable;         // id => stream recordable
     QString m_pulseStreamName;
     QMutex m_metaCacheMutex;
+    std::optional<Downloader> m_cacheDownloader;
+    QString m_cacheProgressString;
+    bool m_caching = false;
 
     void streamRecordedHandler(const QString &title, const QString &path);
     void streamToRecordChangedHandler(const QUrl &id, bool value);
@@ -347,61 +391,67 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static QString getExtensionFromAudioContentType(const QString &mime);
     static QString mimeFromDisposition(const QString &disposition);
     static bool hlsPlaylist(const QByteArray &data);
+    static QString durationStringFromSec(int duration);
+    static QString mimeFromReply(const QNetworkReply *reply);
     bool getContentMetaItem(const QString &id, const QUrl &url, QString &meta,
-                            const ItemMeta *item);
+                            ItemMeta *item);
     bool getContentMeta(const QString &id, const QUrl &url, QString &meta,
-                        const ItemMeta *item);
+                        ItemMeta *item);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
-    QHash<QUrl, ItemMeta>::const_iterator makeItemMeta(
+    QHash<QUrl, ItemMeta>::iterator makeItemMeta(
         const QUrl &url, const QUrl &origUrl = {}, const QString &app = {},
         bool ytdl = false, bool art = false, bool refresh = false,
-        bool asAudio = false);
-    QHash<QUrl, ItemMeta>::const_iterator makeMicItemMeta(const QUrl &url);
-    QHash<QUrl, ItemMeta>::const_iterator makeAudioCaptureItemMeta(
-        const QUrl &url);
-    QHash<QUrl, ItemMeta>::const_iterator makeScreenCaptureItemMeta(
-        const QUrl &url);
-    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTracker(
-        const QUrl &url);
-    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingTaglib(
-        const QUrl &url);
-    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest(
+        Type type = Type::Type_Unknown);
+    QHash<QUrl, ItemMeta>::iterator makeMicItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makeAudioCaptureItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makeScreenCaptureItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingTracker(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingTaglib(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingHTTPRequest(
         const QUrl &url, const QUrl &origUrl = {}, const QString &app = {},
         bool ytdl = false, bool refresh = false, bool art = false,
-        bool asAudio = false);
-    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingHTTPRequest2(
+        Type type = Type::Type_Unknown);
+    QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingHTTPRequest2(
         const QUrl &url, ItemMeta &meta,
         std::shared_ptr<QNetworkAccessManager> nam =
             std::shared_ptr<QNetworkAccessManager>(),
         int counter = 0);
-    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingYtdlApi(
+    QHash<QUrl, ContentServer::ItemMeta>::iterator makeItemMetaUsingCachedFile(
+        const QUrl &url, const QString &cachedFile, ItemMeta &meta);
+    QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingYtdlApi(
+        QUrl url, ItemMeta &meta,
+        std::shared_ptr<QNetworkAccessManager> nam =
+            std::shared_ptr<QNetworkAccessManager>(),
+        int counter = 0);
+    QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingBcApi(
         const QUrl &url, ItemMeta &meta,
         std::shared_ptr<QNetworkAccessManager> nam =
             std::shared_ptr<QNetworkAccessManager>(),
         int counter = 0);
-    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingBcApi(
+    QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingSoundcloudApi(
         const QUrl &url, ItemMeta &meta,
         std::shared_ptr<QNetworkAccessManager> nam =
             std::shared_ptr<QNetworkAccessManager>(),
         int counter = 0);
-    QHash<QUrl, ItemMeta>::const_iterator makeItemMetaUsingSoundcloudApi(
-        const QUrl &url, ItemMeta &meta,
-        std::shared_ptr<QNetworkAccessManager> nam =
-            std::shared_ptr<QNetworkAccessManager>(),
-        int counter = 0);
-    QHash<QUrl, ItemMeta>::const_iterator makeUpnpItemMeta(const QUrl &url);
-    QHash<QUrl, ItemMeta>::const_iterator makeMetaUsingExtension(
-        const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makeUpnpItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makeMetaUsingExtension(const QUrl &url);
     void run() override;
-    // static bool extractAudio(const QString &path, ContentServer::AvData
-    // &data);
-    //    static bool fillAvDataFromCodec(const AVCodecParameters *codec,
-    //                                    const QString &videoPath, AvData
-    //                                    &data);
     static QString extractItemFromDidl(const QString &didl);
-    bool saveTmpRec(const QString &path);
+    bool saveTmpRec(const QString &path, bool deletePath);
     static QString readTitleUsingTaglib(const QString &path);
     void updateMetaAlbumArt(ItemMeta &meta) const;
+    CacheDecision cacheContentIfNeeded(const QUrl &id);
+    static void updateMetaWithNotStandardHeaders(ItemMeta &meta,
+                                                 const QNetworkReply &reply);
+    static void updateMetaIfCached(ItemMeta &meta,
+                                   Type type = Type::Type_Unknown,
+                                   const QString &cachedPath = {});
+    std::optional<QString> cacheContent(const ItemMeta &meta);
+    static std::optional<AvMeta> transcodeToAudioFile(const QString &path);
+    static bool writeTagsWithMeta(const QString &path, const ItemMeta &meta);
+    static void writeRecTags(const QString &path);
+    void updateCacheProgressString();
+    void setCachingState(bool state);
 };
 
 #endif  // CONTENTSERVER_H

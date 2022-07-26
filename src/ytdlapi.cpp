@@ -15,6 +15,7 @@
 #endif
 #undef slots
 #include <pybind11/embed.h>
+#include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
 #define slots Q_SLOTS
 #include <stdlib.h>
@@ -326,7 +327,9 @@ static void logVideoInfo(const video_info::VideoInfo& info) {
         qDebug() << "    quality:" << f.quality.value_or(0);
         qDebug() << "    acodec:" << f.acodec;
         qDebug() << "    vcodec:" << f.vcodec;
+#ifdef QT_DEBUG
         qDebug() << "    url:" << f.url;
+#endif
     }
 }
 
@@ -374,20 +377,28 @@ QUrl YtdlApi::bestVideoUrl(const std::vector<video_info::Format>& formats) {
 std::optional<YtdlApi::Track> YtdlApi::track(const QUrl& url) const {
     if (state != State::Enabled) return std::nullopt;
 
-    auto info = YTMusic{}.extract_video_info(url.toString().toStdString());
+    YTMusic ytm;
 
-    logVideoInfo(info);
+    try {
+        auto info = ytm.extract_video_info(url.toString().toStdString());
 
-    Track track;
+        logVideoInfo(info);
 
-    track.streamUrl = bestVideoUrl(info.formats);
-    track.streamAudioUrl = bestAudioUrl(info.formats);
-    if (track.streamUrl.isEmpty() && track.streamAudioUrl.isEmpty())
-        return std::nullopt;
+        Track t;
 
-    track.title = QString::fromStdString(info.title);
-    track.webUrl = url;
-    track.image = QUrl{QString::fromStdString(info.thumbnail)};
+        t.streamUrl = bestVideoUrl(info.formats);
+        t.streamAudioUrl = bestAudioUrl(info.formats);
+        if (t.streamUrl.isEmpty() && t.streamAudioUrl.isEmpty())
+            return std::nullopt;
 
-    return track;
+        t.title = QString::fromStdString(info.title);
+        t.webUrl = url;
+        t.image = QUrl{QString::fromStdString(info.thumbnail)};
+
+        return t;
+    } catch (const std::exception& err) {
+        qWarning() << "ytdl error:" << err.what();
+    }
+
+    return std::nullopt;
 }

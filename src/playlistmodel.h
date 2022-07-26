@@ -43,6 +43,7 @@ struct UrlItem {
     QUrl origUrl;
     QString name;
     QString author;
+    QString album;
     QUrl icon;
     QString desc;
     QString app;
@@ -57,11 +58,16 @@ class PlaylistWorker : public QThread {
 
    public:
     QList<ListItem *> items;
-    explicit PlaylistWorker(const QList<UrlItem> &urls, bool asAudio = false,
-                            QObject *parent = nullptr);
-    explicit PlaylistWorker(QList<UrlItem> &&urls, bool asAudio = false,
-                            QObject *parent = nullptr);
-    explicit PlaylistWorker(QList<QUrl> &&ids, QObject *parent = nullptr);
+
+    template <typename Urls>
+    PlaylistWorker(Urls &&urls, ContentServer::Type type,
+                   QObject *parent = nullptr)
+        : QThread{parent},
+          urls(std::forward<Urls>(urls)),
+          type{type},
+          urlIsId{false} {}
+    explicit PlaylistWorker(QList<QUrl> &&ids, QObject *parent = nullptr)
+        : QThread{parent}, ids(std::move(ids)), urlIsId{true} {}
     inline QString origId(ListItem *item) {
         return itemToOrigId.value(item).toString();
     }
@@ -75,7 +81,7 @@ class PlaylistWorker : public QThread {
     QList<UrlItem> urls;
     QList<QUrl> ids;
     QHash<ListItem *, QUrl> itemToOrigId;
-    bool asAudio;
+    ContentServer::Type type = ContentServer::Type::Type_Unknown;
     bool urlIsId;
     void run() override;
 };
@@ -104,7 +110,8 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
         E_FileExists,
         E_SomeItemsNotAdded,
         E_ItemNotAdded,
-        E_AllItemsNotAdded
+        E_AllItemsNotAdded,
+        E_ProxyError
     };
     Q_ENUM(ErrorType)
 
@@ -178,23 +185,24 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
 
    public slots:
     void load();
-    void addItemPaths(const QStringList &paths);
-    void addItemPath(const QString &path, const QString &name = {},
-                     bool autoPlay = false);
-    void addItemUrls(const QList<UrlItem> &urls);
-    void addItemFileUrls(const QList<QUrl> &urls);
-    void addItemUrls(const QVariantList &urls);
-    void addItemUrl(QUrl url, const QString &name = {},
-                    const QUrl &origUrl = {}, const QString &author = {},
-                    const QUrl &icon = {}, const QString &desc = {},
-                    QString app = {}, bool autoPlay = false,
-                    bool asAudio = false);
-    void addItemUrlAsAudio(const QUrl &url, const QString &name = {},
-                           const QUrl &origUrl = {}, const QString &author = {},
-                           const QUrl &icon = {}, const QString &desc = {},
-                           const QString &app = {}, bool autoPlay = false);
-    void addItemPathsAsAudio(const QStringList &paths);
-    void addItemFileUrlsAsAudio(const QList<QUrl> &urls);
+    void addItemPaths(
+        const QStringList &paths,
+        ContentServer::Type type = ContentServer::Type::Type_Unknown);
+    void addItemPath(
+        const QString &path,
+        ContentServer::Type type = ContentServer::Type::Type_Unknown,
+        const QString &name = {}, bool autoPlay = false);
+    void addItemFileUrls(
+        const QList<QUrl> &urls,
+        ContentServer::Type type = ContentServer::Type::Type_Unknown);
+    void addItemUrls(
+        const QVariantList &urls,
+        ContentServer::Type type = ContentServer::Type::Type_Unknown);
+    void addItemUrl(
+        QUrl url, ContentServer::Type type = ContentServer::Type::Type_Unknown,
+        const QString &name = {}, const QUrl &origUrl = {},
+        const QString &author = {}, const QUrl &icon = {},
+        const QString &desc = {}, QString app = {}, bool autoPlay = false);
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
     void setToBeActiveIndex(int index);
@@ -255,8 +263,10 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
 #ifdef SAILFISH
     void handleBackgroundActivityStateChange();
 #endif
-    void addItems(const QList<QUrl> &urls, bool asAudio);
-    void addItems(const QList<UrlItem> &urls, bool asAudio);
+    void addItems(const QList<QUrl> &urls,
+                  ContentServer::Type type = ContentServer::Type::Type_Unknown);
+    void addItems(const QList<UrlItem> &urls,
+                  ContentServer::Type type = ContentServer::Type::Type_Unknown);
     void setActiveItemIndex(int index);
     bool addId(const QUrl &id);
     PlaylistItem *makeItem(const QUrl &id);
@@ -331,7 +341,7 @@ class PlaylistItem : public ListItem {
         return m_origUrl.isEmpty() ? m_url : m_origUrl;
     }
     inline auto type() const { return m_type; }
-    inline auto ctype() const { return m_ctype; }
+    QString ctype() const;
     inline auto artist() const { return m_artist; }
     inline auto album() const { return m_album; }
     inline auto date() const { return m_date; }
@@ -349,7 +359,7 @@ class PlaylistItem : public ListItem {
     void setActive(bool value);
     void setToBeActive(bool value);
     void setPlay(bool value);
-    inline bool refreshable() const { return m_ytdl; }
+    bool refreshable() const;
     QString friendlyRecDate() const;
 
    private:

@@ -7,6 +7,8 @@
 
 #include "utils.h"
 
+#include <QtCore/qmath.h>
+
 #include <QAbstractSocket>
 #include <QClipboard>
 #include <QDebug>
@@ -38,6 +40,7 @@ const QString Utils::typeKey = "jupii_type";
 const QString Utils::cookieKey = "jupii_cookie";
 const QString Utils::nameKey = "jupii_name";
 const QString Utils::authorKey = "jupii_author";
+const QString Utils::albumKey = "jupii_album";
 const QString Utils::origUrlKey = "jupii_origurl";
 const QString Utils::iconKey = "jupii_icon";
 const QString Utils::descKey = "jupii_desc";
@@ -140,10 +143,19 @@ void Utils::removeFromCacheDir(const QStringList &filter) {
     }
 }
 
-bool Utils::writeToCacheFile(const QString &filename, const QByteArray &data,
-                             bool del) {
-    QDir dir{Settings::instance()->getCacheDir()};
-    return writeToFile(dir.absoluteFilePath(filename), data, del);
+std::optional<QString> Utils::writeToCacheFile(const QString &filename,
+                                               const QByteArray &data,
+                                               bool del) {
+    if (filename.isEmpty()) return std::nullopt;
+
+    auto path =
+        QDir{Settings::instance()->getCacheDir()}.absoluteFilePath(filename);
+
+    if (!writeToFile(path, data, del)) {
+        return std::nullopt;
+    }
+
+    return path;
 }
 
 bool Utils::writeToFile(const QString &path, const QByteArray &data, bool del) {
@@ -225,17 +237,14 @@ QString Utils::readLicenseFile() const {
 }
 
 bool Utils::cacheFileExists(const QString &filename) {
-    QDir dir{Settings::instance()->getCacheDir()};
-    return QFileInfo::exists(dir.absoluteFilePath(filename));
+    return static_cast<bool>(cachePathForFile(filename));
 }
 
-QString Utils::cachePathForFile(const QString &filename) {
-    QDir dir{Settings::instance()->getCacheDir()};
-    auto path = dir.absoluteFilePath(filename);
-
+std::optional<QString> Utils::cachePathForFile(const QString &filename) {
+    auto path =
+        QDir{Settings::instance()->getCacheDir()}.absoluteFilePath(filename);
     if (QFileInfo::exists(path)) return path;
-
-    return {};
+    return std::nullopt;
 }
 
 QString Utils::hash(const QString &value) {
@@ -249,12 +258,10 @@ QUrl Utils::iconFromId(const QUrl &id) {
     return icon;
 }
 
-bool Utils::pathTypeNameCookieIconFromId(const QUrl &id, QString *path,
-                                         int *type, QString *name,
-                                         QString *cookie, QUrl *icon,
-                                         QString *desc, QString *author,
-                                         QUrl *origUrl, bool *ytdl, bool *play,
-                                         QString *app, int *duration) {
+bool Utils::pathTypeNameCookieIconFromId(
+    const QUrl &id, QString *path, int *type, QString *name, QString *cookie,
+    QUrl *icon, QString *desc, QString *author, QString *album, QUrl *origUrl,
+    bool *ytdl, bool *play, QString *app, int *duration) {
     if (!id.isValid()) {
         qWarning() << "Id is invalid:" << id.toString();
         return false;
@@ -267,8 +274,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl &id, QString *path,
             path->clear();
     }
 
-    if (type || cookie || name || desc || author || icon || origUrl || play ||
-        ytdl || app || duration) {
+    if (type || cookie || name || desc || author || album || icon || origUrl ||
+        play || ytdl || app || duration) {
         QUrlQuery q{id};
         if (type && q.hasQueryItem(Utils::typeKey))
             *type = q.queryItemValue(Utils::typeKey).toInt();
@@ -282,6 +289,8 @@ bool Utils::pathTypeNameCookieIconFromId(const QUrl &id, QString *path,
             *desc = q.queryItemValue(Utils::descKey);
         if (author && q.hasQueryItem(Utils::authorKey))
             *author = q.queryItemValue(Utils::authorKey);
+        if (album && q.hasQueryItem(Utils::albumKey))
+            *album = q.queryItemValue(Utils::albumKey);
         if (origUrl && q.hasQueryItem(Utils::origUrlKey))
             *origUrl = QUrl(q.queryItemValue(Utils::origUrlKey));
         if (play && q.hasQueryItem(Utils::playKey))
@@ -503,7 +512,9 @@ QString Utils::nameFromId(const QUrl &id) {
     return {};
 }
 
-void Utils::fixUrl(QUrl &url) { url.setQuery(QUrlQuery{url}); }
+void Utils::fixUrl(QUrl &url) {
+    url.setQuery(QUrlQuery(url));  // don't use QUrlQuery{}
+}
 
 QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id, bool swapCookie,
                         bool swapOrigUrl, bool swapYtdl) {
@@ -512,7 +523,8 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id, bool swapCookie,
         uq.removeAllQueryItems(Utils::cookieKey);
     if (uq.hasQueryItem(Utils::typeKey)) uq.removeAllQueryItems(Utils::typeKey);
 
-    QString cookie, type, name, icon, desc, author, origUrl, ytdl, dur, app;
+    QString cookie, type, name, icon, desc, author, album, origUrl, ytdl, dur,
+        app;
     QUrlQuery iq{id};
     if (swapCookie && iq.hasQueryItem(Utils::cookieKey))
         cookie = iq.queryItemValue(Utils::cookieKey);
@@ -526,6 +538,8 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id, bool swapCookie,
         desc = iq.queryItemValue(Utils::descKey);
     if (iq.hasQueryItem(Utils::authorKey))
         author = iq.queryItemValue(Utils::authorKey);
+    if (iq.hasQueryItem(Utils::albumKey))
+        album = iq.queryItemValue(Utils::albumKey);
     if (swapOrigUrl && iq.hasQueryItem(Utils::origUrlKey))
         origUrl = iq.queryItemValue(Utils::origUrlKey);
     if (swapYtdl && iq.hasQueryItem(Utils::ytdlKey))
@@ -539,6 +553,7 @@ QUrl Utils::swapUrlInId(const QUrl &url, const QUrl &id, bool swapCookie,
     if (!icon.isEmpty()) uq.addQueryItem(Utils::iconKey, icon);
     if (!desc.isEmpty()) uq.addQueryItem(Utils::descKey, desc);
     if (!author.isEmpty()) uq.addQueryItem(Utils::authorKey, author);
+    if (!album.isEmpty()) uq.addQueryItem(Utils::albumKey, album);
     if (!origUrl.isEmpty()) uq.addQueryItem(Utils::origUrlKey, origUrl);
     if (!ytdl.isEmpty()) uq.addQueryItem(Utils::ytdlKey, ytdl);
     if (!dur.isEmpty()) uq.addQueryItem(Utils::durKey, dur);
@@ -571,7 +586,12 @@ QUrl Utils::cleanId(const QUrl &id) {
     return id;
 }
 
-QUrl Utils::urlFromId(const QUrl &id) {
+QUrl Utils::urlFromId(const QUrl &id) { return urlsFromId(id).first; }
+
+QUrl Utils::urlFromId(const QString &id) { return urlFromId(QUrl{id}); }
+
+std::pair<QUrl, QUrl> Utils::urlsFromId(const QUrl &id) {
+    std::pair<QUrl, QUrl> urls{id, {}};
     QUrlQuery q{id};
     if (q.hasQueryItem(Utils::cookieKey))
         q.removeAllQueryItems(Utils::cookieKey);
@@ -581,15 +601,43 @@ QUrl Utils::urlFromId(const QUrl &id) {
     if (q.hasQueryItem(Utils::descKey)) q.removeAllQueryItems(Utils::descKey);
     if (q.hasQueryItem(Utils::authorKey))
         q.removeAllQueryItems(Utils::authorKey);
+    if (q.hasQueryItem(Utils::albumKey)) q.removeAllQueryItems(Utils::albumKey);
     if (q.hasQueryItem(Utils::playKey)) q.removeAllQueryItems(Utils::playKey);
-    if (q.hasQueryItem(Utils::origUrlKey))
+    if (q.hasQueryItem(Utils::origUrlKey)) {
+        urls.second = QUrl{q.queryItemValue(Utils::origUrlKey)};
         q.removeAllQueryItems(Utils::origUrlKey);
+    }
     if (q.hasQueryItem(Utils::ytdlKey)) q.removeAllQueryItems(Utils::ytdlKey);
     if (q.hasQueryItem(Utils::appKey)) q.removeAllQueryItems(Utils::appKey);
     if (q.hasQueryItem(Utils::durKey)) q.removeAllQueryItems(Utils::durKey);
-    QUrl url{id};
-    url.setQuery(q);
-    return url;
+
+    urls.first.setQuery(q);
+
+    return urls;
+}
+
+std::pair<QUrl, QUrl> Utils::urlsFromId(const QString &id) {
+    return urlsFromId(QUrl{id});
+}
+
+QString Utils::anonymizedUrl(const QUrl &url) {
+    auto path = url.path();
+    auto query = url.query();
+    return url.scheme() + "://" + url.authority() +
+           (path.isEmpty()     ? QString{}
+            : path.size() < 14 ? '/' + path
+                               : "/..." + (path.right(10))) +
+           (query.isEmpty()     ? QString{}
+            : query.size() < 14 ? query
+                                : "?..." + query.right(10));
+}
+
+QString Utils::anonymizedId(const QUrl &id) {
+    return swapUrlInId(QUrl{anonymizedUrl(urlFromId(id))}, id).toString();
+}
+
+QString Utils::anonymizedId(const QString &id) {
+    return anonymizedId(QUrl{id});
 }
 
 QUrl Utils::bestUrlFromId(const QUrl &id) {
@@ -611,8 +659,6 @@ QUrl Utils::bestUrlFromId(const QUrl &id) {
     url.setQuery(q);
     return url;
 }
-
-QUrl Utils::urlFromId(const QString &id) { return urlFromId(QUrl{id}); }
 
 QString Utils::randString(int len) {
     auto *t = QThread::currentThread();
@@ -649,10 +695,15 @@ QString Utils::deviceIconFileName(QString id, const QString &ext) {
 }
 
 QString Utils::deviceIconFilePath(const QString &id) {
-    auto jpgPath = cachePathForFile(deviceIconFileName(id, "jpg"));
-    return jpgPath.isEmpty()
-               ? Utils::cachePathForFile(deviceIconFileName(id, "png"))
-               : jpgPath;
+    if (auto path =
+            cachePathForFile(deviceIconFileName(id, QStringLiteral("jpg")))) {
+        return *path;
+    }
+    if (auto path =
+            cachePathForFile(deviceIconFileName(id, QStringLiteral("png")))) {
+        return *path;
+    }
+    return {};
 }
 
 QString Utils::escapeName(const QString &filename) {
@@ -678,3 +729,12 @@ void Utils::activateWindow() {
     }
 }
 #endif
+
+QString Utils::humanFriendlySizeString(int64_t size) {
+    if (size == 0) return "0";
+    if (size < 1024) return QStringLiteral("%1 B").arg(size);
+    if (size < 1048576) return QStringLiteral("%1 kB").arg(qFloor(size / 1024));
+    if (size < 1073741824)
+        return QStringLiteral("%1 MB").arg(qFloor(size / 1048576));
+    return QStringLiteral("%1 GB").arg(size / 1073741824);
+}

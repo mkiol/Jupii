@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,6 +7,8 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+
+import harbour.jupii.ContentServer 1.0
 
 Dialog {
     id: root
@@ -21,11 +23,9 @@ Dialog {
 
     onDone: {
         if (result === DialogResult.Accepted) {
-            if (audioSwitch.checked) {
-                playlist.addItemUrlAsAudio(url, name);
-            } else {
-                playlist.addItemUrl(url, name);
-            }
+            var type = audioSwitch.checked ? ContentServer.Type_Music :
+                          ContentServer.Type_Unknown
+            playlist.addItemUrl(url, type, name);
             app.popToQueue()
         }
     }
@@ -83,11 +83,11 @@ Dialog {
             TextSwitch {
                 id: audioSwitch
                 width: parent.width
-                text: qsTr("Add audio-only stream if possible")
+                text: qsTr("Add only audio stream")
             }
 
             Tip {
-                text: qsTr("Only HTTP URLs are supported. If URL points to a playlist file, " +
+                text: qsTr("Only HTTP/HTTPS URLs are supported. If URL points to a playlist file, " +
                            "first playlist item will be added. If URL doesn't point to any media content, " +
                            "youtube-dl will be used to find a direct media URL.")
             }

@@ -17,6 +17,7 @@
 #include <QStringList>
 #include <QThread>
 #include <memory>
+#include <optional>
 #ifdef SAILFISH
 #include <QQuickItem>
 #endif
@@ -30,6 +31,7 @@ class Utils : public QObject, public Singleton<Utils> {
     static const QString cookieKey;
     static const QString nameKey;
     static const QString authorKey;
+    static const QString albumKey;
     static const QString origUrlKey;
     static const QString iconKey;
     static const QString descKey;
@@ -48,6 +50,9 @@ class Utils : public QObject, public Singleton<Utils> {
     Q_INVOKABLE int prefNetworkInfIndex();
     Q_INVOKABLE void setPrefNetworkInfIndex(int idx) const;
     static QString escapeName(const QString &filename);
+    static QString anonymizedUrl(const QUrl &url);
+    static QString anonymizedId(const QUrl &id);
+    static QString anonymizedId(const QString &id);
 
 #ifdef SAILFISH
     void setQmlRootItem(QQuickItem *rootItem);
@@ -96,6 +101,8 @@ class Utils : public QObject, public Singleton<Utils> {
     static void fixUrl(QUrl &url);
     static QUrl urlFromId(const QUrl &id);
     static QUrl urlFromId(const QString &id);
+    static std::pair<QUrl, QUrl> urlsFromId(const QUrl &id);
+    static std::pair<QUrl, QUrl> urlsFromId(const QString &id);
     static QUrl bestUrlFromId(const QUrl &id);
     static QUrl cleanId(const QUrl &id);
     static QUrl iconFromId(const QUrl &id);
@@ -103,26 +110,28 @@ class Utils : public QObject, public Singleton<Utils> {
         const QUrl &id, QString *path = nullptr, int *type = nullptr,
         QString *name = nullptr, QString *cookie = nullptr,
         QUrl *icon = nullptr, QString *desc = nullptr,
-        QString *author = nullptr, QUrl *origUrl = nullptr,
-        bool *ytdl = nullptr, bool *play = nullptr, QString *app = nullptr,
-        int *duration = nullptr);
+        QString *author = nullptr, QString *album = nullptr,
+        QUrl *origUrl = nullptr, bool *ytdl = nullptr, bool *play = nullptr,
+        QString *app = nullptr, int *duration = nullptr);
     QString randString(int len = 5);
     static void removeFile(const QString &path);
-    static bool writeToCacheFile(const QString &filename,
-                                 const QByteArray &data, bool del = false);
+    static std::optional<QString> writeToCacheFile(const QString &filename,
+                                                   const QByteArray &data,
+                                                   bool del = false);
     static bool writeToFile(const QString &path, const QByteArray &data,
                             bool del = false);
     static void removeFromCacheDir(const QStringList &filter);
     static bool readFromCacheFile(const QString &filename, QByteArray &data);
     static QString pathToCacheFile(const QString &filename);
     static bool cacheFileExists(const QString &filename);
-    static QString cachePathForFile(const QString &filename);
+    static std::optional<QString> cachePathForFile(const QString &filename);
     static QString friendlyDate(const QDateTime &date);
     static QString parseArtist(const QString &artist);
     static QDateTime parseDate(const QString &date);
     static QString deviceIconFileName(QString id, const QString &ext);
     static QString deviceIconFilePath(const QString &id);
     static bool createPlaylistDir();
+    static QString humanFriendlySizeString(int64_t size);
 
    private:
     QHash<QThread *, bool> seedDone;

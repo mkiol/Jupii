@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,28 +12,33 @@
 #include <QDebug>
 #include <QFile>
 
-#include "playlistmodel.h"
 #include "avtransport.h"
+#include "contentserver.h"
+#include "info.h"
+#include "playlistmodel.h"
 #include "services.h"
 #include "utils.h"
-#include "info.h"
 
-DbusProxy::DbusProxy(QObject *parent) : QObject(parent),
-    player{this},
-    playlist{this}
-{
-    connect(PlaylistModel::instance(), &PlaylistModel::itemsLoaded, this, [this](){ setEnabled(true); }, Qt::QueuedConnection);
+DbusProxy::DbusProxy(QObject* parent)
+    : QObject{parent}, player{this}, playlist{this} {
+    connect(
+        PlaylistModel::instance(), &PlaylistModel::itemsLoaded, this,
+        [this] { setEnabled(true); }, Qt::QueuedConnection);
 
     auto con = QDBusConnection::sessionBus();
 
-    if (!con.registerObject("/", this)) {
-        qWarning() << "Dbus object registration failed:" << con.lastError().message();
-        if (con.lastError().type() == QDBusError::AddressInUse) throw std::runtime_error("dbus address in use");
+    if (!con.registerObject(QStringLiteral("/"), this)) {
+        qWarning() << "dbus object registration failed:"
+                   << con.lastError().message();
+        if (con.lastError().type() == QDBusError::AddressInUse)
+            throw std::runtime_error("dbus address in use");
         return;
     }
     if (!con.registerService(Jupii::DBUS_SERVICE)) {
-        qWarning() << "Dbus service registration failed:" << con.lastError().message();
-        if (con.lastError().type() == QDBusError::AddressInUse) throw std::runtime_error("dbus address in use");
+        qWarning() << "dbus service registration failed:"
+                   << con.lastError().message();
+        if (con.lastError().type() == QDBusError::AddressInUse)
+            throw std::runtime_error("dbus address in use");
         return;
     }
 
@@ -44,27 +49,23 @@ DbusProxy::DbusProxy(QObject *parent) : QObject(parent),
         connect(av.get(), &AVTransport::transportStateChanged, this,
                 &DbusProxy::updatePlaying, Qt::QueuedConnection);
     } else {
-        qWarning() << "AVTransport doesn't exist so cannot connect to dbus proxy";
+        qWarning() << "avt doesn't exist so cannot connect to dbus proxy";
     }
 
-    qDebug() << "Dbus service successfully registered";
+    qDebug() << "dbus service successfully registered";
 }
 
-DbusProxy::~DbusProxy()
-{
+DbusProxy::~DbusProxy() {
     setCanControl(false);
     setPlaying(false);
 }
 
-void DbusProxy::updatePlaying()
-{
+void DbusProxy::updatePlaying() {
     auto av = Services::instance()->avTransport;
-    if (av)
-        setPlaying(av->getTransportState() == AVTransport::Playing);
+    if (av) setPlaying(av->getTransportState() == AVTransport::Playing);
 }
 
-void DbusProxy::updateCanControl()
-{
+void DbusProxy::updateCanControl() {
     auto av = Services::instance()->avTransport;
     if (av) {
         setCanControl(av->getInited());
@@ -73,22 +74,15 @@ void DbusProxy::updateCanControl()
     }
 }
 
-QString DbusProxy::deviceName()
-{
+QString DbusProxy::deviceName() {
     auto av = Services::instance()->avTransport;
-    if (av)
-        av->getDeviceFriendlyName();
+    if (av) av->getDeviceFriendlyName();
     return {};
 }
 
-bool DbusProxy::canControl()
-{
-    qDebug() << "Dbus canControl, value:" << m_canControl;
-    return m_canControl;
-}
+bool DbusProxy::canControl() { return m_canControl; }
 
-void DbusProxy::setCanControl(bool value)
-{
+void DbusProxy::setCanControl(bool value) {
     if (m_canControl != value) {
         m_canControl = value;
         emit canControlChanged();
@@ -96,14 +90,9 @@ void DbusProxy::setCanControl(bool value)
     }
 }
 
-bool DbusProxy::playing()
-{
-    qDebug() << "Dbus playing, value:" << m_playing;
-    return m_playing;
-}
+bool DbusProxy::playing() { return m_playing; }
 
-void DbusProxy::setPlaying(bool value)
-{
+void DbusProxy::setPlaying(bool value) {
     if (m_playing != value) {
         m_playing = value;
         emit playingChanged();
@@ -111,49 +100,34 @@ void DbusProxy::setPlaying(bool value)
     }
 }
 
-void DbusProxy::appendPath(const QString& path)
-{
-    qDebug() << "Dbus appendPath, path:" << path;
-
+void DbusProxy::appendPath(const QString& path) {
     if (!enabled()) {
-        qWarning() << "Dbus not yet enabled";
+        qWarning() << "dbus not yet enabled";
         return;
     }
-
-    auto pl = PlaylistModel::instance();
-    pl->addItemPath(path);
+    PlaylistModel::instance()->addItemPath(path,
+                                           ContentServer::Type::Type_Unknown);
 }
 
-void DbusProxy::addPath(const QString& path, const QString& name)
-{
-    qDebug() << "Dbus addPath, path:" << path << name;
-
+void DbusProxy::addPath(const QString& path, const QString& name) {
     if (!enabled()) {
-        qWarning() << "Dbus not yet enabled";
+        qWarning() << "dbus not yet enabled";
         return;
     }
-
-    auto pl = PlaylistModel::instance();
-    pl->addItemPath(path, name);
+    PlaylistModel::instance()->addItemPath(
+        path, ContentServer::Type::Type_Unknown, name);
 }
 
-void DbusProxy::addUrl(const QString& url, const QString& name)
-{
-    qDebug() << "Dbus addUrl, url:" << url << name;
-
+void DbusProxy::addUrl(const QString& url, const QString& name) {
     if (!enabled()) {
-        qWarning() << "Dbus not yet enabled";
+        qWarning() << "dbus not yet enabled";
         return;
     }
-
-    auto pl = PlaylistModel::instance();
-    pl->addItemUrl(QUrl(url), name);
+    PlaylistModel::instance()->addItemUrl(
+        QUrl(url), ContentServer::Type::Type_Unknown, name);
 }
 
-void DbusProxy::openUrl(const QStringList& arguments)
-{
-    qDebug() << "Dbus openUrl, arguments:" << arguments;
-
+void DbusProxy::openUrl(const QStringList& arguments) {
     m_pendingOpenUrlArguments << arguments;
     if (enabled()) {
         openPendingUrl();
@@ -162,153 +136,129 @@ void DbusProxy::openUrl(const QStringList& arguments)
     }
 }
 
-void DbusProxy::openPendingUrl()
-{
+void DbusProxy::openPendingUrl() {
     if (!m_pendingOpenUrlArguments.isEmpty()) {
-        qDebug() << "Dbus openPendingUrl, arguments:" << m_pendingOpenUrlArguments;
-        foreach (const auto url, m_pendingOpenUrlArguments) addUrl(url, {});
+        qDebug() << "dbus pending open url arguments:"
+                 << m_pendingOpenUrlArguments;
+        foreach (const auto url, m_pendingOpenUrlArguments)
+            addUrl(url, {});
         m_pendingOpenUrlArguments.clear();
         focus();
     }
 }
 
-void DbusProxy::addPathOnce(const QString& path, const QString& name)
-{
-    qDebug() << "Dbus addPathOnce, path:" << path << name;
-
+void DbusProxy::addPathOnce(const QString& path, const QString& name) {
     if (!enabled()) {
-        qWarning() << "D-Bus not yet enabled";
+        qWarning() << "dbus not yet enabled";
         return;
     }
 
     auto pl = PlaylistModel::instance();
     if (pl->pathExists(path)) {
-        qDebug() << "Path already exists";
+        qDebug() << "path already exists";
     } else {
-        pl->addItemPath(path, name);
+        pl->addItemPath(path, ContentServer::Type::Type_Unknown, name);
     }
 }
 
-void DbusProxy::addPathOnceAndPlay(const QString& path, const QString& name)
-{
-    qDebug() << "Dbus addPathOnceAndPlay, path:" << path << name;
-
+void DbusProxy::addPathOnceAndPlay(const QString& path, const QString& name) {
     if (!enabled()) {
-        qWarning() << "Dbus not yet enabled";
+        qWarning() << "dbus not yet enabled";
         return;
     }
 
     auto pl = PlaylistModel::instance();
     if (pl->playPath(path)) {
-        qDebug() << "Path already exists";
+        qDebug() << "path already exists";
     } else {
-        pl->addItemPath(path, name, true);
+        pl->addItemPath(path, ContentServer::Type::Type_Unknown, name, true);
     }
 
     focus();
 }
 
-void DbusProxy::addUrlOnce(const QString& url, const QString& name)
-{
-    qDebug() << "Dbus addUrlOnce, url:" << url << name;
-
+void DbusProxy::addUrlOnce(const QString& url, const QString& name) {
     if (!enabled()) {
-        qWarning() << "Dbus not yet enabled";
+        qWarning() << "dbus not yet enabled";
         return;
     }
 
-    QUrl u(url);
+    QUrl u{url};
 
     auto pl = PlaylistModel::instance();
     if (pl->urlExists(u)) {
-        qDebug() << "Url already exists";
+        qDebug() << "url already exists";
     } else {
-        pl->addItemUrl(u, name);
+        pl->addItemUrl(u, ContentServer::Type::Type_Unknown, name);
     }
 }
 
-void DbusProxy::addUrlOnceAndPlay(const QString& url, const QString& name)
-{
-    qDebug() << "Dbus addUrlOnceAndPlay, url:" << url << name;
-
+void DbusProxy::addUrlOnceAndPlay(const QString& url, const QString& name) {
     if (!enabled()) {
-        qWarning() << "Dbus not yet enabled";
+        qWarning() << "dbus not yet enabled";
         return;
     }
 
-    QUrl u(url);
+    QUrl u{url};
 
     auto pl = PlaylistModel::instance();
     if (pl->playUrl(u)) {
-        qDebug() << "Url already exists";
+        qDebug() << "url already exists";
     } else {
-        pl->addItemUrl(u, name, {}, {}, {}, {}, {}, true);
+        pl->addItemUrl(u, ContentServer::Type::Type_Unknown, name, {}, {}, {},
+                       {}, {}, true);
     }
 
     focus();
 }
 
-void DbusProxy::add(const QString &url,
-                    const QString &origUrl,
-                    const QString &name,
-                    const QString &author,
-                    const QString &description,
-                    int type,
-                    const QString &app,
-                    const QString &icon,
-                    bool once,
-                    bool play) {
-    Q_UNUSED(type)
-    qDebug() << "Dbus add, url:" << url << name;
-
+void DbusProxy::add(const QString& url, const QString& origUrl,
+                    const QString& name, const QString& author,
+                    const QString& description, int type, const QString& app,
+                    const QString& icon, bool once, bool play) {
     if (!enabled()) {
-        qWarning() << "Dbus not yet enabled";
+        qWarning() << "dbus not yet enabled";
         return;
     }
 
     auto pl = PlaylistModel::instance();
 
-    QUrl u(url);
-    QUrl ou(origUrl);
+    QUrl u{url};
+    QUrl ou{origUrl};
 
-    if (once && (pl->urlExists(u) || (!origUrl.isEmpty() && pl->urlExists(ou)))) {
+    if (once &&
+        (pl->urlExists(u) || (!origUrl.isEmpty() && pl->urlExists(ou)))) {
         if (play) {
-            qDebug() << "Url already exists, so only playing it";
+            qDebug() << "url already exists, so only playing it";
             pl->playUrl(u);
         } else {
-            qDebug() << "Url already exists";
+            qDebug() << "url already exists";
         }
     } else {
-        pl->addItemUrl(u, name, ou, author, QUrl(icon), description, app, play);
+        pl->addItemUrl(u, static_cast<ContentServer::Type>(type), name, ou,
+                       author, QUrl{icon}, description, app, play);
     }
 }
 
-void DbusProxy::pause()
-{
+void DbusProxy::pause() {
     if (m_canControl) {
-        auto pl = PlaylistModel::instance();
-        pl->pause();
+        PlaylistModel::instance()->pause();
     }
 }
 
-void DbusProxy::play()
-{
+void DbusProxy::play() {
     if (m_canControl) {
-        auto pl = PlaylistModel::instance();
-        pl->play();
+        PlaylistModel::instance()->play();
     }
 }
 
-void DbusProxy::togglePlay()
-{
+void DbusProxy::togglePlay() {
     if (m_canControl) {
-        auto pl = PlaylistModel::instance();
-        pl->togglePlay();
+        PlaylistModel::instance()->togglePlay();
     }
 }
 
-void DbusProxy::focus()
-{
+void DbusProxy::focus() {
 #ifdef SAILFISH
     // bringing app to foreground
     emit focusRequested();
@@ -317,21 +267,15 @@ void DbusProxy::focus()
 #endif
 }
 
-void DbusProxy::clearPlaylist()
-{
-    qDebug() << "Dbus clearPlaylist";
-
+void DbusProxy::clearPlaylist() {
     if (!enabled()) {
-        qWarning() << "Dbus not yet enabled";
+        qWarning() << "dbus not yet enabled";
         return;
     }
-
-    auto pl = PlaylistModel::instance();
-    pl->clear();
+    PlaylistModel::instance()->clear();
 }
 
-void DbusProxy::setEnabled(bool value)
-{
+void DbusProxy::setEnabled(bool value) {
     if (m_enabled != value) {
         m_enabled = value;
         emit enabledChanged();

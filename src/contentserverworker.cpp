@@ -25,6 +25,8 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
       server{new QHttpServer{parent}},
       volumeBoost{Settings::instance()->getAudioBoost()} {
     qRegisterMetaType<ContentServerWorker::CacheLimit>("CacheLimit");
+    qRegisterMetaType<ContentServerWorker::CacheLimit>(
+        "ContentServerWorker::CacheLimit");
 
     connect(server, &QHttpServer::newRequest, this,
             &ContentServerWorker::requestHandler);
@@ -39,7 +41,7 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
 
     if (!server->listen(
             static_cast<quint16>(Settings::instance()->getPort()))) {
-        throw std::runtime_error("Unable to start HTTP server");
+        throw std::runtime_error("unable to start http server");
     }
 
     proxiesCleanupTimer.setTimerType(Qt::TimerType::VeryCoarseTimer);
@@ -60,9 +62,21 @@ void ContentServerWorker::closeRecFile(Proxy &proxy) {
     }
 }
 
-void ContentServerWorker::cleanCacheFiles() {
-    Utils::removeFromCacheDir(
-        {"rec-*.*", "passlogfile-*.*", "art-*.*", "art_image_*.*"});
+void ContentServerWorker::cleanCacheFiles(bool force) {
+    auto cleaningType = Settings::instance()->cacheCleaningType();
+    qDebug() << "cleaning cache type:" << cleaningType;
+
+    QStringList filters{"rec-*.*", "passlogfile-*.*", "art-*.*",
+                        "art_image_*.*", "tmp_*.*"};
+
+    if (force ||
+        cleaningType == Settings::CacheCleaningType::CacheCleaning_Auto ||
+        cleaningType == Settings::CacheCleaningType::CacheCleaning_Always) {
+        filters.push_back(QStringLiteral("extracted_audio_*.*"));
+        filters.push_back(QStringLiteral("cache_*.*"));
+    }
+
+    Utils::removeFromCacheDir(filters);
 }
 
 void ContentServerWorker::openRecFile(Proxy &proxy, Proxy::Source &source) {
@@ -147,32 +161,32 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
                                          QHttpResponse *resp) {
     qDebug() << ">>> requestHandler";
     qDebug() << "  method:" << req->methodString();
-    qDebug() << "  URL:" << req->url().path();
-    qDebug() << "  headers:" << req->url().path();
+    qDebug() << "  path:" << req->url().path();
+    qDebug() << "  headers:";
     for (auto it = req->headers().cbegin(); it != req->headers().cend(); ++it) {
         qDebug() << "    " << it.key() << ":" << it.value();
     }
 
     if (req->method() != QHttpRequest::HTTP_GET &&
         req->method() != QHttpRequest::HTTP_HEAD) {
-        qWarning() << "Request method is unsupported";
+        qWarning() << "request method is unsupported";
         resp->setHeader(QStringLiteral("Allow"), QStringLiteral("HEAD, GET"));
         sendEmptyResponse(resp, 405);
         return;
     }
 
-    const auto id = ContentServer::instance()->idUrlFromUrl(req->url());
+    auto id = ContentServer::instance()->idUrlFromUrl(req->url());
     if (!id) {
-        qWarning() << "Unknown content requested!";
+        qWarning() << "unknown content requested";
         sendEmptyResponse(resp, 404);
         return;
     }
 
-    qDebug() << "Id:" << id->toString();
+    qDebug() << "id:" << Utils::anonymizedId(*id);
 
-    const auto meta = ContentServer::instance()->getMetaForId(*id, false);
+    auto *meta = ContentServer::instance()->getMetaForId(*id, false);
     if (!meta) {
-        qWarning() << "No meta item found";
+        qWarning() << "no meta item found";
         sendEmptyResponse(resp, 404);
         return;
     }
@@ -193,23 +207,24 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
     } else if (meta->itemType == ContentServer::ItemType_AudioCapture) {
         requestForAudioCaptureHandler(*id, meta, req, resp);
     } else if (meta->itemType == ContentServer::ItemType_Url) {
-        if (!meta->path.isEmpty()) {
+        if (!meta->path.isEmpty() &&
+            !meta->flagSet(ContentServer::MetaFlag::MadeFromCache)) {
             requestForFileHandler(*id, meta, req, resp);
         } else {
-            requestForUrlHandler(*id, req, resp);
+            requestForUrlHandler(*id, meta, req, resp);
         }
     } else {
-        qWarning() << "Unknown item type";
+        qWarning() << "unknown item type";
         sendEmptyResponse(resp, 404);
     }
 }
 
 void ContentServerWorker::responseForAudioCaptureDone() {
-    qDebug() << "Audio capture HTTP response done";
+    qDebug() << "audio capture http response done";
     auto resp = sender();
     for (int i = 0; i < audioCaptureItems.size(); ++i) {
         if (resp == audioCaptureItems[i].resp) {
-            qDebug() << "Removing finished audio capture item";
+            qDebug() << "removing finished audio capture item";
             auto id = audioCaptureItems.at(i).id;
             audioCaptureItems.removeAt(i);
             emit itemRemoved(id);
@@ -218,18 +233,18 @@ void ContentServerWorker::responseForAudioCaptureDone() {
     }
 
     if (audioCaptureItems.isEmpty()) {
-        qDebug() << "No clients for audio capture connected, "
+        qDebug() << "no clients for audio capture connected, "
                     "so ending audio capturing";
         audioCaster.reset();
     }
 }
 
 void ContentServerWorker::responseForScreenCaptureDone() {
-    qDebug() << "Screen capture HTTP response done";
+    qDebug() << "screen capture http response done";
     auto resp = sender();
     for (int i = 0; i < screenCaptureItems.size(); ++i) {
         if (resp == screenCaptureItems[i].resp) {
-            qDebug() << "Removing finished screen capture item";
+            qDebug() << "removing finished screen capture item";
             auto id = screenCaptureItems.at(i).id;
             screenCaptureItems.removeAt(i);
             emit itemRemoved(id);
@@ -238,14 +253,14 @@ void ContentServerWorker::responseForScreenCaptureDone() {
     }
 
     if (screenCaptureItems.isEmpty()) {
-        qDebug() << "No clients for screen capture connected, "
+        qDebug() << "no clients for screen capture connected, "
                     "so ending screen capturing";
         screenCaster.reset();
     }
 }
 
 void ContentServerWorker::screenErrorHandler() {
-    qWarning() << "Error in screen casting, "
+    qWarning() << "error in screen casting, "
                   "so disconnecting clients and ending casting";
     foreach (auto &item, screenCaptureItems)
         item.resp->end();
@@ -257,7 +272,7 @@ void ContentServerWorker::screenErrorHandler() {
 }
 
 void ContentServerWorker::audioErrorHandler() {
-    qWarning() << "Error in audio casting, so disconnecting clients and ending "
+    qWarning() << "error in audio casting, so disconnecting clients and ending "
                   "casting";
     foreach (auto &item, audioCaptureItems)
         item.resp->end();
@@ -270,7 +285,7 @@ void ContentServerWorker::audioErrorHandler() {
 
 void ContentServerWorker::micErrorHandler() {
     qWarning()
-        << "Error in mic casting, so disconnecting clients and ending casting";
+        << "error in mic casting, so disconnecting clients and ending casting";
     foreach (auto &item, micItems)
         item.resp->end();
     foreach (const auto &item, micItems)
@@ -280,26 +295,33 @@ void ContentServerWorker::micErrorHandler() {
     micCaster.reset();
 }
 
-void ContentServerWorker::requestForFileHandler(
-    const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
-    QHttpResponse *resp) {
-    const auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
-    if (meta->type == ContentServer::Type::Video &&
-        type == ContentServer::Type::Music) {
+void ContentServerWorker::requestForFileHandler(const QUrl &id,
+                                                ContentServer::ItemMeta *meta,
+                                                QHttpRequest *req,
+                                                QHttpResponse *resp) {
+    auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
+
+    if (meta->type == ContentServer::Type::Type_Video &&
+        type == ContentServer::Type::Type_Music) {
         if (id.scheme() == QStringLiteral("qrc")) {
-            qWarning() << "Unable to extract audio stream from qrc";
+            qWarning() << "unable to extract audio stream from qrc";
             sendEmptyResponse(resp, 500);
             return;
         }
-        qDebug()
-            << "Video content and type is audio => extracting audio stream";
-        auto avData = Transcoder::extractAudio(meta->path);
-        if (!avData) {
-            qWarning() << "Unable to extract audio stream";
-            sendEmptyResponse(resp, 404);
-            return;
+
+        qDebug() << "video content but audio type requested => using extracted "
+                    "audio stream";
+
+        if (!meta->audioAvMeta || !QFile::exists(meta->audioAvMeta->path)) {
+            meta->audioAvMeta = Transcoder::extractAudio(meta->path);
+            if (!meta->audioAvMeta) {
+                qWarning() << "unable to extract audio stream";
+                sendEmptyResponse(resp, 404);
+                return;
+            }
         }
-        streamFile(avData->path, avData->mime, req, resp);
+
+        streamFile(meta->audioAvMeta->path, meta->audioAvMeta->mime, req, resp);
     } else {
         streamFile(meta->path, meta->mime, req, resp);
     }
@@ -311,21 +333,24 @@ void ContentServerWorker::requestForUrlHandlerFallback(const QUrl &id,
                                                        const QUrl &origUrl,
                                                        QHttpRequest *req,
                                                        QHttpResponse *resp) {
-    qDebug() << "Request fallback from" << id << "to" << origUrl;
+    qDebug() << "request fallback from" << Utils::anonymizedId(id) << "to"
+             << origUrl;
 
-    const auto meta =
-        ContentServer::instance()->getMeta(origUrl, true);  // create new meta
+    auto meta = ContentServer::instance()->getMeta(
+        origUrl, true, {}, {}, false, false, false,
+        static_cast<ContentServer::Type>(
+            Utils::typeFromId(id)));  // create new meta
     if (!meta) {
-        qWarning() << "No meta item";
+        qWarning() << "no meta item";
         sendEmptyResponse(resp, 404);
         return;
     }
 
     const auto finalId = Utils::swapUrlInId(meta->url, id);
 
-    qDebug() << "finalId:" << finalId;
+    qDebug() << "final id:" << Utils::anonymizedId(finalId);
 
-    requestForUrlHandler(finalId, req, resp);
+    requestForUrlHandler(finalId, meta, req, resp);
 }
 
 QNetworkReply *ContentServerWorker::makeRequest(const QUrl &id,
@@ -341,7 +366,12 @@ QNetworkReply *ContentServerWorker::makeRequest(const QUrl &id,
 QNetworkReply *ContentServerWorker::makeRequest(const QUrl &id,
                                                 const QByteArray &range) {
     QNetworkRequest request;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                         QNetworkRequest::NoLessSafeRedirectPolicy);
+#else
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
     request.setUrl(Utils::urlFromId(id));
     request.setRawHeader(QByteArrayLiteral("Icy-MetaData"),
                          QByteArrayLiteral("1"));
@@ -365,17 +395,17 @@ QByteArray ContentServerWorker::makeRangeHeader(int start, int end) {
     return QStringLiteral("bytes=%1-").arg(start).toLatin1();
 }
 
-void ContentServerWorker::makeProxy(const QUrl &id, const bool first,
-                                    const CacheLimit cacheLimit,
+void ContentServerWorker::makeProxy(const QUrl &id, bool first,
+                                    CacheLimit cacheLimit,
                                     const QByteArray &range, QHttpRequest *req,
                                     QHttpResponse *resp) {
     const auto meta = ContentServer::instance()->getMetaForId(id, false);
-    if (!meta) qWarning() << "No meta item found";
+    if (!meta) qWarning() << "no meta item found";
 
     if (proxies.contains(id))
-        qDebug() << "Proxy already exists for the id";
+        qDebug() << "proxy already exists for the id";
     else
-        qDebug() << "Making new proxy";
+        qDebug() << "making new proxy";
 
     Proxy &proxy = proxies[id];
 
@@ -388,6 +418,7 @@ void ContentServerWorker::makeProxy(const QUrl &id, const bool first,
         proxy.mode = meta->flagSet(ContentServer::MetaFlag::PlaylistProxy)
                          ? Proxy::Mode::Playlist
                          : Proxy::Mode::Streaming;
+        proxy.otype = meta->type;
         if (reply->url() != meta->origUrl) proxy.origUrl = meta->origUrl;
     }
 
@@ -396,31 +427,17 @@ void ContentServerWorker::makeProxy(const QUrl &id, const bool first,
     QString name;
     QUrl icon;
     Utils::pathTypeNameCookieIconFromId(proxy.id, nullptr, nullptr, &name,
-                                        nullptr, &icon, nullptr, &proxy.author);
+                                        nullptr, &icon, nullptr, &proxy.author,
+                                        &proxy.album);
     if (name.isEmpty() && meta)
         proxy.title = ContentServer::bestName(*meta);
     else
         proxy.title = std::move(name);
 
     if (!icon.isEmpty()) {
-        auto artMeta = ContentServer::instance()->getMeta(icon, false);
-        if (artMeta && !artMeta->path.isEmpty()) {  // art icon cache found
-            proxy.artPath = artMeta->path;
-        } else if (QFileInfo::exists(icon.toLocalFile())) {
-            proxy.artPath = icon.toLocalFile();
-        }
-    } else if (meta && !meta->albumArt.isEmpty()) {
-        qDebug() << "meta->albumArt:" << meta->albumArt;
-        if (QFileInfo::exists(meta->albumArt)) {
-            proxy.artPath = meta->albumArt;
-        } else if (meta->albumArt.startsWith("qrc:")) {  // remove 'qrc'
-            proxy.artPath = meta->albumArt.right(meta->albumArt.size() - 3);
-        } else {
-            auto artMeta =
-                ContentServer::instance()->getMeta(QUrl{meta->albumArt}, false);
-            if (artMeta && !artMeta->path.isEmpty())  // art icon cache found
-                proxy.artPath = artMeta->path;
-        }
+        proxy.artPath = ContentServer::localArtPathIfExists(icon.toString());
+    } else if (meta) {
+        proxy.artPath = ContentServer::localArtPathIfExists(meta->albumArt);
     }
 
     if (req && resp) {
@@ -430,7 +447,7 @@ void ContentServerWorker::makeProxy(const QUrl &id, const bool first,
 
         proxy.addSink(req, resp);
         auto source = proxy.replyMatched(resp);
-        if (!source) throw std::runtime_error("No source for sink");
+        if (!source) throw std::runtime_error("no source for sink");
 
         if (!proxy.connected) {
             proxy.connected = true;
@@ -458,7 +475,7 @@ void ContentServerWorker::makeProxy(const QUrl &id, const bool first,
 void ContentServerWorker::startProxy(const QUrl &id) {
     const auto meta = ContentServer::instance()->getMetaForId(id, false);
     if (!meta) {
-        qWarning() << "No meta item found";
+        qWarning() << "no meta item found";
         emit proxyError(id);
         return;
     }
@@ -467,7 +484,7 @@ void ContentServerWorker::startProxy(const QUrl &id) {
     logProxies();
 
     if (proxies.contains(id)) {
-        qWarning() << "Proxy already exists";
+        qWarning() << "proxy already exists";
         const auto proxy = proxies[id];
         if (proxy.connected && !proxy.sinks.isEmpty()) {
             emit proxyConnected(id);
@@ -485,18 +502,18 @@ void ContentServerWorker::startProxy(const QUrl &id) {
 }
 
 void ContentServerWorker::logProxies() const {
-    qDebug() << "Proxies:";
+    qDebug() << "proxies:";
     int i = 1;
     for (auto it = proxies.cbegin(); it != proxies.cend(); ++it, ++i) {
         const auto &proxy = it.value();
-        qDebug() << i << "|"
+        qDebug() << "  " << i << "|"
                  << "sources:" << proxy.sources.size()
                  << ", sinks:" << proxy.sinks.size();
     }
 }
 
 void ContentServerWorker::logProxySinks(const Proxy &proxy) {
-    qDebug() << "Sinks:";
+    qDebug() << "sinks:";
     int i = 1;
     for (auto it = proxy.sinks.cbegin(); it != proxy.sinks.cend(); ++it, ++i) {
         const auto &sink = it.value();
@@ -506,20 +523,20 @@ void ContentServerWorker::logProxySinks(const Proxy &proxy) {
 }
 
 void ContentServerWorker::logProxySources(const Proxy &proxy) {
-    qDebug() << "Sources:";
+    qDebug() << "sources:";
     int i = 1;
     for (auto it = proxy.sources.cbegin(); it != proxy.sources.cend();
          ++it, ++i) {
         const auto &source = it.value();
         if (source.range)
-            qDebug() << i << "|"
+            qDebug() << "  " << i << "|"
                      << "sources:" << source.reply << source.range.value()
                      << static_cast<int>(source.cacheDone)
                      << ", cache:" << source.cache.size() << "("
                      << source.cacheLimit.minSize << "/"
                      << source.cacheLimit.maxSize << ")";
         else
-            qDebug() << i << "|"
+            qDebug() << "  " << i << "|"
                      << "sources:" << source.reply << "no-range"
                      << static_cast<int>(source.cacheDone)
                      << ", cache:" << source.cache.size() << "("
@@ -529,23 +546,23 @@ void ContentServerWorker::logProxySources(const Proxy &proxy) {
 }
 
 void ContentServerWorker::logProxySourceToSinks(const Proxy &proxy) {
-    qDebug() << "Source to Sink:";
+    qDebug() << "source to sink:";
     int i = 1;
     for (auto it = proxy.sourceToSinkMap.cbegin();
          it != proxy.sourceToSinkMap.cend(); ++it, ++i) {
-        qDebug() << i << "|" << it.key() << "->" << it.value();
+        qDebug() << "  " << i << "|" << it.key() << "->" << it.value();
     }
 }
 
-void ContentServerWorker::startProxyInternal(const QUrl &id, const bool first,
-                                             const CacheLimit cacheLimit,
+void ContentServerWorker::startProxyInternal(const QUrl &id, bool first,
+                                             CacheLimit cacheLimit,
                                              const QByteArray &range,
                                              QHttpRequest *req,
                                              QHttpResponse *resp) {
     const bool cachedRequest = !resp;
 
     if (cachedRequest && matchedSourceExists(id, range)) {
-        qDebug() << "Matched source already exists";
+        qDebug() << "matched source already exists";
         return;
     }
 
@@ -555,7 +572,7 @@ void ContentServerWorker::startProxyInternal(const QUrl &id, const bool first,
         proxy.addSink(req, resp);
 
         if (auto reply = proxy.replyMatched(resp)) {
-            qDebug() << "Matching source found";
+            qDebug() << "matching source found";
 
             resp->disconnect(this);
             connect(resp, &QHttpResponse::done, this,
@@ -573,35 +590,56 @@ void ContentServerWorker::startProxyInternal(const QUrl &id, const bool first,
             return;
         }
 
-        qDebug() << "Matching source not found";
+        qDebug() << "matching source not found";
     }
 
     makeProxy(id, first, cacheLimit, range, req, resp);
 }
 
-void ContentServerWorker::requestForUrlHandler(const QUrl &id,
-                                               QHttpRequest *req,
-                                               QHttpResponse *resp) {
+void ContentServerWorker::requestForCachedContent(
+    const QUrl &id, const ContentServer::ItemMeta *meta, const QString &path,
+    ContentServer::Type type, QHttpRequest *req, QHttpResponse *resp) {
+    // recording is possible only for audio canched files
+    if (meta->type == ContentServer::Type::Type_Music ||
+        type == ContentServer::Type::Type_Music) {
+        emit streamRecordableChanged(id, true, path);
+    }
+
+    streamFile(path, meta->mime, req, resp);
+}
+
+void ContentServerWorker::requestForUrlHandler(
+    const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
+    QHttpResponse *resp) {
     // 0 - proxy for all
     // 1 - redirection for all
     // 2 - none for all
     // 3 - proxy for shoutcast, redirection for others
     // 4 - proxy for shoutcast, none for others
-    const auto relay = Settings::instance()->getRemoteContentMode();
+    const auto relay =
+        Settings::instance()->getRemoteContentMode();  // TO-DO: convert to enum
 
     if (relay == 1 || relay == 3) {
-        qDebug() << "Redirection mode";
+        qDebug() << "redirection mode";
         sendRedirection(resp, Utils::urlFromId(id).toString());
         return;
     }
 
     if (relay == 2) {
-        qWarning() << "Relaying is disabled";
+        qWarning() << "relaying is disabled";
         sendEmptyResponse(resp, 500);
         return;
     }
 
-    qDebug() << "Proxy mode:" << resp;
+    auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
+
+    if (auto path = ContentServer::pathToCachedContent(*meta, true, type)) {
+        qDebug() << "cached content exists:" << *path;
+        requestForCachedContent(id, meta, *path, type, req, resp);
+        return;
+    }
+
+    qDebug() << "proxy mode:" << resp;
     logProxies();
     startProxyInternal(id, false, CacheLimit{}, {}, req, resp);
 }
@@ -609,11 +647,11 @@ void ContentServerWorker::requestForUrlHandler(const QUrl &id,
 void ContentServerWorker::handleHeadRequest(const ContentServer::ItemMeta *meta,
                                             QHttpRequest *req,
                                             QHttpResponse *resp) {
-    qDebug() << "HEAD request handling:" << resp;
+    qDebug() << "head request handling:" << resp;
     if (req->method() != QHttpRequest::HTTP_HEAD)
-        throw std::runtime_error("Request is not HEAD");
+        throw std::runtime_error("request is not head");
 
-    const auto seekSupported = meta->flagSet(ContentServer::MetaFlag::Seek);
+    auto seekSupported = meta->flagSet(ContentServer::MetaFlag::Seek);
 
     resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
     resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
@@ -638,7 +676,7 @@ void ContentServerWorker::handleHeadRequest(const ContentServer::ItemMeta *meta,
         const auto range = Range::fromRange(
             req->headers().value(QStringLiteral("range")), meta->size);
         if (!range) {
-            qWarning() << "Unable to read or invalid Range header";
+            qWarning() << "unable to read or invalid range header";
             sendEmptyResponse(resp, 416);
             return;
         }
@@ -665,13 +703,13 @@ void ContentServerWorker::handleHeadRequest(const ContentServer::ItemMeta *meta,
 void ContentServerWorker::requestForMicHandler(
     const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
     QHttpResponse *resp) {
-    qDebug() << "Sending 200 response and starting streaming";
+    qDebug() << "sending 200 response and starting streaming";
     resp->writeHead(200);
 
     if (!micCaster) {
         micCaster = std::make_unique<MicCaster>();
         if (!micCaster->init()) {
-            qWarning() << "Cannot init mic caster";
+            qWarning() << "cannot init mic caster";
             micCaster.reset();
             sendEmptyResponse(resp, 500);
             return;
@@ -704,12 +742,12 @@ void ContentServerWorker::requestForMicHandler(
 void ContentServerWorker::requestForAudioCaptureHandler(
     const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
     QHttpResponse *resp) {
-    qDebug() << "Audio capture request handler";
+    qDebug() << "audio capture request handler";
 
     if (!audioCaster) {
         audioCaster = std::make_unique<AudioCaster>();
         if (!audioCaster->init()) {
-            qWarning() << "Cannot init audio caster";
+            qWarning() << "cannot init audio caster";
             audioCaster.reset();
             sendEmptyResponse(resp, 500);
             return;
@@ -717,13 +755,13 @@ void ContentServerWorker::requestForAudioCaptureHandler(
     }
 
     if (!pulseSource->start()) {
-        qWarning() << "Cannot init pulse audio";
+        qWarning() << "cannot init pulse audio";
         audioCaster.reset();
         sendEmptyResponse(resp, 500);
         return;
     }
 
-    qDebug() << "Sending 200 response and starting streaming";
+    qDebug() << "sending 200 response and starting streaming";
     resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
     resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
     resp->setHeader(QStringLiteral("transferMode.dlna.org"),
@@ -751,7 +789,7 @@ void ContentServerWorker::requestForAudioCaptureHandler(
 void ContentServerWorker::requestForScreenCaptureHandler(
     const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
     QHttpResponse *resp) {
-    qDebug() << "Screen capture request handler";
+    qDebug() << "screen capture request handler";
 
     if (!Settings::instance()->getScreenSupported()) {
         qWarning() << "Screen capturing is not supported";
@@ -759,13 +797,13 @@ void ContentServerWorker::requestForScreenCaptureHandler(
         return;
     }
 
-    qDebug() << "Sending 200 response and starting streaming";
+    qDebug() << "sending 200 response and starting streaming";
 
     bool startNeeded = false;
     if (!screenCaster) {
         screenCaster = std::make_unique<ScreenCaster>();
         if (!screenCaster->init()) {
-            qWarning() << "Cannot init screen capture";
+            qWarning() << "cannot init screen capture";
             screenCaster.reset();
             sendEmptyResponse(resp, 500);
             return;
@@ -786,7 +824,7 @@ void ContentServerWorker::requestForScreenCaptureHandler(
         screenCaster->start();
         if (Settings::instance()->getScreenAudio()) {
             if (!pulseSource->start()) {
-                qWarning() << "Pulse cannot be started";
+                qWarning() << "pulse cannot be started";
                 sendEmptyResponse(resp, 500);
                 return;
             }
@@ -810,7 +848,7 @@ void ContentServerWorker::requestForScreenCaptureHandler(
 void ContentServerWorker::seqWriteData(std::shared_ptr<QFile> file, qint64 size,
                                        QHttpResponse *resp) {
     if (resp->isFinished()) {
-        qWarning() << "Connection closed by server, so skiping data sending";
+        qWarning() << "connection closed by server, so skiping data sending";
     } else {
         qint64 rlen = size;
         const qint64 len =
@@ -829,17 +867,17 @@ void ContentServerWorker::seqWriteData(std::shared_ptr<QFile> file, qint64 size,
                 return;
             }
         } else {
-            qWarning() << "No more data to read";
+            qWarning() << "no more data to read";
         }
 
-        qDebug() << "All data sent, so ending connection";
+        qDebug() << "all data sent, so ending connection";
     }
 
     resp->end();
 }
 
 void ContentServerWorker::sendEmptyResponse(QHttpResponse *resp, int code) {
-    qDebug() << "sendEmptyResponse:" << resp << code;
+    qDebug() << "send empty response:" << resp << code;
     resp->setHeader(QStringLiteral("Content-Length"), QStringLiteral("0"));
     resp->writeHead(code);
     resp->end();
@@ -847,14 +885,14 @@ void ContentServerWorker::sendEmptyResponse(QHttpResponse *resp, int code) {
 
 void ContentServerWorker::sendResponse(QHttpResponse *resp, int code,
                                        const QByteArray &data) {
-    qDebug() << "sendResponse:" << resp << code;
+    qDebug() << "send response:" << resp << code;
     resp->writeHead(code);
     resp->end(data);
 }
 
 void ContentServerWorker::sendRedirection(QHttpResponse *resp,
                                           const QString &location) {
-    qDebug() << "sendRedirection:" << resp << location;
+    qDebug() << "send redirection:" << resp << location;
     resp->setHeader(QStringLiteral("Location"), location);
     resp->setHeader(QStringLiteral("Content-Length"), QStringLiteral("0"));
     resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
@@ -863,11 +901,11 @@ void ContentServerWorker::sendRedirection(QHttpResponse *resp,
 }
 
 void ContentServerWorker::responseForMicDone() {
-    qDebug() << "Mic HTTP response done";
+    qDebug() << "mic http response done";
     auto resp = sender();
     for (int i = 0; i < micItems.size(); ++i) {
         if (resp == micItems[i].resp) {
-            qDebug() << "Removing finished mic item";
+            qDebug() << "removing finished mic item";
             auto id = micItems.at(i).id;
             micItems.removeAt(i);
             emit itemRemoved(id);
@@ -876,7 +914,7 @@ void ContentServerWorker::responseForMicDone() {
     }
 
     if (micItems.isEmpty()) {
-        qDebug() << "No clients for mic connected, "
+        qDebug() << "no clients for mic connected, "
                     "so ending mic casting";
         micCaster.reset();
     }
@@ -885,10 +923,10 @@ void ContentServerWorker::responseForMicDone() {
 void ContentServerWorker::responseForUrlDone() {
     auto resp = qobject_cast<QHttpResponse *>(sender());
 
-    qDebug() << "Response done:" << resp;
+    qDebug() << "response done:" << resp;
 
     if (!resp->property("proxy").isValid()) {
-        qWarning() << "No proxy id for resp";
+        qWarning() << "no proxy id for resp";
         return;
     }
 
@@ -902,9 +940,9 @@ void ContentServerWorker::responseForUrlDone() {
 
 void ContentServerWorker::removeProxySource(Proxy &proxy,
                                             QNetworkReply *reply) {
-    qDebug() << "Removing proxy source:" << reply;
+    qDebug() << "removing proxy source:" << reply;
     if (!proxy.sources.contains(reply))
-        throw std::runtime_error("No source for reply");
+        throw std::runtime_error("no source for reply");
 
     finishRecFile(proxy, proxy.sources[reply]);
     proxy.removeSource(reply);
@@ -912,10 +950,10 @@ void ContentServerWorker::removeProxySource(Proxy &proxy,
 }
 
 void ContentServerWorker::removeProxy(const QUrl &id) {
-    qDebug() << "Removing proxy";
+    qDebug() << "removing proxy";
 
     if (!proxies.contains(id)) {
-        qWarning() << "No proxy for id";
+        qWarning() << "no proxy for id";
         return;
     }
 
@@ -937,7 +975,7 @@ void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
     auto resps = proxy.sourceToSinkMap.values(reply);
     for (auto resp : resps) {
         if (!proxy.sinks.contains(resp))
-            throw std::runtime_error("No sink for resp");
+            throw std::runtime_error("no sink for resp");
         qDebug() << "calling handleRespWithProxyMetaData for sink:" << resp
                  << resp->isFinished();
         if (!resp->isFinished()) {
@@ -951,7 +989,7 @@ void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
                                                       QHttpRequest *,
                                                       QHttpResponse *resp,
                                                       QNetworkReply *reply) {
-    qDebug() << "Handle resp with proxy meta data:" << reply << resp;
+    qDebug() << "handle resp with proxy meta data:" << reply << resp;
 
     if (!proxy.sources.contains(reply))
         throw std::runtime_error("No source for reply");
@@ -1016,14 +1054,14 @@ void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
                             QString::fromLatin1(h.second));
     }
 
-    qDebug() << "Sending resp:" << code;
+    qDebug() << "sending resp:" << code;
 
     resp->writeHead(code);
     if (source.state == Proxy::State::Streaming) {
         proxy.writeNotSent(reply, resp);
     }
     if (reply->isFinished()) {
-        qDebug() << "Ending resp because reply is finished";
+        qDebug() << "ending resp because reply is finished";
         resp->end();
     }
 }
@@ -1031,15 +1069,15 @@ void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
 void ContentServerWorker::proxyMetaDataChanged() {
     const auto reply = qobject_cast<QNetworkReply *>(sender());
     if (!reply->property("proxy").isValid()) {
-        qWarning() << "No proxy id for reply";
+        qWarning() << "no proxy id for reply";
         return;
     }
 
-    qDebug() << "Proxy meta data received:" << reply;
+    qDebug() << "proxy meta data received:" << reply;
 
     const auto id = reply->property("proxy").toUrl();
     if (!proxies.contains(id)) {
-        qWarning() << "No proxy for id";
+        qWarning() << "no proxy for id";
         return;
     }
 
@@ -1055,21 +1093,21 @@ void ContentServerWorker::proxyMetaDataChanged() {
     const auto code =
         reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-    qDebug() << "Source state:" << static_cast<int>(source.state);
-    qDebug() << "Reply status:" << code << reason;
-    if (error != QNetworkReply::NoError) qDebug() << "Error code:" << error;
-    qDebug() << "Headers:";
+    qDebug() << "source state:" << static_cast<int>(source.state);
+    qDebug() << "reply status:" << code << reason;
+    if (error != QNetworkReply::NoError) qDebug() << "error code:" << error;
+    qDebug() << "headers:";
     for (const auto &p : reply->rawHeaderPairs()) {
-        qDebug() << p.first << p.second;
+        qDebug() << "  " << p.first << p.second;
     }
 
     if (error != QNetworkReply::NoError || code > 299) {
-        qWarning() << "Error response from network server";
+        qWarning() << "error response from network server";
         proxy.sendEmptyResponseAll(reply, code < 400 ? 404 : code);
     } else if (reply->header(QNetworkRequest::ContentTypeHeader)
                    .toString()
                    .isEmpty()) {
-        qWarning() << "No content type header receive from network server";
+        qWarning() << "no content type header receive from network server";
         proxy.sendEmptyResponseAll(reply, 404);
     } else if (source.state == Proxy::State::Initial) {
         processNewSource(proxy, source);
@@ -1083,17 +1121,17 @@ void ContentServerWorker::proxyMetaDataChanged() {
     removeProxySource(proxy, reply);
 }
 
-void ContentServerWorker::requestAdditionalSource(
-    const QUrl &id, const int length, const ContentServer::Type type) {
+void ContentServerWorker::requestAdditionalSource(const QUrl &id, int length,
+                                                  ContentServer::Type type) {
     if (length <= 2 * CacheLimit::DEFAULT_DELTA) {
-        qDebug() << "Skipping additional source because length is to short:"
+        qDebug() << "skipping additional source because length is to short:"
                  << length;
         return;
     }
 
     const int delta =
         std::max(static_cast<int>(length / 60), CacheLimit::DEFAULT_DELTA);
-    qDebug() << "Requesting proxy additional source:" << length << delta;
+    qDebug() << "requesting proxy additional source:" << length << delta;
 
     emit proxyRequested(id, false, CacheLimit::fromType(type, delta),
                         makeRangeHeader(length - delta, -1), nullptr, nullptr);
@@ -1103,7 +1141,7 @@ void ContentServerWorker::requestFullSource(const QUrl &id, const int length,
                                             const ContentServer::Type type) {
     const int delta =
         std::max(static_cast<int>(length / 60), CacheLimit::DEFAULT_DELTA);
-    qDebug() << "Requesting proxy full source:" << length << delta;
+    qDebug() << "requesting proxy full source:" << length << delta;
 
     emit proxyRequested(id, true, CacheLimit::fromType(type, delta), {},
                         nullptr, nullptr);
@@ -1128,7 +1166,7 @@ void ContentServerWorker::processNewSource(Proxy &proxy,
         source.range = range;
     }
 
-    qDebug() << "Content full length:" << source.length;
+    qDebug() << "content full length:" << source.length;
 
     proxy.updateRageLength(source);
 
@@ -1151,9 +1189,9 @@ void ContentServerWorker::initRecFile(Proxy &proxy, Proxy::Source &source) {
         const auto mime =
             source.reply->header(QNetworkRequest::ContentTypeHeader).toString();
         if (ContentServer::getExtensionFromAudioContentType(mime).isEmpty()) {
-            qDebug() << "Stream should not be recorded";
+            qDebug() << "stream should not be recorded";
         } else {
-            qDebug() << "Stream should be recorded";
+            qDebug() << "stream should be recorded";
             source.recFile = std::make_shared<QFile>();
             if (!source.hasMeta()) openRecFile(proxy, source);
         }
@@ -1161,22 +1199,22 @@ void ContentServerWorker::initRecFile(Proxy &proxy, Proxy::Source &source) {
 }
 
 void ContentServerWorker::proxyRedirected(const QUrl &url) {
-    qDebug() << "Proxy redirected to:" << url;
+    qDebug() << "proxy redirected to:" << url;
 }
 
 void ContentServerWorker::proxyFinished() {
     auto reply = qobject_cast<QNetworkReply *>(sender());
     if (!reply->property("proxy").isValid()) {
-        qWarning() << "No proxy id for reply";
+        qWarning() << "no proxy id for reply";
         reply->deleteLater();
         return;
     }
 
-    qDebug() << "Proxy finished:" << reply;
+    qDebug() << "proxy finished:" << reply;
 
     const auto id = reply->property("proxy").toUrl();
     if (!proxies.contains(id)) {
-        qWarning() << "No proxy for id";
+        qWarning() << "no proxy for id";
         reply->deleteLater();
         return;
     }
@@ -1184,7 +1222,7 @@ void ContentServerWorker::proxyFinished() {
     auto &proxy = proxies[id];
 
     if (!proxy.sources.contains(reply))
-        throw std::runtime_error("No source for reply");
+        throw std::runtime_error("no source for reply");
     auto &source = proxy.sources[reply];
 
     const auto code =
@@ -1196,7 +1234,7 @@ void ContentServerWorker::proxyFinished() {
     if (source.state == Proxy::State::Initial) {
         proxy.sendEmptyResponseAll(reply, code < 200 ? 404 : code);
     } else if (source.state == Proxy::State::Buffering) {
-        qDebug() << "Playlist proxy mode, so sending all data";
+        qDebug() << "playlist proxy mode, so sending all data";
         auto data = reply->readAll();
         if (!data.isEmpty()) {
             // Resolving relative URLs in a playlist
@@ -1206,14 +1244,14 @@ void ContentServerWorker::proxyFinished() {
             else
                 source.cache = data;
         } else {
-            qWarning() << "Data is empty";
+            qWarning() << "data is empty";
         }
         proxy.connected = true;
         emit proxyConnected(proxy.id);
     } else if (proxy.sourceShouldBeRemoved(source)) {
-        qDebug() << "Source should be removed";
+        qDebug() << "source should be removed";
     } else {
-        qDebug() << "Source finished but before cache limit";
+        qDebug() << "source finished but before cache limit";
         checkCachedCondition(proxy);
         proxy.writeNotSentAll(reply);
         proxy.endSinks(reply);
@@ -1232,7 +1270,7 @@ void ContentServerWorker::setStreamToRecord(const QUrl &id, bool value) {
     for (Proxy &item : proxies) {
         if (item.id == id) {
             if (item.saveRec != value) {
-                qDebug() << "Setting stream to record:" << id << value;
+                qDebug() << "setting stream to record:" << id << value;
                 item.saveRec = value;
                 emit streamToRecordChanged(id, value);
             } else {
@@ -1246,7 +1284,7 @@ QByteArray ContentServerWorker::processShoutcastMetadata(Proxy &proxy,
                                                          QNetworkReply *reply,
                                                          QByteArray data) {
     if (!proxy.sources.contains(reply))
-        throw std::runtime_error("No sourece for reply");
+        throw std::runtime_error("no sourece for reply");
     auto &source = proxy.sources[reply];
 
     if (!source.prevData.isEmpty()) {
@@ -1285,36 +1323,37 @@ QByteArray ContentServerWorker::processShoutcastMetadata(Proxy &proxy,
                 source.prevData = metadata;
                 source.metacounter = bytes - metadata.size();
                 return data;
-            } else {  // full metadata received
-                source.metasize = size + 1;
-                if (size > 0) {
-                    const auto metadata = data.mid(start + offset + 1, size);
-                    if (metadata != proxy.metadata) {
-                        const auto newTitle =
-                            ContentServer::streamTitleFromShoutcastMetadata(
-                                metadata);
-#ifdef QT_DEBUG
-                        const auto oldTitle =
-                            ContentServer::streamTitleFromShoutcastMetadata(
-                                proxy.metadata);
-                        qDebug() << "metadata:" << proxy.metadata << oldTitle
-                                 << "->" << metadata << newTitle;
-#endif
-                        if (source.recFile) {
-                            if (source.recFile->isOpen())
-                                saveRecFile(proxy, source);
-                            if (!newTitle.isEmpty()) openRecFile(proxy, source);
-                        }
-
-                        proxy.metadata = metadata;
-                        source.metadata = metadata;
-                        emit shoutcastMetadataUpdated(proxy.id, proxy.metadata);
-                    }
-                    totalsize += size;
-                }
-
-                rpoints.append({start + offset, size + 1});
             }
+
+            // full metadata received
+            source.metasize = size + 1;
+            if (size > 0) {
+                const auto metadata = data.mid(start + offset + 1, size);
+                if (metadata != proxy.metadata) {
+                    const auto newTitle =
+                        ContentServer::streamTitleFromShoutcastMetadata(
+                            metadata);
+#ifdef QT_DEBUG
+                    const auto oldTitle =
+                        ContentServer::streamTitleFromShoutcastMetadata(
+                            proxy.metadata);
+                    qDebug() << "metadata:" << proxy.metadata << oldTitle
+                             << "->" << metadata << newTitle;
+#endif
+                    if (source.recFile) {
+                        if (source.recFile->isOpen())
+                            saveRecFile(proxy, source);
+                        if (!newTitle.isEmpty()) openRecFile(proxy, source);
+                    }
+
+                    proxy.metadata = metadata;
+                    source.metadata = metadata;
+                    emit shoutcastMetadataUpdated(proxy.id, proxy.metadata);
+                }
+                totalsize += size;
+            }
+
+            rpoints.append({start + offset, size + 1});
             mcount += source.metaint + 1;
         } else {
             mcount += source.metaint;
@@ -1367,7 +1406,7 @@ ContentServerWorker::Proxy::sourceMatchesRange(Source &source,
                range->end == source.range->length - 1) ||
               (range->end == -1 &&
                source.range->end == source.range->length - 1)))) {
-            qDebug() << "source matched: Exact" << source.reply;
+            qDebug() << "source matched: exact" << source.reply;
             return MatchType::Exact;
         }
 
@@ -1383,13 +1422,13 @@ ContentServerWorker::Proxy::sourceMatchesRange(Source &source,
             ((!source.range && range->start <= source.cacheLimit.delta) ||
              (range->start <= (source.range->start + source.cacheLimit.delta) &&
               range->start >= source.range->start))) {
-            qDebug() << "source matched: Delta (" << source.cache.size() << ")"
+            qDebug() << "source matched: delta (" << source.cache.size() << ")"
                      << source.reply;
             return MatchType::Delta;
         }
     }
 
-    qDebug() << "source matched: Not" << source.reply;
+    qDebug() << "source matched: not" << source.reply;
     return type;
 }
 
@@ -1419,21 +1458,21 @@ void ContentServerWorker::Proxy::recordData(QNetworkReply *reply,
 void ContentServerWorker::proxyReadyRead() {
     auto reply = qobject_cast<QNetworkReply *>(sender());
     if (!reply->property("proxy").isValid()) {
-        qWarning() << "No proxy id for reply";
+        qWarning() << "no proxy id for reply";
         reply->abort();
         return;
     }
 
     const auto id = reply->property("proxy").toUrl();
     if (!proxies.contains(id)) {
-        qWarning() << "No proxy for id";
+        qWarning() << "no proxy for id";
         reply->abort();
         return;
     }
 
     auto &proxy = proxies[id];
     if (!proxy.sources.contains(reply))
-        throw std::runtime_error("No source for reply");
+        throw std::runtime_error("no source for reply");
     auto &source = proxy.sources[reply];
 
     // qDebug() << "Ready read:" << reply;
@@ -1444,14 +1483,15 @@ void ContentServerWorker::proxyReadyRead() {
     }
 
     if (proxy.sourceShouldBeRemoved(source)) {
-        qDebug() << "Source should be removed";
+        qDebug() << "source should be removed";
         removeProxySource(proxy, source.reply);
         return;
     }
 
     // qDebug() << "proxyReadyRead:" << reply << reply->bytesAvailable();
 
-    dispatchProxyData(proxy, reply, reply->readAll());
+    auto data = reply->readAll();
+    dispatchProxyData(proxy, reply, data);
 }
 
 void ContentServerWorker::Proxy::Source::trimProxyCache() {
@@ -1478,12 +1518,12 @@ void ContentServerWorker::checkCachedCondition(Proxy &proxy) {
     }
 
     if (proxy.minCacheReached()) {
-        qDebug() << "Min cache size reached";
+        qDebug() << "min cache size reached";
         proxy.connected = true;
         proxy.resetCacheTimer();
         emit proxyConnected(proxy.id);
     } else if (proxy.maxCacheReached()) {
-        qDebug() << "Max cache reached";
+        qDebug() << "max cache reached";
         proxy.connected = true;
         proxy.resetCacheTimer();
         emit proxyConnected(proxy.id);
@@ -1491,14 +1531,13 @@ void ContentServerWorker::checkCachedCondition(Proxy &proxy) {
 }
 
 void ContentServerWorker::dispatchProxyData(Proxy &proxy, QNetworkReply *reply,
-                                            const QByteArray &data) {
+                                            QByteArray &data) {
     auto &source = proxy.sources[reply];
 
-    const auto cacheState = source.maxCacheReached();
+    auto cacheState = source.maxCacheReached();
 
     if (source.hasMeta()) {
-        const auto dataWithoutMeta =
-            processShoutcastMetadata(proxy, reply, data);
+        auto dataWithoutMeta = processShoutcastMetadata(proxy, reply, data);
         proxy.recordData(reply, dataWithoutMeta);
         source.cache.append(data);
         source.cacheWithoutMeta.append(dataWithoutMeta);
@@ -1544,7 +1583,7 @@ std::optional<ContentServerWorker::Range> ContentServerWorker::Range::fromRange(
         }
     }
 
-    qWarning() << "Invalid Range:" << rangeHeader;
+    qWarning() << "invalid range:" << rangeHeader;
     return std::nullopt;
 }
 
@@ -1572,7 +1611,7 @@ void ContentServerWorker::streamFileRange(std::shared_ptr<QFile> file,
     const auto range =
         Range::fromRange(req->headers().value(QStringLiteral("range")), length);
     if (!range) {
-        qWarning() << "Unable to read on invalid Range header";
+        qWarning() << "unable to read on invalid range header";
         sendEmptyResponse(resp, 416);
     }
 
@@ -1580,7 +1619,7 @@ void ContentServerWorker::streamFileRange(std::shared_ptr<QFile> file,
                     QString::number(range->rangeLength()));
     resp->setHeader(QStringLiteral("Content-Range"),
                     QStringLiteral("bytes ") + QString::number(range->start) +
-                        "-" + QString::number(range->end) + "/" +
+                        '-' + QString::number(range->end) + '/' +
                         QString::number(length));
 
     resp->writeHead(206);
@@ -1604,7 +1643,7 @@ void ContentServerWorker::streamFile(const QString &path, const QString &mime,
     auto file = std::make_shared<QFile>(path);
 
     if (!file->open(QFile::ReadOnly)) {
-        qWarning() << "Unable to open file:" << file->fileName();
+        qWarning() << "unable to open file:" << file->fileName();
         sendEmptyResponse(resp, 500);
         return;
     }
@@ -1660,8 +1699,7 @@ void ContentServerWorker::dispatchPulseData(const void *data, int size) {
     if (audioCaptureEnabled || screenCaptureAudioEnabled) {
         QByteArray d;
         if (data) {
-            // qDebug() << "writing data:" << size << volumeBoost;
-            if (volumeBoost > 1.0f) {  // increasing volume level
+            if (volumeBoost > 1.0F) {  // increasing volume level
                 d = QByteArray(static_cast<const char *>(data),
                                size);  // deep copy
                 adjustVolume(&d, volumeBoost, true);
@@ -1670,9 +1708,7 @@ void ContentServerWorker::dispatchPulseData(const void *data, int size) {
                                             size);
             }
         } else {
-            // writing null data
-            // qDebug() << "writing null data:" << size;
-            d = QByteArray(size, '\0');
+            d = QByteArray(size, '\0');  // writing null data
         }
         if (audioCaptureEnabled) audioCaster->writeAudioData(d);
         if (screenCaptureAudioEnabled) screenCaster->writeAudioData(d);
@@ -1681,7 +1717,7 @@ void ContentServerWorker::dispatchPulseData(const void *data, int size) {
 
 void ContentServerWorker::sendMicData(const void *data, int size) {
     if (micItems.isEmpty()) {
-        qDebug() << "No mic items";
+        qDebug() << "no mic items";
         return;
     }
 
@@ -1690,11 +1726,11 @@ void ContentServerWorker::sendMicData(const void *data, int size) {
     auto i = micItems.begin();
     while (i != micItems.end()) {
         if (!i->resp->isHeaderWritten()) {
-            qWarning() << "Head not written";
+            qWarning() << "head not written";
             i->resp->end();
         }
         if (i->resp->isFinished()) {
-            qWarning() << "Server request already finished, "
+            qWarning() << "server request already finished, "
                           "so removing mic item";
             const auto id = i->id;
             i = micItems.erase(i);
@@ -1708,7 +1744,7 @@ void ContentServerWorker::sendMicData(const void *data, int size) {
 
 void ContentServerWorker::sendAudioCaptureData(const void *data, int size) {
     if (audioCaptureItems.isEmpty()) {
-        qDebug() << "No audio capture items";
+        qDebug() << "no audio capture items";
         return;
     }
 
@@ -1717,11 +1753,11 @@ void ContentServerWorker::sendAudioCaptureData(const void *data, int size) {
     auto i = audioCaptureItems.begin();
     while (i != audioCaptureItems.end()) {
         if (!i->resp->isHeaderWritten()) {
-            qWarning() << "Head not written";
+            qWarning() << "head not written";
             i->resp->end();
         }
         if (i->resp->isFinished()) {
-            qWarning() << "Server request already finished, "
+            qWarning() << "server request already finished, "
                           "so removing audio capture item";
             const auto id = i->id;
             i = audioCaptureItems.erase(i);
@@ -1735,7 +1771,7 @@ void ContentServerWorker::sendAudioCaptureData(const void *data, int size) {
 
 void ContentServerWorker::sendScreenCaptureData(const void *data, int size) {
     if (screenCaptureItems.isEmpty()) {
-        qDebug() << "No screen items";
+        qDebug() << "no screen items";
         return;
     }
 
@@ -1744,11 +1780,11 @@ void ContentServerWorker::sendScreenCaptureData(const void *data, int size) {
     auto i = screenCaptureItems.begin();
     while (i != screenCaptureItems.end()) {
         if (!i->resp->isHeaderWritten()) {
-            qWarning() << "Head not written";
+            qWarning() << "head not written";
             i->resp->end();
         }
         if (i->resp->isFinished()) {
-            qWarning() << "Server request already finished, "
+            qWarning() << "server request already finished, "
                           "so removing screen item";
             const auto id = i->id;
             i = screenCaptureItems.erase(i);
@@ -1763,11 +1799,11 @@ void ContentServerWorker::sendScreenCaptureData(const void *data, int size) {
 std::optional<QNetworkReply *> ContentServerWorker::Proxy::matchSource(
     QHttpResponse *resp) {
     if (matchedSinkExists(resp)) {
-        qWarning() << "Sink already has matched source";
+        qWarning() << "sink already has matched source";
         return std::nullopt;
     }
 
-    if (!sinks.contains(resp)) throw std::runtime_error("No sink for resp");
+    if (!sinks.contains(resp)) throw std::runtime_error("no sink for resp");
 
     auto &sink = sinks[resp];
 
@@ -1841,7 +1877,7 @@ std::optional<QNetworkReply *> ContentServerWorker::Proxy::replyMatched(
 QList<QHttpResponse *> ContentServerWorker::Proxy::matchSinks(
     QNetworkReply *reply) {
     if (!sources.contains(reply))
-        throw std::runtime_error("No source for reply");
+        throw std::runtime_error("no source for reply");
 
     QList<QHttpResponse *> resps;
 
@@ -1857,7 +1893,7 @@ QList<QHttpResponse *> ContentServerWorker::Proxy::matchSinks(
         }
     }
 
-    qDebug() << "Matched sinks:" << reply << resps.size();
+    qDebug() << "matched sinks:" << reply << resps.size();
 
     return resps;
 }
@@ -1894,7 +1930,7 @@ void ContentServerWorker::Proxy::addSink(QHttpRequest *req,
 
     matchSource(resp);
 
-    qDebug() << "Sink added:" << resp << sinks.size();
+    qDebug() << "sink added:" << resp << sinks.size();
     ContentServerWorker::logProxySinks(*this);
     ContentServerWorker::logProxySourceToSinks(*this);
 }
@@ -1906,7 +1942,7 @@ void ContentServerWorker::Proxy::removeSink(QHttpResponse *resp) {
 
     unmatchSink(resp);
 
-    qDebug() << "Sink removed:" << resp << sinks.size();
+    qDebug() << "sink removed:" << resp << sinks.size();
     ContentServerWorker::logProxySinks(*this);
     ContentServerWorker::logProxySourceToSinks(*this);
 
@@ -1918,9 +1954,8 @@ void ContentServerWorker::Proxy::removeSink(QHttpResponse *resp) {
     }
 }
 
-void ContentServerWorker::Proxy::addSource(QNetworkReply *reply,
-                                           const bool first,
-                                           const CacheLimit cacheLimit) {
+void ContentServerWorker::Proxy::addSource(QNetworkReply *reply, bool first,
+                                           CacheLimit cacheLimit) {
     if (sources.contains(reply)) return;
 
     reply->setProperty("proxy", id);
@@ -1936,7 +1971,7 @@ void ContentServerWorker::Proxy::addSource(QNetworkReply *reply,
 
     matchSinks(reply);
 
-    qDebug() << "Source added:" << reply << sources.size();
+    qDebug() << "source added:" << reply << sources.size();
     ContentServerWorker::logProxySources(*this);
     ContentServerWorker::logProxySourceToSinks(*this);
 }
@@ -1947,7 +1982,7 @@ void ContentServerWorker::Proxy::removeSource(QNetworkReply *reply) {
     sources.remove(reply);
     unmatchSource(reply);
 
-    qDebug() << "Source removed:" << reply << sources.size();
+    qDebug() << "source removed:" << reply << sources.size();
     ContentServerWorker::logProxySources(*this);
     ContentServerWorker::logProxySourceToSinks(*this);
 
@@ -2018,42 +2053,42 @@ ContentServerWorker::Proxy::CacheReachedType
 ContentServerWorker::Proxy::Source::maxCacheReached() {
     if (cacheDone == CacheReachedType::All) return CacheReachedType::All;
 
-    const auto time = cacheStart.secsTo(QTime::currentTime());
+    auto time = cacheStart.secsTo(QTime::currentTime());
 
-    const CacheReachedType type = [time, this] {
+    CacheReachedType type = [time, this] {
         if (cacheDone == CacheReachedType::BuffFull ||
             (cacheLimit.maxSize != CacheLimit::INF_SIZE &&
              cache.size() > cacheLimit.maxSize)) {
             if (cacheDone == CacheReachedType::Timeout ||
                 (cacheLimit.maxTime != CacheLimit::INF_TIME &&
-                 time > cacheLimit.maxTime))
+                 time > cacheLimit.maxTime)) {
                 return CacheReachedType::All;
-            else
-                return CacheReachedType::BuffFull;
+            }
+            return CacheReachedType::BuffFull;
         }
         if (cacheDone == CacheReachedType::Timeout ||
             (cacheLimit.maxTime != CacheLimit::INF_TIME &&
-             time > cacheLimit.maxTime))
+             time > cacheLimit.maxTime)) {
             return CacheReachedType::Timeout;
-        else
-            return CacheReachedType::NotReached;
+        }
+        return CacheReachedType::NotReached;
     }();
 
     if (type == CacheReachedType::All) {
-        qDebug() << "Proxy cache reached (All):" << reply;
-        qDebug() << "Cache limits:" << reply << ", size:" << cache.size() << "("
+        qDebug() << "proxy cache reached (all):" << reply;
+        qDebug() << "cache limits:" << reply << ", size:" << cache.size() << "("
                  << cacheLimit.maxSize << "), time:" << time << "("
                  << cacheLimit.maxTime << ")";
         cache.clear();
         cacheWithoutMeta.clear();
     } else if (cacheDone != type && type == CacheReachedType::Timeout) {
-        qDebug() << "Proxy cache reached (Timeout):" << reply;
-        qDebug() << "Cache limits:" << reply << ", size:" << cache.size() << "("
+        qDebug() << "proxy cache reached (timeout):" << reply;
+        qDebug() << "cache limits:" << reply << ", size:" << cache.size() << "("
                  << cacheLimit.maxSize << "), time:" << time << "("
                  << cacheLimit.maxTime << ")";
     } else if (cacheDone != type && type == CacheReachedType::BuffFull) {
-        qDebug() << "Proxy cache reached (BuffFull):" << reply;
-        qDebug() << "Cache limits:" << reply << ", size:" << cache.size() << "("
+        qDebug() << "proxy cache reached (buff full):" << reply;
+        qDebug() << "cache limits:" << reply << ", size:" << cache.size() << "("
                  << cacheLimit.maxSize << "), time:" << time << "("
                  << cacheLimit.maxTime << ")";
         cache.clear();
@@ -2061,7 +2096,7 @@ ContentServerWorker::Proxy::Source::maxCacheReached() {
     }
 
     if (cacheDone != type) {
-        qDebug() << "Cache state change:" << static_cast<int>(cacheDone) << "->"
+        qDebug() << "cache state change:" << static_cast<int>(cacheDone) << "->"
                  << static_cast<int>(type);
         cacheDone = type;
     }
@@ -2070,7 +2105,7 @@ ContentServerWorker::Proxy::Source::maxCacheReached() {
 }
 
 void ContentServerWorker::Proxy::Source::resetCacheTimer() {
-    const auto cacheState = maxCacheReached();
+    auto cacheState = maxCacheReached();
 
     if (cacheState != CacheReachedType::NotReached) {
         cacheDone = CacheReachedType::NotReached;
@@ -2134,7 +2169,7 @@ void ContentServerWorker::Proxy::removeDeadSources() {
 }
 
 void ContentServerWorker::removeDeadProxies() {
-    qDebug() << "Checking for dead proxies and sources";
+    qDebug() << "checking for dead proxies and sources";
     proxiesCleanupTimer.stop();
 
     const auto ids = proxies.keys();
@@ -2204,10 +2239,10 @@ bool ContentServerWorker::Proxy::Source::openRecFile() {
             QStringLiteral("rec-%1.%2")
                 .arg(Utils::instance()->randString(),
                      ContentServer::getExtensionFromAudioContentType(mime)));
-        qDebug() << "Opening file for recording:" << recFilePath;
+        qDebug() << "opening file for recording:" << recFilePath;
         recFile->setFileName(recFilePath);
         if (recFile->open(QIODevice::WriteOnly)) return true;
-        qWarning() << "File for recording cannot be open";
+        qWarning() << "file for recording cannot be open";
     }
 
     return false;
@@ -2229,10 +2264,10 @@ std::optional<QString> ContentServerWorker::Proxy::Source::endRecFile(
         return std::nullopt;
     }
 
-    qDebug() << "Saving tmp recorded file:" << title;
+    qDebug() << "saving tmp recorded file:" << title;
 
     if (!recFile->exists() || recFile->size() <= ContentServer::recMinSize) {
-        qDebug() << "Recorded file doesn't exist or tiny size";
+        qDebug() << "recorded file doesn't exist or tiny size";
         recFile->remove();
         return std::nullopt;
     }
@@ -2245,7 +2280,7 @@ std::optional<QString> ContentServerWorker::Proxy::Source::endRecFile(
                          .toString()));
 
     if (!recFile->copy(tmpFile)) {
-        qWarning() << "Cannot copy file:" << recFile->fileName() << tmpFile;
+        qWarning() << "cannot copy file:" << recFile->fileName() << tmpFile;
         recFile->remove();
         return std::nullopt;
     }
@@ -2256,14 +2291,9 @@ std::optional<QString> ContentServerWorker::Proxy::Source::endRecFile(
                                        : proxy.origUrl.toString();
 
     if (!ContentServer::writeMetaUsingTaglib(
-            tmpFile,                                   // path
-            title,                                     // title
-            metaint > 0 ? proxy.title : proxy.author,  // author
-            ContentServer::recAlbumName,               // album
-            {},                                        // comment
-            url,                                       // URL
-            QDateTime::currentDateTime(),              // time of recording
-            proxy.artPath)) {
+            tmpFile, true, title, metaint > 0 ? proxy.title : proxy.author,
+            ContentServer::recAlbumName, {}, url, QDateTime::currentDateTime(),
+            proxy.artPath, proxy.otype)) {
         qWarning() << "cannot write meta using taglib";
     };
 
@@ -2291,26 +2321,40 @@ ContentServerWorker::Proxy::Source::saveRecFile(const Proxy &proxy) {
         return std::nullopt;
     }
 
-    qDebug() << "Saving recorded file for title:" << title;
+    qDebug() << "saving recorded file for title:" << title;
 
     if (!recFile->exists() || recFile->size() <= ContentServer::recMinSize) {
-        qDebug() << "Recorded file doesn't exist or tiny size";
+        qDebug() << "recorded file doesn't exist or tiny size";
         recFile->remove();
         return std::nullopt;
     }
+
+    auto mime = reply->header(QNetworkRequest::ContentTypeHeader).toString();
 
     auto recFilePath = QDir{Settings::instance()->getRecDir()}.filePath(
         QStringLiteral("%1.%2.%3.%4")
             .arg(Utils::escapeName(title), Utils::instance()->randString(),
                  "jupii_rec",
-                 ContentServer::getExtensionFromAudioContentType(
-                     reply->header(QNetworkRequest::ContentTypeHeader)
-                         .toString())));
+                 ContentServer::getExtensionFromAudioContentType(mime)));
 
-    if (!recFile->copy(recFilePath)) {
-        qWarning() << "Cannot copy file:" << recFile->fileName() << recFilePath;
-        recFile->remove();
-        return std::nullopt;
+    if (mime == QStringLiteral("audio/mp4") &&
+        !Transcoder::isMp4Isom(recFile->fileName())) {
+        auto avMeta =
+            Transcoder::extractAudio(recFile->fileName(), recFilePath);
+        if (!avMeta) {
+            qWarning() << "cannot transcode file:" << recFile->fileName()
+                       << recFilePath;
+            recFile->remove();
+            return std::nullopt;
+        }
+        recFilePath = std::move(avMeta->path);
+    } else {
+        if (!recFile->copy(recFilePath)) {
+            qWarning() << "cannot copy file:" << recFile->fileName()
+                       << recFilePath;
+            recFile->remove();
+            return std::nullopt;
+        }
     }
 
     recFile->remove();
@@ -2319,21 +2363,16 @@ ContentServerWorker::Proxy::Source::saveRecFile(const Proxy &proxy) {
                                        : proxy.origUrl.toString();
 
     if (!ContentServer::writeMetaUsingTaglib(
-            recFilePath,                               // path
-            title,                                     // title
-            metaint > 0 ? proxy.title : proxy.author,  // author
-            ContentServer::recAlbumName,               // album
-            {},                                        // comment
-            url,                                       // URL
-            QDateTime::currentDateTime(),              // time of recording
-            proxy.artPath)) {
+            recFilePath, true, title, metaint > 0 ? proxy.title : proxy.author,
+            ContentServer::recAlbumName, {}, url, QDateTime::currentDateTime(),
+            proxy.artPath, proxy.otype)) {
         qWarning() << "cannot write meta using taglib";
     };
 
     return std::pair{title, recFilePath};
 }
 
-void ContentServerWorker::Range::updateLength(const int length) {
+void ContentServerWorker::Range::updateLength(int length) {
     this->length = length;
     if (end == -1 && length > -1) end = length - 1;
 }
@@ -2377,10 +2416,12 @@ bool ContentServerWorker::Proxy::Source::minCacheReached() const {
 
 QDebug operator<<(QDebug debug, const ContentServerWorker::Range &range) {
     QDebugStateSaver saver{debug};
-    debug.nospace()
-        << "Range("
-        << QString{"%1-%2/%3"}.arg(range.start).arg(range.end).arg(range.length)
-        << ")";
+    debug.nospace() << "Range("
+                    << QStringLiteral("%1-%2/%3")
+                           .arg(range.start)
+                           .arg(range.end)
+                           .arg(range.length)
+                    << ")";
     return debug;
 }
 

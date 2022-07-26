@@ -447,15 +447,14 @@ QString AVTransport::getCurrentURL()
 
 QString AVTransport::getContentType()
 {
-    const auto ai = PlaylistModel::instance()->getActiveItem();
-    if (!ai)
-        return {};
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (!ai) return {};
     return ai->ctype();
 }
 
 bool AVTransport::getCurrentYtdl()
 {
-    const auto ai = PlaylistModel::instance()->getActiveItem();
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
     return ai ? ai->ytdl() : false;
 }
 
@@ -491,74 +490,63 @@ QString AVTransport::getCurrentClass()
 
 QString AVTransport::getCurrentTitle()
 {
-    const auto ai = PlaylistModel::instance()->getActiveItem();
-    if (!ai)
-        return m_currentTitle;
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (!ai) return m_currentTitle;
     return ai->name();
 }
 
 QString AVTransport::getCurrentAuthor()
 {
-    const auto ai = PlaylistModel::instance()->getActiveItem();
-    if (!ai)
-        return m_currentAuthor;
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (!ai) return m_currentAuthor;
     return ai->artist();
 }
 
 QString AVTransport::getCurrentDescription()
 {
-    const auto ai = PlaylistModel::instance()->getActiveItem();
-    if (!ai)
-        return m_currentDescription;
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (!ai) return m_currentDescription;
     return ai->desc();
 }
 
 QUrl AVTransport::getCurrentAlbumArtURI()
 {
-    const auto ai = PlaylistModel::instance()->getActiveItem();
-    if (!ai)
-        return m_currentAlbumArtURI;
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (!ai) return m_currentAlbumArtURI;
     return ai->icon();
 }
 
 QString AVTransport::getCurrentAlbum()
 {
-    const auto ai = PlaylistModel::instance()->getActiveItem();
-    if (!ai)
-        return m_currentAlbum;
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (!ai) return m_currentAlbum;
     return ai->album();
 }
 
 QString AVTransport::getCurrentRecDate()
 {
-    const auto ai = PlaylistModel::instance()->getActiveItem();
-    if (!ai)
-        return {};
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (!ai) return {};
     return ai->friendlyRecDate();
 }
 
 QString AVTransport::getCurrentRecUrl()
 {
     const auto ai = PlaylistModel::instance()->getActiveItem();
-    if (!ai)
-        return {};
+    if (!ai) return {};
     return ai->recUrl();
 }
 
 bool AVTransport::getNextSupported()
 {
-    if (ignoreActions())
-        return !m_nextURI.isEmpty();
-
+    if (ignoreActions()) return !m_nextURI.isEmpty();
     return (m_currentTransportActions & UPnPClient::AVTransport::TPA_Next) &&
                 !m_nextURI.isEmpty();
 }
 
 bool AVTransport::getPauseSupported()
 {
-    if (ignoreActions())
-        return true;
-
+    if (ignoreActions()) return true;
     return m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause;
 }
 
@@ -566,16 +554,13 @@ bool AVTransport::getPlaySupported()
 {
     if (ignoreActions())
         return !m_currentURI.isEmpty();
-
     return (m_currentTransportActions & UPnPClient::AVTransport::TPA_Play) &&
                 !m_currentURI.isEmpty();
 }
 
 bool AVTransport::getPreviousSupported()
 {
-    if (ignoreActions())
-        return true;
-
+    if (ignoreActions()) return true;
     return m_currentTransportActions & UPnPClient::AVTransport::TPA_Previous;
 }
 
@@ -593,9 +578,7 @@ bool AVTransport::getSeekSupported()
 
 bool AVTransport::getStopSupported()
 {
-    if (ignoreActions())
-        return true;
-
+    if (ignoreActions()) return true;
     return m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop;
 }
 
@@ -693,7 +676,8 @@ bool AVTransport::ignoreActions()
 
 void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 {
-    qDebug() << "setLocalContent:" << cid << nid;
+    qDebug() << "setLocalContent:" << Utils::anonymizedId(cid)
+             << Utils::anonymizedId(nid);
 
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
@@ -783,7 +767,8 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         }
 
         if (do_next) {
-            qDebug() << "Calling setNextAVTransportURI with id:" << nid;
+            qDebug() << "Calling setNextAVTransportURI with id:"
+                     << Utils::anonymizedId(nid);
             if (!handleError(srv->setNextAVTransportURI(s_nURI.toStdString(), nmeta.toStdString()))) {
                 qWarning() << "Error response for setNextAVTransportURI()";
                 if (!getInited()) {
@@ -822,7 +807,8 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
                 }
             }
 
-            qDebug() << "Calling setAVTransportURI with id:" << cid;
+            qDebug() << "Calling setAVTransportURI with id:"
+                     << Utils::anonymizedId(cid);
             if (!handleError(srv->setAVTransportURI(s_cURI.toStdString(),cmeta.toStdString()))) {
                 qWarning() << "Error response for setAVTransportURI()";
                 if (!getInited()) {

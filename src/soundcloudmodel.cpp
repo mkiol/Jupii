@@ -89,6 +89,7 @@ QVariantList SoundcloudModel::selectedItems()
             map.insert("url", scitem->url());
             map.insert("name", scitem->name());
             map.insert("author", scitem->artist());
+            map.insert("album", scitem->album());
             map.insert("icon", scitem->icon());
             map.insert("app", "soundcloud");
             list << map;

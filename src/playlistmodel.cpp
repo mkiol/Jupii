@@ -30,24 +30,13 @@
 #include "soundcloudapi.h"
 #include "utils.h"
 
-PlaylistWorker::PlaylistWorker(const QList<UrlItem> &urls, bool asAudio,
-                               QObject *parent)
-    : QThread{parent}, urls{urls}, asAudio{asAudio}, urlIsId{false} {}
-
-PlaylistWorker::PlaylistWorker(QList<UrlItem> &&urls, bool asAudio,
-                               QObject *parent)
-    : QThread{parent}, urls{urls}, asAudio{asAudio}, urlIsId{false} {}
-
-PlaylistWorker::PlaylistWorker(QList<QUrl> &&ids, QObject *parent)
-    : QThread{parent}, ids{ids}, asAudio{false}, urlIsId{true} {}
-
 void PlaylistWorker::cancel() {
     if (isRunning()) {
-        qDebug() << "Playlist worker cancel";
+        qDebug() << "playlist worker cancel";
         requestInterruption();
         quit();
         wait();
-        qDebug() << "Playlist worker cancel ended";
+        qDebug() << "playlist worker cancel ended";
     }
 }
 
@@ -64,10 +53,10 @@ void PlaylistWorker::run() {
             if (url.url.isLocalFile()) {
                 auto type =
                     ContentServer::getContentTypeByExtension(url.url.path());
-                if (type == ContentServer::Type::Playlist) {
+                if (type == ContentServer::Type::Type_Playlist) {
                     isPlaylist = true;
                     auto path = url.url.toLocalFile();
-                    qDebug() << "File" << path << "is a playlist";
+                    qDebug() << "file is a playlist:" << path;
 
                     QFile f{path};
                     if (f.exists()) {
@@ -88,7 +77,7 @@ void PlaylistWorker::run() {
                                         : parseM3u(data, dir);
 
                                 if (items.isEmpty()) {
-                                    qWarning() << "Playlist doesn't contain "
+                                    qWarning() << "playlist doesn't contain "
                                                   "any valid items";
                                 } else {
                                     foreach (const auto &item, items) {
@@ -100,15 +89,14 @@ void PlaylistWorker::run() {
                                     }
                                 }
                             } else {
-                                qWarning() << "Playlist content is empty";
+                                qWarning() << "playlist content is empty";
                             }
                         } else {
-                            qWarning()
-                                << "Cannot open file" << f.fileName()
-                                << "for reading (" + f.errorString() + ")";
+                            qWarning() << "cannot open file" << f.fileName()
+                                       << f.errorString();
                         }
                     } else {
-                        qWarning() << "File" << f.fileName() << "doesn't exist";
+                        qWarning() << "file doesn't exist:" << f.fileName();
                     }
                 }
             }
@@ -122,6 +110,7 @@ void PlaylistWorker::run() {
             const auto &url = purl.url;
             const auto &name = purl.name.trimmed();
             const auto &author = purl.author.trimmed();
+            const auto &album = purl.album.trimmed();
             const auto &icon = purl.icon;
             const auto &desc = purl.desc.trimmed();
             const auto &origUrl = purl.origUrl;
@@ -156,12 +145,11 @@ void PlaylistWorker::run() {
                 }
 
                 // type
-                if (asAudio) {
+                if (type != ContentServer::Type::Type_Unknown) {
                     if (q.hasQueryItem(Utils::typeKey))
                         q.removeQueryItem(Utils::typeKey);
                     q.addQueryItem(Utils::typeKey,
-                                   QString::number(static_cast<int>(
-                                       ContentServer::Type::Music)));
+                                   QString::number(static_cast<int>(type)));
                 }
 
                 // icon
@@ -183,6 +171,13 @@ void PlaylistWorker::run() {
                     if (q.hasQueryItem(Utils::authorKey))
                         q.removeQueryItem(Utils::authorKey);
                     q.addQueryItem(Utils::authorKey, author);
+                }
+
+                // album
+                if (!album.isEmpty()) {
+                    if (q.hasQueryItem(Utils::albumKey))
+                        q.removeQueryItem(Utils::albumKey);
+                    q.addQueryItem(Utils::albumKey, album);
                 }
 
                 // app
@@ -225,10 +220,9 @@ void PlaylistWorker::run() {
     auto *pl = PlaylistModel::instance();
     for (int i = 0; i < ids.size(); ++i) {
         if (isInterruptionRequested()) {
-            qDebug() << "Playlist worker interruption requested";
+            qDebug() << "playlist worker interruption requested";
             return;
         }
-        qDebug() << "Calling makeItem:" << QThread::currentThreadId();
         emit progress(i, ids.size());
         if (auto *item = pl->makeItem(ids.at(i)); item) {
             itemToOrigId.insert(item, ids.at(i));
@@ -396,7 +390,7 @@ void PlaylistModel::next() {
     if (rowCount() > 0) {
         if (Services::instance()->avTransport->updating() || isBusy() ||
             isRefreshing()) {
-            qDebug() << "Playlist busy/refreshing or AV update is in progress, "
+            qDebug() << "playlist busy/refreshing or av update is in progress, "
                         "next skipped";
             return;
         }
@@ -406,7 +400,7 @@ void PlaylistModel::next() {
         else
             refreshAndSetContent(nextActiveId(), "", true);
     } else {
-        qWarning() << "Playlist is empty so cannot do next()";
+        qWarning() << "playlist is empty so cannot do next";
     }
 }
 
@@ -416,7 +410,7 @@ void PlaylistModel::prev() {
 
     if (rowCount() > 0) {
         if (av->updating() || isBusy() || isRefreshing()) {
-            qDebug() << "Playlist busy/refreshing or AV update is in progress, "
+            qDebug() << "playlist busy/refreshing or av update is in progress, "
                         "prev skipped";
             return;
         }
@@ -458,25 +452,24 @@ void PlaylistModel::onAvNextURIChanged() {
     auto av = Services::instance()->avTransport;
 
     if (av->getNextURI().isEmpty() && !av->getCurrentURI().isEmpty()) {
-        qDebug() << "AVT switches to nextURI without currentURIChanged";
+        qDebug() << "avt switches to nextURI without currentURIChanged";
         updateActiveId();
         doUpdate();
     }
 }
 
 void PlaylistModel::doOnTrackEnded() {
-    qDebug() << "doOnTrackEnded";
     m_trackEndedTimer.start();
 }
 
 void PlaylistModel::onTrackEnded() {
-    qDebug() << "onTrackEnded";
+    qDebug() << "on track ended";
 
     auto av = Services::instance()->avTransport;
 
     if (av->getInited()) {
         if (av->updating() || isBusy() || isRefreshing()) {
-            qDebug() << "Playlist busy/refreshing or AV update is in progress, "
+            qDebug() << "playlist busy/refreshing or av update is in progress, "
                         "so delaying track end handling";
             doOnTrackEnded();
             return;
@@ -525,8 +518,6 @@ void PlaylistModel::onAvInitedChanged() {
     bool inited = av->getInited();
     bool busy = av->getBusy();
 
-    qDebug() << "onAvInitedChanged:" << inited << busy;
-
     resetToBeActive();
 
     if (inited) {
@@ -542,13 +533,11 @@ void PlaylistModel::onAvInitedChanged() {
 }
 
 void PlaylistModel::onItemsAdded() {
-    qDebug() << "onItemsAdded";
     updateActiveId();
     doUpdate();
 }
 
 void PlaylistModel::onItemsLoaded() {
-    qDebug() << "onItemsLoaded";
     updateActiveId();
     doUpdate();
 }
@@ -556,7 +545,7 @@ void PlaylistModel::onItemsLoaded() {
 void PlaylistModel::onItemsRemoved() { doUpdate(); }
 
 void PlaylistModel::save() {
-    qDebug() << "Saving current playlist";
+    qDebug() << "saving current playlist";
 
     QStringList p_ids;
     QStringList d_ids;
@@ -577,34 +566,33 @@ void PlaylistModel::save() {
 }
 
 void PlaylistModel::doUpdate() {
-    qDebug() << "doUpdate";
+    qDebug() << "doing update";
     m_updateTimer.start();
 }
 
 void PlaylistModel::update() {
-    qDebug() << "Update playlist";
+    qDebug() << "update playlist";
 
     if (rowCount() > 0) {
         auto av = Services::instance()->avTransport;
         if (av->getInited()) {
             if (isRefreshing()) {
-                qDebug() << "Playlist refreshing, skipping update";
+                qDebug() << "playlist refreshing, skipping update";
                 return;
             }
             if (av->updating() || isBusy()) {
-                qDebug() << "Playlist busy or AV update is in progress, so "
+                qDebug() << "playlist busy or av update is in progress, so "
                             "delaying playlist update";
                 doUpdate();
                 return;
             }
 
             if (autoPlay()) {
-                qDebug() << "Auto playing item";
+                qDebug() << "auto playing item";
                 return;
             }
 
             auto aid = activeId();
-            qDebug() << "aid:" << aid;
             if (!aid.isEmpty()) {
                 bool updateCurrent =
                     Utils::cookieFromId(av->getCurrentId()) != activeCookie() &&
@@ -624,7 +612,7 @@ void PlaylistModel::setBusy(bool busy) {
 
 bool PlaylistModel::saveToFile(const QString &title) {
     if (m_list.isEmpty()) {
-        qWarning() << "Current playlist is empty";
+        qWarning() << "current playlist is empty";
         return false;
     }
 
@@ -634,7 +622,6 @@ bool PlaylistModel::saveToFile(const QString &title) {
 
     QString name{title.trimmed()};
     if (name.isEmpty()) {
-        qWarning() << "Name is empty, so using default name";
         name = tr("Playlist");
     }
 
@@ -654,7 +641,7 @@ bool PlaylistModel::saveToFile(const QString &title) {
 
 bool PlaylistModel::saveToUrl(const QUrl &path) {
     if (m_list.isEmpty()) {
-        qWarning() << "Current playlist is empty";
+        qWarning() << "current playlist is empty";
         return false;
     }
 
@@ -690,10 +677,10 @@ QByteArray PlaylistModel::makePlsData(const QString &name) {
 }
 
 void PlaylistModel::load() {
-    qDebug() << "Playlist load";
+    qDebug() << "playlist load";
 
     if (!Directory::instance()->getInited()) {
-        qWarning() << "Directory is not inited, skipping playlist load";
+        qWarning() << "directory is not inited, skipping playlist load";
         return;
     }
 
@@ -755,41 +742,30 @@ const PlaylistItem *PlaylistModel::getActiveItem() const {
                : nullptr;
 }
 
-void PlaylistModel::addItemPaths(const QStringList &paths) {
+void PlaylistModel::addItemPaths(const QStringList &paths,
+                                 ContentServer::Type type) {
     QList<UrlItem> urls;
     foreach (const auto &path, paths) {
         UrlItem ui;
         ui.url = QUrl::fromLocalFile(path);
         urls << ui;
     }
-    addItems(urls, false);
+    addItems(urls, type);
 }
 
-void PlaylistModel::addItemFileUrls(const QList<QUrl> &urls) {
+void PlaylistModel::addItemFileUrls(const QList<QUrl> &urls,
+                                    ContentServer::Type type) {
     QList<UrlItem> items;
     foreach (const auto &url, urls) {
         UrlItem ui;
         ui.url = url;
         items << ui;
     }
-    addItems(items, false);
+    addItems(items, type);
 }
 
-void PlaylistModel::addItemFileUrlsAsAudio(const QList<QUrl> &urls) {
-    QList<UrlItem> items;
-    foreach (const auto &url, urls) {
-        UrlItem ui;
-        ui.url = url;
-        items << ui;
-    }
-    addItems(items, true);
-}
-
-void PlaylistModel::addItemUrls(const QList<UrlItem> &urls) {
-    addItems(urls, false);
-}
-
-void PlaylistModel::addItemUrls(const QVariantList &urls) {
+void PlaylistModel::addItemUrls(const QVariantList &urls,
+                                ContentServer::Type type) {
     QList<UrlItem> items;
 
     foreach (const QVariant &item, urls) {
@@ -800,6 +776,7 @@ void PlaylistModel::addItemUrls(const QVariantList &urls) {
             Utils::fixUrl(ui.url);
             ui.name = m.value("name").toString();
             ui.author = m.value("author").toString();
+            ui.album = m.value("album").toString();
             ui.icon = m.value("icon").toUrl();
             ui.desc = m.value("desc").toString();
             ui.origUrl = m.value("origUrl").toUrl();
@@ -814,7 +791,7 @@ void PlaylistModel::addItemUrls(const QVariantList &urls) {
         }
     }
 
-    addItems(items, false);
+    addItems(items, type);
 }
 
 PlaylistModel::UrlType PlaylistModel::determineUrlType(QUrl *url) {
@@ -895,47 +872,39 @@ PlaylistModel::UrlType PlaylistModel::determineUrlType(QUrl *url) {
     return UrlType::Unknown;
 }
 
-void PlaylistModel::addItemUrlAsAudio(const QUrl &url, const QString &name,
-                                      const QUrl &origUrl,
-                                      const QString &author, const QUrl &icon,
-                                      const QString &desc, const QString &app,
-                                      bool play) {
-    addItemUrl(url, name, origUrl, author, icon, desc, app, play, true);
-}
-
-void PlaylistModel::addItemUrl(QUrl url, const QString &name,
-                               const QUrl &origUrl, const QString &author,
-                               const QUrl &icon, const QString &desc,
-                               QString app, bool play, bool asAudio) {
+void PlaylistModel::addItemUrl(QUrl url, ContentServer::Type type,
+                               const QString &name, const QUrl &origUrl,
+                               const QString &author, const QUrl &icon,
+                               const QString &desc, QString app, bool play) {
     if (app.isEmpty() && origUrl.isEmpty()) {
-        auto type = determineUrlType(&url);
-        if (type == UrlType::BcTrack) {
+        auto urlType = determineUrlType(&url);
+        if (urlType == UrlType::BcTrack) {
             qDebug() << "url type: BcTrack";
             app = "bc";
-        } else if (type == UrlType::SoundcloudTrack) {
+        } else if (urlType == UrlType::SoundcloudTrack) {
             qDebug() << "url type: SoundcloudTrack";
             app = "soundcloud";
-        } else if (type == UrlType::BcMain) {
+        } else if (urlType == UrlType::BcMain) {
             qDebug() << "url type: BcMain";
             emit bcMainUrlAdded();
             return;
-        } else if (type == UrlType::BcAlbum) {
+        } else if (urlType == UrlType::BcAlbum) {
             qDebug() << "url type: BcAlbum";
             emit bcAlbumUrlAdded(url);
             return;
-        } else if (type == UrlType::BcArtist) {
+        } else if (urlType == UrlType::BcArtist) {
             qDebug() << "url type: BcArtist";
             emit bcArtistUrlAdded(url);
             return;
-        } else if (type == UrlType::SoundcloudMain) {
+        } else if (urlType == UrlType::SoundcloudMain) {
             qDebug() << "url type: SoundcloudMain";
             emit soundcloudMainUrlAdded();
             return;
-        } else if (type == UrlType::SoundcloudAlbum) {
+        } else if (urlType == UrlType::SoundcloudAlbum) {
             qDebug() << "url type: SoundcloudAlbum";
             emit soundcloudAlbumUrlAdded(url);
             return;
-        } else if (type == UrlType::SoundcloudArtist) {
+        } else if (urlType == UrlType::SoundcloudArtist) {
             qDebug() << "url type: SoundcloudArtist";
             emit soundcloudArtistUrlAdded(url);
             return;
@@ -954,18 +923,18 @@ void PlaylistModel::addItemUrl(QUrl url, const QString &name,
     ui.app = std::move(app);
     ui.play = play;
     urls << ui;
-    addItems(urls, asAudio);
+    addItems(urls, type);
 }
 
-void PlaylistModel::addItemPath(const QString &path, const QString &name,
-                                bool play) {
+void PlaylistModel::addItemPath(const QString &path, ContentServer::Type type,
+                                const QString &name, bool play) {
     QList<UrlItem> urls;
     UrlItem ui;
     ui.url = QUrl::fromLocalFile(path);
     ui.name = name;
     ui.play = play;
     urls << ui;
-    addItems(urls, false);
+    addItems(urls, type);
 }
 
 bool PlaylistModel::pathExists(const QString &path) {
@@ -1011,25 +980,16 @@ bool PlaylistModel::playUrl(const QUrl &url) {
     return false;
 }
 
-void PlaylistModel::addItemPathsAsAudio(const QStringList &paths) {
-    QList<UrlItem> urls;
-    foreach (const auto &path, paths) {
-        UrlItem ui;
-        ui.url = QUrl::fromLocalFile(path);
-        urls << ui;
-    }
-    addItems(urls, true);
-}
-
-void PlaylistModel::addItems(const QList<UrlItem> &urls, bool asAudio) {
+void PlaylistModel::addItems(const QList<UrlItem> &urls,
+                             ContentServer::Type type) {
     if (urls.isEmpty() || isBusy()) {
-        qWarning() << "Cannot add items";
+        qWarning() << "cannot add items";
         return;
     }
 
     setBusy(true);
 
-    m_add_worker = std::make_unique<PlaylistWorker>(urls, asAudio);
+    m_add_worker = std::make_unique<PlaylistWorker>(urls, type);
     connect(m_add_worker.get(), &PlaylistWorker::finished, this,
             &PlaylistModel::addWorkerDone);
     connect(m_add_worker.get(), &PlaylistWorker::progress, this,
@@ -1038,7 +998,8 @@ void PlaylistModel::addItems(const QList<UrlItem> &urls, bool asAudio) {
     m_add_worker->start();
 }
 
-void PlaylistModel::addItems(const QList<QUrl> &urls, bool asAudio) {
+void PlaylistModel::addItems(const QList<QUrl> &urls,
+                             ContentServer::Type type) {
     if (urls.isEmpty()) return;
 
     QList<UrlItem> purls;
@@ -1049,7 +1010,7 @@ void PlaylistModel::addItems(const QList<QUrl> &urls, bool asAudio) {
         purls << ui;
     }
 
-    addItems(purls, asAudio);
+    addItems(purls, type);
 }
 
 void PlaylistModel::progressUpdate(int value, int total) {
@@ -1068,12 +1029,12 @@ void PlaylistModel::progressUpdate(int value, int total) {
 }
 
 void PlaylistModel::addWorkerDone() {
-    qDebug() << "addWorkerDone";
+    qDebug() << "add worker done";
 
     if (m_add_worker) {
         if (m_add_worker->items.length() != m_add_worker->ids.length()) {
             qWarning()
-                << "Some urls are invalid and cannot be added to the playlist";
+                << "dome urls are invalid and cannot be added to the playlist";
             if (m_add_worker->ids.length() == 1)
                 emit error(E_ItemNotAdded);
             else if (m_add_worker->items.length() == 0)
@@ -1102,10 +1063,10 @@ void PlaylistModel::addWorkerDone() {
             if (old_refreshable == 0 && m_refreshable_count > 0)
                 emit refreshableChanged();
         } else {
-            qWarning() << "No items to add to playlist";
+            qWarning() << "no items to add to playlist";
         }
     } else {
-        qWarning() << "Worker done signal but worker is null";
+        qWarning() << "worker done signal but worker is null";
     }
 
     setBusy(false);
@@ -1113,54 +1074,47 @@ void PlaylistModel::addWorkerDone() {
 }
 
 PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
-    qDebug() << "makeItem:" << id;
+    qDebug() << "making item:" << Utils::anonymizedId(id);
 
-    int t = 0;
-    int duration = 0;
-    QString name, cookie, author, app;
+    int t = 0, duration = 0;
+    QString name, cookie, author, album, app;
     QUrl ficon, origUrl;
-    bool play = false;
-    bool ytdl = false;
-    if (!Utils::pathTypeNameCookieIconFromId(id, nullptr, &t, &name, &cookie,
-                                             &ficon, nullptr, &author, &origUrl,
-                                             &ytdl, &play, &app, &duration) ||
+    bool play = false, ytdl = false;
+    if (!Utils::pathTypeNameCookieIconFromId(
+            id, nullptr, &t, &name, &cookie, &ficon, nullptr, &author, &album,
+            &origUrl, &ytdl, &play, &app, &duration) ||
         cookie.isEmpty()) {
-        qWarning() << "Invalid Id";
+        qWarning() << "invalid id";
         return nullptr;
     }
 
-    if (play) qDebug() << "Auto play is enabled";
+    if (play) qDebug() << "auto play is enabled";
 
     auto url = Utils::urlFromId(id);
+    auto type = static_cast<ContentServer::Type>(t);
 
-    const ContentServer::ItemMeta *meta;
+    ContentServer::ItemMeta *meta;
     if (!origUrl.isEmpty() && origUrl != url) {
-        meta = ContentServer::instance()->getMeta(/*url=*/url,
-                                                  /*createNew=*/false);
+        meta = ContentServer::instance()->getMeta(
+            url, false, origUrl, /*app=*/{}, /*ytdl=*/false, /*img=*/false,
+            /*refresh=*/false, /*type=*/type);
         if (meta && meta->expired()) {
-            qDebug() << "Meta exipred";
+            qDebug() << "meta exipred";
             meta = ContentServer::instance()->getMeta(
-                /*url=*/url, /*createNew=*/true, /*origUrl=*/origUrl,
-                /*app=*/app, /*ytdl=*/ytdl, /*img=*/false, /*refresh=*/true,
-                /*asAudio=*/static_cast<ContentServer::Type>(t) ==
-                    ContentServer::Type::Music);
+                url, true, origUrl, /*app=*/app, /*ytdl=*/ytdl, /*img=*/false,
+                /*refresh=*/true, /*type=*/type);
         } else {
             meta = ContentServer::instance()->getMeta(
-                /*url=*/url, /*createNew=*/true, /*origUrl=*/origUrl,
-                /*app=*/app,
-                /*ytdl=*/ytdl, /*img=*/false, /*refresh=*/false,
-                /*asAudio=*/static_cast<ContentServer::Type>(t) ==
-                    ContentServer::Type::Music);
+                url, true, origUrl, /*app=*/app, /*ytdl=*/ytdl, /*img=*/false,
+                /*refresh=*/false, /*type=*/type);
         }
     } else {
         meta = ContentServer::instance()->getMeta(
-            /*url=*/url, /*createNew=*/true, /*origUrl=*/origUrl, /*app=*/app,
-            /*ytdl=*/ytdl, /*img=*/false, /*refresh=*/false,
-            /*asAudio=*/static_cast<ContentServer::Type>(t) ==
-                ContentServer::Type::Music);
+            url, true, origUrl, /*app=*/app, /*ytdl=*/ytdl, /*img=*/false,
+            /*refresh=*/false, /*type=*/type);
     }
     if (!meta) {
-        qWarning() << "No meta item found";
+        qWarning() << "no meta found";
         return nullptr;
     }
 
@@ -1173,7 +1127,7 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
             QUrlQuery q{finalId};
             if (q.hasQueryItem(Utils::ytdlKey))
                 q.removeQueryItem(Utils::ytdlKey);
-            q.addQueryItem(Utils::ytdlKey, "true");
+            q.addQueryItem(Utils::ytdlKey, QStringLiteral("true"));
             finalId.setQuery(q);
             ytdl = true;
         }
@@ -1189,8 +1143,7 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
         }
     }
 
-    auto type = static_cast<ContentServer::Type>(t);
-    if (type == ContentServer::Type::Unknown) {
+    if (type == ContentServer::Type::Type_Unknown) {
         if (meta->flagSet(ContentServer::MetaFlag::YtDl)) {  // add type to url
                                                              // for ytdl content
             QUrlQuery q{finalId};
@@ -1214,6 +1167,8 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
             q.addQueryItem(Utils::nameKey, name);
             finalId.setQuery(q);
         }
+    } else {
+        meta->title = name;
     }
 
     if (origUrl.isEmpty()) {
@@ -1225,20 +1180,30 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
             finalId.setQuery(q);
             origUrl = meta->origUrl;
         }
+    } else {
+        meta->origUrl = origUrl;
     }
 
     QUrl iconUrl;
-    if (ficon.isEmpty()) {
-        if (meta->albumArt.isEmpty()) {
-            iconUrl = type == ContentServer::Type::Image ? meta->url : QUrl();
-        } else if (QFileInfo::exists(meta->albumArt)) {
-            iconUrl = QUrl::fromLocalFile(meta->albumArt);
-        } else {
-            iconUrl = QUrl{meta->albumArt};
+    if (ficon.isEmpty() ||
+        meta->flagSet(ContentServer::MetaFlag::MadeFromCache)) {
+        if (!meta->albumArt.isEmpty()) {
+            auto artPath = ContentServer::localArtPathIfExists(meta->albumArt);
+            if (artPath.isEmpty()) {
+                iconUrl = type == ContentServer::Type::Type_Image
+                              ? meta->url
+                              : ContentServer::artUrl(meta->albumArt);
+            } else {
+                iconUrl = ContentServer::artUrl(artPath);
+            }
         }
     } else {
         iconUrl = ficon;
     }
+
+    // qDebug() << "icon url:" << meta->albumArt << ficon << iconUrl;
+    if (!iconUrl.isEmpty())
+        ContentServer::instance()->getMetaForImg(iconUrl, true);
 
     if (ytdl && duration == 0 && meta->duration > 0) {
         QUrlQuery q{finalId};
@@ -1251,24 +1216,31 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
         duration = meta->duration;
     }
 
-    ContentServer::instance()->getMetaForImg(iconUrl,
-                                             true);  // create meta for albumArt
+    if (!author.isEmpty()) {
+        meta->artist = author;
+    }
+
+    if (!album.isEmpty()) {
+        meta->album = album;
+    }
+
+    // qDebug() << "meta:" << meta->title << meta->artist << meta->album;
 
     finalId = meta->itemType == ContentServer::ItemType_Upnp || url == meta->url
                   ? Utils::cleanId(finalId)
                   : Utils::swapUrlInId(meta->url, finalId);
 
-    qDebug() << "final id:" << finalId;
+    qDebug() << "final id:" << Utils::anonymizedId(finalId);
 
-    return new PlaylistItem(finalId,     // id
-                            name,        // name
-                            meta->url,   // url
-                            origUrl,     // orig url
-                            type,        // type
-                            meta->mime,  // ctype
-                            author.isEmpty() ? meta->artist : author,  // artist
-                            meta->album,                               // album
-                            "",                                        // date
+    return new PlaylistItem(finalId,       // id
+                            name,          // name
+                            meta->url,     // url
+                            origUrl,       // orig url
+                            type,          // type
+                            meta->mime,    // ctype
+                            meta->artist,  // artist
+                            meta->album,   // album
+                            {},            // date
                             duration, meta->size, iconUrl, ytdl, play,
                             meta->comment, meta->recDate, meta->recUrl,
                             meta->itemType, meta->upnpDevId);
@@ -1284,7 +1256,7 @@ bool PlaylistModel::addId(const QUrl &id) {
 }
 
 void PlaylistModel::setActiveId(const QString &id) {
-    qDebug() << "setActiveId:" << id;
+    qDebug() << "set active id:" << Utils::anonymizedId(id);
     const auto cookie = Utils::cookieFromId(id);
     auto metaExists =
         ContentServer::instance()->metaExists(Utils::urlFromId(id));
@@ -1338,7 +1310,7 @@ void PlaylistModel::setToBeActiveId(const QString &id) {
 
 void PlaylistModel::setActiveUrl(const QUrl &url) {
     if (url.isEmpty()) {
-        qDebug() << "Set empty active URL";
+        qDebug() << "set empty active url";
         setActiveId({});
     } else {
         setActiveId(ContentServer::instance()->idFromUrl(url));
@@ -1410,7 +1382,6 @@ QString PlaylistModel::secondId() const {
 }
 
 void PlaylistModel::setActiveItemIndex(int index) {
-    qDebug() << "setActiveItemIndex:" << m_activeItemIndex << index;
     if (m_activeItemIndex != index) {
         m_activeItemIndex = index;
         emit activeItemIndexChanged();
@@ -1430,7 +1401,7 @@ bool PlaylistModel::autoPlay() {
         auto *fi = qobject_cast<PlaylistItem *>(li);
         if (!done && fi->play()) {
             if (ai != fi->id() || !playing) {
-                qDebug() << "Playing item:" << fi->id();
+                qDebug() << "playing item:" << fi->id();
                 play(fi->id());
             }
             done = true;
@@ -1533,14 +1504,14 @@ bool PlaylistModel::play(const QString &id) {
 
     if (m_list.isEmpty() || !dir->getInited() || !av->getInited() ||
         !find(id)) {
-        qWarning() << "Cannot play";
+        qWarning() << "cannot play";
         return false;
     }
 
     if (activeId() == id &&
         av->getCurrentId().toString() ==
             id) {  // both checks are needed due to url change in refresh
-        qDebug() << "Id is active id";
+        qDebug() << "id is active id";
         if (av->getTransportState() != AVTransport::Playing) {
             if (av->getCurrentTrackDuration() > 0 &&
                 av->getRelativeTimePosition() > 0) {
@@ -1556,7 +1527,7 @@ bool PlaylistModel::play(const QString &id) {
     }
 
     if (isBusy() || isRefreshing()) {
-        qWarning() << "Cannot play";
+        qWarning() << "cannot play";
         return false;
     }
 
@@ -1574,7 +1545,7 @@ void PlaylistModel::togglePlay() {
     auto av = Services::instance()->avTransport;
 
     if (!dir->getInited() || !av->getInited()) {
-        qWarning() << "Cannot play";
+        qWarning() << "cannot play";
         return;
     }
 
@@ -1600,7 +1571,7 @@ void PlaylistModel::play() {
     auto av = Services::instance()->avTransport;
 
     if (!dir->getInited() || !av->getInited()) {
-        qWarning() << "Cannot play";
+        qWarning() << "cannot play";
         return;
     }
 
@@ -1620,7 +1591,7 @@ void PlaylistModel::pause() {
     auto av = Services::instance()->avTransport;
 
     if (!dir->getInited() || !av->getInited()) {
-        qWarning() << "Cannot pause";
+        qWarning() << "cannot pause";
         return;
     }
 
@@ -1637,25 +1608,26 @@ QList<ListItem *> PlaylistModel::handleRefreshWorker() {
 
     if (m_refresh_worker) {
         bool refreshed = false;
+        decltype(m_list) tmpList;
         for (auto &item : m_refresh_worker->items) {
             const auto id = m_refresh_worker->origId(item);
-            qDebug() << "Refresh done for:" << id;
+            qDebug() << "refresh done for:" << Utils::anonymizedId(id);
             if (auto *oldItem = qobject_cast<PlaylistItem *>(find(id))) {
                 auto *newItem = qobject_cast<PlaylistItem *>(item);
                 if (newItem->id() == id) {
-                    qDebug() << "No need to update item";
+                    qDebug() << "no need to update item";
                     delete newItem;
                 } else {
-                    auto list = m_list;
-                    for (int i = 0; i < list.size(); ++i) {
-                        if (id == list.at(i)->id()) {
-                            qDebug() << "Replace item with new id:" << i
-                                     << newItem->id();
+                    tmpList = m_list;
+                    for (int i = 0; i < tmpList.size(); ++i) {
+                        if (id == tmpList.at(i)->id()) {
+                            qDebug() << "replace item with new id:" << i
+                                     << Utils::anonymizedId(newItem->id());
                             newItem->setToBeActive(oldItem->toBeActive());
-                            list.replace(i, newItem);
+                            tmpList.replace(i, newItem);
                             if (m_activeItemIndex == i) setActiveItemIndex(-1);
                             clear(false, false);
-                            appendRows(list);
+                            appendRows(tmpList);
                             delete oldItem;
                             ;
                             items << newItem;
@@ -1665,7 +1637,7 @@ QList<ListItem *> PlaylistModel::handleRefreshWorker() {
                     }
                 }
             } else {
-                qWarning() << "Orig item doesn't exist";
+                qWarning() << "orig item doesn't exist";
                 delete item;
             }
         }
@@ -1686,6 +1658,8 @@ void PlaylistModel::updateActiveId() {
 void PlaylistModel::doUpdateActiveId() { m_updateActiveTimer.start(); }
 
 void PlaylistModel::cancelRefresh() {
+    ContentServer::instance()->cancelCaching();
+
     if (!isRefreshing()) {
         return;
     }
@@ -1701,7 +1675,6 @@ void PlaylistModel::handleRefreshTimer() {
             if (auto *item =
                     qobject_cast<PlaylistItem *>(m_list.at(idx.value()));
                 item->refreshable()) {
-                qDebug() << "Refreshing next item";
                 refreshAndSetContent({}, item->id(), false, false);
             }
         }
@@ -1712,12 +1685,12 @@ void PlaylistModel::handleRefreshTimer() {
 
 void PlaylistModel::refresh(QList<QUrl> &&ids) {
     if (ids.isEmpty()) {
-        qWarning() << "No ids to refresh";
+        qWarning() << "no ids to refresh";
         return;
     }
 
     if (!m_refresh_mutex.tryLock()) {
-        qDebug() << "Other refreshing is ongoing";
+        qDebug() << "other refreshing is ongoing";
         return;
     }
 
@@ -1726,9 +1699,7 @@ void PlaylistModel::refresh(QList<QUrl> &&ids) {
     connect(
         m_refresh_worker.get(), &PlaylistWorker::finished, this,
         [this] {
-            qDebug() << "refresh_worker finished";
             handleRefreshWorker();
-
             m_refresh_worker.reset();
             m_refresh_mutex.unlock();
             emit refreshingChanged();
@@ -1743,7 +1714,7 @@ void PlaylistModel::refresh(QList<QUrl> &&ids) {
 
     emit refreshingChanged();
 
-    qDebug() << "Refreshing started";
+    qDebug() << "refreshing started";
 }
 
 void PlaylistModel::refresh() {
@@ -1757,13 +1728,18 @@ void PlaylistModel::refresh() {
 }
 
 void PlaylistModel::setContent(const QString &id1, const QString &id2) {
-    qDebug() << "setContent";
-
     if (!id1.isEmpty()) {
-        const auto *item = qobject_cast<PlaylistItem *>(find(id1));
+        auto *item = qobject_cast<PlaylistItem *>(find(id1));
         if (item && item->itemType() == ContentServer::ItemType_Url) {
-            if (!ContentServer::instance()->startProxy(QUrl{id1})) {
-                qWarning() << "Proxy did not start";
+            auto err = ContentServer::instance()->startProxy(QUrl{id1});
+            if (err != ContentServer::ProxyError::NoError) {
+                if (err == ContentServer::ProxyError::Canceled) {
+                    qWarning() << "proxy did not start => canceled";
+                } else {
+                    qWarning() << "proxy did not start => error";
+                    emit error(PlaylistModel::ErrorType::E_ProxyError);
+                }
+                item->setToBeActive(false);
                 return;
             }
         }
@@ -1776,26 +1752,27 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
                                          bool toBeActive,
                                          bool setIfNotChanged) {
     if (!m_refresh_mutex.tryLock()) {
-        qDebug() << "Other refreshing is ongoing";
+        qDebug() << "other refreshing is ongoing";
         return;
     }
 
-    qDebug() << "refreshAndSetContent id1,id2:" << id1 << id2;
+    qDebug() << "refreshing:" << Utils::anonymizedId(id1)
+             << Utils::anonymizedId(id2);
 
-    QList<QUrl> ids;  // ids to refresh
+    QList<QUrl> idsToRefresh;
 
     auto *item1 = qobject_cast<PlaylistItem *>(find(id1));
     if (item1) {
         if (item1->itemType() == ContentServer::ItemType_LocalFile &&
             !QFileInfo::exists(item1->path())) {
-            qWarning() << "File1 doesn't exist:" << item1->path();
+            qWarning() << "first file doesn't exist:" << item1->path();
             m_refresh_mutex.unlock();
             return;
         }
-        if (item1->refreshable()) ids << QUrl{id1};
+        if (item1->refreshable()) idsToRefresh << QUrl{id1};
         if (toBeActive) setToBeActiveId(id1);
     } else if (id1 == id2) {
-        qWarning() << "Cannot find:" << id1;
+        qWarning() << "cannot find:" << Utils::anonymizedId(id1);
         m_refresh_mutex.unlock();
         return;
     }
@@ -1805,29 +1782,30 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
         item2 = qobject_cast<PlaylistItem *>(find(id2));
         if (item2 && item2->itemType() == ContentServer::ItemType_LocalFile &&
             !QFileInfo::exists(item2->path())) {
-            qWarning() << "File2 doesn't exist:" << item2->path();
+            qWarning() << "second file doesn't exist:" << item2->path();
             item2 = nullptr;
         }
-        if (item2 && item2->refreshable()) ids << QUrl{id2};
+        if (item2 && item2->refreshable()) idsToRefresh << QUrl{id2};
     }
 
     if (!item1 && !item2) {
-        qWarning() << "Cannot find both items:" << id1 << id2;
+        qWarning() << "cannot find both items:" << Utils::anonymizedId(id1)
+                   << Utils::anonymizedId(id2);
         m_refresh_mutex.unlock();
         return;
     }
 
-    if (ids.isEmpty()) {  // no ids to refresh
+    if (idsToRefresh.isEmpty()) {
+        qDebug() << "no ids to refresh";
         if (setIfNotChanged) setContent(id1, id2);
         m_refresh_mutex.unlock();
     } else {
-        m_refresh_worker = std::make_unique<PlaylistWorker>(std::move(ids));
+        m_refresh_worker =
+            std::make_unique<PlaylistWorker>(std::move(idsToRefresh));
 
         connect(
             m_refresh_worker.get(), &PlaylistWorker::finished, this,
             [this, id1, id2, toBeActive, setIfNotChanged] {
-                qDebug() << "refresh_worker finished";
-
                 auto *item1 = qobject_cast<PlaylistItem *>(find(id1));
                 auto *item2 = id1 == id2
                                   ? item1
@@ -1852,7 +1830,7 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
                                      id2)
                                 setContent(id1, newItems.at(0)->id());
                             else {
-                                qWarning() << "Refreshed item doesn't match";
+                                qWarning() << "refreshed item doesn't match";
                                 clearActive = true;
                             }
                         } else {  // none items refreshed
@@ -1863,7 +1841,7 @@ void PlaylistModel::refreshAndSetContent(const QString &id1, const QString &id2,
                 } else
                     clearActive = true;
 
-                if (clearActive && item1 && toBeActive) setToBeActiveId("");
+                if (clearActive && item1 && toBeActive) setToBeActiveId({});
 
                 m_refresh_mutex.unlock();
                 if (m_refresh_worker) {
@@ -1897,8 +1875,6 @@ QString PlaylistModel::nextId(const QString &id) const {
 
     return {};
 }
-
-// -----
 
 PlaylistItem::PlaylistItem(
     const QUrl &id, const QString &name, const QUrl &url, const QUrl &origUrl,
@@ -2027,3 +2003,20 @@ void PlaylistItem::setToBeActive(bool value) {
 }
 
 void PlaylistItem::setPlay(bool value) { m_play = value; }
+
+QString PlaylistItem::ctype() const {
+    if (m_type == ContentServer::Type::Type_Music) {
+        auto *meta = ContentServer::instance()->getMetaForId(m_id, false);
+        if (meta && meta->audioAvMeta) {
+            return meta->audioAvMeta->mime;
+        }
+    }
+    return m_ctype;
+}
+
+bool PlaylistItem::refreshable() const {
+    if (!m_ytdl) return false;
+    auto *meta = ContentServer::instance()->getMetaForId(m_id, false);
+    return !meta ||
+           !static_cast<bool>(ContentServer::pathToCachedContent(*meta, true));
+}

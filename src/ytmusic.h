@@ -1,16 +1,17 @@
 ﻿// SPDX-FileCopyrightText: 2021 Jonah Brüchert <jbb@kaidan.im>
 //
-// SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+// SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR
+// LicenseRef-KDE-Accepted-GPL
 
 #ifndef YTMUSIC_H
 #define YTMUSIC_H
 
-#include <string>
-#include <optional>
 #include <map>
+#include <memory>
+#include <optional>
+#include <string>
 #include <variant>
 #include <vector>
-#include <memory>
 
 struct YTMusicPrivate;
 
@@ -32,8 +33,7 @@ struct Album {
     std::string name;
     std::optional<std::string> id;
 };
-}
-
+}  // namespace meta
 
 namespace search {
 ///
@@ -79,12 +79,11 @@ struct Artist {
 };
 
 using SearchResultItem = std::variant<Video, Playlist, Song, Album, Artist>;
-};
-
+};  // namespace search
 
 namespace artist {
 struct Artist {
-    template<typename T>
+    template <typename T>
     struct Section {
         std::optional<std::string> browse_id;
         std::vector<T> results;
@@ -139,37 +138,37 @@ struct Artist {
     std::optional<Section<Single>> singles;
     std::optional<Section<Video>> videos;
 };
-}
+}  // namespace artist
 
 namespace album {
-    struct Track {
-        bool is_explicit;
-        std::string title;
-        std::vector<meta::Artist> artists;
-        std::optional<std::string> album;
-        std::optional<std::string> video_id;
-        std::optional<std::string> duration;
-        std::optional<std::string> like_status;
+struct Track {
+    bool is_explicit;
+    std::string title;
+    std::vector<meta::Artist> artists;
+    std::optional<std::string> album;
+    std::optional<std::string> video_id;
+    std::optional<std::string> duration;
+    std::optional<std::string> like_status;
+};
+
+struct Album {
+    struct ReleaseDate {
+        int year;
+        int month;
+        int day;
     };
 
-    struct Album {
-        struct ReleaseDate {
-            int year;
-            int month;
-            int day;
-        };
-
-        std::string title;
-        int track_count;
-        std::string duration;
-        std::string audio_playlist_id;
-        std::string year;
-        std::optional<std::string> description;
-        std::vector<meta::Thumbnail> thumbnails;
-        std::vector<Track> tracks;
-        std::vector<meta::Artist> artists;
-    };
-}
+    std::string title;
+    int track_count;
+    std::string duration;
+    std::string audio_playlist_id;
+    std::string year;
+    std::optional<std::string> description;
+    std::vector<meta::Thumbnail> thumbnails;
+    std::vector<Track> tracks;
+    std::vector<meta::Artist> artists;
+};
+}  // namespace album
 
 namespace song {
 struct Song {
@@ -200,7 +199,7 @@ struct Song {
     std::string release;
     std::string category;
 };
-}
+}  // namespace song
 
 namespace playlist {
 struct Track {
@@ -226,7 +225,7 @@ struct Playlist {
     int track_count;
     std::vector<Track> tracks;
 };
-}
+}  // namespace playlist
 
 namespace video_info {
 struct Format {
@@ -248,7 +247,7 @@ struct VideoInfo {
 
     // More, but not interesting for us right now
 };
-}
+}  // namespace video_info
 
 namespace watch {
 struct Playlist {
@@ -266,24 +265,24 @@ struct Playlist {
     std::vector<Track> tracks;
     std::optional<std::string> lyrics;
 };
-}
+}  // namespace watch
 
-class YTMusic
-{
-public:
+class YTMusic {
+   public:
     YTMusic(const std::optional<std::string> &auth = std::nullopt,
             const std::optional<std::string> &user = std::nullopt,
             const std::optional<bool> requests_session = std::nullopt,
-            const std::optional<std::map<std::string, std::string>> &proxies = std::nullopt,
+            const std::optional<std::map<std::string, std::string>> &proxies =
+                std::nullopt,
             const std::string &language = "en");
 
     ~YTMusic();
 
-    std::vector<search::SearchResultItem> search(const std::string &query,
-                                                 const std::optional<std::string> &filter = std::nullopt,
-                                                 const std::optional<std::string> &scope = std::nullopt,
-                                                 const int limit = 20,
-                                                 const bool ignore_spelling = false) const;
+    std::vector<search::SearchResultItem> search(
+        const std::string &query,
+        const std::optional<std::string> &filter = std::nullopt,
+        const std::optional<std::string> &scope = std::nullopt,
+        const int limit = 20, const bool ignore_spelling = false) const;
 
     /// https://ytmusicapi.readthedocs.io/en/latest/reference.html#ytmusicapi.YTMusic.get_artist
     artist::Artist get_artist(const std::string &channel_id) const;
@@ -295,24 +294,27 @@ public:
     std::optional<song::Song> get_song(const std::string &video_id) const;
 
     /// https://ytmusicapi.readthedocs.io/en/latest/reference.html#ytmusicapi.YTMusic.get_playlist
-    playlist::Playlist get_playlist(const std::string &playlist_id, int limit = 100) const;
+    playlist::Playlist get_playlist(const std::string &playlist_id,
+                                    int limit = 100) const;
 
     /// https://ytmusicapi.readthedocs.io/en/latest/reference.html#ytmusicapi.YTMusic.get_artist_albums
-    std::vector<artist::Artist::Album> get_artist_albums(const std::string &channel_id, const std::string &params) const;
+    std::vector<artist::Artist::Album> get_artist_albums(
+        const std::string &channel_id, const std::string &params) const;
 
     /// youtube-dl's extract_info function
     video_info::VideoInfo extract_video_info(const std::string &video_id) const;
 
     /// https://ytmusicapi.readthedocs.io/en/latest/reference.html#ytmusicapi.YTMusic.get_watch_playlist
-    watch::Playlist get_watch_playlist(const std::optional<std::string> &videoId = std::nullopt,
-                                      const std::optional<std::string> &playlistId = std::nullopt,
-                                      int limit = 25,
-                                      const std::optional<std::string> &params = std::nullopt) const;
+    watch::Playlist get_watch_playlist(
+        const std::optional<std::string> &videoId = std::nullopt,
+        const std::optional<std::string> &playlistId = std::nullopt,
+        int limit = 25,
+        const std::optional<std::string> &params = std::nullopt) const;
 
     // TODO wrap more methods
 
-private:
+   private:
     std::unique_ptr<YTMusicPrivate> d;
 };
 
-#endif // YTMUSIC_H
+#endif  // YTMUSIC_H

@@ -84,6 +84,7 @@ QVariantList BcModel::selectedItems()
             map.insert("origUrl", bcitem->origUrl());
             map.insert("app", "bc");
             map.insert("duration", bcitem->duration());
+            map.insert("album", bcitem->album());
             list << map;
         }
     }

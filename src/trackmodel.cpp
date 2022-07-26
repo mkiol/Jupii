@@ -137,15 +137,9 @@ TrackModel::TrackData TrackModel::makeTrackDataFromId(const QUrl& id) const
     QString name;
     int t = 0;
 
-    Utils::pathTypeNameCookieIconFromId(
-                id,
-                nullptr,
-                &t,
-                &name,
-                nullptr,
-                &data.icon,
-                nullptr,
-                &data.author);
+    Utils::pathTypeNameCookieIconFromId(id, nullptr, &t, &name, nullptr,
+                                        &data.icon, nullptr, &data.author,
+                                        &data.album);
 
     data.type = t == 0 ?
                 ContentServer::getContentTypeByExtension(id) :
@@ -190,7 +184,7 @@ QList<ListItem*> TrackModel::makeTrackItemsFromPlaylistFile(const QString& playl
                 {}, // album
                 item.url, // url
                 {}, // icon
-                ContentServer::Type::Unknown, // type
+                ContentServer::Type::Type_Unknown, // type
                 0, // number
                 0, // length
                 ContentServer::itemTypeFromUrl(item.url)
@@ -277,7 +271,7 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
                 data.author = id_data.author;
             if (!id_data.icon.isEmpty())
                 data.icon = id_data.icon;
-            if (id_data.type != ContentServer::Type::Unknown)
+            if (id_data.type != ContentServer::Type::Type_Unknown)
                 data.type = id_data.type;
         } else {
             m_trackdata_by_id.insert(id, id_data);

@@ -51,9 +51,9 @@ class ContentServerWorker : public QObject,
         static const int DEFAULT_DELTA;
         static inline CacheLimit fromType(const ContentServer::Type type,
                                           int delta = DEFAULT_DELTA) {
-            if (type == ContentServer::Type::Video)
+            if (type == ContentServer::Type::Type_Video)
                 return {INF_SIZE, INF_SIZE, 5, delta};
-            if (type == ContentServer::Type::Music)
+            if (type == ContentServer::Type::Type_Music)
                 return {INF_SIZE, INF_SIZE, 2, delta};
             return {INF_SIZE, INF_SIZE, 0, delta};
         }
@@ -74,7 +74,7 @@ class ContentServerWorker : public QObject,
         inline bool operator==(const Range &rv) const {
             return start == rv.start && end == rv.end;
         }
-        void updateLength(const int length);
+        void updateLength(int length);
         static std::optional<Range> fromRange(const QString &rangeHeader,
                                               int length = -1);
         static std::optional<Range> fromContentRange(
@@ -106,9 +106,10 @@ class ContentServerWorker : public QObject,
                           QHttpResponse *resp);
     void proxyConnected(const QUrl &id);
     void proxyError(const QUrl &id);
-    void proxyRequested(const QUrl &id, const bool first,
-                        const CacheLimit cacheLimit, const QByteArray &range,
-                        QHttpRequest *req, QHttpResponse *resp);
+    void proxyRequested(const QUrl &id, bool first,
+                        ContentServerWorker::CacheLimit cacheLimit,
+                        const QByteArray &range, QHttpRequest *req,
+                        QHttpResponse *resp);
 
    public slots:
     void setStreamToRecord(const QUrl &id, bool value);
@@ -178,7 +179,7 @@ class ContentServerWorker : public QObject,
                 return req->method() == QHttpRequest::HTTP_HEAD;
             }
             inline bool meta() const {
-                return req->headers().contains("icy-metadata");
+                return req->headers().contains(QStringLiteral("icy-metadata"));
             }
             inline bool fromBegin() const { return !range || range->full(); }
             void write(const QByteArray &data);
@@ -193,9 +194,11 @@ class ContentServerWorker : public QObject,
         Mode mode = Mode::Streaming;
         QString title;
         QString author;
+        QString album;
         QString recExt;
         QString artPath;
         QUrl origUrl;
+        ContentServer::Type otype = ContentServer::Type::Type_Unknown;
         QHash<QHttpResponse *, Sink> sinks;
         QHash<QNetworkReply *, Source> sources;
         QMultiHash<QNetworkReply *, QHttpResponse *> sourceToSinkMap;
@@ -205,8 +208,7 @@ class ContentServerWorker : public QObject,
         void removeSink(QHttpResponse *resp);
         void removeSinks();
         ContentServerWorker::Proxy::Source &source(const QNetworkReply *reply);
-        void addSource(QNetworkReply *reply, const bool first,
-                       const CacheLimit cacheLimit);
+        void addSource(QNetworkReply *reply, bool first, CacheLimit cacheLimit);
         void removeSource(QNetworkReply *reply);
         void removeSources();
         void writeAll(const QNetworkReply *reply, const QByteArray &data);
@@ -273,11 +275,15 @@ class ContentServerWorker : public QObject,
     void streamFileNoRange(std::shared_ptr<QFile> file, QHttpRequest *req,
                            QHttpResponse *resp);
     void requestHandler(QHttpRequest *req, QHttpResponse *resp);
-    void requestForFileHandler(const QUrl &id,
-                               const ContentServer::ItemMeta *meta,
+    void requestForFileHandler(const QUrl &id, ContentServer::ItemMeta *meta,
                                QHttpRequest *req, QHttpResponse *resp);
-    void requestForUrlHandler(const QUrl &id, QHttpRequest *req,
-                              QHttpResponse *resp);
+    void requestForUrlHandler(const QUrl &id,
+                              const ContentServer::ItemMeta *meta,
+                              QHttpRequest *req, QHttpResponse *resp);
+    void requestForCachedContent(const QUrl &id,
+                                 const ContentServer::ItemMeta *meta,
+                                 const QString &path, ContentServer::Type type,
+                                 QHttpRequest *req, QHttpResponse *resp);
     void requestForUrlHandlerFallback(const QUrl &id, const QUrl &origUrl,
                                       QHttpRequest *req, QHttpResponse *resp);
     void requestForMicHandler(const QUrl &id,
@@ -291,9 +297,9 @@ class ContentServerWorker : public QObject,
     void requestForScreenCaptureHandler(const QUrl &id,
                                         const ContentServer::ItemMeta *meta,
                                         QHttpRequest *req, QHttpResponse *resp);
-    void makeProxy(const QUrl &id, const bool first,
-                   const CacheLimit cacheLimit, const QByteArray &range = {},
-                   QHttpRequest *req = nullptr, QHttpResponse *resp = nullptr);
+    void makeProxy(const QUrl &id, bool first, CacheLimit cacheLimit,
+                   const QByteArray &range = {}, QHttpRequest *req = nullptr,
+                   QHttpResponse *resp = nullptr);
     QByteArray processShoutcastMetadata(Proxy &proxy, QNetworkReply *reply,
                                         QByteArray data);
     void updatePulseStreamName(const QString &name);
@@ -312,12 +318,11 @@ class ContentServerWorker : public QObject,
     void closeRecFile(Proxy &proxy);
     void finishRecFile(Proxy &proxy, Proxy::Source &source);
     void finishAllRecFile(Proxy &proxy);
-    static void cleanCacheFiles();
+    static void cleanCacheFiles(bool force = false);
     void handleRespWithProxyMetaData(Proxy &proxy, QHttpRequest *,
                                      QHttpResponse *resp, QNetworkReply *reply);
     void handleRespWithProxyMetaData(Proxy &proxy, QNetworkReply *reply);
-    void startProxyInternal(const QUrl &id, const bool first,
-                            const CacheLimit cacheLimit,
+    void startProxyInternal(const QUrl &id, bool first, CacheLimit cacheLimit,
                             const QByteArray &range = {},
                             QHttpRequest *req = nullptr,
                             QHttpResponse *resp = nullptr);
@@ -339,7 +344,7 @@ class ContentServerWorker : public QObject,
     QNetworkReply *makeRequest(const QUrl &id, const QHttpRequest *req);
     QNetworkReply *makeRequest(const QUrl &id, const QByteArray &range = {});
     void dispatchProxyData(Proxy &proxy, QNetworkReply *reply,
-                           const QByteArray &data);
+                           QByteArray &data);
     void removeDeadProxies();
     void logProxies() const;
     static void logProxySinks(const Proxy &proxy);
@@ -348,10 +353,10 @@ class ContentServerWorker : public QObject,
     static QByteArray makeRangeHeader(int start, int end = -1);
     void processNewSource(Proxy &proxy, Proxy::Source &source);
     void checkCachedCondition(Proxy &proxy);
-    void requestFullSource(const QUrl &id, const int length,
-                           const ContentServer::Type type);
-    void requestAdditionalSource(const QUrl &id, const int length,
-                                 const ContentServer::Type type);
+    void requestFullSource(const QUrl &id, int length,
+                           ContentServer::Type type);
+    void requestAdditionalSource(const QUrl &id, int length,
+                                 ContentServer::Type type);
     bool matchedSourceExists(const QUrl &id, const QByteArray &range);
 };
 

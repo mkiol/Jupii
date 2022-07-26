@@ -84,6 +84,10 @@ class Settings : public QSettings,
                    icecastSearchHistoryChanged)
     Q_PROPERTY(QStringList tuneinSearchHistory READ tuneinSearchHistory NOTIFY
                    tuneinSearchHistoryChanged)
+    Q_PROPERTY(CacheType cacheType READ cacheType WRITE setCacheType NOTIFY
+                   cacheTypeChanged)
+    Q_PROPERTY(CacheCleaningType cacheCleaningType READ cacheCleaningType WRITE
+                   setCacheCleaningType NOTIFY cacheCleaningTypeChanged)
 
    public:
     enum class HintType {
@@ -93,6 +97,16 @@ class Settings : public QSettings,
         Hint_MediaInfoSwipeLeft = 1 << 3
     };
     Q_ENUM(HintType)
+
+    enum class CacheType { Cache_Auto = 0, Cache_Always = 1, Cache_Never = 2 };
+    Q_ENUM(CacheType)
+
+    enum class CacheCleaningType {
+        CacheCleaning_Auto = 0,
+        CacheCleaning_Always = 1,
+        CacheCleaning_Never = 2
+    };
+    Q_ENUM(CacheCleaningType)
 
 #ifdef SAILFISH
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
@@ -190,6 +204,10 @@ class Settings : public QSettings,
     Q_INVOKABLE QUrl appIcon() const;
     QString pythonChecksum() const;
     void setPythonChecksum(const QString &value);
+    CacheType cacheType() const;
+    void setCacheType(CacheType value);
+    CacheCleaningType cacheCleaningType() const;
+    void setCacheCleaningType(CacheCleaningType value);
 
    signals:
     void portChanged();
@@ -227,6 +245,8 @@ class Settings : public QSettings,
     void soundcloudSearchHistoryChanged();
     void icecastSearchHistoryChanged();
     void tuneinSearchHistoryChanged();
+    void cacheTypeChanged();
+    void cacheCleaningTypeChanged();
 
    private:
     inline static const QString settingsFilename =

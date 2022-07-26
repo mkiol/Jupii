@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,6 +10,8 @@ import QtQuick.Controls 2.2 as Controls
 import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.14 as Kirigami
 import QtQuick.Dialogs 1.1
+
+import harbour.jupii.ContentServer 1.0
 
 Kirigami.ScrollablePage {
     id: root
@@ -39,11 +41,9 @@ Kirigami.ScrollablePage {
         selectExisting: true
         folder: shortcuts.music
         onAccepted: {
-            if (asAudio) {
-                playlist.addItemFileUrlsAsAudio(fileDialog.fileUrls)
-            } else {
-                playlist.addItemFileUrls(fileDialog.fileUrls)
-            }
+            playlist.addItemFileUrls(fileDialog.fileUrls,
+                                     asAudio ? ContentServer.Type_Music :
+                                               ContentServer.Type_Unknown)
             pageStack.flickBack()
         }
     }
@@ -55,8 +55,8 @@ Kirigami.ScrollablePage {
         width: parent.width - 8 * Kirigami.Units.largeSpacing
         onAccepted: {
             if (ok) {
-                if (asAudio) playlist.addItemUrlAsAudio(url, name)
-                else playlist.addItemUrl(url, name)
+                playlist.addItemUrl(url, asAudio ? ContentServer.Type_Music :
+                                                   ContentServer.Type_Unknown, name)
             }
             pageStack.flickBack()
         }

@@ -73,7 +73,7 @@ private:
     QString m_album;
     QUrl m_url;
     QUrl m_icon;
-    ContentServer::Type m_type = ContentServer::Type::Unknown;
+    ContentServer::Type m_type = ContentServer::Type::Type_Unknown;
     int m_number = 0;
     int m_length = 0;
     ContentServer::ItemType m_item_type = ContentServer::ItemType_Unknown;
@@ -115,8 +115,9 @@ private:
     struct TrackData {
         QString title;
         QString author;
+        QString album;
         QUrl icon;
-        ContentServer::Type type = ContentServer::Type::Unknown;
+        ContentServer::Type type = ContentServer::Type::Type_Unknown;
     };
 
     static const QString queryByAlbumTemplate;

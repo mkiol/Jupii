@@ -83,34 +83,6 @@ Page {
 
         onItemsAdded: root.showLastItem()
         onItemsLoaded: root.showActiveItem()
-//        onBcMainUrlAdded: {
-//            pageStack.pop(root, PageStackAction.Immediate)
-//            pageStack.push(Qt.resolvedUrl("BcPage.qml"))
-//        }
-//        onBcAlbumUrlAdded: {
-//            pageStack.pop(root, PageStackAction.Immediate)
-//            pageStack.push(Qt.resolvedUrl("BcPage.qml"), {albumPage: url})
-//        }
-//        onBcArtistUrlAdded: {
-////            if (pageStack.currentPage !== root) {
-////                pageStack.pop(root, PageStackAction.Immediate)
-////            }
-//            if (pageStack.busy)
-//            replaceAbove(root, Qt.resolvedUrl("BcPage.qml"), {artistPage: url})
-//            //pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: url})
-//        }
-//        onSoundcloudMainUrlAdded: {
-//            pageStack.pop(root, PageStackAction.Immediate)
-//            pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"))
-//        }
-//        onSoundcloudAlbumUrlAdded: {
-//            pageStack.pop(root, PageStackAction.Immediate)
-//            pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {albumPage: url})
-//        }
-//        onSoundcloudArtistUrlAdded: {
-//            pageStack.pop(root, PageStackAction.Immediate)
-//            pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: url})
-//        }
 
         onError: {
             if (code === PlayListModel.E_FileExists)
@@ -121,6 +93,8 @@ Page {
                 notifications.show(qsTr("Some items cannot be added"))
             else if (code === PlayListModel.E_AllItemsNotAdded)
                 notifications.show(qsTr("Items cannot be added"))
+            else if (code === PlayListModel.E_ProxyError)
+                notifications.show(qsTr("Unable to play item"))
             else
                 notifications.show(qsTr("Unknown error"))
         }
@@ -189,8 +163,8 @@ Page {
                 visible: (playlist.busy || playlist.refreshing)
                 text: playlist.refreshing ?
                           playlist.progressTotal > 1 ?
-                              qsTr("Refreshing item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
-                              qsTr("Refreshing item...") :
+                              qsTr("Preparing item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
+                              qsTr("Preparing item...") :
                           playlist.progressTotal > 1 ?
                               qsTr("Adding item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
                               qsTr("Adding item...")
@@ -300,6 +274,13 @@ Page {
                 running: model.toBeActive
                 visible: running
                 size: BusyIndicatorSize.Medium
+                Label {
+                    font.pixelSize: Theme.fontSizeTiny
+                    color: Theme.secondaryColor
+                    anchors.centerIn: parent
+                    text: cserver.cacheProgressString
+                    visible: parent.running && cserver.caching
+                }
             }
         }
 

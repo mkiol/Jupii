@@ -116,7 +116,8 @@ Page {
                     title: qsTr("Experiments")
 
                     content.sourceComponent: Column {
-                        /*ComboBox {
+                        ComboBox {
+                            visible: settings.isDebug()
                             label: qsTr("Screen capture")
                             currentIndex: settings.screenSupported ?
                                               settings.screenAudio ? 2 : 1 : 0
@@ -174,7 +175,7 @@ Page {
                             onValueChanged: {
                                 settings.screenQuality = value
                             }
-                        }*/
+                        }
 
                         TextSwitch {
                             automaticCheck: false
@@ -298,6 +299,114 @@ Page {
                             }
                         }
 
+                        ComboBox {
+                            label: qsTr("Caching")
+                            description: qsTr("Controls when a remote content is fully downloaded before playing. " +
+                                              "When 'Auto' is set (recommended), caching is enabled for small files and when " +
+                                              "transcoding or audio extracting is needed. " +
+                                              "Option 'Always' forces chaching in every case. It might increase delay in " +
+                                              "playing start, but any subsequent playback is quicker because content is already in the cache. " +
+                                              "Option 'Never' disables caching.")
+
+                            currentIndex: {
+                                if (settings.cacheType === Settings.Cache_Auto)
+                                    return 0
+                                if (settings.cacheType === Settings.Cache_Always)
+                                    return 1
+                                if (settings.cacheType === Settings.Cache_Never)
+                                    return 2
+                                return 0
+                            }
+
+                            menu: ContextMenu {
+                                MenuItem { text: qsTr("Auto") }
+                                MenuItem { text: qsTr("Always") }
+                                MenuItem { text: qsTr("Never") }
+                            }
+
+                            onCurrentIndexChanged: {
+                                if (currentIndex == 0)
+                                    settings.cacheType = Settings.Cache_Auto
+                                else if (currentIndex == 1)
+                                    settings.cacheType = Settings.Cache_Always
+                                else if (currentIndex == 2)
+                                    settings.cacheType = Settings.Cache_Never
+                                else
+                                    settings.cacheType = Settings.Cache_Auto
+                            }
+                        }
+
+                        ComboBox {
+                            label: qsTr("Cache cleaning")
+                            description: qsTr("Controls when cached items are removed. " +
+                                              "When 'Auto' is set (recommended), only cache for items not existing in play queue are removed. " +
+                                              "Option 'Always' forces removal of all cached items when app starts. " +
+                                              "Option 'Never' disables any cache cleaning.")
+
+                            currentIndex: {
+                                if (settings.cacheCleaningType === Settings.CacheCleaning_Auto)
+                                    return 0
+                                if (settings.cacheCleaningType === Settings.CacheCleaning_Always)
+                                    return 1
+                                if (settings.cacheCleaningType === Settings.CacheCleaning_Never)
+                                    return 2
+                                return 0
+                            }
+
+                            menu: ContextMenu {
+                                MenuItem { text: qsTr("Auto") }
+                                MenuItem { text: qsTr("Always") }
+                                MenuItem { text: qsTr("Never") }
+                            }
+
+                            onCurrentIndexChanged: {
+                                if (currentIndex == 0)
+                                    settings.cacheCleaningType = Settings.CacheCleaning_Auto
+                                else if (currentIndex == 1)
+                                    settings.cacheCleaningType = Settings.CacheCleaning_Always
+                                else if (currentIndex == 2)
+                                    settings.cacheCleaningType = Settings.CacheCleaning_Never
+                                else
+                                    settings.cacheCleaningType = Settings.CacheCleaning_Auto
+                            }
+                        }
+
+                        ListItem {
+                            contentHeight: flow0.height + 2 * Theme.paddingLarge
+                            onClicked: openMenu()
+
+                            Flow {
+                                id: flow0
+                                spacing: Theme.paddingMedium
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: parent.left; anchors.right: parent.right
+                                anchors.leftMargin: Theme.paddingLarge
+                                anchors.rightMargin: Theme.paddingLarge
+
+                                Label {
+                                    text: qsTr("Cache size")
+                                }
+
+                                Label {
+                                    id: sizeLabel
+                                    color: Theme.secondaryColor
+                                    text: cserver.cacheSizeString()
+
+                                    Connections {
+                                        target: cserver
+                                        onCacheSizeChanged: sizeLabel.text = cserver.cacheSizeString()
+                                    }
+                                }
+                            }
+
+                            menu: ContextMenu {
+                                MenuItem {
+                                    text: qsTr("Delete cache")
+                                    onClicked: cserver.cleanCache()
+                                }
+                            }
+                        }
+
                         TextSwitch {
                             automaticCheck: false
                             checked: settings.showAllDevices
@@ -313,7 +422,7 @@ Page {
                             }
                         }
 
-                        /*ComboBox {
+                        ComboBox {
                             visible: settings.isDebug() && settings.screenSupported
                             label: qsTr("Screen capture encoder")
                             currentIndex: {
@@ -347,7 +456,7 @@ Page {
 
                         ComboBox {
                             visible: settings.isDebug() && settings.screenSupported
-                            label: "Screen capture framerate"
+                            label: qsTr("Screen capture framerate")
                             currentIndex: {
                                 if (settings.screenFramerate < 15) {
                                     return 0;
@@ -358,7 +467,7 @@ Page {
                                 }
                             }
                             menu: ContextMenu {
-                                MenuItem { text: "5 fps (default)" }
+                                MenuItem { text: "5 fps" }
                                 MenuItem { text: "15 fps" }
                                 MenuItem { text: "30 fps" }
                             }
@@ -375,7 +484,7 @@ Page {
                                     settings.screenFramerate = 5;
                                 }
                             }
-                        }*/
+                        }
 
                         TextField {
                             anchors {

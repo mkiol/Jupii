@@ -127,11 +127,14 @@ static void registerTypes() {
         "harbour.jupii.Settings", 1, 0, "Settings",
         QStringLiteral("Settings is a singleton"));
 
-    qRegisterMetaType<Service::ErrorType>("ErrorType");
+    qRegisterMetaType<Service::ErrorType>("Service::ErrorType");
     qRegisterMetaType<QList<ListItem*>>("QListOfListItem");
     qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
-    qRegisterMetaType<XC::ErrorType>("XcErrorType");
-
+    qRegisterMetaType<XC::ErrorType>("XC::ErrorType");
+    qRegisterMetaType<Settings::CacheType>("Settings::CacheType");
+    qRegisterMetaType<Settings::CacheCleaningType>(
+        "Settings::CacheCleaningType");
+    qRegisterMetaType<ContentServer::Type>("ContentServer::Type");
     qRegisterMetaType<std::shared_ptr<QFile>>("std::shared_ptr<QFile>");
 }
 
@@ -141,7 +144,7 @@ static void installTranslator() {
     auto transDir =
         SailfishApp::pathTo(QStringLiteral("translations")).toLocalFile();
 #else
-    QString transDir{":/translations"};
+    auto transDir = QStringLiteral(":/translations");
 #endif
     if (!translator->load(QLocale{}, QStringLiteral("jupii"),
                           QStringLiteral("-"), transDir,

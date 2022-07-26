@@ -148,6 +148,8 @@ Kirigami.ScrollablePage {
                 notifications.show(qsTr("Some items cannot be added"))
             else if (code === PlayListModel.E_AllItemsNotAdded)
                 notifications.show(qsTr("Items cannot be added"))
+            else if (code === PlayListModel.E_ProxyError)
+                notifications.show(qsTr("Unable to play item"))
             else
                 notifications.show(qsTr("Unknown error"))
         }
@@ -189,8 +191,8 @@ Kirigami.ScrollablePage {
         wrapMode: Text.WordWrap
         text: playlist.refreshing ?
                   playlist.progressTotal > 1 ?
-                      qsTr("Refreshing item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
-                      qsTr("Refreshing item...") :
+                      qsTr("Preparing item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
+                      qsTr("Preparing item...") :
                   playlist.progressTotal > 1 ?
                       qsTr("Adding item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
                       qsTr("Adding item...")

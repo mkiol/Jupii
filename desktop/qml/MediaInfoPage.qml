@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -267,6 +267,21 @@ Kirigami.ScrollablePage {
                          text.length !== 0
                 wrapMode: Text.WordWrap
                 text: av.currentContentType
+            }
+
+            Controls.Label {
+                visible: cachedLabel.visible
+                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                text: qsTr("Cached")
+                color: Kirigami.Theme.disabledTextColor
+            }
+            Controls.Label {
+                id: cachedLabel
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillWidth: true
+                visible: itemType === ContentServer.ItemType_Url
+                wrapMode: Text.WordWrap
+                text: cserver.idCached(av.currentId) ? qsTr("Yes") : qsTr("No")
             }
 
             /*Controls.Label {

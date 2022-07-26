@@ -8,6 +8,8 @@
 #ifndef TRANSCODER_H
 #define TRANSCODER_H
 
+#include <QByteArray>
+#include <QIODevice>
 #include <QString>
 #include <optional>
 
@@ -15,23 +17,31 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 }
 
-struct AvData {
-    QString path;
-    QString mime;
-    QString type;
-    QString extension;
-    int64_t bitrate = 0;
-    int channels = 0;
-    int64_t size = 0;
-};
+#include "contentserver.h"
+
+struct AVFormatContext;
+struct AVOutputFormat;
+struct AVStream;
 
 class Transcoder {
    public:
-    static std::optional<AvData> extractAudio(const QString &file);
+    static bool isMp4Isom(QIODevice &device);
+    static bool isMp4Isom(const QString &file);
+    static std::optional<AvMeta> extractAudio(const QString &inFile,
+                                              const QString &outFile = {});
 
    private:
-    static bool fillAvData(const AVCodecParameters *codec,
-                           const QString &videoFile, AvData *data);
+    struct InputAvData {
+        AvMeta meta;
+        AVFormatContext *ic = nullptr;
+        const AVCodec *icodec = nullptr;
+        int aidx = 0;
+    };
+    static bool writeOutput(const QString &path, AVFormatContext *ic,
+                            AVFormatContext *oc, AVStream *ast, int aidx);
+    static const AVOutputFormat *bestFormatForMime(const QString &mime);
+    static std::optional<InputAvData> openAudioInput(const QString &file);
+    static std::optional<AvMeta> makeAvMeta(const AVCodecParameters *codec);
 };
 
 #endif  // TRANSCODER_H

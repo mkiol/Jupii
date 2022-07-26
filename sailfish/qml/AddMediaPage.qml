@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,6 +8,8 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Sailfish.Pickers 1.0
+
+import harbour.jupii.ContentServer 1.0
 
 Page {
     id: root
@@ -35,7 +37,7 @@ Page {
                     var paths = [];
                     for (var i = 0; i < selectedContent.count; ++i)
                         paths.push(selectedContent.get(i).filePath)
-                    playlist.addItemPaths(paths)
+                    playlist.addItemPaths(paths, ContentServer.Type_Video)
                     app.popToQueue()
                 }
             }
@@ -67,7 +69,7 @@ Page {
                     var paths = [];
                     for (var i = 0; i < selectedContent.count; ++i)
                         paths.push(selectedContent.get(i).filePath)
-                    playlist.addItemPathsAsAudio(paths)
+                    playlist.addItemPaths(paths, ContentServer.Type_Music)
                     app.popToQueue()
                 }
             }
