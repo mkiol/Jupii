@@ -333,13 +333,19 @@ static void logVideoInfo(const video_info::VideoInfo& info) {
     }
 }
 
+static bool urlOk(std::string_view url) {
+    if (url.empty()) return false;
+    if (url.find("manifest.googlevideo.com") != std::string::npos) return false;
+    return true;
+}
+
 QUrl YtdlApi::bestAudioUrl(const std::vector<video_info::Format>& formats) {
     std::vector<video_info::Format> audioFormats{};
     std::copy_if(formats.cbegin(), formats.cend(),
                  std::back_inserter(audioFormats), [](const auto& format) {
                      return format.vcodec == "none" &&
                             format.acodec.find("mp4a") != std::string::npos &&
-                            !format.url.empty();
+                            urlOk(format.url);
                  });
 
     auto it = std::max_element(audioFormats.cbegin(), audioFormats.cend(),
@@ -360,7 +366,7 @@ QUrl YtdlApi::bestVideoUrl(const std::vector<video_info::Format>& formats) {
                  std::back_inserter(audioFormats), [](const auto& format) {
                      return format.vcodec.find("avc1") != std::string::npos &&
                             format.acodec.find("mp4a") != std::string::npos &&
-                            !format.url.empty();
+                            urlOk(format.url);
                  });
 
     auto it = std::max_element(audioFormats.cbegin(), audioFormats.cend(),
