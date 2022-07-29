@@ -36,19 +36,19 @@
 #include "services.h"
 #include "settings.h"
 
-const QString Utils::typeKey = "jupii_type";
-const QString Utils::cookieKey = "jupii_cookie";
-const QString Utils::nameKey = "jupii_name";
-const QString Utils::authorKey = "jupii_author";
-const QString Utils::albumKey = "jupii_album";
-const QString Utils::origUrlKey = "jupii_origurl";
-const QString Utils::iconKey = "jupii_icon";
-const QString Utils::descKey = "jupii_desc";
-const QString Utils::playKey = "jupii_play";
-const QString Utils::idKey = "jupii_id";
-const QString Utils::ytdlKey = "jupii_ytdl";
-const QString Utils::appKey = "jupii_app";
-const QString Utils::durKey = "jupii_dur";
+const QString Utils::typeKey = QStringLiteral("jupii_type");
+const QString Utils::cookieKey = QStringLiteral("jupii_cookie");
+const QString Utils::nameKey = QStringLiteral("jupii_name");
+const QString Utils::authorKey = QStringLiteral("jupii_author");
+const QString Utils::albumKey = QStringLiteral("jupii_album");
+const QString Utils::origUrlKey = QStringLiteral("jupii_origurl");
+const QString Utils::iconKey = QStringLiteral("jupii_icon");
+const QString Utils::descKey = QStringLiteral("jupii_desc");
+const QString Utils::playKey = QStringLiteral("jupii_play");
+const QString Utils::idKey = QStringLiteral("jupii_id");
+const QString Utils::ytdlKey = QStringLiteral("jupii_ytdl");
+const QString Utils::appKey = QStringLiteral("jupii_app");
+const QString Utils::durKey = QStringLiteral("jupii_dur");
 
 Utils::Utils(QObject *parent)
     : QObject{parent}, nam{std::make_unique<QNetworkAccessManager>()} {}
@@ -221,7 +221,7 @@ QString Utils::readLicenseFile() const {
         QStandardPaths::standardLocations(QStandardPaths::DataLocation);
 
     foreach (const auto &dir, dirs) {
-        QFile file{QDir{dir}.absoluteFilePath("LICENSE")};
+        QFile file{QDir{dir}.absoluteFilePath(QStringLiteral("LICENSE"))};
         if (file.exists()) {
             if (file.open(QIODevice::ReadOnly)) {
                 data = file.readAll();
@@ -458,7 +458,7 @@ QUrl Utils::urlFromText(const QString &text, const QString &context) {
     }
 
     // check if text is a absolute file path
-    const auto file = QUrl::fromLocalFile(text);
+    auto file = QUrl::fromLocalFile(text);
     if (QFileInfo::exists(file.toLocalFile())) return file;
 
     // check if text is valid URL

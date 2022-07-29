@@ -1034,7 +1034,7 @@ void PlaylistModel::addWorkerDone() {
     if (m_add_worker) {
         if (m_add_worker->items.length() != m_add_worker->ids.length()) {
             qWarning()
-                << "dome urls are invalid and cannot be added to the playlist";
+                << "some urls are invalid and cannot be added to the playlist";
             if (m_add_worker->ids.length() == 1)
                 emit error(E_ItemNotAdded);
             else if (m_add_worker->items.length() == 0)
@@ -1728,20 +1728,55 @@ void PlaylistModel::refresh() {
 }
 
 void PlaylistModel::setContent(const QString &id1, const QString &id2) {
-    if (!id1.isEmpty()) {
-        auto *item = qobject_cast<PlaylistItem *>(find(id1));
-        if (item && item->itemType() == ContentServer::ItemType_Url) {
-            auto err = ContentServer::instance()->startProxy(QUrl{id1});
-            if (err != ContentServer::ProxyError::NoError) {
-                if (err == ContentServer::ProxyError::Canceled) {
-                    qWarning() << "proxy did not start => canceled";
-                } else {
-                    qWarning() << "proxy did not start => error";
-                    emit error(PlaylistModel::ErrorType::E_ProxyError);
-                }
-                item->setToBeActive(false);
-                return;
+    auto cachingResult = [this](const QString &id) {
+        using Result = std::pair<PlaylistItem *, ContentServer::CachingResult>;
+        if (!id.isEmpty()) {
+            auto item = qobject_cast<PlaylistItem *>(find(id));
+            if (item && item->itemType() == ContentServer::ItemType_Url) {
+                return Result{item,
+                              ContentServer::instance()->makeCache(QUrl{id})};
             }
+        }
+        return Result{nullptr, ContentServer::CachingResult::Invalid};
+    };
+
+    auto r1 = cachingResult(id1);
+    if (r1.second == ContentServer::CachingResult::NotCachedCanceled) {
+        qWarning() << "first item caching canceled";
+        r1.first->setToBeActive(false);
+        return;
+    }
+    if (r1.second == ContentServer::CachingResult::NotCachedError) {
+        qWarning() << "first item caching error";
+        emit error(PlaylistModel::ErrorType::E_ProxyError);
+        r1.first->setToBeActive(false);
+        return;
+    }
+
+    auto r2 = cachingResult(id2);
+    if (r2.second == ContentServer::CachingResult::NotCachedCanceled) {
+        qWarning() << "second item caching canceled";
+        if (r1.first) r1.first->setToBeActive(false);
+        return;
+    }
+    if (r2.second == ContentServer::CachingResult::NotCachedError) {
+        qWarning() << "second item caching error";
+        emit error(PlaylistModel::ErrorType::E_ProxyError);
+        if (r1.first) r1.first->setToBeActive(false);
+        return;
+    }
+
+    if (r1.second == ContentServer::CachingResult::NotCached) {
+        auto err = ContentServer::instance()->startProxy(QUrl{id1});
+        if (err != ContentServer::ProxyError::NoError) {
+            if (err == ContentServer::ProxyError::Canceled) {
+                qWarning() << "proxy did not start => canceled";
+            } else {
+                qWarning() << "proxy did not start => error";
+                emit error(PlaylistModel::ErrorType::E_ProxyError);
+            }
+            if (r1.first) r1.first->setToBeActive(false);
+            return;
         }
     }
 

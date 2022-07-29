@@ -1096,7 +1096,7 @@ bool ContentServer::readMP4MetaUsingTaglib(const TagLib::FileRef &file,
                 *otype =
                     static_cast<Type>(item.toStringList().toString().toInt());
             } else {
-                *otype = Type::Type_Unknown;
+                *otype = Type::Type_Invalid;
             }
         }
     }
@@ -1179,7 +1179,7 @@ bool ContentServer::readID3MetaUsingTaglib(const TagLib::FileRef &file,
             if (it != tags.end()) {
                 *otype = static_cast<Type>(it->second.toString().toInt());
             } else {
-                *otype = Type::Type_Unknown;
+                *otype = Type::Type_Invalid;
             }
         }
     }
@@ -1552,7 +1552,7 @@ ContentServer::Type ContentServer::readOtypeFromCachedFile(
     Type otype;
     if (!readMetaUsingTaglib(path, nullptr, nullptr, nullptr, nullptr, nullptr,
                              nullptr, nullptr, /*otype=*/&otype)) {
-        return Type::Type_Unknown;
+        return Type::Type_Invalid;
     }
     return otype;
 }
@@ -1958,7 +1958,8 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
 
     if (!art) {
         if (auto cachedFile = pathToCachedContent(meta, true, meta.type)) {
-            return makeItemMetaUsingCachedFile(fixed_url, *cachedFile, meta);
+            auto it = makeItemMetaUsingCachedFile(fixed_url, *cachedFile, meta);
+            if (it != m_metaCache.end()) return it;
         }
     }
 
@@ -1989,6 +1990,7 @@ ContentServer::makeItemMetaUsingCachedFile(const QUrl &url,
                              /*otype=*/nullptr, &meta.duration, &meta.bitrate,
                              &meta.sampleRate, &meta.channels)) {
         qWarning() << "cannot read meta with taglib";
+        return m_metaCache.end();
     }
 
     return m_metaCache.insert(url, meta);
@@ -2541,12 +2543,15 @@ static inline QString removeExtension(const QString &fileName) {
     return fileName.left(idx);
 }
 
-bool ContentServer::writeTagsWithMeta(const QString &path,
-                                      const ItemMeta &meta) {
+bool ContentServer::writeTagsWithMeta(const QString &path, const ItemMeta &meta,
+                                      const QUrl &id) {
     auto url = meta.origUrl.isEmpty() ? meta.url : meta.origUrl;
+    auto icon = localArtPathIfExists(Utils::iconFromId(id).toString());
+
     if (!writeMetaUsingTaglib(path, true, meta.title, meta.artist, meta.album,
                               meta.comment, url.toString(),
-                              QDateTime::currentDateTime(), meta.albumArt,
+                              QDateTime::currentDateTime(),
+                              icon.isEmpty() ? meta.albumArt : icon,
                               /*otype=*/meta.type)) {
         qWarning() << "cannot write meta using taglib";
         return false;
@@ -2564,8 +2569,8 @@ void ContentServer::setCachingState(bool state) {
 
 std::optional<QString> ContentServer::cacheContent(const ItemMeta &meta) {
     auto path = pathToCachedContent(meta, false);
-    const int timeout =
-        static_cast<int>(6 * (meta.size / 1000));  // 1 min for 10 MB
+    const int timeout = std::max(
+        5000, static_cast<int>(60 * (meta.size / 50000)));  // 1 min for 50 MB
     qDebug() << "downloading content:" << meta.size << "bytes" << timeout
              << "ms";
 
@@ -2578,7 +2583,7 @@ std::optional<QString> ContentServer::cacheContent(const ItemMeta &meta) {
             &m_cacheDownloader.value(), &Downloader::progressChanged, this,
             [this]() { updateCacheProgressString(); }, Qt::QueuedConnection);
 
-        if (m_cacheDownloader->downloadToFile(meta.url, *path, timeout)) {
+        if (m_cacheDownloader->downloadToFile(meta.url, *path, timeout, true)) {
             qDebug() << "content successfully cached";
             disconnect(conn);
             setCachingState(false);
@@ -2638,51 +2643,54 @@ void ContentServer::updateMetaIfCached(ItemMeta &meta, Type type,
     }
 }
 
-ContentServer::CacheDecision ContentServer::cacheContentIfNeeded(
-    const QUrl &id) {
+ContentServer::CachingResult ContentServer::makeCache(const QUrl &id) {
     auto cacheType = Settings::instance()->cacheType();
 
-    qDebug() << "caching type:" << cacheType;
+    qDebug() << "make cache requested:" << cacheType;
 
     if (cacheType == Settings::CacheType::Cache_Never)
-        return CacheDecision::NoCacheDoStreming;
+        return CachingResult::NotCached;
 
     auto *meta = getMetaForId(id, false);
-    if (!meta) return CacheDecision::NoCacheAbort;
+    if (!meta) return CachingResult::NotCachedError;
 
     if (meta->size == 0) {
-        return CacheDecision::NoCacheDoStreming;
+        return CachingResult::NotCached;
     }
 
     auto type = static_cast<Type>(Utils::typeFromId(id));
 
     if (pathToCachedContent(*meta, true, type)) {
         qDebug() << "content already cached";
-        return CacheDecision::Cached;
+        return CachingResult::Cached;
     }
 
     if (meta->flagSet(MetaFlag::Mp4AudioNotIsom)) {
         qDebug() << "audio/mp4 not isom content => pre-caching forced";
 
         auto cachePath = cacheContent(*meta);
-        if (!cachePath) return CacheDecision::NoCacheAbort;
+        if (!cachePath) {
+            if (m_cacheDownloader && m_cacheDownloader->canceled())
+                return CachingResult::NotCachedCanceled;
+            return CachingResult::NotCachedError;
+        }
 
         auto avMeta = transcodeToAudioFile(*cachePath);
         if (!avMeta) {
             QFile::remove(*cachePath);
-            return CacheDecision::NoCacheAbort;
+            return CachingResult::NotCachedError;
         }
 
         if (*cachePath != avMeta->path) QFile::remove(*cachePath);
 
-        if (!writeTagsWithMeta(avMeta->path, *meta)) {
+        if (!writeTagsWithMeta(avMeta->path, *meta, id)) {
             QFile::remove(avMeta->path);
-            return CacheDecision::NoCacheAbort;
+            return CachingResult::NotCachedError;
         }
 
         updateMetaIfCached(*meta, type, avMeta->path);
 
-        return CacheDecision::Cached;
+        return CachingResult::Cached;
     }
 
     if (meta->type == Type::Type_Video && type == Type::Type_Music) {
@@ -2690,28 +2698,32 @@ ContentServer::CacheDecision ContentServer::cacheContentIfNeeded(
 
         auto cachePath = pathToCachedContent(*meta, true, Type::Type_Video);
         if (!cachePath) cachePath = cacheContent(*meta);
-        if (!cachePath) return CacheDecision::NoCacheAbort;
+        if (!cachePath) {
+            if (m_cacheDownloader && m_cacheDownloader->canceled())
+                return CachingResult::NotCachedCanceled;
+            return CachingResult::NotCachedError;
+        }
 
         auto avMeta = transcodeToAudioFile(*cachePath);
         if (!avMeta) {
             qWarning() << "cannot extract audio";
             QFile::remove(*cachePath);
-            return CacheDecision::NoCacheAbort;
+            return CachingResult::NotCachedError;
         }
 
-        if (!writeTagsWithMeta(avMeta->path, *meta)) {
+        if (!writeTagsWithMeta(avMeta->path, *meta, id)) {
             QFile::remove(*cachePath);
             QFile::remove(avMeta->path);
-            return CacheDecision::NoCacheAbort;
+            return CachingResult::NotCachedError;
         }
 
         meta->audioAvMeta = std::move(avMeta);
 
-        writeTagsWithMeta(*cachePath, *meta);
+        writeTagsWithMeta(*cachePath, *meta, id);
 
         updateMetaIfCached(*meta, type, *cachePath);
 
-        return CacheDecision::Cached;
+        return CachingResult::Cached;
     }
 
     bool doCaching = false;
@@ -2731,40 +2743,26 @@ ContentServer::CacheDecision ContentServer::cacheContentIfNeeded(
         auto cachePath = cacheContent(*meta);
         if (!cachePath) {
             if (m_cacheDownloader && m_cacheDownloader->canceled())
-                return CacheDecision::NoCacheAbort;
-            return CacheDecision::NoCacheDoStreming;
+                return CachingResult::NotCachedCanceled;
+            return CachingResult::NotCached;
         }
 
-        if (!writeTagsWithMeta(*cachePath, *meta) && type == Type::Type_Music) {
+        if (!writeTagsWithMeta(*cachePath, *meta, id) &&
+            type == Type::Type_Music) {
             QFile::remove(*cachePath);
-            return CacheDecision::NoCacheDoStreming;
+            return CachingResult::NotCached;
         }
 
         updateMetaIfCached(*meta, type, *cachePath);
 
-        return CacheDecision::Cached;
+        return CachingResult::Cached;
     }
 
-    return CacheDecision::NoCacheDoStreming;
+    return CachingResult::NotCached;
 }
 
 ContentServer::ProxyError ContentServer::startProxy(const QUrl &id) {
     qDebug() << "start proxy requested";
-
-    auto decision = cacheContentIfNeeded(id);
-
-    if (decision == CacheDecision::Cached) {
-        qDebug() << "content cached => proxy no needed";
-        return ProxyError::NoError;
-    }
-
-    if (decision == CacheDecision::NoCacheAbort) {
-        qDebug() << "content not cached => aborting";
-        return m_cacheDownloader->canceled() ? ProxyError::Canceled
-                                             : ProxyError::Error;
-    }
-
-    qDebug() << "content not cached => starting proxy";
 
     QEventLoop loop;
     QMetaObject::Connection connOk, connErr;
@@ -3100,14 +3098,15 @@ std::optional<QString> ContentServer::pathToCachedContent(const ItemMeta &meta,
     qDebug() << "cached files:" << files;
 #endif
 
-    if (type == Type::Type_Unknown && !files.isEmpty()) {
+    if (!files.isEmpty()) {
         files.erase(
             std::remove_if(files.begin(), files.end(),
                            [](const auto &file) {
                                auto otype = readOtypeFromCachedFile(file);
                                /*qDebug() << "otype:" << file << otype
                                         << getContentTypeByExtension(file);*/
-                               return otype != getContentTypeByExtension(file);
+                               return otype == Type::Type_Invalid ||
+                                      otype != getContentTypeByExtension(file);
                            }),
             files.end());
 

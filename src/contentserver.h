@@ -23,6 +23,7 @@
 #include <QThread>
 #include <QTime>
 #include <QUrl>
+#include <limits>
 #include <memory>
 #include <optional>
 
@@ -62,13 +63,14 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
                    cacheProgressChanged)
 
    public:
-    enum class Type {
+    enum class Type : unsigned int {
         Type_Unknown = 0,
         Type_Image = 1,
         Type_Music = 2,
         Type_Video = 4,
         Type_Dir = 128,
-        Type_Playlist = 256
+        Type_Playlist = 256,
+        Type_Invalid = std::numeric_limits<unsigned int>::max(),
     };
     Q_ENUM(Type)
 
@@ -101,6 +103,13 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         MadeFromCache = 1 << 10
     };
 
+    enum class CachingResult {
+        Invalid,
+        Cached,
+        NotCached,
+        NotCachedError,
+        NotCachedCanceled
+    };
     enum class ProxyError { NoError, Canceled, Error };
 
     struct ItemMeta {
@@ -277,6 +286,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     double cacheProgress() const;
     inline auto cacheProgressString() const { return m_cacheProgressString; };
     Q_INVOKABLE bool idCached(const QUrl &id);
+    CachingResult makeCache(const QUrl &id);
 
    signals:
     void streamRecordError(const QString &title);
@@ -313,8 +323,6 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         DLNA_ORG_FLAG_CONNECTION_STALL = (1U << 21),
         DLNA_ORG_FLAG_DLNA_V15 = (1U << 20)
     };
-
-    enum class CacheDecision { Cached, NoCacheDoStreming, NoCacheAbort };
 
     struct StreamData {
         QUrl id;
@@ -440,7 +448,6 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     bool saveTmpRec(const QString &path, bool deletePath);
     static QString readTitleUsingTaglib(const QString &path);
     void updateMetaAlbumArt(ItemMeta &meta) const;
-    CacheDecision cacheContentIfNeeded(const QUrl &id);
     static void updateMetaWithNotStandardHeaders(ItemMeta &meta,
                                                  const QNetworkReply &reply);
     static void updateMetaIfCached(ItemMeta &meta,
@@ -448,7 +455,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
                                    const QString &cachedPath = {});
     std::optional<QString> cacheContent(const ItemMeta &meta);
     static std::optional<AvMeta> transcodeToAudioFile(const QString &path);
-    static bool writeTagsWithMeta(const QString &path, const ItemMeta &meta);
+    static bool writeTagsWithMeta(const QString &path, const ItemMeta &meta,
+                                  const QUrl &id);
     static void writeRecTags(const QString &path);
     void updateCacheProgressString();
     void setCachingState(bool state);

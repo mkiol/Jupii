@@ -26,7 +26,8 @@ class Downloader final : public QObject {
     ~Downloader() final;
     QByteArray downloadData(const QUrl &url, int timeout = httpTimeout);
     bool downloadToFile(const QUrl &url, const QString &outputPath,
-                        int timeout = httpTimeout);
+                        int timeout = httpTimeout,
+                        bool abortWhenSlowDownload = false);
     inline void cancel() { mCancelRequested = true; }
     inline auto canceled() const { return mCancelRequested; }
     inline bool busy() const { return mReply && mReply->isRunning(); }
@@ -37,7 +38,9 @@ class Downloader final : public QObject {
     void progressChanged();
 
    private:
-    static const int httpTimeout = 10000;
+    static const int httpTimeout = 10000;  // 10s
+    static const int timeRateCheck = 3;    // 3s
+    static const int minRate = 500000;     // 500 kbps
     bool mCancelRequested = false;
     QNetworkReply *mReply = nullptr;
     std::pair<int64_t, int64_t> mProgress;

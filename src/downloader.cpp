@@ -13,6 +13,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QThread>
+#include <QTime>
 #include <QTimer>
 
 static const QByteArray userAgent = QByteArrayLiteral(
@@ -40,7 +41,7 @@ Downloader::Downloader(std::shared_ptr<QNetworkAccessManager> nam,
 Downloader::~Downloader() {}
 
 bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
-                                int timeout) {
+                                int timeout, bool abortWhenSlowDownload) {
     if (busy()) {
         qWarning() << "downloaded is busy";
         return false;
@@ -64,6 +65,8 @@ bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
 
     std::unique_ptr<QNetworkAccessManager> priv_nam;
 
+    auto startTime = QTime::currentTime();
+
     if (nam) {
         mReply = nam->get(request);
     } else {
@@ -79,9 +82,10 @@ bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
     auto con1 = connect(
         &timer, &QTimer::timeout, this,
         [this] {
-            auto *reply = qobject_cast<QNetworkReply *>(sender());
-            if (!reply) return;
-            reply->abort();
+            if (mReply) {
+                qWarning() << "timeout => aborting";
+                mReply->abort();
+            }
         },
         Qt::QueuedConnection);
     auto con2 = connect(
@@ -107,7 +111,22 @@ bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
         Qt::QueuedConnection);
     auto con4 = connect(
         mReply, &QNetworkReply::downloadProgress, this,
-        [this](qint64 bytesReceived, qint64 bytesTotal) {
+        [this, &startTime, abortWhenSlowDownload](qint64 bytesReceived,
+                                                  qint64 bytesTotal) {
+            auto *reply = qobject_cast<QNetworkReply *>(sender());
+            if (!reply) return;
+
+            if (abortWhenSlowDownload) {
+                if (auto sec = startTime.secsTo(QTime::currentTime());
+                    sec > timeRateCheck) {
+                    if (static_cast<int>(bytesReceived / sec) < minRate) {
+                        qWarning() << "slow download => aborting:"
+                                   << static_cast<int>(bytesReceived / sec);
+                        reply->abort();
+                    }
+                }
+            }
+
             mProgress = {bytesReceived, bytesTotal};
             emit progressChanged();
         },
@@ -182,9 +201,10 @@ QByteArray Downloader::downloadData(const QUrl &url, int timeout) {
     auto con1 = connect(
         &timer, &QTimer::timeout, this,
         [this] {
-            auto *reply = qobject_cast<QNetworkReply *>(sender());
-            if (!reply) return;
-            reply->abort();
+            if (mReply) {
+                qWarning() << "timeout => aborting";
+                mReply->abort();
+            }
         },
         Qt::QueuedConnection);
     auto con2 = connect(
