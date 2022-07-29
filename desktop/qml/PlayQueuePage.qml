@@ -192,7 +192,7 @@ Kirigami.ScrollablePage {
         text: playlist.refreshing ?
                   playlist.progressTotal > 1 ?
                       qsTr("Preparing item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
-                      qsTr("Preparing item...") :
+                      (qsTr("Preparing item...") + (cserver.caching ? " " + cserver.cacheProgressString : "")) :
                   playlist.progressTotal > 1 ?
                       qsTr("Adding item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
                       qsTr("Adding item...")

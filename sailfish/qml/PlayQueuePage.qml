@@ -305,25 +305,8 @@ Page {
 
     BusyIndicatorWithLabel {
         running: playlist.busy || av.busy || rc.busy
-        text: (playlist.busy || playlist.refreshing) ?
+        text: (playlist.busy || playlist.refreshing) && playlist.progressTotal > 1 ?
                   "" + (playlist.progressValue + 1) + "/" + playlist.progressTotal : ""
-    }
-
-    BusyIndicator {
-        anchors.centerIn: parent
-        running: playlist.busy || av.busy || rc.busy
-        size: BusyIndicatorSize.Large
-
-        Label {
-            enabled: playlist.busy || playlist.refreshing
-            opacity: enabled ? 1.0 : 0.0
-            visible: opacity > 0.0
-            Behavior on opacity { FadeAnimation {} }
-            anchors.centerIn: parent
-            font.pixelSize: Theme.fontSizeMedium
-            color: parent.color
-            text: "" + (playlist.progressValue + 1) + "/" + playlist.progressTotal
-        }
     }
 
     PlayerPanel {
