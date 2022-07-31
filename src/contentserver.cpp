@@ -24,9 +24,6 @@
 #include "connectivitydetector.h"
 #include "contentdirectory.h"
 #include "contentserverworker.h"
-#include "directory.h"
-#include "info.h"
-#include "libupnpp/control/cdirectory.hxx"
 #include "log.h"
 #include "miccaster.h"
 #include "playlistmodel.h"
@@ -41,36 +38,24 @@
 #include "ytdlapi.h"
 
 extern "C" {
-#include "libavcodec/avcodec.h"
 #include "libavdevice/avdevice.h"
 #include "libavformat/avformat.h"
 #include "libavutil/dict.h"
-#include "libavutil/imgutils.h"
 #include "libavutil/log.h"
-#include "libavutil/mathematics.h"
-#include "libavutil/time.h"
 #include "libavutil/timestamp.h"
-#include "libswresample/swresample.h"
-#include "libswscale/swscale.h"
 }
 
 // TagLib
 #include "attachedpictureframe.h"
 #include "fileref.h"
-#include "flacfile.h"
-#include "flacproperties.h"
 #include "id3v2frame.h"
 #include "id3v2tag.h"
 #include "mp4file.h"
 #include "mp4item.h"
-#include "mp4properties.h"
 #include "mp4tag.h"
 #include "mpegfile.h"
-#include "oggflacfile.h"
 #include "tag.h"
 #include "tpropertymap.h"
-#include "vorbisfile.h"
-#include "vorbisproperties.h"
 
 #ifdef SAILFISH
 #include <sailfishapp.h>
@@ -2002,11 +1987,15 @@ QString ContentServer::mimeFromReply(const QNetworkReply *reply) {
             .toLower());
 
     if (mime.isEmpty()) {
-        return reply->header(QNetworkRequest::ContentTypeHeader)
-            .toString()
-            .toLower();
+        mime = reply->header(QNetworkRequest::ContentTypeHeader)
+                   .toString()
+                   .toLower();
     }
 
+    auto list = mime.split(',');
+    if (!list.isEmpty()) mime = list.last().trimmed();
+
+    qDebug() << "mime:" << mime;
     return mime;
 }
 
@@ -2568,30 +2557,30 @@ void ContentServer::setCachingState(bool state) {
 }
 
 std::optional<QString> ContentServer::cacheContent(const ItemMeta &meta) {
-    auto path = pathToCachedContent(meta, false);
-    const int timeout = std::max(
-        5000, static_cast<int>(60 * (meta.size / 50000)));  // 1 min for 50 MB
-    qDebug() << "downloading content:" << meta.size << "bytes" << timeout
-             << "ms";
+    qDebug() << "downloading content:" << meta.size << "bytes";
 
-    if (!m_cacheDownloader.has_value()) m_cacheDownloader.emplace();
+    auto path = pathToCachedContent(meta, false);
+
+    if (m_cacheDownloader)
+        m_cacheDownloader->reset();
+    else
+        m_cacheDownloader.emplace();
 
     if (path) {
-        emit cacheProgressChanged();
-        setCachingState(true);
+        updateCacheProgressString();
         auto conn = connect(
             &m_cacheDownloader.value(), &Downloader::progressChanged, this,
             [this]() { updateCacheProgressString(); }, Qt::QueuedConnection);
 
-        if (m_cacheDownloader->downloadToFile(meta.url, *path, timeout, true)) {
+        if (m_cacheDownloader->downloadToFile(meta.url, *path, true)) {
             qDebug() << "content successfully cached";
             disconnect(conn);
-            setCachingState(false);
+            updateCacheProgressString();
             return path;
         }
 
         disconnect(conn);
-        setCachingState(false);
+        updateCacheProgressString();
     }
 
     qWarning() << "cannot cache content";
@@ -2643,20 +2632,25 @@ void ContentServer::updateMetaIfCached(ItemMeta &meta, Type type,
     }
 }
 
+int64_t ContentServer::cachePendingSizeForId(const QUrl &id) {
+    if (id.isEmpty()) return 0;
+    auto *meta = getMetaForId(id, false);
+    if (!meta) return 0;
+    if (meta->size == 0) return 0;
+    if (pathToCachedContent(*meta, true,
+                            static_cast<Type>(Utils::typeFromId(id)))) {
+        return 0;
+    }
+    return meta->size;
+}
+
 ContentServer::CachingResult ContentServer::makeCache(const QUrl &id) {
-    auto cacheType = Settings::instance()->cacheType();
-
-    qDebug() << "make cache requested:" << cacheType;
-
-    if (cacheType == Settings::CacheType::Cache_Never)
-        return CachingResult::NotCached;
+    qDebug() << "make cache:" << Utils::anonymizedId(id);
 
     auto *meta = getMetaForId(id, false);
     if (!meta) return CachingResult::NotCachedError;
 
-    if (meta->size == 0) {
-        return CachingResult::NotCached;
-    }
+    if (meta->size == 0) return CachingResult::NotCached;
 
     auto type = static_cast<Type>(Utils::typeFromId(id));
 
@@ -2732,9 +2726,8 @@ ContentServer::CachingResult ContentServer::makeCache(const QUrl &id) {
         doCaching = true;
         qDebug() << "file is small => pre-caching forced:" << meta->size
                  << "bytes";
-    }
-
-    if (cacheType == Settings::CacheType::Cache_Always) {
+    } else if (Settings::instance()->cacheType() ==
+               Settings::CacheType::Cache_Always) {
         doCaching = true;
         qDebug() << "pre-caching enabled for all content";
     }
@@ -2759,6 +2752,49 @@ ContentServer::CachingResult ContentServer::makeCache(const QUrl &id) {
     }
 
     return CachingResult::NotCached;
+}
+
+std::pair<ContentServer::CachingResult, ContentServer::CachingResult>
+ContentServer::makeCache(const QUrl &id1, const QUrl &id2) {
+    auto cacheType = Settings::instance()->cacheType();
+
+    qDebug() << "make cache requested: cache type=" << cacheType
+             << "id1=" << Utils::anonymizedId(id1)
+             << "id2=" << Utils::anonymizedId(id2);
+
+    if (cacheType == Settings::CacheType::Cache_Never)
+        return {CachingResult::NotCached, CachingResult::NotCached};
+
+    std::pair<CachingResult, CachingResult> result{CachingResult::Invalid,
+                                                   CachingResult::Invalid};
+
+    setCachingState(true);
+    updateCacheProgressString(true);
+
+    if (!id1.isEmpty()) {
+        m_cacheDoneSize = 0;
+        m_cachePendingSize = cachePendingSizeForId(id2);
+        auto sizeId1 = cachePendingSizeForId(id1);
+        result.first = makeCache(id1);
+        if (result.first == CachingResult::NotCachedCanceled ||
+            result.first == CachingResult::NotCachedError) {
+            setCachingState(false);
+            m_cacheDoneSize = 0;
+            m_cachePendingSize = 0;
+            return result;
+        }
+        m_cacheDoneSize = sizeId1;
+        m_cachePendingSize = sizeId1;
+    }
+    if (!id2.isEmpty()) {
+        result.second = makeCache(id2);
+    }
+
+    setCachingState(false);
+    m_cacheDoneSize = 0;
+    m_cachePendingSize = 0;
+
+    return result;
 }
 
 ContentServer::ProxyError ContentServer::startProxy(const QUrl &id) {
@@ -3028,23 +3064,32 @@ void ContentServer::cancelCaching() {
 }
 
 double ContentServer::cacheProgress() const {
-    if (m_cacheDownloader && m_cacheDownloader->busy()) {
+    if (m_cacheDownloader) {
         auto [bytesReceived, bytesTotal] = m_cacheDownloader->progress();
-        if (bytesTotal > 0)
-            return static_cast<double>(bytesReceived) / bytesTotal;
+        if (bytesTotal > 0) {
+            bytesReceived += m_cacheDoneSize;
+            bytesTotal += m_cachePendingSize;
+            return static_cast<double>(bytesReceived) /
+                   static_cast<double>(bytesTotal);
+        }
     }
 
     return 0.0;
 }
 
-void ContentServer::updateCacheProgressString() {
+void ContentServer::updateCacheProgressString(bool toZero) {
     QString newStr;
-    if (auto p = cacheProgress(); p > 0.0) {
+    if (toZero) {
+        newStr = QStringLiteral("0%");
+    } else if (auto p = cacheProgress(); p > 0.0) {
         newStr = QString::number(static_cast<int>(p * 100)) + '%';
     }
 
+    if (newStr.isEmpty()) return;
+
     if (newStr != m_cacheProgressString) {
         m_cacheProgressString = std::move(newStr);
+        // qDebug() << "cache progress:" << m_cacheProgressString;
         emit cacheProgressChanged();
     }
 }
@@ -3164,6 +3209,6 @@ bool ContentServer::idCached(const QUrl &id) {
     if (meta->size == 0) return false;
     if (meta->itemType != ItemType::ItemType_Url) return false;
 
-    auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
+    auto type = static_cast<Type>(Utils::typeFromId(id));
     return static_cast<bool>(pathToCachedContent(*meta, true, type));
 }

@@ -41,7 +41,7 @@ Downloader::Downloader(std::shared_ptr<QNetworkAccessManager> nam,
 Downloader::~Downloader() {}
 
 bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
-                                int timeout, bool abortWhenSlowDownload) {
+                                bool abortWhenSlowDownload) {
     if (busy()) {
         qWarning() << "downloaded is busy";
         return false;
@@ -77,13 +77,13 @@ bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
     QEventLoop loop;
     QTimer timer;
     timer.setSingleShot(true);
-    timer.setInterval(timeout);
+    timer.setInterval(startTimeout);
 
     auto con1 = connect(
         &timer, &QTimer::timeout, this,
-        [this] {
-            if (mReply) {
-                qWarning() << "timeout => aborting";
+        [this, &output] {
+            if (mReply && output.size() == 0) {
+                qWarning() << "start timeout => aborting";
                 mReply->abort();
             }
         },
@@ -260,4 +260,18 @@ QByteArray Downloader::downloadData(const QUrl &url, int timeout) {
     mReply = nullptr;
 
     return data;
+}
+
+void Downloader::cancel() {
+    mCancelRequested = true;
+    if (mReply) {
+        qWarning() << "cancel requested";
+        mReply->abort();
+    }
+}
+
+void Downloader::reset() {
+    mCancelRequested = false;
+    mProgress = {0, 0};
+    nam.reset();
 }

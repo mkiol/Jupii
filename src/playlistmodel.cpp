@@ -190,7 +190,7 @@ void PlaylistWorker::run() {
                     if (origUrlExists) {
                         if (q.hasQueryItem(Utils::ytdlKey))
                             q.removeQueryItem(Utils::ytdlKey);
-                        q.addQueryItem(Utils::ytdlKey, "true");
+                        q.addQueryItem(Utils::ytdlKey, QStringLiteral("true"));
                     }
                 }
 
@@ -198,7 +198,7 @@ void PlaylistWorker::run() {
                 if (play) {
                     if (q.hasQueryItem(Utils::playKey))
                         q.removeQueryItem(Utils::playKey);
-                    q.addQueryItem(Utils::playKey, "true");
+                    q.addQueryItem(Utils::playKey, QStringLiteral("true"));
                 }
 
                 // duration
@@ -1728,45 +1728,44 @@ void PlaylistModel::refresh() {
 }
 
 void PlaylistModel::setContent(const QString &id1, const QString &id2) {
-    auto cachingResult = [this](const QString &id) {
-        using Result = std::pair<PlaylistItem *, ContentServer::CachingResult>;
-        if (!id.isEmpty()) {
-            auto item = qobject_cast<PlaylistItem *>(find(id));
-            if (item && item->itemType() == ContentServer::ItemType_Url) {
-                return Result{item,
-                              ContentServer::instance()->makeCache(QUrl{id})};
-            }
+    auto cachableItem = [this](const QString &id) -> PlaylistItem * {
+        if (id.isEmpty()) return nullptr;
+        auto item = qobject_cast<PlaylistItem *>(find(id));
+        if (item && item->itemType() == ContentServer::ItemType_Url) {
+            return item;
         }
-        return Result{nullptr, ContentServer::CachingResult::Invalid};
+        return nullptr;
     };
 
-    auto r1 = cachingResult(id1);
-    if (r1.second == ContentServer::CachingResult::NotCachedCanceled) {
-        qWarning() << "first item caching canceled";
-        r1.first->setToBeActive(false);
-        return;
-    }
-    if (r1.second == ContentServer::CachingResult::NotCachedError) {
-        qWarning() << "first item caching error";
-        emit error(PlaylistModel::ErrorType::E_ProxyError);
-        r1.first->setToBeActive(false);
+    auto *item1 = cachableItem(id1);
+    auto *item2 = cachableItem(id2);
+
+    std::pair<ContentServer::CachingResult, ContentServer::CachingResult>
+        result;
+
+    if (item1 && item2)
+        result = ContentServer::instance()->makeCache(QUrl{id1}, QUrl{id2});
+    else if (item1)
+        result = ContentServer::instance()->makeCache(QUrl{id1}, {});
+    else if (item2)
+        result = ContentServer::instance()->makeCache(QUrl{id2}, {});
+
+    if (result.first == ContentServer::CachingResult::NotCachedCanceled ||
+        result.second == ContentServer::CachingResult::NotCachedCanceled) {
+        qWarning() << "item caching canceled";
+        if (item1) item1->setToBeActive(false);
         return;
     }
 
-    auto r2 = cachingResult(id2);
-    if (r2.second == ContentServer::CachingResult::NotCachedCanceled) {
-        qWarning() << "second item caching canceled";
-        if (r1.first) r1.first->setToBeActive(false);
-        return;
-    }
-    if (r2.second == ContentServer::CachingResult::NotCachedError) {
-        qWarning() << "second item caching error";
+    if (result.first == ContentServer::CachingResult::NotCachedError ||
+        result.second == ContentServer::CachingResult::NotCachedError) {
+        qWarning() << "item caching error";
         emit error(PlaylistModel::ErrorType::E_ProxyError);
-        if (r1.first) r1.first->setToBeActive(false);
+        if (item1) item1->setToBeActive(false);
         return;
     }
 
-    if (r1.second == ContentServer::CachingResult::NotCached) {
+    if (item1 && result.first == ContentServer::CachingResult::NotCached) {
         auto err = ContentServer::instance()->startProxy(QUrl{id1});
         if (err != ContentServer::ProxyError::NoError) {
             if (err == ContentServer::ProxyError::Canceled) {
@@ -1775,7 +1774,7 @@ void PlaylistModel::setContent(const QString &id1, const QString &id2) {
                 qWarning() << "proxy did not start => error";
                 emit error(PlaylistModel::ErrorType::E_ProxyError);
             }
-            if (r1.first) r1.first->setToBeActive(false);
+            item1->setToBeActive(false);
             return;
         }
     }

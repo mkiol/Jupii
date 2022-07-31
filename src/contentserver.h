@@ -286,7 +286,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     double cacheProgress() const;
     inline auto cacheProgressString() const { return m_cacheProgressString; };
     Q_INVOKABLE bool idCached(const QUrl &id);
-    CachingResult makeCache(const QUrl &id);
+    std::pair<CachingResult, CachingResult> makeCache(const QUrl &id1,
+                                                      const QUrl &id2);
 
    signals:
     void streamRecordError(const QString &title);
@@ -375,6 +376,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     std::optional<Downloader> m_cacheDownloader;
     QString m_cacheProgressString;
     bool m_caching = false;
+    int64_t m_cachePendingSize = 0;
+    int64_t m_cacheDoneSize = 0;
 
     void streamRecordedHandler(const QString &title, const QString &path);
     void streamToRecordChangedHandler(const QUrl &id, bool value);
@@ -458,8 +461,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static bool writeTagsWithMeta(const QString &path, const ItemMeta &meta,
                                   const QUrl &id);
     static void writeRecTags(const QString &path);
-    void updateCacheProgressString();
+    void updateCacheProgressString(bool toZero = false);
     void setCachingState(bool state);
+    int64_t cachePendingSizeForId(const QUrl &id);
+    CachingResult makeCache(const QUrl &id);
 };
-
 #endif  // CONTENTSERVER_H
