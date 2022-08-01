@@ -111,9 +111,69 @@ Page {
                 }
             }*/
 
+            /*TextSwitch {
+                automaticCheck: false
+                visible:  settings.remoteContentMode == 0
+                checked: settings.rec
+                text: qsTr("Stream recorder")
+                description: qsTr("Enables audio recording from URL items. " +
+                                  "If URL item is a Icecast stream, individual tracks from a stream will be recorded. " +
+                                  "To enable recording use 'Record' button located on the bottom bar. " +
+                                  "When the 'Record' button is activated before " +
+                                  "the end of currently played track, the whole track is saved to a file.")
+                onClicked: {
+                    settings.rec = !settings.rec
+                }
+            }*/
+
+            ListItem {
+                contentHeight: visible ? recflow.height + 2*Theme.paddingLarge : 0
+
+                Flow {
+                    id: recflow
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: parent.left; right: parent.right
+                        leftMargin: Theme.paddingLarge
+                        rightMargin: Theme.paddingLarge
+                    }
+                    spacing: Theme.paddingMedium
+
+                    Label {
+                        text: qsTr("Directory for recordings")
+                    }
+
+                    Label {
+                        color: Theme.highlightColor
+                        text: utils.dirNameFromPath(settings.recDir)
+                    }
+                }
+
+                onClicked: openMenu();
+
+                menu: ContextMenu {
+                    MenuItem {
+                        text: qsTr("Change")
+                        onClicked: {
+                            var obj = pageStack.push(Qt.resolvedUrl("DirPage.qml"));
+                            obj.accepted.connect(function() {
+                                settings.recDir = obj.selectedPath
+                            })
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("Set default")
+                        onClicked: {
+                            settings.recDir = ""
+                        }
+                    }
+                }
+            }
+
             ExpandingSectionGroup {
                 ExpandingSection {
                     title: qsTr("Experiments")
+                    visible: settings.isDebug()
 
                     content.sourceComponent: Column {
                         ComboBox {
@@ -174,66 +234,6 @@ Page {
 
                             onValueChanged: {
                                 settings.screenQuality = value
-                            }
-                        }
-
-                        TextSwitch {
-                            automaticCheck: false
-                            visible:  settings.remoteContentMode == 0
-                            checked: settings.rec
-                            text: qsTr("Stream recorder")
-                            description: qsTr("Enables audio recording from URL items. " +
-                                              "If URL item is a Icecast stream, individual tracks from a stream will be recorded. " +
-                                              "To enable recording use 'Record' button located on the bottom bar. " +
-                                              "When the 'Record' button is activated before " +
-                                              "the end of currently played track, the whole track is saved to a file.")
-                            onClicked: {
-                                settings.rec = !settings.rec
-                            }
-                        }
-
-                        ListItem {
-                            visible: settings.rec && settings.remoteContentMode == 0
-                            contentHeight: visible ? recflow.height + 2*Theme.paddingLarge : 0
-
-                            Flow {
-                                id: recflow
-                                anchors {
-                                    verticalCenter: parent.verticalCenter
-                                    left: parent.left; right: parent.right
-                                    leftMargin: Theme.paddingLarge
-                                    rightMargin: Theme.paddingLarge
-                                }
-                                spacing: Theme.paddingMedium
-
-                                Label {
-                                    text: qsTr("Directory for recordings")
-                                }
-
-                                Label {
-                                    color: Theme.highlightColor
-                                    text: utils.dirNameFromPath(settings.recDir)
-                                }
-                            }
-
-                            onClicked: openMenu();
-
-                            menu: ContextMenu {
-                                MenuItem {
-                                    text: qsTr("Change")
-                                    onClicked: {
-                                        var obj = pageStack.push(Qt.resolvedUrl("DirPage.qml"));
-                                        obj.accepted.connect(function() {
-                                            settings.recDir = obj.selectedPath
-                                        })
-                                    }
-                                }
-                                MenuItem {
-                                    text: qsTr("Set default")
-                                    onClicked: {
-                                        settings.recDir = ""
-                                    }
-                                }
                             }
                         }
 
@@ -304,8 +304,7 @@ Page {
                             description: qsTr("Controls when a remote content is fully downloaded before playing. " +
                                               "When 'Auto' is set (recommended), caching is enabled for small files and when " +
                                               "transcoding or audio extracting is needed. " +
-                                              "Option 'Always' forces chaching in every case. It might increase delay in " +
-                                              "playing start, but any subsequent playback is quicker because content is already in the cache. " +
+                                              "Option 'Always' forces chaching in every case. " +
                                               "Option 'Never' disables caching.")
 
                             currentIndex: {

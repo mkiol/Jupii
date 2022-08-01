@@ -186,7 +186,6 @@ Page {
             }
 
             SimpleListItem {
-                visible: settings.rec
                 title.text: qsTr("Recording")
                 icon.source: "image://icons/icon-m-record?"  + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)

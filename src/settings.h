@@ -45,7 +45,6 @@ class Settings : public QSettings,
                    audioBoostChanged)
     Q_PROPERTY(
         QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
-    Q_PROPERTY(bool rec READ getRec WRITE setRec NOTIFY recChanged)
     Q_PROPERTY(
         int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
     Q_PROPERTY(int screenFramerate READ getScreenFramerate WRITE
@@ -120,8 +119,6 @@ class Settings : public QSettings,
     int getVolStep() const;
     void setShowAllDevices(bool value);
     bool getShowAllDevices() const;
-    void setRec(bool value);
-    bool getRec() const;
     void setScreenSupported(bool value);
     bool getScreenSupported() const;
     void setScreenFramerate(int value);
@@ -223,7 +220,6 @@ class Settings : public QSettings,
     void useHWVolumeChanged();
     void prefNetInfChanged();
     void micVolumeChanged();
-    void recChanged();
     void volStepChanged();
     void screenFramerateChanged();
     void screenCropTo169Changed();

@@ -269,17 +269,7 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.isSection: true
             }
 
-            Controls.Switch {
-                enabled:  settings.remoteContentMode == 0
-                checked: settings.rec
-                text: qsTr("Stream recorder")
-                onToggled: {
-                    settings.rec = !settings.rec
-                }
-            }
-
             Controls.Button {
-                enabled: settings.rec && settings.remoteContentMode == 0
                 Kirigami.FormData.label: qsTr("Directory for recordings")
                 text: utils.dirNameFromPath(settings.recDir)
                 onClicked: fileDialog.open()

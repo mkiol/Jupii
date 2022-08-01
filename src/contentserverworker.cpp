@@ -1184,8 +1184,7 @@ void ContentServerWorker::processNewSource(Proxy &proxy,
 }
 
 void ContentServerWorker::initRecFile(Proxy &proxy, Proxy::Source &source) {
-    if (source.state == Proxy::State::Streaming &&
-        Settings::instance()->getRec() && source.full()) {
+    if (source.state == Proxy::State::Streaming && source.full()) {
         const auto mime =
             source.reply->header(QNetworkRequest::ContentTypeHeader).toString();
         if (ContentServer::getExtensionFromAudioContentType(mime).isEmpty()) {

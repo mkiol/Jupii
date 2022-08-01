@@ -361,15 +361,6 @@ bool Settings::getShowAllDevices() const {
     return value("showalldevices", false).toBool();
 }
 
-void Settings::setRec(bool value) {
-    if (getRec() != value) {
-        setValue("rec", value);
-        emit recChanged();
-    }
-}
-
-bool Settings::getRec() const { return value("rec", true).toBool(); }
-
 void Settings::setScreenSupported([[maybe_unused]] bool value) {
 #ifdef SAILFISH
     if (getScreenSupported() != value) {
