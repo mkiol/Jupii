@@ -39,6 +39,7 @@
 #include <QProcess>
 #include <QTextCodec>
 #include <QTranslator>
+#include <cstdint>
 #include <iostream>
 #include <libupnpp/control/description.hxx>
 #include <libupnpp/control/discovery.hxx>
@@ -57,7 +58,6 @@
 #include "devicemodel.h"
 #include "directory.h"
 #include "dirmodel.h"
-#include "filemetadata.h"
 #include "fosdemmodel.h"
 #include "gpoddermodel.h"
 #include "icecastmodel.h"
@@ -136,6 +136,7 @@ static void registerTypes() {
         "Settings::CacheCleaningType");
     qRegisterMetaType<ContentServer::Type>("ContentServer::Type");
     qRegisterMetaType<std::shared_ptr<QFile>>("std::shared_ptr<QFile>");
+    qRegisterMetaType<int64_t>("int64_t");
 }
 
 static void installTranslator() {

@@ -16,8 +16,8 @@
 #include "utils.h"
 
 const int ContentServerWorker::CacheLimit::INF_TIME = -1;
-const int ContentServerWorker::CacheLimit::INF_SIZE = -1;
-const int ContentServerWorker::CacheLimit::DEFAULT_DELTA = 300'000;
+const int64_t ContentServerWorker::CacheLimit::INF_SIZE = -1;
+const int64_t ContentServerWorker::CacheLimit::DEFAULT_DELTA = 300'000;
 
 ContentServerWorker::ContentServerWorker(QObject *parent)
     : QObject{parent},
@@ -30,8 +30,6 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
 
     connect(server, &QHttpServer::newRequest, this,
             &ContentServerWorker::requestHandler);
-    connect(this, &ContentServerWorker::contSeqWriteData, this,
-            &ContentServerWorker::seqWriteData, Qt::QueuedConnection);
     connect(this, &ContentServerWorker::proxyRequested, this,
             &ContentServerWorker::startProxyInternal, Qt::QueuedConnection);
     connect(
@@ -389,7 +387,7 @@ QNetworkReply *ContentServerWorker::makeRequest(const QUrl &id,
     return nam->get(request);
 }
 
-QByteArray ContentServerWorker::makeRangeHeader(int start, int end) {
+QByteArray ContentServerWorker::makeRangeHeader(int64_t start, int64_t end) {
     if (end > 0)
         return QStringLiteral("bytes=%1-%2").arg(start, end).toLatin1();
     return QStringLiteral("bytes=%1-").arg(start).toLatin1();
@@ -496,9 +494,9 @@ void ContentServerWorker::startProxy(const QUrl &id) {
     }
 
     if (meta->flagSet(ContentServer::MetaFlag::Seek)) {
-        requestAdditionalSource(id, static_cast<int>(meta->size), meta->type);
+        requestAdditionalSource(id, meta->size, meta->type);
     }
-    requestFullSource(id, static_cast<int>(meta->size), meta->type);
+    requestFullSource(id, meta->size, meta->type);
 }
 
 void ContentServerWorker::logProxies() const {
@@ -845,34 +843,40 @@ void ContentServerWorker::requestForScreenCaptureHandler(
     PulseAudioSource::discoverStream();
 }
 
-void ContentServerWorker::seqWriteData(std::shared_ptr<QFile> file, qint64 size,
-                                       QHttpResponse *resp) {
+void ContentServerWorker::seqWriteData(std::shared_ptr<QFile> file,
+                                       int64_t size, QHttpResponse *resp) {
     if (resp->isFinished()) {
         qWarning() << "connection closed by server, so skiping data sending";
-    } else {
-        qint64 rlen = size;
-        const qint64 len =
-            rlen < ContentServer::qlen ? rlen : ContentServer::qlen;
-        // qDebug() << "Sending" << len << "of data";
-        QByteArray data;
-        data.resize(static_cast<int>(len));
-        auto cdata = data.data();
-        const auto count = static_cast<int>(file->read(cdata, len));
-        rlen = rlen - len;
-
-        if (count > 0) {
-            resp->write(data);
-            if (rlen > 0) {
-                emit contSeqWriteData(file, rlen, resp);
-                return;
-            }
-        } else {
-            qWarning() << "no more data to read";
-        }
-
-        qDebug() << "all data sent, so ending connection";
+        resp->end();
     }
 
+    auto rlen = size;
+    auto len = std::min<int64_t>(rlen, 1000000);
+    QByteArray data;
+    data.resize(static_cast<int>(len));
+    auto *cdata = data.data();
+    const auto count = static_cast<int>(file->read(cdata, len));
+    rlen = rlen - len;
+
+    qDebug() << file->fileName() << data.size();
+
+    if (count > 0) {
+        if (rlen > 0 && !resp->property("seq").toBool()) {
+            resp->setProperty("seq", true);
+            connect(
+                resp, &QHttpResponse::allBytesWritten, this,
+                [this, rlen, file] {
+                    auto *resp = qobject_cast<QHttpResponse *>(sender());
+                    if (!resp) return;
+                    seqWriteData(file, rlen, resp);
+                },
+                Qt::QueuedConnection);
+        }
+        resp->write(data);
+        return;
+    }
+
+    qDebug() << "all data sent, so ending connection";
     resp->end();
 }
 
@@ -921,7 +925,7 @@ void ContentServerWorker::responseForMicDone() {
 }
 
 void ContentServerWorker::responseForUrlDone() {
-    auto resp = qobject_cast<QHttpResponse *>(sender());
+    auto *resp = qobject_cast<QHttpResponse *>(sender());
 
     qDebug() << "response done:" << resp;
 
@@ -973,7 +977,7 @@ void ContentServerWorker::removeProxy(const QUrl &id) {
 void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
                                                       QNetworkReply *reply) {
     auto resps = proxy.sourceToSinkMap.values(reply);
-    for (auto resp : resps) {
+    for (auto *resp : resps) {
         if (!proxy.sinks.contains(resp))
             throw std::runtime_error("no sink for resp");
         qDebug() << "calling handleRespWithProxyMetaData for sink:" << resp
@@ -1019,11 +1023,11 @@ void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
     if (code > 199 && code < 299) {
         auto &sink = proxy.sinks[resp];
 
-        const int length = source.hasLength()
-                               ? sink.range
-                                     ? sink.range->end - sink.range->start + 1
-                                     : source.length
-                               : -1;
+        const auto length = source.hasLength()
+                                ? sink.range
+                                      ? sink.range->end - sink.range->start + 1
+                                      : source.length
+                                : -1;
 
         qDebug() << "lengths:" << source.hasLength() << source.length << length;
         if (sink.range) {
@@ -1121,7 +1125,8 @@ void ContentServerWorker::proxyMetaDataChanged() {
     removeProxySource(proxy, reply);
 }
 
-void ContentServerWorker::requestAdditionalSource(const QUrl &id, int length,
+void ContentServerWorker::requestAdditionalSource(const QUrl &id,
+                                                  int64_t length,
                                                   ContentServer::Type type) {
     if (length <= 2 * CacheLimit::DEFAULT_DELTA) {
         qDebug() << "skipping additional source because length is to short:"
@@ -1129,18 +1134,18 @@ void ContentServerWorker::requestAdditionalSource(const QUrl &id, int length,
         return;
     }
 
-    const int delta =
-        std::max(static_cast<int>(length / 60), CacheLimit::DEFAULT_DELTA);
+    const int64_t delta =
+        std::max(static_cast<int64_t>(length / 60), CacheLimit::DEFAULT_DELTA);
     qDebug() << "requesting proxy additional source:" << length << delta;
 
     emit proxyRequested(id, false, CacheLimit::fromType(type, delta),
                         makeRangeHeader(length - delta, -1), nullptr, nullptr);
 }
 
-void ContentServerWorker::requestFullSource(const QUrl &id, const int length,
+void ContentServerWorker::requestFullSource(const QUrl &id, int64_t length,
                                             const ContentServer::Type type) {
-    const int delta =
-        std::max(static_cast<int>(length / 60), CacheLimit::DEFAULT_DELTA);
+    const int64_t delta =
+        std::max(static_cast<int64_t>(length / 60), CacheLimit::DEFAULT_DELTA);
     qDebug() << "requesting proxy full source:" << length << delta;
 
     emit proxyRequested(id, true, CacheLimit::fromType(type, delta), {},
@@ -1559,12 +1564,12 @@ void ContentServerWorker::dispatchProxyData(Proxy &proxy, QNetworkReply *reply,
 }
 
 std::optional<ContentServerWorker::Range> ContentServerWorker::Range::fromRange(
-    const QString &rangeHeader, int length) {
+    const QString &rangeHeader, int64_t length) {
     static const QRegExp rx{
         QStringLiteral("bytes[\\s]*=[\\s]*([\\d]+)-([\\d]*)")};
 
     if (rx.indexIn(rangeHeader) >= 0) {
-        Range range{rx.cap(1).toInt(), rx.cap(2).toInt(), length};
+        Range range{rx.cap(1).toLongLong(), rx.cap(2).toLongLong(), length};
         if (range.length <= 0) range.length = -1;
         if (range.end <= 0) range.end = -1;
         if (length > 0) {
@@ -1592,7 +1597,8 @@ ContentServerWorker::Range::fromContentRange(
     static const QRegExp rx{
         QStringLiteral("bytes[\\s]*([\\d]+)-([\\d]+)/([\\d]+)")};
     if (rx.indexIn(contentRangeHeader) >= 0) {
-        Range range{rx.cap(1).toInt(), rx.cap(2).toInt(), rx.cap(3).toInt()};
+        Range range{rx.cap(1).toLongLong(), rx.cap(2).toLongLong(),
+                    rx.cap(3).toLongLong()};
         if (range.length <= 0) range.length = -1;
         if (range.start >= 0 && range.start < range.end && range.end > 0 &&
             (range.length == -1 || range.end < range.length))
@@ -1623,6 +1629,8 @@ void ContentServerWorker::streamFileRange(std::shared_ptr<QFile> file,
 
     resp->writeHead(206);
     file->seek(range->start);
+    qDebug() << "range->rangeLength()" << range->rangeLength()
+             << file->bytesAvailable() << *range;
     seqWriteData(file, range->rangeLength(), resp);
 }
 
@@ -2021,8 +2029,9 @@ void ContentServerWorker::Proxy::writeAll(const QNetworkReply *reply,
                                           const QByteArray &data) {
     for (auto it = sourceToSinkMap.cbegin(); it != sourceToSinkMap.cend();
          ++it) {
-        if (it.key() == reply && !it.value()->isFinished())
+        if (it.key() == reply && !it.value()->isFinished()) {
             it.value()->write(data);
+        }
     }
 }
 
@@ -2120,7 +2129,7 @@ void ContentServerWorker::Proxy::endAll() {
 
 void ContentServerWorker::Proxy::endSinks(QNetworkReply *reply) {
     const auto matchedSinks = sourceToSinkMap.values(reply);
-    for (auto &r : matchedSinks) {
+    for (const auto &r : matchedSinks) {
         if (!r->isFinished()) r->end();
     }
 }
@@ -2161,7 +2170,7 @@ bool ContentServerWorker::Proxy::sourceShouldBeRemoved(Source &source) {
 
 void ContentServerWorker::Proxy::removeDeadSources() {
     const auto replies = sources.keys();
-    for (auto r : replies) {
+    for (auto *r : replies) {
         auto &source = sources[r];
         if (sourceShouldBeRemoved(source)) removeSource(source.reply);
     }
@@ -2172,11 +2181,11 @@ void ContentServerWorker::removeDeadProxies() {
     proxiesCleanupTimer.stop();
 
     const auto ids = proxies.keys();
-    for (auto &id : ids) {
+    for (const auto &id : ids) {
         auto &proxy = proxies[id];
 
         const auto replies = proxy.sources.keys();
-        for (auto r : replies) {
+        for (auto *r : replies) {
             auto &source = proxy.sources[r];
             if (proxy.sourceShouldBeRemoved(source)) {
                 finishRecFile(proxy, source);
@@ -2371,7 +2380,7 @@ ContentServerWorker::Proxy::Source::saveRecFile(const Proxy &proxy) {
     return std::pair{title, recFilePath};
 }
 
-void ContentServerWorker::Range::updateLength(int length) {
+void ContentServerWorker::Range::updateLength(int64_t length) {
     this->length = length;
     if (end == -1 && length > -1) end = length - 1;
 }
@@ -2380,7 +2389,7 @@ bool ContentServerWorker::Proxy::minCacheReached() const {
     if (!sinks.isEmpty()) return true;
 
     bool firstReached = false;
-    for (auto &source : sources) {
+    for (const auto &source : sources) {
         if (source.minCacheReached()) {
             if (source.first) firstReached = true;
         } else {

@@ -24,6 +24,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QUrl>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -47,8 +48,8 @@ class ContentServerWorker : public QObject,
    public:
     struct CacheLimit {
         static const int INF_TIME;
-        static const int INF_SIZE;
-        static const int DEFAULT_DELTA;
+        static const int64_t INF_SIZE;
+        static const int64_t DEFAULT_DELTA;
         static inline CacheLimit fromType(const ContentServer::Type type,
                                           int delta = DEFAULT_DELTA) {
             if (type == ContentServer::Type::Type_Video)
@@ -58,25 +59,25 @@ class ContentServerWorker : public QObject,
             return {INF_SIZE, INF_SIZE, 0, delta};
         }
 
-        int minSize = INF_SIZE;
-        int maxSize = INF_SIZE;
+        int64_t minSize = INF_SIZE;
+        int64_t maxSize = INF_SIZE;
         int maxTime = 0;
-        int delta = DEFAULT_DELTA;
+        int64_t delta = DEFAULT_DELTA;
     };
     struct Range {
-        int start;
-        int end;
-        int length;
+        int64_t start;
+        int64_t end;
+        int64_t length;
         inline bool full() const {
             return start == 0 && (end == -1 || end == length - 1);
         }
-        inline int rangeLength() const { return end - start + 1; }
+        inline auto rangeLength() const { return end - start + 1; }
         inline bool operator==(const Range &rv) const {
             return start == rv.start && end == rv.end;
         }
-        void updateLength(int length);
+        void updateLength(int64_t length);
         static std::optional<Range> fromRange(const QString &rangeHeader,
-                                              int length = -1);
+                                              int64_t length = -1);
         static std::optional<Range> fromContentRange(
             const QString &contentRangeHeader);
         friend QDebug operator<<(QDebug debug,
@@ -102,8 +103,6 @@ class ContentServerWorker : public QObject,
     void pulseStreamUpdated(const QUrl &id, const QString &name);
     void itemAdded(const QUrl &id);
     void itemRemoved(const QUrl &id);
-    void contSeqWriteData(std::shared_ptr<QFile> file, qint64 size,
-                          QHttpResponse *resp);
     void proxyConnected(const QUrl &id);
     void proxyError(const QUrl &id);
     void proxyRequested(const QUrl &id, bool first,
@@ -129,7 +128,7 @@ class ContentServerWorker : public QObject,
             int metaint = 0;
             int metacounter = 0;
             int metasize = 0;
-            int length = -1;
+            int64_t length = -1;
             CacheLimit cacheLimit;
             bool first = false;
             QByteArray metadata;
@@ -168,7 +167,7 @@ class ContentServerWorker : public QObject,
             QHttpRequest *req = nullptr;
             QHttpResponse *resp = nullptr;
             std::optional<Range> range;
-            int sentBytes = 0;
+            int64_t sentBytes = 0;
             inline bool operator==(const Sink &s) const {
                 return resp == s.resp;
             }
@@ -339,7 +338,7 @@ class ContentServerWorker : public QObject,
     void audioErrorHandler();
     void micErrorHandler();
     void responseForUrlDone();
-    void seqWriteData(std::shared_ptr<QFile> file, qint64 size,
+    void seqWriteData(std::shared_ptr<QFile> file, int64_t size,
                       QHttpResponse *resp);
     QNetworkReply *makeRequest(const QUrl &id, const QHttpRequest *req);
     QNetworkReply *makeRequest(const QUrl &id, const QByteArray &range = {});
@@ -350,12 +349,12 @@ class ContentServerWorker : public QObject,
     static void logProxySinks(const Proxy &proxy);
     static void logProxySources(const Proxy &proxy);
     static void logProxySourceToSinks(const Proxy &proxy);
-    static QByteArray makeRangeHeader(int start, int end = -1);
+    static QByteArray makeRangeHeader(int64_t start, int64_t end = -1);
     void processNewSource(Proxy &proxy, Proxy::Source &source);
     void checkCachedCondition(Proxy &proxy);
-    void requestFullSource(const QUrl &id, int length,
+    void requestFullSource(const QUrl &id, int64_t length,
                            ContentServer::Type type);
-    void requestAdditionalSource(const QUrl &id, int length,
+    void requestAdditionalSource(const QUrl &id, int64_t length,
                                  ContentServer::Type type);
     bool matchedSourceExists(const QUrl &id, const QByteArray &range);
 };

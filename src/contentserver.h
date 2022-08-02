@@ -23,6 +23,7 @@
 #include <QThread>
 #include <QTime>
 #include <QUrl>
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -357,7 +358,6 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static const QString broadcastItemClass;
     static const QString defaultItemClass;
     static const QByteArray userAgent;
-    static const int64_t qlen = 1000000;
     static const int threadWait = 1;
     static const int maxRedirections = 6;
     static const int httpTimeout = 20000;

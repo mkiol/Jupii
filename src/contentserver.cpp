@@ -1124,7 +1124,7 @@ bool ContentServer::readMP4MetaUsingTaglib(const TagLib::FileRef &file,
                         albumArtPrefix + ext,
                         QByteArray::fromRawData(
                             cover.data().data(),
-                            static_cast<const int>(cover.data().size())));
+                            static_cast<int>(cover.data().size())));
                     if (path) {
                         *artPath = *path;
                     } else {
