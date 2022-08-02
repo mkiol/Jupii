@@ -26,8 +26,12 @@ Controls.Dialog {
 
     onOpenedChanged: {
         if (opened) {
-            url = ""
+            asAudio = false
             name = ""
+            if (utils.clipboardContainsUrl())
+                url = utils.clipboard()
+            else
+                url = ""
         }
     }
 

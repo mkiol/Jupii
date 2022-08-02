@@ -75,6 +75,8 @@ class Utils : public QObject, public Singleton<Utils> {
     Q_INVOKABLE QString urlToPath(const QUrl &url) const;
     Q_INVOKABLE QUrl pathToUrl(const QString &path) const;
     Q_INVOKABLE void setClipboard(const QString &data) const;
+    Q_INVOKABLE QString clipboard() const;
+    Q_INVOKABLE bool clipboardContainsUrl() const;
 
     static QString hash(const QString &value);
     static bool isIdValid(const QString &id);

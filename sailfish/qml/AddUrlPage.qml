@@ -30,6 +30,11 @@ Dialog {
         }
     }
 
+    Component.onCompleted: {
+        if (utils.clipboardContainsUrl())
+            urlField.text = utils.clipboard()
+    }
+
     SilicaFlickable {
         anchors.fill: parent
 
@@ -50,6 +55,7 @@ Dialog {
                 width: parent.width
                 placeholderText: qsTr("Enter URL")
                 label: qsTr("URL")
+                wrapMode: TextInput.WrapAnywhere
                 inputMethodHints: Qt.ImhUrlCharactersOnly | Qt.ImhNoPredictiveText
 
                 EnterKey.iconSource: nameField.text.length > 0 && root.ok ?
@@ -62,6 +68,14 @@ Dialog {
                         nameField.forceActiveFocus();
                 }
 
+                rightItem: IconButton {
+                    onClicked: urlField.text = ""
+                    width: icon.width
+                    height: icon.height
+                    icon.source: "image://theme/icon-m-input-clear"
+                    opacity: urlField.text.length > 0 ? 1.0 : 0.0
+                    Behavior on opacity { FadeAnimation {} }
+                }
             }
 
             TextField {
@@ -69,7 +83,7 @@ Dialog {
                 width: parent.width
                 placeholderText: qsTr("Enter Name (optional)")
                 label: qsTr("Name")
-
+                wrapMode: TextInput.WrapAnywhere
                 EnterKey.iconSource: root.ok ? "image://theme/icon-m-enter-accept" :
                                                "image://theme/icon-m-enter-next"
                 EnterKey.onClicked: {
@@ -77,6 +91,15 @@ Dialog {
                         root.accept();
                     else
                         urlField.forceActiveFocus()
+                }
+
+                rightItem: IconButton {
+                    onClicked: nameField.text = ""
+                    width: icon.width
+                    height: icon.height
+                    icon.source: "image://theme/icon-m-input-clear"
+                    opacity: nameField.text.length > 0 ? 1.0 : 0.0
+                    Behavior on opacity { FadeAnimation {} }
                 }
             }
 

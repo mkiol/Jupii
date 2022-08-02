@@ -344,6 +344,15 @@ void Utils::setClipboard(const QString &data) const {
     QGuiApplication::clipboard()->setText(data);
 }
 
+QString Utils::clipboard() const {
+    return QGuiApplication::clipboard()->text();
+}
+
+bool Utils::clipboardContainsUrl() const {
+    auto text = QGuiApplication::clipboard()->text();
+    return Utils::isUrlOk(QUrl{text});
+}
+
 int Utils::itemTypeFromUrl(const QUrl &url) const {
     return static_cast<int>(ContentServer::itemTypeFromUrl(url));
 }
