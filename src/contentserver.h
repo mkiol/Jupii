@@ -100,7 +100,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         Refresh = 1 << 7,
         Art = 1 << 8,
         Mp4AudioNotIsom = 1 << 9,
-        MadeFromCache = 1 << 10
+        MadeFromCache = 1 << 10,
+        NiceAlbumArt = 1 << 11
     };
 
     enum class CachingResult {
@@ -356,13 +357,13 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static const QString broadcastItemClass;
     static const QString defaultItemClass;
     static const QByteArray userAgent;
-    static const qint64 qlen = 100000;
+    static const int64_t qlen = 1000000;
     static const int threadWait = 1;
     static const int maxRedirections = 6;
     static const int httpTimeout = 20000;
-    static const qint64 recMaxSize = 500000000;
-    static const qint64 recMinSize = 100000;
-    static const qint64 maxSizeForCaching = 50000000;
+    static const int64_t recMaxSize = 500000000;
+    static const int64_t recMinSize = 100000;
+    static const int64_t maxSizeForCaching = 50000000;
 
     QHash<QUrl, ItemMeta> m_metaCache;     // url => ItemMeta
     QHash<QString, QString> m_metaIdx;     // DIDL-lite id => id
@@ -446,6 +447,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         int counter = 0);
     QHash<QUrl, ItemMeta>::iterator makeUpnpItemMeta(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeMetaUsingExtension(const QUrl &url);
+    QHash<QUrl, ContentServer::ItemMeta>::iterator makeItemMetaUsingApi(
+        const QString &mime, QNetworkReply *reply, ItemMeta &meta,
+        std::shared_ptr<QNetworkAccessManager> nam, int counter);
     void run() override;
     static QString extractItemFromDidl(const QString &didl);
     bool saveTmpRec(const QString &path, bool deletePath);
@@ -465,5 +469,6 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     void setCachingState(bool state);
     int64_t cachePendingSizeForId(const QUrl &id);
     CachingResult makeCache(const QUrl &id);
+    static void saveAlbumArt(QNetworkReply &reply, ItemMeta &meta);
 };
 #endif  // CONTENTSERVER_H

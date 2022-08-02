@@ -7,14 +7,18 @@
 
 #include "contentserver.h"
 
+#include <QBuffer>
 #include <QDebug>
 #include <QDir>
 #include <QEventLoop>
 #include <QFileInfo>
+#include <QImage>
+#include <QImageReader>
 #include <QNetworkCookie>
 #include <QNetworkCookieJar>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QPixmap>
 #include <QRegExp>
 #include <QTimer>
 #include <numeric>
@@ -913,19 +917,26 @@ ContentServer::getMetaCacheIterator(const QUrl &url, bool createNew,
                                     Type type) {
     if (url.isEmpty()) return m_metaCache.end();
 
-    if (refresh) removeMeta(url);
-
     auto i = m_metaCache.find(url);
-    //    if (i == m_metaCache.end() && !origUrl.isEmpty()) {
-    //        i = m_metaCache.find(origUrl);
-    //#ifdef QT_DEBUG
-    //        if (i != m_metaCache.end()) qDebug() << "found meta for orig url";
-    //#endif
-    //    }
+
+    QString albumArt;
+    if (refresh && i != m_metaCache.end()) {
+        if (i->flagSet(MetaFlag::NiceAlbumArt))
+            albumArt = std::move(i->albumArt);
+        removeMeta(url);
+        i = m_metaCache.end();
+    }
 
     if (i == m_metaCache.end()) {
-        if (createNew)
-            return makeItemMeta(url, origUrl, app, ytdl, img, refresh, type);
+        if (createNew) {
+            auto newIt =
+                makeItemMeta(url, origUrl, app, ytdl, img, refresh, type);
+            if (!albumArt.isEmpty() && newIt != m_metaCache.end()) {
+                newIt->albumArt = std::move(albumArt);
+                newIt->setFlags(MetaFlag::NiceAlbumArt);
+            }
+            return newIt;
+        }
 #ifdef QT_DEBUG
         qDebug() << "meta data does not exist";
 #endif
@@ -1092,32 +1103,35 @@ bool ContentServer::readMP4MetaUsingTaglib(const TagLib::FileRef &file,
             auto covers = item.toCoverArtList();
             if (!covers.isEmpty()) {
                 const auto &cover = covers.front();
-                auto filename =
-                    [&albumArtPrefix](MP4::CoverArt::Format format) {
-                        switch (format) {
-                            case MP4::CoverArt::Format::PNG:
-                                return albumArtPrefix + "png";
-                            case MP4::CoverArt::Format::JPEG:
-                                return albumArtPrefix + "jpg";
-                            case MP4::CoverArt::Format::GIF:
-                                return albumArtPrefix + "gif";
-                            case MP4::CoverArt::Format::BMP:
-                                return albumArtPrefix + "bmp";
-                            case MP4::CoverArt::Unknown:
-                                break;
-                        }
-                        qWarning() << "art unknown format:" << format;
-                        return QString{};
-                    }(cover.format());
+                auto ext = [](MP4::CoverArt::Format format) -> QString {
+                    switch (format) {
+                        case MP4::CoverArt::Format::PNG:
+                            return "png";
+                        case MP4::CoverArt::Format::JPEG:
+                            return "jpg";
+                        case MP4::CoverArt::Format::GIF:
+                            return "gif";
+                        case MP4::CoverArt::Format::BMP:
+                            return "bmp";
+                        case MP4::CoverArt::Unknown:
+                            break;
+                    }
+                    return {};
+                }(cover.format());
 
-                auto path = Utils::writeToCacheFile(
-                    filename, QByteArray::fromRawData(
-                                  cover.data().data(),
-                                  static_cast<const int>(cover.data().size())));
-                if (path) {
-                    *artPath = *path;
+                if (!ext.isEmpty()) {
+                    auto path = Utils::writeToCacheFile(
+                        albumArtPrefix + ext,
+                        QByteArray::fromRawData(
+                            cover.data().data(),
+                            static_cast<const int>(cover.data().size())));
+                    if (path) {
+                        *artPath = *path;
+                    } else {
+                        qWarning() << "cannot read art file";
+                    }
                 } else {
-                    qWarning() << "cannot read art file";
+                    qWarning() << "art unknown format";
                 }
             }
         }
@@ -1190,6 +1204,8 @@ bool ContentServer::readID3MetaUsingTaglib(const TagLib::FileRef &file,
                     } else {
                         qWarning() << "cannot write art file:" << *path;
                     }
+                } else {
+                    qWarning() << "art unknown format";
                 }
             }
         }
@@ -1343,6 +1359,8 @@ bool ContentServer::writeID3MetaUsingTaglib(
             } else {
                 qWarning() << "cannot open:" << artPath;
             }
+        } else {
+            qWarning() << "cover type is unknown";
         }
     }
 
@@ -1420,11 +1438,16 @@ bool ContentServer::writeMP4MetaUsingTaglib(
         if (QFile art{artPath}; art.open(QIODevice::ReadOnly)) {
             auto bytes = art.readAll();
             if (!bytes.isEmpty()) {
-                List<MP4::CoverArt> covers{};
-                covers.append({mapPathToFormat(artPath),
-                               {bytes.constData(),
-                                static_cast<unsigned int>(bytes.size())}});
-                tag->setItem("covr", {covers});
+                auto type = mapPathToFormat(artPath);
+                if (type != MP4::CoverArt::Format::Unknown) {
+                    List<MP4::CoverArt> covers{};
+                    covers.append({type,
+                                   {bytes.constData(),
+                                    static_cast<unsigned int>(bytes.size())}});
+                    tag->setItem("covr", {covers});
+                } else {
+                    qWarning() << "cover type is unknown";
+                }
             }
         } else {
             qWarning() << "cannot open:" << artPath;
@@ -1842,6 +1865,11 @@ ContentServer::makeItemMetaUsingYtdlApi(
     meta.app = QStringLiteral("ytdl");
     meta.setFlags(MetaFlag::YtDl);
 
+    if (!track->imageUrl.isEmpty()) {
+        meta.albumArt = track->imageUrl.toString();
+        meta.setFlags(MetaFlag::NiceAlbumArt);
+    }
+
     auto newUrl = meta.type == Type::Type_Music
                       ? std::move(track->streamAudioUrl)
                       : std::move(track->streamUrl);
@@ -1872,9 +1900,13 @@ ContentServer::makeItemMetaUsingBcApi(
     meta.album = std::move(track.album);
     meta.artist = std::move(track.artist);
     meta.duration = track.duration;
-    meta.albumArt = track.imageUrl.toString();
     meta.app = QStringLiteral("bc");
     meta.setFlags(MetaFlag::YtDl);
+
+    if (!track.imageUrl.isEmpty()) {
+        meta.albumArt = track.imageUrl.toString();
+        meta.setFlags(MetaFlag::NiceAlbumArt);
+    }
 
     auto newUrl = std::move(track.streamUrl);
     Utils::fixUrl(newUrl);
@@ -1904,9 +1936,13 @@ ContentServer::makeItemMetaUsingSoundcloudApi(
     meta.album = std::move(track.album);
     meta.artist = std::move(track.artist);
     meta.duration = track.duration;
-    meta.albumArt = track.imageUrl.toString();
     meta.app = QStringLiteral("soundcloud");
     meta.setFlags(MetaFlag::YtDl);
+
+    if (!track.imageUrl.isEmpty()) {
+        meta.albumArt = track.imageUrl.toString();
+        meta.setFlags(MetaFlag::NiceAlbumArt);
+    }
 
     auto newUrl = std::move(track.streamUrl);
     Utils::fixUrl(newUrl);
@@ -2293,22 +2329,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
 
     if (!ytdl_broken && type != Type::Type_Music && type != Type::Type_Video &&
         type != Type::Type_Image) {
-        if (mime.contains(QStringLiteral("text/html"))) {
-            reply->deleteLater();
-            auto url = reply->url();
-            if (meta.app == QStringLiteral("bc") || BcApi::validUrl(url)) {
-                return makeItemMetaUsingBcApi(url, meta, nam, counter);
-            }
-            if (meta.app == QStringLiteral("soundcloud") ||
-                SoundcloudApi::validUrl(url)) {
-                return makeItemMetaUsingSoundcloudApi(url, meta, nam, counter);
-            }
-            return makeItemMetaUsingYtdlApi(url, meta, nam, counter);
-        }
-
-        qWarning() << "unsupported type:" << mime;
-        reply->deleteLater();
-        return m_metaCache.end();
+        return makeItemMetaUsingApi(mime, reply, meta, nam, counter);
     }
 
     bool ranges = QString{reply->rawHeader("Accept-Ranges")}.toLower().contains(
@@ -2334,17 +2355,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
     meta.setFlags(MetaFlag::Seek, size > 0 && ranges);
 
     if (type == Type::Type_Image && meta.flagSet(MetaFlag::Art)) {
-        qDebug() << "saving album art to file";
-        auto ext = m_imgMimeToExtMap.value(meta.mime);
-        auto data = reply->readAll();
-        if (!ext.isEmpty() && !data.isEmpty()) {
-            auto path = Utils::writeToCacheFile(
-                albumArtCacheName(meta.url.toString(), ext), data, true);
-            if (path) meta.path = std::move(*path);
-        } else {
-            qWarning() << "cannot save album art for:"
-                       << Utils::anonymizedUrl(meta.url);
-        }
+        saveAlbumArt(*reply, meta);
     } else {
         updateMetaAlbumArt(meta);
         updateMetaWithNotStandardHeaders(meta, *reply);
@@ -2357,6 +2368,77 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
 
     reply->deleteLater();
     return m_metaCache.insert(url, meta);
+}
+
+QHash<QUrl, ContentServer::ItemMeta>::iterator
+ContentServer::makeItemMetaUsingApi(const QString &mime, QNetworkReply *reply,
+                                    ItemMeta &meta,
+                                    std::shared_ptr<QNetworkAccessManager> nam,
+                                    int counter) {
+    reply->deleteLater();
+
+    if (mime.contains(QStringLiteral("text/html"))) {
+        auto url = reply->url();
+        if (meta.app == QStringLiteral("bc") || BcApi::validUrl(url)) {
+            return makeItemMetaUsingBcApi(url, meta, nam, counter);
+        }
+        if (meta.app == QStringLiteral("soundcloud") ||
+            SoundcloudApi::validUrl(url)) {
+            return makeItemMetaUsingSoundcloudApi(url, meta, nam, counter);
+        }
+        return makeItemMetaUsingYtdlApi(url, meta, nam, counter);
+    }
+
+    qWarning() << "unsupported type:" << mime;
+    return m_metaCache.end();
+}
+
+void ContentServer::saveAlbumArt(QNetworkReply &reply, ItemMeta &meta) {
+    qDebug() << "saving album art to a file";
+
+    auto data = reply.readAll();
+    if (data.isEmpty()) {
+        qWarning() << "album art data is empty";
+        return;
+    }
+
+    auto ext = m_imgMimeToExtMap.value(meta.mime);
+    if (ext.isEmpty()) {
+        qWarning() << "invalid album art format";
+        return;
+    }
+
+    if (ext != "jpg" && ext != "png") {
+        qDebug() << "converting album art format";
+        auto convertOk = [&data, &ext] {
+            auto format = ext.toLatin1();
+            QPixmap p;
+            if (!p.loadFromData(data, format)) {
+                qWarning() << "cannot load format";
+                return false;
+            }
+            data.clear();
+            QBuffer b{&data};
+            b.open(QIODevice::WriteOnly);
+            if (!p.save(&b, "jpeg")) {
+                qWarning() << "cannot save format";
+                return false;
+            }
+            ext = "jpg";
+            return true;
+        }();
+
+        if (!convertOk) {
+            qWarning() << "cannot convert album art format";
+            return;
+        }
+    }
+
+    auto path = Utils::writeToCacheFile(
+        albumArtCacheName(meta.url.toString(), ext), data, true);
+    if (path) meta.path = std::move(*path);
+
+    qDebug() << "album art saved to" << meta.path;
 }
 
 void ContentServer::updateMetaWithNotStandardHeaders(

@@ -399,7 +399,7 @@ std::optional<YtdlApi::Track> YtdlApi::track(const QUrl& url) const {
 
         t.title = QString::fromStdString(info.title);
         t.webUrl = url;
-        t.image = QUrl{QString::fromStdString(info.thumbnail)};
+        t.imageUrl = QUrl{QString::fromStdString(info.thumbnail)};
 
         return t;
     } catch (const std::exception& err) {

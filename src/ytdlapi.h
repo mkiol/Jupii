@@ -25,7 +25,7 @@ class YtdlApi : public QObject {
         QUrl webUrl;
         QUrl streamUrl;
         QUrl streamAudioUrl;
-        QUrl image;
+        QUrl imageUrl;
     };
 
     YtdlApi(QObject* parent = nullptr);

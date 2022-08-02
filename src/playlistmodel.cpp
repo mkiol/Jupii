@@ -1187,7 +1187,15 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
     QUrl iconUrl;
     if (ficon.isEmpty() ||
         meta->flagSet(ContentServer::MetaFlag::MadeFromCache)) {
-        if (!meta->albumArt.isEmpty()) {
+        if (meta->flagSet(ContentServer::MetaFlag::NiceAlbumArt) &&
+            !meta->albumArt.isEmpty()) {
+            iconUrl = QUrl{meta->albumArt};
+
+            // NiceAlbumArt => adding icon to url
+            QUrlQuery q{finalId};
+            q.addQueryItem(Utils::iconKey, meta->albumArt);
+            finalId.setQuery(q);
+        } else if (!meta->albumArt.isEmpty()) {
             auto artPath = ContentServer::localArtPathIfExists(meta->albumArt);
             if (artPath.isEmpty()) {
                 iconUrl = type == ContentServer::Type::Type_Image
@@ -1201,9 +1209,9 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
         iconUrl = ficon;
     }
 
-    // qDebug() << "icon url:" << meta->albumArt << ficon << iconUrl;
-    if (!iconUrl.isEmpty())
+    if (!iconUrl.isEmpty()) {
         ContentServer::instance()->getMetaForImg(iconUrl, true);
+    }
 
     if (ytdl && duration == 0 && meta->duration > 0) {
         QUrlQuery q{finalId};
