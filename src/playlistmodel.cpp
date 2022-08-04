@@ -1210,7 +1210,10 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
     }
 
     if (!iconUrl.isEmpty()) {
-        ContentServer::instance()->getMetaForImg(iconUrl, true);
+        auto *imgMeta = ContentServer::instance()->getMetaForImg(iconUrl, true);
+        if (imgMeta && !imgMeta->path.isEmpty()) {
+            iconUrl = QUrl::fromLocalFile(imgMeta->path);
+        }
     }
 
     if (ytdl && duration == 0 && meta->duration > 0) {

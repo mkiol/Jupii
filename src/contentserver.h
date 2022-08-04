@@ -17,6 +17,7 @@
 #include <QMutex>
 #include <QNetworkAccessManager>
 #include <QObject>
+#include <QPixmap>
 #include <QSet>
 #include <QString>
 #include <QStringList>
@@ -327,6 +328,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         DLNA_ORG_FLAG_DLNA_V15 = (1U << 20)
     };
 
+    enum class ImageOrientation { Unknown, R0, R90, R180, R270 };
+
     struct StreamData {
         QUrl id;
         QString title;             // current title
@@ -364,6 +367,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static const int64_t recMaxSize = 500000000;
     static const int64_t recMinSize = 100000;
     static const int64_t maxSizeForCaching = 50000000;
+    static const int maxThumbPixelSize = 512;
 
     QHash<QUrl, ItemMeta> m_metaCache;     // url => ItemMeta
     QHash<QString, QString> m_metaIdx;     // DIDL-lite id => id
@@ -470,5 +474,14 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     int64_t cachePendingSizeForId(const QUrl &id);
     CachingResult makeCache(const QUrl &id);
     static void saveAlbumArt(QNetworkReply &reply, ItemMeta &meta);
+    static std::optional<QString> saveThumb(QByteArray &&data,
+                                            const ItemMeta &meta);
+    static bool convertToJpeg(const QByteArray &format, QByteArray &data);
+    static bool convertToThumb(
+        const QByteArray &format, QByteArray &data,
+        ImageOrientation orientation = ImageOrientation::Unknown);
+    static bool convertPixmapToThumb(QPixmap &pixmap,
+                                     ImageOrientation orientation);
+    static ImageOrientation imageOrientation(const QByteArray &data);
 };
 #endif  // CONTENTSERVER_H
