@@ -149,7 +149,8 @@ HEADERS += \
     $$ROOT_DIR/screencaster.h \
     $$ROOT_DIR/dnscontentdeterminator.h \
     $$ROOT_DIR/singleton.h \
-    $$ROOT_DIR/ytmusic.h
+    $$ROOT_DIR/ytmusic.h \
+    $$ROOT_DIR/exif.h \
 
 SOURCES += \
     $$PWD/transcoder.cpp \
@@ -211,7 +212,8 @@ SOURCES += \
     $$ROOT_DIR/contentserverworker.cpp \
     $$ROOT_DIR/screencaster.cpp \
     $$ROOT_DIR/dnscontentdeterminator.cpp \
-    $$ROOT_DIR/ytmusic.cpp
+    $$ROOT_DIR/ytmusic.cpp \
+    $$ROOT_DIR/exif.cpp \
 
 DISTFILES += \
     $$PWD/../dbus/org.freedesktop.Tracker3.Endpoint.xml
