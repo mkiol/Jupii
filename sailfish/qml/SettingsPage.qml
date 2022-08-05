@@ -173,11 +173,11 @@ Page {
             ExpandingSectionGroup {
                 ExpandingSection {
                     title: qsTr("Experiments")
-                    visible: settings.isDebug()
+                    visible: !settings.sandboxed()
 
                     content.sourceComponent: Column {
                         ComboBox {
-                            visible: settings.isDebug()
+                            visible: !settings.sandboxed()
                             label: qsTr("Screen capture")
                             currentIndex: settings.screenSupported ?
                                               settings.screenAudio ? 2 : 1 : 0

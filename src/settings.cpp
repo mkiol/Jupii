@@ -7,6 +7,8 @@
 
 #include "settings.h"
 
+#include <unistd.h>
+
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QDebug>
@@ -56,6 +58,7 @@ Settings::Settings()
     removeLogFiles();
     qInstallMessageHandler(qtLog);
     ::configureLogToFile(getLogToFile());
+    updateSandboxStatus();
 
     qDebug() << "HW name:" << hwName;
     qDebug() << "app:" << Jupii::ORG << Jupii::APP_ID;
@@ -68,6 +71,7 @@ Settings::Settings()
     qDebug() << "cache location:"
              << QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
     qDebug() << "settings file:" << fileName();
+    qDebug() << "sandboxed:" << m_sandboxed;
 }
 
 bool Settings::isDebug() const {
@@ -373,8 +377,7 @@ void Settings::setScreenSupported([[maybe_unused]] bool value) {
 bool Settings::getScreenSupported() const {
 #if defined(SAILFISH) && !defined(QT_DEBUG)
     // Sreen Capture does not work with sandboxing
-    // return value("screensupported", false).toBool();
-    return false;
+    return sandboxed() ? false : value("screensupported", false).toBool();
 #else
     return true;
 #endif
@@ -848,4 +851,16 @@ Settings::CacheCleaningType Settings::cacheCleaningType() const {
         value("cachecleaningtype",
               static_cast<int>(CacheCleaningType::CacheCleaning_Auto))
             .toInt());
+}
+
+void Settings::updateSandboxStatus() {
+    auto path = QStringLiteral("/proc/%1/stat").arg(getppid());
+
+    QFile pf{path};
+    if (!pf.open(QIODevice::ReadOnly)) {
+        qWarning() << "cannot open:" << path;
+        return;
+    }
+
+    m_sandboxed = pf.readAll().contains("firejail");
 }

@@ -205,6 +205,7 @@ class Settings : public QSettings,
     void setCacheType(CacheType value);
     CacheCleaningType cacheCleaningType() const;
     void setCacheCleaningType(CacheCleaningType value);
+    Q_INVOKABLE inline bool sandboxed() const { return m_sandboxed; }
 
    signals:
     void portChanged();
@@ -251,6 +252,7 @@ class Settings : public QSettings,
 
     QString hwName;
     int m_colorScheme = 0;
+    bool m_sandboxed = false;
 
 #ifdef SAILFISH
     static QString readHwInfo();
@@ -258,6 +260,7 @@ class Settings : public QSettings,
     static std::pair<int, int> sysVer();
     static QString settingsFilepath();
     static void initOpenUrlMode();
+    void updateSandboxStatus();
 };
 
 #endif  // SETTINGS_H
