@@ -97,7 +97,7 @@ Page {
 
             PaddedLabel {
                 horizontalAlignment: Text.AlignLeft
-                text: "QHTTPServer · Libupnpp · TagLib · FFmpeg · LAME · x264 · Gumbo"
+                text: "QHTTPServer · Libupnpp · TagLib · FFmpeg · LAME · x264 · Gumbo · yt-dlc · EasyEXIF"
             }
 
             Spacer {}

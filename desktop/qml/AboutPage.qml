@@ -135,7 +135,7 @@ Kirigami.ScrollablePage {
         Controls.Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: "QHTTPServer · Libupnpp · TagLib · FFmpeg · LAME · x264 · Gumbo"
+            text: "QHTTPServer · Libupnpp · TagLib · FFmpeg · LAME · x264 · Gumbo · yt-dlc · EasyEXIF"
         }
     }
 }
