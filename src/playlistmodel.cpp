@@ -798,6 +798,11 @@ PlaylistModel::UrlType PlaylistModel::determineUrlType(QUrl *url) {
     const auto host = url->host();
     const auto path = url->path();
 
+    if (url->isLocalFile()) return UrlType::File;
+
+    if (url->scheme().compare("jupii", Qt::CaseInsensitive) == 0)
+        return UrlType::Jupii;
+
     auto cleanUrl = [url, &host]() {
         if (host.size() > 2 && host.startsWith("m.")) {
             url->setHost(host.mid(2));
@@ -872,10 +877,10 @@ PlaylistModel::UrlType PlaylistModel::determineUrlType(QUrl *url) {
     return UrlType::Unknown;
 }
 
-void PlaylistModel::addItemUrl(QUrl url, ContentServer::Type type,
-                               const QString &name, const QUrl &origUrl,
-                               const QString &author, const QUrl &icon,
-                               const QString &desc, QString app, bool play) {
+void PlaylistModel::addItemUrlWithTypeCheck(
+    bool doTypeCheck, QUrl &&url, ContentServer::Type type, const QString &name,
+    const QUrl &origUrl, const QString &author, const QUrl &icon,
+    const QString &desc, QString &&app, bool play) {
     if (app.isEmpty() && origUrl.isEmpty()) {
         auto urlType = determineUrlType(&url);
         if (urlType == UrlType::BcTrack) {
@@ -908,6 +913,11 @@ void PlaylistModel::addItemUrl(QUrl url, ContentServer::Type type,
             qDebug() << "url type: SoundcloudArtist";
             emit soundcloudArtistUrlAdded(url);
             return;
+        } else if (doTypeCheck && urlType == UrlType::Unknown &&
+                   type == ContentServer::Type::Type_Unknown) {
+            qDebug() << "unknown type url";
+            emit unknownTypeUrlAdded(url, name);
+            return;
         }
     }
 
@@ -924,6 +934,20 @@ void PlaylistModel::addItemUrl(QUrl url, ContentServer::Type type,
     ui.play = play;
     urls << ui;
     addItems(urls, type);
+}
+
+void PlaylistModel::addItemUrlSkipUrlDialog(QUrl url, ContentServer::Type type,
+                                            const QString &name) {
+    return addItemUrlWithTypeCheck(false, std::move(url), type, name, {}, {},
+                                   {}, {}, {}, false);
+}
+
+void PlaylistModel::addItemUrl(QUrl url, ContentServer::Type type,
+                               const QString &name, const QUrl &origUrl,
+                               const QString &author, const QUrl &icon,
+                               const QString &desc, QString app, bool play) {
+    return addItemUrlWithTypeCheck(true, std::move(url), type, name, origUrl,
+                                   author, icon, desc, std::move(app), play);
 }
 
 void PlaylistModel::addItemPath(const QString &path, ContentServer::Type type,

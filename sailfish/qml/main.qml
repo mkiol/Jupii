@@ -159,5 +159,8 @@ ApplicationWindow {
         onSoundcloudArtistUrlAdded: {
             if (showQueue(true)) pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: url})
         }
+        onUnknownTypeUrlAdded: {
+            if (showQueue(true)) pageStack.push(Qt.resolvedUrl("AddUrlPage.qml"), {url: url, name: name})
+        }
     }
 }

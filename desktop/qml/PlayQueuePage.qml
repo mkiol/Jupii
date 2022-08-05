@@ -134,6 +134,10 @@ Kirigami.ScrollablePage {
             pageStack.pop(root)
             pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: url})
         }
+        onUnknownTypeUrlAdded: {
+            pageStack.pop(root)
+            pageStack.push(Qt.resolvedUrl("AddMediaPage.qml"), {openUrlDialog: true, url: url, name: name})
+        }
 
         onBusyChanged: {
             refreshing = playlist.busy

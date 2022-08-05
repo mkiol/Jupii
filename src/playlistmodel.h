@@ -182,6 +182,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     void soundcloudMainUrlAdded();
     void soundcloudAlbumUrlAdded(const QUrl &url);
     void soundcloudArtistUrlAdded(const QUrl &url);
+    void unknownTypeUrlAdded(const QUrl &url, const QString &name);
 
    public slots:
     void load();
@@ -203,6 +204,9 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
         const QString &name = {}, const QUrl &origUrl = {},
         const QString &author = {}, const QUrl &icon = {},
         const QString &desc = {}, QString app = {}, bool autoPlay = false);
+    void addItemUrlSkipUrlDialog(
+        QUrl url, ContentServer::Type type = ContentServer::Type::Type_Unknown,
+        const QString &name = {});
     void setActiveId(const QString &id);
     void setActiveUrl(const QUrl &url);
     void setToBeActiveIndex(int index);
@@ -220,7 +224,9 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
         SoundcloudMain,
         SoundcloudTrack,
         SoundcloudAlbum,
-        SoundcloudArtist
+        SoundcloudArtist,
+        File,
+        Jupii
     };
 
     const static int refreshTimer = 30000;  // 30s
@@ -287,6 +293,11 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     void refresh(QList<QUrl> &&ids);
     void updateRefreshTimer();
     static UrlType determineUrlType(QUrl *url);
+    void addItemUrlWithTypeCheck(bool doTypeCheck, QUrl &&url,
+                                 ContentServer::Type type, const QString &name,
+                                 const QUrl &origUrl, const QString &author,
+                                 const QUrl &icon, const QString &desc,
+                                 QString &&app, bool autoPlay);
 #ifdef SAILFISH
     void updateBackgroundActivity();
 #endif

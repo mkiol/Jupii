@@ -25,14 +25,14 @@ Dialog {
         if (result === DialogResult.Accepted) {
             var type = audioSwitch.checked ? ContentServer.Type_Music :
                           ContentServer.Type_Unknown
-            playlist.addItemUrl(url, type, name);
+            playlist.addItemUrlSkipUrlDialog(url, type, name);
             app.popToQueue()
         }
     }
 
     Component.onCompleted: {
-        if (utils.clipboardContainsUrl())
-            urlField.text = utils.clipboard()
+        if (root.url.length == 0 && utils.clipboardContainsUrl())
+            root.url.text = utils.clipboard()
     }
 
     SilicaFlickable {

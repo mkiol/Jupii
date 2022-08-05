@@ -27,12 +27,17 @@ Controls.Dialog {
     onOpenedChanged: {
         if (opened) {
             asAudio = false
-            name = ""
-            if (utils.clipboardContainsUrl())
-                url = utils.clipboard()
-            else
-                url = ""
+            if (url.length == 0) {
+                if (utils.clipboardContainsUrl())
+                    url = utils.clipboard()
+                name = ""
+            }
         }
+    }
+
+    onRejected: {
+        name = ""
+        url = ""
     }
 
     ColumnLayout {

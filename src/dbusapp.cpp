@@ -124,7 +124,7 @@ void DbusProxy::addUrl(const QString& url, const QString& name) {
         return;
     }
     PlaylistModel::instance()->addItemUrl(
-        QUrl(url), ContentServer::Type::Type_Unknown, name);
+        QUrl{url}, ContentServer::Type::Type_Unknown, name);
 }
 
 void DbusProxy::openUrl(const QStringList& arguments) {

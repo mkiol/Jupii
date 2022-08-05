@@ -17,6 +17,9 @@ Kirigami.ScrollablePage {
     id: root
 
     property var rightPage: app.rightPage(root)
+    property bool openUrlDialog: false
+    property alias url: urlDialog.url
+    property alias name: urlDialog.name
 
     leftPadding: 0
     rightPadding: 0
@@ -26,6 +29,13 @@ Kirigami.ScrollablePage {
     Kirigami.Theme.colorSet: Kirigami.Theme.Window
 
     title: qsTr("Add items")
+
+    Component.onCompleted: {
+        if (openUrlDialog) {
+            urlDialog.open()
+            openUrlDialog = false
+        }
+    }
 
     onBackRequested: {
         fileDialog.close()
@@ -55,9 +65,11 @@ Kirigami.ScrollablePage {
         width: parent.width - 8 * Kirigami.Units.largeSpacing
         onAccepted: {
             if (ok) {
-                playlist.addItemUrl(url, asAudio ? ContentServer.Type_Music :
+                playlist.addItemUrlSkipUrlDialog(url, asAudio ? ContentServer.Type_Music :
                                                    ContentServer.Type_Unknown, name)
             }
+            url = ""
+            name = ""
             pageStack.flickBack()
         }
     }
