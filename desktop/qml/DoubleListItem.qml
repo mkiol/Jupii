@@ -23,6 +23,7 @@ Kirigami.SwipeListItem {
     property alias next: nextIcon.visible
     property alias busy: busyIndicator.running
     property alias extra: extraLabel.text
+    property alias extra2: extra2Label.text
     property real leadingPadding: Kirigami.Units.largeSpacing
     property real trailingPadding: Kirigami.Units.largeSpacing
 
@@ -99,6 +100,20 @@ Kirigami.SwipeListItem {
                     font: Kirigami.Theme.smallFont
                     opacity: 0.7
                     visible: text.length > 0
+                }
+            }
+            Rectangle {
+                Layout.minimumWidth: extra2Label.implicitWidth + 2 * Kirigami.Units.smallSpacing
+                Layout.minimumHeight: extra2Label.implicitHeight + Kirigami.Units.smallSpacing
+                Layout.alignment: Qt.AlignVCenter
+                visible: extra2Label.text.length > 0
+                color: "transparent"
+                border.color: Kirigami.Theme.disabledTextColor
+                radius: 3
+                Controls.Label {
+                    id: extra2Label
+                    color: Kirigami.Theme.disabledTextColor
+                    anchors.centerIn: parent
                 }
             }
             Rectangle {

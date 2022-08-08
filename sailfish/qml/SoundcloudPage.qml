@@ -58,6 +58,12 @@ Dialog {
         onError: {
             notifications.show(qsTr("Error in getting data from soundcloud.com"))
         }
+        onBusyChanged: {
+            if (!busy) {
+                var idx = itemModel.lastIndex();
+                if (idx > 0) listView.positionViewAtIndex(idx, ListView.Beginning)
+            }
+        }
     }
 
     SilicaListView {
@@ -70,9 +76,15 @@ Dialog {
         model: itemModel
 
         footer: ShowMoreItem {
-            enabled: featureMode
+            enabled: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
             onClicked: {
-                pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: "jupii://soundcloud-featured"})
+                if (root.featureMode) {
+                    pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"),
+                                   {artistPage: "jupii://soundcloud-featured"})
+                } else if (root.notableMode) {
+                    itemModel.requestMoreItems()
+                    itemModel.updateModel()
+                }
             }
         }
 
@@ -115,6 +127,7 @@ Dialog {
                         model.type === SoundcloudModel.Type_Artist ? model.artist : ""
             subtitle.text: model.type === SoundcloudModel.Type_Track ||
                            model.type === SoundcloudModel.Type_Album ? model.artist : ""
+            dimmed: itemModel.filter.length == 0
             enabled: !itemModel.busy && listView.count > 0
             defaultIcon.source: model.type === SoundcloudModel.Type_Album ?
                                     "image://theme/icon-m-media-albums?" + primaryColor :
@@ -124,6 +137,7 @@ Dialog {
             icon.source: model.icon
             extra: model.type === SoundcloudModel.Type_Album ? qsTr("Album") :
                    model.type === SoundcloudModel.Type_Artist ? qsTr("Artist") : ""
+            extra2: model.genre
 
             onClicked: {
                 if (model.type === SoundcloudModel.Type_Track) {

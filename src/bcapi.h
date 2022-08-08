@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,20 +8,19 @@
 #ifndef BCAPI_H
 #define BCAPI_H
 
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QNetworkAccessManager>
 #include <QObject>
 #include <QString>
-#include <QByteArray>
-#include <QNetworkAccessManager>
 #include <QUrl>
-#include <QJsonDocument>
 #include <memory>
-#include <vector>
 #include <optional>
+#include <vector>
 
-class BcApi : public QObject
-{
+class BcApi : public QObject {
     Q_OBJECT
-public:
+   public:
     enum class Type {
         Unknown = 0,
         Artist,
@@ -38,6 +37,7 @@ public:
         QString artist;
         QUrl imageUrl;
         QUrl webUrl;
+        QString genre;
     };
 
     struct Track {
@@ -76,19 +76,24 @@ public:
         std::vector<ArtistAlbum> albums;
     };
 
-    BcApi(std::shared_ptr<QNetworkAccessManager> nam = {}, QObject *parent = nullptr);
+    BcApi(std::shared_ptr<QNetworkAccessManager> nam = {},
+          QObject *parent = nullptr);
     std::vector<SearchResultItem> search(const QString &query) const;
     std::vector<SearchResultItem> notableItems();
+    void makeMoreNotableItems();
+    inline static bool canMakeMoreNotableItems() {
+        return m_notableIds.size() > m_notableItems.size();
+    }
     std::vector<SearchResultItem> notableItemsFirstPage();
     Track track(const QUrl &url) const;
     Album album(const QUrl &url) const;
     Artist artist(const QUrl &url) const;
     static bool validUrl(const QUrl &url);
 
-signals:
+   signals:
     void progressChanged(int n, int total);
 
-private:
+   private:
     static const int maxNotable;
     static const int maxNotableFirstPage;
     static std::vector<BcApi::SearchResultItem> m_notableItems;
@@ -98,12 +103,13 @@ private:
 
     std::optional<QJsonDocument> parseDataBlob() const;
     std::optional<SearchResultItem> notableItem(double id) const;
-    SearchResultItem notableItem(const QJsonObject &obj) const;
+    static SearchResultItem notableItem(const QJsonObject &obj);
     inline static QUrl artUrl(const QString &id);
     static QUrl makeSearchUrl(const QString &phrase);
     static QJsonDocument parseJsonData(const QByteArray &data);
     static Type textToType(const QString &text);
-    void storeNotableIds(const QJsonObject &obj);
+    static void storeNotableIds(const QJsonObject &obj);
+    bool prepareNotableIds() const;
 };
 
-#endif // BCAPI_H
+#endif  // BCAPI_H

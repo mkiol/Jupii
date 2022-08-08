@@ -8,75 +8,80 @@
 #ifndef SOUNDCLOUDMODEL_H
 #define SOUNDCLOUDMODEL_H
 
+#include <QByteArray>
+#include <QDebug>
+#include <QHash>
 #include <QObject>
 #include <QString>
-#include <QHash>
-#include <QDebug>
-#include <QByteArray>
+#include <QUrl>
 #include <QVariant>
 #include <QVariantList>
-#include <QUrl>
 #include <optional>
 
-#include "listmodel.h"
 #include "itemmodel.h"
+#include "listmodel.h"
 #include "soundcloudapi.h"
 
-class SoundcloudModel : public SelectableItemModel
-{
+class SoundcloudModel : public SelectableItemModel {
     Q_OBJECT
-    Q_PROPERTY (QUrl albumUrl READ getAlbumUrl WRITE setAlbumUrl NOTIFY albumUrlChanged)
-    Q_PROPERTY (QString albumTitle READ getAlbumTitle NOTIFY albumTitleChanged)
-    Q_PROPERTY (QUrl artistUrl READ getArtistUrl WRITE setArtistUrl NOTIFY artistUrlChanged)
-    Q_PROPERTY (QString artistName READ getArtistName NOTIFY artistNameChanged)
-public:
-    enum Type {
-        Type_Unknown = 0,
-        Type_Artist,
-        Type_Album,
-        Type_Track
-    };
+    Q_PROPERTY(
+        QUrl albumUrl READ getAlbumUrl WRITE setAlbumUrl NOTIFY albumUrlChanged)
+    Q_PROPERTY(QString albumTitle READ getAlbumTitle NOTIFY albumTitleChanged)
+    Q_PROPERTY(QUrl artistUrl READ getArtistUrl WRITE setArtistUrl NOTIFY
+                   artistUrlChanged)
+    Q_PROPERTY(QString artistName READ getArtistName NOTIFY artistNameChanged)
+    Q_PROPERTY(bool canShowMore READ canShowMore NOTIFY canShowMoreChanged)
+   public:
+    enum Type { Type_Unknown = 0, Type_Artist, Type_Album, Type_Track };
     Q_ENUM(Type)
 
     explicit SoundcloudModel(QObject *parent = nullptr);
-    ~SoundcloudModel();
+    ~SoundcloudModel() override;
     Q_INVOKABLE QVariantList selectedItems() override;
+    Q_INVOKABLE inline void requestMoreItems() {
+        mLastIndex = getCount();
+        mShowMoreRequested = true;
+    }
+    Q_INVOKABLE inline int lastIndex() const { return mLastIndex; }
 
     QUrl getAlbumUrl() const;
-    void setAlbumUrl(const QUrl& albumUrl);
-
+    void setAlbumUrl(const QUrl &albumUrl);
     QUrl getArtistUrl() const;
-    void setArtistUrl(const QUrl& artistUrl);
-
+    void setArtistUrl(const QUrl &artistUrl);
     QString getAlbumTitle() const;
     QString getArtistName() const;
 
-signals:
+   signals:
     void error();
     void albumUrlChanged();
     void albumTitleChanged();
     void artistUrlChanged();
     void artistNameChanged();
+    void canShowMoreChanged();
 
-private:
-    QList<ListItem*> makeItems() override;
-    QList<ListItem*> makeSearchItems() const;
-    QList<ListItem*> makeFeaturedItems();
-    QList<ListItem*> makeAlbumItems();
-    QList<ListItem*> makeArtistItems();
+   private:
+    QUrl mAlbumUrl;
+    QString mAlbumTitle;
+    QUrl mArtistUrl;
+    QString mArtistName;
+    std::optional<SoundcloudApi::User> mLastArtist;
+    bool mCanShowMore = false;
+    bool mShowMoreRequested = false;
+    int mLastIndex = 0;
+
+    QList<ListItem *> makeItems() override;
+    QList<ListItem *> makeSearchItems();
+    QList<ListItem *> makeFeaturedItems(bool more);
+    QList<ListItem *> makeAlbumItems();
+    QList<ListItem *> makeArtistItems();
     void setAlbumTitle(const QString &albumTitle);
     void setArtistName(const QString &artistName);
-    QUrl albumUrl;
-    QString albumTitle;
-    QUrl artistUrl;
-    QString artistName;
-    std::optional<SoundcloudApi::User> lastArtist;
+    inline auto canShowMore() const { return mCanShowMore; }
 };
 
-class SoundcloudItem : public SelectableItem
-{
+class SoundcloudItem : public SelectableItem {
     Q_OBJECT
-public:
+   public:
     enum Roles {
         NameRole = Qt::DisplayRole,
         IdRole = Qt::UserRole,
@@ -85,30 +90,31 @@ public:
         UrlRole,
         IconRole,
         TypeRole,
+        GenreRole,
         SelectedRole
     };
 
-public:
-    SoundcloudItem(QObject *parent = nullptr): SelectableItem(parent) {}
-    explicit SoundcloudItem(const QString &id,
-                      const QString &name,
-                      const QString &artist,
-                      const QString &album,
-                      const QUrl &url,
-                      const QUrl &icon,
-                      SoundcloudModel::Type type,
-                      QObject *parent = nullptr);
+   public:
+    SoundcloudItem(QObject *parent = nullptr) : SelectableItem(parent) {}
+    explicit SoundcloudItem(const QString &id, const QString &name,
+                            const QString &artist, const QString &album,
+                            const QUrl &url, const QUrl &icon,
+                            SoundcloudModel::Type type,
+                            const QString &genre = {},
+                            QObject *parent = nullptr);
     QVariant data(int role) const override;
     QHash<int, QByteArray> roleNames() const override;
     inline QString id() const override { return m_id; }
-    inline QString name() const { return m_name; }
-    inline QString artist() const { return m_artist; }
-    inline QString album() const { return m_album; }
-    inline QUrl url() const { return m_url; }
-    inline QUrl icon() const { return m_icon; }
-    inline SoundcloudModel::Type type() const { return m_type; }
+    inline auto name() const { return m_name; }
+    inline auto artist() const { return m_artist; }
+    inline auto album() const { return m_album; }
+    inline auto url() const { return m_url; }
+    inline auto icon() const { return m_icon; }
+    inline auto type() const { return m_type; }
+    inline auto genre() const { return m_genre; }
     void refresh();
-private:
+
+   private:
     QString m_id;
     QString m_name;
     QString m_artist;
@@ -116,6 +122,7 @@ private:
     QUrl m_url;
     QUrl m_icon;
     SoundcloudModel::Type m_type = SoundcloudModel::Type::Type_Unknown;
+    QString m_genre;
 };
 
-#endif // SOUNDCLOUDMODEL_H
+#endif  // SOUNDCLOUDMODEL_H

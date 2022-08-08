@@ -14,6 +14,7 @@ Item {
 
     property string targetPage
     property url artistUrl
+    signal clicked
 
     width: parent.width
     height: button.height + 2 * Kirigami.Units.largeSpacing
@@ -22,8 +23,6 @@ Item {
         id: button
         anchors.centerIn: parent
         text: qsTr("Show more")
-        onClicked: {
-            pageStack.push(Qt.resolvedUrl(root.targetPage), {artistPage: root.artistUrl})
-        }
+        onClicked: root.clicked()
     }
 }

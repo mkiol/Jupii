@@ -8,23 +8,22 @@
 #ifndef SOUNDCLOUDAPI_H
 #define SOUNDCLOUDAPI_H
 
+#include <QByteArray>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QNetworkAccessManager>
 #include <QObject>
 #include <QString>
-#include <QByteArray>
-#include <QNetworkAccessManager>
 #include <QUrl>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <memory>
 #include <functional>
+#include <memory>
 #include <optional>
 
 #include "gumbotools.h"
 
-class SoundcloudApi : public QObject
-{
+class SoundcloudApi : public QObject {
     Q_OBJECT
-public:
+   public:
     enum class Type {
         Unknown = 0,
         User,
@@ -35,10 +34,11 @@ public:
     struct SearchResultItem {
         Type type = Type::Unknown;
         QString title;
-        QString artist; // or username
+        QString artist;  // or username
         QString album;
         QUrl imageUrl;
         QUrl webUrl;
+        QString genre;
     };
 
     struct Track {
@@ -75,7 +75,7 @@ public:
 
     struct UserTrack {
         QString title;
-        QString artist; // or username
+        QString artist;  // or username
         QString album;
         QUrl imageUrl;
         QUrl webUrl;
@@ -89,24 +89,30 @@ public:
         std::vector<UserTrack> tracks;
     };
 
-    SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam = {}, QObject *parent = nullptr);
+    explicit SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam = {},
+                           QObject *parent = nullptr);
     std::vector<SearchResultItem> search(const QString &query) const;
-    std::vector<SearchResultItem> featuredItems(int max = maxFeatured) const;
+    std::vector<SearchResultItem> featuredItems() const;
+    void makeMoreFeaturedItems();
+    inline static bool canMakeMoreFeaturedItems() { return m_canMakeMore; }
     std::vector<SearchResultItem> featuredItemsFirstPage() const;
     Track track(const QUrl &url);
     User user(const QUrl &url);
     Playlist playlist(const QUrl &url);
     static bool validUrl(const QUrl &url);
 
-private:
+   private:
     static QString clientId;
     static const int maxFeatured;
     static const int maxFeaturedFirstPage;
+    static bool m_canMakeMore;
+    static std::vector<SoundcloudApi::SearchResultItem> m_featuresItems;
     std::shared_ptr<QNetworkAccessManager> nam;
     QString locale;
 
+    void makeFeaturedItems(int max = maxFeatured) const;
     void discoverClientId();
-    std::optional<SearchResultItem> searchItem(const QJsonObject &obj) const;
+    static std::optional<SearchResultItem> searchItem(const QJsonObject &obj);
     QJsonDocument downloadJsonData(const QUrl &url) const;
     gumbo::GumboOutput_ptr downloadHtmlData(const QUrl &url) const;
     static QJsonDocument parseJsonData(const QByteArray &data);
@@ -124,8 +130,8 @@ private:
     static QString extractUsernameFromTitle(const QString &text);
     static bool mediaOk(const QJsonArray &media);
     QJsonArray extractItems(const QUrl &url) const;
-    void addClientId(QUrl *url) const;
+    static void addClientId(QUrl *url);
     void user(const QUrl &url, User *user, int count = 0) const;
 };
 
-#endif // SOUNDCLOUDAPI_H
+#endif  // SOUNDCLOUDAPI_H

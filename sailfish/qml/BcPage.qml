@@ -61,6 +61,12 @@ Dialog {
         onProgressChanged: {
             busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
         }
+        onBusyChanged: {
+            if (!busy) {
+                var idx = itemModel.lastIndex();
+                if (idx > 0) listView.positionViewAtIndex(idx, ListView.Beginning)
+            }
+        }
     }
 
     SilicaListView {
@@ -73,9 +79,15 @@ Dialog {
         model: itemModel
 
         footer: ShowMoreItem {
-            enabled: featureMode
+            enabled: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
             onClicked: {
-                pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: "jupii://bc-notable"})
+                if (root.featureMode) {
+                    pageStack.push(Qt.resolvedUrl("BcPage.qml"),
+                                   {artistPage: "jupii://bc-notable"})
+                } else if (root.notableMode) {
+                    itemModel.requestMoreItems()
+                    itemModel.updateModel()
+                }
             }
         }
 
@@ -119,6 +131,7 @@ Dialog {
                         model.type === BcModel.Type_Artist ? model.artist : ""
             subtitle.text: model.type === BcModel.Type_Track ||
                            model.type === BcModel.Type_Album ? model.artist : ""
+            dimmed: itemModel.filter.length == 0
             enabled: !itemModel.busy && listView.count > 0
             defaultIcon.source: model.type === BcModel.Type_Album ?
                                     "image://theme/icon-m-media-albums?" + primaryColor :
@@ -128,6 +141,7 @@ Dialog {
             icon.source: model.icon
             extra: model.type === BcModel.Type_Album ? qsTr("Album") :
                    model.type === BcModel.Type_Artist ? qsTr("Artist") : ""
+            extra2: model.genre
 
             onClicked: {
                 if (model.type === BcModel.Type_Track) {

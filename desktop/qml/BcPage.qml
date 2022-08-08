@@ -88,6 +88,12 @@ Kirigami.ScrollablePage {
         onError: {
             notifications.show(qsTr("Error in getting data from bandcamp.com"))
         }
+        onBusyChanged: {
+            if (!busy) {
+                var idx = itemModel.lastIndex();
+                if (idx > 0) itemList.positionViewAtIndex(idx, ListView.Beginning)
+            }
+        }
     }
 
     Component {
@@ -120,6 +126,7 @@ Kirigami.ScrollablePage {
 
             extra: model.type === BcModel.Type_Album ? qsTr("Album") :
                    model.type === BcModel.Type_Artist ? qsTr("Artist") : ""
+            extra2: model.genre
 
             highlighted: {
                 if (pageStack.currentItem !== root) {
@@ -159,9 +166,16 @@ Kirigami.ScrollablePage {
         }
 
         footer: ShowmoreItem {
-            visible: root.featureMode
-            targetPage: "BcPage.qml"
-            artistUrl: "jupii://bc-notable"
+            visible: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
+            onClicked: {
+                if (root.featureMode) {
+                    pageStack.push(Qt.resolvedUrl("BcPage.qml"),
+                                   {artistPage: "jupii://bc-notable"})
+                } else if (root.notableMode) {
+                    itemModel.requestMoreItems()
+                    itemModel.updateModel()
+                }
+            }
         }
 
         Kirigami.PlaceholderMessage {

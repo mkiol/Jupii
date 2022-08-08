@@ -32,7 +32,7 @@ Dialog {
 
     Component.onCompleted: {
         if (root.url.length == 0 && utils.clipboardContainsUrl())
-            root.url.text = utils.clipboard()
+            root.url = utils.clipboard()
     }
 
     SilicaFlickable {

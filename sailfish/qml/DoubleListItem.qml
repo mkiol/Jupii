@@ -17,12 +17,13 @@ ListItem {
     property alias defaultIcon: _dicon
     property alias attachedIcon: _aicon
     property alias extra: extraLabel.text
+    property alias extra2: extraLabel2.text
     property bool dimmed: false
 
     readonly property bool _iconDisabled: _icon.status !== Image.Ready &&
                                          _dicon.status !== Image.Ready
 
-    opacity: enabled && _icon.status !== Image.Loading ? 1.0 : dimmed ? 0.8 : 0.0
+    opacity: enabled && _icon.status !== Image.Loading ? 1.0 : dimmed ? 0.7 : 0.0
     visible: opacity > 0.0
     Behavior on opacity { FadeAnimation {} }
 
@@ -75,7 +76,7 @@ ListItem {
             left: _iconDisabled ? parent.left : _icon.right
             right: parent.right
             rightMargin: Theme.horizontalPageMargin +
-                         (extraLabel.visible ? extraLabel.width + Theme.paddingMedium : 0)
+                         (extraLabel.visible || extraLabel2.visible ? extraCol.width + Theme.paddingMedium : 0)
             leftMargin: _iconDisabled ? Theme.horizontalPageMargin : Theme.paddingMedium
             verticalCenter: parent.verticalCenter
         }
@@ -107,21 +108,26 @@ ListItem {
         }
     }
 
-    Rectangle {
-        width: visible ? extraLabel.implicitWidth + 2 * Theme.paddingSmall : 0
-        height: visible ? extraLabel.implicitHeight + Theme.paddingSmall : 0
-        anchors.verticalCenter: parent.verticalCenter
+    Column {
+        id: extraCol
+        spacing: Theme.paddingSmall
+        width: Math.max(extraLabel.width, extraLabel2.width)
         anchors.right: parent.right
         anchors.rightMargin: Theme.horizontalPageMargin
-        visible: extraLabel.text.length > 0
-        color: "transparent"
-        border.color: extraLabel.color
-        radius: 8
-        Label {
+        anchors.verticalCenter: parent.verticalCenter
+
+        ExtraLabel {
             id: extraLabel
-            font.pixelSize: Theme.fontSizeSmall
-            color: root.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
-            anchors.centerIn: parent
+            anchors.right: parent.right
+            fontPixelSize: Theme.fontSizeSmall
+            textColor: root.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+        }
+
+        ExtraLabel {
+            id: extraLabel2
+            anchors.right: parent.right
+            fontPixelSize: Theme.fontSizeTiny
+            textColor: root.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
         }
     }
 }
