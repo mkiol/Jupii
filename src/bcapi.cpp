@@ -56,7 +56,7 @@ BcApi::Track BcApi::track(const QUrl &url) const {
 
     auto data = Downloader{nam}.downloadData(url);
     if (data.isEmpty()) {
-        qWarning() << "No data received";
+        qWarning() << "no data received";
         return track;
     }
 
@@ -64,7 +64,7 @@ BcApi::Track BcApi::track(const QUrl &url) const {
 
     auto output = gumbo::parseHtmlData(data);
     if (!output) {
-        qWarning() << "Cannot parse HTML data";
+        qWarning() << "cannot parse html data";
         return track;
     }
 
@@ -72,13 +72,13 @@ BcApi::Track BcApi::track(const QUrl &url) const {
         gumbo::search_for_attr_one(output->root, "data-tralbum"),
         "data-tralbum"));
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "Cannot parse JSON data";
+        qWarning() << "cannot parse json data";
         return track;
     }
 
     auto track_info = json.object().value(QLatin1String{"trackinfo"}).toArray();
     if (track_info.isEmpty()) {
-        qWarning() << "Track info is missing";
+        qWarning() << "track info is missing";
         return track;
     }
 
@@ -107,13 +107,13 @@ BcApi::Track BcApi::track(const QUrl &url) const {
         "content")};
 
     if (track.streamUrl.isEmpty()) {
-        qWarning() << "Stream URL is missing";
+        qWarning() << "stream url is missing";
     }
     if (track.title.isEmpty()) {
-        qWarning() << "Track title is missing";
+        qWarning() << "track title is missing";
     }
     if (track.webUrl.isEmpty()) {
-        qWarning() << "Web URL is missing";
+        qWarning() << "web url is missing";
     }
 
     return track;
@@ -124,7 +124,7 @@ BcApi::Album BcApi::album(const QUrl &url) const {
 
     auto data = Downloader{nam}.downloadData(url);
     if (data.isEmpty()) {
-        qWarning() << "No data received";
+        qWarning() << "no data received";
         return album;
     }
 
@@ -132,7 +132,7 @@ BcApi::Album BcApi::album(const QUrl &url) const {
 
     auto output = gumbo::parseHtmlData(data);
     if (!output) {
-        qWarning() << "Cannot parse HTML data";
+        qWarning() << "cannot parse html data";
         return album;
     }
 
@@ -140,7 +140,7 @@ BcApi::Album BcApi::album(const QUrl &url) const {
         gumbo::search_for_attr_one(output->root, "data-tralbum"),
         "data-tralbum"));
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "Cannot parse JSON data";
+        qWarning() << "cannot parse json data";
         return album;
     }
 
@@ -204,7 +204,7 @@ BcApi::Artist BcApi::artist(const QUrl &url) const {
 
     auto data = Downloader{nam}.downloadData(newUrl);
     if (data.isEmpty()) {
-        qWarning() << "No data received";
+        qWarning() << "no data received";
         return artist;
     }
 
@@ -212,7 +212,7 @@ BcApi::Artist BcApi::artist(const QUrl &url) const {
 
     auto output = gumbo::parseHtmlData(data);
     if (!output) {
-        qWarning() << "Cannot parse HTML data";
+        qWarning() << "cannot parse html data";
         return artist;
     }
 
@@ -257,7 +257,7 @@ QJsonDocument BcApi::parseJsonData(const QByteArray &data) {
     auto json = QJsonDocument::fromJson(data, &err);
 
     if (err.error != QJsonParseError::NoError) {
-        qWarning() << "Error parsing json:" << err.errorString();
+        qWarning() << "error parsing json:" << err.errorString();
     }
 
     return json;
@@ -268,7 +268,7 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query) const {
 
     auto data = Downloader{nam}.downloadData(makeSearchUrl(query));
     if (data.isEmpty()) {
-        qWarning() << "No data received";
+        qWarning() << "no data received";
         return items;
     }
 
@@ -276,7 +276,7 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query) const {
 
     auto json = parseJsonData(data);
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "Cannot parse JSON data";
+        qWarning() << "cannot parse json data";
         return items;
     }
 
@@ -337,7 +337,7 @@ std::optional<BcApi::SearchResultItem> BcApi::notableItem(double id) const {
         QUrl{"https://bandcamp.com/api/notabletralbum/2/get?id=" +
              QString::number(id, 'd', 0)});
     if (data.isEmpty()) {
-        qWarning() << "No data received";
+        qWarning() << "no data received";
         return std::nullopt;
     }
 
@@ -346,7 +346,7 @@ std::optional<BcApi::SearchResultItem> BcApi::notableItem(double id) const {
 
     auto json = parseJsonData(data);
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "Cannot parse JSON data";
+        qWarning() << "cannot parse json data";
         return std::nullopt;
     }
 
@@ -432,7 +432,7 @@ std::optional<QJsonDocument> BcApi::parseDataBlob() const {
     auto data = Downloader{nam}.downloadData(
         QUrl{QStringLiteral("https://bandcamp.com")});
     if (data.isEmpty()) {
-        qWarning() << "No data received";
+        qWarning() << "no data received";
         return std::nullopt;
     }
 
@@ -441,14 +441,14 @@ std::optional<QJsonDocument> BcApi::parseDataBlob() const {
 
     auto output = gumbo::parseHtmlData(data);
     if (!output) {
-        qWarning() << "Cannot parse HTML data";
+        qWarning() << "cannot parse html data";
         return std::nullopt;
     }
 
     auto json = parseJsonData(gumbo::attr_data(
         gumbo::search_for_id(output->root, "pagedata"), "data-blob"));
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "Cannot parse JSON data";
+        qWarning() << "cannot parse json data";
         return std::nullopt;
     }
 

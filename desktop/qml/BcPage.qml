@@ -86,7 +86,7 @@ Kirigami.ScrollablePage {
     BcModel {
         id: itemModel
         onError: {
-            notifications.show(qsTr("Error in getting data from bandcamp.com"))
+            notifications.show(qsTr("Error in getting data"))
         }
         onBusyChanged: {
             if (!busy) {

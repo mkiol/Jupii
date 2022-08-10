@@ -20,7 +20,7 @@
 
 #include "downloader.h"
 
-const int SoundcloudApi::maxFeatured = 10;
+const int SoundcloudApi::maxFeatured = 20;
 const int SoundcloudApi::maxFeaturedFirstPage = 5;
 bool SoundcloudApi::m_canMakeMore = true;
 std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::m_featuresItems{};
@@ -40,7 +40,7 @@ void SoundcloudApi::discoverClientId() {
     auto output =
         downloadHtmlData(QUrl{QStringLiteral("https://soundcloud.com")});
     if (!output) {
-        qWarning() << "Cannot parse HTML data";
+        qWarning() << "cannot parse html data";
         return;
     }
 
@@ -53,7 +53,7 @@ void SoundcloudApi::discoverClientId() {
                 !data.isEmpty()) {
                 if (auto id = extractClientId(data); !id.isEmpty()) {
 #ifdef QT_DEBUG
-                    qDebug() << "Client id: " << id;
+                    qDebug() << "client id: " << id;
 #endif
                     clientId = id;
                     return;
@@ -63,11 +63,12 @@ void SoundcloudApi::discoverClientId() {
         if (QThread::currentThread()->isInterruptionRequested()) return;
     }
 
-    qWarning() << "Cannot find clientId";
+    qWarning() << "cannot find client id";
 }
 
 bool SoundcloudApi::validUrl(const QUrl &url) {
-    return url.host().contains("soundcloud.com", Qt::CaseInsensitive);
+    return url.host().contains(QLatin1String{"soundcloud.com"},
+                               Qt::CaseInsensitive);
 }
 
 QJsonDocument SoundcloudApi::parseJsonData(const QByteArray &data) {
@@ -76,7 +77,7 @@ QJsonDocument SoundcloudApi::parseJsonData(const QByteArray &data) {
     auto json = QJsonDocument::fromJson(data, &err);
 
     if (err.error != QJsonParseError::NoError) {
-        qWarning() << "Error parsing json:" << err.errorString();
+        qWarning() << "error parsing json:" << err.errorString();
     }
 
     return json;
@@ -85,7 +86,7 @@ QJsonDocument SoundcloudApi::parseJsonData(const QByteArray &data) {
 gumbo::GumboOutput_ptr SoundcloudApi::downloadHtmlData(const QUrl &url) const {
     auto data = Downloader{nam}.downloadData(url);
     if (data.isEmpty()) {
-        qWarning() << "No data received";
+        qWarning() << "no data received";
         return {};
     }
 
@@ -95,7 +96,7 @@ gumbo::GumboOutput_ptr SoundcloudApi::downloadHtmlData(const QUrl &url) const {
 QJsonDocument SoundcloudApi::downloadJsonData(const QUrl &url) const {
     auto data = Downloader{nam}.downloadData(url);
     if (data.isEmpty()) {
-        qWarning() << "No data received";
+        qWarning() << "no data received";
         return {};
     }
 
@@ -161,7 +162,7 @@ QJsonArray SoundcloudApi::extractItems(const QUrl &url) const {
 
     auto output = downloadHtmlData(url);
     if (!output) {
-        qWarning() << "Cannot parse HTML data";
+        qWarning() << "cannot parse html data";
         return items;
     }
 
@@ -174,7 +175,7 @@ QJsonArray SoundcloudApi::extractItems(const QUrl &url) const {
             !data.isEmpty()) {
             auto json = parseJsonData(data.toUtf8());
             if (json.isNull() || !json.isArray()) {
-                qWarning() << "Cannot parse JSON data";
+                qWarning() << "cannot parse json data";
             } else {
                 chunks = json.array();
             }
@@ -184,7 +185,7 @@ QJsonArray SoundcloudApi::extractItems(const QUrl &url) const {
     }
 
     if (chunks.isEmpty()) {
-        qWarning() << "Empty chunks data";
+        qWarning() << "empty chunks data";
         return items;
     }
 
@@ -203,7 +204,7 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url) {
 
     auto items = extractItems(url);
     if (items.isEmpty()) {
-        qWarning() << "No items";
+        qWarning() << "no items";
         return track;
     }
 
@@ -236,7 +237,7 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url) {
 
             QUrl url{m.value(QLatin1String{"url"}).toString()};
             if (url.isEmpty()) {
-                qWarning() << "Empty url";
+                qWarning() << "empty url";
                 return track;
             }
 
@@ -244,7 +245,7 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url) {
 
             auto json = downloadJsonData(url);
             if (json.isNull() || !json.isObject()) {
-                qWarning() << "Cannot parse JSON data";
+                qWarning() << "cannot parse JSON data";
                 return track;
             }
 
@@ -260,7 +261,7 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url) {
         }
 
         if (track.streamUrl.isEmpty()) {
-            qWarning() << "Stream Url is empty";
+            qWarning() << "stream url is empty";
             return track;
         }
 
@@ -287,7 +288,7 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url) {
         return track;
     }
 
-    qWarning() << "No valid chunk";
+    qWarning() << "no valid chunk";
     return track;
 }
 
@@ -319,7 +320,7 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url) {
 
     auto output = downloadHtmlData(url);
     if (!output) {
-        qWarning() << "Cannot parse HTML data";
+        qWarning() << "cannot parse HTML data";
         return playlist;
     }
 
@@ -337,13 +338,13 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url) {
     }
 
     if (playlistId.isEmpty()) {
-        qWarning() << "Empty playlist id";
+        qWarning() << "empty playlist id";
         return playlist;
     }
 
     auto json = downloadJsonData(makePlaylistUrl(playlistId));
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "Cannot parse JSON data";
+        qWarning() << "cannot parse JSON data";
         return playlist;
     }
 
@@ -360,7 +361,7 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url) {
 
     auto tracks = pobj.value(QLatin1String{"tracks"}).toArray();
     if (tracks.isEmpty()) {
-        qWarning() << "No tracks for playlist:" << playlistId;
+        qWarning() << "no tracks for playlist:" << playlistId;
         return playlist;
     }
 
@@ -408,7 +409,7 @@ void SoundcloudApi::user(const QUrl &url, User *user, int count) const {
 
     auto json = downloadJsonData(url);
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "Cannot parse JSON data";
+        qWarning() << "cannot parse json data";
         return;
     }
 
@@ -416,7 +417,7 @@ void SoundcloudApi::user(const QUrl &url, User *user, int count) const {
 
     auto items = json.object().value(QLatin1String{"collection"}).toArray();
     if (items.isEmpty()) {
-        qWarning() << "No items";
+        qWarning() << "no items";
         return;
     }
 
@@ -488,7 +489,7 @@ SoundcloudApi::User SoundcloudApi::user(const QUrl &url) {
 
     auto output = downloadHtmlData(url);
     if (!output) {
-        qWarning() << "Cannot parse HTML data";
+        qWarning() << "cannot parse html data";
         return user;
     }
 
@@ -507,7 +508,7 @@ SoundcloudApi::User SoundcloudApi::user(const QUrl &url) {
     }();
 
     if (userId.isEmpty()) {
-        qWarning() << "Empty user id";
+        qWarning() << "empty user id";
         return user;
     }
 
@@ -567,7 +568,7 @@ std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::search(
 
     auto json = downloadJsonData(makeSearchUrl(query));
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "Cannot parse JSON data";
+        qWarning() << "cannot parse json data";
         return items;
     }
 
@@ -594,7 +595,7 @@ std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::featuredItems()
 void SoundcloudApi::makeFeaturedItems(int max) const {
     auto json = downloadJsonData(makeFeaturedTracksUrl(max));
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "Cannot parse JSON data";
+        qWarning() << "cannot parse json data";
         return;
     }
 

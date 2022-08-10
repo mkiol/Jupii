@@ -56,7 +56,7 @@ Dialog {
     BcModel {
         id: itemModel
         onError: {
-            notifications.show(qsTr("Error in getting data from bandcamp.com"))
+            notifications.show(qsTr("Error in getting data"))
         }
         onProgressChanged: {
             busyIndicator.text = total == 0 ? "" : "" + n + "/" + total

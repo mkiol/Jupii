@@ -56,7 +56,7 @@ Dialog {
     SoundcloudModel {
         id: itemModel
         onError: {
-            notifications.show(qsTr("Error in getting data from soundcloud.com"))
+            notifications.show(qsTr("Error in getting data"))
         }
         onBusyChanged: {
             if (!busy) {
