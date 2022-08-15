@@ -21,14 +21,7 @@
 class BcApi : public QObject {
     Q_OBJECT
    public:
-    enum class Type {
-        Unknown = 0,
-        Artist,
-        Album,
-        Track,
-        Label,
-        Fan,
-    };
+    enum class Type { Unknown = 0, Artist, Album, Track, Label, Fan };
 
     struct SearchResultItem {
         Type type = Type::Unknown;
@@ -96,7 +89,7 @@ class BcApi : public QObject {
    private:
     static const int maxNotable;
     static const int maxNotableFirstPage;
-    static std::vector<BcApi::SearchResultItem> m_notableItems;
+    static std::vector<SearchResultItem> m_notableItems;
     static bool m_notableItemsDone;
     static std::vector<double> m_notableIds;
     std::shared_ptr<QNetworkAccessManager> nam;

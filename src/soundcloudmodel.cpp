@@ -13,6 +13,9 @@
 
 #include "soundcloudapi.h"
 
+const QUrl SoundcloudModel::mFeaturedUrl{
+    QStringLiteral("jupii://soundcloud-featured")};
+
 SoundcloudModel::SoundcloudModel(QObject *parent)
     : SelectableItemModel(new SoundcloudItem, parent) {}
 
@@ -78,7 +81,7 @@ QVariantList SoundcloudModel::selectedItems() {
 QList<ListItem *> SoundcloudModel::makeItems() {
     if (mAlbumUrl.isEmpty() && mArtistUrl.isEmpty()) return makeSearchItems();
     if (mArtistUrl.isEmpty()) return makeAlbumItems();
-    if (mArtistUrl == QUrl{QStringLiteral("jupii://soundcloud-featured")}) {
+    if (mArtistUrl == mFeaturedUrl) {
         if (mShowMoreRequested) {
             mShowMoreRequested = false;
             return makeFeaturedItems(true);
@@ -155,7 +158,6 @@ QList<ListItem *> SoundcloudModel::makeSearchItems() {
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
             auto *aa = qobject_cast<SoundcloudItem *>(a);
             auto *bb = qobject_cast<SoundcloudItem *>(b);
-            // Artist = 1, Album = 2, Track = 3
             return aa->type() < bb->type();
         });
     }

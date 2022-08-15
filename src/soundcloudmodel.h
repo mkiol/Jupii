@@ -31,6 +31,7 @@ class SoundcloudModel : public SelectableItemModel {
                    artistUrlChanged)
     Q_PROPERTY(QString artistName READ getArtistName NOTIFY artistNameChanged)
     Q_PROPERTY(bool canShowMore READ canShowMore NOTIFY canShowMoreChanged)
+    Q_PROPERTY(QUrl featuredUrl READ featuredUrl CONSTANT)
    public:
     enum Type { Type_Unknown = 0, Type_Artist, Type_Album, Type_Track };
     Q_ENUM(Type)
@@ -60,6 +61,7 @@ class SoundcloudModel : public SelectableItemModel {
     void canShowMoreChanged();
 
    private:
+    static const QUrl mFeaturedUrl;
     QUrl mAlbumUrl;
     QString mAlbumTitle;
     QUrl mArtistUrl;
@@ -77,6 +79,7 @@ class SoundcloudModel : public SelectableItemModel {
     void setAlbumTitle(const QString &albumTitle);
     void setArtistName(const QString &artistName);
     inline auto canShowMore() const { return mCanShowMore; }
+    static inline auto featuredUrl() { return mFeaturedUrl; }
 };
 
 class SoundcloudItem : public SelectableItem {

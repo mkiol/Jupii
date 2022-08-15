@@ -25,7 +25,7 @@ Dialog {
     readonly property bool albumMode: albumPage && albumPage.toString().length > 0
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
-    readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://soundcloud-featured"
+    readonly property bool notableMode: artistPage && artistPage === itemModel.featuredUrl
     readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0 && listView.count > 0
 
     canAccept: itemModel.selectedCount > 0
@@ -80,7 +80,7 @@ Dialog {
             onClicked: {
                 if (root.featureMode) {
                     pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"),
-                                   {artistPage: "jupii://soundcloud-featured"})
+                                   {artistPage: itemModel.featuredUrl})
                 } else if (root.notableMode) {
                     itemModel.requestMoreItems()
                     itemModel.updateModel()

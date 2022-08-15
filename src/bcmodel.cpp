@@ -13,6 +13,8 @@
 
 #include "bcapi.h"
 
+const QUrl BcModel::mNotableUrl{QStringLiteral("jupii://bc-notable")};
+
 BcModel::BcModel(QObject *parent) : SelectableItemModel(new BcItem, parent) {}
 
 QUrl BcModel::getAlbumUrl() const { return mAlbumUrl; }
@@ -76,7 +78,7 @@ QVariantList BcModel::selectedItems() {
 QList<ListItem *> BcModel::makeItems() {
     if (mAlbumUrl.isEmpty() && mArtistUrl.isEmpty()) return makeSearchItems();
     if (mArtistUrl.isEmpty()) return makeAlbumItems();
-    if (mArtistUrl == QUrl{QStringLiteral("jupii://bc-notable")}) {
+    if (mArtistUrl == mNotableUrl) {
         if (mShowMoreRequested) {
             mShowMoreRequested = false;
             return makeNotableItems(true);

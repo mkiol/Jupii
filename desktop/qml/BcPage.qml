@@ -21,7 +21,7 @@ Kirigami.ScrollablePage {
     readonly property bool albumMode: albumPage && albumPage.toString().length > 0
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
-    readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://bc-notable"
+    readonly property bool notableMode: artistPage && artistPage === itemModel.notableUrl
     readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
 
     leftPadding: 0
@@ -106,7 +106,15 @@ Kirigami.ScrollablePage {
                    model.type === BcModel.Type_Artist ? model.artist : ""
             subtitle:  model.type === BcModel.Type_Track ||
                        model.type === BcModel.Type_Album ? model.artist : ""
-            defaultIconSource: "audio-x-generic"
+            defaultIconSource: {
+                switch (model.type) {
+                case BcModel.Type_Artist:
+                    return "view-media-artist"
+                case BcModel.Type_Album:
+                    return "media-album-cover"
+                }
+                return "emblem-music-symbolic"
+            }
             iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
             next: model.type !== BcModel.Type_Track
@@ -170,7 +178,7 @@ Kirigami.ScrollablePage {
             onClicked: {
                 if (root.featureMode) {
                     pageStack.push(Qt.resolvedUrl("BcPage.qml"),
-                                   {artistPage: "jupii://bc-notable"})
+                                   {artistPage: itemModel.notableUrl})
                 } else if (root.notableMode) {
                     itemModel.requestMoreItems()
                     itemModel.updateModel()

@@ -25,7 +25,7 @@ Dialog {
     readonly property bool albumMode: albumPage && albumPage.toString().length > 0
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
-    readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://bc-notable"
+    readonly property bool notableMode: artistPage && artistPage === itemModel.notableUrl
     readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0 && listView.count > 0
 
     canAccept: itemModel.selectedCount > 0
@@ -83,7 +83,7 @@ Dialog {
             onClicked: {
                 if (root.featureMode) {
                     pageStack.push(Qt.resolvedUrl("BcPage.qml"),
-                                   {artistPage: "jupii://bc-notable"})
+                                   {artistPage: itemModel.notableUrl})
                 } else if (root.notableMode) {
                     itemModel.requestMoreItems()
                     itemModel.updateModel()

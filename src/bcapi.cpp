@@ -21,7 +21,7 @@
 #include "downloader.h"
 #include "gumbotools.h"
 
-const int BcApi::maxNotable = 10;
+const int BcApi::maxNotable = 15;
 const int BcApi::maxNotableFirstPage = 5;
 
 std::vector<double> BcApi::m_notableIds{};

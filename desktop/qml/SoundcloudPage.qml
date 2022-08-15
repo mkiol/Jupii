@@ -21,7 +21,7 @@ Kirigami.ScrollablePage {
     readonly property bool albumMode: albumPage && albumPage.toString().length > 0
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
-    readonly property bool notableMode: artistPage && artistPage.toString() == "jupii://soundcloud-featured"
+    readonly property bool notableMode: artistPage && artistPage === itemModel.featuredUrl
     readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
 
     leftPadding: 0
@@ -106,7 +106,15 @@ Kirigami.ScrollablePage {
                    model.type === SoundcloudModel.Type_Artist ? model.artist : ""
             subtitle:  model.type === SoundcloudModel.Type_Track ||
                        model.type === SoundcloudModel.Type_Album ? model.artist : ""
-            defaultIconSource: "audio-x-generic"
+            defaultIconSource: {
+                switch (model.type) {
+                case SoundcloudModel.Type_Artist:
+                    return "view-media-artist"
+                case SoundcloudModel.Type_Album:
+                    return "media-album-cover"
+                }
+                return "emblem-music-symbolic"
+            }
             iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
             next: model.type !== SoundcloudModel.Type_Track
@@ -170,7 +178,7 @@ Kirigami.ScrollablePage {
             onClicked: {
                 if (root.featureMode) {
                     pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"),
-                                   {artistPage: "jupii://soundcloud-featured"})
+                                   {artistPage: itemModel.featuredUrl})
                 } else if (root.notableMode) {
                     itemModel.requestMoreItems()
                     itemModel.updateModel()

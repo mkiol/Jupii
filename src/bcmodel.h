@@ -28,6 +28,7 @@ class BcModel : public SelectableItemModel {
                    artistUrlChanged)
     Q_PROPERTY(QString artistName READ getArtistName NOTIFY artistNameChanged)
     Q_PROPERTY(bool canShowMore READ canShowMore NOTIFY canShowMoreChanged)
+    Q_PROPERTY(QUrl notableUrl READ notableUrl CONSTANT)
    public:
     enum Type {
         Type_Unknown = 0,
@@ -64,6 +65,7 @@ class BcModel : public SelectableItemModel {
     void canShowMoreChanged();
 
    private:
+    static const QUrl mNotableUrl;
     QUrl mAlbumUrl;
     QString mAlbumTitle;
     QUrl mArtistUrl;
@@ -80,6 +82,7 @@ class BcModel : public SelectableItemModel {
     void setAlbumTitle(const QString &albumTitle);
     void setArtistName(const QString &artistName);
     inline auto canShowMore() const { return mCanShowMore; }
+    static inline auto notableUrl() { return mNotableUrl; }
 };
 
 class BcItem : public SelectableItem {
