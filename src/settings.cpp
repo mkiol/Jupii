@@ -787,6 +787,28 @@ void Settings::removeTuneinSearchHistory(const QString &value) {
     }
 }
 
+QStringList Settings::ytSearchHistory() const {
+    return value("ytsearchhistory", {}).toStringList();
+}
+
+void Settings::addYtSearchHistory(const QString &value) {
+    auto v = value.toLower();
+    auto list = ytSearchHistory();
+    list.removeOne(v);
+    list.push_front(v);
+    if (list.size() > maxSearchHistory) list.removeLast();
+    setValue("ytsearchhistory", list);
+    emit ytSearchHistoryChanged();
+}
+
+void Settings::removeYtSearchHistory(const QString &value) {
+    auto list = ytSearchHistory();
+    if (list.removeOne(value.toLower())) {
+        setValue("ytsearchhistory", list);
+        emit ytSearchHistoryChanged();
+    }
+}
+
 static inline QFile desktopFile() {
     return QFile{QString{"%1/%2-open-url.desktop"}.arg(
         QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation),
@@ -832,6 +854,7 @@ QString Settings::pythonChecksum() const {
 void Settings::setCacheType(CacheType value) {
     if (value != cacheType()) {
         setValue("cachetype", static_cast<int>(value));
+        emit cacheTypeChanged();
     }
 }
 
@@ -843,6 +866,7 @@ Settings::CacheType Settings::cacheType() const {
 void Settings::setCacheCleaningType(CacheCleaningType value) {
     if (value != cacheCleaningType()) {
         setValue("cachecleaningtype", static_cast<int>(value));
+        emit cacheCleaningTypeChanged();
     }
 }
 
@@ -850,6 +874,20 @@ Settings::CacheCleaningType Settings::cacheCleaningType() const {
     return static_cast<CacheCleaningType>(
         value("cachecleaningtype",
               static_cast<int>(CacheCleaningType::CacheCleaning_Auto))
+            .toInt());
+}
+
+void Settings::setYtPreferredType(YtPreferredType value) {
+    if (value != ytPreferredType()) {
+        setValue("ytpreferredtype", static_cast<int>(value));
+        emit ytPreferredTypeChanged();
+    }
+}
+
+Settings::YtPreferredType Settings::ytPreferredType() const {
+    return static_cast<YtPreferredType>(
+        value("ytpreferredtype",
+              static_cast<int>(YtPreferredType::YtPreferredType_Audio))
             .toInt());
 }
 

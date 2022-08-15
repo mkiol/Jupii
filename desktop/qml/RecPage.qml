@@ -130,7 +130,7 @@ Kirigami.ScrollablePage {
                 if (author.length > 0)
                     return author
             }
-            defaultIconSource: "audio-x-generic"
+            defaultIconSource: "emblem-music-symbolic"
             iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
 

@@ -53,23 +53,37 @@ const QString Utils::durKey = QStringLiteral("jupii_dur");
 Utils::Utils(QObject *parent)
     : QObject{parent}, nam{std::make_unique<QNetworkAccessManager>()} {}
 
-QString Utils::secToStr(int value) const {
+QString Utils::secToStrStatic(int value) {
     int s = value % 60;
     int m = (value - s) / 60 % 60;
     int h = (value - s - m * 60) / 3600;
 
     QString str;
-    QTextStream sstr(&str);
+    QTextStream sstr{&str};
 
-    if (h > 0) sstr << h << ":";
+    if (h > 0) sstr << h << ':';
 
-    sstr << m << ":";
+    sstr << m << ':';
 
-    if (s < 10) sstr << "0";
+    if (s < 10) sstr << '0';
 
     sstr << s;
 
     return str;
+}
+
+int Utils::strToSecStatic(const QString &value) {
+    auto list = value.split(':');
+
+    if (list.size() > 2)
+        return list.at(list.size() - 1).toInt() +
+               60 * list.at(list.size() - 2).toInt() +
+               3600 * list.at(list.size() - 3).toInt();
+    if (list.size() > 1)
+        return list.at(list.size() - 1).toInt() +
+               60 * list.at(list.size() - 2).toInt();
+    if (list.size() > 0) return list.at(list.size() - 1).toInt();
+    return 0;
 }
 
 bool Utils::ethNetworkInf(const QNetworkInterface &interface) {

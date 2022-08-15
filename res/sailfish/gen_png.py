@@ -38,6 +38,7 @@ icons = {
     "fosdem" : [1],
     "bandcamp" : [1],
     "soundcloud" : [1],
+    "youtube" : [1],
     "cover" : [6],
     "record" : [1],
     "record-active" : [1]

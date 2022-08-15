@@ -75,6 +75,7 @@
 #include "tuneinmodel.h"
 #include "utils.h"
 #include "xc.h"
+#include "ytmodel.h"
 
 static void makeAppDirs() {
     auto root = QDir::root();
@@ -114,6 +115,7 @@ static void registerTypes() {
     qmlRegisterType<BcModel>("harbour.jupii.BcModel", 1, 0, "BcModel");
     qmlRegisterType<SoundcloudModel>("harbour.jupii.SoundcloudModel", 1, 0,
                                      "SoundcloudModel");
+    qmlRegisterType<YtModel>("harbour.jupii.YtModel", 1, 0, "YtModel");
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0,
                                   "IcecastModel");
     qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1,
@@ -134,6 +136,7 @@ static void registerTypes() {
     qRegisterMetaType<Settings::CacheType>("Settings::CacheType");
     qRegisterMetaType<Settings::CacheCleaningType>(
         "Settings::CacheCleaningType");
+    qRegisterMetaType<Settings::YtPreferredType>("Settings::YtPreferredType");
     qRegisterMetaType<ContentServer::Type>("ContentServer::Type");
     qRegisterMetaType<std::shared_ptr<QFile>>("std::shared_ptr<QFile>");
     qRegisterMetaType<int64_t>("int64_t");

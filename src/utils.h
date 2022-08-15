@@ -58,7 +58,11 @@ class Utils : public QObject, public Singleton<Utils> {
     void setQmlRootItem(QQuickItem *rootItem);
     void activateWindow();
 #endif
-    Q_INVOKABLE QString secToStr(int value) const;
+    static QString secToStrStatic(int value);
+    static int strToSecStatic(const QString &value);
+    Q_INVOKABLE inline QString secToStr(int value) const {
+        return secToStrStatic(value);
+    }
     Q_INVOKABLE bool isUrlOk(const QUrl &url) const;
     Q_INVOKABLE bool isGpodderAvailable() const;
     Q_INVOKABLE bool isIdMic(const QUrl &id) const;

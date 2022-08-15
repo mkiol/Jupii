@@ -224,11 +224,11 @@ Kirigami.ScrollablePage {
                 else
                     switch (model.type) {
                     case AVTransport.T_Image:
-                        return "image-x-generic"
+                        return "emblem-photos-symbolic"
                     case AVTransport.T_Audio:
-                        return "audio-x-generic"
+                        return "emblem-music-symbolic"
                     case AVTransport.T_Video:
-                        return "video-x-generic"
+                        return "emblem-videos-symbolic"
                     default:
                         return "unknown"
                     }

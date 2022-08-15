@@ -151,6 +151,7 @@ HEADERS += \
     $$ROOT_DIR/singleton.h \
     $$ROOT_DIR/ytmusic.h \
     $$ROOT_DIR/exif.h \
+    $$ROOT_DIR/ytmodel.h
 
 SOURCES += \
     $$PWD/transcoder.cpp \
@@ -214,6 +215,7 @@ SOURCES += \
     $$ROOT_DIR/dnscontentdeterminator.cpp \
     $$ROOT_DIR/ytmusic.cpp \
     $$ROOT_DIR/exif.cpp \
+    $$ROOT_DIR/ytmodel.cpp
 
 DISTFILES += \
     $$PWD/../dbus/org.freedesktop.Tracker3.Endpoint.xml

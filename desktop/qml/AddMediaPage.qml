@@ -255,5 +255,15 @@ Kirigami.ScrollablePage {
                 pageStack.push(Qt.resolvedUrl("TuneinPage.qml"))
             }
         }
+
+        BasicListItemWithArrow {
+            Layout.fillWidth: true
+            label: "YouTube"
+            icon: "qrc:/images/youtube.svg"
+            highlighted: rightPage ? rightPage.objectName === "yt" : false
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("YtPage.qml"))
+            }
+        }
     }
 }

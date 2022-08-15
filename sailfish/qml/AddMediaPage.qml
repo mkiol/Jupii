@@ -314,6 +314,14 @@ Page {
                     pageStack.push(Qt.resolvedUrl("TuneinPage.qml"));
                 }
             }
+
+            SimpleListItem {
+                title.text: "YouTube"
+                icon.source: "image://icons/icon-m-youtube"
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("YtPage.qml"));
+                }
+            }
         }
     }
 

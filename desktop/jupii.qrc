@@ -68,5 +68,6 @@
         <file>qml/SoundcloudPage.qml</file>
         <file>qml/BasicListItemWithArrow.qml</file>
         <file>qml/ShowmoreItem.qml</file>
+        <file>qml/YtPage.qml</file>
     </qresource>
 </RCC>

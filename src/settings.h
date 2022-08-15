@@ -83,10 +83,14 @@ class Settings : public QSettings,
                    icecastSearchHistoryChanged)
     Q_PROPERTY(QStringList tuneinSearchHistory READ tuneinSearchHistory NOTIFY
                    tuneinSearchHistoryChanged)
+    Q_PROPERTY(QStringList ytSearchHistory READ ytSearchHistory NOTIFY
+                   ytSearchHistoryChanged)
     Q_PROPERTY(CacheType cacheType READ cacheType WRITE setCacheType NOTIFY
                    cacheTypeChanged)
     Q_PROPERTY(CacheCleaningType cacheCleaningType READ cacheCleaningType WRITE
                    setCacheCleaningType NOTIFY cacheCleaningTypeChanged)
+    Q_PROPERTY(YtPreferredType ytPreferredType READ ytPreferredType WRITE
+                   setYtPreferredType NOTIFY ytPreferredTypeChanged)
 
    public:
     enum class HintType {
@@ -106,6 +110,9 @@ class Settings : public QSettings,
         CacheCleaning_Never = 2
     };
     Q_ENUM(CacheCleaningType)
+
+    enum class YtPreferredType { YtPreferredType_Video, YtPreferredType_Audio };
+    Q_ENUM(YtPreferredType)
 
 #ifdef SAILFISH
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
@@ -198,6 +205,9 @@ class Settings : public QSettings,
     QStringList tuneinSearchHistory() const;
     Q_INVOKABLE void addTuneinSearchHistory(const QString &value);
     Q_INVOKABLE void removeTuneinSearchHistory(const QString &value);
+    QStringList ytSearchHistory() const;
+    Q_INVOKABLE void addYtSearchHistory(const QString &value);
+    Q_INVOKABLE void removeYtSearchHistory(const QString &value);
     Q_INVOKABLE QUrl appIcon() const;
     QString pythonChecksum() const;
     void setPythonChecksum(const QString &value);
@@ -205,6 +215,8 @@ class Settings : public QSettings,
     void setCacheType(CacheType value);
     CacheCleaningType cacheCleaningType() const;
     void setCacheCleaningType(CacheCleaningType value);
+    YtPreferredType ytPreferredType() const;
+    void setYtPreferredType(YtPreferredType value);
     Q_INVOKABLE inline bool sandboxed() const { return m_sandboxed; }
 
    signals:
@@ -242,8 +254,10 @@ class Settings : public QSettings,
     void soundcloudSearchHistoryChanged();
     void icecastSearchHistoryChanged();
     void tuneinSearchHistoryChanged();
+    void ytSearchHistoryChanged();
     void cacheTypeChanged();
     void cacheCleaningTypeChanged();
+    void ytPreferredTypeChanged();
 
    private:
     inline static const QString settingsFilename =

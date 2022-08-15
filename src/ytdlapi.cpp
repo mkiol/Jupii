@@ -26,15 +26,24 @@
 #include <QFile>
 #include <QIODevice>
 #include <QStandardPaths>
+#include <QThread>
 #include <QTimer>
 #include <algorithm>
 #include <fstream>
 #include <sstream>
 
+#ifdef SAILFISH
 #include "downloader.h"
 #include "info.h"
 #include "settings.h"
 #include "utils.h"
+#endif
+
+#include "utils.h"
+
+const int YtdlApi::maxHome = 50;
+const int YtdlApi::maxHomeFirstPage = 2;
+std::vector<home::Section> YtdlApi::m_homeSections{};
 
 YtdlApi::State YtdlApi::state = YtdlApi::State::Unknown;
 
@@ -333,10 +342,15 @@ static void logVideoInfo(const video_info::VideoInfo& info) {
     }
 }
 
-static bool urlOk(std::string_view url) {
+bool YtdlApi::urlOk(std::string_view url) {
     if (url.empty()) return false;
     if (url.find("manifest.googlevideo.com") != std::string::npos) return false;
     return true;
+}
+
+QUrl YtdlApi::makeYtUrl(std::string_view id) {
+    return QUrl{
+        QStringLiteral("https://www.youtube.com/watch?v=%1").arg(id.data())};
 }
 
 QUrl YtdlApi::bestAudioUrl(const std::vector<video_info::Format>& formats) {
@@ -354,57 +368,369 @@ QUrl YtdlApi::bestAudioUrl(const std::vector<video_info::Format>& formats) {
                                           f2.quality.value_or(0);
                                });
 
-    if (it == audioFormats.cend()) return {};
+    if (it == audioFormats.cend()) {
+        qWarning() << "best audio format not found";
+        return {};
+    }
 
     return QUrl{QString::fromStdString(it->url)};
 }
 
 QUrl YtdlApi::bestVideoUrl(const std::vector<video_info::Format>& formats) {
-    std::vector<video_info::Format> audioFormats{};
+    std::vector<video_info::Format> videoFormats{};
 
     std::copy_if(formats.cbegin(), formats.cend(),
-                 std::back_inserter(audioFormats), [](const auto& format) {
+                 std::back_inserter(videoFormats), [](const auto& format) {
                      return format.vcodec.find("avc1") != std::string::npos &&
                             format.acodec.find("mp4a") != std::string::npos &&
                             urlOk(format.url);
                  });
 
-    auto it = std::max_element(audioFormats.cbegin(), audioFormats.cend(),
+    auto it = std::max_element(videoFormats.cbegin(), videoFormats.cend(),
                                [](const auto& f1, const auto& f2) {
                                    return f1.quality.value_or(0) <
                                           f2.quality.value_or(0);
                                });
 
-    if (it == audioFormats.cend()) return {};
+    if (it == videoFormats.cend()) {
+        qWarning() << "best video format not found";
+        return {};
+    }
 
     return QUrl{QString::fromStdString(it->url)};
 }
 
-std::optional<YtdlApi::Track> YtdlApi::track(const QUrl& url) const {
+QUrl YtdlApi::bestThumbUrl(const std::vector<meta::Thumbnail>& thumbs) {
+    if (thumbs.empty()) return {};
+
+    std::vector<meta::Thumbnail> squareThumbs;
+    std::copy_if(thumbs.cbegin(), thumbs.cend(),
+                 std::back_inserter(squareThumbs),
+                 [](const auto& thumb) { return thumb.width == thumb.height; });
+
+    const auto& ts = squareThumbs.empty() ? thumbs : squareThumbs;
+
+    auto it = std::max_element(
+        ts.cbegin(), ts.cend(), [](const auto& t1, const auto& t2) {
+            return t1.width + t1.height < t2.width + t2.height;
+        });
+
+    if (it == ts.cend()) {
+        qWarning() << "best thumb not found";
+        return {};
+    }
+
+    return QUrl{QString::fromStdString(it->url)};
+}
+
+QString YtdlApi::bestArtistName(const std::vector<meta::Artist>& artists,
+                                const QString& defaultName) {
+    if (artists.empty() || artists[0].name.empty()) return defaultName;
+    return QString::fromStdString(artists[0].name);
+}
+
+std::optional<YtdlApi::Track> YtdlApi::track(QUrl url) const {
     if (state != State::Enabled) return std::nullopt;
 
-    YTMusic ytm;
+    YTMusic ytm{};
 
     try {
         auto info = ytm.extract_video_info(url.toString().toStdString());
 
         logVideoInfo(info);
 
-        Track t;
+        Track t{/*title=*/QString::fromStdString(info.title),
+                /*webUrl=*/std::move(url),
+                /*streamUrl=*/bestVideoUrl(info.formats),
+                /*streamAudioUrl=*/bestAudioUrl(info.formats),
+                /*imageUrl=*/QUrl{QString::fromStdString(info.thumbnail)}};
 
-        t.streamUrl = bestVideoUrl(info.formats);
-        t.streamAudioUrl = bestAudioUrl(info.formats);
         if (t.streamUrl.isEmpty() && t.streamAudioUrl.isEmpty())
             return std::nullopt;
-
-        t.title = QString::fromStdString(info.title);
-        t.webUrl = url;
-        t.imageUrl = QUrl{QString::fromStdString(info.thumbnail)};
-
         return t;
     } catch (const std::exception& err) {
         qWarning() << "ytdl error:" << err.what();
     }
 
     return std::nullopt;
+}
+
+std::optional<YtdlApi::Album> YtdlApi::album(const QString& id) const {
+    if (state != State::Enabled) return std::nullopt;
+    if (id.isEmpty()) return std::nullopt;
+    if (QThread::currentThread()->isInterruptionRequested())
+        return std::nullopt;
+
+    YTMusic ytm{};
+
+    try {
+        auto result = ytm.get_album(id.toStdString());
+
+        Album a{/*title=*/QString::fromStdString(result.title),
+                /*artist=*/bestArtistName(result.artists),
+                /*imageUrl=*/bestThumbUrl(result.thumbnails),
+                /*tracks=*/{}};
+
+        std::transform(
+            result.tracks.cbegin(), result.tracks.cend(),
+            std::back_inserter(a.tracks), [&a](const auto& t) {
+                return AlbumTrack{
+                    QString::fromStdString(t.video_id.value_or(std::string{})),
+                    QString::fromStdString(t.title),
+                    bestArtistName(t.artists, a.artist),
+                    makeYtUrl(t.video_id.value_or(std::string{})),
+                    t.duration ? Utils::strToSecStatic(
+                                     QString::fromStdString(*t.duration))
+                               : 0};
+            });
+
+        return a;
+    } catch (const std::exception& err) {
+        qWarning() << "ytdl error:" << err.what();
+    }
+
+    return std::nullopt;
+}
+
+std::optional<YtdlApi::Album> YtdlApi::playlist(const QString& id) const {
+    if (state != State::Enabled) return std::nullopt;
+    if (id.isEmpty()) return std::nullopt;
+    if (QThread::currentThread()->isInterruptionRequested())
+        return std::nullopt;
+
+    YTMusic ytm{};
+
+    try {
+        auto result = ytm.get_playlist(id.toStdString());
+
+        Album a;
+        a.artist = QString::fromStdString(result.author.name);
+        a.title = QString::fromStdString(result.title);
+        a.imageUrl = bestThumbUrl(result.thumbnails);
+
+        std::transform(
+            result.tracks.cbegin(), result.tracks.cend(),
+            std::back_inserter(a.tracks), [](const auto& t) {
+                return AlbumTrack{
+                    QString::fromStdString(t.video_id.value_or(std::string{})),
+                    QString::fromStdString(t.title), bestArtistName(t.artists),
+                    makeYtUrl(t.video_id.value_or(std::string{})),
+                    Utils::strToSecStatic(QString::fromStdString(t.duration))};
+            });
+
+        return a;
+    } catch (const std::exception& err) {
+        qWarning() << "ytdl error:" << err.what();
+    }
+
+    return std::nullopt;
+}
+
+std::optional<YtdlApi::Artist> YtdlApi::artist(const QString& id) const {
+    if (state != State::Enabled) return std::nullopt;
+    if (id.isEmpty()) return std::nullopt;
+    if (QThread::currentThread()->isInterruptionRequested())
+        return std::nullopt;
+
+    YTMusic ytm{};
+
+    try {
+        auto result = ytm.get_artist(id.toStdString());
+
+        Artist a;
+
+        a.name = QString::fromStdString(result.name);
+        a.imageUrl = bestThumbUrl(result.thumbnails);
+
+        if (result.albums) {
+            std::transform(
+                result.albums->results.cbegin(), result.albums->results.cend(),
+                std::back_inserter(a.albums), [](const auto& t) {
+                    return ArtistAlbum{QString::fromStdString(t.browse_id),
+                                       QString::fromStdString(t.title),
+                                       bestThumbUrl(t.thumbnails)};
+                });
+        }
+        if (result.songs) {
+            std::transform(
+                result.songs->results.cbegin(), result.songs->results.cend(),
+                std::back_inserter(a.tracks), [](const auto& t) {
+                    return ArtistTrack{QString::fromStdString(t.video_id),
+                                       QString::fromStdString(t.title),
+                                       QString::fromStdString(t.album.name),
+                                       makeYtUrl(t.video_id),
+                                       bestThumbUrl(t.thumbnails),
+                                       /*duration=*/0};
+                });
+        }
+        if (result.videos) {
+            std::transform(
+                result.videos->results.cbegin(), result.videos->results.cend(),
+                std::back_inserter(a.tracks), [](const auto& t) {
+                    return ArtistTrack{QString::fromStdString(t.video_id),
+                                       QString::fromStdString(t.title),
+                                       /*album=*/{},
+                                       makeYtUrl(t.video_id),
+                                       bestThumbUrl(t.thumbnails),
+                                       /*duration=*/0};
+                });
+        }
+
+        return a;
+    } catch (const std::exception& err) {
+        qWarning() << "ytdl error:" << err.what();
+    }
+
+    return std::nullopt;
+}
+
+std::vector<YtdlApi::SearchResultItem> YtdlApi::homeFirstPage() {
+    return home(maxHomeFirstPage);
+}
+
+std::vector<YtdlApi::SearchResultItem> YtdlApi::home(int limit) {
+    std::vector<SearchResultItem> items;
+
+    if (state != State::Enabled) return items;
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
+
+    try {
+        if (m_homeSections.empty()) {
+            m_homeSections = YTMusic{}.get_home();
+        }
+
+        for (const auto& section : m_homeSections) {
+            for (int i = 0; i < std::min<int>(limit, section.content.size());
+                 ++i) {
+                const auto& r = section.content[i];
+
+                if (QThread::currentThread()->isInterruptionRequested())
+                    return items;
+
+                SearchResultItem item;
+
+                std::visit(
+                    [&](auto&& arg) {
+                        using T = std::decay_t<decltype(arg)>;
+                        if constexpr (std::is_same_v<T, home::Video>) {
+                            item.type = Type::Video;
+                            item.id = QString::fromStdString(arg.video_id);
+                            item.title = QString::fromStdString(arg.title);
+                            item.webUrl = makeYtUrl(arg.video_id);
+                            if (arg.album)
+                                item.album =
+                                    QString::fromStdString(arg.album->name);
+                            item.imageUrl = bestThumbUrl(arg.thumbnail);
+                            item.artist = bestArtistName(arg.artists);
+                        } else if constexpr (std::is_same_v<T,
+                                                            home::Playlist>) {
+                            item.type = Type::Playlist;
+                            item.id = QString::fromStdString(arg.id);
+                            item.title = QString::fromStdString(arg.title);
+                            item.imageUrl = bestThumbUrl(arg.thumbnail);
+                        } else {
+#ifdef QT_DEBUG
+                            qWarning() << "unknown type";
+#endif
+                        }
+                    },
+                    r);
+
+                if (!item.id.isEmpty()) {
+                    item.section = QString::fromStdString(section.title);
+                    items.push_back(std::move(item));
+                }
+            }
+        }
+    } catch (const std::exception& err) {
+        qWarning() << "ytdl error:" << err.what();
+    }
+
+    return items;
+}
+
+std::vector<YtdlApi::SearchResultItem> YtdlApi::search(
+    const QString& query) const {
+    std::vector<SearchResultItem> items;
+
+    if (state != State::Enabled) return items;
+    if (QThread::currentThread()->isInterruptionRequested()) return items;
+
+    YTMusic ytm{};
+
+    try {
+        auto results = ytm.search(query.toStdString());
+        items.reserve(results.size());
+
+        for (const auto& r : results) {
+            if (QThread::currentThread()->isInterruptionRequested())
+                return items;
+
+            SearchResultItem item;
+
+            std::visit(
+                [&](auto&& arg) {
+                    using T = std::decay_t<decltype(arg)>;
+                    if constexpr (std::is_same_v<T, search::Album>) {
+                        item.type = Type::Album;
+                        item.id = QString::fromStdString(arg.browse_id);
+                        item.album = QString::fromStdString(arg.title);
+                        item.artist = bestArtistName(arg.artists);
+                        // auto album = ytm.get_album(arg.browse_id);
+                        // item.imageUrl = bestThumbUrl(album.thumbnails);
+                    } else if constexpr (std::is_same_v<T, search::Artist>) {
+                        item.type = Type::Artist;
+                        item.id = QString::fromStdString(arg.browse_id);
+                        item.artist = QString::fromStdString(arg.artist);
+                        // auto artist = ytm.get_artist(arg.browse_id);
+                        // item.imageUrl = bestThumbUrl(artist.thumbnails);
+                    } else if constexpr (std::is_same_v<T, search::Playlist>) {
+                        item.type = Type::Playlist;
+                        item.id = QString::fromStdString(arg.browse_id);
+                        item.count =
+                            QString::fromStdString(arg.item_count).toInt();
+                        item.title = QString::fromStdString(arg.title);
+                        // item.artist = QString::fromStdString(arg.author);
+                        // auto playlist = ytm.get_playlist(arg.browse_id);
+                        // item.imageUrl = bestThumbUrl(playlist.thumbnails);
+                    } else if constexpr (std::is_same_v<T, search::Song> ||
+                                         std::is_same_v<T, search::Video>) {
+                        item.type = Type::Video;
+                        item.id = QString::fromStdString(arg.video_id);
+                        item.title = QString::fromStdString(arg.title);
+                        item.webUrl = makeYtUrl(arg.video_id);
+                        item.artist = bestArtistName(arg.artists);
+
+                        if constexpr (std::is_same_v<T, search::Song>) {
+                            item.album = QString::fromStdString(arg.album.name);
+                            item.duration = Utils::strToSecStatic(
+                                QString::fromStdString(arg.duration));
+                        }
+
+                        /*if (auto song = ytm.get_song(arg.video_id)) {
+                            if (item.artist.isEmpty() &&
+                                !song->author.empty()) {
+                                item.artist =
+                                    QString::fromStdString(song->author);
+                            }
+                            item.imageUrl =
+                                bestThumbUrl(song->thumbnail.thumbnails);
+                            item.duration =
+                                QString::fromStdString(song->length).toInt();
+                        }*/
+                    } else {
+#ifdef QT_DEBUG
+                        qWarning() << "unknown type";
+#endif
+                    }
+                },
+                r);
+
+            if (!item.id.isEmpty()) items.push_back(std::move(item));
+        }
+    } catch (const std::exception& err) {
+        qWarning() << "ytdl error:" << err.what();
+    }
+
+    return items;
 }
