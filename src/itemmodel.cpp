@@ -42,8 +42,12 @@ ItemModel::~ItemModel()
 
 void ItemModel::updateModel(const QString &data)
 {
-    if (m_worker && m_worker->isRunning())
+    if (m_worker && m_worker->isRunning()) {
+        if (m_worker->data != data) {
+            m_worker->requestInterruption();
+        }
         return;
+    }
 
     setBusy(true);
     m_worker = std::unique_ptr<ItemWorker>(new ItemWorker{this, data});
