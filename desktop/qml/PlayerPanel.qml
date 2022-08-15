@@ -224,36 +224,27 @@ Rectangle {
                                 return "computer"
                             switch (av.currentType) {
                             case AVTransport.T_Image:
-                                return "image-x-generic"
+                                return "emblem-photos-symbolic"
                             case AVTransport.T_Audio:
-                                return "audio-x-generic"
+                                return "emblem-music-symbolic"
                             case AVTransport.T_Video:
-                                return "video-x-generic"
+                                return "emblem-videos-symbolic"
                             }
-                            return "view-media-album-cover"
+                            return "media-album-cover"
                         }
                         visible: parent.status !== Image.Ready
                     }
 
-                    Item { // attached icon
-                        visible: itemType === ContentServer.ItemType_Url ||
-                                 itemType === ContentServer.ItemType_Upnp
+                    AttachedIcon {
+                        source: {
+                            switch (itemType) {
+                            case ContentServer.ItemType_Url: return "folder-remote"
+                            case ContentServer.ItemType_Upnp: return "network-server"
+                            }
+                            return ""
+                        }
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
-                        width: Kirigami.Units.iconSizes.smallMedium
-                        height: Kirigami.Units.iconSizes.smallMedium
-                        Rectangle {
-                            anchors.fill: parent
-                            color: Kirigami.Theme.backgroundColor
-                            opacity: 0.7
-                        }
-                        Kirigami.Icon {
-                            anchors.fill: parent
-                            source: itemType === ContentServer.ItemType_Url ?
-                                        "folder-remote" :
-                                    itemType === ContentServer.ItemType_Upnp ?
-                                        "network-server" : ""
-                        }
                     }
                 }
 

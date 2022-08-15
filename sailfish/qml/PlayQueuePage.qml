@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -204,10 +204,15 @@ Page {
                     }
                 }
             }
-            attachedIcon.source: model.itemType === ContentServer.ItemType_Url ?
+            attachedIcon2.source: model.itemType === ContentServer.ItemType_Url ?
                                      ("image://icons/icon-s-browser?" + primaryColor) :
                                  model.itemType === ContentServer.ItemType_Upnp ?
                                      ("image://icons/icon-s-device?" + primaryColor) : ""
+            attachedIcon.source: {
+                if (icon.status !== Image.Ready)
+                    return ""
+                return defaultIcon.source
+            }
             icon.source: {
                 if (model.itemType === ContentServer.ItemType_Mic ||
                     model.itemType === ContentServer.ItemType_AudioCapture ||

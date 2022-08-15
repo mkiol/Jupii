@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,6 +18,7 @@ Kirigami.SwipeListItem {
     property string iconSource
     property alias defaultIconSource: iconItem.fallback
     property alias attachedIconName: attachedIcon.source
+    property alias attachedIcon2Name: attachedIcon2.source
     property alias iconSize: iconItem.size
     property bool active: false
     property alias next: nextIcon.visible
@@ -64,21 +65,16 @@ Kirigami.SwipeListItem {
                 Layout.maximumWidth: size
                 visible: !root.busy && typeof source !== "undefined"
 
-                Item {
-                    visible: typeof attachedIconName !== "undefined" && attachedIconName.length > 0
+                AttachedIcon {
+                    id: attachedIcon
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    width: Kirigami.Units.iconSizes.small
-                    height: Kirigami.Units.iconSizes.small
-                    Rectangle {
-                        anchors.fill: parent
-                        color: Kirigami.Theme.backgroundColor
-                        opacity: 0.7
-                    }
-                    Kirigami.Icon {
-                        id: attachedIcon
-                        anchors.fill: parent
-                    }
+                }
+
+                AttachedIcon {
+                    id: attachedIcon2
+                    anchors.right: parent.right
+                    anchors.top: parent.top
                 }
             }
             ColumnLayout {

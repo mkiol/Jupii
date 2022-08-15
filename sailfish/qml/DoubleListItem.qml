@@ -16,6 +16,7 @@ ListItem {
     property alias icon: _icon
     property alias defaultIcon: _dicon
     property alias attachedIcon: _aicon
+    property alias attachedIcon2: _aicon2
     property alias extra: extraLabel.text
     property alias extra2: extraLabel2.text
     property bool dimmed: false
@@ -54,18 +55,16 @@ ListItem {
             visible: icon.status !== Image.Ready
         }
 
-        Rectangle {
-            visible: _aicon.status === Image.Ready
+        AttachedIcon {
+            id: _aicon
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            width: Theme.iconSizeSmall
-            height: Theme.iconSizeSmall
-            color: Theme.rgba((Theme.colorScheme === Theme.LightOnDark ?
-                      Theme.darkPrimaryColor : Theme.lightPrimaryColor), 0.5)
-            Image {
-                id: _aicon
-                anchors.fill: parent
-            }
+        }
+
+        AttachedIcon {
+            id: _aicon2
+            anchors.right: parent.right
+            anchors.top: parent.top
         }
     }
 
