@@ -1885,9 +1885,11 @@ ContentServer::makeItemMetaUsingYtdlApi(
     auto newUrl = meta.type == Type::Type_Music
                       ? std::move(track->streamAudioUrl)
                       : std::move(track->streamUrl);
+
     Utils::fixUrl(newUrl);
 
-    return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
+    return makeItemMetaUsingHTTPRequest2(newUrl, meta, std::move(nam),
+                                         counter + 1);
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
@@ -1923,7 +1925,8 @@ ContentServer::makeItemMetaUsingBcApi(
     auto newUrl = std::move(track.streamUrl);
     Utils::fixUrl(newUrl);
 
-    return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
+    return makeItemMetaUsingHTTPRequest2(newUrl, meta, std::move(nam),
+                                         counter + 1);
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
@@ -1959,7 +1962,8 @@ ContentServer::makeItemMetaUsingSoundcloudApi(
     auto newUrl = std::move(track.streamUrl);
     Utils::fixUrl(newUrl);
 
-    return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam, counter + 1);
+    return makeItemMetaUsingHTTPRequest2(newUrl, meta, std::move(nam),
+                                         counter + 1);
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
