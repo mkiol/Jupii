@@ -123,6 +123,17 @@ Dialog {
                 var selected = model.selected
                 itemModel.setSelected(model.index, !selected);
             }
+
+            menu: ContextMenu {
+                MenuItem {
+                    text: qsTr("Delete")
+                    onClicked: {
+                        Remorse.popupAction(root,
+                            qsTr("Deleting %n item(s)", "", 1),
+                            function(){itemModel.deleteItem(model.id)})
+                    }
+                }
+            }
         }
 
         ViewPlaceholder {
