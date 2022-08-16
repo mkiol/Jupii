@@ -2862,20 +2862,26 @@ ContentServer::CachingResult ContentServer::makeCache(const QUrl &id) {
         if (!cachePath) {
             if (m_cacheDownloader && m_cacheDownloader->canceled())
                 return CachingResult::NotCachedCanceled;
-            return CachingResult::NotCachedError;
+            return Settings::instance()->allowNotIsomMp4()
+                       ? CachingResult::NotCached
+                       : CachingResult::NotCachedError;
         }
 
         auto avMeta = transcodeToAudioFile(*cachePath);
         if (!avMeta) {
             QFile::remove(*cachePath);
-            return CachingResult::NotCachedError;
+            return Settings::instance()->allowNotIsomMp4()
+                       ? CachingResult::NotCached
+                       : CachingResult::NotCachedError;
         }
 
         if (*cachePath != avMeta->path) QFile::remove(*cachePath);
 
         if (!writeTagsWithMeta(avMeta->path, *meta, id)) {
             QFile::remove(avMeta->path);
-            return CachingResult::NotCachedError;
+            return Settings::instance()->allowNotIsomMp4()
+                       ? CachingResult::NotCached
+                       : CachingResult::NotCachedError;
         }
 
         updateMetaIfCached(*meta, type, avMeta->path);

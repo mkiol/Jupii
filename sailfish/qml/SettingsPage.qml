@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2019 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -403,6 +403,20 @@ Page {
                                     text: qsTr("Delete cache")
                                     onClicked: cserver.cleanCache()
                                 }
+                            }
+                        }
+
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: !settings.allowNotIsomMp4
+                            text: qsTr("Block MP4v2 audio streams")
+                            description: qsTr("Some UPnP devices don't support audio stream in MP4v2 container. " +
+                                              "This kind of stream might even hang a device. " +
+                                              "To overcome this problem, MP4v2 audio content is always cached " +
+                                              "and re-transcoded to MP4v1. When re-transcoding fails and this option " +
+                                              "is enabled, content will not be played at all.")
+                            onClicked: {
+                                settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
                             }
                         }
 

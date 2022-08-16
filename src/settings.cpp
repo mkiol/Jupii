@@ -902,3 +902,14 @@ void Settings::updateSandboxStatus() {
 
     m_sandboxed = pf.readAll().contains("firejail");
 }
+
+void Settings::setAllowNotIsomMp4(bool value) {
+    if (value != allowNotIsomMp4()) {
+        setValue("allownotisommp4", value);
+        emit allowNotIsomMp4Changed();
+    }
+}
+
+bool Settings::allowNotIsomMp4() const {
+    return value("allownotisommp4", true).toBool();
+}

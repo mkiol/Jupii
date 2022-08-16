@@ -89,6 +89,8 @@ class Settings : public QSettings,
                    cacheTypeChanged)
     Q_PROPERTY(CacheCleaningType cacheCleaningType READ cacheCleaningType WRITE
                    setCacheCleaningType NOTIFY cacheCleaningTypeChanged)
+    Q_PROPERTY(bool allowNotIsomMp4 READ allowNotIsomMp4 WRITE
+                   setAllowNotIsomMp4 NOTIFY allowNotIsomMp4Changed)
     Q_PROPERTY(YtPreferredType ytPreferredType READ ytPreferredType WRITE
                    setYtPreferredType NOTIFY ytPreferredTypeChanged)
 
@@ -218,6 +220,8 @@ class Settings : public QSettings,
     YtPreferredType ytPreferredType() const;
     void setYtPreferredType(YtPreferredType value);
     Q_INVOKABLE inline bool sandboxed() const { return m_sandboxed; }
+    bool allowNotIsomMp4() const;
+    void setAllowNotIsomMp4(bool value);
 
    signals:
     void portChanged();
@@ -258,6 +262,7 @@ class Settings : public QSettings,
     void cacheTypeChanged();
     void cacheCleaningTypeChanged();
     void ytPreferredTypeChanged();
+    void allowNotIsomMp4Changed();
 
    private:
     inline static const QString settingsFilename =

@@ -414,6 +414,13 @@ Kirigami.ScrollablePage {
                 }
             }
 
+            Controls.Switch {
+                checked: !settings.allowNotIsomMp4
+                text: qsTr("Block MP4v2 audio streams")
+                onToggled: {
+                    settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
+                }
+            }
 
             Item {
                 Kirigami.FormData.isSection: true
