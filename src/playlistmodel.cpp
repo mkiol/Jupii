@@ -1765,7 +1765,7 @@ void PlaylistModel::refresh() {
 void PlaylistModel::setContent(const QString &id1, const QString &id2) {
     auto cachableItem = [this](const QString &id) -> PlaylistItem * {
         if (id.isEmpty()) return nullptr;
-        auto item = qobject_cast<PlaylistItem *>(find(id));
+        auto *item = qobject_cast<PlaylistItem *>(find(id));
         if (item && item->itemType() == ContentServer::ItemType_Url) {
             return item;
         }
@@ -1800,7 +1800,7 @@ void PlaylistModel::setContent(const QString &id1, const QString &id2) {
         return;
     }
 
-    if (item1 && result.first == ContentServer::CachingResult::NotCached) {
+    /*if (item1 && result.first == ContentServer::CachingResult::NotCached) {
         auto err = ContentServer::instance()->startProxy(QUrl{id1});
         if (err != ContentServer::ProxyError::NoError) {
             if (err == ContentServer::ProxyError::Canceled) {
@@ -1812,7 +1812,7 @@ void PlaylistModel::setContent(const QString &id1, const QString &id2) {
             item1->setToBeActive(false);
             return;
         }
-    }
+    }*/
 
     Services::instance()->avTransport->setLocalContent(id1, id2);
 }
