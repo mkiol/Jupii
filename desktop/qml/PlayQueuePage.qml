@@ -233,11 +233,11 @@ Kirigami.ScrollablePage {
                         return "unknown"
                     }
             }
-            attachedIcon2Name: model.itemType === ContentServer.ItemType_Url ?
+            attachedIconName: model.itemType === ContentServer.ItemType_Url ?
                                   "folder-remote" :
                               model.itemType === ContentServer.ItemType_Upnp ?
                                   "network-server" : ""
-            attachedIconName: {
+            attachedIcon2Name: {
                 if (iconSource.length === 0)
                     return ""
                 return defaultIconSource

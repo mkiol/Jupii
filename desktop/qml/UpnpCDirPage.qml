@@ -138,6 +138,13 @@ Kirigami.ScrollablePage {
                     return "unknown"
                 }
             }
+            attachedIconName: {
+                if (icon.status !== Image.Ready || model.type === CDirModel.BackType ||
+                        model.type === CDirModel.DirType || model.type === CDirModel.MusicAlbumType)
+                    return ""
+                return defaultIconSource
+            }
+
             iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
 

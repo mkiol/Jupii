@@ -199,6 +199,7 @@ Rectangle {
                 onClicked: root.iconClicked()
 
                 Image {
+                    id: icon
                     anchors.fill: parent
                     sourceSize.width: Kirigami.Units.iconSizes.huge
                     sourceSize.height: Kirigami.Units.iconSizes.huge
@@ -235,16 +236,34 @@ Rectangle {
                         visible: parent.status !== Image.Ready
                     }
 
-                    AttachedIcon {
-                        source: {
-                            switch (itemType) {
-                            case ContentServer.ItemType_Url: return "folder-remote"
-                            case ContentServer.ItemType_Upnp: return "network-server"
-                            }
-                            return ""
-                        }
+                    Column {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
+                        width: Kirigami.Units.iconSizes.small
+
+                        AttachedIcon {
+                            source: {
+                                switch (itemType) {
+                                case ContentServer.ItemType_Url: return "folder-remote"
+                                case ContentServer.ItemType_Upnp: return "network-server"
+                                }
+                                return ""
+                            }
+                        }
+
+                        AttachedIcon {
+                            source: {
+                                if (icon.status !== Image.Ready) return ""
+                                switch (av.currentType) {
+                                case AVTransport.T_Image:
+                                    return "emblem-photos-symbolic"
+                                case AVTransport.T_Audio:
+                                    return "emblem-music-symbolic"
+                                case AVTransport.T_Video:
+                                    return "emblem-videos-symbolic"
+                                }
+                            }
+                        }
                     }
                 }
 

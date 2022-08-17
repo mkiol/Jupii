@@ -316,7 +316,7 @@ Page {
             }
 
             SimpleListItem {
-                title.text: "YouTube"
+                title.text: "YouTube Music"
                 icon.source: "image://icons/icon-m-youtube"
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("YtPage.qml"));

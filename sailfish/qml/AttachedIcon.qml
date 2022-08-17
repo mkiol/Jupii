@@ -14,8 +14,8 @@ Rectangle {
     property alias source: _icon.source
 
     visible: _icon.status === Image.Ready
-    width: Theme.iconSizeSmall
-    height: Theme.iconSizeSmall
+    width: visible ? Theme.iconSizeSmall : 0
+    height: visible ? Theme.iconSizeSmall : 0
     color: Theme.rgba((Theme.colorScheme === Theme.LightOnDark ?
               Theme.darkPrimaryColor : Theme.lightPrimaryColor), 0.5)
     Image {

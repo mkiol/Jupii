@@ -147,6 +147,12 @@ Dialog {
                     return "image://theme/icon-m-file-other?" + primaryColor
                 }
             }
+            attachedIcon.source: {
+                if (icon.status !== Image.Ready || model.type === CDirModel.BackType ||
+                        model.type === CDirModel.DirType || model.type === CDirModel.MusicAlbumType)
+                    return ""
+                return defaultIcon.source
+            }
         }
 
         ViewPlaceholder {

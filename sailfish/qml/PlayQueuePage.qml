@@ -204,11 +204,11 @@ Page {
                     }
                 }
             }
-            attachedIcon2.source: model.itemType === ContentServer.ItemType_Url ?
+            attachedIcon.source: model.itemType === ContentServer.ItemType_Url ?
                                      ("image://icons/icon-s-browser?" + primaryColor) :
                                  model.itemType === ContentServer.ItemType_Upnp ?
                                      ("image://icons/icon-s-device?" + primaryColor) : ""
-            attachedIcon.source: {
+            attachedIcon2.source: {
                 if (icon.status !== Image.Ready)
                     return ""
                 return defaultIcon.source

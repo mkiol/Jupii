@@ -258,7 +258,7 @@ Kirigami.ScrollablePage {
 
         BasicListItemWithArrow {
             Layout.fillWidth: true
-            label: "YouTube"
+            label: "YouTube Music"
             icon: "qrc:/images/youtube.svg"
             highlighted: rightPage ? rightPage.objectName === "yt" : false
             onClicked: {

@@ -33,7 +33,7 @@ Kirigami.ScrollablePage {
     topPadding: 0
 
     title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
-           homeMode ? qsTr("Home") : itemModel.artistName.length > 0 ? itemModel.artistName : "YouTube"
+           homeMode ? qsTr("Home") : itemModel.artistName.length > 0 ? itemModel.artistName : "YouTube Music"
 
     //refreshing: itemModel.busy
     Component.onCompleted: {
@@ -82,18 +82,13 @@ Kirigami.ScrollablePage {
                     itemModel.filter = text
                 }
             }
-            Controls.Label {
-                Layout.alignment: Qt.AlignLeft
-                Layout.leftMargin: Kirigami.Units.smallSpacing
-                text: qsTr("Media type:")
-            }
             Controls.ComboBox {
                 Layout.alignment: Qt.AlignLeft
                 Layout.rightMargin: Kirigami.Units.smallSpacing
                 currentIndex: settings.ytPreferredType === Settings.YtPreferredType_Audio ? 1 : 0
                 model: [
-                    qsTr("Video"),
-                    qsTr("Audio")
+                    qsTr("Media type: %1").arg(qsTr("Video")),
+                    qsTr("Media type: %1").arg(qsTr("Audio"))
                 ]
                 onCurrentIndexChanged: {
                     if (currentIndex === 1)
@@ -119,15 +114,6 @@ Kirigami.ScrollablePage {
             required property string section
             text: section
         }
-
-//        Kirigami.SwipeListItem {
-//            visible: !itemModel.busy
-//            sectionDelegate: true
-//            required property string section
-//            Controls.Label {
-//                text: parent.section
-//            }
-//        }
     }
 
     Component {
@@ -175,7 +161,11 @@ Kirigami.ScrollablePage {
                     return ""
                 return defaultIconSource
             }
-            iconSource: model.icon
+            iconSource: {
+                if (model.type === YtModel.Type_Video && albumMode)
+                    return ""
+                return model.icon
+            }
             iconSize: Kirigami.Units.iconSizes.medium
             next: model.type !== YtModel.Type_Video
 
@@ -256,7 +246,7 @@ Kirigami.ScrollablePage {
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: itemList.count === 0 && !itemModel.busy
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
-                      qsTr("Type the words to search") : artistMode ? qsTr("No albums") : qsTr("No items")
+                      qsTr("Type the words to search") : qsTr("No items")
         }
 
         section.property: "section"

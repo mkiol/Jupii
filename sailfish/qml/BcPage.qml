@@ -138,7 +138,11 @@ Dialog {
                                 model.type === BcModel.Type_Artist ?
                                     "image://theme/icon-m-media-artists?" + primaryColor :
                                 "image://theme/icon-m-file-audio?" + primaryColor
-            icon.source: model.icon
+            icon.source: {
+                if (model.type === BcModel.Type_Track && albumMode)
+                    return ""
+                return model.icon
+            }
             extra: model.type === BcModel.Type_Album ? qsTr("Album") :
                    model.type === BcModel.Type_Artist ? qsTr("Artist") : ""
             extra2: model.genre

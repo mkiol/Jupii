@@ -116,7 +116,9 @@ Dialog {
             }
 
             MenuItem {
-                text: qsTr("Media type:") + " " + (settings.ytPreferredType === Settings.YtPreferredType_Audio ? qsTr("Audio") : qsTr("Video"))
+                text: qsTr("Media type: %1").arg(
+                          settings.ytPreferredType === Settings.YtPreferredType_Audio ?
+                              qsTr("Audio") : qsTr("Video"))
                 onClicked: {
                     if (settings.ytPreferredType === Settings.YtPreferredType_Audio)
                         settings.ytPreferredType = Settings.YtPreferredType_Video
@@ -173,7 +175,11 @@ Dialog {
                     return ""
                 return defaultIcon.source
             }
-            icon.source: model.icon
+            icon.source: {
+                if (model.type === YtModel.Type_Video && albumMode)
+                    return ""
+                return model.icon
+            }
             extra: {
                 switch (model.type) {
                 case YtModel.Type_Album:
@@ -215,7 +221,7 @@ Dialog {
             verticalOffset: listView.headerItem.height / 2
             enabled: listView.count === 0 && !itemModel.busy
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
-                      qsTr("Type the words to search") : root.artistMode ? qsTr("No albums") : qsTr("No items")
+                      qsTr("Type the words to search") : qsTr("No items")
         }
     }
 

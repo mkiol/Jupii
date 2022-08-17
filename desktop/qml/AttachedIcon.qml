@@ -14,8 +14,8 @@ Item {
     property alias source: _icon.source
 
     visible: typeof _icon.source !== "undefined" && _icon.source.length > 0
-    width: Kirigami.Units.iconSizes.small
-    height: Kirigami.Units.iconSizes.small
+    width: visible ? Kirigami.Units.iconSizes.small : 0
+    height: visible ? Kirigami.Units.iconSizes.small : 0
     Rectangle {
         anchors.fill: parent
         color: Kirigami.Theme.backgroundColor

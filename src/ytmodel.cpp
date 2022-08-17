@@ -156,14 +156,17 @@ QList<ListItem *> YtModel::makeAlbumItems() {
 
     std::transform(std::make_move_iterator(album->tracks.begin()),
                    std::make_move_iterator(album->tracks.end()),
-                   std::back_inserter(items), [&album](auto result) {
+                   std::back_inserter(items),
+                   [&album, icon = mAlbumType == Type::Type_Playlist
+                                       ? QUrl{}
+                                       : album->imageUrl](auto result) {
                        return new YtItem{std::move(result.id),
                                          std::move(result.title),
                                          std::move(result.artist),
                                          album->title,
                                          /*url=*/std::move(result.webUrl),
                                          /*origUrl=*/{},
-                                         album->imageUrl,
+                                         /*icon=*/icon,
                                          /*section=*/{},
                                          result.duration,
                                          Type::Type_Video};

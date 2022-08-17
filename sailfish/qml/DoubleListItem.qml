@@ -55,16 +55,18 @@ ListItem {
             visible: icon.status !== Image.Ready
         }
 
-        AttachedIcon {
-            id: _aicon
+        Column {
+            width: Theme.iconSizeSmall
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-        }
 
-        AttachedIcon {
-            id: _aicon2
-            anchors.right: parent.right
-            anchors.top: parent.top
+            AttachedIcon {
+                id: _aicon
+            }
+
+            AttachedIcon {
+                id: _aicon2
+            }
         }
     }
 

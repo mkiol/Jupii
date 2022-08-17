@@ -134,7 +134,11 @@ Dialog {
                                 model.type === SoundcloudModel.Type_Artist ?
                                     "image://theme/icon-m-media-artists?" + primaryColor :
                                 "image://theme/icon-m-file-audio?" + primaryColor
-            icon.source: model.icon
+            icon.source: {
+                if (model.type === SoundcloudModel.Type_Track && albumMode)
+                    return ""
+                return model.icon
+            }
             extra: model.type === SoundcloudModel.Type_Album ? qsTr("Album") :
                    model.type === SoundcloudModel.Type_Artist ? qsTr("Artist") : ""
             extra2: model.genre

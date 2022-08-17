@@ -116,24 +116,32 @@ DockedPanel_ {
                     source: av.currentAlbumArtURI
                 }
 
-                AttachedIcon {
+                Column {
+                    width: Theme.iconSizeSmall
                     anchors.right: _image.right
                     anchors.bottom: _image.bottom
-                    source: itemType === ContentServer.ItemType_Url ?
-                                ("image://icons/icon-s-browser?" + Theme.primaryColor) :
-                            itemType === ContentServer.ItemType_Upnp ?
-                                ("image://icons/icon-s-device?" + Theme.primaryColor) : ""
-                }
 
-                Image {
-                    anchors {
-                        right: _image.right
-                        bottom: _image.bottom
+                    AttachedIcon {
+                        source: itemType === ContentServer.ItemType_Url ?
+                                    ("image://icons/icon-s-browser?" + Theme.primaryColor) :
+                                itemType === ContentServer.ItemType_Upnp ?
+                                    ("image://icons/icon-s-device?" + Theme.primaryColor) : ""
                     }
-                    source: itemType === ContentServer.ItemType_Url ?
-                                ("image://icons/icon-s-browser?" + Theme.primaryColor) :
-                            itemType === ContentServer.ItemType_Upnp ?
-                                ("image://icons/icon-s-device?" + Theme.primaryColor) : ""
+
+                    AttachedIcon {
+                        source: {
+                            switch (av.currentType) {
+                            case AVTransport.T_Image:
+                                return "image://theme/icon-m-file-image?" + Theme.primaryColor
+                            case AVTransport.T_Audio:
+                                return "image://theme/icon-m-file-audio?" + Theme.primaryColor
+                            case AVTransport.T_Video:
+                                return "image://theme/icon-m-file-video?" + Theme.primaryColor
+                            default:
+                                return "image://theme/icon-m-file-other?" + Theme.primaryColor
+                            }
+                        }
+                    }
                 }
 
                 Column {

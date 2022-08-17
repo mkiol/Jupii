@@ -109,6 +109,12 @@ Dialog {
                                  model.itemType === ContentServer.ItemType_Upnp ?
                                      ("image://icons/icon-s-device?" + primaryColor) : ""
 
+            attachedIcon2.source: {
+                if (icon.status !== Image.Ready)
+                    return ""
+                return defaultIcon.source
+            }
+
             onClicked: {
                 var selected = model.selected
                 itemModel.setSelected(model.index, !selected);

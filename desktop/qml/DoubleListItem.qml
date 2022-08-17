@@ -65,16 +65,18 @@ Kirigami.SwipeListItem {
                 Layout.maximumWidth: size
                 visible: !root.busy && typeof source !== "undefined"
 
-                AttachedIcon {
-                    id: attachedIcon
+                Column {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                }
+                    width: Kirigami.Units.iconSizes.small
 
-                AttachedIcon {
-                    id: attachedIcon2
-                    anchors.right: parent.right
-                    anchors.top: parent.top
+                    AttachedIcon {
+                        id: attachedIcon
+                    }
+
+                    AttachedIcon {
+                        id: attachedIcon2
+                    }
                 }
             }
             ColumnLayout {
