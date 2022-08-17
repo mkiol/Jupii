@@ -1,6 +1,24 @@
---- site-packages/yt_dlp/utils.py	2022-05-22 17:24:25.000000000 +0200
-+++ site-packages/yt_dlp/utils.py	2022-06-06 20:42:07.629809635 +0200
-@@ -1691,16 +1691,19 @@
+--- site-packages/yt_dlp/utils.py	2022-08-17 20:46:00.339624643 +0200
++++ site-packages/yt_dlp/utils.py	2022-08-17 20:53:43.070612932 +0200
+@@ -1722,10 +1722,13 @@
+     if timezone is None:
+         timezone, date_str = extract_timezone(date_str)
+ 
+-    with contextlib.suppress(ValueError):
+-        date_format = f'%Y-%m-%d{delimiter}%H:%M:%S'
+-        dt = datetime.datetime.strptime(date_str, date_format) - timezone
+-        return calendar.timegm(dt.timetuple())
++    try:
++        with contextlib.suppress(ValueError):
++            date_format = f'%Y-%m-%d{delimiter}%H:%M:%S'
++            dt = datetime.datetime.strptime(date_str, date_format) - timezone
++            return calendar.timegm(dt.timetuple())
++    except TypeError:
++        return None
+ 
+ 
+ def date_formats(day_first=True):
+@@ -1744,16 +1747,19 @@
      date_str = re.sub(r'(?i)\s*(?:AM|PM)(?:\s+[A-Z]+)?', '', date_str)
      _, date_str = extract_timezone(date_str)
  
@@ -29,7 +47,7 @@
  
  
  def unified_timestamp(date_str, day_first=True):
-@@ -1725,13 +1728,16 @@
+@@ -1779,14 +1785,17 @@
      if m:
          date_str = m.group(1)
  
@@ -37,23 +55,24 @@
 -        with contextlib.suppress(ValueError):
 -            dt = datetime.datetime.strptime(date_str, expression) - timezone + datetime.timedelta(hours=pm_delta)
 -            return calendar.timegm(dt.timetuple())
--    timetuple = email.utils.parsedate_tz(date_str)
--    if timetuple:
--        return calendar.timegm(timetuple) + pm_delta * 3600
 +    try:
 +        for expression in date_formats(day_first):
 +            with contextlib.suppress(ValueError):
 +                dt = datetime.datetime.strptime(date_str, expression) - timezone + datetime.timedelta(hours=pm_delta)
 +                return calendar.timegm(dt.timetuple())
+ 
+-    timetuple = email.utils.parsedate_tz(date_str)
+-    if timetuple:
+-        return calendar.timegm(timetuple) + pm_delta * 3600 - timezone.total_seconds()
 +        timetuple = email.utils.parsedate_tz(date_str)
 +        if timetuple:
-+            return calendar.timegm(timetuple) + pm_delta * 3600
++            return calendar.timegm(timetuple) + pm_delta * 3600 - timezone.total_seconds()
 +    except TypeError:
 +        return None
  
  
  def determine_ext(url, default_ext='unknown_video'):
-@@ -1790,7 +1796,10 @@
+@@ -1845,7 +1854,10 @@
              return datetime_round(new_date, unit)
          return new_date
  
