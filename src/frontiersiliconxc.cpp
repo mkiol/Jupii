@@ -125,18 +125,18 @@ bool FrontierSiliconXC::parseDeviceDescription(const QByteArray& data)
 
 bool FrontierSiliconXC::init()
 {
-    QByteArray data = Downloader{}.downloadData(QUrl{URL.arg(address)}, 1000);
-    if (data.isEmpty()) {
+    auto data = Downloader{}.downloadData(QUrl{URL.arg(address)}, 1000);
+    if (data.bytes.isEmpty()) {
         qWarning() << "Cannot download device description";
         return false;
     }
 
 #ifdef QT_DEBUG
-    qDebug() << "FrontierSiliconXC data:" << data;
+    qDebug() << "FrontierSiliconXC data:" << data.bytes;
 #endif
 
-    if (!parseDeviceDescription(data)) {
-        qWarning() << "Cannot parse device description:" << data;
+    if (!parseDeviceDescription(data.bytes)) {
+        qWarning() << "Cannot parse device description:" << data.bytes;
         return false;
     }
 

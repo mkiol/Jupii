@@ -50,8 +50,8 @@ void SoundcloudApi::discoverClientId() {
     for (auto *script : scripts) {
         if (QUrl url{gumbo::attr_data(script, "src")}; !url.isEmpty()) {
             if (auto data = Downloader{nam}.downloadData(url);
-                !data.isEmpty()) {
-                if (auto id = extractClientId(data); !id.isEmpty()) {
+                !data.bytes.isEmpty()) {
+                if (auto id = extractClientId(data.bytes); !id.isEmpty()) {
 #ifdef QT_DEBUG
                     qDebug() << "client id: " << id;
 #endif
@@ -85,22 +85,22 @@ QJsonDocument SoundcloudApi::parseJsonData(const QByteArray &data) {
 
 gumbo::GumboOutput_ptr SoundcloudApi::downloadHtmlData(const QUrl &url) const {
     auto data = Downloader{nam}.downloadData(url);
-    if (data.isEmpty()) {
+    if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return {};
     }
 
-    return gumbo::parseHtmlData(data);
+    return gumbo::parseHtmlData(data.bytes);
 }
 
 QJsonDocument SoundcloudApi::downloadJsonData(const QUrl &url) const {
     auto data = Downloader{nam}.downloadData(url);
-    if (data.isEmpty()) {
+    if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return {};
     }
 
-    return parseJsonData(data);
+    return parseJsonData(data.bytes);
 }
 
 SoundcloudApi::Type SoundcloudApi::textToType(const QString &text) {

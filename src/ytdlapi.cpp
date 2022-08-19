@@ -676,14 +676,14 @@ std::vector<YtdlApi::SearchResultItem> YtdlApi::search(
                         item.id = QString::fromStdString(arg.browse_id);
                         item.album = QString::fromStdString(arg.title);
                         item.artist = bestArtistName(arg.artists);
-                        // auto album = ytm.get_album(arg.browse_id);
-                        // item.imageUrl = bestThumbUrl(album.thumbnails);
+                        auto album = ytm.get_album(arg.browse_id);
+                        item.imageUrl = bestThumbUrl(album.thumbnails);
                     } else if constexpr (std::is_same_v<T, search::Artist>) {
                         item.type = Type::Artist;
                         item.id = QString::fromStdString(arg.browse_id);
                         item.artist = QString::fromStdString(arg.artist);
-                        // auto artist = ytm.get_artist(arg.browse_id);
-                        // item.imageUrl = bestThumbUrl(artist.thumbnails);
+                        auto artist = ytm.get_artist(arg.browse_id);
+                        item.imageUrl = bestThumbUrl(artist.thumbnails);
                     } else if constexpr (std::is_same_v<T, search::Playlist>) {
                         item.type = Type::Playlist;
                         item.id = QString::fromStdString(arg.browse_id);

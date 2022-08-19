@@ -90,12 +90,12 @@ void SomafmModel::downloadImages(std::shared_ptr<QNetworkAccessManager> nam)
             const auto url = QUrl{bestImage(entry)};
             if (!id.isEmpty() && !url.isEmpty()) {
                 auto data = Downloader{nam}.downloadData(url);
-                if (!data.isEmpty()) {
+                if (!data.bytes.isEmpty()) {
                     auto filename = m_imageFilename + id;
                     if (auto ext = url.fileName().split('.').last(); !ext.isEmpty())
                         filename = filename + "." + ext;
                     qDebug() << "Downloaded image:" << filename;
-                    Utils::writeToCacheFile(filename, data, true);
+                    Utils::writeToCacheFile(filename, data.bytes, true);
                 }
             }
         }
@@ -111,13 +111,13 @@ void SomafmModel::downloadDir()
         if (QThread::currentThread()->isInterruptionRequested())
             return;
 
-        if (data.isEmpty()) {
+        if (data.bytes.isEmpty()) {
             qWarning() << "No data received";
             emit error();
             return;
         }
 
-        Utils::writeToCacheFile(m_dirFilename, data, true);
+        Utils::writeToCacheFile(m_dirFilename, data.bytes, true);
 
         if (!parseData()) {
             emit error();

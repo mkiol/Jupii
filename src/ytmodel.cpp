@@ -11,6 +11,7 @@
 #include <QList>
 #include <vector>
 
+#include "thumb.h"
 #include "utils.h"
 #include "ytdlapi.h"
 
@@ -92,16 +93,17 @@ QList<ListItem *> YtModel::makeHomeItems() {
     std::transform(std::make_move_iterator(results.begin()),
                    std::make_move_iterator(results.end()),
                    std::back_inserter(items), [](auto result) {
-                       return new YtItem{std::move(result.id),
-                                         std::move(result.title),
-                                         std::move(result.artist),
-                                         std::move(result.album),
-                                         /*url=*/std::move(result.webUrl),
-                                         /*origUrl=*/{},
-                                         std::move(result.imageUrl),
-                                         /*section=*/std::move(result.section),
-                                         result.duration,
-                                         static_cast<Type>(result.type)};
+                       return new YtItem{
+                           std::move(result.id),
+                           std::move(result.title),
+                           std::move(result.artist),
+                           std::move(result.album),
+                           /*url=*/std::move(result.webUrl),
+                           /*origUrl=*/{},
+                           /*icon=*/Thumb::makeCache(result.imageUrl),
+                           /*section=*/std::move(result.section),
+                           result.duration,
+                           static_cast<Type>(result.type)};
                    });
     return items;
 }
@@ -119,16 +121,17 @@ QList<ListItem *> YtModel::makeSearchItems() {
     std::transform(std::make_move_iterator(results.begin()),
                    std::make_move_iterator(results.end()),
                    std::back_inserter(items), [](auto result) {
-                       return new YtItem{std::move(result.id),
-                                         std::move(result.title),
-                                         std::move(result.artist),
-                                         std::move(result.album),
-                                         /*url=*/std::move(result.webUrl),
-                                         /*origUrl=*/{},
-                                         std::move(result.imageUrl),
-                                         /*section=*/std::move(result.section),
-                                         result.duration,
-                                         static_cast<Type>(result.type)};
+                       return new YtItem{
+                           std::move(result.id),
+                           std::move(result.title),
+                           std::move(result.artist),
+                           std::move(result.album),
+                           /*url=*/std::move(result.webUrl),
+                           /*origUrl=*/{},
+                           /*icon=*/Thumb::makeCache(result.imageUrl),
+                           /*section=*/std::move(result.section),
+                           result.duration,
+                           static_cast<Type>(result.type)};
                    });
 
     if (!phrase.isEmpty()) {  // don't sort home items
@@ -159,7 +162,8 @@ QList<ListItem *> YtModel::makeAlbumItems() {
                    std::back_inserter(items),
                    [&album, icon = mAlbumType == Type::Type_Playlist
                                        ? QUrl{}
-                                       : album->imageUrl](auto result) {
+                                       : Thumb::makeCache(album->imageUrl)](
+                       auto result) {
                        return new YtItem{std::move(result.id),
                                          std::move(result.title),
                                          std::move(result.artist),
@@ -189,16 +193,17 @@ QList<ListItem *> YtModel::makeArtistItems() {
     std::transform(std::make_move_iterator(artist->albums.begin()),
                    std::make_move_iterator(artist->albums.end()),
                    std::back_inserter(items), [&artist](auto result) {
-                       return new YtItem{std::move(result.id),
-                                         result.title,
-                                         artist->name,
-                                         /*album=*/std::move(result.title),
-                                         /*url=*/{},
-                                         /*origUrl=*/{},
-                                         std::move(result.imageUrl),
-                                         /*section=*/{},
-                                         0,
-                                         Type::Type_Album};
+                       return new YtItem{
+                           std::move(result.id),
+                           result.title,
+                           artist->name,
+                           /*album=*/std::move(result.title),
+                           /*url=*/{},
+                           /*origUrl=*/{},
+                           /*icon=*/Thumb::makeCache(result.imageUrl),
+                           /*section=*/{},
+                           0,
+                           Type::Type_Album};
                    });
     std::transform(std::make_move_iterator(artist->tracks.begin()),
                    std::make_move_iterator(artist->tracks.end()),
@@ -259,7 +264,7 @@ QVariant YtItem::data(int role) const {
         case OrigUrlRole:
             return origUrl();
         case IconRole:
-            return icon();
+            return iconCached();
         case DurationRole:
             return durationStr();
         case TypeRole:
@@ -275,5 +280,11 @@ QVariant YtItem::data(int role) const {
 
 QString YtItem::durationStr() const {
     if (duration() > 0) return Utils::secToStrStatic(duration());
+    return {};
+}
+
+QUrl YtItem::iconCached() const {
+    auto path = Thumb::path(m_icon);
+    if (path) return QUrl::fromLocalFile(*path);
     return {};
 }

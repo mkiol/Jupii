@@ -16,6 +16,8 @@
 #include <QTime>
 #include <QTimer>
 
+#include "contentserver.h"
+
 static const QByteArray userAgent = QByteArrayLiteral(
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/605.1.15 "
     "(KHTML, like Gecko) Version/12.1.2 Safari/605.1.15");
@@ -169,7 +171,8 @@ bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
     return true;
 }
 
-QByteArray Downloader::downloadData(const QUrl &url, int timeout) {
+Downloader::DownloadedData Downloader::downloadData(const QUrl &url,
+                                                    int timeout) {
     if (busy()) {
         qWarning() << "downloaded is busy";
         return {};
@@ -247,11 +250,14 @@ QByteArray Downloader::downloadData(const QUrl &url, int timeout) {
 #endif
 
     QByteArray data;
+    QString mime;
 
-    if (auto err = mReply->error(); err != QNetworkReply::NoError)
+    if (auto err = mReply->error(); err != QNetworkReply::NoError) {
         qWarning() << "error:" << err << mReply->url();
-    else
+    } else {
         data = mReply->readAll();
+        mime = ContentServer::mimeFromReply(mReply);
+    }
 
     mProgress.first = mProgress.second;
     emit progressChanged();
@@ -259,7 +265,7 @@ QByteArray Downloader::downloadData(const QUrl &url, int timeout) {
     mReply->deleteLater();
     mReply = nullptr;
 
-    return data;
+    return {std::move(mime), std::move(data)};
 }
 
 void Downloader::cancel() {

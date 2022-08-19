@@ -21,10 +21,14 @@ class Downloader final : public QObject {
     Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
 
    public:
+    struct DownloadedData {
+        QString mime;
+        QByteArray bytes;
+    };
     Downloader(std::shared_ptr<QNetworkAccessManager> nam = {},
                QObject *parent = nullptr);
     ~Downloader() final;
-    QByteArray downloadData(const QUrl &url, int timeout = httpTimeout);
+    DownloadedData downloadData(const QUrl &url, int timeout = httpTimeout);
     bool downloadToFile(const QUrl &url, const QString &outputPath, bool abortWhenSlowDownload);
     void cancel();
     void reset();

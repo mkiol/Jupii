@@ -8,18 +8,17 @@
 #include "tuneinmodel.h"
 
 #include <QDebug>
-#include <QList>
-#include <QTimer>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
 #include <QDomNodeList>
 #include <QDomText>
+#include <QList>
+#include <QTimer>
 #include <QUrlQuery>
 
-#include "utils.h"
-#include "iconprovider.h"
 #include "downloader.h"
+#include "iconprovider.h"
 
 TuneinModel::TuneinModel(QObject *parent) :
     SelectableItemModel(new TuneinItem, parent)
@@ -80,7 +79,7 @@ QList<ListItem*> TuneinModel::makeItems()
     }
 
     auto data = Downloader{}.downloadData(makeSearchUrl(filter));
-    if (data.isEmpty()) {
+    if (data.bytes.isEmpty()) {
         qWarning() << "No data received";
         return items;
     }
@@ -88,7 +87,7 @@ QList<ListItem*> TuneinModel::makeItems()
     if (QThread::currentThread()->isInterruptionRequested())
         return items;
 
-    auto entries = parseData(data);
+    auto entries = parseData(data.bytes);
     if (entries.isEmpty())
         return items;
 

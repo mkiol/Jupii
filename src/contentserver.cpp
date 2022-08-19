@@ -35,6 +35,7 @@
 #include "services.h"
 #include "settings.h"
 #include "soundcloudapi.h"
+#include "thumb.h"
 #include "tracker.h"
 #include "trackercursor.h"
 #include "transcoder.h"
@@ -60,9 +61,6 @@ extern "C" {
 #include "mpegfile.h"
 #include "tag.h"
 #include "tpropertymap.h"
-
-// easyexif
-#include "exif.h"
 
 #ifdef SAILFISH
 #include <sailfishapp.h>
@@ -1637,7 +1635,9 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url) {
     if (meta.type == Type::Type_Image) {
         meta.setFlags(MetaFlag::Seek, false);
         if (QFile f{meta.path}; f.open(QIODevice::ReadOnly)) {
-            if (auto thumbPath = saveThumb(f.readAll(), meta)) {
+            if (auto thumbPath =
+                    Thumb::save(f.readAll(), meta.url,
+                                     m_imgMimeToExtMap.value(meta.mime))) {
                 meta.albumArt = std::move(*thumbPath);
             }
         }
@@ -2047,13 +2047,19 @@ QString ContentServer::mimeFromReply(const QNetworkReply *reply) {
     auto list = mime.split(',');
     if (!list.isEmpty()) mime = list.last().trimmed();
 
-    qDebug() << "mime:" << mime;
+    // qDebug() << "mime:" << mime;
     return mime;
 }
 
 QString ContentServer::albumArtCacheName(const QString &path,
                                          const QString &ext) {
     return QStringLiteral("art_image_%1.%2").arg(Utils::hash(path), ext);
+}
+
+QString ContentServer::albumArtCachePath(const QString &path,
+                                         const QString &ext) {
+    return QDir{Settings::instance()->getCacheDir()}.filePath(
+        albumArtCacheName(path, ext));
 }
 
 QString ContentServer::extractedAudioCachePath(const QString &path,
@@ -2409,142 +2415,11 @@ ContentServer::makeItemMetaUsingApi(const QString &mime, QNetworkReply *reply,
     return m_metaCache.end();
 }
 
-bool ContentServer::convertPixmapToThumb(QPixmap &pixmap,
-                                         ImageOrientation orientation) {
-    bool modified = false;
-
-    if (pixmap.width() != pixmap.height()) {
-        if (pixmap.width() > pixmap.height()) {
-            pixmap = pixmap.copy((pixmap.width() - pixmap.height()) / 2, 0,
-                                 pixmap.height(), pixmap.height());
-        } else {
-            pixmap = pixmap.copy(0, (pixmap.height() - pixmap.width()) / 2,
-                                 pixmap.width(), pixmap.width());
-        }
-        modified = true;
-    }
-
-    if (pixmap.width() > maxThumbPixelSize) {
-        pixmap = pixmap.scaled(maxThumbPixelSize, maxThumbPixelSize,
-                               Qt::AspectRatioMode::IgnoreAspectRatio,
-                               Qt::TransformationMode::SmoothTransformation);
-        modified = true;
-    }
-
-    if (orientation != ImageOrientation::Unknown &&
-        orientation != ImageOrientation::R0) {
-        if (orientation == ImageOrientation::R90)
-            pixmap = pixmap.transformed(QMatrix{}.rotate(90.0));
-        else if (orientation == ImageOrientation::R180)
-            pixmap = pixmap.transformed(QMatrix{}.rotate(180.0));
-        else if (orientation == ImageOrientation::R270)
-            pixmap = pixmap.transformed(QMatrix{}.rotate(270.0));
-        modified = true;
-    }
-
-    return modified;
-}
-
-ContentServer::ImageOrientation ContentServer::imageOrientation(
-    const QByteArray &data) {
-    easyexif::EXIFInfo exif;
-    if (exif.parseFrom(
-            reinterpret_cast<const unsigned char *>(data.constData()),
-            data.size())) {
-        return ImageOrientation::R0;
-    }
-
-    switch (exif.Orientation) {
-        case 3:
-            return ImageOrientation::R180;
-        case 6:
-            return ImageOrientation::R90;
-        case 8:
-            return ImageOrientation::R270;
-    }
-
-    return ImageOrientation::R0;
-}
-
-bool ContentServer::convertToThumb(const QByteArray &format, QByteArray &data,
-                                   ImageOrientation orientation) {
-    QPixmap pixmap;
-    if (!pixmap.loadFromData(data, format)) {
-        qWarning() << "cannot load thumb";
-        return false;
-    }
-
-    if (orientation == ImageOrientation::Unknown) {
-        orientation = imageOrientation(data);
-    }
-
-    if (!convertPixmapToThumb(pixmap, orientation)) return true;
-
-    data.clear();
-
-    QBuffer b{&data};
-    b.open(QIODevice::WriteOnly);
-    if (!pixmap.save(&b, format)) {
-        qWarning() << "cannot save thumb";
-        return false;
-    }
-
-    return true;
-}
-
-bool ContentServer::convertToJpeg(const QByteArray &format, QByteArray &data) {
-    QPixmap p;
-    if (!p.loadFromData(data, format)) {
-        qWarning() << "cannot load format";
-        return false;
-    }
-
-    data.clear();
-
-    QBuffer b{&data};
-    b.open(QIODevice::WriteOnly);
-
-    if (!p.save(&b, "jpeg")) {
-        qWarning() << "cannot save format";
-        return false;
-    }
-
-    return true;
-}
-
-std::optional<QString> ContentServer::saveThumb(QByteArray &&data,
-                                                const ItemMeta &meta) {
-    qDebug() << "saving thumb";
-
-    if (data.isEmpty()) {
-        qWarning() << "thumb data is empty";
-        return std::nullopt;
-    }
-
-    auto ext = m_imgMimeToExtMap.value(meta.mime);
-    if (ext.isEmpty()) {
-        qWarning() << "invalid thumb format";
-        return std::nullopt;
-    }
-
-    auto orientation = imageOrientation(data);
-
-    if (ext != QStringLiteral("jpg") && ext != QStringLiteral("png")) {
-        qDebug() << "converting thumb format";
-        if (!convertToJpeg(ext.toLatin1(), data)) return std::nullopt;
-        ext = QStringLiteral("jpg");
-    }
-
-    if (!convertToThumb(ext.toLatin1(), data, orientation)) return std::nullopt;
-
-    return Utils::writeToCacheFile(albumArtCacheName(meta.url.toString(), ext),
-                                   data, true);
-}
-
 void ContentServer::saveAlbumArt(QNetworkReply &reply, ItemMeta &meta) {
     qDebug() << "saving album art";
 
-    auto path = saveThumb(reply.readAll(), meta);
+    auto path = Thumb::save(reply.readAll(), meta.url,
+                                 m_imgMimeToExtMap.value(meta.mime));
     if (!path) {
         qWarning() << "cannot save album art";
         return;

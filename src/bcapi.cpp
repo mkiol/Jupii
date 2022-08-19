@@ -55,14 +55,14 @@ BcApi::Track BcApi::track(const QUrl &url) const {
     Track track;
 
     auto data = Downloader{nam}.downloadData(url);
-    if (data.isEmpty()) {
+    if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return track;
     }
 
     if (QThread::currentThread()->isInterruptionRequested()) return track;
 
-    auto output = gumbo::parseHtmlData(data);
+    auto output = gumbo::parseHtmlData(data.bytes);
     if (!output) {
         qWarning() << "cannot parse html data";
         return track;
@@ -123,14 +123,14 @@ BcApi::Album BcApi::album(const QUrl &url) const {
     Album album;
 
     auto data = Downloader{nam}.downloadData(url);
-    if (data.isEmpty()) {
+    if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return album;
     }
 
     if (QThread::currentThread()->isInterruptionRequested()) return album;
 
-    auto output = gumbo::parseHtmlData(data);
+    auto output = gumbo::parseHtmlData(data.bytes);
     if (!output) {
         qWarning() << "cannot parse html data";
         return album;
@@ -203,14 +203,14 @@ BcApi::Artist BcApi::artist(const QUrl &url) const {
     }
 
     auto data = Downloader{nam}.downloadData(newUrl);
-    if (data.isEmpty()) {
+    if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return artist;
     }
 
     if (QThread::currentThread()->isInterruptionRequested()) return artist;
 
-    auto output = gumbo::parseHtmlData(data);
+    auto output = gumbo::parseHtmlData(data.bytes);
     if (!output) {
         qWarning() << "cannot parse html data";
         return artist;
@@ -267,14 +267,14 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query) const {
     std::vector<SearchResultItem> items;
 
     auto data = Downloader{nam}.downloadData(makeSearchUrl(query));
-    if (data.isEmpty()) {
+    if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return items;
     }
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
-    auto json = parseJsonData(data);
+    auto json = parseJsonData(data.bytes);
     if (json.isNull() || !json.isObject()) {
         qWarning() << "cannot parse json data";
         return items;
@@ -336,7 +336,7 @@ std::optional<BcApi::SearchResultItem> BcApi::notableItem(double id) const {
     auto data = Downloader{nam}.downloadData(
         QUrl{"https://bandcamp.com/api/notabletralbum/2/get?id=" +
              QString::number(id, 'd', 0)});
-    if (data.isEmpty()) {
+    if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return std::nullopt;
     }
@@ -344,7 +344,7 @@ std::optional<BcApi::SearchResultItem> BcApi::notableItem(double id) const {
     if (QThread::currentThread()->isInterruptionRequested())
         return std::nullopt;
 
-    auto json = parseJsonData(data);
+    auto json = parseJsonData(data.bytes);
     if (json.isNull() || !json.isObject()) {
         qWarning() << "cannot parse json data";
         return std::nullopt;
@@ -431,7 +431,7 @@ std::vector<BcApi::SearchResultItem> BcApi::notableItems() {
 std::optional<QJsonDocument> BcApi::parseDataBlob() const {
     auto data = Downloader{nam}.downloadData(
         QUrl{QStringLiteral("https://bandcamp.com")});
-    if (data.isEmpty()) {
+    if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return std::nullopt;
     }
@@ -439,7 +439,7 @@ std::optional<QJsonDocument> BcApi::parseDataBlob() const {
     if (QThread::currentThread()->isInterruptionRequested())
         return std::nullopt;
 
-    auto output = gumbo::parseHtmlData(data);
+    auto output = gumbo::parseHtmlData(data.bytes);
     if (!output) {
         qWarning() << "cannot parse html data";
         return std::nullopt;

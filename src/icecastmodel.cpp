@@ -68,13 +68,13 @@ void IcecastModel::downloadDir()
 
         if (QThread::currentThread()->isInterruptionRequested()) return;
 
-        if (data.isEmpty()) {
+        if (data.bytes.isEmpty()) {
             qWarning() << "No data received";
             emit error();
             return;
         }
 
-        Utils::writeToCacheFile(m_dirFilename, data, true);
+        Utils::writeToCacheFile(m_dirFilename, data.bytes, true);
     }
 
     if (!parseData()) {

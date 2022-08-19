@@ -112,6 +112,7 @@ class YtItem : public SelectableItem {
     inline auto url() const { return m_url; }
     inline auto origUrl() const { return m_origUrl; }
     inline auto icon() const { return m_icon; }
+    QUrl iconCached() const;
     inline auto section() const { return m_section; }
     inline auto duration() const { return m_duration; }
     inline auto type() const { return m_type; }

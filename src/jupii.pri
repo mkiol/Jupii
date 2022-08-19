@@ -89,7 +89,6 @@ sailfish {
 INCLUDEPATH += $$ROOT_DIR
 
 HEADERS += \
-    $$PWD/transcoder.h \
     $$ROOT_DIR/dbus_jupii_adaptor.h \
     $$ROOT_DIR/dbus_tracker_inf.h \
     $$ROOT_DIR/dbus_notifications_inf.h \
@@ -151,10 +150,11 @@ HEADERS += \
     $$ROOT_DIR/singleton.h \
     $$ROOT_DIR/ytmusic.h \
     $$ROOT_DIR/exif.h \
-    $$ROOT_DIR/ytmodel.h
+    $$ROOT_DIR/ytmodel.h \
+    $$ROOT_DIR/thumb.h \
+    $$ROOT_DIR/transcoder.h
 
 SOURCES += \
-    $$PWD/transcoder.cpp \
     $$ROOT_DIR/dbus_jupii_adaptor.cpp \
     $$ROOT_DIR/dbus_tracker_inf.cpp \
     $$ROOT_DIR/dbus_notifications_inf.cpp \
@@ -215,7 +215,9 @@ SOURCES += \
     $$ROOT_DIR/dnscontentdeterminator.cpp \
     $$ROOT_DIR/ytmusic.cpp \
     $$ROOT_DIR/exif.cpp \
-    $$ROOT_DIR/ytmodel.cpp
+    $$ROOT_DIR/ytmodel.cpp \
+    $$ROOT_DIR/thumb.cpp \
+    $$ROOT_DIR/transcoder.cpp
 
 DISTFILES += \
     $$PWD/../dbus/org.freedesktop.Tracker3.Endpoint.xml

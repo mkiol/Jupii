@@ -8,14 +8,14 @@
 #ifndef XC_H
 #define XC_H
 
-#include <QObject>
-#include <QUrl>
-#include <QString>
-#include <QVariant>
 #include <QNetworkReply>
+#include <QObject>
+#include <QString>
+#include <QUrl>
+#include <QVariant>
 #include <memory>
-#include <vector>
 #include <utility>
+#include <vector>
 
 class QNetworkReply;
 
