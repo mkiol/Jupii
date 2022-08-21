@@ -43,8 +43,7 @@ Page {
                 title: "Caching"
                 description: "For better performance, remote content can be fully downloaded before playing. " +
                              "If item is cached any re-plays don't require downloading content from the Internet. " +
-                             "Moreover caching enables transcoding and audio extracting for URL items. " +
-                             "Various caching strategies can be configured in the settings under 'Advanced' section."
+                             "Moreover caching enables transcoding and audio extracting for URL items."
             }
 
             LogItem {
@@ -70,6 +69,12 @@ Page {
                 title: "Screen capture only without sandboxing"
                 description: "Screen capture does not work right now under sandboxing. " +
                              "This experimental feature is enabled only when app is running without SailJail."
+            }
+
+            LogItem {
+                title: "Improved Bandcamp and SoundCloud browsers"
+                description: "All featured items for Bandcamp and SoundCloud are now available. " +
+                             "To load more items click on 'Show more' button."
             }
 
             LogItem {
