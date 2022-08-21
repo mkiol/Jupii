@@ -47,7 +47,10 @@ Kirigami.ScrollablePage {
             enabled: itemModel.selectableCount > 0 && !itemModel.busy
             iconName: "list-add"
             onTriggered: {
-                playlist.addItemUrls(itemModel.selectedItems())
+                if (settings.ytPreferredType === Settings.YtPreferredType_Audio)
+                    playlist.addItemUrls(itemModel.selectedItems(), ContentServer.Type_Music)
+                else
+                    playlist.addItemUrls(itemModel.selectedItems())
                 app.removePagesAfterAddMedia()
             }
         }
