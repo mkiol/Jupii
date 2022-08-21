@@ -122,8 +122,8 @@ bool Thumb::convertPixmap(QPixmap &pixmap, ImageOrientation orientation) {
 std::optional<QString> Thumb::path(const QUrl &url) {
     if (url.isEmpty()) return std::nullopt;
 
-    auto pathForExt = [&](const QString &ext) {
-        auto p = ContentServer::albumArtCachePath(url.toString(), ext);
+    auto pathForExt = [url = url.toString()](const QString &ext) {
+        auto p = ContentServer::albumArtCachePath(url, ext);
         if (QFileInfo::exists(p)) return p;
         return QString{};
     };
