@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,9 +38,11 @@ Dialog {
 
     SomafmModel {
         id: itemModel
-
         onError: {
-            notifications.show(qsTr("Cannot download or parse SomaFM channels"))
+            notifications.show(qsTr("Error in getting data"))
+        }
+        onProgressChanged: {
+            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
         }
     }
 
@@ -108,10 +110,9 @@ Dialog {
         }
     }
 
-    BusyIndicator {
-        anchors.centerIn: parent
+    BusyIndicatorWithLabel {
+        id: busyIndicator
         running: itemModel.busy
-        size: BusyIndicatorSize.Large
     }
 
     VerticalScrollDecorator {

@@ -13,6 +13,10 @@ BusyIndicator {
     anchors.centerIn: parent
     size: BusyIndicatorSize.Large
 
+    onRunningChanged: {
+        if (!running) label.text = ""
+    }
+
     Label {
         id: label
         enabled: text.length > 0

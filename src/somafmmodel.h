@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,24 +8,23 @@
 #ifndef SOMAFMMODEL_H
 #define SOMAFMMODEL_H
 
-#include <QString>
-#include <QHash>
-#include <QDebug>
 #include <QByteArray>
-#include <QVariant>
-#include <QUrl>
-#include <QDomNodeList>
+#include <QDebug>
 #include <QDomElement>
+#include <QDomNodeList>
+#include <QHash>
 #include <QNetworkAccessManager>
+#include <QString>
+#include <QUrl>
+#include <QVariant>
 #include <memory>
 
-#include "listmodel.h"
 #include "itemmodel.h"
+#include "listmodel.h"
 
-class SomafmItem : public SelectableItem
-{
+class SomafmItem : public SelectableItem {
     Q_OBJECT
-public:
+   public:
     enum Roles {
         NameRole = Qt::DisplayRole,
         IconRole = Qt::DecorationRole,
@@ -35,23 +34,19 @@ public:
         SelectedRole
     };
 
-public:
-    SomafmItem(QObject *parent = nullptr): SelectableItem(parent) {}
-    explicit SomafmItem(const QString &id,
-                      const QString &name,
-                      const QString &description,
-                      const QUrl &url,
-                      const QUrl &icon,
-                      QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    inline QString id() const { return m_id; }
-    inline QString name() const { return m_name; }
-    inline QString description() const { return m_description; }
-    inline QUrl url() const { return m_url; }
-    inline QUrl icon() const { return m_icon; }
+   public:
+    SomafmItem(QObject *parent = nullptr) : SelectableItem(parent) {}
+    explicit SomafmItem(QString id, QString name, QString description, QUrl url,
+                        QUrl icon, QObject *parent = nullptr);
+    QVariant data(int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+    inline QString id() const override { return m_id; }
+    inline auto name() const { return m_name; }
+    inline auto description() const { return m_description; }
+    inline auto url() const { return m_url; }
+    inline auto icon() const { return m_icon; }
 
-private:
+   private:
     QString m_id;
     QString m_name;
     QString m_description;
@@ -59,31 +54,32 @@ private:
     QUrl m_icon;
 };
 
-class SomafmModel : public SelectableItemModel
-{
+class SomafmModel : public SelectableItemModel {
     Q_OBJECT
-public:
+   public:
     explicit SomafmModel(QObject *parent = nullptr);
-    ~SomafmModel();
+    ~SomafmModel() override;
     Q_INVOKABLE QVariantList selectedItems() override;
 
-public slots:
+   public slots:
     void refresh();
 
-signals:
+   signals:
     void error();
+    void progressChanged(int n, int total);
 
-private:
+   private:
     static const QUrl m_dirUrl;
     static const QString m_dirFilename;
     static const QString m_imageFilename;
     QDomNodeList m_entries;
 
-    QList<ListItem*> makeItems() override;
+    QList<ListItem *> makeItems() override;
     bool parseData();
-    void downloadImages(std::shared_ptr<QNetworkAccessManager> nam);
+    bool parseData(const QByteArray &data);
+    bool downloadImages(std::shared_ptr<QNetworkAccessManager> nam);
     void downloadDir();
-    static QString bestImage(const QDomElement& entry);
+    static QString bestImage(const QDomElement &entry);
 };
 
-#endif // SOMAFMMODEL_H
+#endif  // SOMAFMMODEL_H

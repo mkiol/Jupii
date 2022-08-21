@@ -81,7 +81,7 @@ Kirigami.ScrollablePage {
     SomafmModel {
         id: itemModel
         onError: {
-            notifications.show(qsTr("Cannot download or parse SomaFM channels"))
+            notifications.show(qsTr("Error in getting data"))
         }
     }
 
