@@ -40,7 +40,7 @@ Dialog {
     FosdemModel {
         id: itemModel
         onError: {
-            notifications.show(qsTr("Cannot download or parse FOSDEM events"))
+            notifications.show(qsTr("Error in getting data"))
         }
     }
 

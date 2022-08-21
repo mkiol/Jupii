@@ -29,6 +29,54 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Version %1").arg("2.13")
+            }
+
+            LogItem {
+                title: "YouTube Music browser"
+                description: "YouTube Music is a popular video and music streaming platform. " +
+                             "You can search and add content you like using a simple browser available via 'Add Items' menu. " +
+                             "To switch between audio/video media type use pull-down menu option 'Media Type'."
+            }
+
+            LogItem {
+                title: "Caching"
+                description: "For better performance, remote content can be fully downloaded before playing. " +
+                             "If item is cached any re-plays don't require downloading content from the Internet. " +
+                             "Moreover caching enables transcoding and audio extracting for URL items. " +
+                             "Various caching strategies can be configured in the settings under 'Advanced' section."
+            }
+
+            LogItem {
+                title: "Audio extracting from remote video"
+                description: "Option 'Add URL' has new switch 'Add only audio stream'. " +
+                             "When it's enabled, instead of video, audio stream is extracted and played on UPnP device."
+            }
+
+            LogItem {
+                title: "Media type indicator"
+                description: "UI improvement. Play queue item has now small icon which indicates whether " +
+                             "content type is Video, Audio or Image."
+            }
+
+            LogItem {
+                title: "Permission for integration with gPodder app"
+                description: "Integration with gPodder was broken since sandboxing was enabled. " +
+                             "To overcome this problem Jupii requests for 'gPodder' permission " +
+                             "when it's run for the first time."
+            }
+
+            LogItem {
+                title: "Screen capture only without sandboxing"
+                description: "Screen capture does not work right now under sandboxing. " +
+                             "This experimental feature is enabled only when app is running without SailJail."
+            }
+
+            LogItem {
+                title: "Bug fixes and many small improvements"
+            }
+
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.12")
             }
 

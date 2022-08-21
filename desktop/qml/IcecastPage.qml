@@ -82,7 +82,7 @@ Kirigami.ScrollablePage {
     IcecastModel {
         id: itemModel
         onError: {
-            notifications.show(qsTr("Cannot download or parse Icecast directory"))
+            notifications.show(qsTr("Error in getting data"))
         }
     }
 

@@ -45,7 +45,7 @@ Dialog {
         id: itemModel
 
         onError: {
-            notifications.show(qsTr("Cannot download or parse TuneIn stations"))
+            notifications.show(qsTr("Error in getting data"))
         }
     }
 
