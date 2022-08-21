@@ -21,6 +21,7 @@
 #include <QRegExp>
 #include <QSize>
 #include <QTimer>
+#include <algorithm>
 #include <numeric>
 #include <optional>
 
@@ -668,6 +669,10 @@ bool ContentServer::getContentMeta(const QString &id, const QUrl &url,
 void ContentServer::registerExternalConnections() const {
     connect(PlaylistModel::instance(), &PlaylistModel::activeItemChanged, this,
             &ContentServer::cleanTmpRec, Qt::QueuedConnection);
+    connect(
+        PlaylistModel::instance(), &PlaylistModel::itemsLoaded,
+        ContentServerWorker::instance(),
+        [] { ContentServer::cleanCacheFiles(); }, Qt::QueuedConnection);
 }
 
 bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
@@ -3288,4 +3293,80 @@ bool ContentServer::idCached(const QUrl &id) {
 
     auto type = static_cast<Type>(Utils::typeFromId(id));
     return static_cast<bool>(pathToCachedContent(*meta, true, type));
+}
+
+QStringList ContentServer::unusedCachedFiles() const {
+    auto allFiles = QDir{Settings::instance()->getCacheDir()}.entryList(
+        QStringList{"cache_*.*"}, QDir::Files);
+
+    if (allFiles.isEmpty()) return allFiles;
+
+    QStringList usedFiles{};
+    usedFiles.reserve(allFiles.size());
+    for (const auto &meta : m_metaCache) {
+        if (auto path = pathToCachedContent(meta, true, meta.type)) {
+            usedFiles.push_back(QFileInfo{*path}.fileName());
+        }
+    }
+
+    allFiles.erase(std::remove_if(allFiles.begin(), allFiles.end(),
+                                  [&](const auto &path) {
+                                      return usedFiles.contains(path);
+                                  }),
+                   allFiles.end());
+
+    qDebug() << "unused cached files:" << allFiles;
+
+    return allFiles;
+}
+
+QStringList ContentServer::unusedArtFiles() const {
+    auto allFiles = QDir{Settings::instance()->getCacheDir()}.entryList(
+        QStringList{"art_image_*.*"}, QDir::Files);
+
+    if (allFiles.isEmpty()) return allFiles;
+
+    QStringList usedFiles{};
+    for (const auto &meta : m_metaCache) {
+        if (!meta.albumArt.isEmpty()) {
+            auto fn = QFileInfo{meta.albumArt}.fileName();
+            if (allFiles.contains(fn)) {
+                usedFiles.push_back(fn);
+                continue;
+            }
+        }
+        if (!meta.path.isEmpty()) {
+            auto fn = QFileInfo{meta.path}.fileName();
+            if (allFiles.contains(fn)) usedFiles.push_back(fn);
+        }
+    }
+
+    allFiles.erase(std::remove_if(allFiles.begin(), allFiles.end(),
+                                  [&](const auto &path) {
+                                      return usedFiles.contains(path);
+                                  }),
+                   allFiles.end());
+
+    qDebug() << "unused art files:" << allFiles;
+
+    return allFiles;
+}
+
+void ContentServer::cleanCacheFiles(bool force) {
+    if (!force && Settings::instance()->cacheCleaningType() ==
+                      Settings::CacheCleaningType::CacheCleaning_Always)
+        return;
+
+    QStringList filters{"rec-*.*", "passlogfile-*.*", "tmp_*.*"};
+
+    if (force) {
+        filters.append({"extracted_audio_*.*", "cache_*.*", "art_image_*.*"});
+    } else if (Settings::instance()->cacheCleaningType() ==
+               Settings::CacheCleaningType::CacheCleaning_Auto) {
+        filters.append(QStringLiteral("extracted_audio_*.*"));
+        filters.append(ContentServer::instance()->unusedCachedFiles());
+        filters.append(ContentServer::instance()->unusedArtFiles());
+    }
+
+    Utils::removeFromCacheDir(filters);
 }

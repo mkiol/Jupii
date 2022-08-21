@@ -49,7 +49,11 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
             &ContentServerWorker::removeDeadProxies, Qt::QueuedConnection);
 
     pulseSource = std::make_unique<PulseAudioSource>();
-    cleanCacheFiles();
+
+    if (Settings::instance()->cacheCleaningType() ==
+        Settings::CacheCleaningType::CacheCleaning_Always) {
+        ContentServer::cleanCacheFiles(true);
+    }
 }
 
 void ContentServerWorker::closeRecFile(Proxy &proxy) {
@@ -58,23 +62,6 @@ void ContentServerWorker::closeRecFile(Proxy &proxy) {
         emit streamToRecordChanged(proxy.id, proxy.saveRec);
         emit streamRecordableChanged(proxy.id, false, {});
     }
-}
-
-void ContentServerWorker::cleanCacheFiles(bool force) {
-    auto cleaningType = Settings::instance()->cacheCleaningType();
-    qDebug() << "cleaning cache type:" << cleaningType;
-
-    QStringList filters{"rec-*.*", "passlogfile-*.*", "art-*.*",
-                        "art_image_*.*", "tmp_*.*"};
-
-    if (force ||
-        cleaningType == Settings::CacheCleaningType::CacheCleaning_Auto ||
-        cleaningType == Settings::CacheCleaningType::CacheCleaning_Always) {
-        filters.push_back(QStringLiteral("extracted_audio_*.*"));
-        filters.push_back(QStringLiteral("cache_*.*"));
-    }
-
-    Utils::removeFromCacheDir(filters);
 }
 
 void ContentServerWorker::openRecFile(Proxy &proxy, Proxy::Source &source) {

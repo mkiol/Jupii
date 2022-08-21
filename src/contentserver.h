@@ -471,5 +471,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     int64_t cachePendingSizeForId(const QUrl &id);
     CachingResult makeCache(const QUrl &id);
     static void saveAlbumArt(QNetworkReply &reply, ItemMeta &meta);
+    static void cleanCacheFiles(bool force = false);
+    QStringList unusedCachedFiles() const;
+    QStringList unusedArtFiles() const;
 };
 #endif  // CONTENTSERVER_H

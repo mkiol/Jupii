@@ -317,7 +317,6 @@ class ContentServerWorker : public QObject,
     void closeRecFile(Proxy &proxy);
     void finishRecFile(Proxy &proxy, Proxy::Source &source);
     void finishAllRecFile(Proxy &proxy);
-    static void cleanCacheFiles(bool force = false);
     void handleRespWithProxyMetaData(Proxy &proxy, QHttpRequest *,
                                      QHttpResponse *resp, QNetworkReply *reply);
     void handleRespWithProxyMetaData(Proxy &proxy, QNetworkReply *reply);
