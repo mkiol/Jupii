@@ -19,15 +19,11 @@
 #include <utility>
 
 #include "avtransport.h"
-#include "bcapi.h"
 #include "directory.h"
 #include "dnscontentdeterminator.h"
-#include "filemetadata.h"
 #include "playlistparser.h"
-#include "renderingcontrol.h"
 #include "services.h"
 #include "settings.h"
-#include "soundcloudapi.h"
 #include "utils.h"
 
 void PlaylistWorker::cancel() {

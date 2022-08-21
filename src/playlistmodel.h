@@ -71,7 +71,7 @@ class PlaylistWorker : public QThread {
     inline QString origId(ListItem *item) {
         return itemToOrigId.value(item).toString();
     }
-    ~PlaylistWorker();
+    ~PlaylistWorker() override;
     void cancel();
 
    signals:
