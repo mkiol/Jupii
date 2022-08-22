@@ -336,11 +336,12 @@ Page {
                         }
 
                         ComboBox {
+                            visible: settings.isDebug()
                             label: qsTr("Cache cleaning")
-                            description: qsTr("Controls when cached items are removed. " +
+                            /*description: qsTr("Controls when cached items are removed. " +
                                               "When 'Auto' is set (recommended), only cache for items not existing in play queue are removed. " +
                                               "Option 'Always' forces removal of all cached items when app starts. " +
-                                              "Option 'Never' disables any cache cleaning.")
+                                              "Option 'Never' disables any cache cleaning.")*/
 
                             currentIndex: {
                                 if (settings.cacheCleaningType === Settings.CacheCleaning_Auto)
@@ -412,9 +413,8 @@ Page {
                             text: qsTr("Block MP4v2 audio streams")
                             description: qsTr("Some UPnP devices don't support audio stream in MP4v2 container. " +
                                               "This kind of stream might even hang a device. " +
-                                              "To overcome this problem, MP4v2 audio content is always cached " +
-                                              "and re-transcoded to MP4v1. When re-transcoding fails and this option " +
-                                              "is enabled, content will not be played at all.")
+                                              "To overcome this problem, Jupii tries to re-transcode stream to MP4v1 format. " +
+                                              "When re-transcoding fails and this option is enabled, item will not be played at all.")
                             onClicked: {
                                 settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
                             }
