@@ -35,50 +35,54 @@ Page {
             LogItem {
                 title: "YouTube Music browser"
                 description: "YouTube Music is a popular video and music streaming platform. " +
-                             "You can search and add content you like using a simple browser available via 'Add Items' menu. " +
-                             "To switch between audio/video media type use pull-down menu option 'Media Type'."
+                             "You can search and add content you like using a browser available via 'Add Items' menu. " +
+                             "To switch between audio/video use 'Media Type' option in pull-down menu. " +
+                             "Known issue: Searching and adding items is quite slow right now."
             }
 
             LogItem {
                 title: "Caching"
                 description: "For better performance, remote content can be fully downloaded before playing. " +
-                             "If item is cached any re-plays don't require downloading content from the Internet. " +
-                             "Moreover caching enables transcoding and audio extracting for URL items."
+                             "If an item is cached any re-plays don't require downloading content from the Internet. " +
+                             "Moreover, with caching, transcoding and audio extracting for URL items is possible."
             }
 
             LogItem {
                 title: "Audio extracting from remote video"
-                description: "Option 'Add URL' has new switch 'Add only audio stream'. " +
+                description: "Option 'Add URL' has a new switch 'Add only audio stream'. " +
                              "When it's enabled, instead of video, audio stream is extracted and played on UPnP device."
             }
 
             LogItem {
                 title: "Media type indicator"
-                description: "UI improvement. Play queue item has now small icon which indicates whether " +
+                description: "Small UI improvement. An item on play queue has small icon which indicates whether " +
                              "content type is Video, Audio or Image."
             }
 
             LogItem {
                 title: "Permission for integration with gPodder app"
-                description: "Integration with gPodder was broken since sandboxing was enabled. " +
-                             "To overcome this problem Jupii requests for 'gPodder' permission " +
+                description: "Integration with gPodder has not worked since sandboxing was enabled. " +
+                             "To overcome this problem, Jupii requests for 'gPodder' permission " +
                              "when it's run for the first time."
             }
 
             LogItem {
                 title: "Screen capture only without sandboxing"
                 description: "Screen capture does not work right now under sandboxing. " +
-                             "This experimental feature is enabled only when app is running without SailJail."
+                             "This experimental feature is available only when app is running without SailJail. " +
+                             "To enable Screen capture you have to manually add 'Sandboxing=Disabled' to harbour-jupii.desktop file."
             }
 
             LogItem {
                 title: "Improved Bandcamp and SoundCloud browsers"
-                description: "All featured items for Bandcamp and SoundCloud are now available. " +
-                             "To load more items click on 'Show more' button."
+                description: "All featured items for Bandcamp and SoundCloud are now available for browsing. " +
+                             "To load more featured tracks or albums, click on 'Show more' button at the bottom of the items list."
             }
 
             LogItem {
-                title: "Bug fixes and many small improvements"
+                title: "Bug fixes and improvements"
+                description: "Many small and big bugs have been fixed. " +
+                             "For example, problem with playing very large video files is resolved."
             }
 
             SectionHeader {
