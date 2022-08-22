@@ -471,14 +471,19 @@ std::optional<YtdlApi::Album> YtdlApi::album(const QString& id) const {
                 /*imageUrl=*/bestThumbUrl(result.thumbnails),
                 /*tracks=*/{}};
 
+        result.tracks.erase(
+            std::remove_if(
+                result.tracks.begin(), result.tracks.end(),
+                [](const auto& t) { return !static_cast<bool>(t.video_id); }),
+            result.tracks.end());
+
         std::transform(
             result.tracks.cbegin(), result.tracks.cend(),
             std::back_inserter(a.tracks), [&a](const auto& t) {
                 return AlbumTrack{
-                    QString::fromStdString(t.video_id.value_or(std::string{})),
+                    QString::fromStdString(*t.video_id),
                     QString::fromStdString(t.title),
-                    bestArtistName(t.artists, a.artist),
-                    makeYtUrl(t.video_id.value_or(std::string{})),
+                    bestArtistName(t.artists, a.artist), makeYtUrl(*t.video_id),
                     t.duration ? Utils::strToSecStatic(
                                      QString::fromStdString(*t.duration))
                                : 0};
@@ -508,13 +513,19 @@ std::optional<YtdlApi::Album> YtdlApi::playlist(const QString& id) const {
         a.title = QString::fromStdString(result.title);
         a.imageUrl = bestThumbUrl(result.thumbnails);
 
+        result.tracks.erase(
+            std::remove_if(
+                result.tracks.begin(), result.tracks.end(),
+                [](const auto& t) { return !static_cast<bool>(t.video_id); }),
+            result.tracks.end());
+
         std::transform(
             result.tracks.cbegin(), result.tracks.cend(),
             std::back_inserter(a.tracks), [](const auto& t) {
                 return AlbumTrack{
-                    QString::fromStdString(t.video_id.value_or(std::string{})),
+                    QString::fromStdString(*t.video_id),
                     QString::fromStdString(t.title), bestArtistName(t.artists),
-                    makeYtUrl(t.video_id.value_or(std::string{})),
+                    makeYtUrl(*t.video_id),
                     Utils::strToSecStatic(QString::fromStdString(t.duration))};
             });
 
