@@ -74,7 +74,7 @@ class YtModel : public SelectableItemModel {
     QList<ListItem *> makeSearchItems();
     QList<ListItem *> makeAlbumItems();
     QList<ListItem *> makeArtistItems();
-    static QList<ListItem *> makeHomeItems();
+    QList<ListItem *> makeHomeItems();
     void setAlbumTitle(const QString &albumTitle);
     void setArtistName(const QString &artistName);
     static inline auto homeId() { return mHomeId; }

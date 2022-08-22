@@ -90,21 +90,23 @@ QList<ListItem *> YtModel::makeHomeItems() {
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
-    std::transform(std::make_move_iterator(results.begin()),
-                   std::make_move_iterator(results.end()),
-                   std::back_inserter(items), [](auto result) {
-                       return new YtItem{
-                           std::move(result.id),
-                           std::move(result.title),
-                           std::move(result.artist),
-                           std::move(result.album),
-                           /*url=*/std::move(result.webUrl),
-                           /*origUrl=*/{},
-                           /*icon=*/Thumb::makeCache(result.imageUrl),
-                           /*section=*/std::move(result.section),
-                           result.duration,
-                           static_cast<Type>(result.type)};
-                   });
+    std::transform(
+        std::make_move_iterator(results.begin()),
+        std::make_move_iterator(results.end()), std::back_inserter(items),
+        [&, i = 0, total = results.size()](auto result) mutable {
+            auto *item = new YtItem{std::move(result.id),
+                                    std::move(result.title),
+                                    std::move(result.artist),
+                                    std::move(result.album),
+                                    /*url=*/std::move(result.webUrl),
+                                    /*origUrl=*/{},
+                                    /*icon=*/Thumb::makeCache(result.imageUrl),
+                                    /*section=*/std::move(result.section),
+                                    result.duration,
+                                    static_cast<Type>(result.type)};
+            emit progressChanged(++i, total);
+            return item;
+        });
     return items;
 }
 
@@ -118,21 +120,23 @@ QList<ListItem *> YtModel::makeSearchItems() {
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
-    std::transform(std::make_move_iterator(results.begin()),
-                   std::make_move_iterator(results.end()),
-                   std::back_inserter(items), [](auto result) {
-                       return new YtItem{
-                           std::move(result.id),
-                           std::move(result.title),
-                           std::move(result.artist),
-                           std::move(result.album),
-                           /*url=*/std::move(result.webUrl),
-                           /*origUrl=*/{},
-                           /*icon=*/Thumb::makeCache(result.imageUrl),
-                           /*section=*/std::move(result.section),
-                           result.duration,
-                           static_cast<Type>(result.type)};
-                   });
+    std::transform(
+        std::make_move_iterator(results.begin()),
+        std::make_move_iterator(results.end()), std::back_inserter(items),
+        [&, i = 0, total = results.size()](auto result) mutable {
+            auto *item = new YtItem{std::move(result.id),
+                                    std::move(result.title),
+                                    std::move(result.artist),
+                                    std::move(result.album),
+                                    /*url=*/std::move(result.webUrl),
+                                    /*origUrl=*/{},
+                                    /*icon=*/Thumb::makeCache(result.imageUrl),
+                                    /*section=*/std::move(result.section),
+                                    result.duration,
+                                    static_cast<Type>(result.type)};
+            emit progressChanged(++i, total);
+            return item;
+        });
 
     if (!phrase.isEmpty()) {  // don't sort home items
         std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {

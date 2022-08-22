@@ -66,6 +66,9 @@ Dialog {
         onError: {
             notifications.show(qsTr("Error in getting data"))
         }
+        onProgressChanged: {
+            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
+        }
     }
 
     SilicaListView {
