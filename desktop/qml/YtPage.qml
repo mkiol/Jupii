@@ -90,8 +90,8 @@ Kirigami.ScrollablePage {
                 Layout.rightMargin: Kirigami.Units.smallSpacing
                 currentIndex: settings.ytPreferredType === Settings.YtPreferredType_Audio ? 1 : 0
                 model: [
-                    qsTr("Media type: %1").arg(qsTr("Video")),
-                    qsTr("Media type: %1").arg(qsTr("Audio"))
+                    qsTr("Type: %1").arg(qsTr("Video")),
+                    qsTr("Type: %1").arg(qsTr("Audio"))
                 ]
                 onCurrentIndexChanged: {
                     if (currentIndex === 1)

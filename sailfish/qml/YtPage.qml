@@ -67,7 +67,7 @@ Dialog {
             notifications.show(qsTr("Error in getting data"))
         }
         onProgressChanged: {
-            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
+            busyIndicator.progressText = total == 0 ? "" : "" + n + "/" + total
         }
     }
 
@@ -119,7 +119,7 @@ Dialog {
             }
 
             MenuItem {
-                text: qsTr("Media type: %1").arg(
+                text: qsTr("Type: %1").arg(
                           settings.ytPreferredType === Settings.YtPreferredType_Audio ?
                               qsTr("Audio") : qsTr("Video"))
                 onClicked: {

@@ -63,6 +63,7 @@ Dialog {
             implicitWidth: root.width
             dialog: root
             view: listView
+            search: !itemModel.refreshing
             recentSearches: itemModel.filter.length === 0 ? settings.icecastSearchHistory : []
             sectionHeaderText: listView.count > 0 && recentSearches.length > 0 ? qsTr("Radio stations") : ""
             onActiveFocusChanged: listView.currentIndex = -1
@@ -126,10 +127,9 @@ Dialog {
         }
     }
 
-    BusyIndicator {
-        anchors.centerIn: parent
+    BusyIndicatorWithLabel {
         running: itemModel.busy
-        size: BusyIndicatorSize.Large
+        infoText: itemModel.refreshing ? qsTr("Refreshing...") : ""
     }
 
     VerticalScrollDecorator {

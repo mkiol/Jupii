@@ -42,7 +42,7 @@ Dialog {
             notifications.show(qsTr("Error in getting data"))
         }
         onProgressChanged: {
-            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
+            busyIndicator.progressText = total == 0 ? "" : "" + n + "/" + total
         }
     }
 
@@ -57,6 +57,7 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
+            search: !itemModel.refreshing
             dialog: root
             view: listView
             onActiveFocusChanged: {
@@ -113,6 +114,7 @@ Dialog {
     BusyIndicatorWithLabel {
         id: busyIndicator
         running: itemModel.busy
+        infoText: itemModel.refreshing ? qsTr("Refreshing...") : ""
     }
 
     VerticalScrollDecorator {

@@ -78,6 +78,7 @@ FocusScope {
             delegate: Component {
                 ListItem {
                     menu: contextMenu
+                    visible: root.search
                     contentHeight: Theme.itemSizeExtraSmall
                     Label {
                         font.pixelSize: Theme.fontSizeSmall
@@ -107,7 +108,7 @@ FocusScope {
 
         SectionHeader {
             id: sectionHeader
-            opacity: (text.length > 0) ? 1.0 : 0.0
+            opacity: (text.length > 0 && root.search) ? 1.0 : 0.0
             visible: opacity > 0.0
             Behavior on opacity { FadeAnimation {} }
         }

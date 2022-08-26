@@ -59,7 +59,7 @@ Dialog {
             notifications.show(qsTr("Error in getting data"))
         }
         onProgressChanged: {
-            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
+            busyIndicator.progressText = total == 0 ? "" : "" + n + "/" + total
         }
         onBusyChanged: {
             if (!busy) {

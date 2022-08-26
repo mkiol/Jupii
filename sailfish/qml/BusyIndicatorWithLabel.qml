@@ -8,23 +8,49 @@
 import QtQuick 2.4
 import Sailfish.Silica 1.0
 
-BusyIndicator {
-    property alias text: label.text
+Item {
+    id: root
+    property alias running: busyIndicator.running
+    property alias size: busyIndicator.size
+    property alias infoText: infoLabel.text
+    property alias progressText: progressLabel.text
+
     anchors.centerIn: parent
-    size: BusyIndicatorSize.Large
+    height: column.height
+    visible: opacity > 0.0
+    opacity: running ? 1.0 : 0.0
+    Behavior on opacity { FadeAnimation {} }
 
-    onRunningChanged: {
-        if (!running) label.text = ""
-    }
+    Column {
+        id: column
+        width: root.width
+        spacing: Theme.paddingMedium
+        anchors.verticalCenter: parent.verticalCenter
 
-    Label {
-        id: label
-        enabled: text.length > 0
-        opacity: enabled ? 1.0 : 0.0
-        visible: opacity > 0.0
-        Behavior on opacity { FadeAnimation {} }
-        anchors.centerIn: parent
-        font.pixelSize: Theme.fontSizeMedium
-        color: parent.color
+        InfoLabel {
+            id: infoLabel
+            visible: text.length !== 0
+        }
+
+        BusyIndicator {
+            id: busyIndicator
+            anchors.horizontalCenter: parent.horizontalCenter
+            size: BusyIndicatorSize.Large
+
+            onRunningChanged: {
+                if (!running) progressLabel.text = ""
+            }
+
+            Label {
+                id: progressLabel
+                enabled: text.length !== 0
+                opacity: enabled ? 1.0 : 0.0
+                visible: opacity > 0.0
+                Behavior on opacity { FadeAnimation {} }
+                anchors.centerIn: parent
+                font.pixelSize: Theme.fontSizeMedium
+                color: parent.color
+            }
+        }
     }
 }

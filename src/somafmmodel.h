@@ -56,23 +56,25 @@ class SomafmItem : public SelectableItem {
 
 class SomafmModel : public SelectableItemModel {
     Q_OBJECT
+    Q_PROPERTY(bool refreshing READ refreshing NOTIFY refreshingChanged)
    public:
     explicit SomafmModel(QObject *parent = nullptr);
     ~SomafmModel() override;
     Q_INVOKABLE QVariantList selectedItems() override;
-
-   public slots:
-    void refresh();
+    Q_INVOKABLE void refresh();
+    inline auto refreshing() const { return m_refreshing; }
 
    signals:
     void error();
     void progressChanged(int n, int total);
+    void refreshingChanged();
 
    private:
     static const QUrl m_dirUrl;
     static const QString m_dirFilename;
     static const QString m_imageFilename;
     QDomNodeList m_entries;
+    bool m_refreshing = false;
 
     QList<ListItem *> makeItems() override;
     bool parseData();
@@ -80,6 +82,7 @@ class SomafmModel : public SelectableItemModel {
     bool downloadImages(std::shared_ptr<QNetworkAccessManager> nam);
     void downloadDir();
     static QString bestImage(const QDomElement &entry);
+    void setRefreshing(bool value);
 };
 
 #endif  // SOMAFMMODEL_H

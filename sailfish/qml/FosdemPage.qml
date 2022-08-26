@@ -55,6 +55,7 @@ Dialog {
 
         header: SearchDialogHeader {
             implicitWidth: root.width
+            search: !itemModel.refreshing
             dialog: root
             view: listView
             onActiveFocusChanged: {
@@ -108,10 +109,9 @@ Dialog {
         }
     }
 
-    BusyIndicator {
-        anchors.centerIn: parent
+    BusyIndicatorWithLabel {
         running: itemModel.busy
-        size: BusyIndicatorSize.Large
+        infoText: itemModel.refreshing ? qsTr("Refreshing...") : ""
     }
 
     VerticalScrollDecorator {

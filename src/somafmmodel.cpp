@@ -118,26 +118,31 @@ bool SomafmModel::downloadImages(std::shared_ptr<QNetworkAccessManager> nam) {
 
 void SomafmModel::downloadDir() {
     if (!Utils::cacheFileExists(m_dirFilename)) {
+        setRefreshing(true);
+
         auto nam = std::make_shared<QNetworkAccessManager>();
         auto data = Downloader{nam}.downloadData(m_dirUrl);
 
         if (QThread::currentThread()->isInterruptionRequested()) return;
 
         if (data.bytes.isEmpty()) {
-            qWarning() << "No data received";
+            qWarning() << "no data received";
             emit error();
+            setRefreshing(false);
             return;
         }
 
         if (!parseData(data.bytes)) {
             emit error();
             Utils::removeFromCacheDir({m_dirFilename});
+            setRefreshing(false);
             return;
         }
 
         if (downloadImages(std::move(nam))) {
             Utils::writeToCacheFile(m_dirFilename, data.bytes, true);
         }
+        setRefreshing(false);
     } else if (!parseData()) {
         emit error();
         Utils::removeFromCacheDir({m_dirFilename});
@@ -165,6 +170,13 @@ QVariantList SomafmModel::selectedItems() {
                    });
 
     return list;
+}
+
+void SomafmModel::setRefreshing(bool value) {
+    if (value != m_refreshing) {
+        m_refreshing = value;
+        emit refreshingChanged();
+    }
 }
 
 QList<ListItem *> SomafmModel::makeItems() {
