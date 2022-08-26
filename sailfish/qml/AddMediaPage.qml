@@ -37,7 +37,7 @@ Page {
                     var paths = [];
                     for (var i = 0; i < selectedContent.count; ++i)
                         paths.push(selectedContent.get(i).filePath)
-                    playlist.addItemPaths(paths, ContentServer.Type_Video)
+                    playlist.addItemPaths(paths)
                     app.popToQueue()
                 }
             }
