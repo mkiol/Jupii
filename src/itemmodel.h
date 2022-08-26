@@ -100,8 +100,8 @@ public:
     void setFilter(const QString& filter);
     void setFilterNoUpdate(const QString& filter);
     const QString& getFilter() const;
-    int selectedCount();
-    int selectableCount();
+    int selectedCount() const;
+    int selectableCount() const;
 
     Q_INVOKABLE void setSelected(int index, bool value);
     Q_INVOKABLE void setAllSelected(bool value);

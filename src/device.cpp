@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2019-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,28 +7,26 @@
 
 #include "device.h"
 
-#include <QDebug>
-#include <QUrl>
-#include <QDir>
 #include <QCoreApplication>
-
-#include <string>
-#include <functional>
+#include <QDebug>
+#include <QDir>
+#include <QUrl>
 #include <algorithm>
+#include <functional>
+#include <string>
 
-#include "directory.h"
-#include "settings.h"
-#include "info.h"
-#include "utils.h"
-#include "contentserver.h"
-#include "playlistmodel.h"
-#include "iconprovider.h"
 #include "connectivitydetector.h"
-
-#include "libupnpp/device/service.hxx"
+#include "contentserver.h"
+#include "iconprovider.h"
+#include "info.h"
 #include "libupnpp/device/device.hxx"
+#include "libupnpp/device/service.hxx"
+#include "playlistmodel.h"
+#include "settings.h"
+#include "utils.h"
 
-const QString MediaServerDevice::descTemplate = R"(<deviceType>urn:schemas-upnp-org:device:MediaServer:1</deviceType>
+const QString MediaServerDevice::descTemplate{QStringLiteral(
+    R"(<deviceType>urn:schemas-upnp-org:device:MediaServer:1</deviceType>
 <friendlyName>%1</friendlyName>
 <manufacturer>%1</manufacturer>
 <manufacturerURL>%2</manufacturerURL>
@@ -108,9 +106,10 @@ const QString MediaServerDevice::descTemplate = R"(<deviceType>urn:schemas-upnp-
         <depth>8</depth>
         <url>%14</url>
     </icon>
-</iconList>)";
+</iconList>)")};
 
-const QString MediaServerDevice::csTemplate = R"(<?xml version="1.0"?>
+const QString MediaServerDevice::csTemplate{
+    QStringLiteral(R"(<?xml version="1.0"?>
 <scpd xmlns="urn:schemas-upnp-org:service-1-0">
     <specVersion>
         <major>1</major>
@@ -261,9 +260,10 @@ const QString MediaServerDevice::csTemplate = R"(<?xml version="1.0"?>
             <dataType>ui4</dataType>
         </stateVariable>
     </serviceStateTable>
-</scpd>)";
+</scpd>)")};
 
-const QString MediaServerDevice::cmTemplate = R"(<?xml version="1.0"?>
+const QString MediaServerDevice::cmTemplate{
+    QStringLiteral(R"(<?xml version="1.0"?>
 <scpd xmlns="urn:schemas-upnp-org:service-1-0">
     <specVersion>
         <major>1</major>
@@ -394,49 +394,44 @@ const QString MediaServerDevice::cmTemplate = R"(<?xml version="1.0"?>
             <dataType>i4</dataType>
         </stateVariable>
     </serviceStateTable>
-</scpd>)";
+</scpd>)")};
 
-void MediaServerDevice::updateDirectory()
-{
-    qDebug() << "updateDirectory";
-    if (cd) {
-        cd->update();
-    }
+void MediaServerDevice::updateDirectory() {
+    qDebug() << "updating directory";
+    if (cd) cd->update();
 }
 
-QString MediaServerDevice::desc()
-{
+QString MediaServerDevice::desc() {
     auto desc = descTemplate.arg(Settings::instance()->prettyName(),
-                     Jupii::PAGE,
-                     Jupii::APP_VERSION);
+                                 Jupii::PAGE, Jupii::APP_VERSION);
 
     // -- icons --
     QString ifname, addr;
     if (!ConnectivityDetector::instance()->selectNetworkIf(ifname, addr)) {
-        qWarning() << "Cannot find valid network interface";
+        qWarning() << "cannot find valid network interface";
         return desc;
     }
 
-    QList<QUrl> icons{IconProvider::urlToImg("upnp-256.png"),
-                      IconProvider::urlToImg("upnp-120.png"),
-                      IconProvider::urlToImg("upnp-48.png"),
-                      IconProvider::urlToImg("upnp-32.png"),
-                      IconProvider::urlToImg("upnp-16.png"),
-                      IconProvider::urlToImg("upnp-256.jpg"),
-                      IconProvider::urlToImg("upnp-120.jpg"),
-                      IconProvider::urlToImg("upnp-48.jpg"),
-                      IconProvider::urlToImg("upnp-32.jpg"),
-                      IconProvider::urlToImg("upnp-16.jpg")};
+    QList<QUrl> icons{IconProvider::urlToImg(QStringLiteral("upnp-256.png")),
+                      IconProvider::urlToImg(QStringLiteral("upnp-120.png")),
+                      IconProvider::urlToImg(QStringLiteral("upnp-48.png")),
+                      IconProvider::urlToImg(QStringLiteral("upnp-32.png")),
+                      IconProvider::urlToImg(QStringLiteral("upnp-16.png")),
+                      IconProvider::urlToImg(QStringLiteral("upnp-256.jpg")),
+                      IconProvider::urlToImg(QStringLiteral("upnp-120.jpg")),
+                      IconProvider::urlToImg(QStringLiteral("upnp-48.jpg")),
+                      IconProvider::urlToImg(QStringLiteral("upnp-32.jpg")),
+                      IconProvider::urlToImg(QStringLiteral("upnp-16.jpg"))};
 
     auto cs = ContentServer::instance();
     for (const auto& icon : icons) {
-        cs->getMetaForImg(icon, true); // create meta for icon
+        cs->getMetaForImg(icon, true);  // create meta for icon
         auto id = Utils::idFromUrl(icon, ContentServer::artCookie);
         QUrl iconUrl;
         if (cs->makeUrl(id, iconUrl)) {
             desc = desc.arg(iconUrl.toString());
         } else {
-            qWarning() << "Cannot make Url form icon url";
+            qWarning() << "cannot make url form icon url";
             return desc;
         }
     }
@@ -445,29 +440,31 @@ QString MediaServerDevice::desc()
     return desc;
 }
 
-MediaServerDevice::MediaServerDevice(QObject *parent) :
-    QObject(parent),
-    UPnPProvider::UpnpDevice(
-        "uuid:" + Settings::instance()->mediaServerDevUuid().toStdString())
-{
-    qDebug() << "Creating UPnP Media Server device";
+MediaServerDevice::MediaServerDevice(QObject* parent)
+    : QObject(parent),
+      UPnPProvider::UpnpDevice(
+          "uuid:" + Settings::instance()->mediaServerDevUuid().toStdString()) {
+    qDebug() << "creating media server device";
 
     auto pl = PlaylistModel::instance();
-    connect(pl, &PlaylistModel::itemsAdded, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
-    connect(pl, &PlaylistModel::itemsRemoved, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
-    connect(pl, &PlaylistModel::itemsLoaded, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
-    connect(pl, &PlaylistModel::itemsRefreshed, this, &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
+    connect(pl, &PlaylistModel::itemsAdded, this,
+            &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
+    connect(pl, &PlaylistModel::itemsRemoved, this,
+            &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
+    connect(pl, &PlaylistModel::itemsLoaded, this,
+            &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
+    connect(pl, &PlaylistModel::itemsRefreshed, this,
+            &MediaServerDevice::updateDirectory, Qt::QueuedConnection);
 
     start();
 }
 
-MediaServerDevice::~MediaServerDevice()
-{
-    qDebug() << "Ending UPnP Media Server device";
+MediaServerDevice::~MediaServerDevice() {
+    qDebug() << "ending media server device";
 }
 
-bool MediaServerDevice::readLibFile(const std::string& name, std::string& contents)
-{
+bool MediaServerDevice::readLibFile(const std::string& name,
+                                    std::string& contents) {
     if (name.empty())
         contents = desc().toStdString();
     else if (name == "CD")
@@ -480,20 +477,21 @@ bool MediaServerDevice::readLibFile(const std::string& name, std::string& conten
     return true;
 }
 
-void MediaServerDevice::start()
-{
+void MediaServerDevice::start() {
     auto handler = std::bind(&MediaServerDevice::actionHandler, this,
                              std::placeholders::_1, std::placeholders::_2);
 
-    cd = std::make_unique<ContentDirectoryService>("urn:schemas-upnp-org:service:ContentDirectory:1",
-                                "urn:upnp-org:serviceId:ContentDirectory", this);
+    cd = std::make_unique<ContentDirectoryService>(
+        "urn:schemas-upnp-org:service:ContentDirectory:1",
+        "urn:upnp-org:serviceId:ContentDirectory", this);
     addActionMapping(cd.get(), "GetSearchCapabilities", handler);
     addActionMapping(cd.get(), "GetSortCapabilities", handler);
     addActionMapping(cd.get(), "GetSystemUpdateID", handler);
     addActionMapping(cd.get(), "Browse", handler);
 
-    cm = std::make_unique<ConnectionManagerService>("urn:schemas-upnp-org:service:ConnectionManager:1",
-                                "urn:upnp-org:serviceId:ConnectionManager", this);
+    cm = std::make_unique<ConnectionManagerService>(
+        "urn:schemas-upnp-org:service:ConnectionManager:1",
+        "urn:upnp-org:serviceId:ConnectionManager", this);
     addActionMapping(cm.get(), "GetProtocolInfo", handler);
     addActionMapping(cm.get(), "GetCurrentConnectionIDs", handler);
     addActionMapping(cm.get(), "GetCurrentConnectionInfo", handler);
@@ -501,81 +499,84 @@ void MediaServerDevice::start()
     startloop();
 }
 
-int MediaServerDevice::actionHandler(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
-{
+int MediaServerDevice::actionHandler(const UPnPP::SoapIncoming& in,
+                                     UPnPP::SoapOutgoing& out) {
     auto action = QString::fromStdString(out.getName());
 #ifdef QT_DEBUG
-    qDebug() << "Action to handle in:" << QString::fromStdString(in.getName());
-    qDebug() << "Action to handle out:" << action;
+    qDebug() << "action to handle in:" << QString::fromStdString(in.getName());
+    qDebug() << "action to handle out:" << action;
 #endif
 
-    if (action == "GetSortCapabilities") {
+    if (action == QStringLiteral("GetSortCapabilities")) {
         return getSortCapabilities(in, out);
-    } else if (action == "Browse") {
+    }
+    if (action == QStringLiteral("Browse")) {
         return browse(in, out);
-    } else if (action == "GetSearchCapabilities") {
+    }
+    if (action == QStringLiteral("GetSearchCapabilities")) {
         return getSearchCapabilities(in, out);
-    } else if (action == "GetSystemUpdateID") {
+    }
+    if (action == QStringLiteral("GetSystemUpdateID")) {
         return getSystemUpdateID(in, out);
-    } else if (action == "GetProtocolInfo") {
+    }
+    if (action == QStringLiteral("GetProtocolInfo")) {
         return getProtocolInfo(in, out);
-    } else if (action == "GetCurrentConnectionIDs") {
+    }
+    if (action == QStringLiteral("GetCurrentConnectionIDs")) {
         return getCurrentConnectionIDs(in, out);
-    } else if (action == "GetCurrentConnectionInfo") {
+    }
+    if (action == QStringLiteral("GetCurrentConnectionInfo")) {
         return getCurrentConnectionInfo(in, out);
     }
 
     return UPNP_E_INVALID_ACTION;
 }
 
-int MediaServerDevice::getSearchCapabilities(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
-{
-    out.addarg("SortCaps","dc:title");
+int MediaServerDevice::getSearchCapabilities(const UPnPP::SoapIncoming&,
+                                             UPnPP::SoapOutgoing& out) {
+    out.addarg("SortCaps", "dc:title");
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::getSortCapabilities(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
-{
-    out.addarg("SearchCaps","dc:title");
+int MediaServerDevice::getSortCapabilities(const UPnPP::SoapIncoming&,
+                                           UPnPP::SoapOutgoing& out) {
+    out.addarg("SearchCaps", "dc:title");
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::getSystemUpdateID(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
-{
+int MediaServerDevice::getSystemUpdateID(const UPnPP::SoapIncoming&,
+                                         UPnPP::SoapOutgoing& out) const {
     out.addarg("Id", cd->systemUpdateId());
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::browse(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
-{
-    std::string objectId; in.get("ObjectID", &objectId);
-    std::string browseFlag; in.get("BrowseFlag", &browseFlag);
-    std::string requestedCount; in.get("RequestedCount", &requestedCount);
-#ifdef SAILFISH
-    qDebug() << "ObjectID:" << QString::fromStdString(objectId);
-    qDebug() << "BrowseFlag:" << QString::fromStdString(browseFlag);
-    qDebug() << "RequestedCount:" << QString::fromStdString(requestedCount);
+int MediaServerDevice::browse(const UPnPP::SoapIncoming& in,
+                              UPnPP::SoapOutgoing& out) const {
+    std::string objectId;
+    in.get("ObjectID", &objectId);
+    std::string browseFlag;
+    in.get("BrowseFlag", &browseFlag);
+    std::string requestedCount;
+    in.get("RequestedCount", &requestedCount);
 
-    //std::string filter; in.get("Filter", &filter);
-    //std::string startingIndex; in.get("StartingIndex", &startingIndex);
-    //std::string sortCriteria; in.get("SortCriteria", &sortCriteria);
-    //qDebug() << "Filter:" << QString::fromStdString(filter);
-    //qDebug() << "StartingIndex:" << QString::fromStdString(startingIndex);
-    //qDebug() << "SortCriteria:" << QString::fromStdString(sortCriteria);
-#endif
     if (objectId == "0") {
         if (browseFlag == "BrowseMetadata") {
-            out.addarg("Result", "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" "
-                                 "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
-                                 "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" "
-                                 "xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\">"
-                                 "<container id=\"0\" parentID=\"-1\" restricted=\"1\" searchable=\"0\">"
-                                 "<dc:title>Root</dc:title><upnp:class>object.container</upnp:class>"
-                                 "</container></DIDL-Lite>");
+            out.addarg("Result",
+                       "<DIDL-Lite "
+                       "xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" "
+                       "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
+                       "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" "
+                       "xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\">"
+                       "<container id=\"0\" parentID=\"-1\" restricted=\"1\" "
+                       "searchable=\"0\">"
+                       "<dc:title>Root</dc:title><upnp:class>object.container</"
+                       "upnp:class>"
+                       "</container></DIDL-Lite>");
             out.addarg("NumberReturned", "1");
             out.addarg("TotalMatches", "1");
-        } else { //BrowseDirectChildren
-            auto list = PlaylistModel::instance()->getDidlList(std::stoi(requestedCount));
+        } else {  // BrowseDirectChildren
+            auto list = PlaylistModel::instance()->getDidlList(
+                std::stoi(requestedCount));
             out.addarg("Result", list.second.toStdString());
             std::string count = std::to_string(list.first);
             out.addarg("NumberReturned", count);
@@ -583,13 +584,15 @@ int MediaServerDevice::browse(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing
         }
     } else {
         if (browseFlag == "BrowseMetadata") {
-            auto list = PlaylistModel::instance()->getDidlList(1, QString::fromStdString(objectId));
+            auto list = PlaylistModel::instance()->getDidlList(
+                1, QString::fromStdString(objectId));
             out.addarg("Result", list.second.toStdString());
             std::string count = std::to_string(list.first);
             out.addarg("NumberReturned", count);
             out.addarg("TotalMatches", count);
-        } else { //BrowseDirectChildren
-            qWarning() << "Requested objectID is not root for BrowseDirectChildren";
+        } else {  // BrowseDirectChildren
+            qWarning()
+                << "requested ObjectId is not root for BrowseDirectChildren";
             return UPNP_E_BAD_REQUEST;
         }
     }
@@ -599,128 +602,132 @@ int MediaServerDevice::browse(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::getProtocolInfo(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
-{
-    out.addarg("Source","http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN,"
-                        "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_SM,"
-                        "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_MED,"
-                        "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_LRG,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_HD_50_AC3_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_HD_60_AC3_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_HP_HD_AC3_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_HD_AAC_MULT5_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_HD_AC3_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_HD_MPEG1_L3_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_SD_AAC_MULT5_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_SD_AC3_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_SD_MPEG1_L3_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_PS_NTSC,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_PS_PAL,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_TS_HD_NA_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_TS_SD_NA_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO,"
-                        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG1,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_MP_SD_AAC_MULT5,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_MP_SD_AC3,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_CIF15_AAC_520,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_CIF30_AAC_940,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_L31_HD_AAC,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_L32_HD_AAC,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_L3L_SD_AAC,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_HP_HD_AAC,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_MP_HD_1080i_AAC,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_MP_HD_720p_AAC,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=MPEG4_P2_MP4_ASP_AAC,"
-                        "http-get:*:video/mp4:DLNA.ORG_PN=MPEG4_P2_MP4_SP_VGA_AAC,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HD_50_AC3,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HD_50_AC3_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HD_60_AC3,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HD_60_AC3_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HP_HD_AC3_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_AAC_MULT5,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_AAC_MULT5_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_AC3,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_AC3_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_MPEG1_L3,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_MPEG1_L3_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_AAC_MULT5,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_AAC_MULT5_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_AC3,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_AC3_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_MPEG1_L3,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_MPEG1_L3_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_HD_NA,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_HD_NA_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_SD_EU,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_SD_EU_T,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_SD_NA,"
-                        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_SD_NA_T,"
-                        "http-get:*:audio/mpeg:DLNA.ORG_PN=MP3,"
-                        "http-get:*:audio/mp4:DLNA.ORG_PN=AAC_ISO_320,"
-                        "http-get:*:audio/3gpp:DLNA.ORG_PN=AAC_ISO_320,"
-                        "http-get:*:audio/mp4:DLNA.ORG_PN=AAC_ISO,"
-                        "http-get:*:audio/mp4:DLNA.ORG_PN=AAC_MULT5_ISO,"
-                        "http-get:*:audio/L16;rate=44100;channels=2:DLNA.ORG_PN=LPCM,"
-                        "http-get:*:image/jpeg:*,"
-                        "http-get:*:video/avi:*,"
-                        "http-get:*:video/divx:*,"
-                        "http-get:*:video/x-matroska:*,"
-                        "http-get:*:video/mpeg:*,"
-                        "http-get:*:video/mp4:*,"
-                        "http-get:*:video/x-ms-wmv:*,"
-                        "http-get:*:video/x-msvideo:*,"
-                        "http-get:*:video/x-flv:*,"
-                        "http-get:*:video/x-tivo-mpeg:*,"
-                        "http-get:*:video/quicktime:*,"
-                        "http-get:*:audio/mp4:*,"
-                        "http-get:*:audio/x-wav:*,"
-                        "http-get:*:audio/x-flac:*,"
-                        "http-get:*:audio/x-dsd:*,"
-                        "http-get:*:application/ogg:*");
-    out.addarg("Sink","");
+int MediaServerDevice::getProtocolInfo(const UPnPP::SoapIncoming&,
+                                       UPnPP::SoapOutgoing& out) {
+    out.addarg(
+        "Source",
+        "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN,"
+        "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_SM,"
+        "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_MED,"
+        "http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_LRG,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_HD_50_AC3_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_HD_60_AC3_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_HP_HD_AC3_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_HD_AAC_MULT5_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_HD_AC3_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_HD_MPEG1_L3_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_SD_AAC_MULT5_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_SD_AC3_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=AVC_TS_MP_SD_MPEG1_L3_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_PS_NTSC,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_PS_PAL,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_TS_HD_NA_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_TS_SD_NA_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG_TS_SD_EU_ISO,"
+        "http-get:*:video/mpeg:DLNA.ORG_PN=MPEG1,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_MP_SD_AAC_MULT5,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_MP_SD_AC3,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_CIF15_AAC_520,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_CIF30_AAC_940,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_L31_HD_AAC,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_L32_HD_AAC,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_L3L_SD_AAC,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_HP_HD_AAC,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_MP_HD_1080i_AAC,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_MP_HD_720p_AAC,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=MPEG4_P2_MP4_ASP_AAC,"
+        "http-get:*:video/mp4:DLNA.ORG_PN=MPEG4_P2_MP4_SP_VGA_AAC,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HD_50_AC3,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HD_50_AC3_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HD_60_AC3,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HD_60_AC3_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_HP_HD_AC3_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_AAC_MULT5,"
+        "http-get:*:video/"
+        "vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_AAC_MULT5_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_AC3,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_AC3_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_MPEG1_L3,"
+        "http-get:*:video/"
+        "vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_HD_MPEG1_L3_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_AAC_MULT5,"
+        "http-get:*:video/"
+        "vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_AAC_MULT5_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_AC3,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_AC3_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_MPEG1_L3,"
+        "http-get:*:video/"
+        "vnd.dlna.mpeg-tts:DLNA.ORG_PN=AVC_TS_MP_SD_MPEG1_L3_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_HD_NA,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_HD_NA_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_SD_EU,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_SD_EU_T,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_SD_NA,"
+        "http-get:*:video/vnd.dlna.mpeg-tts:DLNA.ORG_PN=MPEG_TS_SD_NA_T,"
+        "http-get:*:audio/mpeg:DLNA.ORG_PN=MP3,"
+        "http-get:*:audio/mp4:DLNA.ORG_PN=AAC_ISO_320,"
+        "http-get:*:audio/3gpp:DLNA.ORG_PN=AAC_ISO_320,"
+        "http-get:*:audio/mp4:DLNA.ORG_PN=AAC_ISO,"
+        "http-get:*:audio/mp4:DLNA.ORG_PN=AAC_MULT5_ISO,"
+        "http-get:*:audio/L16;rate=44100;channels=2:DLNA.ORG_PN=LPCM,"
+        "http-get:*:image/jpeg:*,"
+        "http-get:*:video/avi:*,"
+        "http-get:*:video/divx:*,"
+        "http-get:*:video/x-matroska:*,"
+        "http-get:*:video/mpeg:*,"
+        "http-get:*:video/mp4:*,"
+        "http-get:*:video/x-ms-wmv:*,"
+        "http-get:*:video/x-msvideo:*,"
+        "http-get:*:video/x-flv:*,"
+        "http-get:*:video/x-tivo-mpeg:*,"
+        "http-get:*:video/quicktime:*,"
+        "http-get:*:audio/mp4:*,"
+        "http-get:*:audio/x-wav:*,"
+        "http-get:*:audio/x-flac:*,"
+        "http-get:*:audio/x-dsd:*,"
+        "http-get:*:application/ogg:*");
+    out.addarg("Sink", "");
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::getCurrentConnectionIDs(const UPnPP::SoapIncoming&, UPnPP::SoapOutgoing& out)
-{
-    out.addarg("ConnectionIDs","");
+int MediaServerDevice::getCurrentConnectionIDs(const UPnPP::SoapIncoming&,
+                                               UPnPP::SoapOutgoing& out) {
+    out.addarg("ConnectionIDs", "");
     return UPNP_E_SUCCESS;
 }
 
-int MediaServerDevice::getCurrentConnectionInfo(const UPnPP::SoapIncoming& in, UPnPP::SoapOutgoing& out)
-{
-    std::string connectionID; in.get("ConnectionID", &connectionID);
+int MediaServerDevice::getCurrentConnectionInfo(const UPnPP::SoapIncoming& in,
+                                                UPnPP::SoapOutgoing& out) {
+    std::string connectionID;
+    in.get("ConnectionID", &connectionID);
     qDebug() << "ConnectionID:" << QString::fromStdString(connectionID);
-    out.addarg("RcsID","");
-    out.addarg("AVTransportID","");
-    out.addarg("ProtocolInfo","");
-    out.addarg("PeerConnectionManage","");
-    out.addarg("PeerConnectionID","");
-    out.addarg("Direction","");
-    out.addarg("Status","");
+    out.addarg("RcsID", "");
+    out.addarg("AVTransportID", "");
+    out.addarg("ProtocolInfo", "");
+    out.addarg("PeerConnectionManage", "");
+    out.addarg("PeerConnectionID", "");
+    out.addarg("Direction", "");
+    out.addarg("Status", "");
     return UPNP_E_SUCCESS;
 }
 
-ContentDirectoryService::ContentDirectoryService(const std::string& stp, const std::string& sid,
-                         UPnPProvider::UpnpDevice *dev) :
-    UPnPProvider::UpnpService(stp, sid, "CD", dev)
-{
-}
+ContentDirectoryService::ContentDirectoryService(const std::string& stp,
+                                                 const std::string& sid,
+                                                 UPnPProvider::UpnpDevice* dev)
+    : UPnPProvider::UpnpService(stp, sid, "CD", dev) {}
 
-std::string ContentDirectoryService::systemUpdateId()
-{
+std::string ContentDirectoryService::systemUpdateId() const {
     return std::to_string(updateCounter);
 }
 
-void ContentDirectoryService::update()
-{
+void ContentDirectoryService::update() {
     updateCounter++;
     updateNeeded = true;
 }
 
-bool ContentDirectoryService::getEventData(bool, std::vector<std::string>& names,
-                          std::vector<std::string>& values)
-{
+bool ContentDirectoryService::getEventData(bool,
+                                           std::vector<std::string>& names,
+                                           std::vector<std::string>& values) {
     if (updateNeeded) {
         names.push_back("SystemUpdateID");
         values.push_back(systemUpdateId());
@@ -729,13 +736,12 @@ bool ContentDirectoryService::getEventData(bool, std::vector<std::string>& names
     return true;
 }
 
-ConnectionManagerService::ConnectionManagerService(const std::string& stp, const std::string& sid,
-                         UPnPProvider::UpnpDevice *dev) :
-    UPnPProvider::UpnpService(stp, sid, "CM", dev)
-{
-}
+ConnectionManagerService::ConnectionManagerService(
+    const std::string& stp, const std::string& sid,
+    UPnPProvider::UpnpDevice* dev)
+    : UPnPProvider::UpnpService(stp, sid, "CM", dev) {}
 
-bool ConnectionManagerService::getEventData(bool, std::vector<std::string>&, std::vector<std::string>&)
-{
+bool ConnectionManagerService::getEventData(bool, std::vector<std::string>&,
+                                            std::vector<std::string>&) {
     return true;
 }

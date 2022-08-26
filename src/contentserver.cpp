@@ -516,7 +516,7 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
     QUrl icon;
     if (!Utils::pathTypeNameCookieIconFromId(
             QUrl{id}, &path, &t, &name, nullptr, &icon, &desc, &author, &album,
-            nullptr, nullptr, nullptr, nullptr, &duration))
+            nullptr, nullptr, nullptr, /*app=*/nullptr, &duration))
         return false;
 
     bool audioType = static_cast<Type>(t) ==
@@ -1059,7 +1059,7 @@ QString ContentServer::readTitleUsingTaglib(const QString &path) {
 
 inline static auto wStr2qStr(const TagLib::String &str) {
     return QString::fromWCharArray(str.toCWString());
-};
+}
 
 bool ContentServer::readMP4MetaUsingTaglib(const TagLib::FileRef &file,
                                            QString *recUrl, QDateTime *recDate,

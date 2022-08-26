@@ -63,9 +63,7 @@ class PlaylistWorker : public QThread {
     PlaylistWorker(Urls &&urls, ContentServer::Type type,
                    QObject *parent = nullptr)
         : QThread{parent},
-          urls(std::forward<Urls>(urls)),
-          type{type},
-          urlIsId{false} {}
+          urls(std::forward<Urls>(urls)), type{type}, urlIsId{false} {}
     explicit PlaylistWorker(QList<QUrl> &&ids, QObject *parent = nullptr)
         : QThread{parent}, ids(std::move(ids)), urlIsId{true} {}
     inline QString origId(ListItem *item) {

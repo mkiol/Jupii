@@ -394,7 +394,7 @@ void PlaylistModel::next() {
         if (activeId().isEmpty())
             refreshAndSetContent(firstId(), nextActiveId(), true);
         else
-            refreshAndSetContent(nextActiveId(), "", true);
+            refreshAndSetContent(nextActiveId(), {}, true);
     } else {
         qWarning() << "playlist is empty so cannot do next";
     }
@@ -454,9 +454,7 @@ void PlaylistModel::onAvNextURIChanged() {
     }
 }
 
-void PlaylistModel::doOnTrackEnded() {
-    m_trackEndedTimer.start();
-}
+void PlaylistModel::doOnTrackEnded() { m_trackEndedTimer.start(); }
 
 void PlaylistModel::onTrackEnded() {
     qDebug() << "on track ended";
@@ -479,7 +477,7 @@ void PlaylistModel::onTrackEnded() {
             if (!aid.isEmpty()) {
                 auto nid = nextActiveId();
                 if (!nid.isEmpty()) {
-                    refreshAndSetContent(nid, "");
+                    refreshAndSetContent(nid, {});
                 }
             }
         }
@@ -593,7 +591,8 @@ void PlaylistModel::update() {
                 bool updateCurrent =
                     Utils::cookieFromId(av->getCurrentId()) != activeCookie() &&
                     av->getTransportState() == AVTransport::Playing;
-                refreshAndSetContent(updateCurrent ? aid : "", nextActiveId());
+                refreshAndSetContent(updateCurrent ? aid : QString{},
+                                     nextActiveId());
             }
         }
     }
@@ -625,7 +624,7 @@ bool PlaylistModel::saveToFile(const QString &title) {
 
     QString path;
     for (int i = 0; i < 10; ++i) {
-        name = oname + (i > 0 ? " " + QString::number(i) : "");
+        name = oname + (i > 0 ? " " + QString::number(i) : QString{});
         path = dir + "/" + name + ".pls";
         if (!QFileInfo::exists(path)) break;
     }
@@ -768,16 +767,16 @@ void PlaylistModel::addItemUrls(const QVariantList &urls,
         if (item.canConvert(QMetaType::QVariantMap)) {
             auto m = item.toMap();
             UrlItem ui;
-            ui.url = m.value("url").toUrl();
+            ui.url = m.value(QStringLiteral("url")).toUrl();
             Utils::fixUrl(ui.url);
-            ui.name = m.value("name").toString();
-            ui.author = m.value("author").toString();
-            ui.album = m.value("album").toString();
-            ui.icon = m.value("icon").toUrl();
-            ui.desc = m.value("desc").toString();
-            ui.origUrl = m.value("origUrl").toUrl();
-            ui.app = m.value("app").toString();
-            ui.duration = m.value("duration").toInt();
+            ui.name = m.value(QStringLiteral("name")).toString();
+            ui.author = m.value(QStringLiteral("author")).toString();
+            ui.album = m.value(QStringLiteral("album")).toString();
+            ui.icon = m.value(QStringLiteral("icon")).toUrl();
+            ui.desc = m.value(QStringLiteral("desc")).toString();
+            ui.origUrl = m.value(QStringLiteral("origUrl")).toUrl();
+            ui.app = m.value(QStringLiteral("app")).toString();
+            ui.duration = m.value(QStringLiteral("duration")).toInt();
             items << ui;
         } else if (item.canConvert(QMetaType::QUrl)) {
             UrlItem ui;
@@ -796,73 +795,83 @@ PlaylistModel::UrlType PlaylistModel::determineUrlType(QUrl *url) {
 
     if (url->isLocalFile()) return UrlType::File;
 
-    if (url->scheme().compare("jupii", Qt::CaseInsensitive) == 0)
+    if (url->scheme().compare(QStringLiteral("jupii"), Qt::CaseInsensitive) ==
+        0)
         return UrlType::Jupii;
 
     auto cleanUrl = [url, &host]() {
-        if (host.size() > 2 && host.startsWith("m.")) {
+        if (host.size() > 2 && host.startsWith(QStringLiteral("m."))) {
             url->setHost(host.mid(2));
         }
         url->setQuery(QString{});
         url->setFragment(QString{});
     };
 
-    if (host.compare("soundcloud.com", Qt::CaseInsensitive) == 0) {
+    if (host.compare(QStringLiteral("soundcloud.com"), Qt::CaseInsensitive) ==
+        0) {
         if (path.isEmpty() || path == "/") {
             cleanUrl();
             return UrlType::SoundcloudMain;
         }
     }
 
-    if (host.contains("soundcloud.com", Qt::CaseInsensitive)) {
+    if (host.contains(QStringLiteral("soundcloud.com"), Qt::CaseInsensitive)) {
         cleanUrl();
         auto ps = path.split('/');
         if (ps.size() == 3) {
             const auto &last = ps.last();
-            if (last.compare("popular-tracks", Qt::CaseInsensitive) == 0 ||
-                last.compare("tracks", Qt::CaseInsensitive) == 0 ||
-                last.compare("albums", Qt::CaseInsensitive) == 0 ||
-                last.compare("playlist", Qt::CaseInsensitive) == 0 ||
-                last.compare("reposts", Qt::CaseInsensitive) == 0) {
-                url->setPath("/" + ps.at(1));
+            if (last.compare(QStringLiteral("popular-tracks"),
+                             Qt::CaseInsensitive) == 0 ||
+                last.compare(QStringLiteral("tracks"), Qt::CaseInsensitive) ==
+                    0 ||
+                last.compare(QStringLiteral("albums"), Qt::CaseInsensitive) ==
+                    0 ||
+                last.compare(QStringLiteral("playlist"), Qt::CaseInsensitive) ==
+                    0 ||
+                last.compare(QStringLiteral("reposts"), Qt::CaseInsensitive) ==
+                    0) {
+                url->setPath(QStringLiteral("/") + ps.at(1));
                 return UrlType::SoundcloudArtist;
             }
             return UrlType::SoundcloudTrack;
         }
-        if (path.contains("/sets/", Qt::CaseInsensitive))
+        if (path.contains(QStringLiteral("/sets/"), Qt::CaseInsensitive))
             return UrlType::SoundcloudAlbum;
         if (ps.size() == 2 && !ps.last().isEmpty())
             return UrlType::SoundcloudArtist;
 
-        *url = QUrl{"https://soundcloud.com"};
+        *url = QUrl{QStringLiteral("https://soundcloud.com")};
         return UrlType::SoundcloudMain;
     }
 
-    if (host.compare("bandcamp.com", Qt::CaseInsensitive) == 0) {
+    if (host.compare(QStringLiteral("bandcamp.com"), Qt::CaseInsensitive) ==
+        0) {
         cleanUrl();
-        if (path.isEmpty() || path == "/") return UrlType::BcMain;
+        if (path.isEmpty() || path == QStringLiteral("/"))
+            return UrlType::BcMain;
     }
 
-    if (host.contains("bandcamp.com", Qt::CaseInsensitive) ||
+    if (host.contains(QStringLiteral("bandcamp.com"), Qt::CaseInsensitive) ||
         DnsDeterminator::type(*url) == DnsDeterminator::Type::Bc) {
         cleanUrl();
         auto ps = path.split('/');
-        if (path.contains("/album/", Qt::CaseInsensitive))
+        if (path.contains(QStringLiteral("/album/"), Qt::CaseInsensitive))
             return UrlType::BcAlbum;
-        if (path.contains("/track/", Qt::CaseInsensitive))
+        if (path.contains(QStringLiteral("/track/"), Qt::CaseInsensitive))
             return UrlType::BcTrack;
 
         if (path.isEmpty() || path == "/" ||
-            path.contains("/music/", Qt::CaseInsensitive) ||
-            path.contains("/merch/", Qt::CaseInsensitive) ||
-            path.contains("/community/", Qt::CaseInsensitive) ||
-            path.contains("/concerts/", Qt::CaseInsensitive)) {
-            url->setPath("");
+            path.contains(QStringLiteral("/music/"), Qt::CaseInsensitive) ||
+            path.contains(QStringLiteral("/merch/"), Qt::CaseInsensitive) ||
+            path.contains(QStringLiteral("/community/"), Qt::CaseInsensitive) ||
+            path.contains(QStringLiteral("/concerts/"), Qt::CaseInsensitive)) {
+            url->setPath({});
             return UrlType::BcArtist;
         }
 
-        if (host.compare("bandcamp.com", Qt::CaseInsensitive) == 0) {
-            *url = QUrl{"https://bandcamp.com"};
+        if (host.compare(QStringLiteral("bandcamp.com"), Qt::CaseInsensitive) ==
+            0) {
+            *url = QUrl{QStringLiteral("https://bandcamp.com")};
             return UrlType::BcMain;
         }
 
@@ -881,10 +890,10 @@ void PlaylistModel::addItemUrlWithTypeCheck(
         auto urlType = determineUrlType(&url);
         if (urlType == UrlType::BcTrack) {
             qDebug() << "url type: BcTrack";
-            app = "bc";
+            app = QStringLiteral("bc");
         } else if (urlType == UrlType::SoundcloudTrack) {
             qDebug() << "url type: SoundcloudTrack";
-            app = "soundcloud";
+            app = QStringLiteral("soundcloud");
         } else if (urlType == UrlType::BcMain) {
             qDebug() << "url type: BcMain";
             emit bcMainUrlAdded();
@@ -934,16 +943,16 @@ void PlaylistModel::addItemUrlWithTypeCheck(
 
 void PlaylistModel::addItemUrlSkipUrlDialog(QUrl url, ContentServer::Type type,
                                             const QString &name) {
-    return addItemUrlWithTypeCheck(false, std::move(url), type, name, {}, {},
-                                   {}, {}, {}, false);
+    addItemUrlWithTypeCheck(false, std::move(url), type, name, {}, {}, {}, {},
+                            {}, false);
 }
 
 void PlaylistModel::addItemUrl(QUrl url, ContentServer::Type type,
                                const QString &name, const QUrl &origUrl,
                                const QString &author, const QUrl &icon,
                                const QString &desc, QString app, bool play) {
-    return addItemUrlWithTypeCheck(true, std::move(url), type, name, origUrl,
-                                   author, icon, desc, std::move(app), play);
+    addItemUrlWithTypeCheck(true, std::move(url), type, name, origUrl, author,
+                            icon, desc, std::move(app), play);
 }
 
 void PlaylistModel::addItemPath(const QString &path, ContentServer::Type type,
@@ -1948,26 +1957,11 @@ PlaylistItem::PlaylistItem(
     const qint64 size, const QUrl &icon, bool ytdl, bool play,
     const QString &desc, const QDateTime &recDate, const QString &recUrl,
     ContentServer::ItemType itemType, const QString &devId, QObject *parent)
-    : ListItem(parent),
-      m_id(id),
-      m_name(name),
-      m_url(url),
-      m_origUrl(origUrl),
-      m_type(type),
-      m_ctype(ctype),
-      m_artist(artist),
-      m_album(album),
-      m_date(date),
-      m_cookie(Utils::cookieFromId(id)),
-      m_duration(duration),
-      m_size(size),
-      m_icon(icon),
-      m_play(play),
-      m_ytdl(ytdl),
-      m_desc(desc),
-      m_recDate(recDate),
-      m_recUrl(recUrl),
-      m_item_type(itemType),
+    : ListItem(parent), m_id(id), m_name(name), m_url(url), m_origUrl(origUrl),
+      m_type(type), m_ctype(ctype), m_artist(artist), m_album(album),
+      m_date(date), m_cookie(Utils::cookieFromId(id)), m_duration(duration),
+      m_size(size), m_icon(icon), m_play(play), m_ytdl(ytdl), m_desc(desc),
+      m_recDate(recDate), m_recUrl(recUrl), m_item_type(itemType),
       m_devid(devId) {}
 
 QHash<int, QByteArray> PlaylistItem::roleNames() const {
