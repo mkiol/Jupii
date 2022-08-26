@@ -97,7 +97,7 @@ Kirigami.ScrollablePage {
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
-            label: qsTr("Audio from video file")
+            label: qsTr("Audio from video")
             icon: "folder-open"
             highlighted: fileDialog.visible
             onClicked: {

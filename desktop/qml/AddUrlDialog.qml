@@ -50,9 +50,7 @@ Controls.Dialog {
             Layout.rightMargin: Kirigami.Units.largeSpacing
             Layout.bottomMargin: Kirigami.Units.largeSpacing
             visible: true
-            text: qsTr("Only HTTP/HTTPS URLs are supported. If URL points to a playlist file, " +
-                       "first playlist item will be added. If URL doesn't point to any media content, " +
-                       "youtube-dl will be used to find a direct media URL.")
+            text: qsTr("When URL doesn't point directly to audio, video or image file, media content is discovered with youtube-dl.")
         }
 
         Controls.TextField {

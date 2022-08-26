@@ -201,7 +201,7 @@ Page {
                                 }
                             }
 
-                            description: qsTr("Enables Screen casting feature. Capturing " +
+                            description: qsTr("Screen casting feature. Capturing " +
                                               "video is still in beta stage, so " +
                                               "the quality may be not of the best.");
                         }
@@ -274,11 +274,11 @@ Page {
                                 // 2 - none for all
                                 // 3 - proxy for shoutcast, redirection for others
                                 // 4 - proxy for shoutcast, none for others
-                                if (settings.remoteContentMode == 0)
+                                if (settings.remoteContentMode === 0)
                                     return 0
-                                if (settings.remoteContentMode == 1 || settings.remoteContentMode == 2)
+                                if (settings.remoteContentMode === 1 || settings.remoteContentMode === 2)
                                     return 2
-                                if (settings.remoteContentMode == 3 || settings.remoteContentMode == 4)
+                                if (settings.remoteContentMode === 3 || settings.remoteContentMode === 4)
                                     return 1
                                 return 0
                             }
@@ -411,9 +411,9 @@ Page {
                             automaticCheck: false
                             checked: !settings.allowNotIsomMp4
                             text: qsTr("Block MP4v2 audio streams")
-                            description: qsTr("Some UPnP devices don't support audio stream in MP4v2 container. " +
+                            description: qsTr("Some UPnP devices don't support audio stream in MP4 version 2 format. " +
                                               "This kind of stream might even hang a device. " +
-                                              "To overcome this problem, Jupii tries to re-transcode stream to MP4v1 format. " +
+                                              "To overcome this problem, Jupii tries to re-transcode stream to MP4v1. " +
                                               "When re-transcoding fails and this option is enabled, item will not be played at all.")
                             onClicked: {
                                 settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
