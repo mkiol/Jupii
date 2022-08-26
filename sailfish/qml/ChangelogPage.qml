@@ -36,7 +36,8 @@ Page {
                 title: "YouTube Music browser"
                 description: "YouTube Music is a popular video and music streaming platform. " +
                              "You can search and add content you like using a browser available via 'Add Items' menu. " +
-                             "To switch between audio/video use 'Media Type' option in pull-down menu. " +
+                             "To switch between audio/video use 'Type' option in pull-down menu. " +
+                             "YouTube Music integration is possible thanks to yt-dlc, ytmusicapi and KDE's AudioTube app. " +
                              "Known issue: Searching and adding items is quite slow right now."
             }
 
@@ -76,7 +77,8 @@ Page {
             LogItem {
                 title: "Improved Bandcamp and SoundCloud browsers"
                 description: "All featured items for Bandcamp and SoundCloud are now available for browsing. " +
-                             "To load more featured tracks or albums, click on 'Show more' button at the bottom of the items list."
+                             "To load more featured tracks or albums, click on 'Show more' button at the bottom of the items list. " +
+                             "Moreover, list item contains label with genre name."
             }
 
             LogItem {
