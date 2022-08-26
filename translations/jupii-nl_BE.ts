@@ -4,10 +4,6 @@
 <context>
     <name>AboutPage</name>
     <message>
-        <source>About</source>
-        <translation>Over</translation>
-    </message>
-    <message>
         <source>Version %1</source>
         <translation>Versie %1</translation>
     </message>
@@ -75,10 +71,6 @@
         <translation>Artiest</translation>
     </message>
     <message>
-        <source>Audio from Video</source>
-        <translation>Audio van video</translation>
-    </message>
-    <message>
         <source>Video</source>
         <translation>Video</translation>
     </message>
@@ -104,10 +96,6 @@
     </message>
     <message>
         <source>Audio capture</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Recordings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -142,15 +130,19 @@
         <source>Choose a file</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Recording</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio from video</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AddUrlDialog</name>
     <message>
         <source>Add URL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -167,6 +159,14 @@
     </message>
     <message>
         <source>Enter Name (optional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add only audio stream</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -193,7 +193,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Only HTTP URLs are supported. If URL points to a playlist file, first playlist item will be added. If URL doesn&apos;t point to any media content, youtube-dl will be used to find a direct media URL.</source>
+        <source>Add only audio stream</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -264,10 +268,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error in getting data from bandcamp.com</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No items</source>
         <translation type="unfinished"></translation>
     </message>
@@ -307,7 +307,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show more</source>
+        <source>Error in getting data</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -502,10 +502,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot download or parse FOSDEM events</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -527,6 +523,14 @@
             <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
+    </message>
+    <message>
+        <source>Error in getting data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refreshing...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -566,10 +570,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot download or parse Icecast directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -590,6 +590,14 @@
     </message>
     <message>
         <source>Radio stations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error in getting data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refreshing...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -696,10 +704,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open URL in browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No media</source>
         <translation type="unfinished"></translation>
     </message>
@@ -717,6 +721,22 @@
     </message>
     <message>
         <source>URL was copied to clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cached</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -798,15 +818,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Refreshing item %1 of %2...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Adding item %1 of %2...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refreshing item...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -859,6 +871,18 @@
     </message>
     <message>
         <source>Tap to access playback &amp; volume controls</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to play item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preparing item %1 of %2...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preparing item...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1028,6 +1052,10 @@
             <numerusform></numerusform>
         </translation>
     </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RenderingControl</name>
@@ -1100,10 +1128,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stream recorder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Change</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1120,43 +1144,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Screen capture</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable logging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Force screen 16:9 aspect ratio</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scale</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Crop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enabled with audio</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Don&apos;t force</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1176,23 +1168,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enables Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Only Icecast</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enables audio recording from URL items. If URL item is a Icecast stream, individual tracks from a stream will be recorded. To enable recording use &apos;Record&apos; button located on the bottom bar. When the &apos;Record&apos; button is activated before the end of currently played track, the whole track is saved to a file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen capture quality</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1232,14 +1212,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Screen capture encoder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Frontier Silicon PIN</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1248,24 +1220,95 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open link</source>
+        <source>Caching</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Don&apos;t show</source>
+        <source>Auto</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show</source>
-        <translation type="unfinished">Tonen</translation>
+        <source>Cache cleaning</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show Jupii as an option in &apos;Open link&apos; dialog.</source>
+        <source>Screen capture encoder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen capture framerate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabled with audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force screen 16:9 aspect ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Don&apos;t force</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Crop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen capture quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cache size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete cache</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Controls when a remote content is fully downloaded before playing. When &apos;Auto&apos; is set (recommended), caching is enabled for small files and when transcoding or audio extracting is needed. Option &apos;Always&apos; forces chaching in every case. Option &apos;Never&apos; disables caching.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Block MP4v2 audio streams</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Some UPnP devices don&apos;t support audio stream in MP4 version 2 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to MP4v1. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ShowMoreItem</name>
+    <message>
+        <source>Show more</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ShowmoreItem</name>
     <message>
         <source>Show more</source>
         <translation type="unfinished"></translation>
@@ -1286,10 +1329,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot download or parse SomaFM channels</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1307,6 +1346,14 @@
             <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
+    </message>
+    <message>
+        <source>Error in getting data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refreshing...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1351,15 +1398,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error in getting data from soundcloud.com</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Trending tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show more</source>
+        <source>Error in getting data</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1396,10 +1439,6 @@
 <context>
     <name>TuneinPage</name>
     <message>
-        <source>Cannot download or parse TuneIn stations</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Unselect all</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1432,6 +1471,10 @@
     </message>
     <message>
         <source>Radio stations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error in getting data</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1552,6 +1595,53 @@
     </message>
     <message>
         <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>YtPage</name>
+    <message>
+        <source>Error in getting data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Album</source>
+        <translation type="unfinished">Album</translation>
+    </message>
+    <message>
+        <source>Playlist</source>
+        <translation type="unfinished">Afspeellijst</translation>
+    </message>
+    <message>
+        <source>Artist</source>
+        <translation type="unfinished">Artiest</translation>
+    </message>
+    <message>
+        <source>Type the words to search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Video</source>
+        <translation type="unfinished">Video</translation>
+    </message>
+    <message>
+        <source>Type: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
