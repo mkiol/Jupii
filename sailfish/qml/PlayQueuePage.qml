@@ -102,6 +102,11 @@ Page {
         onActiveItemChanged: {
             root.showActiveItem()
         }
+
+        onProgressValueChanged: {
+            if ((playlist.busy || playlist.refreshing) && playlist.progressTotal > 1)
+                busyIndicator.progressText = "" + (playlist.progressValue + 1) + "/" + playlist.progressTotal
+        }
     }
 
     SilicaListView {
@@ -204,10 +209,18 @@ Page {
                     }
                 }
             }
-            attachedIcon.source: model.itemType === ContentServer.ItemType_Url ?
-                                     ("image://icons/icon-s-browser?" + primaryColor) :
-                                 model.itemType === ContentServer.ItemType_Upnp ?
-                                     ("image://icons/icon-s-device?" + primaryColor) : ""
+            attachedIcon.source: {
+                switch(model.itemType) {
+                case ContentServer.ItemType_Url:
+                    if (model.type === AVTransport.T_Audio && model.duration === 0) {
+                        return "image://theme/icon-m-media-radio?" + primaryColor
+                    }
+                    return "image://icons/icon-s-browser?" + primaryColor
+                case ContentServer.ItemType_Upnp:
+                    return "image://icons/icon-s-device?" + primaryColor
+                }
+                return ""
+            }
             attachedIcon2.source: {
                 if (icon.status !== Image.Ready)
                     return ""
@@ -309,9 +322,8 @@ Page {
 //    }
 
     BusyIndicatorWithLabel {
+        id: busyIndicator
         running: playlist.busy || av.busy || rc.busy
-        text: (playlist.busy || playlist.refreshing) && playlist.progressTotal > 1 ?
-                  "" + (playlist.progressValue + 1) + "/" + playlist.progressTotal : ""
     }
 
     PlayerPanel {
