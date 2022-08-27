@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,23 +8,22 @@
 #ifndef PLAYLISTFILEMODEL_H
 #define PLAYLISTFILEMODEL_H
 
+#include <QByteArray>
+#include <QDebug>
+#include <QHash>
+#include <QList>
+#include <QModelIndex>
 #include <QString>
 #include <QStringList>
-#include <QHash>
-#include <QDebug>
-#include <QByteArray>
-#include <QModelIndex>
-#include <QVariant>
 #include <QUrl>
-#include <QList>
+#include <QVariant>
 
-#include "listmodel.h"
 #include "itemmodel.h"
+#include "listmodel.h"
 
-class PlaylistFileItem : public SelectableItem
-{
+class PlaylistFileItem : public SelectableItem {
     Q_OBJECT
-public:
+   public:
     enum Roles {
         TitleRole = Qt::DisplayRole,
         IdRole = Qt::UserRole,
@@ -34,25 +33,21 @@ public:
         PathRole
     };
 
-public:
-    PlaylistFileItem(QObject *parent = nullptr): SelectableItem(parent) {}
-    explicit PlaylistFileItem(const QString &id,
-                      const QString &title,
-                      const QString &path,
-                      const QUrl &url,
-                      int count,
-                      int length,
-                      QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    inline QString id() const { return m_id; }
-    inline QString title() const { return m_title; }
-    inline QString path() const { return m_path; }
-    inline QUrl icon() const { return m_icon; }
-    inline int count() const { return m_count; }
-    inline int length() const { return m_length; }
+   public:
+    PlaylistFileItem(QObject *parent = nullptr) : SelectableItem(parent) {}
+    explicit PlaylistFileItem(const QString &id, const QString &title,
+                              const QString &path, const QUrl &icon, int count,
+                              int length, QObject *parent = nullptr);
+    QVariant data(int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+    inline QString id() const override { return m_id; }
+    inline auto title() const { return m_title; }
+    inline auto path() const { return m_path; }
+    inline auto icon() const { return m_icon; }
+    inline auto count() const { return m_count; }
+    inline auto length() const { return m_length; }
 
-private:
+   private:
     QString m_id;
     QString m_title;
     QString m_path;
@@ -61,27 +56,25 @@ private:
     int m_length = 0;
 };
 
-class PlaylistFileModel : public SelectableItemModel
-{
+class PlaylistFileModel : public SelectableItemModel {
     Q_OBJECT
 
-public:
+   public:
     explicit PlaylistFileModel(QObject *parent = nullptr);
-    Q_INVOKABLE bool deleteFile(const QString& playlistId);
+    Q_INVOKABLE bool deleteFile(const QString &playlistId);
 
-private:
+   private:
     static const QString playlistsQueryTemplate;
     static const QString playlistsQueryTemplateEx;
 
     QString m_exId;
 
     void updateModelEx(const QString &exId);
-    QList<ListItem*> makeItems();
-    QList<ListItem*> processTrackerReply(
-            const QStringList& varNames,
-            const QByteArray& data);
+    QList<ListItem *> makeItems() override;
+    static QList<ListItem *> processTrackerReply(const QStringList &varNames,
+                                                 const QByteArray &data);
 
     void disconnectAll();
 };
 
-#endif // PLAYLISTFILEMODEL_H
+#endif  // PLAYLISTFILEMODEL_H
