@@ -125,9 +125,6 @@ DockedPanel_ {
                         source: {
                             switch(root.itemType) {
                             case ContentServer.ItemType_Url:
-                                if (av.currentType === AVTransport.T_Audio && av.currentTrackDuration === 0) {
-                                    return "image://theme/icon-m-media-radio?" + Theme.primaryColor
-                                }
                                 return "image://icons/icon-s-browser?" + Theme.primaryColor
                             case ContentServer.ItemType_Upnp:
                                 return "image://icons/icon-s-device?" + Theme.primaryColor

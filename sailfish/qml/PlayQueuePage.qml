@@ -212,9 +212,6 @@ Page {
             attachedIcon.source: {
                 switch(model.itemType) {
                 case ContentServer.ItemType_Url:
-                    if (model.type === AVTransport.T_Audio && model.duration === 0) {
-                        return "image://theme/icon-m-media-radio?" + primaryColor
-                    }
                     return "image://icons/icon-s-browser?" + primaryColor
                 case ContentServer.ItemType_Upnp:
                     return "image://icons/icon-s-device?" + primaryColor
