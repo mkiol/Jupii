@@ -72,12 +72,13 @@ Dialog {
 
         PullDownMenu {
             id: menu
+            visible: !itemModel.refreshing
             busy: itemModel.busy
 
             MenuItem {
                 text: qsTr("Refresh")
-                onClicked: itemModel.refresh()
                 enabled: !itemModel.busy
+                onClicked: itemModel.refresh()
             }
 
             MenuItem {
@@ -129,7 +130,6 @@ Dialog {
 
     BusyIndicatorWithLabel {
         running: itemModel.busy
-        infoText: itemModel.refreshing ? qsTr("Refreshing...") : ""
     }
 
     VerticalScrollDecorator {
