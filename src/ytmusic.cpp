@@ -60,7 +60,10 @@ struct UNEXPORT YTMusicPrivate {
     py::object get_ytdl() {
         // lazy initialization
         if (ytdl.is_none()) {
-            ytdl = py::module::import("yt_dlp").attr("YoutubeDL")(py::dict());
+            py::dict opt("noplaylist"_a = py::bool_(true),
+                         "skip_playlist_after_errors"_a = py::bool_(true),
+                         "socket_timeout"_a = 5);
+            ytdl = py::module::import("yt_dlp").attr("YoutubeDL")(opt);
         }
 
         return ytdl;
@@ -148,10 +151,10 @@ album::Track extract_album_track(py::handle track) {
 }
 
 video_info::Format extract_format(py::handle format) {
-    return {optional_key<int>(format, "quality"),
-            format["url"].cast<std::string>(),
-            format["vcodec"].cast<std::string>(),
-            format["acodec"].cast<std::string>()};
+    return {
+        optional_key<int>(format, "quality"), format["url"].cast<std::string>(),
+        format["vcodec"].is_none() ? "" : format["vcodec"].cast<std::string>(),
+        format["acodec"].is_none() ? "" : format["acodec"].cast<std::string>()};
 }
 
 meta::Album extract_meta_album(py::handle album) {
@@ -472,15 +475,22 @@ video_info::VideoInfo YTMusic::extract_video_info(
     const std::string &video_id) const {
     using namespace pybind11::literals;
 
-    const auto info = d->get_ytdl().attr("extract_info")(
+    auto info = d->get_ytdl().attr("extract_info")(
         video_id, "download"_a = py::bool_(false));
+
+    if (info.contains("entries") && !info.contains("formats")) {
+        auto list = info["entries"].cast<py::list>();
+        if (!list.empty()) info = list[0];
+    }
 
     return {info["id"].cast<std::string>(),
             info["title"].cast<std::string>(),
             info.contains("artist") ? info["artist"].cast<std::string>() : "",
             info.contains("channel") ? info["channel"].cast<std::string>() : "",
             extract_py_list<video_info::Format>(info["formats"]),
-            info["thumbnail"].cast<std::string>()};
+            info["thumbnail"].is_none()
+                ? ""
+                : info["thumbnail"].cast<std::string>()};
 }
 
 watch::Playlist YTMusic::get_watch_playlist(
