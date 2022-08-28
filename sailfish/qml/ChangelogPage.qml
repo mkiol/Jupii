@@ -78,7 +78,7 @@ Page {
                 title: "Improved Bandcamp and SoundCloud browsers"
                 description: "All featured items for Bandcamp and SoundCloud are now available for browsing. " +
                              "To load more featured tracks or albums, click on 'Show more' button at the bottom of the items list. " +
-                             "Moreover, list item contains label with genre name."
+                             "Moreover, list item contains label showing track or album genre."
             }
 
             LogItem {
