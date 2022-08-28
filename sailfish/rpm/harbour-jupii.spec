@@ -18,6 +18,8 @@ URL:        http://mozilla.org/MPL/2.0/
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  harbour-jupii.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
+Requires:   python3-libs
+Requires:   python3-base
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
