@@ -298,8 +298,8 @@ bool YtdlApi::check() {
     try {
         module::import("ytmusicapi");
         module::import("yt_dlp");
-    } catch (const std::runtime_error& e) {
-        qDebug() << "ytdl check failed:" << e.what();
+    } catch (const std::exception& err) {
+        qDebug() << "ytdl check failed:" << err.what();
         return false;
     }
 
