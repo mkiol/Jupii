@@ -437,22 +437,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../src/contentserver.cpp" line="747"/>
+        <location filename="../src/contentserver.cpp" line="716"/>
         <source>Unknown</source>
         <translation>Neznano</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1777"/>
+        <location filename="../src/contentserver.cpp" line="1746"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1796"/>
+        <location filename="../src/contentserver.cpp" line="1765"/>
         <source>Audio capture</source>
         <translation>Zajem zvoka</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1815"/>
+        <location filename="../src/contentserver.cpp" line="1784"/>
         <source>Screen capture</source>
         <translation>Zajem zaslona</translation>
     </message>
@@ -679,27 +679,22 @@
         <translation>Osveži</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="80"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="81"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="52"/>
         <source>Unselect all</source>
         <translation>Počisti vse</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="81"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="82"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="52"/>
         <source>Select all</source>
         <translation>Izberi vse</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="108"/>
+        <location filename="../sailfish/qml/FosdemPage.qml" line="109"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="132"/>
         <source>No items</source>
         <translation>Ni elementov</translation>
-    </message>
-    <message>
-        <location filename="../sailfish/qml/FosdemPage.qml" line="114"/>
-        <source>Refreshing...</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
@@ -763,34 +758,29 @@
         <translation>Radijske postaje</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="78"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="79"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="46"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="146"/>
         <source>Refresh</source>
         <translation>Osveži</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="86"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="87"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="52"/>
         <source>Unselect all</source>
         <translation>Počisti vse</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="87"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="88"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="52"/>
         <source>Select all</source>
         <translation>Izberi vse</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="126"/>
+        <location filename="../sailfish/qml/IcecastPage.qml" line="127"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="143"/>
         <source>No stations</source>
         <translation>Ni postaj</translation>
-    </message>
-    <message>
-        <location filename="../sailfish/qml/IcecastPage.qml" line="132"/>
-        <source>Refreshing...</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
@@ -1110,12 +1100,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="312"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="309"/>
         <source>Pull down to add new items</source>
         <translation>Za dodajanje novih elementov potegni navzdol</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="256"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="253"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="275"/>
         <source>Show</source>
         <translation>Prikaži</translation>
@@ -1150,57 +1140,57 @@
         <translation>Dodajanje elementa</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="256"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="253"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="275"/>
         <source>Play</source>
         <translation>Predvajaj</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="271"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="268"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="275"/>
         <source>Pause</source>
         <translation>Pavza</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="281"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="278"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="286"/>
         <source>Remove</source>
         <translation>Odstrani</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="311"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="308"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="308"/>
         <source>No items</source>
         <translation>Ni elementov</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="335"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="332"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="326"/>
         <source>Unknown</source>
         <translation>Neznano</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="429"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="426"/>
         <source>Tap to access playback &amp; volume controls</source>
         <translation>Pritisni za dostop do ukazov za predvajanje in glasnost</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="447"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="444"/>
         <source>Flick left to see current track details</source>
         <translation>Podrsaj v levo za prikaz podrobnosti trenutnega posnetka</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="406"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="403"/>
         <source>Not connected</source>
         <translation>Brez povezave</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="407"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="404"/>
         <source>Connect to a device to control playback using %1.</source>
         <translation>Za upravjanje predvanjaja z uporabo %1 najprej poveži z napravo.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="408"/>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="405"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>Četudi brez povezave, so vsi elementi v čakalni vrsti še vedno dostopni v drugih napravah v vašem lokalnem omrežju.</translation>
     </message>
@@ -1568,49 +1558,49 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="303"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="304"/>
         <source>Caching</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="321"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="357"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="452"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="322"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="358"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="454"/>
         <source>Auto</source>
         <translation type="unfinished">Samodejno</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="340"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="341"/>
         <source>Cache cleaning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="387"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="389"/>
         <source>Cache size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="404"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="406"/>
         <source>Delete cache</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="440"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="442"/>
         <source>Screen capture encoder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="472"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="474"/>
         <source>Screen capture framerate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="531"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="533"/>
         <source>Reset tips and hints</source>
         <translation>Ponastavi nasvete in namige</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="533"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="535"/>
         <source>Resetting tips and hints</source>
         <translation>Ponstavljam nasvete in namige</translation>
     </message>
@@ -1676,8 +1666,8 @@
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="288"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="322"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="358"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="323"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="359"/>
         <source>Always</source>
         <translation>Vedno</translation>
     </message>
@@ -1688,58 +1678,53 @@
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="290"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="323"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="359"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="324"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="360"/>
         <source>Never</source>
         <translation>Nikoli</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="304"/>
-        <source>Controls when a remote content is fully downloaded before playing. When &apos;Auto&apos; is set (recommended), caching is enabled for small files and when transcoding or audio extracting is needed. Option &apos;Always&apos; forces chaching in every case. Option &apos;Never&apos; disables caching.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="413"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="415"/>
         <source>Block MP4v2 audio streams</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="414"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="416"/>
         <source>Some UPnP devices don&apos;t support audio stream in MP4 version 2 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to MP4v1. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="427"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="429"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>Prikazane so vse UPnP naprave vključno z uradno nepodprtimi, kot so domači usmerjevalniki in serverji. Za nepodprte naprave so prikazane le najbolj osnovne informacije. Ta možnost je dobrodošla za primer, ko želite videti vse UPnP naprave v domačem omrežju.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="509"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="511"/>
         <source>Enter Frontier Silicon PIN</source>
         <translation>Vnesite Frontier Silicon PIN</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="543"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="545"/>
         <source>Resetting settings</source>
         <translation>Ponastavljam nastavitve</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="426"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="428"/>
         <source>All devices visible</source>
         <translation>Vse naprave so vidne</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="519"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="521"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Potrebno za odpravljanje težav. Vsebina je shranjena v datoteki %1.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="518"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="520"/>
         <source>Enable logging</source>
         <translation>Omogoči beleženje</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="541"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="543"/>
         <source>Reset settings</source>
         <translation>Ponastavi nastavitve</translation>
     </message>
@@ -1749,7 +1734,7 @@
         <translation>Napredno</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="506"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="508"/>
         <source>Frontier Silicon PIN</source>
         <translation>Frontier Silicon PIN</translation>
     </message>
@@ -1786,27 +1771,22 @@
         <translation>Osveži</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="81"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="82"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="51"/>
         <source>Unselect all</source>
         <translation>Počisti vse</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="82"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="83"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="51"/>
         <source>Select all</source>
         <translation>Izberi vse</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="110"/>
+        <location filename="../sailfish/qml/SomafmPage.qml" line="111"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="131"/>
         <source>No channels</source>
         <translation>Ni kanalov</translation>
-    </message>
-    <message>
-        <location filename="../sailfish/qml/SomafmPage.qml" line="117"/>
-        <source>Refreshing...</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SomafmPage.qml" line="34"/>

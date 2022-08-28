@@ -528,10 +528,6 @@
         <source>Error in getting data</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Refreshing...</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>FosdemYearsPage</name>
@@ -594,10 +590,6 @@
     </message>
     <message>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refreshing...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1284,10 +1276,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Controls when a remote content is fully downloaded before playing. When &apos;Auto&apos; is set (recommended), caching is enabled for small files and when transcoding or audio extracting is needed. Option &apos;Always&apos; forces chaching in every case. Option &apos;Never&apos; disables caching.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Block MP4v2 audio streams</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1349,10 +1337,6 @@
     </message>
     <message>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refreshing...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
