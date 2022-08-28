@@ -48,10 +48,16 @@ std::vector<home::Section> YtdlApi::m_homeSections{};
 YtdlApi::State YtdlApi::state = YtdlApi::State::Unknown;
 
 #ifdef SAILFISH
-const QString YtdlApi::pythonArchivePath =
-    QStringLiteral("/usr/share/%1/lib/python.tar.xz").arg(Jupii::APP_BINARY_ID);
+const QString YtdlApi::pythonArchivePath{
+    QStringLiteral("/usr/share/%1/lib/python.tar.xz")
+        .arg(Jupii::APP_BINARY_ID)};
 
-inline static QString pythonUnpackDir() {
+QString YtdlApi::pythonSitePath() {
+    return QStandardPaths::writableLocation(QStandardPaths::DataLocation) +
+           "/python3.8/site-packages";
+}
+
+QString YtdlApi::pythonUnpackPath() {
     return QStandardPaths::writableLocation(QStandardPaths::DataLocation);
 }
 
@@ -220,17 +226,6 @@ static bool tar_decode(const QString& file_in, const QString& dir_out) {
 
     return ok;
 }
-
-inline static void setPythonPath() {
-    ::setenv(
-        "PYTHONPATH",
-        QStringLiteral("%1/%2")
-            .arg(QStandardPaths::writableLocation(QStandardPaths::DataLocation),
-                 QStringLiteral("/python3.8/site-packages"))
-            .toStdString()
-            .c_str(),
-        true);
-}
 #endif
 
 QDebug operator<<(QDebug debug, const std::string& s) {
@@ -241,7 +236,7 @@ QDebug operator<<(QDebug debug, const std::string& s) {
 
 YtdlApi::YtdlApi(QObject* parent) : QObject{parent} {
 #ifdef SAILFISH
-    setPythonPath();
+    ::setenv("PYTHONPATH", pythonSitePath().toStdString().c_str(), true);
 #endif
     init();
 }
@@ -255,7 +250,7 @@ bool YtdlApi::unpack() {
         return false;
     }
 
-    auto unpackPath = pythonUnpackDir() + "/python.tar";
+    auto unpackPath = pythonUnpackPath() + "/python.tar";
     if (QFileInfo::exists(unpackPath)) QFile::remove(unpackPath);
 
     if (!xz_decode(pythonArchivePath, unpackPath)) {
@@ -264,7 +259,7 @@ bool YtdlApi::unpack() {
         return false;
     }
 
-    if (!tar_decode(unpackPath, pythonUnpackDir())) {
+    if (!tar_decode(unpackPath, pythonUnpackPath())) {
         qWarning() << "cannot extract python tar archive";
         QFile::remove(unpackPath);
         Settings::instance()->setPythonChecksum({});
@@ -290,6 +285,10 @@ bool YtdlApi::check() {
             qDebug() << "python modules checksum is invalid => need to unpack";
             return false;
         }
+    }
+    if (!QFile::exists(pythonSitePath())) {
+        qDebug() << "no python site dir";
+        return false;
     }
 #endif
     using namespace pybind11;

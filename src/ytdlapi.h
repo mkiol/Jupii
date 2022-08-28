@@ -99,6 +99,8 @@ class YtdlApi : public QObject {
     static State state;
 #ifdef SAILFISH
     const static QString pythonArchivePath;
+    static QString pythonSitePath();
+    static QString pythonUnpackPath();
 #endif
     static bool unpack();
     static bool check();
