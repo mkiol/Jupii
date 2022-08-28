@@ -262,6 +262,7 @@ Page {
                         }
 
                         ComboBox {
+                            visible: settings.isDebug()
                             label: qsTr("Stream relaying")
                             description: qsTr("Internet streams are relayed to UPnP device through %1. " +
                                               "Recommended option is 'Always' because it provides best " +
@@ -300,12 +301,13 @@ Page {
                         }
 
                         ComboBox {
+                            visible: settings.isDebug()
                             label: qsTr("Caching")
-                            description: qsTr("Controls when a remote content is fully downloaded before playing. " +
+                            /*description: qsTr("Controls when a remote content is fully downloaded before playing. " +
                                               "When 'Auto' is set (recommended), caching is enabled for small files and when " +
                                               "transcoding or audio extracting is needed. " +
                                               "Option 'Always' forces chaching in every case. " +
-                                              "Option 'Never' disables caching.")
+                                              "Option 'Never' disables caching.")*/
 
                             currentIndex: {
                                 if (settings.cacheType === Settings.Cache_Auto)
@@ -373,7 +375,8 @@ Page {
 
                         ListItem {
                             contentHeight: flow0.height + 2 * Theme.paddingLarge
-                            onClicked: openMenu()
+                            enabled: false
+                            //onClicked: openMenu()
 
                             Flow {
                                 id: flow0
