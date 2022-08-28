@@ -159,15 +159,18 @@ void SomafmModel::refresh() {
 QVariantList SomafmModel::selectedItems() {
     QVariantList list;
 
-    std::transform(m_list.cbegin(), m_list.cend(), std::back_inserter(list),
-                   [](const auto *item) {
-                       auto channel = qobject_cast<const SomafmItem *>(item);
-                       return QVariantMap{{"url", channel->url()},
-                                          {"name", channel->name()},
-                                          {"icon", channel->icon()},
-                                          {"author", "SomaFM"},
-                                          {"app", "somafm"}};
-                   });
+    list.reserve(selectedCount());
+
+    std::for_each(m_list.cbegin(), m_list.cend(), [&](const auto *item) {
+        const auto *channel = qobject_cast<const SomafmItem *>(item);
+        if (channel->selected())
+            list.push_back(QVariantMap{
+                {QStringLiteral("url"), channel->url()},
+                {QStringLiteral("name"), channel->name()},
+                {QStringLiteral("icon"), channel->icon()},
+                {QStringLiteral("author"), QStringLiteral("SomaFM")},
+                {QStringLiteral("app"), QStringLiteral("somafm")}});
+    });
 
     return list;
 }

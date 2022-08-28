@@ -97,17 +97,20 @@ void IcecastModel::setRefreshing(bool value) {
 QVariantList IcecastModel::selectedItems() {
     QVariantList list;
 
-    foreach (const auto item, m_list) {
-        auto *station = qobject_cast<IcecastItem *>(item);
+    list.reserve(selectedCount());
+
+    std::for_each(m_list.cbegin(), m_list.cend(), [&](const auto *item) {
+        const auto *station = qobject_cast<const IcecastItem *>(item);
         if (station->selected()) {
-            list << QVariantMap{
-                {"url", station->url()},
-                {"name", station->name()},
-                {"icon", IconProvider::urlToNoResId("icon-icecast")},
-                {"author", "Icecast"},
-                {"app", "icecast"}};
+            list.push_back(QVariantMap{
+                {QStringLiteral("url"), station->url()},
+                {QStringLiteral("name"), station->name()},
+                {QStringLiteral("icon"),
+                 IconProvider::urlToNoResId(QStringLiteral("icon-icecast"))},
+                {QStringLiteral("author"), QStringLiteral("Icecast")},
+                {QStringLiteral("app"), QStringLiteral("icecast")}});
         }
-    }
+    });
 
     return list;
 }

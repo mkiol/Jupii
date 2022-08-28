@@ -57,21 +57,22 @@ void YtModel::setArtistName(const QString &artistName) {
 QVariantList YtModel::selectedItems() {
     QVariantList list;
 
-    foreach (const auto item, m_list) {
-        auto *ytitem = qobject_cast<YtItem *>(item);
+    list.reserve(selectedCount());
+
+    std::for_each(m_list.cbegin(), m_list.cend(), [&](const auto *item) {
+        const auto *ytitem = qobject_cast<const YtItem *>(item);
         if (ytitem->selected()) {
-            QVariantMap map;
-            map.insert(QStringLiteral("url"), ytitem->url());
-            map.insert(QStringLiteral("name"), ytitem->name());
-            map.insert(QStringLiteral("author"), ytitem->artist());
-            map.insert(QStringLiteral("icon"), ytitem->icon());
-            map.insert(QStringLiteral("origUrl"), ytitem->origUrl());
-            map.insert(QStringLiteral("app"), QStringLiteral("yt"));
-            map.insert(QStringLiteral("duration"), ytitem->duration());
-            map.insert(QStringLiteral("album"), ytitem->album());
-            list << map;
+            list.push_back(
+                QVariantMap{{QStringLiteral("url"), ytitem->url()},
+                            {QStringLiteral("name"), ytitem->name()},
+                            {QStringLiteral("author"), ytitem->artist()},
+                            {QStringLiteral("icon"), ytitem->icon()},
+                            {QStringLiteral("origUrl"), ytitem->origUrl()},
+                            {QStringLiteral("app"), QStringLiteral("yt")},
+                            {QStringLiteral("duration"), ytitem->duration()},
+                            {QStringLiteral("album"), ytitem->album()}});
         }
-    }
+    });
 
     return list;
 }
