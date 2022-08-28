@@ -1241,6 +1241,10 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
     if (!iconUrl.isEmpty()) {
         auto *imgMeta = ContentServer::instance()->getMetaForImg(iconUrl, true);
         if (imgMeta && !imgMeta->path.isEmpty()) {
+            if (!ficon.isEmpty() &&
+                meta->flagSet(ContentServer::MetaFlag::MadeFromCache)) {
+                ContentServer::instance()->makeItemMetaCopy(ficon, *imgMeta);
+            }
             iconUrl = QUrl::fromLocalFile(imgMeta->path);
         }
     }

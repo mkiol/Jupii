@@ -196,37 +196,6 @@ const QString ContentServer::recAlbumName =
 const QString ContentServer::typeTagName = QStringLiteral("otype");
 const char *const ContentServer::recMp4TagPrefix = "----:org.mkiol.jupii:";
 
-ContentServer::ItemMeta::ItemMeta()
-    : flags(static_cast<int>(MetaFlag::Unknown) |
-            static_cast<int>(MetaFlag::Local) |
-            static_cast<int>(MetaFlag::Seek)) {}
-
-ContentServer::ItemMeta::ItemMeta(const ItemMeta *meta)
-    : trackerId(meta->trackerId),
-      url(meta->url),
-      origUrl(meta->origUrl),
-      path(meta->path),
-      filename(meta->filename),
-      title(meta->title),
-      mime(meta->mime),
-      comment(meta->comment),
-      album(meta->album),
-      albumArt(meta->albumArt),
-      artist(meta->artist),
-      didl(meta->didl),
-      upnpDevId(meta->upnpDevId),
-      type(meta->type),
-      itemType(meta->itemType),
-      duration(meta->duration),
-      bitrate(meta->bitrate),
-      sampleRate(meta->sampleRate),
-      channels(meta->channels),
-      size(meta->size),
-      recUrl(meta->recUrl),
-      recDate(meta->recDate),
-      metaUpdateTime(meta->metaUpdateTime),
-      flags(meta->flags) {}
-
 ContentServer::ContentServer(QObject *parent) : QThread{parent} {
 #ifdef QT_DEBUG
     av_log_set_level(AV_LOG_DEBUG);
@@ -2006,6 +1975,20 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
     }
 
     return makeItemMetaUsingHTTPRequest2(fixed_url, meta);
+}
+
+void ContentServer::makeItemMetaCopy(const QUrl &newUrl,
+                                     const ItemMeta &origMeta) {
+    qDebug() << "making meta copy:" << origMeta.url << "->" << newUrl;
+    if (m_metaCache.contains(newUrl)) {
+        qWarning() << "url already in meta cache";
+        return;
+    }
+
+    auto newMeta{origMeta};
+    newMeta.url = newUrl;
+
+    m_metaCache.insert(newUrl, newMeta);
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator

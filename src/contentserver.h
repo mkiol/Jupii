@@ -140,7 +140,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         QDateTime recDate;
         QTime metaUpdateTime{QTime::currentTime()};
         QString app;
-        int flags = 0;
+        int flags{static_cast<int>(MetaFlag::Unknown) |
+                  static_cast<int>(MetaFlag::Local) |
+                  static_cast<int>(MetaFlag::Seek)};
 
         inline bool flagSet(MetaFlag flag) const {
             return (this->flags & static_cast<int>(flag)) != 0;
@@ -171,9 +173,6 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         inline bool dummy() const {
             return flagSet(MetaFlag::YtDl) ? metaUpdateTime.isNull() : false;
         }
-
-        explicit ItemMeta(const ItemMeta *meta);
-        ItemMeta();
     };
 
     static const QString artCookie;
@@ -292,6 +291,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     std::pair<CachingResult, CachingResult> makeCache(const QUrl &id1,
                                                       const QUrl &id2);
     static QString mimeFromReply(const QNetworkReply *reply);
+    void makeItemMetaCopy(const QUrl &newUrl, const ItemMeta &origMeta);
 
    signals:
     void streamRecordError(const QString &title);
