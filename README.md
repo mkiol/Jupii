@@ -15,7 +15,7 @@ Following features are implemented:
 - Streaming of local Microphone to Media Renderer devices
 - Streaming of audio playback of any local application (similar functionality to pulseaudio-dlna server)
 - Screen casting (beta feature)
-- Recording of tracks in Icecast streams
+- Recording of music tracks (including tracks in Icecast streams)
 - Play queue (play once/repeat options)
 - Playlists (saving/opening)
 - Sharing content to other devices via UPnP Media Server
@@ -36,7 +36,7 @@ Jupii relies on following open source projects:
 - [Lame](https://lame.sourceforge.io/)
 - [x264](https://www.videolan.org/developers/x264.html)
 - [Gumbo](https://github.com/google/gumbo-parser)
-- [yt-dlc](https://github.com/blackjack4494/yt-dlc)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi)
 - [EasyEXIF](https://github.com/mayanklahiri/easyexif)
 - [AudioTube](https://github.com/KDE/audiotube)

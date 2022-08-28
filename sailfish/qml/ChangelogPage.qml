@@ -37,7 +37,7 @@ Page {
                 description: "YouTube Music is a popular video and music streaming platform. " +
                              "You can search and add content you like using a browser available via 'Add Items' menu. " +
                              "To switch between audio/video use 'Type' option in pull-down menu. " +
-                             "YouTube Music integration is possible thanks to yt-dlc, ytmusicapi and KDE's AudioTube app. " +
+                             "YouTube Music integration is possible thanks to yt-dlp, ytmusicapi and KDE's AudioTube app. " +
                              "Known issue: Searching and adding items is quite slow right now."
             }
 
