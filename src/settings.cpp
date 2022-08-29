@@ -852,6 +852,8 @@ QString Settings::pythonChecksum() const {
 }
 
 void Settings::setCacheType(CacheType value) {
+    if (!isDebug()) return;
+
     if (value != cacheType()) {
         setValue("cachetype", static_cast<int>(value));
         emit cacheTypeChanged();
@@ -859,11 +861,15 @@ void Settings::setCacheType(CacheType value) {
 }
 
 Settings::CacheType Settings::cacheType() const {
+    if (!isDebug()) return CacheType::Cache_Auto;
+
     return static_cast<CacheType>(
         value("cachetype", static_cast<int>(CacheType::Cache_Auto)).toInt());
 }
 
 void Settings::setCacheCleaningType(CacheCleaningType value) {
+    if (!isDebug()) return;
+
     if (value != cacheCleaningType()) {
         setValue("cachecleaningtype", static_cast<int>(value));
         emit cacheCleaningTypeChanged();
@@ -871,6 +877,8 @@ void Settings::setCacheCleaningType(CacheCleaningType value) {
 }
 
 Settings::CacheCleaningType Settings::cacheCleaningType() const {
+    if (!isDebug()) return CacheCleaningType::CacheCleaning_Auto;
+
     return static_cast<CacheCleaningType>(
         value("cachecleaningtype",
               static_cast<int>(CacheCleaningType::CacheCleaning_Auto))
