@@ -401,7 +401,7 @@ Page {
         opacity: enabled ? 1.0 : 0.0
         Behavior on opacity { FadeAnimation {} }
         text: qsTr("Not connected")
-        subtext: qsTr("Connect to a device to control playback using %1.").arg(APP_NAME)
+        subtext: qsTr("Connect to a device to control playback.")
                  + (settings.contentDirSupported ? " " + qsTr("Without connection, all items in play queue are still accessible on other devices in your local network.") : "")
         enabled: settings.hintEnabled(Settings.Hint_NotConnectedTip)
                  && devless && !menu.active

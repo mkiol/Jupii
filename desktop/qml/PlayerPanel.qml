@@ -114,7 +114,7 @@ Rectangle {
             icon.source: "network-offline"
             text: {
                 if (!directory.inited) return qsTr("No network connection")
-                return qsTr("Not connected") + ". " + qsTr("Connect to a device to control playback using %1.").arg(APP_NAME) +
+                return qsTr("Not connected") + ". " + qsTr("Connect to a device to control playback.") +
                        (settings.contentDirSupported ? " " + qsTr("Without connection, all items in play queue are still accessible on other devices in your local network.") :
                                                        "");
             }
