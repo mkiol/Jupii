@@ -1165,6 +1165,11 @@
         <translation>Nieznany</translation>
     </message>
     <message>
+        <location filename="../sailfish/qml/PlayQueuePage.qml" line="404"/>
+        <source>Connect to a device to control playback.</source>
+        <translation>Połącz z urządzeniem aby sterować odtwarzaniem.</translation>
+    </message>
+    <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="426"/>
         <source>Tap to access playback &amp; volume controls</source>
         <translation>Dotknij aby sterować odtwarzaniem i głośnością</translation>
@@ -1178,11 +1183,6 @@
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="403"/>
         <source>Not connected</source>
         <translation>Nie połączony</translation>
-    </message>
-    <message>
-        <location filename="../sailfish/qml/PlayQueuePage.qml" line="404"/>
-        <source>Connect to a device to control playback using %1.</source>
-        <translation>Połącz z urządzeniem aby sterować odtwarzaniem za pomocą %1ego.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="405"/>
@@ -1224,8 +1224,8 @@
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="117"/>
-        <source>Connect to a device to control playback using %1.</source>
-        <translation>Połącz z urządzeniem aby sterować odtwarzaniem za pomocą %1ego.</translation>
+        <source>Connect to a device to control playback.</source>
+        <translation type="unfinished">Połącz z urządzeniem aby sterować odtwarzaniem.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="118"/>
@@ -1548,49 +1548,49 @@
         <translation>Funkcja przechwytywania ekranu. Przechwytywanie jest nadal w fazie &apos;beta&apos;, więc jakość nie jest najlepsza.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="304"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="305"/>
         <source>Caching</source>
         <translation>Tworzenie kopii lokalnej</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="322"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="358"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="454"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="323"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="359"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="455"/>
         <source>Auto</source>
         <translation>Automacznie</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="341"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="342"/>
         <source>Cache cleaning</source>
         <translation>Czyszczenie kopii lokalnej</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="389"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="390"/>
         <source>Cache size</source>
         <translation>Rozmiar kopii lokalnej</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="406"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="407"/>
         <source>Delete cache</source>
         <translation>Usuń kopię lokalną</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="442"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="443"/>
         <source>Screen capture encoder</source>
         <translation>Encoder w przechwytywaniu ekranu</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="474"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="475"/>
         <source>Screen capture framerate</source>
         <translation>Liczba klatek w przechwytywaniu ekranu</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="533"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="534"/>
         <source>Reset tips and hints</source>
         <translation>Resetuj pokazywanie porad i wskazówek</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="535"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="536"/>
         <source>Resetting tips and hints</source>
         <translation>Resetuj pokazywanie porad i wskazówek</translation>
     </message>
@@ -1645,76 +1645,76 @@
         <translation>Jakość w przechwytywaniu ekranu</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="265"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="266"/>
         <source>Stream relaying</source>
         <translation>Przekazywanie strumieni z Internetu</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="266"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="267"/>
         <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
         <translation>Określa kiedy dane z Internetu (np. radio internetowe) są przekazywane do urządzeń UPnP za pośrednictwem %1ego. Zalecaną opcją jest &apos;Zawsze&apos; ponieważ zapewnia najlepszą kompatybilność. W przypadku gdy przekazywanie jest wyłączone (opcja &apos;Nigdy&apos;), wykrywanie tytułów Icecast oraz Nagrywanie nie są dostępne.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="288"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="323"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="359"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="289"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="324"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="360"/>
         <source>Always</source>
         <translation>Zawsze</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="289"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="290"/>
         <source>Only Icecast</source>
         <translation>Tylko Icecast</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="290"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="324"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="360"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="291"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="325"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="361"/>
         <source>Never</source>
         <translation>Nigdy</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="415"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="416"/>
         <source>Block MP4v2 audio streams</source>
         <translation>Blokuj strumień audio MP4v2</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="416"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="417"/>
         <source>Some UPnP devices don&apos;t support audio stream in MP4 version 2 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to MP4v1. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
         <translation>Niektóre urządzenia UPnP nie obsługują strumieni audio w formacie MP4 wersja 2. Taki strumień może nawet zawiesić urządzenie. Aby obejść ten problem, Jupii zawsze stara się konwertować format na MP4v1. Jeśli konwersja się nie uda oraz ta opcja jest włączona, to utwór nie zostanie odtworzony.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="429"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="430"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>Wszystkie typy urządzeń UPnP są wykrywane i wyświetlane. Dotyczy to także niekompatybilnych urządzeń takich jak domowe rutery. W przypadku niekompatybilnych urządzeń tylko podstawowe informacje o urządzeniu są dostępne. Ta opcja może być użyteczna w sprawdzeniu jakie urządzenia UPnP są w twojej sieci dowmowej.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="511"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="512"/>
         <source>Enter Frontier Silicon PIN</source>
         <translation>Wprowadź PIN dla Frontier Silicon</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="545"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="546"/>
         <source>Resetting settings</source>
         <translation>Resetowanie ustawień</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="428"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="429"/>
         <source>All devices visible</source>
         <translation>Wszystkie urządzenia widoczne</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="521"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="522"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Potrzebne do diagnozowania błędów. Dane będą zapisywane do pliku %1.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="520"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="521"/>
         <source>Enable logging</source>
         <translation>Włącz zapis logów do pliku</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="543"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="544"/>
         <source>Reset settings</source>
         <translation>Resetuj ustawienia</translation>
     </message>
@@ -1724,7 +1724,7 @@
         <translation>Zaawansowane</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="508"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="509"/>
         <source>Frontier Silicon PIN</source>
         <translation>PIN Frontier Silicon</translation>
     </message>

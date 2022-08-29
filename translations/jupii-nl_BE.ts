@@ -838,10 +838,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Connect to a device to control playback using %1.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Track info</source>
         <translation type="unfinished"></translation>
     </message>
@@ -877,16 +873,16 @@
         <source>Preparing item...</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Connect to a device to control playback.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PlayerPanel</name>
     <message>
         <source>Not connected</source>
         <translation type="unfinished">Nie’ verbonden</translation>
-    </message>
-    <message>
-        <source>Connect to a device to control playback using %1.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
@@ -926,6 +922,10 @@
     </message>
     <message>
         <source>No network connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to a device to control playback.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
