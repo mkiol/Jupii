@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sl_SI" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="sl_SI" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -107,7 +105,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="153"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="100"/>
         <source>Audio from video</source>
-        <translation type="unfinished"></translation>
+        <translation>Zvok iz videa</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="162"/>
@@ -129,7 +127,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="189"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="112"/>
         <source>Recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Snemanje</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="198"/>
@@ -200,7 +198,7 @@
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="53"/>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kadar naslov URL ne kaže neposredno na zvočno, video ali slikovno datoteko, je medijska vsebina odkrita s pomočjo youtube-dl.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="59"/>
@@ -225,7 +223,7 @@
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="86"/>
         <source>Add only audio stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodajte samo zvočni tok</translation>
     </message>
 </context>
 <context>
@@ -258,12 +256,12 @@
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="109"/>
         <source>Add only audio stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodajte samo zvočni tok</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="113"/>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kadar naslov URL ne kaže neposredno na zvočno, video ali slikovno datoteko, je medijska vsebina odkrita s pomočjo youtube-dl.</translation>
     </message>
 </context>
 <context>
@@ -291,12 +289,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/AlbumsPage.qml" line="87"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n skladba</numerusform>
-            <numerusform>%n skladbi</numerusform>
-            <numerusform>%n skladbe</numerusform>
-            <numerusform>%n skladb</numerusform>
-        </translation>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AlbumsPage.qml" line="95"/>
@@ -319,12 +312,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/ArtistPage.qml" line="75"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n skladba</numerusform>
-            <numerusform>%n skladbi</numerusform>
-            <numerusform>%n skladbe</numerusform>
-            <numerusform>%n skladb</numerusform>
-        </translation>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/ArtistPage.qml" line="83"/>
@@ -395,18 +383,13 @@
     <message numerus="yes">
         <location filename="../desktop/qml/BcPage.qml" line="43"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Dodaj %n izbrano</numerusform>
-            <numerusform>Dodaj %n izbrani</numerusform>
-            <numerusform>Dodaj %n izbrane</numerusform>
-            <numerusform>Dodaj %n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Dodaj %n izbrano</numerusform><numerusform>Dodaj %n izbrani</numerusform><numerusform>Dodaj %n izbrane</numerusform><numerusform>Dodaj %n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="59"/>
         <location filename="../desktop/qml/BcPage.qml" line="89"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Napaka pri pridobivanju podatkov</translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="160"/>
@@ -669,7 +652,7 @@
         <location filename="../sailfish/qml/FosdemPage.qml" line="43"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="85"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Napaka pri pridobivanju podatkov</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="72"/>
@@ -704,12 +687,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Dodaj %n izbrano</numerusform>
-            <numerusform>Dodaj %n izbrani</numerusform>
-            <numerusform>Dodaj %n izbrane</numerusform>
-            <numerusform>Dodaj %n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Dodaj %n izbrano</numerusform><numerusform>Dodaj %n izbrani</numerusform><numerusform>Dodaj %n izbrane</numerusform><numerusform>Dodaj %n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/FosdemPage.qml" line="109"/>
@@ -750,7 +728,7 @@
         <location filename="../sailfish/qml/IcecastPage.qml" line="49"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="85"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Napaka pri pridobivanju podatkov</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="68"/>
@@ -790,12 +768,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Dodaj %n izbrano</numerusform>
-            <numerusform>Dodaj %n izbrani</numerusform>
-            <numerusform>Dodaj %n izbrane</numerusform>
-            <numerusform>Dodaj %n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Dodaj %n izbrano</numerusform><numerusform>Dodaj %n izbrani</numerusform><numerusform>Dodaj %n izbrane</numerusform><numerusform>Dodaj %n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/IcecastPage.qml" line="120"/>
@@ -875,19 +848,19 @@
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="266"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="275"/>
         <source>Cached</source>
-        <translation type="unfinished"></translation>
+        <translation>Shranjeno v predpomnilnik</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="267"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="284"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Da</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="267"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="284"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="326"/>
@@ -953,7 +926,7 @@
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="88"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="27"/>
         <source>Open URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Odpri URL</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="164"/>
@@ -1046,7 +1019,7 @@
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="97"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="156"/>
         <source>Unable to play item</source>
-        <translation type="unfinished"></translation>
+        <translation>Elementa ni mogoče predvajati</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="99"/>
@@ -1091,13 +1064,13 @@
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="171"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="198"/>
         <source>Preparing item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Pripravljam element %1 od %2 ...</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="172"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="199"/>
         <source>Preparing item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Pripravljam element</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="309"/>
@@ -1172,7 +1145,7 @@
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="404"/>
         <source>Connect to a device to control playback.</source>
-        <translation type="unfinished"></translation>
+        <translation>Za upravljanje predvanja najprej poveži napravo.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="426"/>
@@ -1230,7 +1203,7 @@
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="117"/>
         <source>Connect to a device to control playback.</source>
-        <translation type="unfinished"></translation>
+        <translation>Za upravljanje predvanja najprej poveži napravo.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="118"/>
@@ -1297,12 +1270,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/PlaylistPage.qml" line="78"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n skladba</numerusform>
-            <numerusform>%n skladbi</numerusform>
-            <numerusform>%n skladbe</numerusform>
-            <numerusform>%n skladb</numerusform>
-        </translation>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladbi</numerusform><numerusform>%n skladbe</numerusform><numerusform>%n skladb</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="86"/>
@@ -1347,12 +1315,7 @@
         <location filename="../sailfish/qml/RecPage.qml" line="72"/>
         <location filename="../sailfish/qml/RecPage.qml" line="132"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Brisanje izbrane</numerusform>
-            <numerusform>Brisanje izbranih</numerusform>
-            <numerusform>Brisanje izbranih</numerusform>
-            <numerusform>Brisanje izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Brisanje izbrane</numerusform><numerusform>Brisanje izbranih</numerusform><numerusform>Brisanje izbranih</numerusform><numerusform>Brisanje izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="80"/>
@@ -1392,7 +1355,7 @@
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="129"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Izbriši</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="141"/>
@@ -1413,22 +1376,12 @@
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Dodaj %n izbranega</numerusform>
-            <numerusform>Dodaj %n izbrana</numerusform>
-            <numerusform>Dodaj %n izbrane</numerusform>
-            <numerusform>Dodaj %n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Dodaj %n izbranega</numerusform><numerusform>Dodaj %n izbrana</numerusform><numerusform>Dodaj %n izbrane</numerusform><numerusform>Dodaj %n izbranih</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="74"/>
         <source>Delete %n recording(s)?</source>
-        <translation>
-            <numerusform>Izbrišem %n posnetek?</numerusform>
-            <numerusform>Izbrišem %n posnetka?</numerusform>
-            <numerusform>Izbrišem %n posnetke?</numerusform>
-            <numerusform>Izbrišem %n posnetkov?</numerusform>
-        </translation>
+        <translation><numerusform>Izbrišem %n posnetek?</numerusform><numerusform>Izbrišem %n posnetka?</numerusform><numerusform>Izbrišem %n posnetke?</numerusform><numerusform>Izbrišem %n posnetkov?</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="94"/>
@@ -1482,12 +1435,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="43"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n izbran</numerusform>
-            <numerusform>%n izbrana</numerusform>
-            <numerusform>%n izbrani</numerusform>
-            <numerusform>%n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>%n izbran</numerusform><numerusform>%n izbrana</numerusform><numerusform>%n izbrani</numerusform><numerusform>%n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="72"/>
@@ -1555,44 +1503,44 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="204"/>
         <source>Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcija ScreenCast. Zajemanje videoposnetkov je še vedno v beta fazi, zato kakovost morda ne bo najboljša.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="305"/>
         <source>Caching</source>
-        <translation type="unfinished"></translation>
+        <translation>Shranjevanje v predpomnilnik</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="323"/>
         <location filename="../sailfish/qml/SettingsPage.qml" line="359"/>
         <location filename="../sailfish/qml/SettingsPage.qml" line="455"/>
         <source>Auto</source>
-        <translation type="unfinished">Samodejno</translation>
+        <translation>Samodejno</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="342"/>
         <source>Cache cleaning</source>
-        <translation type="unfinished"></translation>
+        <translation>Čiščenje prepomnilnika</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="390"/>
         <source>Cache size</source>
-        <translation type="unfinished"></translation>
+        <translation>Velikost predpomnilnika</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="407"/>
         <source>Delete cache</source>
-        <translation type="unfinished"></translation>
+        <translation>Izbriši predpomnilnik</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="443"/>
         <source>Screen capture encoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodirnik zajema zaslona</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="475"/>
         <source>Screen capture framerate</source>
-        <translation type="unfinished"></translation>
+        <translation>Število slik pri zajemanju zaslonskega posnetka</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="534"/>
@@ -1612,47 +1560,47 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="181"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Posnetek zaslona</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="186"/>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Onemogočeno</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="187"/>
         <source>Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Omogočeno</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="188"/>
         <source>Enabled with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Omogočeno z zvokom</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="211"/>
         <source>Force screen 16:9 aspect ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Vsili 16:9 razmerje zaslona</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="214"/>
         <source>Don&apos;t force</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne vsiljuj</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="215"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Povečaj</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="216"/>
         <source>Crop</source>
-        <translation type="unfinished"></translation>
+        <translation>Obreži</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="233"/>
         <source>Screen capture quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Kvaliteta zaslonskega posnetka</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="266"/>
@@ -1686,12 +1634,12 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="416"/>
         <source>Block MP4v2 audio streams</source>
-        <translation type="unfinished"></translation>
+        <translation>Blokiraj MP4v2 avdio tokove</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="417"/>
         <source>Some UPnP devices don&apos;t support audio stream in MP4 version 2 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to MP4v1. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nekatere naprave UPnP ne podpirajo zvočnega toka v formatu MP4v2. Ta vrsta toka lahko napravo celo zaustavi. Za odpravo te težave poskuša Jupii prekodirati tok v MP4v1. Če ponovno kodiranje ni uspešno in je ta možnost omogočena, se element sploh ne bo predvajal.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="430"/>
@@ -1752,7 +1700,7 @@
     <message>
         <location filename="../desktop/qml/ShowmoreItem.qml" line="25"/>
         <source>Show more</source>
-        <translation type="unfinished">Prikaži več</translation>
+        <translation>Prikaži več</translation>
     </message>
 </context>
 <context>
@@ -1761,7 +1709,7 @@
         <location filename="../sailfish/qml/SomafmPage.qml" line="42"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="84"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Napaka pri pridobivanju podatkov</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SomafmPage.qml" line="74"/>
@@ -1796,12 +1744,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SomafmPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Dodaj %n izbranega</numerusform>
-            <numerusform>Dodaj %n izbrana</numerusform>
-            <numerusform>Dodaj %n izbrane</numerusform>
-            <numerusform>Dodaj %n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Dodaj %n izbranega</numerusform><numerusform>Dodaj %n izbrana</numerusform><numerusform>Dodaj %n izbrane</numerusform><numerusform>Dodaj %n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SomafmPage.qml" line="108"/>
@@ -1820,12 +1763,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SoundcloudPage.qml" line="43"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Dodaj %n izbranega</numerusform>
-            <numerusform>Dodaj %n izbrana</numerusform>
-            <numerusform>Dodaj %n izbrane</numerusform>
-            <numerusform>Dodaj %n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Dodaj %n izbranega</numerusform><numerusform>Dodaj %n izbrana</numerusform><numerusform>Dodaj %n izbrane</numerusform><numerusform>Dodaj %n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="43"/>
@@ -1836,7 +1774,7 @@
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="59"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="89"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Napaka pri pridobivanju podatkov</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="111"/>
@@ -1922,7 +1860,7 @@
         <location filename="../sailfish/qml/TuneinPage.qml" line="48"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="78"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Napaka pri pridobivanju podatkov</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="67"/>
@@ -1961,12 +1899,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/TuneinPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Dodaj %n izbranega</numerusform>
-            <numerusform>Dodaj %n izbrana</numerusform>
-            <numerusform>Dodaj %n izbrane</numerusform>
-            <numerusform>Dodaj %n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Dodaj %n izbranega</numerusform><numerusform>Dodaj %n izbrana</numerusform><numerusform>Dodaj %n izbrane</numerusform><numerusform>Dodaj %n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/TuneinPage.qml" line="102"/>
@@ -2098,12 +2031,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="33"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Dodaj %n izbranega</numerusform>
-            <numerusform>Dodaj %n izbrana</numerusform>
-            <numerusform>Dodaj %n izbrane</numerusform>
-            <numerusform>Dodaj %n izbranih</numerusform>
-        </translation>
+        <translation><numerusform>Dodaj %n izbranega</numerusform><numerusform>Dodaj %n izbrana</numerusform><numerusform>Dodaj %n izbrane</numerusform><numerusform>Dodaj %n izbranih</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="73"/>
@@ -2139,57 +2067,57 @@
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="67"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Napaka pri pridobivanju podatkov</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="112"/>
         <source>Unselect all</source>
-        <translation type="unfinished"></translation>
+        <translation>Počisti vse</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="112"/>
         <source>Select all</source>
-        <translation type="unfinished">Izberi vse</translation>
+        <translation>Izberi vse</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="122"/>
         <source>Type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Tip: %1</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="124"/>
         <source>Audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Avdio</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="124"/>
         <source>Video</source>
-        <translation type="unfinished">Video</translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="189"/>
         <source>Album</source>
-        <translation type="unfinished">Album</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="191"/>
         <source>Playlist</source>
-        <translation type="unfinished">Seznam predvajanja</translation>
+        <translation>Seznam predvajanja</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="193"/>
         <source>Artist</source>
-        <translation type="unfinished">Izvajalec</translation>
+        <translation>Izvajalec</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="227"/>
         <source>Type the words to search</source>
-        <translation type="unfinished">Za iskanje vnesi nekaj besed</translation>
+        <translation>Za iskanje vnesi nekaj besed</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="227"/>
         <source>No items</source>
-        <translation type="unfinished">Ni elementov</translation>
+        <translation>Ni elementov</translation>
     </message>
 </context>
 <context>

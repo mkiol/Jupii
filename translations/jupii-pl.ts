@@ -1225,7 +1225,7 @@
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="117"/>
         <source>Connect to a device to control playback.</source>
-        <translation type="unfinished">Połącz z urządzeniem aby sterować odtwarzaniem.</translation>
+        <translation>Połącz z urządzeniem aby sterować odtwarzaniem.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="118"/>

@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="nl" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="nl" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -107,7 +105,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="153"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="100"/>
         <source>Audio from video</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio uit video</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="162"/>
@@ -129,7 +127,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="189"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="112"/>
         <source>Recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Opname</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="198"/>
@@ -200,7 +198,7 @@
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="53"/>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="unfinished"></translation>
+        <translation>Als een url niet direct naar een audio-, video- of afbeeldingsbestand verwijst, dan kan de media-inhoud met behulp van youtube-dl worden vastgesteld.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="59"/>
@@ -225,7 +223,7 @@
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="86"/>
         <source>Add only audio stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiostream toevoegen</translation>
     </message>
 </context>
 <context>
@@ -258,12 +256,12 @@
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="109"/>
         <source>Add only audio stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiostream toevoegen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="113"/>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="unfinished"></translation>
+        <translation>Als een url niet direct naar een audio-, video- of afbeeldingsbestand verwijst, dan kan de media-inhoud met behulp van youtube-dl worden vastgesteld.</translation>
     </message>
 </context>
 <context>
@@ -291,10 +289,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/AlbumsPage.qml" line="87"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n nummer</numerusform>
-            <numerusform>%n nummers</numerusform>
-        </translation>
+        <translation><numerusform>%n nummer</numerusform><numerusform>%n nummers</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AlbumsPage.qml" line="95"/>
@@ -317,10 +312,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/ArtistPage.qml" line="75"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n nummer</numerusform>
-            <numerusform>%n nummers</numerusform>
-        </translation>
+        <translation><numerusform>%n nummer</numerusform><numerusform>%n nummers</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/ArtistPage.qml" line="83"/>
@@ -391,16 +383,13 @@
     <message numerus="yes">
         <location filename="../desktop/qml/BcPage.qml" line="43"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-        </translation>
+        <translation><numerusform>%n geselecteerde toevoegen</numerusform><numerusform>%n geselecteerde toevoegen</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/BcPage.qml" line="59"/>
         <location filename="../desktop/qml/BcPage.qml" line="89"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="160"/>
@@ -663,7 +652,7 @@
         <location filename="../sailfish/qml/FosdemPage.qml" line="43"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="85"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="72"/>
@@ -698,10 +687,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/FosdemPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-        </translation>
+        <translation><numerusform>%n geselecteerde toevoegen</numerusform><numerusform>%n geselecteerde toevoegen</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/FosdemPage.qml" line="109"/>
@@ -742,7 +728,7 @@
         <location filename="../sailfish/qml/IcecastPage.qml" line="49"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="85"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="68"/>
@@ -782,10 +768,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/IcecastPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-        </translation>
+        <translation><numerusform>%n geselecteerde toevoegen</numerusform><numerusform>%n geselecteerde toevoegen</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/IcecastPage.qml" line="120"/>
@@ -865,19 +848,19 @@
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="266"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="275"/>
         <source>Cached</source>
-        <translation type="unfinished"></translation>
+        <translation>In cache</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="267"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="284"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Ja</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="267"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="284"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Nee</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="326"/>
@@ -943,7 +926,7 @@
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="88"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="27"/>
         <source>Open URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Url openen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="164"/>
@@ -1036,7 +1019,7 @@
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="97"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="156"/>
         <source>Unable to play item</source>
-        <translation type="unfinished"></translation>
+        <translation>Het item kan niet worden afgespeeld</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="99"/>
@@ -1081,13 +1064,13 @@
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="171"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="198"/>
         <source>Preparing item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Bezig met voorbereiden van item %1 van %2…</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="172"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="199"/>
         <source>Preparing item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Bezig met voorbereiden van item…</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="309"/>
@@ -1162,7 +1145,7 @@
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="404"/>
         <source>Connect to a device to control playback.</source>
-        <translation type="unfinished"></translation>
+        <translation>Maak verbinding met een apparaat om het te bedienen.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="426"/>
@@ -1220,7 +1203,7 @@
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="117"/>
         <source>Connect to a device to control playback.</source>
-        <translation type="unfinished"></translation>
+        <translation>Maak verbinding met een apparaat om het te bedienen.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="118"/>
@@ -1287,10 +1270,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/PlaylistPage.qml" line="78"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n nummer</numerusform>
-            <numerusform>%n nummers</numerusform>
-        </translation>
+        <translation><numerusform>%n nummer</numerusform><numerusform>%n nummers</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlaylistPage.qml" line="86"/>
@@ -1335,10 +1315,7 @@
         <location filename="../sailfish/qml/RecPage.qml" line="72"/>
         <location filename="../sailfish/qml/RecPage.qml" line="132"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Bezig met verwijderen van %n item…</numerusform>
-            <numerusform>Bezig met verwijderen van %n items…</numerusform>
-        </translation>
+        <translation><numerusform>Bezig met verwijderen van %n item…</numerusform><numerusform>Bezig met verwijderen van %n items…</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="80"/>
@@ -1378,7 +1355,7 @@
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="129"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwijderen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/RecPage.qml" line="141"/>
@@ -1399,18 +1376,12 @@
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-        </translation>
+        <translation><numerusform>%n geselecteerde toevoegen</numerusform><numerusform>%n geselecteerde toevoegen</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/RecPage.qml" line="74"/>
         <source>Delete %n recording(s)?</source>
-        <translation>
-            <numerusform>Weet je zeker dat je %n opname wilt verwijderen?</numerusform>
-            <numerusform>Weet je zeker dat je %n opnames wilt verwijderen?</numerusform>
-        </translation>
+        <translation><numerusform>Weet je zeker dat je %n opname wilt verwijderen?</numerusform><numerusform>Weet je zeker dat je %n opnames wilt verwijderen?</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/RecPage.qml" line="94"/>
@@ -1464,10 +1435,7 @@
     <message numerus="yes">
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="43"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n geselecteerd</numerusform>
-            <numerusform>%n geselecteerd</numerusform>
-        </translation>
+        <translation><numerusform>%n geselecteerd</numerusform><numerusform>%n geselecteerd</numerusform></translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SearchDialogHeader.qml" line="72"/>
@@ -1535,44 +1503,44 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="204"/>
         <source>Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
-        <translation type="unfinished"></translation>
+        <translation>De schermopnamefunctie. Let op: deze functie wordt nog volop getest, dus de kwaliteit kan tegenvallen.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="305"/>
         <source>Caching</source>
-        <translation type="unfinished"></translation>
+        <translation>Cache</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="323"/>
         <location filename="../sailfish/qml/SettingsPage.qml" line="359"/>
         <location filename="../sailfish/qml/SettingsPage.qml" line="455"/>
         <source>Auto</source>
-        <translation type="unfinished">Automatisch</translation>
+        <translation>Automatisch</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="342"/>
         <source>Cache cleaning</source>
-        <translation type="unfinished"></translation>
+        <translation>Cache-opruiming</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="390"/>
         <source>Cache size</source>
-        <translation type="unfinished"></translation>
+        <translation>Cache-omvang</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="407"/>
         <source>Delete cache</source>
-        <translation type="unfinished"></translation>
+        <translation>Cache wissen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="443"/>
         <source>Screen capture encoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Opnamedecodering</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="475"/>
         <source>Screen capture framerate</source>
-        <translation type="unfinished"></translation>
+        <translation>Framesnelheid van opname</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="534"/>
@@ -1592,47 +1560,47 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="181"/>
         <source>Screen capture</source>
-        <translation type="unfinished">Schermopname</translation>
+        <translation>Schermopname</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="186"/>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Uitgeschakeld</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="187"/>
         <source>Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Inschakelen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="188"/>
         <source>Enabled with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Inschakelen met audio</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="211"/>
         <source>Force screen 16:9 aspect ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>16:9-beeldverhouding afdwingen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="214"/>
         <source>Don&apos;t force</source>
-        <translation type="unfinished"></translation>
+        <translation>Niet afdwingen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="215"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Grootte aanpassen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="216"/>
         <source>Crop</source>
-        <translation type="unfinished"></translation>
+        <translation>Bijsnijden</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="233"/>
         <source>Screen capture quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Opnamekwaliteit</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="266"/>
@@ -1666,12 +1634,12 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="416"/>
         <source>Block MP4v2 audio streams</source>
-        <translation type="unfinished"></translation>
+        <translation>Mp4v2-audiostreams blokkeren</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="417"/>
         <source>Some UPnP devices don&apos;t support audio stream in MP4 version 2 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to MP4v1. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sommige UPnP-apparaten hebben geen ondersteuning voor audiostreams met mp4-versie 2. Hierdoor kan een apparaat vastlopen. Jupii probeert daarom de stream te converteren naar mp4v1. Als dat mislukt en deze optie is ingeschakeld, dan wordt het item in kwestie niet afgespeeld.</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="430"/>
@@ -1732,7 +1700,7 @@
     <message>
         <location filename="../desktop/qml/ShowmoreItem.qml" line="25"/>
         <source>Show more</source>
-        <translation type="unfinished">Meer tonen</translation>
+        <translation>Meer tonen</translation>
     </message>
 </context>
 <context>
@@ -1741,7 +1709,7 @@
         <location filename="../sailfish/qml/SomafmPage.qml" line="42"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="84"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SomafmPage.qml" line="74"/>
@@ -1776,10 +1744,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SomafmPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-        </translation>
+        <translation><numerusform>%n geselecteerde toevoegen</numerusform><numerusform>%n geselecteerde toevoegen</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SomafmPage.qml" line="108"/>
@@ -1798,10 +1763,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/SoundcloudPage.qml" line="43"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-        </translation>
+        <translation><numerusform>%n geselecteerde toevoegen</numerusform><numerusform>%n geselecteerde toevoegen</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="43"/>
@@ -1812,7 +1774,7 @@
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="59"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="89"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="111"/>
@@ -1898,7 +1860,7 @@
         <location filename="../sailfish/qml/TuneinPage.qml" line="48"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="78"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="67"/>
@@ -1937,10 +1899,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/TuneinPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-        </translation>
+        <translation><numerusform>%n geselecteerde toevoegen</numerusform><numerusform>%n geselecteerde toevoegen</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/TuneinPage.qml" line="102"/>
@@ -2072,10 +2031,7 @@
     <message numerus="yes">
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="33"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-            <numerusform>%n geselecteerde toevoegen</numerusform>
-        </translation>
+        <translation><numerusform>%n geselecteerde toevoegen</numerusform><numerusform>%n geselecteerde toevoegen</numerusform></translation>
     </message>
     <message>
         <location filename="../desktop/qml/UpnpCDirPage.qml" line="73"/>
@@ -2111,57 +2067,57 @@
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="67"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="112"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Niets selecteren</translation>
+        <translation>Niets selecteren</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="112"/>
         <source>Select all</source>
-        <translation type="unfinished">Alles selecteren</translation>
+        <translation>Alles selecteren</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="122"/>
         <source>Type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Type: %1</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="124"/>
         <source>Audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="124"/>
         <source>Video</source>
-        <translation type="unfinished">Video</translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="189"/>
         <source>Album</source>
-        <translation type="unfinished">Album</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="191"/>
         <source>Playlist</source>
-        <translation type="unfinished">Afspeellijst</translation>
+        <translation>Afspeellijst</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="193"/>
         <source>Artist</source>
-        <translation type="unfinished">Artiest</translation>
+        <translation>Artiest</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="227"/>
         <source>Type the words to search</source>
-        <translation type="unfinished">Voer een zoekopdracht in</translation>
+        <translation>Voer een zoekopdracht in</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="227"/>
         <source>No items</source>
-        <translation type="unfinished">Geen items</translation>
+        <translation>Geen items</translation>
     </message>
 </context>
 <context>
