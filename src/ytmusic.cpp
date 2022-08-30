@@ -62,7 +62,8 @@ struct UNEXPORT YTMusicPrivate {
         if (ytdl.is_none()) {
             py::dict opt("noplaylist"_a = py::bool_(true),
                          "skip_playlist_after_errors"_a = py::bool_(true),
-                         "socket_timeout"_a = 5);
+                         "socket_timeout"_a = 5,
+                         "extract_flat"_a = py::str("in_playlist"));
             ytdl = py::module::import("yt_dlp").attr("YoutubeDL")(opt);
         }
 
