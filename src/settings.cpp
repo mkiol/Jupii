@@ -299,23 +299,17 @@ QString Settings::getRecDir() {
         QStandardPaths::writableLocation(QStandardPaths::MusicLocation) +
         "/JupiiRecordings";
     auto recDir = value("recdir", defDir).toString();
-    QDir d(recDir);
-    if (recDir.isEmpty()) {
+
+    QDir d{recDir};
+
+    if (recDir.isEmpty() || !d.exists()) {
+        qWarning() << "recording dir doesn't exist:" << recDir;
         d.mkpath(defDir);
         setValue("recdir", defDir);
         emit recDirChanged();
         return defDir;
     }
-    if (!d.exists()) {
-        qWarning() << "Recording dir doesn't exist";
-        if (!d.mkpath(recDir)) {
-            qWarning() << "Cannot create recording dir";
-            d.mkpath(defDir);
-            setValue("recdir", defDir);
-            emit recDirChanged();
-            return defDir;
-        }
-    }
+
     return recDir;
 }
 
