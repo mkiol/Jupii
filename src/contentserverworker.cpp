@@ -596,27 +596,24 @@ void ContentServerWorker::requestForCachedContent(
 void ContentServerWorker::requestForUrlHandler(
     const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
     QHttpResponse *resp) {
-    // 0 - proxy for all
-    // 1 - redirection for all
-    // 2 - none for all
-    // 3 - proxy for shoutcast, redirection for others
-    // 4 - proxy for shoutcast, none for others
-    const auto relay =
-        Settings::instance()->getRemoteContentMode();  // TO-DO: convert to enum
+    const auto relay = Settings::instance()->getRemoteContentMode();
 
-    if (relay == 1 || relay == 3) {
+    if (relay ==
+            Settings::RemoteContentMode::RemoteContentMode_Redirection_All ||
+        relay == Settings::RemoteContentMode::
+                     RemoteContentMode_Proxy_Shoutcast_Redirection) {
         qDebug() << "redirection mode";
         sendRedirection(resp, Utils::urlFromId(id).toString());
         return;
     }
 
-    if (relay == 2) {
+    if (relay == Settings::RemoteContentMode::RemoteContentMode_None_All) {
         qWarning() << "relaying is disabled";
         sendEmptyResponse(resp, 500);
         return;
     }
 
-    auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
+    const auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
 
     if (auto path = ContentServer::pathToCachedContent(*meta, true, type)) {
         qDebug() << "cached content exists:" << *path;

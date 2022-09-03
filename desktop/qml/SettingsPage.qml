@@ -302,18 +302,16 @@ Kirigami.ScrollablePage {
             }
 
             Controls.ComboBox {
+                visible: settings.isDebug()
                 Kirigami.FormData.label: qsTr("Stream relaying")
                 currentIndex: {
-                    // 0 - proxy for all
-                    // 1 - redirection for all
-                    // 2 - none for all
-                    // 3 - proxy for shoutcast, redirection for others
-                    // 4 - proxy for shoutcast, none for others
-                    if (settings.remoteContentMode == 0)
+                    if (settings.remoteContentMode === Settings.RemoteContentMode_Proxy_All)
                         return 0
-                    if (settings.remoteContentMode == 1 || settings.remoteContentMode == 2)
+                    if (settings.remoteContentMode === Settings.RemoteContentMode_Redirection_All ||
+                            settings.remoteContentMode === Settings.RemoteContentMode_None_All)
                         return 2
-                    if (settings.remoteContentMode == 3 || settings.remoteContentMode == 4)
+                    if (settings.remoteContentMode === Settings.RemoteContentMode_Proxy_Shoutcast_Redirection ||
+                            settings.remoteContentMode === Settings.RemoteContentMode_Proxy_Shoutcast_None)
                         return 1
                     return 0
                 }
@@ -326,11 +324,13 @@ Kirigami.ScrollablePage {
 
                 onCurrentIndexChanged: {
                     if (currentIndex == 0)
-                        settings.remoteContentMode = 0
+                        settings.remoteContentMode = Settings.RemoteContentMode_Proxy_All
                     else if (currentIndex == 1)
-                        settings.remoteContentMode = 4
+                        settings.remoteContentMode = Settings.RemoteContentMode_Proxy_Shoutcast_None
                     else if (currentIndex == 2)
-                        settings.remoteContentMode = 2
+                        settings.remoteContentMode = Settings.RemoteContentMode_None_All
+                    else
+                        settings.remoteContentMode = Settings.RemoteContentMode_Proxy_All
                 }
             }
 
@@ -339,6 +339,7 @@ Kirigami.ScrollablePage {
             }
 
             Controls.ComboBox {
+                visible: settings.isDebug()
                 Kirigami.FormData.label: qsTr("Caching")
                 currentIndex: {
                     if (settings.cacheType === Settings.Cache_Auto)
@@ -369,6 +370,7 @@ Kirigami.ScrollablePage {
             }
 
             Controls.ComboBox {
+                visible: settings.isDebug()
                 Kirigami.FormData.label: qsTr("Cache cleaning")
                 currentIndex: {
                     if (settings.cacheCleaningType === Settings.CacheCleaning_Auto)
@@ -409,6 +411,7 @@ Kirigami.ScrollablePage {
                     }
                 }
                 Controls.Button {
+                    enabled: settings.isDebug()
                     text: qsTr("Delete cache")
                     onClicked: cserver.cleanCache()
                 }

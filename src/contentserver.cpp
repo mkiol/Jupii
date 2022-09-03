@@ -441,11 +441,14 @@ bool ContentServer::getContentMetaItem(const QString &id, QString &meta,
         return false;
     }
 
-    int relay = Settings::instance()->getRemoteContentMode();
     QUrl url;
 
-    if (item->itemType == ItemType_Url &&
-        (relay == 2 || (relay == 4 && !item->flagSet(MetaFlag::Seek)))) {
+    if (const auto relay = Settings::instance()->getRemoteContentMode();
+        item->itemType == ItemType_Url &&
+        (relay == Settings::RemoteContentMode::RemoteContentMode_None_All ||
+         (relay == Settings::RemoteContentMode::
+                       RemoteContentMode_Proxy_Shoutcast_None &&
+          !item->flagSet(MetaFlag::Seek)))) {
         url = item->url;
         if (!makeUrl(id, url, false)) {
             qWarning() << "cannot make url from id";
@@ -658,8 +661,6 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         return false;
     }
 
-    int relay = Settings::instance()->getRemoteContentMode();
-
     if (item->itemType == ItemType_Upnp) {
         qDebug() << "item is upnp and relaying is disabled";
         if (item->didl.isEmpty()) {
@@ -679,8 +680,12 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         return true;
     }
 
-    if (item->itemType == ItemType_Url &&
-        (relay == 2 || (relay == 4 && !item->flagSet(MetaFlag::Seek)))) {
+    if (const auto relay = Settings::instance()->getRemoteContentMode();
+        item->itemType == ItemType_Url &&
+        (relay == Settings::RemoteContentMode::RemoteContentMode_None_All ||
+         (relay == Settings::RemoteContentMode::
+                       RemoteContentMode_Proxy_Shoutcast_None &&
+          !item->flagSet(MetaFlag::Seek)))) {
         qDebug() << "item is url and relaying is disabled";
         url = item->url;
         if (!makeUrl(id, url, false)) {

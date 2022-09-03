@@ -59,8 +59,8 @@ class Settings : public QSettings,
                    NOTIFY screenQualityChanged)
     Q_PROPERTY(QString screenEncoder READ getScreenEncoder WRITE
                    setScreenEncoder NOTIFY screenEncoderChanged)
-    Q_PROPERTY(int remoteContentMode READ getRemoteContentMode WRITE
-                   setRemoteContentMode NOTIFY remoteContentModeChanged)
+    Q_PROPERTY(RemoteContentMode remoteContentMode READ getRemoteContentMode
+                   WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY(int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType
                    NOTIFY albumQueryTypeChanged)
     Q_PROPERTY(int albumRecQueryType READ getRecQueryType WRITE setRecQueryType
@@ -115,6 +115,15 @@ class Settings : public QSettings,
 
     enum class YtPreferredType { YtPreferredType_Video, YtPreferredType_Audio };
     Q_ENUM(YtPreferredType)
+
+    enum class RemoteContentMode {
+        RemoteContentMode_Proxy_All = 0,
+        RemoteContentMode_Redirection_All = 1,
+        RemoteContentMode_None_All = 2,
+        RemoteContentMode_Proxy_Shoutcast_Redirection = 3,
+        RemoteContentMode_Proxy_Shoutcast_None = 4
+    };
+    Q_ENUM(RemoteContentMode)
 
 #ifdef SAILFISH
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
@@ -182,8 +191,8 @@ class Settings : public QSettings,
     QString getPlaylistDir() const;
     QString getPrefNetInf() const;
     void setPrefNetInf(const QString &value);
-    void setRemoteContentMode(int value);
-    int getRemoteContentMode() const;
+    void setRemoteContentMode(RemoteContentMode value);
+    RemoteContentMode getRemoteContentMode() const;
     void setContentDirSupported(bool value);
     bool getContentDirSupported() const;
     void setColorScheme(int value);

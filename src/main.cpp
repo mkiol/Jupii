@@ -141,6 +141,8 @@ static void registerTypes() {
     qRegisterMetaType<Settings::CacheCleaningType>(
         "Settings::CacheCleaningType");
     qRegisterMetaType<Settings::YtPreferredType>("Settings::YtPreferredType");
+    qRegisterMetaType<Settings::RemoteContentMode>(
+        "Settings::RemoteContentMode");
     qRegisterMetaType<ContentServer::Type>("ContentServer::Type");
     qRegisterMetaType<std::shared_ptr<QFile>>("std::shared_ptr<QFile>");
     qRegisterMetaType<int64_t>("int64_t");

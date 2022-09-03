@@ -544,20 +544,22 @@ QByteArray Settings::getKey() {
     return key;
 }
 
-void Settings::setRemoteContentMode(int value) {
+void Settings::setRemoteContentMode(RemoteContentMode value) {
+    if (!isDebug()) return;
+
     if (getRemoteContentMode() != value) {
-        setValue("remotecontentmode2", value);
+        setValue("remotecontentmode2", static_cast<int>(value));
         emit remoteContentModeChanged();
     }
 }
 
-int Settings::getRemoteContentMode() const {
-    // 0 - proxy for all
-    // 1 - redirection for all
-    // 2 - none for all
-    // 3 - proxy for shoutcast, redirection for others
-    // 4 - proxy for shoutcast, none for others
-    return value("remotecontentmode2", 0).toInt();
+Settings::RemoteContentMode Settings::getRemoteContentMode() const {
+    if (!isDebug()) return RemoteContentMode::RemoteContentMode_Proxy_All;
+
+    return static_cast<RemoteContentMode>(
+        value("remotecontentmode2",
+              static_cast<int>(RemoteContentMode::RemoteContentMode_Proxy_All))
+            .toInt());
 }
 
 void Settings::setAlbumQueryType(int value) {
