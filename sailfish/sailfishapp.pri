@@ -44,7 +44,13 @@ target.path = /usr/bin
     INSTALLS += qml
 }
 
-desktop.files = $${TARGET}.desktop $${TARGET}-open-url.desktop
+harbour {
+    desktop.files = $${OUT_PWD}/$${TARGET}.desktop
+    desktop.CONFIG = no_check_exist
+    desktop.extra = cp $${PWD}/$${TARGET}-harbour.desktop $${OUT_PWD}/$${TARGET}.desktop
+} else {
+    desktop.files = $${TARGET}.desktop $${TARGET}-open-url.desktop
+}
 desktop.path = /usr/share/applications
 
 INSTALLS += target desktop

@@ -58,11 +58,6 @@ desktop {
         include($$PROJECTDIR/libs/x264/x264.pri)
         include($$PROJECTDIR/libs/lame/lame.pri)
     }
-
-    # ytdl
-    PKGCONFIG += python3
-    LIBS += -lutil -lpython3.10 -llzma -larchive
-    INCLUDEPATH += $$PROJECTDIR/external/pybind11/include
 }
 
 sailfish {
@@ -76,17 +71,21 @@ sailfish {
     include($$PROJECTDIR/libs/gumbo/gumbo.pri)
     #include($$PROJECTDIR/libs/omx/omx.pri)
     include($$PROJECTDIR/libs/lipstickrecorder/lipstickrecorder.pri)
-
-    # ytdl
-    PKGCONFIG += python3
-    LIBS += -lpython3.8 -llzma -larchive
-    INCLUDEPATH += $$PROJECTDIR/external/pybind11/include
-    python.files = $$PROJECTDIR/libs/python/sfos-$${ARCH_PREFIX}/python.tar.xz
-    python.path = /usr/share/$${TARGET}/lib
-    INSTALLS += python
 }
 
 INCLUDEPATH += $$ROOT_DIR
+
+!harbour {
+    include($$PROJECTDIR/libs/python/python.pri)
+    HEADERS += \
+        $$ROOT_DIR/ytdlapi.h \
+        $$ROOT_DIR/ytmusic.h \
+        $$ROOT_DIR/ytmodel.h
+    SOURCES += \
+        $$ROOT_DIR/ytdlapi.cpp \
+        $$ROOT_DIR/ytmusic.cpp \
+        $$ROOT_DIR/ytmodel.cpp
+}
 
 HEADERS += \
     $$ROOT_DIR/dbus_jupii_adaptor.h \
@@ -130,7 +129,6 @@ HEADERS += \
     $$ROOT_DIR/iconprovider.h \
     $$ROOT_DIR/contentdirectory.h \
     $$ROOT_DIR/cdirmodel.h \
-    $$ROOT_DIR/ytdlapi.h \
     $$ROOT_DIR/bcmodel.h \
     $$ROOT_DIR/notifications.h \
     $$ROOT_DIR/filedownloader.h \
@@ -148,9 +146,7 @@ HEADERS += \
     $$ROOT_DIR/screencaster.h \
     $$ROOT_DIR/dnscontentdeterminator.h \
     $$ROOT_DIR/singleton.h \
-    $$ROOT_DIR/ytmusic.h \
     $$ROOT_DIR/exif.h \
-    $$ROOT_DIR/ytmodel.h \
     $$ROOT_DIR/thumb.h \
     $$ROOT_DIR/transcoder.h
 
@@ -196,7 +192,6 @@ SOURCES += \
     $$ROOT_DIR/iconprovider.cpp \
     $$ROOT_DIR/contentdirectory.cpp \
     $$ROOT_DIR/cdirmodel.cpp \
-    $$ROOT_DIR/ytdlapi.cpp \
     $$ROOT_DIR/bcmodel.cpp \
     $$ROOT_DIR/notifications.cpp \
     $$ROOT_DIR/filedownloader.cpp \
@@ -213,9 +208,7 @@ SOURCES += \
     $$ROOT_DIR/contentserverworker.cpp \
     $$ROOT_DIR/screencaster.cpp \
     $$ROOT_DIR/dnscontentdeterminator.cpp \
-    $$ROOT_DIR/ytmusic.cpp \
     $$ROOT_DIR/exif.cpp \
-    $$ROOT_DIR/ytmodel.cpp \
     $$ROOT_DIR/thumb.cpp \
     $$ROOT_DIR/transcoder.cpp
 

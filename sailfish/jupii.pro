@@ -36,8 +36,9 @@ INCLUDEPATH += /usr/include/c++/8.3.0
 arm: INCLUDEPATH += /usr/include/c++/8.3.0/armv7hl-meego-linux-gnueabi
 arm64: INCLUDEPATH += /usr/include/c++/8.3.0/aarch64-meego-linux-gnu
 
-CONFIG += sailfish screencast
-DEFINES += SAILFISH SCREENCAST
+CONFIG += sailfish
+sailfish: DEFINES += SAILFISH
+harbour: DEFINES += HARBOUR
 
 include($${PROJECTDIR}/src/jupii.pri)
 
@@ -95,9 +96,11 @@ INSTALLS += images
 # sailjail #
 ############
 
-sailjail.files = sailjail/*
-sailjail.path = /etc/sailjail/permissions
-INSTALLS += sailjail
+!harbour {
+    sailjail.files = sailjail/*
+    sailjail.path = /etc/sailjail/permissions
+    INSTALLS += sailjail
+}
 
 DEPENDPATH += $$INCLUDEPATH
 

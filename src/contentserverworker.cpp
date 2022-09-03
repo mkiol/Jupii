@@ -206,7 +206,7 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
 
 void ContentServerWorker::responseForAudioCaptureDone() {
     qDebug() << "audio capture http response done";
-    auto resp = sender();
+    auto *resp = sender();
     for (int i = 0; i < audioCaptureItems.size(); ++i) {
         if (resp == audioCaptureItems[i].resp) {
             qDebug() << "removing finished audio capture item";
@@ -226,7 +226,7 @@ void ContentServerWorker::responseForAudioCaptureDone() {
 
 void ContentServerWorker::responseForScreenCaptureDone() {
     qDebug() << "screen capture http response done";
-    auto resp = sender();
+    auto *resp = sender();
     for (int i = 0; i < screenCaptureItems.size(); ++i) {
         if (resp == screenCaptureItems[i].resp) {
             qDebug() << "removing finished screen capture item";

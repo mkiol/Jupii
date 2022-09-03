@@ -41,7 +41,9 @@
 #include "trackercursor.h"
 #include "transcoder.h"
 #include "utils.h"
+#ifndef HARBOUR
 #include "ytdlapi.h"
+#endif
 
 extern "C" {
 #include "libavdevice/avdevice.h"
@@ -1824,6 +1826,13 @@ ContentServer::makeItemMetaUsingYtdlApi(
     int counter) {
     qDebug() << "trying to find url with ytdl:" << url;
 
+#ifdef HARBOUR
+    Q_UNUSED(meta)
+    Q_UNUSED(nam)
+    Q_UNUSED(counter)
+    qDebug() << "ytdl is disabled in harbour build";
+    return m_metaCache.end();
+#else
     if (QThread::currentThread()->isInterruptionRequested()) {
         qWarning() << "thread interruption was requested";
         return m_metaCache.end();
@@ -1864,6 +1873,7 @@ ContentServer::makeItemMetaUsingYtdlApi(
 
     return makeItemMetaUsingHTTPRequest2(newUrl, meta, std::move(nam),
                                          counter + 1);
+#endif
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator

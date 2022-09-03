@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -60,6 +60,9 @@ ListItem {
             verticalCenter: parent.verticalCenter
         }
 
-        color: root.highlighted || root.active ? Theme.highlightColor : Theme.primaryColor
+        color: {
+            if (root.highlighted || root.active) return Theme.highlightColor
+            return Theme.primaryColor
+        }
     }
 }

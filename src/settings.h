@@ -191,6 +191,7 @@ class Settings : public QSettings,
     QString mediaServerDevUuid();
     QString prettyName() const;
     Q_INVOKABLE bool isDebug() const;
+    Q_INVOKABLE bool isHarbour() const;
     Q_INVOKABLE void reset();
     Q_INVOKABLE bool hintEnabled(HintType hint) const;
     Q_INVOKABLE void disableHint(HintType hint);

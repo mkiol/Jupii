@@ -75,7 +75,9 @@
 #include "tuneinmodel.h"
 #include "utils.h"
 #include "xc.h"
+#ifndef HARBOUR
 #include "ytmodel.h"
+#endif
 
 static void makeAppDirs() {
     auto root = QDir::root();
@@ -115,7 +117,9 @@ static void registerTypes() {
     qmlRegisterType<BcModel>("harbour.jupii.BcModel", 1, 0, "BcModel");
     qmlRegisterType<SoundcloudModel>("harbour.jupii.SoundcloudModel", 1, 0,
                                      "SoundcloudModel");
+#ifndef HARBOUR
     qmlRegisterType<YtModel>("harbour.jupii.YtModel", 1, 0, "YtModel");
+#endif
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0,
                                   "IcecastModel");
     qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1,

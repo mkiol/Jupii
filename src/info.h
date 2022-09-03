@@ -13,7 +13,11 @@ static constexpr const char* APP_NAME = "Jupii";
 #ifdef QT_DEBUG
 static constexpr const char* APP_VERSION = "2.13.0 (debug)";
 #else
+#ifdef HARBOUR
+static constexpr const char* APP_VERSION = "2.13.0 (harbour)";
+#else
 static constexpr const char* APP_VERSION = "2.13.0";
+#endif  // HARBOUR
 #endif  // QT_DEBUG
 #ifdef FLATPAK
 static constexpr const char* APP_ID = "org.mkiol.Jupii";

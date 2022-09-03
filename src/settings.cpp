@@ -61,7 +61,7 @@ Settings::Settings()
     updateSandboxStatus();
 
     qDebug() << "HW name:" << hwName;
-    qDebug() << "app:" << Jupii::ORG << Jupii::APP_ID;
+    qDebug() << "app:" << Jupii::ORG << Jupii::APP_ID << Jupii::APP_VERSION;
     qDebug() << "config location:"
              << QStandardPaths::writableLocation(
                     QStandardPaths::ConfigLocation);
@@ -72,14 +72,6 @@ Settings::Settings()
              << QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
     qDebug() << "settings file:" << fileName();
     qDebug() << "sandboxed:" << m_sandboxed;
-}
-
-bool Settings::isDebug() const {
-#ifdef QT_DEBUG
-    return true;
-#else
-    return false;
-#endif
 }
 
 #ifdef SAILFISH
@@ -920,4 +912,20 @@ void Settings::setAllowNotIsomMp4(bool value) {
 
 bool Settings::allowNotIsomMp4() const {
     return value("allownotisommp4", true).toBool();
+}
+
+bool Settings::isDebug() const {
+#ifdef QT_DEBUG
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool Settings::isHarbour() const {
+#ifdef HARBOUR
+    return true;
+#else
+    return false;
+#endif
 }
