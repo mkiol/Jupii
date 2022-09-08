@@ -1863,6 +1863,10 @@ typedef int (*WebCallback_HostValidate)(const char *hostname, void *cookie);
 EXPORT_SPEC int UpnpSetWebRequestHostValidateCallback(
     WebCallback_HostValidate callback, void *cookie);
 
+/** UpnpSetHostValidateCallback alias for compatibility with libupnp */
+EXPORT_SPEC int UpnpSetHostValidateCallback(
+    WebCallback_HostValidate callback, void *cookie);
+
 
 /** Handle returned by the @ref VDCallback_Open virtual directory function. */
 typedef void *UpnpWebFileHandle;

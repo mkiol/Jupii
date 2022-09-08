@@ -25,8 +25,8 @@
 
 /** Version components. */
 #define LIBUPNPP_VERSION_MAJOR 0
-#define LIBUPNPP_VERSION_MINOR 21
-#define LIBUPNPP_VERSION_REVISION 0
+#define LIBUPNPP_VERSION_MINOR 22
+#define LIBUPNPP_VERSION_REVISION 1
 /// Got this from Xapian...
 #define LIBUPNPP_AT_LEAST(A,B,C)                                        \
     (LIBUPNPP_VERSION_MAJOR > (A) ||                                    \

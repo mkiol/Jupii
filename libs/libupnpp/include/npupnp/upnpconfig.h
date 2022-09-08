@@ -40,16 +40,16 @@
  ***************************************************************************/ 
 
 /** The library version (string) e.g. "1.3.0" */
-#define NPUPNP_VERSION_STRING "4.1.5"
+#define NPUPNP_VERSION_STRING "4.2.1"
 
 /** Major version of the library */
 #define NPUPNP_VERSION_MAJOR 4
 
 /** Minor version of the library */
-#define NPUPNP_VERSION_MINOR 1
+#define NPUPNP_VERSION_MINOR 2
 
 /** Patch version of the library */
-#define NPUPNP_VERSION_PATCH 5
+#define NPUPNP_VERSION_PATCH 1
 
 /** The library version (numeric) e.g. 10300 means version 1.3.0 */
 #define NPUPNP_VERSION    \
@@ -73,7 +73,7 @@
 
 /** Defined to 1 if the library has been compiled with DEBUG enabled 
  *  (i.e. configure --enable-debug) : <upnp/upnpdebug.h> file is available */
-#define UPNP_HAVE_DEBUG 1
+/* #undef UPNP_HAVE_DEBUG */
 
 
 /** Defined to 1 if the library has been compiled with client API enabled 

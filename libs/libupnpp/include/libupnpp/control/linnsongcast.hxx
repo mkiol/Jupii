@@ -136,11 +136,11 @@ void UPNPP_API getReceiverState(const std::string& nm, ReceiverState& st,
 /** Get status for all found Receiver services */
 void UPNPP_API listReceivers(std::vector<ReceiverState>& vscs);
 
-bool UPNPP_API setReceiverPlaying(ReceiverState st);
-bool UPNPP_API setReceiverPlaying(ReceiverState st,
+bool UPNPP_API setReceiverPlaying(ReceiverState& st);
+bool UPNPP_API setReceiverPlaying(ReceiverState& st,
                                   const std::string& uri,
                                   const std::string& meta);
-bool UPNPP_API stopReceiver(ReceiverState st);
+bool UPNPP_API stopReceiver(ReceiverState& st);
 
 void UPNPP_API setReceiversFromSender(const std::string& sendernm,
                                       const std::vector<std::string>& rcvnms);

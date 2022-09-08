@@ -36,6 +36,7 @@
  * system's network interfaces.
  */
 #include <stdio.h>
+#include <memory>
 #include <string>
 #include <ostream>
 #include <vector>
@@ -100,7 +101,7 @@ public:
     friend class Interface;
     class Internal;
 private:
-    Internal *m;
+    std::unique_ptr<Internal> m;
 };
 
 /** @brief Represent a system network interface, its attributes and its
@@ -154,7 +155,7 @@ public:
     class Internal;
     friend class Interfaces;
 private:
-    Internal *m{nullptr};
+    std::unique_ptr<Internal> m;
 };
 
 
@@ -216,7 +217,7 @@ private:
     ~Interfaces();
 
     class Internal;
-    Internal *m{nullptr};
+    std::unique_ptr<Internal> m;
 };
 
 } /* namespace NetIF */
