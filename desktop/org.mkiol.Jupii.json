@@ -205,8 +205,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://ffmpeg.org/releases/ffmpeg-5.0.tar.gz",
-                    "sha256": "7bf52bc242b5db8df67c62cb826df134d917dedcf6abf1289e15e4057bcc1750"
+                    "url": "https://ffmpeg.org/releases/ffmpeg-5.1.1.tar.gz",
+                    "sha256": "4f07a5696273c0503848c97ee3f215f6e38f67f490f93a9efa18d19aef777725"
                 }
             ]
         },
@@ -301,8 +301,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://ffmpeg.org/releases/ffmpeg-5.0.tar.gz",
-                    "sha256": "7bf52bc242b5db8df67c62cb826df134d917dedcf6abf1289e15e4057bcc1750"
+                    "url": "https://ffmpeg.org/releases/ffmpeg-5.1.1.tar.gz",
+                    "sha256": "4f07a5696273c0503848c97ee3f215f6e38f67f490f93a9efa18d19aef777725"
                 }
             ]
         },
@@ -431,7 +431,7 @@
                 {
                     "type": "git",
                     "url": "https://framagit.org/medoc92/npupnp.git",
-                    "tag": "libnpupnp-v4.1.5"
+                    "tag": "libnpupnp-v4.2.1"
                 },
                 {
                     "type": "patch",
@@ -457,7 +457,7 @@
                 {
                     "type": "git",
                     "url": "https://framagit.org/medoc92/libupnpp.git",
-                    "tag": "libupnpp-v0.21.0"
+                    "tag": "libupnpp-v0.22.1"
                 }
             ]
         },
@@ -483,25 +483,18 @@
                 }
             ]
         },
+        "flatpak/python3-yt-dlp.json",
+        "flatpak/python3-ytmusicapi.json",
         {
-            "name": "python",
-            "config-opts": [
-                "--enable-static",
-                "--disable-shared"
-            ],
-            "cleanup": [
-                "/bin",
-                "*.a",
-                "*.la",
-                "/include",
-                "/lib/pkgconfig",
-                "/share"
-            ],
+            "name": "pybind11",
+            "config-opts": ["-DPYBIND11_FINDPYTHON=ON", "-DPYBIND11_TEST=OFF"],
+            "buildsystem": "cmake-ninja",
+            "builddir": true,
             "sources": [
                 {
-                    "type": "archive",
-                    "url": "https://www.python.org/ftp/python/3.10.5/Python-3.10.5.tgz",
-                    "md5": "d87193c077541e22f892ff1353fac76c"
+                    "type": "git",
+                    "url": "https://github.com/pybind/pybind11",
+                    "tag": "v2.10.0"
                 }
             ]
         },
@@ -515,7 +508,30 @@
             "sources": [
                 {
                     "type": "dir",
-                    "path": "../"
+                    "path": "../",
+                    "skip": [
+                        ".git",
+                        "binaries",
+                        "build",
+                        "res",
+                        "sailfish",
+                        "desktop/.flatpak-builder",
+                        "desktop/flatpak",
+                        "desktop/org.mkiol.Jupii.json"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "python-patch",
+            "buildsystem": "simple",
+            "build-commands": [
+                "patch ${FLATPAK_DEST}/lib/python3.9/site-packages/yt_dlp/utils.py yt_dlp.patch"
+            ],
+            "sources": [
+                {
+                    "type": "file",
+                    "path": "../libs/python/yt_dlp.patch"
                 }
             ]
         }

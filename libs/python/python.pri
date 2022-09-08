@@ -17,5 +17,9 @@ sailfish {
 }
 
 desktop {
-    LIBS += -lutil -lpython3.10 -llzma -larchive
+    flatpak {
+        LIBS += -lutil -lpython3.9 -llzma -larchive
+    } else {
+        LIBS += -lutil -lpython3.10 -llzma -larchive
+    }
 }
