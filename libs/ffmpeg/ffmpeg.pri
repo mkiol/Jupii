@@ -1,3 +1,5 @@
+# FFMPEG URL="https://ffmpeg.org/releases/ffmpeg-5.1.1.tar.gz"
+
 FFMPEG_ROOT = $$PROJECTDIR/libs/ffmpeg
 
 INCLUDEPATH += $$FFMPEG_ROOT/include
