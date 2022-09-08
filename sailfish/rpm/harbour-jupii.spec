@@ -15,8 +15,8 @@ Name:       harbour-jupii
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
-Version:    2.13.0
-Release:    1
+Version:    2.13.1
+Release:    2
 Group:      Qt/Qt
 License:    LICENSE
 URL:        http://mozilla.org/MPL/2.0/

@@ -11,12 +11,12 @@
 namespace Jupii {
 static constexpr const char* APP_NAME = "Jupii";
 #ifdef QT_DEBUG
-static constexpr const char* APP_VERSION = "2.13.0 (debug)";
+static constexpr const char* APP_VERSION = "2.13.1 (debug)";
 #else
 #ifdef HARBOUR
-static constexpr const char* APP_VERSION = "2.13.0 (harbour)";
+static constexpr const char* APP_VERSION = "2.13.1 (harbour)";
 #else
-static constexpr const char* APP_VERSION = "2.13.0";
+static constexpr const char* APP_VERSION = "2.13.1";
 #endif  // HARBOUR
 #endif  // QT_DEBUG
 #ifdef FLATPAK
