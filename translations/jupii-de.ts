@@ -107,7 +107,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="153"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="100"/>
         <source>Audio from video</source>
-        <translation type="unfinished"></translation>
+        <translation>Tonspur aus Video</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="162"/>
@@ -129,7 +129,7 @@
         <location filename="../sailfish/qml/AddMediaPage.qml" line="189"/>
         <location filename="../desktop/qml/AddMediaPage.qml" line="112"/>
         <source>Recording</source>
-        <translation type="unfinished"></translation>
+        <translation>Aufnahme</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddMediaPage.qml" line="198"/>
@@ -200,7 +200,7 @@
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="53"/>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn die URL nicht direkt auf eine Audio-, Video- oder Bilddatei verweist, wird der Inhalt mithilfe von youtube-dl gesucht.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="59"/>
@@ -225,7 +225,7 @@
     <message>
         <location filename="../desktop/qml/AddUrlDialog.qml" line="86"/>
         <source>Add only audio stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausschließlich Tonspur hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -258,12 +258,12 @@
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="109"/>
         <source>Add only audio stream</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausschließlich Tonspur hinzufügen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/AddUrlPage.qml" line="113"/>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn die URL nicht direkt auf eine Audio-, Video- oder Bilddatei verweist, wird der Inhalt mithilfe von youtube-dl gesucht.</translation>
     </message>
 </context>
 <context>
@@ -400,7 +400,7 @@
         <location filename="../sailfish/qml/BcPage.qml" line="59"/>
         <location filename="../desktop/qml/BcPage.qml" line="89"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Abruf</translation>
     </message>
     <message>
         <location filename="../desktop/qml/BcPage.qml" line="160"/>
@@ -431,22 +431,22 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../src/contentserver.cpp" line="716"/>
+        <location filename="../src/contentserver.cpp" line="723"/>
         <source>Unknown</source>
         <translation>Unbekannt</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1746"/>
+        <location filename="../src/contentserver.cpp" line="1753"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1765"/>
+        <location filename="../src/contentserver.cpp" line="1772"/>
         <source>Audio capture</source>
         <translation>Tonübertragung</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1784"/>
+        <location filename="../src/contentserver.cpp" line="1791"/>
         <source>Screen capture</source>
         <translation>Bildschirmaufnahme</translation>
     </message>
@@ -663,7 +663,7 @@
         <location filename="../sailfish/qml/FosdemPage.qml" line="43"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="85"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Abruf</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/FosdemPage.qml" line="72"/>
@@ -742,7 +742,7 @@
         <location filename="../sailfish/qml/IcecastPage.qml" line="49"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="85"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Abruf</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/IcecastPage.qml" line="68"/>
@@ -865,19 +865,19 @@
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="266"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="275"/>
         <source>Cached</source>
-        <translation type="unfinished"></translation>
+        <translation>Gecached</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="267"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="284"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Ja</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="267"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="284"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Nein</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="326"/>
@@ -943,7 +943,7 @@
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="88"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="27"/>
         <source>Open URL</source>
-        <translation type="unfinished"></translation>
+        <translation>URL öffnen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/MediaInfoPage.qml" line="164"/>
@@ -1036,7 +1036,7 @@
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="97"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="156"/>
         <source>Unable to play item</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann Element nicht abspielen </translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="99"/>
@@ -1081,13 +1081,13 @@
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="171"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="198"/>
         <source>Preparing item %1 of %2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Bereite Element %1 von %2 vor…</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="172"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="199"/>
         <source>Preparing item...</source>
-        <translation type="unfinished"></translation>
+        <translation>Bereite Element vor</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/PlayQueuePage.qml" line="309"/>
@@ -1538,19 +1538,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="305"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="303"/>
         <source>Caching</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="323"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="359"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="321"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="357"/>
         <location filename="../sailfish/qml/SettingsPage.qml" line="455"/>
         <source>Auto</source>
-        <translation type="unfinished">Automatisch</translation>
+        <translation>Automatisch</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="342"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="340"/>
         <source>Cache cleaning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1567,7 +1567,7 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="443"/>
         <source>Screen capture encoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Encoder für Bildschirmübertragung</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="475"/>
@@ -1592,47 +1592,47 @@
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="181"/>
         <source>Screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildschirmaufnahme</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="186"/>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Deaktiviert</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="187"/>
         <source>Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktiviert</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="188"/>
         <source>Enabled with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Mit Ton Aktiviert</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="211"/>
         <source>Force screen 16:9 aspect ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Erzwinge 16:9 Seitenverhältnis</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="214"/>
         <source>Don&apos;t force</source>
-        <translation type="unfinished"></translation>
+        <translation>Nicht erzwingen</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="215"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Skalieren</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="216"/>
         <source>Crop</source>
-        <translation type="unfinished"></translation>
+        <translation>Beschneiden</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="233"/>
         <source>Screen capture quality</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualität der Bildschirmaufnahme</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SettingsPage.qml" line="266"/>
@@ -1645,21 +1645,21 @@
         <translation>Internetstreams werden an das UPnP-Gerät über %1 weitergeleitet. Empfohlen ist &apos;Immer&apos;, weil dadurch die beste Kompatibilität gewährleistet wird. Falls deaktiviert (&apos;Niemals&apos;), sind Icecast-Titel und Streamaufnahme nicht verfügbar.</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="289"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="324"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="360"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="285"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="322"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="358"/>
         <source>Always</source>
         <translation>Immer</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="290"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="286"/>
         <source>Only Icecast</source>
         <translation>Nur Icecast</translation>
     </message>
     <message>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="291"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="325"/>
-        <location filename="../sailfish/qml/SettingsPage.qml" line="361"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="287"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="323"/>
+        <location filename="../sailfish/qml/SettingsPage.qml" line="359"/>
         <source>Never</source>
         <translation>Niemals</translation>
     </message>
@@ -1741,7 +1741,7 @@
         <location filename="../sailfish/qml/SomafmPage.qml" line="42"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="84"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Abruf</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SomafmPage.qml" line="74"/>
@@ -1812,7 +1812,7 @@
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="59"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="89"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Abruf</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/SoundcloudPage.qml" line="111"/>
@@ -1898,7 +1898,7 @@
         <location filename="../sailfish/qml/TuneinPage.qml" line="48"/>
         <location filename="../desktop/qml/TuneinPage.qml" line="78"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Abruf</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/TuneinPage.qml" line="67"/>
@@ -2111,7 +2111,7 @@
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="67"/>
         <source>Error in getting data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Abruf</translation>
     </message>
     <message>
         <location filename="../sailfish/qml/YtPage.qml" line="112"/>
