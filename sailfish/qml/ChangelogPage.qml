@@ -33,7 +33,7 @@ Page {
             }
 
             LogItem {
-                title: "YouTube Music browser"
+                title: "YouTube Music browser" + (settings.isHarbour() ? " (disabled in Harbour version)" : "")
                 description: "YouTube Music is a popular video and music streaming platform. " +
                              "You can search and add content you like using a browser available via 'Add Items' menu. " +
                              "To switch between audio/video use 'Type' option in pull-down menu. " +
@@ -61,7 +61,7 @@ Page {
             }
 
             LogItem {
-                title: "Permission for integration with gPodder app"
+                title: "Permission for integration with gPodder app" + (settings.isHarbour() ? " (disabled in Harbour version)" : "")
                 description: "Integration with gPodder has not worked since sandboxing was enabled. " +
                              "To overcome this problem, Jupii requests for 'gPodder' permission " +
                              "when it's run for the first time."

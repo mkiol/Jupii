@@ -316,8 +316,7 @@ Page {
             }
 
             SimpleListItem {
-                enabled: !settings.isHarbour()
-                opacity: enabled ? 1.0 : 0.4
+                visible: !settings.isHarbour()
                 title.text: "YouTube Music"
                 icon.source: "image://icons/icon-m-youtube"
                 onClicked: {

@@ -373,10 +373,8 @@ Page {
 
                         ListItem {
                             contentHeight: flow0.height + 2 * Theme.paddingLarge
-                            enabled: settings.isDebug()
-                            onClicked: {
-                                if (settings.isDebug()) openMenu()
-                            }
+                            visible: settings.isDebug()
+                            onClicked: openMenu()
 
                             Flow {
                                 id: flow0
