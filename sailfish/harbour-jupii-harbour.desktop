@@ -9,4 +9,3 @@ Name=Jupii
 Permissions=Internet;Audio;Microphone;RemovableMedia;UserDirs;MediaIndexing
 OrganizationName=org.mkiol
 ApplicationName=jupii
-ExecDBus=harbour-jupii
