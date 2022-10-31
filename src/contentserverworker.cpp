@@ -83,7 +83,7 @@ void ContentServerWorker::endRecFile(Proxy &proxy, Proxy::Source &source) {
 void ContentServerWorker::endAllRecFile(Proxy &proxy) {
     const auto file = [&] {
         std::optional<QString> file;
-        for (auto &s : proxy.sources) file = s.endRecFile(proxy);
+        for (auto &[_, s] : proxy.sources) file = s.endRecFile(proxy);
         return file;
     }();
 
@@ -105,7 +105,7 @@ void ContentServerWorker::saveRecFile(Proxy &proxy, Proxy::Source &source) {
 }
 
 void ContentServerWorker::saveAllRecFile(Proxy &proxy) {
-    for (auto &source : proxy.sources) {
+    for (auto &[_, source] : proxy.sources) {
         if (auto r = source.saveRecFile(proxy)) {
             emit streamRecorded(r->first, r->second);
         }
@@ -439,8 +439,8 @@ void ContentServerWorker::makeProxy(const QUrl &id, bool first,
             emit proxyConnected(id);
         }
 
-        if (proxy.sources[source.value()].hasHeaders()) {
-            handleRespWithProxyMetaData(proxy, req, resp, source.value());
+        if (proxy.sources[*source].hasHeaders()) {
+            handleRespWithProxyMetaData(proxy, req, resp, *source);
         }
     }
 
@@ -471,7 +471,7 @@ void ContentServerWorker::startProxy(const QUrl &id) {
     if (proxies.contains(id)) {
         qWarning() << "proxy already exists";
         const auto proxy = proxies[id];
-        if (proxy.connected && !proxy.sinks.isEmpty()) {
+        if (proxy.connected && !proxy.sinks.empty()) {
             emit proxyConnected(id);
             return;
         }
@@ -501,9 +501,8 @@ void ContentServerWorker::logProxySinks(const Proxy &proxy) {
     qDebug() << "sinks:";
     int i = 1;
     for (auto it = proxy.sinks.cbegin(); it != proxy.sinks.cend(); ++it, ++i) {
-        const auto &sink = it.value();
         qDebug() << i << "|"
-                 << "sink:" << sink.resp;
+                 << "sink:" << it->second.resp;
     }
 }
 
@@ -512,7 +511,7 @@ void ContentServerWorker::logProxySources(const Proxy &proxy) {
     int i = 1;
     for (auto it = proxy.sources.cbegin(); it != proxy.sources.cend();
          ++it, ++i) {
-        const auto &source = it.value();
+        const auto &source = it->second;
         if (source.range)
             qDebug() << "  " << i << "|"
                      << "sources:" << source.reply << source.range.value()
@@ -535,7 +534,7 @@ void ContentServerWorker::logProxySourceToSinks(const Proxy &proxy) {
     int i = 1;
     for (auto it = proxy.sourceToSinkMap.cbegin();
          it != proxy.sourceToSinkMap.cend(); ++it, ++i) {
-        qDebug() << "  " << i << "|" << it.key() << "->" << it.value();
+        qDebug() << "  " << i << "|" << it->first << "->" << it->second;
     }
 }
 
@@ -929,7 +928,7 @@ void ContentServerWorker::responseForUrlDone() {
 void ContentServerWorker::removeProxySource(Proxy &proxy,
                                             QNetworkReply *reply) {
     qDebug() << "removing proxy source:" << reply;
-    if (!proxy.sources.contains(reply))
+    if (proxy.sources.count(reply) == 0)
         throw std::runtime_error("no source for reply");
 
     finishRecFile(proxy, proxy.sources[reply]);
@@ -960,14 +959,14 @@ void ContentServerWorker::removeProxy(const QUrl &id) {
 
 void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
                                                       QNetworkReply *reply) {
-    auto resps = proxy.sourceToSinkMap.values(reply);
-    for (auto *resp : resps) {
-        if (!proxy.sinks.contains(resp))
+    for (auto [key, val] : proxy.sourceToSinkMap) {
+        if (key != reply) continue;
+        if (proxy.sinks.count(val) == 0)
             throw std::runtime_error("no sink for resp");
-        qDebug() << "calling handleRespWithProxyMetaData for sink:" << resp
-                 << resp->isFinished();
-        if (!resp->isFinished()) {
-            auto &sink = proxy.sinks[resp];
+        qDebug() << "calling handleRespWithProxyMetaData for sink:" << val
+                 << val->isFinished();
+        if (!val->isFinished()) {
+            auto &sink = proxy.sinks[val];
             handleRespWithProxyMetaData(proxy, sink.req, sink.resp, reply);
         }
     }
@@ -979,7 +978,7 @@ void ContentServerWorker::handleRespWithProxyMetaData(Proxy &proxy,
                                                       QNetworkReply *reply) {
     qDebug() << "handle resp with proxy meta data:" << reply << resp;
 
-    if (!proxy.sources.contains(reply))
+    if (proxy.sources.count(reply) == 0)
         throw std::runtime_error("No source for reply");
 
     auto &source = proxy.sources[reply];
@@ -1071,7 +1070,7 @@ void ContentServerWorker::proxyMetaDataChanged() {
 
     auto &proxy = proxies[id];
 
-    if (!proxy.sources.contains(reply))
+    if (proxy.sources.count(reply) == 0)
         throw std::runtime_error("No source for reply");
     auto &source = proxy.sources[reply];
 
@@ -1209,7 +1208,7 @@ void ContentServerWorker::proxyFinished() {
 
     auto &proxy = proxies[id];
 
-    if (!proxy.sources.contains(reply))
+    if (proxy.sources.count(reply) == 0)
         throw std::runtime_error("no source for reply");
     auto &source = proxy.sources[reply];
 
@@ -1271,7 +1270,7 @@ void ContentServerWorker::setStreamToRecord(const QUrl &id, bool value) {
 QByteArray ContentServerWorker::processShoutcastMetadata(Proxy &proxy,
                                                          QNetworkReply *reply,
                                                          QByteArray data) {
-    if (!proxy.sources.contains(reply))
+    if (proxy.sources.count(reply) == 0)
         throw std::runtime_error("no sourece for reply");
     auto &source = proxy.sources[reply];
 
@@ -1459,7 +1458,7 @@ void ContentServerWorker::proxyReadyRead() {
     }
 
     auto &proxy = proxies[id];
-    if (!proxy.sources.contains(reply))
+    if (proxy.sources.count(reply) == 0)
         throw std::runtime_error("no source for reply");
     auto &source = proxy.sources[reply];
 
@@ -1497,7 +1496,7 @@ void ContentServerWorker::Proxy::Source::trimProxyCache() {
 void ContentServerWorker::checkCachedCondition(Proxy &proxy) {
     if (proxy.connected) return;
 
-    if (!proxy.sinks.isEmpty()) {
+    if (!proxy.sinks.empty()) {
         if (!proxy.connected) {
             proxy.connected = true;
             emit proxyConnected(proxy.id);
@@ -1794,42 +1793,43 @@ std::optional<QNetworkReply *> ContentServerWorker::Proxy::matchSource(
         return std::nullopt;
     }
 
-    if (!sinks.contains(resp)) throw std::runtime_error("no sink for resp");
+    if (sinks.count(resp) == 0) throw std::runtime_error("no sink for resp");
 
     auto &sink = sinks[resp];
 
-    for (auto it = sources.begin(); it != sources.end(); ++it) {
-        auto &source = it.value();
-        if (sourceMatchesSink(source, sink)) {
-            if (sink.range) sink.range->updateLength(source.length);
-            if (!sourceToSinkMap.contains(source.reply, sink.resp)) {
-                sourceToSinkMap.insert(source.reply, sink.resp);
-            }
-            return source.reply;
-        }
+    auto it = std::find_if(sources.begin(), sources.end(), [&sink](auto &n) {
+        return sourceMatchesSink(n.second, sink);
+    });
+
+    if (it == sources.end()) return std::nullopt;
+
+    const auto &source = it->second;
+
+    if (sink.range) sink.range->updateLength(source.length);
+
+    if (std::find_if(sourceToSinkMap.cbegin(), sourceToSinkMap.cend(),
+                     [reply = source.reply, resp = sink.resp](const auto &n) {
+                         return n.first == reply && n.second == resp;
+                     }) == sourceToSinkMap.cend()) {
+        sourceToSinkMap.emplace(source.reply, sink.resp);
     }
 
-    return std::nullopt;
+    return source.reply;
 }
 
 bool ContentServerWorker::Proxy::matchedSourceExists(const QByteArray &range) {
-    const auto r = Range::fromRange(QString::fromLatin1(range));
-    for (auto &source : sources) {
-        if (sourceMatchesRange(source, r) != MatchType::Not) {
-            return true;
-        }
-    }
-
-    return false;
+    return std::find_if(
+               sources.begin(), sources.end(),
+               [r = Range::fromRange(QString::fromLatin1(range))](auto &n) {
+                   return sourceMatchesRange(n.second, r) != MatchType::Not;
+               }) != sources.end();
 }
 
 bool ContentServerWorker::Proxy::matchedSinkExists(
     const QHttpResponse *resp) const {
-    for (auto it = sourceToSinkMap.cbegin(); it != sourceToSinkMap.cend();
-         ++it) {
-        if (it.value() == resp) return true;
-    }
-    return false;
+    return std::find_if(sourceToSinkMap.cbegin(), sourceToSinkMap.cend(),
+                        [resp](const auto &n) { return n.second == resp; }) !=
+           sourceToSinkMap.cend();
 }
 
 bool ContentServerWorker::matchedSourceExists(const QUrl &id,
@@ -1839,17 +1839,18 @@ bool ContentServerWorker::matchedSourceExists(const QUrl &id,
 }
 
 std::optional<QNetworkReply *> ContentServerWorker::Proxy::unmatchSink(
-    QHttpResponse *resp) {
+    const QHttpResponse *resp) {
     logProxySourceToSinks(*this);
-    auto it = sourceToSinkMap.begin();
-    while (it != sourceToSinkMap.end()) {
-        if (it.value() == resp) {
-            auto reply = it.key();
-            sourceToSinkMap.remove(reply, resp);
+
+    for (auto it = sourceToSinkMap.begin(); it != sourceToSinkMap.end();) {
+        if (it->second == resp) {
+            auto reply = it->first;
+            sourceToSinkMap.erase(it);
             logProxySourceToSinks(*this);
             return reply;
+        } else {
+            ++it;
         }
-        ++it;
     }
 
     return std::nullopt;
@@ -1857,17 +1858,17 @@ std::optional<QNetworkReply *> ContentServerWorker::Proxy::unmatchSink(
 
 std::optional<QNetworkReply *> ContentServerWorker::Proxy::replyMatched(
     const QHttpResponse *resp) const {
-    auto it = sourceToSinkMap.cbegin();
-    while (it != sourceToSinkMap.cend()) {
-        if (it.value() == resp) return it.key();
-        ++it;
-    }
-    return std::nullopt;
+    auto it = std::find_if(sourceToSinkMap.cbegin(), sourceToSinkMap.cend(),
+                           [resp](const auto &n) { return n.second == resp; });
+
+    if (it == sourceToSinkMap.cend()) return std::nullopt;
+
+    return it->first;
 }
 
 QList<QHttpResponse *> ContentServerWorker::Proxy::matchSinks(
     QNetworkReply *reply) {
-    if (!sources.contains(reply))
+    if (sources.count(reply) == 0)
         throw std::runtime_error("no source for reply");
 
     QList<QHttpResponse *> resps;
@@ -1875,11 +1876,18 @@ QList<QHttpResponse *> ContentServerWorker::Proxy::matchSinks(
     auto &source = sources[reply];
 
     for (auto it = sinks.begin(); it != sinks.end(); ++it) {
-        auto &sink = it.value();
+        auto &sink = it->second;
         if (!matchedSinkExists(sink.resp) && sourceMatchesSink(source, sink)) {
-            if (!sourceToSinkMap.contains(source.reply, sink.resp)) {
-                sourceToSinkMap.insert(source.reply, sink.resp);
+            auto it = std::find_if(
+                sourceToSinkMap.cbegin(), sourceToSinkMap.cend(),
+                [reply = source.reply, resp = sink.resp](const auto &n) {
+                    return n.first == reply && n.second == resp;
+                });
+
+            if (it == sourceToSinkMap.cend()) {
+                sourceToSinkMap.emplace(source.reply, sink.resp);
             }
+
             resps.push_back(sink.resp);
         }
     }
@@ -1890,23 +1898,28 @@ QList<QHttpResponse *> ContentServerWorker::Proxy::matchSinks(
 }
 
 void ContentServerWorker::Proxy::unmatchSource(QNetworkReply *reply) {
-    sourceToSinkMap.remove(reply);
+    for (auto it = sourceToSinkMap.begin(); it != sourceToSinkMap.end();) {
+        if (it->first == reply)
+            it = sourceToSinkMap.erase(it);
+        else
+            ++it;
+    }
 }
 
 bool ContentServerWorker::Proxy::matchedSourceExists(
     QNetworkReply *reply) const {
-    return sourceToSinkMap.contains(reply);
+    return sourceToSinkMap.count(reply) > 0;
 }
 
 void ContentServerWorker::Proxy::removeSinks() {
-    while (!sinks.isEmpty()) {
-        removeSink(sinks.begin()->resp);
+    while (!sinks.empty()) {
+        removeSink(sinks.begin()->second.resp);
     }
 }
 
 void ContentServerWorker::Proxy::addSink(QHttpRequest *req,
                                          QHttpResponse *resp) {
-    if (sinks.contains(resp)) {
+    if (sinks.count(resp) > 0) {
         return;
     }
 
@@ -1917,7 +1930,7 @@ void ContentServerWorker::Proxy::addSink(QHttpRequest *req,
     s.resp = resp;
     s.range = Range::fromRange(req->header(QStringLiteral("range")));
 
-    sinks.insert(resp, s);
+    sinks.emplace(resp, s);
 
     matchSource(resp);
 
@@ -1929,7 +1942,7 @@ void ContentServerWorker::Proxy::addSink(QHttpRequest *req,
 void ContentServerWorker::Proxy::removeSink(QHttpResponse *resp) {
     resp->setProperty("proxy", {});
 
-    sinks.remove(resp);
+    sinks.erase(resp);
 
     unmatchSink(resp);
 
@@ -1947,7 +1960,7 @@ void ContentServerWorker::Proxy::removeSink(QHttpResponse *resp) {
 
 void ContentServerWorker::Proxy::addSource(QNetworkReply *reply, bool first,
                                            CacheLimit cacheLimit) {
-    if (sources.contains(reply)) return;
+    if (sources.count(reply) > 0) return;
 
     reply->setProperty("proxy", id);
 
@@ -1958,7 +1971,7 @@ void ContentServerWorker::Proxy::addSource(QNetworkReply *reply, bool first,
     s.cacheLimit = cacheLimit;
     s.first = first;
 
-    sources.insert(reply, s);
+    sources.emplace(reply, s);
 
     matchSinks(reply);
 
@@ -1970,7 +1983,7 @@ void ContentServerWorker::Proxy::addSource(QNetworkReply *reply, bool first,
 void ContentServerWorker::Proxy::removeSource(QNetworkReply *reply) {
     reply->setProperty("proxy", {});
 
-    sources.remove(reply);
+    sources.erase(reply);
     unmatchSource(reply);
 
     qDebug() << "source removed:" << reply << sources.size();
@@ -1985,8 +1998,8 @@ void ContentServerWorker::Proxy::removeSource(QNetworkReply *reply) {
 }
 
 void ContentServerWorker::Proxy::removeSources() {
-    while (!sources.isEmpty()) {
-        removeSource(sources.begin()->reply);
+    while (!sources.empty()) {
+        removeSource(sources.begin()->second.reply);
     }
 }
 
@@ -1996,14 +2009,15 @@ void ContentServerWorker::Proxy::writeAll(QNetworkReply *reply,
     if (sources[reply].hasMeta()) {
         for (auto it = sourceToSinkMap.cbegin(); it != sourceToSinkMap.cend();
              ++it) {
-            if (it.key() == reply && !it.value()->isFinished()) {
-                auto &sink = sinks[it.value()];
+            if (it->first == reply && !it->second->isFinished()) {
+                auto &sink = sinks[it->second];
                 if (sink.meta())
                     sink.resp->write(data);
                 else
                     sink.resp->write(dataWithoutMeta);
             }
         }
+
     } else {
         writeAll(reply, data);
     }
@@ -2013,8 +2027,8 @@ void ContentServerWorker::Proxy::writeAll(const QNetworkReply *reply,
                                           const QByteArray &data) {
     for (auto it = sourceToSinkMap.cbegin(); it != sourceToSinkMap.cend();
          ++it) {
-        if (it.key() == reply && !it.value()->isFinished()) {
-            it.value()->write(data);
+        if (it->first == reply && !it->second->isFinished()) {
+            it->second->write(data);
         }
     }
 }
@@ -2022,8 +2036,8 @@ void ContentServerWorker::Proxy::writeAll(const QNetworkReply *reply,
 void ContentServerWorker::Proxy::writeNotSentAll(QNetworkReply *reply) {
     for (auto it = sourceToSinkMap.cbegin(); it != sourceToSinkMap.cend();
          ++it) {
-        if (it.key() == reply && !it.value()->isFinished())
-            writeNotSent(reply, it.value());
+        if (it->first == reply && !it->second->isFinished())
+            writeNotSent(reply, it->second);
     }
 }
 
@@ -2108,53 +2122,62 @@ void ContentServerWorker::Proxy::Source::resetCacheTimer() {
 }
 
 void ContentServerWorker::Proxy::endAll() {
-    for (auto &r : sinks) r.resp->end();
+    for (auto &r : sinks) r.second.resp->end();
 }
 
 void ContentServerWorker::Proxy::endSinks(QNetworkReply *reply) {
-    const auto matchedSinks = sourceToSinkMap.values(reply);
-    for (const auto &r : matchedSinks) {
-        if (!r->isFinished()) r->end();
+    for (auto &[source, sink] : sourceToSinkMap) {
+        if (source == reply && sink->isFinished()) sink->end();
     }
 }
 
 void ContentServerWorker::Proxy::sendEmptyResponseAll(QNetworkReply *reply,
                                                       int code) {
-    for (auto &resp : sourceToSinkMap.values(reply)) {
-        ContentServerWorker::sendEmptyResponse(resp, code);
+    for (auto &[source, sink] : sourceToSinkMap) {
+        if (source == reply) ContentServerWorker::sendEmptyResponse(sink, code);
     }
 }
 
 void ContentServerWorker::Proxy::sendResponseAll(QNetworkReply *reply, int code,
                                                  const QByteArray &data) {
-    for (auto &resp : sourceToSinkMap.values(reply)) {
-        ContentServerWorker::sendResponse(resp, code, data);
+    for (auto &[source, sink] : sourceToSinkMap) {
+        if (source == reply)
+            ContentServerWorker::sendResponse(sink, code, data);
     }
 }
 
 void ContentServerWorker::Proxy::sendRedirectionAll(QNetworkReply *reply,
                                                     const QString &location) {
-    for (auto &resp : sourceToSinkMap.values(reply)) {
-        ContentServerWorker::sendRedirection(resp, location);
+    for (auto &[source, sink] : sourceToSinkMap) {
+        if (source == reply)
+            ContentServerWorker::sendRedirection(sink, location);
     }
 }
 
 bool ContentServerWorker::Proxy::shouldBeRemoved() {
-    return sinks.isEmpty() &&
-           (sources.isEmpty() ||
-            std::all_of(sources.begin(), sources.end(),
-                        [this](auto &s) { return sourceShouldBeRemoved(s); }));
+    return sinks.empty() &&
+           (sources.empty() ||
+            std::all_of(sources.begin(), sources.end(), [this](auto &n) {
+                return sourceShouldBeRemoved(n.second);
+            }));
 }
 
 bool ContentServerWorker::Proxy::sourceShouldBeRemoved(Source &source) {
     const auto cacheState = source.maxCacheReached();
     return connected && cacheState != CacheReachedType::NotReached &&
-           !sourceToSinkMap.contains(source.reply);
+           sourceToSinkMap.count(source.reply) == 0;
+}
+
+template <typename K, typename V>
+static inline std::vector<K> mapsKeys(const std::unordered_map<K, V> &map) {
+    std::vector<K> keys;
+    keys.reserve(map.size());
+    for (const auto &n : map) keys.push_back(n.first);
+    return keys;
 }
 
 void ContentServerWorker::Proxy::removeDeadSources() {
-    const auto replies = sources.keys();
-    for (auto *r : replies) {
+    for (auto *r : mapsKeys(sources)) {
         auto &source = sources[r];
         if (sourceShouldBeRemoved(source)) removeSource(source.reply);
     }
@@ -2167,9 +2190,7 @@ void ContentServerWorker::removeDeadProxies() {
     const auto ids = proxies.keys();
     for (const auto &id : ids) {
         auto &proxy = proxies[id];
-
-        const auto replies = proxy.sources.keys();
-        for (auto *r : replies) {
+        for (auto *r : mapsKeys(proxy.sources)) {
             auto &source = proxy.sources[r];
             if (proxy.sourceShouldBeRemoved(source)) {
                 finishRecFile(proxy, source);
@@ -2184,21 +2205,21 @@ void ContentServerWorker::removeDeadProxies() {
 }
 
 bool ContentServerWorker::Proxy::recordable() const {
-    foreach (const auto &source, sources) {
-        if (source.recordable()) return true;
-    }
-
-    return false;
+    return std::find_if(sources.cbegin(), sources.cend(), [](const auto &n) {
+               return n.second.recordable();
+           }) != sources.cend();
 }
 
 bool ContentServerWorker::Proxy::closeRecFile() {
     bool ret = false;
-    foreach (const Source &s, sources) {
-        if (s.recFile) {
-            s.recFile->remove();
+
+    std::for_each(sources.cbegin(), sources.cend(), [&ret](const auto &n) {
+        if (n.second.recFile) {
+            n.second.recFile->remove();
             ret = true;
         }
-    }
+    });
+
     return ret;
 }
 
@@ -2370,10 +2391,10 @@ void ContentServerWorker::Range::updateLength(int64_t length) {
 }
 
 bool ContentServerWorker::Proxy::minCacheReached() const {
-    if (!sinks.isEmpty()) return true;
+    if (!sinks.empty()) return true;
 
     bool firstReached = false;
-    for (const auto &source : sources) {
+    for (const auto &[_, source] : sources) {
         if (source.minCacheReached()) {
             if (source.first) firstReached = true;
         } else {
@@ -2385,7 +2406,7 @@ bool ContentServerWorker::Proxy::minCacheReached() const {
 }
 
 bool ContentServerWorker::Proxy::maxCacheReached() {
-    for (auto &source : sources) {
+    for (auto &[_, source] : sources) {
         if (source.maxCacheReached() != CacheReachedType::NotReached) {
             return true;
         }
@@ -2394,7 +2415,7 @@ bool ContentServerWorker::Proxy::maxCacheReached() {
 }
 
 void ContentServerWorker::Proxy::resetCacheTimer() {
-    for (auto &source : sources) {
+    for (auto &[_, source] : sources) {
         source.resetCacheTimer();
     }
 }
@@ -2419,12 +2440,12 @@ QDebug operator<<(QDebug debug, const ContentServerWorker::Range &range) {
 
 void ContentServerWorker::Proxy::updateRageLength(const Source &source) {
     if (source.length < 0) return;
-    if (!sourceToSinkMap.contains(source.reply)) return;
+    if (sourceToSinkMap.count(source.reply) == 0) return;
 
     for (auto it = sourceToSinkMap.cbegin(); it != sourceToSinkMap.cend();
          ++it) {
-        if (it.key() == source.reply && sinks.contains(it.value())) {
-            auto &sink = sinks[it.value()];
+        if (it->first == source.reply && sinks.count(it->second) > 0) {
+            auto &sink = sinks[it->second];
             if (sink.range) sink.range->updateLength(source.length);
         }
     }

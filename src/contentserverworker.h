@@ -27,6 +27,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <utility>
 
 #include "audiocaster.h"
@@ -198,9 +199,10 @@ class ContentServerWorker : public QObject,
         QString artPath;
         QUrl origUrl;
         ContentServer::Type otype = ContentServer::Type::Type_Unknown;
-        QHash<QHttpResponse *, Sink> sinks;
-        QHash<QNetworkReply *, Source> sources;
-        QMultiHash<QNetworkReply *, QHttpResponse *> sourceToSinkMap;
+        std::unordered_map<QHttpResponse *, Sink> sinks;
+        std::unordered_map<QNetworkReply *, Source> sources;
+        std::unordered_multimap<QNetworkReply *, QHttpResponse *>
+            sourceToSinkMap;
         Proxy &operator=(const Proxy &) = delete;
         ~Proxy();
         void addSink(QHttpRequest *req, QHttpResponse *resp);
@@ -225,12 +227,12 @@ class ContentServerWorker : public QObject,
         bool sourceShouldBeRemoved(Source &source);
         void removeDeadSources();
         inline bool hasMeta() const {
-            return !sources.isEmpty() && sources.cbegin()->metaint > 0;
+            return !sources.empty() && sources.cbegin()->second.metaint > 0;
         }
         bool recordable() const;
         bool closeRecFile();
         std::optional<QNetworkReply *> matchSource(QHttpResponse *resp);
-        std::optional<QNetworkReply *> unmatchSink(QHttpResponse *resp);
+        std::optional<QNetworkReply *> unmatchSink(const QHttpResponse *resp);
         std::optional<QNetworkReply *> replyMatched(
             const QHttpResponse *resp) const;
         QList<QHttpResponse *> matchSinks(QNetworkReply *reply);
