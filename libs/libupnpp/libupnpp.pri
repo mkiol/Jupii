@@ -13,13 +13,8 @@ HEADERS += $$UPNPP_ROOT/include/libupnpp/control/*.hxx
 HEADERS += $$UPNPP_ROOT/include/libupnpp/device/*.hxx
 
 sailfish {
-    CONFIG(debug, debug|release) {
-        LIBS += -L$${UPNPP_ROOT}/build/sfos-$${ARCH_PREFIX}-debug -l:libnpupnp.so.4 -l:libmicrohttpd.so.12 -l:libupnpp.so.12
-        upnpp.files = $${UPNPP_ROOT}/build/sfos-$${ARCH_PREFIX}-debug/*
-    } else {
-        LIBS += -L$${UPNPP_ROOT}/build/sfos-$${ARCH_PREFIX} -l:libnpupnp.so.4 -l:libmicrohttpd.so.12 -l:libupnpp.so.12
-        upnpp.files = $${UPNPP_ROOT}/build/sfos-$${ARCH_PREFIX}/*
-    }
+    LIBS += -L$${UPNPP_ROOT}/build/sfos-$${ARCH_PREFIX} -l:libnpupnp.so.4 -l:libmicrohttpd.so.12 -l:libupnpp.so.12
+    upnpp.files = $${UPNPP_ROOT}/build/sfos-$${ARCH_PREFIX}/*
 
     upnpp.path = /usr/share/$${TARGET}/lib
     INSTALLS += upnpp

@@ -16,25 +16,14 @@ HEADERS += \
 sailfish {
     PKGCONFIG += zlib
     LIBS += -lbz2
-    CONFIG(debug, debug|release) {
-        LIBS += -L$${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX}-debug \
-                -l:libavutil.so.57 \
-                -l:libavcodec.so.59 \
-                -l:libavformat.so.59 \
-                -l:libavdevice.so.59 \
-                -l:libswresample.so.4 \
-                -l:libswscale.so.6
-        libffmpeg.files = $${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX}-debug/*
-    } else {
-        LIBS += -L$${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX} \
-                -l:libavutil.so.57 \
-                -l:libavcodec.so.59 \
-                -l:libavformat.so.59 \
-                -l:libavdevice.so.59 \
-                -l:libswresample.so.4 \
-                -l:libswscale.so.6
-        libffmpeg.files = $${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX}/*
-    }
+    LIBS += -L$${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX} \
+            -l:libavutil.so.57 \
+            -l:libavcodec.so.59 \
+            -l:libavformat.so.59 \
+            -l:libavdevice.so.59 \
+            -l:libswresample.so.4 \
+            -l:libswscale.so.6
+    libffmpeg.files = $${FFMPEG_ROOT}/build/sfos-$${ARCH_PREFIX}/*
 
     libffmpeg.path = /usr/share/$${TARGET}/lib
     INSTALLS += libffmpeg
