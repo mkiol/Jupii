@@ -57,6 +57,12 @@ OTHER_FILES += \
     rpm/*.spec \
     *.desktop
 
+CONFIG(debug, debug|release) {
+    QMAKE_CXXFLAGS += -O1 -g3 -fsanitize=address,undefined
+    QMAKE_CFLAGS += -O1 -g3 -fsanitize=address,undefined
+    QMAKE_LFLAGS += -static-libasan -static-libubsan -fsanitize=address,undefined
+}
+
 ################
 # translations #
 ################

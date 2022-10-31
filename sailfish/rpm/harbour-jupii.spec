@@ -44,6 +44,8 @@ BuildRequires:  gcc-c++
 BuildRequires:  libstdc++-devel
 BuildRequires:  glibc-devel
 BuildRequires:  desktop-file-utils
+BuildRequires:  libasan-static
+BuildRequires:  libubsan-static
 
 %description
 Play audio, video and images on UPnP/DLNA devices
