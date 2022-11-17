@@ -71,5 +71,6 @@
         <file>qml/YtPage.qml</file>
         <file>qml/AttachedIcon.qml</file>
         <file>qml/BusyIndicatorWithLabel.qml</file>
+        <file>qml/SearchDialogHeader.qml</file>
     </qresource>
 </RCC>

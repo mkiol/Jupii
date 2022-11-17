@@ -27,6 +27,7 @@ Kirigami.ScrollablePage {
     Component.onCompleted: {
         itemModel.updateModel()
     }
+    Component.onDestruction: addHistory()
 
     actions {
         main: Kirigami.Action {
@@ -56,17 +57,21 @@ Kirigami.ScrollablePage {
         ]
     }
 
+    function addHistory() {
+        var filter = itemModel.filter
+        if (filter.length > 0) settings.addTuneinSearchHistory(filter)
+    }
+
     header: Controls.ToolBar {
         RowLayout {
             spacing: 0
             anchors.fill: parent
-            Kirigami.SearchField {
+            SearchDialogHeader {
                 Layout.fillWidth: true
                 Layout.leftMargin: Kirigami.Units.smallSpacing
                 Layout.rightMargin: Kirigami.Units.smallSpacing
-                onTextChanged: {
-                    itemModel.filter = text
-                }
+                view: itemList
+                recentSearches: settings.tuneinSearchHistory
             }
         }
     }

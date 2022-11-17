@@ -36,6 +36,7 @@ Kirigami.ScrollablePage {
     Component.onCompleted: {
         itemModel.updateModel()
     }
+    Component.onDestruction: addHistory()
 
     actions {
         main: Kirigami.Action {
@@ -65,19 +66,25 @@ Kirigami.ScrollablePage {
         ]
     }
 
+    function addHistory() {
+        if (root.searchMode) {
+            var filter = itemModel.filter
+            if (filter.length > 0) settings.addBcSearchHistory(filter)
+        }
+    }
+
     header: Controls.ToolBar {
         visible: !root.albumMode && !root.artistMode
         height: visible ? implicitHeight : 0
         RowLayout {
             spacing: 0
             anchors.fill: parent
-            Kirigami.SearchField {
+            SearchDialogHeader {
                 Layout.fillWidth: true
                 Layout.leftMargin: Kirigami.Units.smallSpacing
                 Layout.rightMargin: Kirigami.Units.smallSpacing
-                onTextChanged: {
-                    itemModel.filter = text
-                }
+                view: itemList
+                recentSearches: root.searchMode ? settings.bcSearchHistory : []
             }
         }
     }

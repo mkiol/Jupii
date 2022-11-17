@@ -39,6 +39,7 @@ Kirigami.ScrollablePage {
     Component.onCompleted: {
         itemModel.updateModel()
     }
+    Component.onDestruction: addHistory()
 
     actions {
         main: Kirigami.Action {
@@ -71,21 +72,27 @@ Kirigami.ScrollablePage {
         ]
     }
 
+    function addHistory() {
+        if (searchMode) {
+            var filter = itemModel.filter
+            if (filter.length > 0) settings.addYtSearchHistory(filter)
+        }
+    }
+
     header: Controls.ToolBar {
         visible: !root.albumMode && !root.artistMode
         height: visible ? implicitHeight : 0
         RowLayout {
             anchors.fill: parent
-            Kirigami.SearchField {
+            SearchDialogHeader {
                 Layout.fillWidth: true
                 Layout.leftMargin: Kirigami.Units.smallSpacing
                 Layout.rightMargin: Kirigami.Units.smallSpacing
-                onTextChanged: {
-                    itemModel.filter = text
-                }
+                view: itemList
+                recentSearches: root.searchMode ? settings.ytSearchHistory : []
             }
             Controls.ComboBox {
-                Layout.alignment: Qt.AlignLeft
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.rightMargin: Kirigami.Units.smallSpacing
                 currentIndex: settings.ytPreferredType === Settings.YtPreferredType_Audio ? 1 : 0
                 model: [
