@@ -32,9 +32,8 @@ Kirigami.ScrollablePage {
     title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
            notableMode ? qsTr("New and Notable") : itemModel.artistName.length > 0 ? itemModel.artistName : "Bandcamp"
 
-    //refreshing: itemModel.busy
+    supportsRefreshing: false
     Component.onCompleted: {
-        refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()
     }
 
@@ -87,6 +86,9 @@ Kirigami.ScrollablePage {
         id: itemModel
         onError: {
             notifications.show(qsTr("Error in getting data"))
+        }
+        onProgressChanged: {
+            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
         }
         onBusyChanged: {
             if (!busy) {
@@ -197,5 +199,11 @@ Kirigami.ScrollablePage {
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : artistMode ? qsTr("No albums") : qsTr("No items")
         }
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: itemModel.busy
     }
 }

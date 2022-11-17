@@ -24,9 +24,8 @@ Kirigami.ScrollablePage {
 
     title: qsTr("Recordings")
 
-    //refreshing: itemModel.busy
+    supportsRefreshing: false
     Component.onCompleted: {
-        refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()
     }
 
@@ -167,5 +166,11 @@ Kirigami.ScrollablePage {
             visible: itemList.count === 0 && !itemModel.busy
             text: qsTr("No recordings")
         }
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: itemModel.busy
     }
 }

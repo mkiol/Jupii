@@ -23,9 +23,8 @@ Kirigami.ScrollablePage {
 
     title: "TuneIn"
 
-    //refreshing: itemModel.busy
+    supportsRefreshing: false
     Component.onCompleted: {
-        refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()
     }
 
@@ -125,5 +124,11 @@ Kirigami.ScrollablePage {
             text: itemModel.filter.length == 0 ?
                       qsTr("Type the words to search") : qsTr("No stations")
         }
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: itemModel.busy
     }
 }

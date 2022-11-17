@@ -129,9 +129,7 @@ Kirigami.ApplicationWindow {
 
             if (depth > 2 && idx < depth - 1) {
                 removePagesAfter(idx)
-            } /*else if (depth === 1 && pageStack.currentItem.objectName === "queue") {
-                devicesAction.trigger()
-            }*/
+            }
         }
     }
 

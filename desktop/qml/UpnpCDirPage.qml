@@ -22,9 +22,8 @@ Kirigami.ScrollablePage {
 
     title: cdir.deviceFriendlyName.length > 0 ? cdir.deviceFriendlyName : qsTr("Add item")
 
-    //refreshing: cdir.busy || itemModel.busy
+    supportsRefreshing: false
     Component.onCompleted: {
-        refreshing = Qt.binding(function() { return cdir.busy || itemModel.busy })
         itemModel.updateModel()
     }
 
@@ -187,5 +186,11 @@ Kirigami.ScrollablePage {
             visible: itemModel.count === 0 && !itemModel.busy && !cdir.busy
             text: qsTr("No items")
         }
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: cdir.busy || itemModel.busy
     }
 }

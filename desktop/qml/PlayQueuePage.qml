@@ -32,9 +32,7 @@ Kirigami.ScrollablePage {
 
     implicitWidth: Kirigami.Units.gridUnit * 20
 
-    Component.onCompleted: {
-        refreshing = Qt.binding(function() { return root.busy })
-    }
+    supportsRefreshing: false
 
     title: av.deviceFriendlyName.length > 0 ? av.deviceFriendlyName : qsTr("Play queue")
 
@@ -185,23 +183,6 @@ Kirigami.ScrollablePage {
         }
     }
 
-    Controls.Label {
-        anchors.top: parent.top
-        anchors.topMargin: Kirigami.Units.smallSpacing
-        anchors.horizontalCenter: parent.horizontalCenter
-        font: Kirigami.Theme.smallFont
-        color: Kirigami.Theme.disabledTextColor
-        visible: playlist.busy || playlist.refreshing
-        wrapMode: Text.WordWrap
-        text: playlist.refreshing ?
-                  (playlist.progressTotal > 1 ?
-                      qsTr("Preparing item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
-                      qsTr("Preparing item...")) + (cserver.caching ? " " + cserver.cacheProgressString : "") :
-                  playlist.progressTotal > 1 ?
-                      qsTr("Adding item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
-                      qsTr("Adding item...")
-    }
-
     Component {
         id: listItemComponent
         DoubleListItem {
@@ -313,6 +294,19 @@ Kirigami.ScrollablePage {
                 onTriggered: addAction.trigger()
             }
         }
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: root.busy
+        text: (av.busy || rc.busy) ? "" : playlist.refreshing ?
+                  (playlist.progressTotal > 1 ?
+                      qsTr("Preparing item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
+                      qsTr("Preparing item...")) + (cserver.caching ? " " + cserver.cacheProgressString : "") :
+                  playlist.progressTotal > 1 ?
+                      qsTr("Adding item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
+                      qsTr("Adding item...")
     }
 
     footer: PlayerPanel {

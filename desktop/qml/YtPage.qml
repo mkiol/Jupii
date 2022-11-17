@@ -35,9 +35,8 @@ Kirigami.ScrollablePage {
     title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
            homeMode ? qsTr("Home") : itemModel.artistName.length > 0 ? itemModel.artistName : "YouTube Music"
 
-    //refreshing: itemModel.busy
+    supportsRefreshing: false
     Component.onCompleted: {
-        refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()
     }
 
@@ -107,6 +106,9 @@ Kirigami.ScrollablePage {
         id: itemModel
         onError: {
             notifications.show(qsTr("Error in getting data"))
+        }
+        onProgressChanged: {
+            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
         }
     }
 
@@ -255,5 +257,11 @@ Kirigami.ScrollablePage {
         section.property: "section"
         section.criteria: ViewSection.FullString
         section.delegate: root.homeMode || root.featureMode ? sectionHeader : null
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: itemModel.busy
     }
 }

@@ -70,5 +70,6 @@
         <file>qml/ShowmoreItem.qml</file>
         <file>qml/YtPage.qml</file>
         <file>qml/AttachedIcon.qml</file>
+        <file>qml/BusyIndicatorWithLabel.qml</file>
     </qresource>
 </RCC>

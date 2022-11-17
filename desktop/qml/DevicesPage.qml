@@ -24,10 +24,7 @@ Kirigami.ScrollablePage {
         }
     }
 
-    //refreshing: directory.busy
-    Component.onCompleted: {
-        refreshing = Qt.binding(function() { return directory.busy })
-    }
+    supportsRefreshing: false
 
     actions {
         main: Kirigami.Action {
@@ -141,5 +138,11 @@ Kirigami.ScrollablePage {
                 onTriggered: refreshAction.trigger()
             }
         }
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: directory.busy
     }
 }

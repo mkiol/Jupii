@@ -24,9 +24,8 @@ Kirigami.ScrollablePage {
 
     title: "FOSDEM " + year
 
-    //refreshing: itemModel.busy
+    supportsRefreshing: false
     Component.onCompleted: {
-        refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()
     }
 
@@ -136,5 +135,11 @@ Kirigami.ScrollablePage {
                 onTriggered: refreshAction.trigger()
             }
         }
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: itemModel.busy
     }
 }

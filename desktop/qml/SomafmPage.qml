@@ -23,9 +23,8 @@ Kirigami.ScrollablePage {
 
     title: "SomaFM"
 
-    //refreshing: itemModel.busy
+    supportsRefreshing: false
     Component.onCompleted: {
-        refreshing = Qt.binding(function() { return itemModel.busy })
         itemModel.updateModel()
     }
 
@@ -83,6 +82,9 @@ Kirigami.ScrollablePage {
         onError: {
             notifications.show(qsTr("Error in getting data"))
         }
+        onProgressChanged: {
+            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
+        }
     }
 
     Component {
@@ -135,5 +137,11 @@ Kirigami.ScrollablePage {
                 onTriggered: refreshAction.trigger()
             }
         }
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: itemModel.busy
     }
 }

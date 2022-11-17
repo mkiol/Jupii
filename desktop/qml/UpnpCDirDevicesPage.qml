@@ -23,9 +23,8 @@ Kirigami.ScrollablePage {
 
     title: qsTr("Media Servers")
 
-    //refreshing: directory.busy
+    supportsRefreshing: false
     Component.onCompleted: {
-        refreshing = Qt.binding(function() { return directory.busy })
         devmodel.deviceType = DeviceModel.MediaServerType
     }
     Component.onDestruction: {
@@ -114,5 +113,11 @@ Kirigami.ScrollablePage {
                 onTriggered: refreshAction.trigger()
             }
         }
+    }
+
+    BusyIndicatorWithLabel {
+        id: busyIndicator
+        parent: root.overlay
+        running: directory.busy
     }
 }
