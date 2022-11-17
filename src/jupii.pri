@@ -32,6 +32,7 @@ desktop {
         include($$PROJECTDIR/libs/taglib/taglib.pri)
     }
 
+    PKGCONFIG += libzstd
     packagesExist(libupnpp libnpupnp libmicrohttpd expat libcurl) {
         PKGCONFIG += libnpupnp libmicrohttpd expat libcurl
         LIBS += -lupnpp -lupnpputil
