@@ -2157,7 +2157,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
             if (QThread::currentThread()->isInterruptionRequested()) {
                 qWarning()
                     << "thread interruption was requested => aborting request";
-                return reply->abort();
+                reply->abort();
+                return;
             }
 
             qDebug() << ">> received bytes for:"
@@ -2185,7 +2186,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
             if (QThread::currentThread()->isInterruptionRequested()) {
                 qWarning()
                     << "thread interruption was requested => aborting request";
-                return reply->abort();
+                reply->abort();
+                return;
             }
 
             if (reply->rawHeaderPairs().isEmpty()) return;
@@ -2392,7 +2394,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
     }
 
     reply->deleteLater();
-    return m_metaCache.insert(url, meta);
+
+    return m_metaCache.insert(meta.url, meta);
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
