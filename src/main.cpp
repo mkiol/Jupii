@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 #ifdef QT_QML_DEBUG
 #include <QtQuick>
 #endif
@@ -23,20 +23,24 @@
 #include "resourcehandler.h"
 #endif
 
-#ifdef KIRIGAMI
+#ifdef USE_PLASMA
 #include <QApplication>
 #include <QGuiApplication>
 #include <QIcon>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
+#include <memory>
 
 #include "iconprovider.h"
 #endif
 
 #include <QFile>
+#include <QList>
 #include <QLocale>
 #include <QProcess>
+#include <QStandardPaths>
+#include <QString>
 #include <QTextCodec>
 #include <QTranslator>
 #include <cstdint>
@@ -50,6 +54,7 @@
 #include "avtransport.h"
 #include "bcmodel.h"
 #include "cdirmodel.h"
+#include "config.h"
 #include "connectivitydetector.h"
 #include "contentdirectory.h"
 #include "contentserver.h"
@@ -61,7 +66,6 @@
 #include "fosdemmodel.h"
 #include "gpoddermodel.h"
 #include "icecastmodel.h"
-#include "info.h"
 #include "notifications.h"
 #include "playlistfilemodel.h"
 #include "playlistmodel.h"
@@ -75,7 +79,7 @@
 #include "tuneinmodel.h"
 #include "utils.h"
 #include "xc.h"
-#ifndef HARBOUR
+#ifndef USE_SFOS_HARBOUR
 #include "ytmodel.h"
 #endif
 
@@ -117,7 +121,7 @@ static void registerTypes() {
     qmlRegisterType<BcModel>("harbour.jupii.BcModel", 1, 0, "BcModel");
     qmlRegisterType<SoundcloudModel>("harbour.jupii.SoundcloudModel", 1, 0,
                                      "SoundcloudModel");
-#ifndef HARBOUR
+#ifndef USE_SFOS_HARBOUR
     qmlRegisterType<YtModel>("harbour.jupii.YtModel", 1, 0, "YtModel");
 #endif
     qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0,
@@ -149,8 +153,8 @@ static void registerTypes() {
 }
 
 static void installTranslator() {
-    auto* translator = new QTranslator{qApp};
-#ifdef SAILFISH
+    auto* translator = new QTranslator{QCoreApplication::instance()};
+#ifdef USE_SFOS
     auto transDir =
         SailfishApp::pathTo(QStringLiteral("translations")).toLocalFile();
 #else
@@ -159,59 +163,65 @@ static void installTranslator() {
     if (!translator->load(QLocale{}, QStringLiteral("jupii"),
                           QStringLiteral("-"), transDir,
                           QStringLiteral(".qm"))) {
-        qDebug() << "cannot load translation:" << QLocale::system().name()
+        qDebug() << "failed to load translation:" << QLocale::system().name()
                  << transDir;
         if (!translator->load(QStringLiteral("jupii-en"), transDir)) {
-            qDebug() << "cannot load default translation";
+            qDebug() << "failed to load default translation";
             delete translator;
             return;
         }
+    } else {
+        qDebug() << "translation:" << QLocale::system().name();
     }
 
-    QGuiApplication::installTranslator(translator);
+    if (!QGuiApplication::installTranslator(translator)) {
+        qWarning() << "failed to install translation";
+    }
 }
 
 int main(int argc, char** argv) {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     SailfishApp::application(argc, argv);
     auto* view = SailfishApp::createView();
     auto* context = view->rootContext();
     auto* engine = view->engine();
 #endif
-#ifdef KIRIGAMI
+#ifdef USE_PLASMA
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    auto* app = new QApplication{argc, argv};
-    auto* engine = new QQmlApplicationEngine();
+    auto app = std::make_unique<QApplication>(argc, argv);
+    auto engine = std::make_unique<QQmlApplicationEngine>();
     auto* context = engine->rootContext();
-    QGuiApplication::setWindowIcon(QIcon::fromTheme(Jupii::APP_ID));
+    QGuiApplication::setWindowIcon(QIcon::fromTheme(APP_ID));
 #endif
-    QGuiApplication::setApplicationName(Jupii::APP_ID);
-    QGuiApplication::setOrganizationName(Jupii::ORG);
-    QGuiApplication::setApplicationDisplayName(Jupii::APP_NAME);
-    QGuiApplication::setApplicationVersion(Jupii::APP_VERSION);
+    QGuiApplication::setApplicationName(APP_ID);
+    QGuiApplication::setOrganizationName(APP_ORG);
+    QGuiApplication::setApplicationDisplayName(APP_NAME);
+    QGuiApplication::setApplicationVersion(APP_VERSION);
 
     registerTypes();
 
     engine->addImageProvider(QStringLiteral("icons"), new IconProvider{});
 
-    context->setContextProperty(QStringLiteral("APP_NAME"), Jupii::APP_NAME);
-    context->setContextProperty(QStringLiteral("APP_ID"), Jupii::APP_ID);
-    context->setContextProperty(QStringLiteral("APP_VERSION"),
-                                Jupii::APP_VERSION);
-    context->setContextProperty(QStringLiteral("COPYRIGHT_YEAR"),
-                                Jupii::COPYRIGHT_YEAR);
-    context->setContextProperty(QStringLiteral("AUTHOR"), Jupii::AUTHOR);
-    context->setContextProperty(QStringLiteral("AUTHOR_EMAIL"),
-                                Jupii::AUTHOR_EMAIL);
-    context->setContextProperty(QStringLiteral("SUPPORT_EMAIL"),
-                                Jupii::SUPPORT_EMAIL);
-    context->setContextProperty(QStringLiteral("PAGE"), Jupii::PAGE);
-    context->setContextProperty(QStringLiteral("LICENSE"), Jupii::LICENSE);
-    context->setContextProperty(QStringLiteral("LICENSE_URL"),
-                                Jupii::LICENSE_URL);
-    context->setContextProperty(QStringLiteral("LICENSE_SPDX"),
-                                Jupii::LICENSE_SPDX);
+    context->setContextProperty(QStringLiteral("APP_NAME"), APP_NAME);
+    context->setContextProperty(QStringLiteral("APP_ID"), APP_ID);
+    context->setContextProperty(QStringLiteral("APP_VERSION"), APP_VERSION);
+    context->setContextProperty(QStringLiteral("APP_COPYRIGHT_YEAR"),
+                                APP_COPYRIGHT_YEAR);
+    context->setContextProperty(QStringLiteral("APP_AUTHOR"), APP_AUTHOR);
+    context->setContextProperty(QStringLiteral("APP_AUTHOR_EMAIL"),
+                                APP_AUTHOR_EMAIL);
+    context->setContextProperty(QStringLiteral("APP_SUPPORT_EMAIL"),
+                                APP_SUPPORT_EMAIL);
+    context->setContextProperty(QStringLiteral("APP_WEBPAGE"), APP_WEBPAGE);
+    context->setContextProperty(QStringLiteral("APP_LICENSE"), APP_LICENSE);
+    context->setContextProperty(QStringLiteral("APP_LICENSE_URL"),
+                                APP_LICENSE_URL);
+    context->setContextProperty(QStringLiteral("APP_LICENSE_SPDX"),
+                                APP_LICENSE_SPDX);
+    context->setContextProperty(QStringLiteral("APP_TRANSLATORS_STR"),
+                                APP_TRANSLATORS_STR);
+    context->setContextProperty(QStringLiteral("APP_LIBS_STR"), APP_LIBS_STR);
 
     installTranslator();
     makeAppDirs();
@@ -249,7 +259,7 @@ int main(int argc, char** argv) {
     context->setContextProperty(QStringLiteral("conn"), conn);
     context->setContextProperty(QStringLiteral("dbus"), &dbus);
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     ResourceHandler rhandler;
     QObject::connect(view, &QQuickView::focusObjectChanged, &rhandler,
                      &ResourceHandler::handleFocusChange);
@@ -261,9 +271,6 @@ int main(int argc, char** argv) {
 #else
     engine->load(QUrl{QStringLiteral("qrc:/qml/main.qml")});
     int ret = QGuiApplication::exec();
-
-    delete engine;
-    delete app;
 #endif
     fcloseall();
     return ret;

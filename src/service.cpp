@@ -26,7 +26,7 @@ Service::Service(QObject *parent) :
     QObject::connect(&m_timer, &QTimer::timeout, this, &Service::timerEvent);
     QObject::connect(this, &Service::needTimer, this, &Service::timer);
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     auto app = static_cast<QGuiApplication*>(QGuiApplication::instance());
     QObject::connect(app, &QGuiApplication::applicationStateChanged,
                      this, &Service::handleApplicationStateChanged);

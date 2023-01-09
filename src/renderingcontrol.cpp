@@ -24,7 +24,7 @@ RenderingControl::RenderingControl(QObject *parent) : Service(parent),
     m_volumeTimer.setSingleShot(true);
     QObject::connect(&m_volumeTimer, &QTimer::timeout, this, &RenderingControl::volumeTimeout);
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     m_volumeUpTimer.setInterval(500);
     m_volumeUpTimer.setSingleShot(true);
     QObject::connect(&m_volumeUpTimer, &QTimer::timeout, this, &RenderingControl::volumeUpTimeout);
@@ -247,7 +247,7 @@ void RenderingControl::updateMute()
     }
 }
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 void RenderingControl::showVolNofification() const
 {
     auto name = getDeviceFriendlyName().isEmpty() ? tr("Remote device") : getDeviceFriendlyName();

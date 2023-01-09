@@ -5,16 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QDebug>
-#include <QHash>
-#include <QFileInfo>
-#include <utility>
-#include <algorithm>
-
-#include "tracker.h"
 #include "albummodel.h"
-#include "trackercursor.h"
+
+#include <QDebug>
+#include <QFileInfo>
+#include <QHash>
+#include <algorithm>
+#include <utility>
+
 #include "settings.h"
+#include "tracker.h"
+#include "trackercursor.h"
 
 const QString AlbumModel::albumsQueryTemplate {
     "SELECT ?album "

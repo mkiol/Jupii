@@ -26,7 +26,7 @@
 #include <QTime>
 #include <QUrlQuery>
 #include <QtGlobal>
-#ifdef SAILFISH
+#ifdef USE_SFOS
 #include <QMetaObject>
 #endif
 
@@ -743,7 +743,7 @@ QString Utils::escapeName(const QString &filename) {
     return escapedName;
 }
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 void Utils::setQmlRootItem(QQuickItem *rootItem) { qmlRootItem = rootItem; }
 
 void Utils::activateWindow() {

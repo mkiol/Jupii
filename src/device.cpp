@@ -15,12 +15,12 @@
 #include <functional>
 #include <string>
 
+#include "config.h"
+#include "connectionmanagerservice.h"
 #include "connectivitydetector.h"
+#include "contentdirectoryservice.h"
 #include "contentserver.h"
 #include "iconprovider.h"
-#include "info.h"
-#include "libupnpp/device/device.hxx"
-#include "libupnpp/device/service.hxx"
 #include "playlistmodel.h"
 #include "settings.h"
 #include "utils.h"
@@ -403,7 +403,7 @@ void MediaServerDevice::updateDirectory() {
 
 QString MediaServerDevice::desc() {
     auto desc = descTemplate.arg(Settings::instance()->prettyName(),
-                                 Jupii::PAGE, Jupii::APP_VERSION);
+                                 APP_WEBPAGE, APP_VERSION);
 
     // -- icons --
     QString ifname, addr;
@@ -709,39 +709,4 @@ int MediaServerDevice::getCurrentConnectionInfo(const UPnPP::SoapIncoming& in,
     out.addarg("Direction", "");
     out.addarg("Status", "");
     return UPNP_E_SUCCESS;
-}
-
-ContentDirectoryService::ContentDirectoryService(const std::string& stp,
-                                                 const std::string& sid,
-                                                 UPnPProvider::UpnpDevice* dev)
-    : UPnPProvider::UpnpService(stp, sid, "CD", dev) {}
-
-std::string ContentDirectoryService::systemUpdateId() const {
-    return std::to_string(updateCounter);
-}
-
-void ContentDirectoryService::update() {
-    updateCounter++;
-    updateNeeded = true;
-}
-
-bool ContentDirectoryService::getEventData(bool,
-                                           std::vector<std::string>& names,
-                                           std::vector<std::string>& values) {
-    if (updateNeeded) {
-        names.push_back("SystemUpdateID");
-        values.push_back(systemUpdateId());
-        updateNeeded = false;
-    }
-    return true;
-}
-
-ConnectionManagerService::ConnectionManagerService(
-    const std::string& stp, const std::string& sid,
-    UPnPProvider::UpnpDevice* dev)
-    : UPnPProvider::UpnpService(stp, sid, "CM", dev) {}
-
-bool ConnectionManagerService::getEventData(bool, std::vector<std::string>&,
-                                            std::vector<std::string>&) {
-    return true;
 }

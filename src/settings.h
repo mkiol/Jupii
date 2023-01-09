@@ -125,7 +125,7 @@ class Settings : public QSettings,
     };
     Q_ENUM(RemoteContentMode)
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
 #endif
     Settings();
@@ -283,7 +283,7 @@ class Settings : public QSettings,
     int m_colorScheme = 0;
     bool m_sandboxed = false;
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     static QString readHwInfo();
 #endif
     static std::pair<int, int> sysVer();

@@ -44,13 +44,23 @@ struct UNEXPORT YTMusicPrivate {
             // not utf8
             setenv("LC_ALL", "en_US.utf8", true);
 
-            const auto version =
-                module.attr("_version").attr("__version__").cast<std::string>();
-            if (version != TESTED_YTMUSICAPI_VERSION) {
-                std::cerr << "Running with untested version of ytmusicapi."
+            auto oldVersion = module.attr("__dict__").contains("_version");
+            if (oldVersion) {
+                std::cerr << "Running with outdated and untested version of "
+                             "ytmusicapi."
                           << std::endl;
                 std::cerr << "The currently tested and supported version is "
                           << TESTED_YTMUSICAPI_VERSION << std::endl;
+            } else {
+                const auto version =
+                    module.attr("version")("ytmusicapi").cast<std::string>();
+                if (version != TESTED_YTMUSICAPI_VERSION) {
+                    std::cerr << "Running with untested version of ytmusicapi."
+                              << std::endl;
+                    std::cerr
+                        << "The currently tested and supported version is "
+                        << TESTED_YTMUSICAPI_VERSION << std::endl;
+                }
             }
         }
 
@@ -153,7 +163,8 @@ album::Track extract_album_track(py::handle track) {
 
 video_info::Format extract_format(py::handle format) {
     return {
-        optional_key<int>(format, "quality"), format["url"].cast<std::string>(),
+        optional_key<float>(format, "quality"),
+        format["url"].cast<std::string>(),
         format["vcodec"].is_none() ? "" : format["vcodec"].cast<std::string>(),
         format["acodec"].is_none() ? "" : format["acodec"].cast<std::string>()};
 }
@@ -496,11 +507,10 @@ video_info::VideoInfo YTMusic::extract_video_info(
 
 watch::Playlist YTMusic::get_watch_playlist(
     const std::optional<std::string> &videoId,
-    const std::optional<std::string> &playlistId, int limit,
-    const std::optional<std::string> &params) const {
+    const std::optional<std::string> &playlistId, int limit) const {
     const auto playlist = d->get_ytmusic().attr("get_watch_playlist")(
         "videoId"_a = videoId, "playlistId"_a = playlistId,
-        "limit"_a = py::int_(limit), "params"_a = params);
+        "limit"_a = py::int_(limit));
 
     return {extract_py_list<watch::Playlist::Track>(playlist["tracks"]),
             playlist["lyrics"].cast<std::optional<std::string>>()};

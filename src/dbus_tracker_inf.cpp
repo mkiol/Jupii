@@ -9,7 +9,7 @@
  * before re-generating it.
  */
 
-#include "../src/dbus_tracker_inf.h"
+#include "dbus_tracker_inf.h"
 
 /*
  * Implementation of interface class OrgFreedesktopDBusPeerInterface

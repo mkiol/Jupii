@@ -10,36 +10,11 @@
 
 #include <QObject>
 #include <QString>
+#include <libupnpp/device/device.hxx>
 #include <memory>
 
-#include "libupnpp/device/device.hxx"
-#include "libupnpp/device/service.hxx"
-
-class ContentDirectoryService : public UPnPProvider::UpnpService {
-   public:
-    ContentDirectoryService(const std::string& stp, const std::string& sid,
-                            UPnPProvider::UpnpDevice* dev);
-    ContentDirectoryService(const ContentDirectoryService&) = delete;
-    void operator=(const ContentDirectoryService&) = delete;
-    void update();
-    std::string systemUpdateId() const;
-    bool getEventData(bool all, std::vector<std::string>& names,
-                      std::vector<std::string>& values) override;
-
-   private:
-    int updateCounter = 0;
-    bool updateNeeded = true;
-};
-
-class ConnectionManagerService : public UPnPProvider::UpnpService {
-   public:
-    ConnectionManagerService(const std::string& stp, const std::string& sid,
-                             UPnPProvider::UpnpDevice* dev);
-    ConnectionManagerService(const ConnectionManagerService&) = delete;
-    void operator=(const ConnectionManagerService&) = delete;
-    bool getEventData(bool all, std::vector<std::string>& names,
-                      std::vector<std::string>& values) override;
-};
+class ContentDirectoryService;
+class ConnectionManagerService;
 
 class MediaServerDevice : public QObject, public UPnPProvider::UpnpDevice {
     Q_OBJECT

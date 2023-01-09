@@ -18,7 +18,7 @@
 #include <QThread>
 #include <memory>
 #include <optional>
-#ifdef SAILFISH
+#ifdef USE_SFOS
 #include <QQuickItem>
 #endif
 
@@ -54,7 +54,7 @@ class Utils : public QObject, public Singleton<Utils> {
     static QString anonymizedId(const QUrl &id);
     static QString anonymizedId(const QString &id);
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     void setQmlRootItem(QQuickItem *rootItem);
     void activateWindow();
 #endif
@@ -142,7 +142,7 @@ class Utils : public QObject, public Singleton<Utils> {
    private:
     QHash<QThread *, bool> seedDone;
     QStringList lastNetIfs;
-#ifdef SAILFISH
+#ifdef USE_SFOS
     qint32 notifId = 0;
     // Notification notif;
     QQuickItem *qmlRootItem = nullptr;

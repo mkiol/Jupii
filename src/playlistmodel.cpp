@@ -17,6 +17,9 @@
 #include <QTimer>
 #include <QUrlQuery>
 #include <utility>
+#ifdef USE_SFOS
+#include <keepalive/backgroundactivity.h>
+#endif
 
 #include "avtransport.h"
 #include "directory.h"
@@ -272,12 +275,12 @@ PlaylistModel::PlaylistModel(QObject *parent)
     connect(cs, &ContentServer::fullHashesUpdated, this,
             &PlaylistModel::updateActiveId, Qt::QueuedConnection);
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     m_backgroundActivity = new BackgroundActivity(this);
     m_backgroundActivity->setWakeupFrequency(BackgroundActivity::ThirtySeconds);
     connect(m_backgroundActivity, &BackgroundActivity::stateChanged, this,
             &PlaylistModel::handleBackgroundActivityStateChange);
-#endif  // SAILFISH
+#endif  // USE_SFOS
 
     m_updateTimer.setSingleShot(true);
     m_updateTimer.setInterval(1000);
@@ -300,7 +303,7 @@ PlaylistModel::PlaylistModel(QObject *parent)
             &PlaylistModel::updateRefreshTimer, Qt::QueuedConnection);
 }
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 void PlaylistModel::handleBackgroundActivityStateChange() {
     qDebug() << "Background activity state:" << m_backgroundActivity->state();
 }
@@ -317,7 +320,7 @@ void PlaylistModel::updateBackgroundActivity() {
         if (m_backgroundActivity->isRunning()) m_backgroundActivity->stop();
     }
 }
-#endif  // SAILFISH
+#endif  // USE_SFOS
 
 std::pair<int, QString> PlaylistModel::getDidlList(int max,
                                                    const QString &didlId) {
@@ -502,9 +505,9 @@ void PlaylistModel::onAvStateChanged() {
     }
     updateRefreshTimer();
     doUpdate();
-#ifdef SAILFISH
+#ifdef USE_SFOS
     updateBackgroundActivity();
-#endif  // SAILFISH
+#endif  // USE_SFOS
 }
 
 void PlaylistModel::onAvInitedChanged() {
@@ -521,7 +524,7 @@ void PlaylistModel::onAvInitedChanged() {
         }
     }
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     updateBackgroundActivity();
 #endif
 }

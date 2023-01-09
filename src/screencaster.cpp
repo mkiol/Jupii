@@ -24,7 +24,7 @@ extern "C" {
 #include <libavutil/timestamp.h>
 }
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 #include <QPainter>
 #include <QTransform>
 
@@ -37,7 +37,7 @@ extern "C" {
 #include "settings.h"
 #include "utils.h"
 
-#ifdef DESKTOP
+#ifdef USE_PLASMA
 #include <X11/Xlib.h>
 #endif
 
@@ -45,7 +45,7 @@ ScreenCaster::ScreenCaster(QObject *parent) : QObject(parent) {
     connect(this, &ScreenCaster::error, ContentServerWorker::instance(),
             &ContentServerWorker::screenErrorHandler);
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     frameTimer.setTimerType(Qt::PreciseTimer);
     frameTimer.setInterval(1000 / Settings::instance()->getScreenFramerate());
     connect(&frameTimer, &QTimer::timeout, this, &ScreenCaster::writeVideoData,
@@ -62,7 +62,7 @@ ScreenCaster::ScreenCaster(QObject *parent) : QObject(parent) {
 ScreenCaster::~ScreenCaster() {
     qDebug() << "ScreenCaster destructor start";
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     frameTimer.stop();
     repaintTimer.stop();
 #endif
@@ -130,7 +130,7 @@ void ScreenCaster::fixSize(QSize &size, int *xoff, int *yoff) {
 }
 
 void ScreenCaster::initVideoSize() {
-#ifdef DESKTOP
+#ifdef USE_PLASMA
     auto *dpy = XOpenDisplay(nullptr);
     auto *s = DefaultScreenOfDisplay(dpy);
     video_size = {s->width, s->height};
@@ -141,7 +141,7 @@ void ScreenCaster::initVideoSize() {
 #endif
     qDebug() << "screen video size:" << video_size;
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (video_size.width() < video_size.height()) {
         qDebug()
             << "portrait orientation detected, so transposing to landscape";
@@ -169,7 +169,7 @@ void ScreenCaster::initVideoSize() {
 
     fixSize(video_size, &xoff, &yoff);
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (res_div > 1) {
         video_size.setHeight(video_size.height() / res_div);
         video_size.setWidth(video_size.width() / res_div);
@@ -184,7 +184,7 @@ void ScreenCaster::tuneQuality() {
     auto *s = Settings::instance();
     skipped_frames = 0;
     quality = s->getScreenQuality();
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (quality < 2) {
         res_div = 4;
         trans_mode = Qt::FastTransformation;
@@ -245,7 +245,7 @@ void ScreenCaster::setPixFormats() {
     switch (encoder) {
         case ENC_H264_X264_RGB:
             out_video_codec_ctx->pix_fmt = AV_PIX_FMT_RGB24;
-#ifdef SAILFISH
+#ifdef USE_SFOS
             in_video_codec_ctx->pix_fmt = AV_PIX_FMT_RGB24;
             bgImg = QImage{video_size, QImage::Format_RGB888};
             bgImg.fill(Qt::black);
@@ -259,7 +259,7 @@ void ScreenCaster::setPixFormats() {
         default:
             out_video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
             in_video_codec_ctx->pix_fmt = AV_PIX_FMT_0RGB32;
-#ifdef SAILFISH
+#ifdef USE_SFOS
             bgImg = QImage{video_size, QImage::Format_RGB32};
             bgImg.fill(Qt::black);
 #endif
@@ -294,7 +294,7 @@ bool ScreenCaster::initVideoEncoder(const char *name) {
         av_dict_set(&options, "preset", "ultrafast", 0);
         av_dict_set(&options, "tune", "zerolatency", 0);
         av_dict_set(&options, "passlogfile", passLogfile.constData(), 0);
-#ifdef SAILFISH
+#ifdef USE_SFOS
         av_dict_set(&options, "g", "0", 0);
 #endif
         av_dict_set(&options, "profile", "high", 0);
@@ -309,7 +309,7 @@ bool ScreenCaster::initVideoEncoder(const char *name) {
         av_dict_set(&options, "preset", "ultrafast", 0);
         av_dict_set(&options, "tune", "zerolatency", 0);
         av_dict_set(&options, "passlogfile", passLogfile.constData(), 0);
-#ifdef SAILFISH
+#ifdef USE_SFOS
         av_dict_set(&options, "g", "0", 0);
 #endif
         av_dict_set(&options, "profile", "high444", 0);
@@ -329,7 +329,7 @@ bool ScreenCaster::initVideoEncoder(const char *name) {
         return false;
     }
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     out_video_codec_ctx->width = video_size.width();
     out_video_codec_ctx->height = video_size.height();
 #else
@@ -587,7 +587,7 @@ bool ScreenCaster::init() {
 
     AVDictionary *options = nullptr;
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     auto in_video_codec = avcodec_find_decoder(AV_CODEC_ID_RAWVIDEO);
     if (!in_video_codec) {
         qWarning() << "error in avcodec_find_decoder for video";
@@ -753,7 +753,7 @@ bool ScreenCaster::init() {
 }
 
 void ScreenCaster::start() {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     recorder = std::unique_ptr<Recorder>(new Recorder(this, 1));
     frameTimer.start();
     repaintTimer.start();
@@ -916,14 +916,14 @@ bool ScreenCaster::writeAudioData3() {
 
 void ScreenCaster::errorHandler() {
     qDebug() << "screen capture error";
-#ifdef SAILFISH
+#ifdef USE_SFOS
     frameTimer.stop();
     repaintTimer.stop();
 #endif
     emit error();
 }
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 void ScreenCaster::repaint() {
     if (recorder) recorder->repaint();
 }

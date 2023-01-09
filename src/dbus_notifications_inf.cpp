@@ -9,7 +9,7 @@
  * before re-generating it.
  */
 
-#include "../src/dbus_notifications_inf.h"
+#include "dbus_notifications_inf.h"
 
 /*
  * Implementation of interface class OrgFreedesktopNotificationsInterface

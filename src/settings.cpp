@@ -25,8 +25,8 @@
 #include <libupnpp/control/description.hxx>
 #include <limits>
 
+#include "config.h"
 #include "directory.h"
-#include "info.h"
 #include "log.h"
 #include "utils.h"
 
@@ -43,7 +43,7 @@ QString Settings::settingsFilepath() {
 
 Settings::Settings()
     : QSettings{settingsFilepath(), QSettings::NativeFormat},
-#ifdef SAILFISH
+#ifdef USE_SFOS
       hwName {
     readHwInfo()
 }
@@ -61,7 +61,7 @@ Settings::Settings()
     updateSandboxStatus();
 
     qDebug() << "HW name:" << hwName;
-    qDebug() << "app:" << Jupii::ORG << Jupii::APP_ID << Jupii::APP_VERSION;
+    qDebug() << "app:" << APP_ORG << APP_ID << APP_VERSION;
     qDebug() << "config location:"
              << QStandardPaths::writableLocation(
                     QStandardPaths::ConfigLocation);
@@ -74,7 +74,7 @@ Settings::Settings()
     qDebug() << "sandboxed:" << m_sandboxed;
 }
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 QString Settings::readHwInfo() {
     QFile f{HW_RELEASE_FILE};
     if (f.open(QIODevice::ReadOnly)) {
@@ -94,8 +94,8 @@ QString Settings::readHwInfo() {
 #endif
 
 QString Settings::prettyName() const {
-    return hwName.isEmpty() ? QString{Jupii::APP_NAME}
-                            : QString{"%1 (%2)"}.arg(Jupii::APP_NAME, hwName);
+    return hwName.isEmpty() ? QString{APP_NAME}
+                            : QString{"%1 (%2)"}.arg(APP_NAME, hwName);
 }
 
 void Settings::setLogToFile(bool value) {
@@ -321,7 +321,7 @@ void Settings::setPrefNetInf(const QString &value) {
 }
 
 QString Settings::getPrefNetInf() const {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (isDebug()) return value("prefnetinf", "").toString();
     return {};
 #else
@@ -352,7 +352,7 @@ bool Settings::getShowAllDevices() const {
 }
 
 void Settings::setScreenSupported([[maybe_unused]] bool value) {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (getScreenSupported() != value) {
         setValue("screensupported", value);
         emit screenSupportedChanged();
@@ -361,7 +361,7 @@ void Settings::setScreenSupported([[maybe_unused]] bool value) {
 }
 
 bool Settings::getScreenSupported() const {
-#if defined(SAILFISH) && !defined(QT_DEBUG)
+#if defined(USE_SFOS) && !defined(QT_DEBUG)
     // Sreen Capture does not work with sandboxing
     return sandboxed() ? false : value("screensupported", false).toBool();
 #else
@@ -383,7 +383,7 @@ int Settings::getScreenCropTo169() {
     // 0 - disabled
     // 1 - scale
     // 2 - crop
-#ifdef SAILFISH
+#ifdef USE_SFOS
     return value("screencrop169", 1).toInt();
 #else
     return value("screencrop169", 2).toInt();
@@ -398,7 +398,7 @@ void Settings::setScreenAudio(bool value) {
 }
 
 bool Settings::getScreenAudio() {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     return value("screenaudio", false).toBool();
 #else
     return value("screenaudio", true).toBool();
@@ -413,7 +413,7 @@ void Settings::setScreenEncoder(const QString &value) {
 }
 
 QString Settings::getScreenEncoder() const {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (isDebug()) {
         // valid encoders: libx264, libx264rgb, h264_omx
         auto enc_name = value("screenencoder").toString();
@@ -442,7 +442,7 @@ void Settings::setScreenFramerate(int value) {
 }
 
 int Settings::getScreenFramerate() const {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     // default 5 fps
     if (isDebug()) return value("screenframerate", 5).toInt();
     return 5;
@@ -464,7 +464,7 @@ int Settings::getScreenQuality() const {
 }
 
 void Settings::setUseHWVolume(bool value) {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (getUseHWVolume() != value) {
         setValue("usehwvolume", value);
         emit useHWVolumeChanged();
@@ -475,7 +475,7 @@ void Settings::setUseHWVolume(bool value) {
 }
 
 bool Settings::getUseHWVolume() const {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     return value("usehwvolume", true).toBool();
 #else
     return false;
@@ -492,7 +492,7 @@ void Settings::setMicVolume(float value) {
 }
 
 float Settings::getMicVolume() const {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     return value("micvolume", 50.0).toFloat();
 #else
     return value("micvolume", 1.0).toFloat();
@@ -500,7 +500,7 @@ float Settings::getMicVolume() const {
 }
 
 void Settings::setAudioBoost([[maybe_unused]] float value) {
-#ifdef SAILFISH
+#ifdef USE_SFOS
 #else
     value = value < 1 ? 1 : value > 10 ? 10 : value;
 
@@ -512,7 +512,7 @@ void Settings::setAudioBoost([[maybe_unused]] float value) {
 }
 
 float Settings::getAudioBoost() const {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     // return value("micvolume", 2.3f).toFloat();
     return 2.3f;
 #else
@@ -800,7 +800,7 @@ void Settings::removeYtSearchHistory(const QString &value) {
 static inline QFile desktopFile() {
     return QFile{QString{"%1/%2-open-url.desktop"}.arg(
         QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation),
-        Jupii::APP_BINARY_ID)};
+        APP_BINARY_ID)};
 }
 
 void Settings::initOpenUrlMode() {
@@ -808,15 +808,15 @@ void Settings::initOpenUrlMode() {
         QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
         "/dbus-1/services"};
     if (!dbusPath.exists()) dbusPath.mkpath(dbusPath.absolutePath());
-    QFile dbusServiceFile{dbusPath.absolutePath() + "/" + Jupii::DBUS_SERVICE +
+    QFile dbusServiceFile{dbusPath.absolutePath() + "/" + APP_DBUS_SERVICE +
                           ".service"};
     if (dbusServiceFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream s{&dbusServiceFile};
         s.setCodec("UTF-8");
         s << "[D-BUS Service]\n";
-        s << "Name=" << Jupii::DBUS_SERVICE << "\n";
+        s << "Name=" << APP_DBUS_SERVICE << "\n";
         s << "Exec=/usr/bin/invoker --type=silica-qt5 --single-instance "
-          << Jupii::APP_BINARY_ID << "\n";
+          << APP_BINARY_ID << "\n";
         s.flush();
     }
 
@@ -826,7 +826,7 @@ void Settings::initOpenUrlMode() {
 QUrl Settings::appIcon() const {
     return QUrl::fromLocalFile(
         QStringLiteral("/usr/share/icons/hicolor/172x172/apps/%1.png")
-            .arg(Jupii::APP_BINARY_ID));
+            .arg(APP_BINARY_ID));
 }
 
 void Settings::setPythonChecksum(const QString &value) {
@@ -919,7 +919,7 @@ bool Settings::isDebug() const {
 }
 
 bool Settings::isHarbour() const {
-#ifdef HARBOUR
+#ifdef USE_SFOS_HARBOUR
     return true;
 #else
     return false;

@@ -8,8 +8,6 @@
 #ifndef YTDLAPI_H
 #define YTDLAPI_H
 
-#include <ytmusic.h>
-
 #include <QByteArray>
 #include <QObject>
 #include <QString>
@@ -17,6 +15,8 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+
+#include "ytmusic.h"
 
 class YtdlApi : public QObject {
     Q_OBJECT
@@ -97,7 +97,7 @@ class YtdlApi : public QObject {
     static const int maxHomeFirstPage;
     static std::vector<home::Section> m_homeSections;
     static State state;
-#ifdef SAILFISH
+#ifdef USE_SFOS
     const static QString pythonArchivePath;
     static QString pythonSitePath();
     static QString pythonUnpackPath();

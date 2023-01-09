@@ -1215,12 +1215,12 @@ void AVTransport::update(int initDelay, int postDelay)
 
 void AVTransport::needTimerCheck()
 {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     auto app = static_cast<QGuiApplication*>(QGuiApplication::instance());
 #endif
 
     if (m_transportState == Playing
-#ifdef SAILFISH
+#ifdef USE_SFOS
            && app->applicationState() == Qt::ApplicationActive
 #endif
        ) {

@@ -13,8 +13,8 @@
 #include <QFile>
 
 #include "avtransport.h"
+#include "config.h"
 #include "contentserver.h"
-#include "info.h"
 #include "playlistmodel.h"
 #include "services.h"
 #include "utils.h"
@@ -34,7 +34,7 @@ DbusProxy::DbusProxy(QObject* parent)
             throw std::runtime_error("dbus address in use");
         return;
     }
-    if (!con.registerService(Jupii::DBUS_SERVICE)) {
+    if (!con.registerService(APP_DBUS_SERVICE)) {
         qWarning() << "dbus service registration failed:"
                    << con.lastError().message();
         if (con.lastError().type() == QDBusError::AddressInUse)
@@ -259,7 +259,7 @@ void DbusProxy::togglePlay() {
 }
 
 void DbusProxy::focus() {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     // bringing app to foreground
     emit focusRequested();
     auto utils = Utils::instance();

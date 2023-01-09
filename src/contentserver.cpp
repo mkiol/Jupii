@@ -41,37 +41,34 @@
 #include "trackercursor.h"
 #include "transcoder.h"
 #include "utils.h"
-#ifndef HARBOUR
+#ifndef USE_SFOS_HARBOUR
 #include "ytdlapi.h"
 #endif
 
 extern "C" {
-#include "libavdevice/avdevice.h"
-#include "libavformat/avformat.h"
-#include "libavutil/dict.h"
-#include "libavutil/log.h"
-#include "libavutil/timestamp.h"
+#include <libavdevice/avdevice.h>
+#include <libavformat/avformat.h>
+#include <libavutil/dict.h>
+#include <libavutil/log.h>
+#include <libavutil/timestamp.h>
 }
 
-// TagLib
-#include "attachedpictureframe.h"
-#include "fileref.h"
-#include "id3v2frame.h"
-#include "id3v2tag.h"
-#include "mp4file.h"
-#include "mp4item.h"
-#include "mp4tag.h"
-#include "mpegfile.h"
-#include "tag.h"
-#include "tpropertymap.h"
+#include <taglib/attachedpictureframe.h>
+#include <taglib/fileref.h>
+#include <taglib/id3v2frame.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/mp4file.h>
+#include <taglib/mp4item.h>
+#include <taglib/mp4tag.h>
+#include <taglib/mpegfile.h>
+#include <taglib/tag.h>
+#include <taglib/tpropertymap.h>
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 #include <sailfishapp.h>
 #endif
 
-#if defined(SAILFISH) || defined(KIRIGAMI)
 #include "iconprovider.h"
-#endif
 
 const QString ContentServer::queryTemplate = QStringLiteral(
     "SELECT ?item "
@@ -209,7 +206,7 @@ ContentServer::ContentServer(QObject *parent) : QThread{parent} {
     // starting worker
     start(QThread::NormalPriority);
     /*
-    #ifdef SAILFISH
+    #ifdef USE_SFOS
         // screen on/off status
         auto bus = QDBusConnection::systemBus();
         bus.connect("com.nokia.mce", "/com/nokia/mce/signal",
@@ -1752,7 +1749,7 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeMicItemMeta(
     meta.size = 0;
     meta.title = tr("Microphone");
     meta.itemType = ItemType_Mic;
-#if defined(SAILFISH) || defined(KIRIGAMI)
+#if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-mic"));
 #endif
     meta.setFlags(static_cast<int>(MetaFlag::Valid) |
@@ -1771,7 +1768,7 @@ ContentServer::makeAudioCaptureItemMeta(const QUrl &url) {
     meta.size = 0;
     meta.title = tr("Audio capture");
     meta.itemType = ItemType_AudioCapture;
-#if defined(SAILFISH) || defined(KIRIGAMI)
+#if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-pulse"));
 #endif
     meta.setFlags(static_cast<int>(MetaFlag::Valid) |
@@ -1790,7 +1787,7 @@ ContentServer::makeScreenCaptureItemMeta(const QUrl &url) {
     meta.size = 0;
     meta.title = tr("Screen capture");
     meta.itemType = ItemType_ScreenCapture;
-#if defined(SAILFISH) || defined(KIRIGAMI)
+#if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-screen"));
 #endif
     meta.setFlags(static_cast<int>(MetaFlag::Valid) |
@@ -1831,7 +1828,7 @@ ContentServer::makeItemMetaUsingYtdlApi(
     int counter) {
     qDebug() << "trying to find url with ytdl:" << url;
 
-#ifdef HARBOUR
+#ifdef USE_SFOS_HARBOUR
     Q_UNUSED(meta)
     Q_UNUSED(nam)
     Q_UNUSED(counter)
@@ -2534,7 +2531,7 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeItemMeta(
         if (art) {
             it = makeMetaUsingExtension(url);
         } else {
-#ifdef SAILFISH
+#ifdef USE_SFOS
             it = makeItemMetaUsingTracker(url);
             if (it == m_metaCache.end()) {
                 qWarning()

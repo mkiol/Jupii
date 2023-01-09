@@ -8,11 +8,12 @@
  * Do not edit! All changes made to it will be lost.
  */
 
-#include "../src/dbus_jupii_adaptor.h"
-#include <QtCore/QMetaObject>
+#include "dbus_jupii_adaptor.h"
+
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
 #include <QtCore/QMap>
+#include <QtCore/QMetaObject>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>

@@ -76,7 +76,7 @@ void ConnectivityDetector::update() {
             qDebug() << "Preferred network interface found";
             newIfname = prefIfname;
         } else {
-#ifdef SAILFISH
+#ifdef USE_SFOS
             // preferred WLAN
             if (wlanCandidates.contains("tether")) {
                 newIfname = "tether";

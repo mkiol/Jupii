@@ -7,7 +7,7 @@
 
 #include "ytdlapi.h"
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 #include <archive.h>
 #include <archive_entry.h>
 #include <lzma.h>
@@ -32,9 +32,9 @@
 #include <fstream>
 #include <sstream>
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
+#include "config.h"
 #include "downloader.h"
-#include "info.h"
 #include "settings.h"
 #include "utils.h"
 #endif
@@ -47,10 +47,9 @@ std::vector<home::Section> YtdlApi::m_homeSections{};
 
 YtdlApi::State YtdlApi::state = YtdlApi::State::Unknown;
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 const QString YtdlApi::pythonArchivePath{
-    QStringLiteral("/usr/share/%1/lib/python.tar.xz")
-        .arg(Jupii::APP_BINARY_ID)};
+    QStringLiteral("/usr/share/%1/lib/python.tar.xz").arg(APP_BINARY_ID)};
 
 QString YtdlApi::pythonSitePath() {
     return QStandardPaths::writableLocation(QStandardPaths::DataLocation) +
@@ -235,14 +234,14 @@ QDebug operator<<(QDebug debug, const std::string& s) {
 }
 
 YtdlApi::YtdlApi(QObject* parent) : QObject{parent} {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     ::setenv("PYTHONPATH", pythonSitePath().toStdString().c_str(), true);
 #endif
     init();
 }
 
 bool YtdlApi::unpack() {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     qDebug() << "unpacking ytdl modules";
 
     if (!QFileInfo::exists(pythonArchivePath)) {
@@ -278,14 +277,18 @@ bool YtdlApi::unpack() {
 }
 
 bool YtdlApi::check() {
-#ifdef SAILFISH
-    if (auto oldChecksum = Settings::instance()->pythonChecksum();
-        !oldChecksum.isEmpty()) {
-        if (oldChecksum != make_checksum(pythonArchivePath)) {
-            qDebug() << "python modules checksum is invalid => need to unpack";
-            return false;
-        }
+#ifdef USE_SFOS
+    auto oldChecksum = Settings::instance()->pythonChecksum();
+    if (oldChecksum.isEmpty()) {
+        qDebug() << "python modules checksum missing => need to unpack";
+        return false;
     }
+
+    if (oldChecksum != make_checksum(pythonArchivePath)) {
+        qDebug() << "python modules checksum is invalid => need to unpack";
+        return false;
+    }
+
     if (!QFile::exists(pythonSitePath())) {
         qDebug() << "no python site dir";
         return false;
@@ -604,9 +607,11 @@ std::vector<YtdlApi::SearchResultItem> YtdlApi::home(int limit) {
     if (state != State::Enabled) return items;
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
+    YTMusic ytm{};
+
     try {
         if (m_homeSections.empty()) {
-            m_homeSections = YTMusic{}.get_home();
+            m_homeSections = ytm.get_home();
         }
 
         for (const auto& section : m_homeSections) {

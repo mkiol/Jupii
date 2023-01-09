@@ -1,0 +1,25 @@
+# Generated with flatpak-pip-generator --yaml yt-dlp
+name: python3-yt-dlp
+buildsystem: simple
+build-commands:
+  - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+    --prefix=${FLATPAK_DEST} "yt-dlp" --no-build-isolation
+sources:
+  - type: file
+    url: https://files.pythonhosted.org/packages/2a/18/70c32fe9357f3eea18598b23aa9ed29b1711c3001835f7cf99a9818985d0/Brotli-1.0.9.zip
+    sha256: 4d1b810aa0ed773f81dceda2cc7b403d01057458730e309856356d4ef4188438
+  - type: file
+    url: https://files.pythonhosted.org/packages/71/4c/3db2b8021bd6f2f0ceb0e088d6b2d49147671f25832fb17970e9b583d742/certifi-2022.12.7-py3-none-any.whl
+    sha256: 4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18
+  - type: file
+    url: https://files.pythonhosted.org/packages/03/ee/114d7016d2e34f341e212fefb5e7bd87785077ebcfff0ad23a497c70eea1/mutagen-1.46.0-py3-none-any.whl
+    sha256: 8af0728aa2d5c3ee5a727e28d0627966641fddfe804c23eabb5926a4d770aed5
+  - type: file
+    url: https://files.pythonhosted.org/packages/5d/22/575c7dd7c86843e07a791cfa2143e7292d6b380f5a7cce966a49b9d6c9f4/pycryptodomex-3.16.0.tar.gz
+    sha256: e9ba9d8ed638733c9e95664470b71d624a6def149e2db6cc52c1aca5a6a2df1d
+  - type: file
+    url: https://files.pythonhosted.org/packages/85/dc/549a807a53c13fd4a8dac286f117a7a71260defea9ec0c05d6027f2ae273/websockets-10.4.tar.gz
+    sha256: eef610b23933c54d5d921c92578ae5f89813438fded840c2e9809d378dc765d3
+  - type: file
+    url: https://files.pythonhosted.org/packages/a7/49/b49e0ae6fdc959235ecb89a3a5be77dd050493dc30845f89482fb83e38b4/yt_dlp-2023.1.6-py2.py3-none-any.whl
+    sha256: bcac3231e2022cad128a83f69948c845b364b2a85fde53415378f7c199808849

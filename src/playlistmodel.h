@@ -27,14 +27,13 @@
 #include <memory>
 #include <optional>
 
-#ifdef SAILFISH
-#include <keepalive/backgroundactivity.h>
-#endif
-
 #include "contentserver.h"
 #include "listmodel.h"
 #include "singleton.h"
 
+#ifdef USE_SFOS
+class BackgroundActivity;
+#endif
 class PlaylistItem;
 class PlaylistModel;
 
@@ -228,7 +227,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     };
 
     const static int refreshTimer = 30000;  // 30s
-#ifdef SAILFISH
+#ifdef USE_SFOS
     BackgroundActivity *m_backgroundActivity;
 #endif
     std::unique_ptr<PlaylistWorker> m_add_worker;
@@ -264,7 +263,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     void updateActiveId();
     void doOnTrackEnded();
     void handleRefreshTimer();
-#ifdef SAILFISH
+#ifdef USE_SFOS
     void handleBackgroundActivityStateChange();
 #endif
     void addItems(const QList<QUrl> &urls,
@@ -296,7 +295,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
                                  const QUrl &origUrl, const QString &author,
                                  const QUrl &icon, const QString &desc,
                                  QString &&app, bool autoPlay);
-#ifdef SAILFISH
+#ifdef USE_SFOS
     void updateBackgroundActivity();
 #endif
 };

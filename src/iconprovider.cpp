@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 #include <sailfishapp.h>
 #include <mlite5/MGConfItem>
 #endif
@@ -18,7 +18,7 @@
 
 #include "iconprovider.h"
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 static inline QString pathTo(const QString &dir) {
     return SailfishApp::pathTo(dir).toString(QUrl::RemoveScheme);
 }
@@ -30,7 +30,7 @@ IconProvider::IconProvider()
 
 QString IconProvider::themeDirPath() {
     QString themeDir;
-#ifdef SAILFISH
+#ifdef USE_SFOS
     auto ratio =
         MGConfItem(QStringLiteral("/desktop/sailfish/silica/theme_pixel_ratio"))
             .value()
@@ -50,7 +50,7 @@ QString IconProvider::themeDirPath() {
         qWarning() << "unknown pixel ratio so, defaulting to 1.0";
         themeDir = pathTo(QStringLiteral("images/z1.0"));
     }
-#endif  // SAILFISH
+#endif  // USE_SFOS
     return themeDir;
 }
 
@@ -65,7 +65,7 @@ QString IconProvider::pathToId(const QString &id) {
 }
 
 QString IconProvider::pathToNoResId(const QString &id) {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     return QDir{pathTo(QStringLiteral("images"))}.absoluteFilePath(id + ".png");
 #else
     return "qrc:/images/" + id + ".png";
@@ -73,7 +73,7 @@ QString IconProvider::pathToNoResId(const QString &id) {
 }
 
 QUrl IconProvider::urlToNoResId(const QString &id) {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     return QUrl::fromLocalFile(
         QDir{pathTo(QStringLiteral("images"))}.absoluteFilePath(id + ".png"));
 #else
@@ -82,7 +82,7 @@ QUrl IconProvider::urlToNoResId(const QString &id) {
 }
 
 QUrl IconProvider::urlToImg(const QString &filename) {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     return QUrl::fromLocalFile(
         QDir{pathTo(QStringLiteral("images"))}.absoluteFilePath(filename));
 #else

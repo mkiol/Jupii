@@ -29,7 +29,7 @@ public:
     void setVolume(int value);
     bool getMute();
     Q_INVOKABLE void setMute(bool value);
-#ifdef SAILFISH
+#ifdef USE_SFOS
     Q_INVOKABLE void volUpPressed();
     Q_INVOKABLE void volDownPressed();
 #endif
@@ -43,7 +43,7 @@ public slots:
 
 private slots:
     void volumeTimeout();
-#ifdef SAILFISH
+#ifdef USE_SFOS
     void volumeUpTimeout();
 #endif
     void handleApplicationStateChanged(Qt::ApplicationState state);
@@ -53,7 +53,7 @@ private:
     bool m_mute = false;
 
     QTimer m_volumeTimer;
-#ifdef SAILFISH
+#ifdef USE_SFOS
     QTimer m_volumeUpTimer;
 #endif
     int m_futureVolume = 0;
@@ -73,7 +73,7 @@ private:
     void updateVolume();
     void asyncUpdateMute();
     void asyncUpdateVolume();
-#ifdef SAILFISH
+#ifdef USE_SFOS
     void showVolNofification() const;
 #endif
 };

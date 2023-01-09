@@ -12,7 +12,7 @@
 #include <QDBusPendingReply>
 #include <QVariantMap>
 
-#include "info.h"
+#include "config.h"
 
 Notifications::Notifications(QObject* parent) : QObject{parent} {
     createDbusInf();
@@ -70,20 +70,19 @@ bool Notifications::show(const QString& summary, const QString& body,
     QVariantMap hints;
     int timeout = -1;
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
     timeout = 5;
     hints.insert("urgency", 1);
-    hints.insert("x-nemo-owner", Jupii::APP_BINARY_ID);
+    hints.insert("x-nemo-owner", APP_BINARY_ID);
     hints.insert("x-nemo-max-content-lines", 10);
     if (!body.isEmpty()) hints.insert("x-nemo-preview-body", body);
     if (!summary.isEmpty()) hints.insert("x-nemo-preview-summary", summary);
     if (!iconPath.isEmpty()) hints.insert("x-nemo-icon", iconPath);
 #endif
 
-    auto reply =
-        m_dbus_inf->Notify(Jupii::APP_NAME, 0,
-                           iconPath.isEmpty() ? Jupii::APP_BINARY_ID : iconPath,
-                           summary, body, {}, hints, timeout);
+    auto reply = m_dbus_inf->Notify(
+        APP_NAME, 0, iconPath.isEmpty() ? APP_BINARY_ID : iconPath, summary,
+        body, {}, hints, timeout);
 
     return !reply.isError();
 }

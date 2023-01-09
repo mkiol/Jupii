@@ -23,7 +23,7 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
-#ifdef SAILFISH
+#ifdef USE_SFOS
 #include "recorder.h"
 #endif
 
@@ -38,14 +38,14 @@ class ScreenCaster : public QObject {
     void writeAudioData(const QByteArray& data);
 
    signals:
-#ifdef DESKTOP
+#ifdef USE_PLASMA
     void readNextVideoData();
 #endif
     void error();
 
    private slots:
     void writeVideoData();
-#ifdef SAILFISH
+#ifdef USE_SFOS
     void repaint();
 #endif
 
@@ -57,7 +57,7 @@ class ScreenCaster : public QObject {
         ENC_H264_NVENC,
         ENC_H264_OMX
     };
-#ifdef SAILFISH
+#ifdef USE_SFOS
     QTimer frameTimer;
     QTimer repaintTimer;
     std::unique_ptr<Recorder> recorder;

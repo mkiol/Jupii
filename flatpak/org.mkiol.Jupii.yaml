@@ -1,0 +1,594 @@
+app-id: org.mkiol.Jupii
+default-branch: stable
+runtime: org.kde.Platform
+runtime-version: '5.15-21.08'
+sdk: org.kde.Sdk
+rename-desktop-file: jupii.desktop
+rename-icon: jupii
+rename-appdata-file: jupii.metainfo.xml
+command: jupii
+finish-args:
+    - --share=ipc
+    - --share=network
+    - --socket=x11
+    - --socket=wayland
+    - --socket=pulseaudio
+    - --device=all
+    - --talk-name=org.freedesktop.Tracker1.Steroids
+    - --talk-name=org.freedesktop.Tracker3.Endpoint
+    - --talk-name=org.freedesktop.Notifications
+    - --env=QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+cleanup:
+    - '/include'
+    - '/lib/cmake'
+    - '/lib/pkgconfig'
+    - '*.a'
+modules:
+    - name: taglib
+      buildsystem: cmake
+      config-opts:
+        - -DCMAKE_BUILD_TYPE=Release
+        - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        - -DBUILD_BINDINGS=OFF
+        - -DBUILD_SHARED_LIBS=OFF
+        - -DENABLE_STATIC_RUNTIME=OFF
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://github.com/taglib/taglib/releases/download/v1.13/taglib-1.13.tar.gz
+          md5: 0b75619b67b9149cfcbbe5c127df6395
+
+    - name: gumbo
+      buildsystem: autotools
+      config-opts:
+        - --with-pic
+        - --enable-static
+        - --disable-shared
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://github.com/google/gumbo-parser/archive/refs/tags/v0.10.1.tar.gz
+          md5: c6f75c9eda65e897c242f8958a34aed0
+
+    - name: expat
+      buildsystem: autotools
+      config-opts:
+        - --enable-pic
+        - --enable-static
+        - --disable-shared
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
+          md5: 686e9d986f85966c7924dfc041cdc15e
+
+    - name: mhd
+      buildsystem: autotools
+      config-opts:
+        - --disable-doc
+        - --disable-examples
+        - --disable-curl
+        - --disable-https
+        - --disable-postprocessor
+        - --disable-dauth
+        - --disable-bauth
+        - --disable-epoll
+        - --disable-sendfile
+        - --disable-httpupgrade
+        - --enable-static
+        - --disable-shared
+        - --with-pic=yes
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://ftpmirror.gnu.org/libmicrohttpd/libmicrohttpd-0.9.75.tar.gz
+          md5: aff64581937b53f3a23b05216ad2cd02
+
+    - name: curl
+      buildsystem: autotools
+      config-opts:
+        - --enable-pic
+        - --enable-static
+        - --disable-shared
+        - --without-ssl
+        - --without-brotli
+        - --disable-pop3
+        - --disable-mqtt
+        - --disable-netrc
+        - --disable-rtsp
+        - --disable-smb
+        - --disable-smtp
+        - --disable-socketpair
+        - --disable-sspi
+        - --disable-telnet
+        - --disable-tftp
+        - --disable-tls-srp
+        - --disable-hsts
+        - --disable-imap
+        - --disable-ldap
+        - --disable-ldaps
+        - --disable-dnsshuffle
+        - --disable-doh
+        - --disable-file
+        - --disable-ftp
+        - --disable-gopher
+        - --disable-ntlm-wb
+        - --without-fish-functions-dir
+        - --without-libidn2
+        - --without-ca-bundle
+        - --without-libpsl
+        - --without-librtmp
+        - --without-mesalink
+        - --without-nghttp2
+        - --without-nghttp3
+        - --without-ngtcp2
+        - --without-nss
+        - --without-quiche
+        - --without-schannel
+        - --without-secure-transport
+        - --without-winidn
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://curl.se/download/curl-7.87.0.tar.gz
+          md5: 0ac55b432f88b008fb3241981591a541
+
+    - name: npupnp
+      buildsystem: autotools
+      config-opts:
+        - --with-pic=yes
+        - --enable-static
+        - --disable-shared
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://www.lesbonscomptes.com/upmpdcli/downloads/libnpupnp-5.0.0.tar.gz
+          md5: 85bc87c7b89bc6c76c46ddcc2bd33cde
+
+    - name: upnpp
+      buildsystem: autotools
+      config-opts:
+        - --with-pic=yes
+        - --enable-static
+        - --disable-shared
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://www.lesbonscomptes.com/upmpdcli/downloads/libupnpp-0.22.4.tar.gz
+          md5: 31b2bd7cb9b4d6f4306046c07960c029
+
+    - python3-yt-dlp.yaml
+    - python3-ytmusicapi.yaml
+
+    - name: python-patch
+      buildsystem: simple
+      build-commands:
+        - patch ${FLATPAK_DEST}/lib/python3.9/site-packages/yt_dlp/utils.py yt_dlp.patch
+      sources:
+        - type: file
+          path: ../patches/yt_dlp.patch
+
+    - name: pybind11
+      buildsystem: cmake
+      config-opts:
+        - -DCMAKE_BUILD_TYPE=Release
+        - -DBUILD_SHARED_LIBS=OFF
+        - -DPYBIND11_INSTALL=ON
+        - -DPYBIND11_TEST=OFF
+        - -DPYBIND11_FINDPYTHON=ON
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://github.com/pybind/pybind11/archive/refs/tags/v2.10.3.tar.gz
+          md5: a093dac9dfd613a5a7c2afa50a301098
+
+    - name: x264
+      buildsystem: autotools
+      config-opts:
+        - --enable-pic
+        - --enable-static
+        - --disable-cli
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://code.videolan.org/videolan/x264/-/archive/stable/x264-stable.tar.bz2
+          md5: 7bd5f01a556e643e6aaca48e3e391d50
+
+    - name: lame
+      buildsystem: autotools
+      config-opts:
+        - --enable-static
+        - --enable-nasm
+        - --disable-decoder
+        - --disable-analyzer-hooks
+        - --disable-frontend
+        - --with-pic=yes
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://altushost-swe.dl.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz
+          md5: 83e260acbe4389b54fe08e0bdbf7cddb
+
+    - name: ffnvc
+      only-arches:
+        - x86_64
+        - i386
+      buildsystem: simple
+      build-commands:
+        - make install PREFIX=$FLATPAK_DEST
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://github.com/FFmpeg/nv-codec-headers/releases/download/n11.1.5.2/nv-codec-headers-11.1.5.2.tar.gz
+          md5: 94fd5479bf934595530d9bfae93c1c55
+
+    - name: ffmpeg
+      only-arches:
+        - x86_64
+        - i386
+      buildsystem: autotools
+      config-opts:
+        - --disable-autodetect
+        - --disable-doc
+        - --disable-programs
+        - --disable-everything
+        - --enable-static
+        - --disable-shared
+        - --enable-nonfree
+        - --enable-gpl
+        - --enable-pic
+        - --enable-protocol=file
+        - --enable-filter=vflip
+        - --enable-filter=hflip
+        - --enable-filter=scale
+        - --enable-filter=transpose
+        - --enable-filter=color
+        - --enable-filter=overlay
+        - --enable-filter=pad
+        - --enable-encoder=aac
+        - --enable-encoder=libx264
+        - --enable-encoder=h264_v4l2m2m
+        - --enable-encoder=libmp3lame
+        - --enable-encoder=h264_nvenc
+        - --enable-decoder=h264
+        - --enable-decoder=rawvideo
+        - --enable-decoder=pcm_u8
+        - --enable-decoder=pcm_u32le
+        - --enable-decoder=pcm_u32be
+        - --enable-decoder=pcm_u24le
+        - --enable-decoder=pcm_u24be
+        - --enable-decoder=pcm_u16le
+        - --enable-decoder=pcm_u16be
+        - --enable-decoder=pcm_s8
+        - --enable-decoder=pcm_s32le
+        - --enable-decoder=pcm_s32be
+        - --enable-decoder=pcm_s24le
+        - --enable-decoder=pcm_s24be
+        - --enable-decoder=pcm_s16le
+        - --enable-decoder=pcm_s16be
+        - --enable-decoder=pcm_f64le
+        - --enable-decoder=pcm_f64be
+        - --enable-decoder=pcm_f32le
+        - --enable-decoder=pcm_f32be
+        - --enable-decoder=aac
+        - --enable-decoder=aac_fixed
+        - --enable-decoder=aac_latm
+        - --enable-muxer=mp4
+        - --enable-muxer=mpegts
+        - --enable-muxer=mp3
+        - --enable-demuxer=h264
+        - --enable-demuxer=rawvideo
+        - --enable-demuxer=wav
+        - --enable-demuxer=matroska
+        - --enable-demuxer=mpegvideo
+        - --enable-demuxer=ogg
+        - --enable-demuxer=mov
+        - --enable-demuxer=aac
+        - --enable-demuxer=m4v
+        - --enable-parser=h264
+        - --enable-bsf=h264_mp4toannexb
+        - --enable-libx264
+        - --enable-v4l2_m2m
+        - --enable-libxcb
+        - --enable-libmp3lame
+        - --enable-nvenc
+        - --enable-ffnvcodec
+        - --enable-indev=v4l2
+        - --enable-indev=xcbgrab
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://ffmpeg.org/releases/ffmpeg-5.1.2.tar.gz
+          md5: f44232183ae1ef814eac50dd382a2d7f
+
+    - name: ffmpeg-arm
+      only-arches:
+        - arm
+        - aarch64
+      buildsystem: autotools
+      config-opts:
+        - --disable-autodetect
+        - --disable-doc
+        - --disable-programs
+        - --disable-everything
+        - --enable-static
+        - --disable-shared
+        - --enable-nonfree
+        - --enable-gpl
+        - --enable-pic
+        - --enable-protocol=file
+        - --enable-filter=vflip
+        - --enable-filter=hflip
+        - --enable-filter=scale
+        - --enable-filter=transpose
+        - --enable-filter=color
+        - --enable-filter=overlay
+        - --enable-filter=pad
+        - --enable-encoder=aac
+        - --enable-encoder=libx264
+        - --enable-encoder=h264_v4l2m2m
+        - --enable-encoder=libmp3lame
+        - --enable-decoder=h264
+        - --enable-decoder=rawvideo
+        - --enable-decoder=pcm_u8
+        - --enable-decoder=pcm_u32le
+        - --enable-decoder=pcm_u32be
+        - --enable-decoder=pcm_u24le
+        - --enable-decoder=pcm_u24be
+        - --enable-decoder=pcm_u16le
+        - --enable-decoder=pcm_u16be
+        - --enable-decoder=pcm_s8
+        - --enable-decoder=pcm_s32le
+        - --enable-decoder=pcm_s32be
+        - --enable-decoder=pcm_s24le
+        - --enable-decoder=pcm_s24be
+        - --enable-decoder=pcm_s16le
+        - --enable-decoder=pcm_s16be
+        - --enable-decoder=pcm_f64le
+        - --enable-decoder=pcm_f64be
+        - --enable-decoder=pcm_f32le
+        - --enable-decoder=pcm_f32be
+        - --enable-decoder=aac
+        - --enable-decoder=aac_fixed
+        - --enable-decoder=aac_latm
+        - --enable-muxer=mp4
+        - --enable-muxer=mpegts
+        - --enable-muxer=mp3
+        - --enable-demuxer=h264
+        - --enable-demuxer=rawvideo
+        - --enable-demuxer=wav
+        - --enable-demuxer=matroska
+        - --enable-demuxer=mpegvideo
+        - --enable-demuxer=ogg
+        - --enable-demuxer=mov
+        - --enable-demuxer=aac
+        - --enable-demuxer=m4v
+        - --enable-parser=h264
+        - --enable-bsf=h264_mp4toannexb
+        - --enable-libx264
+        - --enable-v4l2_m2m
+        - --enable-libxcb
+        - --enable-libmp3lame
+        - --enable-ffnvcodec
+        - --enable-indev=v4l2
+        - --enable-indev=xcbgrab
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://ffmpeg.org/releases/ffmpeg-5.1.2.tar.gz
+          md5: f44232183ae1ef814eac50dd382a2d7f
+
+    - name: fmt
+      buildsystem: cmake
+      config-opts:
+        - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        - -DFMT_DOC=OFF
+        - -DFMT_TEST=OFF
+        - -DFMT_FUZZ=OFF
+      cleanup:
+        - '/bin'
+        - '/share'
+        - '/lib/cmake'
+        - '/lib/debug'
+        - '*.so'
+        - '*.so.*'
+        - '*.la'
+      sources:
+        - type: archive
+          url: https://github.com/fmtlib/fmt/releases/download/9.1.0/fmt-9.1.0.zip
+          md5: 6133244fe8ef6f75c5601e8069b37b04
+
+    - name: jupii
+      only-arches:
+        - x86_64
+        - i386
+      buildsystem: cmake
+      config-opts:
+        - -Dwith_flatpak=1
+        - -Dwith_plasma=1
+        - -Dwith_sfos=0
+        - -Dwith_v4l2=1
+        - -Dwith_v4l2m2m=1
+        - -Dwith_mp3_format=1
+        - -Dwith_nvenc=1
+        - -Dwith_x11_screen_capture=1
+        - -Dwith_droidcam=0
+        - -Dwith_sfos_screen_capture=0
+        - -Dwith_sfos_harbour=0
+        - -Dwith_trace_logs=0
+        - -Dwith_static_sanitizers=0
+        - -Dbuild_x264=0
+        - -Dbuild_ffmpeg=0
+        - -Dbuild_mhd=0
+        - -Dbuild_fmt=0
+        - -Dbuild_lame=0
+        - -Dbuild_ffnvc=0
+        - -Dbuild_nasm=0
+        - -Dbuild_gumbo=0
+        - -Dbuild_npupnp=0
+        - -Dbuild_upnpp=0
+        - -Dbuild_taglib=0
+        - -Dbuild_libarchive=0
+        - -Dbuild_pybind11=0
+      sources:
+        - type: dir
+          path: ../
+          skip:
+            - flatpak/.flatpak-builder
+            - build
+            - external/ffmpeg
+            - external/ffnvc
+            - external/fmt
+            - external/gumbo
+            - external/lame
+            - external/libarchive
+            - external/mhd
+            - external/nasm
+            - external/npupnp
+            - external/pybind11
+            - external/taglib
+            - external/upnpp
+            - external/x264
+
+    - name: jupii-arm
+      only-arches:
+        - arm
+        - aarch64
+      buildsystem: cmake
+      config-opts:
+        - -Dwith_flatpak=1
+        - -Dwith_plasma=1
+        - -Dwith_sfos=0
+        - -Dwith_v4l2=1
+        - -Dwith_v4l2m2m=1
+        - -Dwith_mp3_format=1
+        - -Dwith_nvenc=0
+        - -Dwith_x11_screen_capture=1
+        - -Dwith_droidcam=0
+        - -Dwith_sfos_screen_capture=0
+        - -Dwith_sfos_harbour=0
+        - -Dwith_trace_logs=0
+        - -Dwith_static_sanitizers=0
+        - -Dbuild_x264=0
+        - -Dbuild_ffmpeg=0
+        - -Dbuild_mhd=0
+        - -Dbuild_fmt=0
+        - -Dbuild_lame=0
+        - -Dbuild_ffnvc=0
+        - -Dbuild_nasm=0
+        - -Dbuild_gumbo=0
+        - -Dbuild_npupnp=0
+        - -Dbuild_upnpp=0
+        - -Dbuild_taglib=0
+        - -Dbuild_libarchive=0
+        - -Dbuild_pybind11=0
+      sources:
+        - type: dir
+          path: ../
+          skip:
+            - flatpak/.flatpak-builder
+            - build
+            - external/ffmpeg
+            - external/ffnvc
+            - external/fmt
+            - external/gumbo
+            - external/lame
+            - external/libarchive
+            - external/mhd
+            - external/nasm
+            - external/npupnp
+            - external/pybind11
+            - external/taglib
+            - external/upnpp
+            - external/x264

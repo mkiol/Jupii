@@ -220,7 +220,7 @@ struct Playlist {
 
 namespace video_info {
 struct Format {
-    std::optional<int> quality;
+    std::optional<float> quality;
     std::string url;
     std::string vcodec;
     std::string acodec;
@@ -322,8 +322,7 @@ class YTMusic {
     watch::Playlist get_watch_playlist(
         const std::optional<std::string> &videoId = std::nullopt,
         const std::optional<std::string> &playlistId = std::nullopt,
-        int limit = 25,
-        const std::optional<std::string> &params = std::nullopt) const;
+        int limit = 25) const;
 
     std::vector<home::Section> get_home(int limit = 3) const;
 

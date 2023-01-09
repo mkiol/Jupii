@@ -10,7 +10,7 @@
 #include <QDebug>
 #include <cstddef>
 
-#include "info.h"
+#include "config.h"
 #include "contentserver.h"
 #include "contentserverworker.h"
 
@@ -207,7 +207,7 @@ void PulseAudioSource::contextSuccessCallback(pa_context*, int success, void*)
 
 void PulseAudioSource::muteConnectedSinkInput(const SinkInput& si)
 {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (!muted && connectedSinkInput != PA_INVALID_INDEX &&
             si.sinkIdx != PA_INVALID_INDEX) {
         qDebug() << "Muting sink input by moving it to null sink:"
@@ -229,7 +229,7 @@ void PulseAudioSource::muteConnectedSinkInput(const SinkInput& si)
 
 void PulseAudioSource::unmuteConnectedSinkInput()
 {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (connectedSinkInput != PA_INVALID_INDEX &&
             connectedSink != PA_INVALID_INDEX &&
             sinkInputs.contains(connectedSinkInput)) {
@@ -255,7 +255,7 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
 #ifdef QT_DEBUG
     qDebug() << "Orig monitor source:" << monitorSources.value(si.sinkIdx);
 #endif
-#ifdef SAILFISH
+#ifdef USE_SFOS
     /* Ugly hacks
        SFOS > 3.1.0:
            mimicking "message-new-email" stream to trigger "event" policy group on
@@ -273,7 +273,7 @@ bool PulseAudioSource::startRecordStream(pa_context *ctx, const SinkInput& si)
     stream = pa_stream_new_with_proplist(ctx, "notiftone", &sampleSpec, nullptr, p);
     pa_proplist_free(p);
 #else
-    stream = pa_stream_new(ctx, Jupii::APP_NAME, &sampleSpec, nullptr);
+    stream = pa_stream_new(ctx, APP_NAME, &sampleSpec, nullptr);
 #endif
     pa_stream_set_read_callback(stream, streamRequestCallback, nullptr);
     connectedSinkInput = si.idx;
@@ -418,7 +418,7 @@ QList<PulseAudioSource::Client> PulseAudioSource::activeClients()
 
 bool PulseAudioSource::blocked(const char* name)
 {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (!strcmp(name, "ngfd") ||
         !strcmp(name, "feedback-event") ||
         !strcmp(name, "keyboard_0") ||
@@ -427,7 +427,7 @@ bool PulseAudioSource::blocked(const char* name)
         !strcmp(name, "jolla keyboard")) {
         return true;
     }
-#else // SAILFISH
+#else // USE_SFOS
     if (!strncmp(name, "speech-dispatcher", 17)
 #ifdef QT_DEBUG
         || !strcmp(name, "Kodi") || !strcmp(name, "KodiSink")
@@ -435,13 +435,13 @@ bool PulseAudioSource::blocked(const char* name)
     ) {
         return true;
     }
-#endif // SAILFISH
+#endif // USE_SFOS
     return false;
 }
 
 void PulseAudioSource::correctClientName(Client &client)
 {
-#ifdef SAILFISH
+#ifdef USE_SFOS
     if (client.name == "CubebUtils" && !client.binary.isEmpty()) {
         client.name = client.binary;
     } else if (client.name == "aliendalvik_audio_glue" ||
@@ -530,7 +530,7 @@ bool PulseAudioSource::init()
     shutdown = false;
     ml = pa_mainloop_new();
     mla = pa_mainloop_get_api(ml);
-    ctx = pa_context_new(mla, Jupii::APP_NAME);
+    ctx = pa_context_new(mla, APP_NAME);
     if (!ctx) {
         qWarning() << "New pulse-audio context failed";
     } else {
