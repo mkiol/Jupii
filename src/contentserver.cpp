@@ -29,7 +29,6 @@
 #include "connectivitydetector.h"
 #include "contentdirectory.h"
 #include "contentserverworker.h"
-#include "log.h"
 #include "miccaster.h"
 #include "playlistmodel.h"
 #include "playlistparser.h"
@@ -196,12 +195,6 @@ const QString ContentServer::typeTagName = QStringLiteral("otype");
 const char *const ContentServer::recMp4TagPrefix = "----:org.mkiol.jupii:";
 
 ContentServer::ContentServer(QObject *parent) : QThread{parent} {
-#ifdef QT_DEBUG
-    av_log_set_level(AV_LOG_DEBUG);
-#else
-    av_log_set_level(AV_LOG_ERROR);
-#endif
-    if (Settings::instance()->getLogToFile()) av_log_set_callback(ffmpegLog);
     avdevice_register_all();
     // starting worker
     start(QThread::NormalPriority);
@@ -568,7 +561,7 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
     m << "<res ";
 
     if (audioType && item->audioAvMeta) {  // extract audio from video
-        // puting audio stream info instead video file
+        // puting audio stream info instead of video file
         if (item->audioAvMeta->size > 0)
             m << "size=\"" << QString::number(item->audioAvMeta->size) << "\" ";
         m << "protocolInfo=\"http-get:*:" << item->audioAvMeta->mime << ":"

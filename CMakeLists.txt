@@ -1,3 +1,9 @@
+# Copyright (C) 2023 Michal Kosciesza <michal@mkiol.net>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, Yo
+
 cmake_minimum_required(VERSION 3.5)
 
 option(with_plasma "enable plasma ui" OFF)
@@ -36,24 +42,29 @@ option(build_pymodules "make python modules archive" ON)
 if(${with_plasma} AND ${with_sfos})
     message(FATAL_ERROR "options with_plasma and with_sfos cannot be set together")
 endif()
+
 if(NOT ${with_plasma} AND NOT ${with_sfos})
     message(FATAL_ERROR "one of the options should be set (with_plasma or with_sfos)")
 endif()
+
 if(with_plasma)
     set(with_droidcam OFF)
     set(with_sfos_screen_capture OFF)
     set(with_sfos_harbour OFF)
     set(build_pymodules OFF)
 endif()
+
 if(with_sfos)
     set(with_v4l2 OFF)
     set(with_v4l2m2m OFF)
     set(with_nvenc OFF)
     set(with_x11_screen_capture OFF)
 endif()
+
 if(with_sfos_harbour)
     set(build_pymodules OFF)
 endif()
+
 if(with_v4l2m2m)
     set(with_v4l2 ON)
 endif()
@@ -193,8 +204,6 @@ set(sources
     src/itemmodel.h
     src/listmodel.cpp
     src/listmodel.h
-    src/log.cpp
-    src/log.h
     src/main.cpp
     src/miccaster.cpp
     src/miccaster.h
@@ -256,7 +265,13 @@ set(sources
     src/contentdirectoryservice.cpp
     src/contentdirectoryservice.h
     src/connectionmanagerservice.cpp
-    src/connectionmanagerservice.h)
+    src/connectionmanagerservice.h
+    src/logger.cpp
+    src/logger.hpp
+    src/qtlogger.cpp
+    src/qtlogger.hpp
+    src/avlogger.cpp
+    src/avlogger.hpp)
 
 if(with_plasma)
     list(APPEND sources
@@ -304,9 +319,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             "-pie;-Wall;-Wextra;-Wpedantic;-O1;-g3;-fsanitize=address,undefined")
         if(with_static_sanitizers)
             target_link_options(compiler_flags INTERFACE
-              "-pie;-static-libasan;-static-libubsan;-fsanitize=address,undefined>>")
+              "-pie;-static-libasan;-static-libubsan;-fsanitize=address,undefined")
         else()
-            target_link_options(compiler_flags INTERFACE "-pie;-fsanitize=address,undefined>>")
+            target_link_options(compiler_flags INTERFACE "-pie;-fsanitize=address,undefined")
         endif()
     else()
         target_compile_options(compiler_flags INTERFACE
@@ -582,7 +597,7 @@ if(build_ffmpeg)
         CONFIGURE_COMMAND CPATH=${external_include_dir}
             LIBRARY_PATH=${external_lib_dir}
             PATH=$ENV{PATH}:${PROJECT_BINARY_DIR}/external/bin PKG_CONFIG_PATH=${external_lib_dir}/pkgconfig
-            <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> ${ffmpeg_opts}
+            <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> ${ffmpeg_opts} --extra-ldflags=-L${external_lib_dir}
         BUILD_COMMAND CPATH=${external_include_dir}
             LIBRARY_PATH=${external_lib_dir}
             PATH=$ENV{PATH}:${PROJECT_BINARY_DIR}/external/bin ${MAKE}
@@ -644,6 +659,7 @@ if(build_x264)
     set(x264_LIBRARIES ${external_lib_dir}/libx264.a)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${x264_LIBRARIES} ${CMAKE_DL_LIBS})
+    add_dependencies(${info_binary_id} x264)
 else()
     pkg_search_module(x264 REQUIRED x264)
     target_include_directories(${info_binary_id} PRIVATE ${x264_INCLUDE_DIRS})
@@ -685,6 +701,7 @@ if(with_mp3_format)
         set(lame_LIBRARIES ${external_lib_dir}/libmp3lame.a)
         target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
         target_link_libraries(${info_binary_id} ${lame_LIBRARIES})
+        add_dependencies(${info_binary_id} lame)
     else()
         find_library(lame_path mp3lame)
         target_link_libraries(${info_binary_id} ${lame_path})
@@ -752,6 +769,7 @@ if(build_npupnp)
     set(npupnp_LIBRARIES ${external_lib_dir}/libnpupnp.a)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${npupnp_LIBRARIES})
+    add_dependencies(${info_binary_id} npupnp)
 else()
     pkg_search_module(npupnp REQUIRED libnpupnp)
     target_include_directories(${info_binary_id} PRIVATE ${npupnp_INCLUDE_DIRS})
@@ -777,6 +795,7 @@ if(build_mhd)
     set(mhd_LIBRARIES ${external_lib_dir}/libmicrohttpd.a)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${mhd_LIBRARIES})
+    add_dependencies(${info_binary_id} mhd)
 else()
     pkg_search_module(mhd REQUIRED libmicrohttpd)
     target_include_directories(${info_binary_id} PRIVATE ${mhd_INCLUDE_DIRS})
@@ -922,11 +941,6 @@ endif()
 # misc
 
 if(with_sfos)
-    add_custom_target(sfos_files SOURCES
-        ${sfos_dir}/qml/*
-        ${sfos_dir}/${info_binary_id}.desktop
-        ${sfos_dir}/${info_binary_id}.spec
-        ${sfos_dir}/icons/*)
     file(WRITE "${CMAKE_BINARY_DIR}/QtCreatorDeployment.txt"
         "${CMAKE_INSTALL_PREFIX}\n${CMAKE_BINARY_DIR}/${info_binary_id}:bin\n")
 endif()

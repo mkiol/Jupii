@@ -29,7 +29,6 @@
 #include "libupnpp/control/description.hxx"
 #include "libupnpp/control/discovery.hxx"
 #include "libupnpp/upnpplib.hxx"
-#include "log.h"
 #include "settings.h"
 #include "utils.h"
 #include "xc.h"
@@ -105,19 +104,8 @@ void Directory::init() {
         return;
     }
 
-    std::string logFile;
-    if (Settings::instance()->getLogToFile()) {
-        logFile.assign(
-            QDir{QStandardPaths::writableLocation(QStandardPaths::HomeLocation)}
-                .filePath(UPNPP_LOG_FILE)
-                .toLatin1()
-                .toStdString());
-    }
-#ifdef QT_DEBUG
-    UPnPP::LibUPnP::setLogFileName(logFile, UPnPP::LibUPnP::LogLevelDebug);
-#else
-    UPnPP::LibUPnP::setLogFileName(logFile, UPnPP::LibUPnP::LogLevelError);
-#endif
+    UPnPP::LibUPnP::setLogLevel(UPnPP::LibUPnP::LogLevelError);
+
     m_directory = UPnPClient::UPnPDeviceDirectory::getTheDir(5);
 
     if (!m_directory) {

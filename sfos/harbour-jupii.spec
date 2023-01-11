@@ -36,6 +36,8 @@ BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(python3)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libarchive)
+BuildRequires:  pkgconfig(gstreamer-1.0)
+BuildRequires:  pkgconfig(gstreamer-app-1.0)
 BuildRequires:  bzip2-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  libasan-static
@@ -44,6 +46,9 @@ BuildRequires:  xz
 BuildRequires:  patch
 BuildRequires:  busybox-symlinks-tar
 BuildRequires:  python3-pip
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
 
 %description
 Play audio, video and images on UPnP/DLNA devices

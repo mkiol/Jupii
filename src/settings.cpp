@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,9 +25,11 @@
 #include <libupnpp/control/description.hxx>
 #include <limits>
 
+#include "avlogger.hpp"
 #include "config.h"
 #include "directory.h"
-#include "log.h"
+#include "logger.hpp"
+#include "qtlogger.hpp"
 #include "utils.h"
 
 QString Settings::settingsFilepath() {
@@ -39,6 +41,18 @@ QString Settings::settingsFilepath() {
            QCoreApplication::organizationName() + QDir::separator() +
            QCoreApplication::applicationName() + QDir::separator() +
            settingsFilename;
+}
+
+void Settings::initLogger() const {
+    Logger::init(Logger::LogType::Trace,
+                 getLogToFile() ? QDir{QStandardPaths::writableLocation(
+                                           QStandardPaths::CacheLocation)}
+                                      .filePath(QStringLiteral("jupii.log"))
+                                      .toStdString()
+                                : std::string{});
+
+    initQtLogger();
+    initAvLogger();
 }
 
 Settings::Settings()
@@ -53,11 +67,12 @@ Settings::Settings()
 }
 #endif
 {
+    initLogger();
+
     initOpenUrlMode();
+
     getCacheDir();
-    removeLogFiles();
-    qInstallMessageHandler(qtLog);
-    ::configureLogToFile(getLogToFile());
+
     updateSandboxStatus();
 
     qDebug() << "HW name:" << hwName;
@@ -86,7 +101,7 @@ QString Settings::readHwInfo() {
         for (const auto &line : data)
             if (rx.indexIn(line) != -1) return rx.cap(1);
     } else {
-        qWarning() << "Cannot open file:" << f.fileName() << f.errorString();
+        qWarning() << "failed to open file:" << f.fileName() << f.errorString();
     }
 
     return {};
@@ -94,36 +109,33 @@ QString Settings::readHwInfo() {
 #endif
 
 QString Settings::prettyName() const {
-    return hwName.isEmpty() ? QString{APP_NAME}
-                            : QString{"%1 (%2)"}.arg(APP_NAME, hwName);
+    return hwName.isEmpty() ? QStringLiteral(APP_NAME)
+                            : QStringLiteral("%1 (%2)").arg(APP_NAME, hwName);
 }
 
 void Settings::setLogToFile(bool value) {
     if (getLogToFile() != value) {
-        setValue("logtofile", value);
-        if (value) {
-            qDebug() << "Logging to file enabled";
-            ::configureLogToFile(true);
-        } else {
-            qDebug() << "Logging to file disabled";
-            ::configureLogToFile(false);
-        }
+        setValue(QStringLiteral("logtofile"), value);
         emit logToFileChanged();
+
+        initLogger();
     }
 }
 
 bool Settings::getLogToFile() const {
-    return value("logtofile", false).toBool();
+    return value(QStringLiteral("logtofile"), false).toBool();
 }
 
 void Settings::setPort(int value) {
     if (getPort() != value) {
-        setValue("port", value);
+        setValue(QStringLiteral("port"), value);
         emit portChanged();
     }
 }
 
-int Settings::getPort() const { return value("port", 9092).toInt(); }
+int Settings::getPort() const {
+    return value(QStringLiteral("port"), 9092).toInt();
+}
 
 void Settings::setVolStep(int value) {
     if (getVolStep() != value) {
@@ -911,7 +923,7 @@ bool Settings::allowNotIsomMp4() const {
 }
 
 bool Settings::isDebug() const {
-#ifdef QT_DEBUG
+#ifdef DEBUG
     return true;
 #else
     return false;

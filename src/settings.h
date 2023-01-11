@@ -290,6 +290,8 @@ class Settings : public QSettings,
     static QString settingsFilepath();
     static void initOpenUrlMode();
     void updateSandboxStatus();
+
+    void initLogger() const;
 };
 
 #endif  // SETTINGS_H
