@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,6 +30,12 @@ Page {
                 title: qsTr("Settings")
             }
 
+            InlineMessage {
+                visible: settings.restartRequired
+                width: parent.width
+                text: qsTr("Restart is required for the changes to take effect.")
+            }
+
             TextSwitch {
                 automaticCheck: false
                 checked: settings.contentDirSupported
@@ -41,272 +47,155 @@ Page {
                 }
             }
 
-            /*Slider {
-                width: parent.width
-                minimumValue: 1
-                maximumValue: 60
-                stepSize: 1
-                handleVisible: true
-                value: settings.forwardTime
-                valueText: value + " s"
-                label: qsTr("Forward/backward time-step interval")
-
-                onValueChanged: {
-                    settings.forwardTime = value
-                }
-            }*/
-
-            TextSwitch {
-                automaticCheck: false
-                checked: settings.useHWVolume
-                text: qsTr("Volume control with hardware keys")
-                onClicked: {
-                    settings.useHWVolume = !settings.useHWVolume
-                }
-            }
-
-            Slider {
-                visible: settings.useHWVolume
-                width: parent.width
-                minimumValue: 1
-                maximumValue: 10
-                stepSize: 1
-                handleVisible: true
-                value: settings.volStep
-                valueText: value
-                label: qsTr("Volume level step")
-
-                onValueChanged: {
-                    settings.volStep = value
-                }
-            }
-
-            Slider {
-                width: parent.width
-                minimumValue: 1
-                maximumValue: 100
-                stepSize: 1
-                handleVisible: true
-                value: Math.round(settings.micVolume)
-                valueText: value
-                label: qsTr("Microphone sensitivity")
-
-                onValueChanged: {
-                    settings.micVolume = value
-                }
-            }
-
-            /*Slider {
-                width: parent.width
-                minimumValue: 1
-                maximumValue: 10
-                stepSize: 1
-                handleVisible: true
-                value: Math.round(settings.audioBoost)
-                valueText: value
-                label: qsTr("Audio Capture volume boost")
-
-                onValueChanged: {
-                    settings.audioBoost = value
-                }
-            }*/
-
-            /*TextSwitch {
-                automaticCheck: false
-                visible:  settings.remoteContentMode == 0
-                checked: settings.rec
-                text: qsTr("Stream recorder")
-                description: qsTr("Enables audio recording from URL items. " +
-                                  "If URL item is a Icecast stream, individual tracks from a stream will be recorded. " +
-                                  "To enable recording use 'Record' button located on the bottom bar. " +
-                                  "When the 'Record' button is activated before " +
-                                  "the end of currently played track, the whole track is saved to a file.")
-                onClicked: {
-                    settings.rec = !settings.rec
-                }
-            }*/
-
-            ListItem {
-                contentHeight: visible ? recflow.height + 2*Theme.paddingLarge : 0
-
-                Flow {
-                    id: recflow
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        left: parent.left; right: parent.right
-                        leftMargin: Theme.paddingLarge
-                        rightMargin: Theme.paddingLarge
-                    }
-                    spacing: Theme.paddingMedium
-
-                    Label {
-                        text: qsTr("Directory for recordings")
-                    }
-
-                    Label {
-                        color: Theme.highlightColor
-                        text: utils.dirNameFromPath(settings.recDir)
-                    }
-                }
-
-                onClicked: openMenu();
-
-                menu: ContextMenu {
-                    MenuItem {
-                        text: qsTr("Change")
-                        onClicked: {
-                            var obj = pageStack.push(Qt.resolvedUrl("DirPage.qml"));
-                            obj.accepted.connect(function() {
-                                settings.recDir = obj.selectedPath
-                            })
-                        }
-                    }
-                    MenuItem {
-                        text: qsTr("Set default")
-                        onClicked: {
-                            settings.recDir = ""
-                        }
-                    }
-                }
-            }
-
             ExpandingSectionGroup {
                 ExpandingSection {
-                    title: qsTr("Experiments")
-                    visible: !settings.sandboxed()
+                    title: qsTr("Hardware keys")
 
                     content.sourceComponent: Column {
-                        ComboBox {
-                            visible: !settings.sandboxed()
-                            label: qsTr("Screen capture")
-                            currentIndex: settings.screenSupported ?
-                                              settings.screenAudio ? 2 : 1 : 0
 
-                            menu: ContextMenu {
-                                MenuItem { text: qsTr("Disabled") }
-                                MenuItem { text: qsTr("Enabled") }
-                                MenuItem { text: qsTr("Enabled with audio") }
-                            }
-
-                            onCurrentIndexChanged: {
-                                if (currentIndex === 2) {
-                                    settings.screenSupported = true;
-                                    settings.screenAudio = true;
-                                } else if (currentIndex === 1) {
-                                    settings.screenSupported = true;
-                                    settings.screenAudio = false;
-                                } else {
-                                    settings.screenSupported = false;
-                                    settings.screenAudio = false;
-                                }
-                            }
-
-                            description: qsTr("Screen casting feature. Capturing " +
-                                              "video is still in beta stage, so " +
-                                              "the quality may be not of the best.");
-                        }
-
-                        ComboBox {
-                            visible: settings.screenSupported
-                            label: qsTr("Force screen 16:9 aspect ratio")
-                            currentIndex: settings.screenCropTo169
-                            menu: ContextMenu {
-                                MenuItem { text: qsTr("Don't force") }
-                                MenuItem { text: qsTr("Scale") }
-                                MenuItem { text: qsTr("Crop") }
-                            }
-
-                            onCurrentIndexChanged: {
-                                settings.screenCropTo169 = currentIndex
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.useHWVolume
+                            text: qsTr("Volume control with hardware keys")
+                            onClicked: {
+                                settings.useHWVolume = !settings.useHWVolume
                             }
                         }
 
                         Slider {
-                            visible: settings.screenSupported
+                            enabled: settings.useHWVolume
+                            opacity: enabled ? 1.0 : Theme.opacityLow
                             width: parent.width
                             minimumValue: 1
-                            maximumValue: 5
+                            maximumValue: 10
                             stepSize: 1
                             handleVisible: true
-                            value: settings.screenQuality
+                            value: settings.volStep
                             valueText: value
-                            label: qsTr("Screen capture quality")
+                            label: qsTr("Volume level step")
 
                             onValueChanged: {
-                                settings.screenQuality = value
+                                settings.volStep = value
                             }
                         }
-
-                        Spacer {}
-                        Spacer {}
                     }
                 }
 
                 ExpandingSection {
-                    title: qsTr("Advanced")
+                    title: qsTr("Streaming format")
+
                     content.sourceComponent: Column {
                         ComboBox {
-                            visible: settings.isDebug()
-                            label: qsTr("Preferred network interface")
-                            currentIndex: utils.prefNetworkInfIndex()
+                            label: qsTr("Video streaming format")
+                            currentIndex: {
+                                switch (settings.casterVideoStreamFormat) {
+                                case Settings.CasterStreamFormat_MpegTs: return 0;
+                                case Settings.CasterStreamFormat_Mp4: return 1;
+                                }
+                                return 0;
+                            }
+
                             menu: ContextMenu {
-                                Repeater {
-                                    model: utils.networkInfs()
-                                    MenuItem { text: modelData }
+                                MenuItem { text: qsTr("MPEG-TS") }
+                                MenuItem { text: qsTr("MP4") }
+                            }
+
+                            onCurrentIndexChanged: {
+                                switch (currentIndex) {
+                                case 0: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs; break;
+                                case 1: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4; break;
+                                default: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4;
                                 }
                             }
-                            onCurrentIndexChanged: {
-                                utils.setPrefNetworkInfIndex(currentIndex)
-                                currentIndex = utils.prefNetworkInfIndex()
-                            }
+                            description: qsTr("Change if you observe problems with video playback in Camera or Screen capture.")
                         }
 
                         ComboBox {
-                            visible: settings.isDebug()
-                            label: qsTr("Stream relaying")
-                            description: qsTr("Internet streams are relayed to UPnP device through %1. " +
-                                              "Recommended option is 'Always' because it provides best " +
-                                              "compatibility. When relaying is disabled ('Never' option), " +
-                                              "Icecast titles and Stream recorder " +
-                                              "are not available.").arg(APP_NAME)
+                            label: qsTr("Audio streaming format")
                             currentIndex: {
-                                if (settings.remoteContentMode === Settings.RemoteContentMode_Proxy_All)
-                                    return 0
-                                if (settings.remoteContentMode === Settings.RemoteContentMode_Redirection_All ||
-                                        settings.remoteContentMode === Settings.RemoteContentMode_None_All)
-                                    return 2
-                                if (settings.remoteContentMode === Settings.RemoteContentMode_Proxy_Shoutcast_Redirection ||
-                                        settings.remoteContentMode === Settings.RemoteContentMode_Proxy_Shoutcast_None)
-                                    return 1
-                                return 0
+                                switch (settings.casterAudioStreamFormat) {
+                                case Settings.CasterStreamFormat_Mp3: return 0;
+                                case Settings.CasterStreamFormat_Mp4: return 1;
+                                case Settings.CasterStreamFormat_MpegTs: return 2;
+                                }
+                                return 0;
                             }
 
                             menu: ContextMenu {
-                                MenuItem { text: qsTr("Always") }
-                                MenuItem { text: qsTr("Only Icecast") }
-                                MenuItem { text: qsTr("Never") }
+                                MenuItem { text: qsTr("MP3") }
+                                MenuItem { text: qsTr("MP4") }
+                                MenuItem { text: qsTr("MPEG-TS") }
                             }
+
                             onCurrentIndexChanged: {
-                                if (currentIndex == 0)
-                                    settings.remoteContentMode = Settings.RemoteContentMode_Proxy_All
-                                else if (currentIndex == 1)
-                                    settings.remoteContentMode = Settings.RemoteContentMode_Proxy_Shoutcast_None
-                                else if (currentIndex == 2)
-                                    settings.remoteContentMode = Settings.RemoteContentMode_None_All
-                                else
-                                    settings.remoteContentMode = Settings.RemoteContentMode_Proxy_All
+                                switch (currentIndex) {
+                                case 0: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3; break;
+                                case 1: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp4; break;
+                                case 2: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_MpegTs; break;
+                                default: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3;
+                                }
+                            }
+
+                            description: qsTr("Change if you observe problems with audio playback in Microphone or Audio capture.")
+                        }
+                    }
+                }
+                ExpandingSection {
+                    title: qsTr("Recorder")
+
+                    content.sourceComponent: Column {
+                        ListItem {
+                            contentHeight: visible ? recflow.height + 2*Theme.paddingLarge : 0
+
+                            Flow {
+                                id: recflow
+                                anchors {
+                                    verticalCenter: parent.verticalCenter
+                                    left: parent.left; right: parent.right
+                                    leftMargin: Theme.paddingLarge
+                                    rightMargin: Theme.paddingLarge
+                                }
+                                spacing: Theme.paddingMedium
+
+                                Label {
+                                    text: qsTr("Directory for recordings")
+                                }
+
+                                Label {
+                                    color: Theme.highlightColor
+                                    text: utils.dirNameFromPath(settings.recDir)
+                                }
+                            }
+
+                            onClicked: openMenu();
+
+                            menu: ContextMenu {
+                                MenuItem {
+                                    text: qsTr("Change")
+                                    onClicked: {
+                                        var obj = pageStack.push(Qt.resolvedUrl("DirPage.qml"));
+                                        obj.accepted.connect(function() {
+                                            settings.recDir = obj.selectedPath
+                                        })
+                                    }
+                                }
+                                MenuItem {
+                                    text: qsTr("Set default")
+                                    onClicked: {
+                                        settings.recDir = ""
+                                    }
+                                }
                             }
                         }
+                    }
+                }
 
+                ExpandingSection {
+                    title: qsTr("Caching")
+
+                    content.sourceComponent: Column {
                         ComboBox {
-                            visible: settings.isDebug()
-                            label: qsTr("Caching")
-                            /*description: qsTr("Controls when a remote content is fully downloaded before playing. " +
-                                              "When 'Auto' is set (recommended), caching is enabled for small files and when " +
-                                              "transcoding or audio extracting is needed. " +
-                                              "Option 'Always' forces chaching in every case. " +
-                                              "Option 'Never' disables caching.")*/
-
+                            label: qsTr("Cache remote content")
                             currentIndex: {
                                 if (settings.cacheType === Settings.Cache_Auto)
                                     return 0
@@ -336,12 +225,7 @@ Page {
                         }
 
                         ComboBox {
-                            visible: settings.isDebug()
                             label: qsTr("Cache cleaning")
-                            /*description: qsTr("Controls when cached items are removed. " +
-                                              "When 'Auto' is set (recommended), only cache for items not existing in play queue are removed. " +
-                                              "Option 'Always' forces removal of all cached items when app starts. " +
-                                              "Option 'Never' disables any cache cleaning.")*/
 
                             currentIndex: {
                                 if (settings.cacheCleaningType === Settings.CacheCleaning_Auto)
@@ -407,14 +291,34 @@ Page {
                                 }
                             }
                         }
+                    }
+                }
+
+                ExpandingSection {
+                    title: qsTr("Advanced")
+                    content.sourceComponent: Column {
+                        ComboBox {
+                            label: qsTr("Preferred network interface")
+                            currentIndex: utils.prefNetworkInfIndex()
+                            menu: ContextMenu {
+                                Repeater {
+                                    model: utils.networkInfs()
+                                    MenuItem { text: modelData }
+                                }
+                            }
+                            onCurrentIndexChanged: {
+                                utils.setPrefNetworkInfIndex(currentIndex)
+                                currentIndex = utils.prefNetworkInfIndex()
+                            }
+                        }
 
                         TextSwitch {
                             automaticCheck: false
                             checked: !settings.allowNotIsomMp4
-                            text: qsTr("Block MP4v2 audio streams")
-                            description: qsTr("Some UPnP devices don't support audio stream in MP4 version 2 format. " +
+                            text: qsTr("Block fragmented MP4 audio streams")
+                            description: qsTr("Some UPnP devices don't support audio stream in fragmented MP4 format. " +
                                               "This kind of stream might even hang a device. " +
-                                              "To overcome this problem, Jupii tries to re-transcode stream to MP4v1. " +
+                                              "To overcome this problem, Jupii tries to re-transcode stream to standard MP4. " +
                                               "When re-transcoding fails and this option is enabled, item will not be played at all.")
                             onClicked: {
                                 settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
@@ -436,69 +340,35 @@ Page {
                             }
                         }
 
-                        ComboBox {
-                            visible: settings.isDebug() && settings.screenSupported
-                            label: qsTr("Screen capture encoder")
+                        /*ComboBox {
+                            label: qsTr("Video encoder")
                             currentIndex: {
-                                var enc = settings.screenEncoder;
-                                if (enc === "libx264")
-                                    return 1;
-                                if (enc === "libx264rgb")
-                                    return 2;
-                                if (enc === "h264_omx")
-                                    return 3;
+                                switch (settings.casterVideoEncoder) {
+                                case Settings.CasterVideoEncoder_Auto: return 0;
+                                case Settings.CasterVideoEncoder_X264: return 1;
+                                case Settings.CasterVideoEncoder_Nvenc: return 2;
+                                case Settings.CasterVideoEncoder_V4l2: return 3;
+                                }
                                 return 0;
                             }
+
                             menu: ContextMenu {
                                 MenuItem { text: qsTr("Auto") }
-                                MenuItem { text: "libx264" }
-                                MenuItem { text: "libx264rgb" }
-                                MenuItem { text: "h264_omx" }
-                            }
-
-                            onCurrentIndexChanged: {
-                                if (currentIndex === 1)
-                                    settings.screenEncoder = "libx264";
-                                else if (currentIndex === 2)
-                                    settings.screenEncoder = "libx264rgb";
-                                else if (currentIndex === 3)
-                                    settings.screenEncoder = "h264_omx";
-                                else
-                                    settings.screenEncoder = "";
-                            }
-                        }
-
-                        ComboBox {
-                            visible: settings.isDebug() && settings.screenSupported
-                            label: qsTr("Screen capture framerate")
-                            currentIndex: {
-                                if (settings.screenFramerate < 15) {
-                                    return 0;
-                                } else if (settings.screenFramerate < 30) {
-                                    return 1;
-                                } else {
-                                    return 2;
-                                }
-                            }
-                            menu: ContextMenu {
-                                MenuItem { text: "5 fps" }
-                                MenuItem { text: "15 fps" }
-                                MenuItem { text: "30 fps" }
+                                MenuItem { text: "x264" }
+                                MenuItem { text: "nvenc" }
+                                MenuItem { text: "V4L2" }
                             }
 
                             onCurrentIndexChanged: {
                                 switch (currentIndex) {
-                                case 0:
-                                    settings.screenFramerate = 5; break;
-                                case 1:
-                                    settings.screenFramerate = 15; break;
-                                case 2:
-                                    settings.screenFramerate = 30; break;
-                                default:
-                                    settings.screenFramerate = 5;
+                                case 0: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto; break;
+                                case 1: settings.casterVideoEncoder = Settings.CasterVideoEncoder_X264; break;
+                                case 2: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Nvenc; break;
+                                case 3: settings.casterVideoEncoder = Settings.CasterVideoEncoder_V4l2; break;
+                                default: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
                                 }
                             }
-                        }
+                        }*/
 
                         TextField {
                             anchors {

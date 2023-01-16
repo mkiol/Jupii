@@ -29,6 +29,7 @@
 #include <optional>
 
 #include "downloader.h"
+#include "settings.h"
 #include "singleton.h"
 
 extern "C" {
@@ -53,6 +54,20 @@ struct AvMeta {
     int64_t bitrate = 0;
     int channels = 0;
     int64_t size = 0;
+};
+
+class UrlInfo {
+    Q_GADGET
+    Q_PROPERTY(QString videoName MEMBER videoName)
+    Q_PROPERTY(QString audioName MEMBER audioName)
+    Q_PROPERTY(Settings::CasterVideoOrientation videoOrientation MEMBER
+                   videoOrientation)
+
+   public:
+    QString videoName;
+    QString audioName;
+    Settings::CasterVideoOrientation videoOrientation =
+        Settings::CasterVideoOrientation::CasterVideoOrientation_Auto;
 };
 
 class ContentServer : public QThread, public Singleton<ContentServer> {
@@ -82,10 +97,11 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         ItemType_LocalFile,
         ItemType_QrcFile,
         ItemType_Url,
-        ItemType_AudioCapture,
+        ItemType_PlaybackCapture,
         ItemType_ScreenCapture,
         ItemType_Mic,
-        ItemType_Upnp
+        ItemType_Upnp,
+        ItemType_Cam
     };
     Q_ENUM(ItemType)
 
@@ -292,6 +308,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
                                                       const QUrl &id2);
     static QString mimeFromReply(const QNetworkReply *reply);
     void makeItemMetaCopy(const QUrl &newUrl, const ItemMeta &origMeta);
+    static UrlInfo parseUrlStatic(const QUrl &url);
+    Q_INVOKABLE UrlInfo parseUrl(const QUrl &url) const;
 
    signals:
     void streamRecordError(const QString &title);
@@ -308,6 +326,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     void cacheSizeChanged();
     void cachingChanged();
     void cacheProgressChanged();
+    void casterError();
 
    public slots:
     void displayStatusChangeHandler(const QString &state);
@@ -416,8 +435,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         bool ytdl = false, bool art = false, bool refresh = false,
         Type type = Type::Type_Unknown);
     QHash<QUrl, ItemMeta>::iterator makeMicItemMeta(const QUrl &url);
-    QHash<QUrl, ItemMeta>::iterator makeAudioCaptureItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makePlaybackCaptureItemMeta(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeScreenCaptureItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makeCamItemMeta(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingTracker(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingTaglib(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingHTTPRequest(
@@ -474,5 +494,20 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static void cleanCacheFiles(bool force = false);
     QStringList unusedCachedFiles() const;
     QStringList unusedArtFiles() const;
+    static QString mimeForCasterFormat(Settings::CasterStreamFormat format,
+                                       bool video);
+    static QString casterMime(ItemType type);
+    static QString videoOrientationToStr(
+        Settings::CasterVideoOrientation videoOrientation);
+    static std::optional<Settings::CasterVideoOrientation>
+    videoOrientationFromStr(const QString &str);
+
+    struct CasterUrlParams {
+        std::optional<QString> videoSource;
+        std::optional<QString> audioSource;
+        std::optional<QString> videoOrientation;
+    };
+    static CasterUrlParams parseCasterUrl(const QUrl &url);
+    static QUrl makeCasterUrl(QUrl url, CasterUrlParams &&params);
 };
 #endif  // CONTENTSERVER_H

@@ -401,11 +401,15 @@ int AVTransport::getCurrentTrack()
 
 int AVTransport::getCurrentTrackDuration()
 {
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (ai && ai->live()) return 0;
     return m_currentTrackDuration > 0 ? m_currentTrackDuration : 0;
 }
 
 int AVTransport::getRelativeTimePosition()
 {
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (ai && ai->live()) return 0;
     return m_relativeTimePosition > 0 ? m_relativeTimePosition : 0;
 }
 
@@ -416,6 +420,9 @@ int AVTransport::getSpeed()
 
 int AVTransport::getAbsoluteTimePosition()
 {
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    if (ai && ai->live()) return 0;
+
     if (m_absoluteTimePosition > m_currentTrackDuration) {
 #ifdef QT_DEBUG
         qDebug() << "Track position is greater that currentTrackDuration";

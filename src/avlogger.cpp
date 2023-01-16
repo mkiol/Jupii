@@ -18,6 +18,8 @@ extern "C" {
 #include "logger.hpp"
 
 static void avLog(void *avcl, int level, const char *fmt, va_list vl) {
+    if (level > av_log_get_level()) return;
+
     const auto tag = [=]() {
         std::ostringstream os;
         os << "av::";
@@ -64,7 +66,7 @@ static void avLog(void *avcl, int level, const char *fmt, va_list vl) {
 }
 
 void initAvLogger() {
-    av_log_set_level(Logger::match(Logger::LogType::Debug) ? AV_LOG_DEBUG
+    av_log_set_level(Logger::match(Logger::LogType::Debug) ? AV_LOG_ERROR
                                                            : AV_LOG_QUIET);
     av_log_set_callback(avLog);
 }

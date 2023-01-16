@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
+﻿/* Copyright (C) 2021-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,10 @@
 #include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
+#include <QUrlQuery>
 
+#include "config.h"
+#include "logger.hpp"
 #include "settings.h"
 #include "transcoder.h"
 #include "utils.h"
@@ -20,21 +23,43 @@ const int64_t ContentServerWorker::CacheLimit::INF_SIZE = -1;
 const int64_t ContentServerWorker::CacheLimit::DEFAULT_DELTA = 300'000;
 
 ContentServerWorker::ContentServerWorker(QObject *parent)
-    : QObject{parent},
-      nam{new QNetworkAccessManager{parent}},
-      server{new QHttpServer{parent}},
-      volumeBoost{Settings::instance()->getAudioBoost()} {
+    : QObject{parent}, nam{new QNetworkAccessManager{parent}},
+      server{new QHttpServer{parent}} {
     qRegisterMetaType<ContentServerWorker::CacheLimit>("CacheLimit");
     qRegisterMetaType<ContentServerWorker::CacheLimit>(
         "ContentServerWorker::CacheLimit");
 
     connect(server, &QHttpServer::newRequest, this,
             &ContentServerWorker::requestHandler);
+
     connect(this, &ContentServerWorker::proxyRequested, this,
             &ContentServerWorker::startProxyInternal, Qt::QueuedConnection);
+
+    connect(this, &ContentServerWorker::casterData, this,
+            &ContentServerWorker::casterDataHandler, Qt::QueuedConnection);
+    connect(this, &ContentServerWorker::casterError, this,
+            &ContentServerWorker::casterErrorHandler, Qt::QueuedConnection);
+    connect(this, &ContentServerWorker::casterAudioSourceNameChanged, this,
+            &ContentServerWorker::casterAudioSourceNameChangedHandler,
+            Qt::QueuedConnection);
+    connect(this, &ContentServerWorker::preStartCaster, this,
+            &ContentServerWorker::preStartCasterHandler, Qt::QueuedConnection);
+
     connect(
-        Settings::instance(), &Settings::audioBoostChanged, this,
-        [this] { volumeBoost = Settings::instance()->getAudioBoost(); },
+        Settings::instance(), &Settings::casterPlaybackVolumeChanged, this,
+        [this] {
+            if (caster)
+                caster->setAudioVolume(
+                    Settings::instance()->getCasterPlaybackVolume());
+        },
+        Qt::QueuedConnection);
+    connect(
+        Settings::instance(), &Settings::casterMicVolumeChanged, this,
+        [this] {
+            if (caster)
+                caster->setAudioVolume(
+                    Settings::instance()->getCasterMicVolume());
+        },
         Qt::QueuedConnection);
 
     if (!server->listen(
@@ -48,7 +73,11 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
     connect(&proxiesCleanupTimer, &QTimer::timeout, this,
             &ContentServerWorker::removeDeadProxies, Qt::QueuedConnection);
 
-    pulseSource = std::make_unique<PulseAudioSource>();
+    casterTimer.setTimerType(Qt::TimerType::VeryCoarseTimer);
+    casterTimer.setInterval(casterTimeout);
+    casterTimer.setSingleShot(true);
+    connect(&casterTimer, &QTimer::timeout, this,
+            &ContentServerWorker::casterTimeoutHandler, Qt::QueuedConnection);
 
     if (Settings::instance()->cacheCleaningType() ==
         Settings::CacheCleaningType::CacheCleaning_Always) {
@@ -183,101 +212,41 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
         return;
     }
 
-    if (meta->itemType == ContentServer::ItemType_LocalFile) {
-        requestForFileHandler(*id, meta, req, resp);
-    } else if (meta->itemType == ContentServer::ItemType_ScreenCapture) {
-        requestForScreenCaptureHandler(*id, meta, req, resp);
-    } else if (meta->itemType == ContentServer::ItemType_Mic) {
-        requestForMicHandler(*id, meta, req, resp);
-    } else if (meta->itemType == ContentServer::ItemType_AudioCapture) {
-        requestForAudioCaptureHandler(*id, meta, req, resp);
-    } else if (meta->itemType == ContentServer::ItemType_Url) {
-        if (!meta->path.isEmpty() &&
-            !meta->flagSet(ContentServer::MetaFlag::MadeFromCache)) {
+    switch (meta->itemType) {
+        case ContentServer::ItemType_LocalFile:
             requestForFileHandler(*id, meta, req, resp);
-        } else {
-            requestForUrlHandler(*id, meta, req, resp);
-        }
-    } else {
-        qWarning() << "unknown item type";
-        sendEmptyResponse(resp, 404);
-    }
-}
-
-void ContentServerWorker::responseForAudioCaptureDone() {
-    qDebug() << "audio capture http response done";
-    auto *resp = sender();
-    for (int i = 0; i < audioCaptureItems.size(); ++i) {
-        if (resp == audioCaptureItems[i].resp) {
-            qDebug() << "removing finished audio capture item";
-            auto id = audioCaptureItems.at(i).id;
-            audioCaptureItems.removeAt(i);
-            emit itemRemoved(id);
             break;
-        }
-    }
-
-    if (audioCaptureItems.isEmpty()) {
-        qDebug() << "no clients for audio capture connected, "
-                    "so ending audio capturing";
-        audioCaster.reset();
-    }
-}
-
-void ContentServerWorker::responseForScreenCaptureDone() {
-    qDebug() << "screen capture http response done";
-    auto *resp = sender();
-    for (int i = 0; i < screenCaptureItems.size(); ++i) {
-        if (resp == screenCaptureItems[i].resp) {
-            qDebug() << "removing finished screen capture item";
-            auto id = screenCaptureItems.at(i).id;
-            screenCaptureItems.removeAt(i);
-            emit itemRemoved(id);
+        case ContentServer::ItemType::ItemType_Cam:
+        case ContentServer::ItemType::ItemType_Mic:
+        case ContentServer::ItemType::ItemType_ScreenCapture:
+        case ContentServer::ItemType::ItemType_PlaybackCapture:
+            requestForCasterHandler(*id, meta, req, resp);
             break;
-        }
+        case ContentServer::ItemType::ItemType_Url:
+            if (!meta->path.isEmpty() &&
+                !meta->flagSet(ContentServer::MetaFlag::MadeFromCache)) {
+                requestForFileHandler(*id, meta, req, resp);
+            } else {
+                requestForUrlHandler(*id, meta, req, resp);
+            }
+            break;
+        default:
+            qWarning() << "unknown item type";
+            sendEmptyResponse(resp, 404);
     }
-
-    if (screenCaptureItems.isEmpty()) {
-        qDebug() << "no clients for screen capture connected, "
-                    "so ending screen capturing";
-        screenCaster.reset();
-    }
 }
 
-void ContentServerWorker::screenErrorHandler() {
-    qWarning() << "error in screen casting, "
-                  "so disconnecting clients and ending casting";
-    foreach (auto &item, screenCaptureItems)
+void ContentServerWorker::casterErrorHandler() {
+    qWarning() << "error in casting, ending casting";
+
+    foreach (auto &item, casterItems)
         item.resp->end();
-    foreach (const auto &item, screenCaptureItems)
+    foreach (const auto &item, casterItems)
         emit itemRemoved(item.id);
 
-    screenCaptureItems.clear();
-    screenCaster.reset(nullptr);
-}
-
-void ContentServerWorker::audioErrorHandler() {
-    qWarning() << "error in audio casting, so disconnecting clients and ending "
-                  "casting";
-    foreach (auto &item, audioCaptureItems)
-        item.resp->end();
-    foreach (const auto &item, audioCaptureItems)
-        emit itemRemoved(item.id);
-
-    audioCaptureItems.clear();
-    audioCaster.reset();
-}
-
-void ContentServerWorker::micErrorHandler() {
-    qWarning()
-        << "error in mic casting, so disconnecting clients and ending casting";
-    foreach (auto &item, micItems)
-        item.resp->end();
-    foreach (const auto &item, micItems)
-        emit itemRemoved(item.id);
-
-    micItems.clear();
-    micCaster.reset();
+    casterItems.clear();
+    casterTimer.stop();
+    caster.reset();
 }
 
 void ContentServerWorker::requestForFileHandler(const QUrl &id,
@@ -321,7 +290,7 @@ void ContentServerWorker::requestForUrlHandlerFallback(const QUrl &id,
     qDebug() << "request fallback from" << Utils::anonymizedId(id) << "to"
              << origUrl;
 
-    auto meta = ContentServer::instance()->getMeta(
+    auto *meta = ContentServer::instance()->getMeta(
         origUrl, true, {}, {}, false, false, false,
         static_cast<ContentServer::Type>(
             Utils::typeFromId(id)));  // create new meta
@@ -394,7 +363,7 @@ void ContentServerWorker::makeProxy(const QUrl &id, bool first,
 
     Proxy &proxy = proxies[id];
 
-    auto reply =
+    auto *reply =
         range.isEmpty() ? makeRequest(id, req) : makeRequest(id, range);
 
     proxy.id = id;
@@ -595,23 +564,6 @@ void ContentServerWorker::requestForCachedContent(
 void ContentServerWorker::requestForUrlHandler(
     const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
     QHttpResponse *resp) {
-    const auto relay = Settings::instance()->getRemoteContentMode();
-
-    if (relay ==
-            Settings::RemoteContentMode::RemoteContentMode_Redirection_All ||
-        relay == Settings::RemoteContentMode::
-                     RemoteContentMode_Proxy_Shoutcast_Redirection) {
-        qDebug() << "redirection mode";
-        sendRedirection(resp, Utils::urlFromId(id).toString());
-        return;
-    }
-
-    if (relay == Settings::RemoteContentMode::RemoteContentMode_None_All) {
-        qWarning() << "relaying is disabled";
-        sendEmptyResponse(resp, 500);
-        return;
-    }
-
     const auto type = static_cast<ContentServer::Type>(Utils::typeFromId(id));
 
     if (auto path = ContentServer::pathToCachedContent(*meta, true, type)) {
@@ -681,68 +633,160 @@ void ContentServerWorker::handleHeadRequest(const ContentServer::ItemMeta *meta,
     sendResponse(resp, 200);
 }
 
-void ContentServerWorker::requestForMicHandler(
-    const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
-    QHttpResponse *resp) {
-    qDebug() << "sending 200 response and starting streaming";
-    resp->writeHead(200);
-
-    if (!micCaster) {
-        micCaster = std::make_unique<MicCaster>();
-        if (!micCaster->init()) {
-            qWarning() << "cannot init mic caster";
-            micCaster.reset();
-            sendEmptyResponse(resp, 500);
-            return;
-        }
+static Caster::VideoEncoder convertVideoEncoder(
+    Settings::CasterVideoEncoder videoEncoder) {
+    switch (videoEncoder) {
+        case Settings::CasterVideoEncoder::CasterVideoEncoder_Auto:
+            return Caster::VideoEncoder::Auto;
+        case Settings::CasterVideoEncoder::CasterVideoEncoder_Nvenc:
+            return Caster::VideoEncoder::Nvenc;
+        case Settings::CasterVideoEncoder::CasterVideoEncoder_V4l2:
+            return Caster::VideoEncoder::V4l2;
+        case Settings::CasterVideoEncoder::CasterVideoEncoder_X264:
+            return Caster::VideoEncoder::X264;
     }
-
-    resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
-    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
-    resp->setHeader(QStringLiteral("transferMode.dlna.org"),
-                    QStringLiteral("Streaming"));
-    resp->setHeader(
-        QStringLiteral("contentFeatures.dlna.org"),
-        ContentServer::dlnaContentFeaturesHeader(
-            meta->mime, meta->flagSet(ContentServer::MetaFlag::Seek)));
-    resp->setHeader(QStringLiteral("Accept-Ranges"), QStringLiteral("none"));
-
-    ConnectionItem item;
-    item.id = id;
-    item.req = req;
-    item.resp = resp;
-    micItems.append(item);
-    emit itemAdded(item.id);
-
-    connect(resp, &QHttpResponse::done, this,
-            &ContentServerWorker::responseForMicDone);
-
-    micCaster->start();
+    return Caster::VideoEncoder::Auto;
 }
 
-void ContentServerWorker::requestForAudioCaptureHandler(
-    const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
-    QHttpResponse *resp) {
-    qDebug() << "audio capture request handler";
+static Caster::StreamFormat convertStreamFormat(
+    Settings::CasterStreamFormat streamFormat) {
+    switch (streamFormat) {
+        case Settings::CasterStreamFormat::CasterStreamFormat_Mp4:
+            return Caster::StreamFormat::Mp4;
+        case Settings::CasterStreamFormat::CasterStreamFormat_MpegTs:
+            return Caster::StreamFormat::MpegTs;
+        case Settings::CasterStreamFormat::CasterStreamFormat_Mp3:
+            return Caster::StreamFormat::Mp3;
+    }
+    return Caster::StreamFormat::Mp4;
+}
 
-    if (!audioCaster) {
-        audioCaster = std::make_unique<AudioCaster>();
-        if (!audioCaster->init()) {
-            qWarning() << "cannot init audio caster";
-            audioCaster.reset();
-            sendEmptyResponse(resp, 500);
-            return;
-        }
+static Caster::VideoOrientation convertVideoOrientation(
+    Settings::CasterVideoOrientation videoOrientation) {
+    switch (videoOrientation) {
+        case Settings::CasterVideoOrientation::CasterVideoOrientation_Auto:
+            return Caster::VideoOrientation::Auto;
+        case Settings::CasterVideoOrientation::CasterVideoOrientation_Landscape:
+            return Caster::VideoOrientation::Landscape;
+        case Settings::CasterVideoOrientation::
+            CasterVideoOrientation_InvertedLandscape:
+            return Caster::VideoOrientation::InvertedLandscape;
+        case Settings::CasterVideoOrientation::CasterVideoOrientation_Portrait:
+            return Caster::VideoOrientation::Portrait;
+        case Settings::CasterVideoOrientation::
+            CasterVideoOrientation_InvertedPortrait:
+            return Caster::VideoOrientation::InvertedPortrait;
+    }
+    return Caster::VideoOrientation::Auto;
+}
+
+Caster::Config ContentServerWorker::configForCaster(
+    ContentServer::ItemType type, const QUrl &url) {
+    const auto *s = Settings::instance();
+
+    Caster::Config config;
+    config.streamAuthor = APP_NAME;
+
+    auto params = ContentServer::parseCasterUrl(url);
+
+    if (type == ContentServer::ItemType::ItemType_Cam) {
+        config.videoSource = params.videoSource
+                                 ? params.videoSource->toStdString()
+                                 : s->getCasterCam().toStdString();
+        config.audioSource =
+            params.audioSource
+                ? params.audioSource->toStdString()
+                : (s->getCasterCamAudio() ? s->getCasterMic().toStdString()
+                                          : "");
+        config.videoOrientation =
+            params.videoOrientation
+                ? convertVideoOrientation(
+                      ContentServer::videoOrientationFromStr(
+                          *params.videoOrientation)
+                          .value_or(s->getCasterVideoOrientation()))
+                : convertVideoOrientation(s->getCasterVideoOrientation());
+        config.audioVolume = s->getCasterMicVolume();
+        config.videoEncoder = convertVideoEncoder(s->getCasterVideoEncoder());
+    } else if (type == ContentServer::ItemType::ItemType_Mic) {
+        config.audioSource = params.audioSource
+                                 ? params.audioSource->toStdString()
+                                 : s->getCasterMic().toStdString();
+        config.audioVolume = s->getCasterMicVolume();
+    } else if (type == ContentServer::ItemType::ItemType_PlaybackCapture) {
+        config.audioSource = params.audioSource
+                                 ? params.audioSource->toStdString()
+                                 : s->getCasterPlayback().toStdString();
+        config.audioVolume = s->getCasterPlaybackVolume();
+        config.streamFormat =
+            convertStreamFormat(s->getCasterAudioStreamFormat());
+    } else if (type == ContentServer::ItemType::ItemType_ScreenCapture) {
+        config.videoSource = params.videoSource
+                                 ? params.videoSource->toStdString()
+                                 : s->getCasterScreen().toStdString();
+        config.audioSource = params.audioSource
+                                 ? params.audioSource->toStdString()
+                                 : (s->getCasterScreenAudio()
+                                        ? s->getCasterPlayback().toStdString()
+                                        : "");
+        config.videoOrientation =
+            params.videoOrientation
+                ? convertVideoOrientation(
+                      ContentServer::videoOrientationFromStr(
+                          *params.videoOrientation)
+                          .value_or(s->getCasterVideoOrientation()))
+                : convertVideoOrientation(s->getCasterVideoOrientation());
+        config.audioVolume = s->getCasterMicVolume();
+        config.videoEncoder = convertVideoEncoder(s->getCasterVideoEncoder());
     }
 
-    if (!pulseSource->start()) {
-        qWarning() << "cannot init pulse audio";
-        audioCaster.reset();
+#ifdef USE_SFOS
+    if (config.videoOrientation == Caster::VideoOrientation::Auto &&
+        !config.videoSource.empty())
+        config.videoSource += "-rotate";
+#endif
+
+    config.streamFormat = convertStreamFormat(s->getCasterVideoStreamFormat());
+
+    return config;
+}
+
+bool ContentServerWorker::castingForType(ContentServer::ItemType type) const {
+    if (!caster) return false;
+
+    switch (type) {
+        case ContentServer::ItemType::ItemType_Cam:
+            return QString::fromStdString(caster->config().videoSource)
+                .startsWith(QStringLiteral("cam"));
+        case ContentServer::ItemType::ItemType_Mic:
+            return caster->config().videoSource.empty() &&
+                   QString::fromStdString(caster->config().audioSource)
+                       .startsWith(QStringLiteral("mic"));
+        case ContentServer::ItemType::ItemType_ScreenCapture:
+            return QString::fromStdString(caster->config().videoSource)
+                .startsWith(QStringLiteral("screen"));
+        case ContentServer::ItemType::ItemType_PlaybackCapture: {
+            if (!caster->config().videoSource.empty()) return false;
+            auto n = QString::fromStdString(caster->config().audioSource);
+            return n.startsWith(QStringLiteral("playback")) ||
+                   n.startsWith(QStringLiteral("monitor"));
+        }
+        default:
+            return false;
+    }
+}
+
+void ContentServerWorker::requestForCasterHandler(
+    const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
+    QHttpResponse *resp) {
+    qDebug() << "caster request handler:" << id;
+
+    if (!castingForType(meta->itemType) && !initCaster(meta->itemType, id)) {
         sendEmptyResponse(resp, 500);
         return;
     }
 
     qDebug() << "sending 200 response and starting streaming";
+
     resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
     resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
     resp->setHeader(QStringLiteral("transferMode.dlna.org"),
@@ -758,72 +802,91 @@ void ContentServerWorker::requestForAudioCaptureHandler(
     item.id = id;
     item.req = req;
     item.resp = resp;
-    audioCaptureItems.append(item);
+    casterItems.append(item);
     emit itemAdded(item.id);
 
     connect(resp, &QHttpResponse::done, this,
-            &ContentServerWorker::responseForAudioCaptureDone);
+            &ContentServerWorker::responseForCasterDone);
 
-    PulseAudioSource::discoverStream();
+    caster->start();
+    casterTimer.start();
 }
 
-void ContentServerWorker::requestForScreenCaptureHandler(
-    const QUrl &id, const ContentServer::ItemMeta *meta, QHttpRequest *req,
-    QHttpResponse *resp) {
-    qDebug() << "screen capture request handler";
+bool ContentServerWorker::initCaster(ContentServer::ItemType type,
+                                     const QUrl &url) {
+    qDebug() << "init caster";
 
-    if (!Settings::instance()->getScreenSupported()) {
-        qWarning() << "Screen capturing is not supported";
-        sendEmptyResponse(resp, 500);
+    casterTimer.stop();
+
+    foreach (auto &item, casterItems)
+        item.resp->end();
+    foreach (const auto &item, casterItems)
+        emit itemRemoved(item.id);
+
+    casterItems.clear();
+
+    caster.reset();
+
+    try {
+        if (type == ContentServer::ItemType::ItemType_ScreenCapture ||
+            type == ContentServer::ItemType::ItemType_PlaybackCapture) {
+            caster.emplace(
+                configForCaster(type, url),
+                [this, type](const uint8_t *data, size_t size) {
+                    emit casterData(
+                        type,
+                        QByteArray(reinterpret_cast<const char *>(data), size));
+                    return size;
+                },
+                [this](Caster::State state) {
+                    if (state == Caster::State::Terminating) emit casterError();
+                },
+                [this](const auto &name) {
+                    emit casterAudioSourceNameChanged(
+                        QString::fromStdString(name));
+                });
+        } else {
+            caster.emplace(
+                configForCaster(type, url),
+                [this, type](const uint8_t *data, size_t size) {
+                    emit casterData(
+                        type,
+                        QByteArray(reinterpret_cast<const char *>(data), size));
+                    return size;
+                },
+                [this](Caster::State state) {
+                    if (state == Caster::State::Terminating) emit casterError();
+                });
+        }
+    } catch (const std::runtime_error &e) {
+        LOGW("failed to init cam caster: " << e.what());
+        return false;
+    }
+
+    return true;
+}
+
+void ContentServerWorker::preStartCasterHandler(ContentServer::ItemType type,
+                                                const QUrl &url) {
+    if (type != ContentServer::ItemType::ItemType_Cam) {
+        qDebug() << "pre-start caster is only for cam";
         return;
     }
 
-    qDebug() << "sending 200 response and starting streaming";
-
-    bool startNeeded = false;
-    if (!screenCaster) {
-        screenCaster = std::make_unique<ScreenCaster>();
-        if (!screenCaster->init()) {
-            qWarning() << "cannot init screen capture";
-            screenCaster.reset();
-            sendEmptyResponse(resp, 500);
-            return;
-        }
-        startNeeded = true;
+    if (!initCaster(type, url)) {
+        qWarning() << "failed to pre-start caster";
+        return;
     }
 
-    ConnectionItem item;
-    item.id = id;
-    item.req = req;
-    item.resp = resp;
-    screenCaptureItems.append(item);
-    emit itemAdded(item.id);
-    connect(resp, &QHttpResponse::done, this,
-            &ContentServerWorker::responseForScreenCaptureDone);
+    caster->start(true);
+    casterTimer.start();
 
-    if (startNeeded) {
-        screenCaster->start();
-        if (Settings::instance()->getScreenAudio()) {
-            if (!pulseSource->start()) {
-                qWarning() << "pulse cannot be started";
-                sendEmptyResponse(resp, 500);
-                return;
-            }
-        }
-    }
+    qDebug() << "caster pre-started";
+}
 
-    resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
-    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
-    resp->setHeader(QStringLiteral("transferMode.dlna.org"),
-                    QStringLiteral("Streaming"));
-    resp->setHeader(
-        QStringLiteral("contentFeatures.dlna.org"),
-        ContentServer::dlnaContentFeaturesHeader(
-            meta->mime, meta->flagSet(ContentServer::MetaFlag::Seek)));
-    resp->setHeader(QStringLiteral("Accept-Ranges"), QStringLiteral("none"));
-    resp->writeHead(200);
-
-    PulseAudioSource::discoverStream();
+void ContentServerWorker::requestToPreStartCaster(ContentServer::ItemType type,
+                                                  const QUrl &url) {
+    emit preStartCaster(type, url);
 }
 
 void ContentServerWorker::seqWriteData(std::shared_ptr<QFile> file,
@@ -887,23 +950,27 @@ void ContentServerWorker::sendRedirection(QHttpResponse *resp,
     resp->end();
 }
 
-void ContentServerWorker::responseForMicDone() {
-    qDebug() << "mic http response done";
+void ContentServerWorker::responseForCasterDone() {
+    qDebug() << "caster http response done";
     auto resp = sender();
-    for (int i = 0; i < micItems.size(); ++i) {
-        if (resp == micItems[i].resp) {
-            qDebug() << "removing finished mic item";
-            auto id = micItems.at(i).id;
-            micItems.removeAt(i);
+    for (int i = 0; i < casterItems.size(); ++i) {
+        if (resp == casterItems[i].resp) {
+            qDebug() << "removing finished caster item";
+            auto id = casterItems.at(i).id;
+            casterItems.removeAt(i);
             emit itemRemoved(id);
             break;
         }
     }
 
-    if (micItems.isEmpty()) {
-        qDebug() << "no clients for mic connected, "
-                    "so ending mic casting";
-        micCaster.reset();
+    if (casterItems.isEmpty()) {
+        qDebug() << "no clients for caster connected, so ending casting";
+
+        if (casterTimer.isActive()) {
+            caster->pause();
+        } else {
+            caster.reset();
+        }
     }
 }
 
@@ -1363,18 +1430,10 @@ void ContentServerWorker::removePoints(const QList<QPair<int, int>> &rpoints,
     }
 }
 
-void ContentServerWorker::updatePulseStreamName(const QString &name) {
-    foreach (const auto &item, audioCaptureItems) {
-#ifdef QT_DEBUG
-        qDebug() << "pulseStreamUpdated:" << name;
-#endif
-        emit pulseStreamUpdated(item.id, name);
-    }
-    foreach (const auto &item, screenCaptureItems) {
-#ifdef QT_DEBUG
-        qDebug() << "pulseStreamUpdated:" << name;
-#endif
-        emit pulseStreamUpdated(item.id, name);
+void ContentServerWorker::casterAudioSourceNameChangedHandler(
+    const QString &name) {
+    foreach (const auto &item, casterItems) {
+        emit playbackCaptureNameUpdated(item.id, name);
     }
 }
 
@@ -1443,7 +1502,7 @@ void ContentServerWorker::Proxy::recordData(QNetworkReply *reply,
 }
 
 void ContentServerWorker::proxyReadyRead() {
-    auto reply = qobject_cast<QNetworkReply *>(sender());
+    auto *reply = qobject_cast<QNetworkReply *>(sender());
     if (!reply->property("proxy").isValid()) {
         qWarning() << "no proxy id for reply";
         reply->abort();
@@ -1618,7 +1677,7 @@ void ContentServerWorker::streamFileRange(std::shared_ptr<QFile> file,
 }
 
 void ContentServerWorker::streamFileNoRange(std::shared_ptr<QFile> file,
-                                            QHttpRequest *,
+                                            [[maybe_unused]] QHttpRequest *req,
                                             QHttpResponse *resp) {
     const auto length = file->bytesAvailable();
 
@@ -1657,130 +1716,27 @@ void ContentServerWorker::streamFile(const QString &path, const QString &mime,
     }
 }
 
-void ContentServerWorker::adjustVolume(QByteArray *data, float factor,
-                                       bool le) {
-    QDataStream sr(data, QIODevice::ReadOnly);
-    sr.setByteOrder(le ? QDataStream::LittleEndian : QDataStream::BigEndian);
-    QDataStream sw(data, QIODevice::WriteOnly);
-    sw.setByteOrder(le ? QDataStream::LittleEndian : QDataStream::BigEndian);
-    int16_t sample;  // assuming 16-bit LPCM sample
-
-    while (!sr.atEnd()) {
-        sr >> sample;
-        int32_t s = int32_t(factor * int32_t(sample));
-        if (s > std::numeric_limits<int16_t>::max()) {
-            sample = std::numeric_limits<int16_t>::max();
-        } else if (s < std::numeric_limits<int16_t>::min()) {
-            sample = std::numeric_limits<int16_t>::min();
-        } else {
-            sample = static_cast<int16_t>(s);
-        }
-        sw << sample;
-    }
-}
-
-void ContentServerWorker::dispatchPulseData(const void *data, int size) {
-    const bool audioCaptureEnabled =
-        audioCaster && !audioCaptureItems.isEmpty();
-    const bool screenCaptureAudioEnabled = screenCaster &&
-                                           screenCaster->audioEnabled() &&
-                                           !screenCaptureItems.isEmpty();
-
-    if (audioCaptureEnabled || screenCaptureAudioEnabled) {
-        QByteArray d;
-        if (data) {
-            if (volumeBoost > 1.0F) {  // increasing volume level
-                d = QByteArray(static_cast<const char *>(data),
-                               size);  // deep copy
-                adjustVolume(&d, volumeBoost, true);
-            } else {
-                d = QByteArray::fromRawData(static_cast<const char *>(data),
-                                            size);
-            }
-        } else {
-            d = QByteArray(size, '\0');  // writing null data
-        }
-        if (audioCaptureEnabled) audioCaster->writeAudioData(d);
-        if (screenCaptureAudioEnabled) screenCaster->writeAudioData(d);
-    }
-}
-
-void ContentServerWorker::sendMicData(const void *data, int size) {
-    if (micItems.isEmpty()) {
-        qDebug() << "no mic items";
+void ContentServerWorker::casterDataHandler(
+    [[maybe_unused]] ContentServer::ItemType type, const QByteArray &data) {
+    if (casterItems.isEmpty()) {
+        qDebug() << "no caster items";
         return;
     }
 
-    const auto d =
-        QByteArray::fromRawData(static_cast<const char *>(data), size);
-    auto i = micItems.begin();
-    while (i != micItems.end()) {
+    auto i = casterItems.begin();
+    while (i != casterItems.end()) {
         if (!i->resp->isHeaderWritten()) {
-            qWarning() << "head not written";
+            qWarning() << "head not written for cater item";
             i->resp->end();
         }
         if (i->resp->isFinished()) {
-            qWarning() << "server request already finished, "
-                          "so removing mic item";
+            qWarning()
+                << "server request already finished, so removing caster item";
             const auto id = i->id;
-            i = micItems.erase(i);
+            i = casterItems.erase(i);
             emit itemRemoved(id);
         } else {
-            i->resp->write(d);
-            ++i;
-        }
-    }
-}
-
-void ContentServerWorker::sendAudioCaptureData(const void *data, int size) {
-    if (audioCaptureItems.isEmpty()) {
-        qDebug() << "no audio capture items";
-        return;
-    }
-
-    const auto d =
-        QByteArray::fromRawData(static_cast<const char *>(data), size);
-    auto i = audioCaptureItems.begin();
-    while (i != audioCaptureItems.end()) {
-        if (!i->resp->isHeaderWritten()) {
-            qWarning() << "head not written";
-            i->resp->end();
-        }
-        if (i->resp->isFinished()) {
-            qWarning() << "server request already finished, "
-                          "so removing audio capture item";
-            const auto id = i->id;
-            i = audioCaptureItems.erase(i);
-            emit itemRemoved(id);
-        } else {
-            i->resp->write(d);
-            ++i;
-        }
-    }
-}
-
-void ContentServerWorker::sendScreenCaptureData(const void *data, int size) {
-    if (screenCaptureItems.isEmpty()) {
-        qDebug() << "no screen items";
-        return;
-    }
-
-    const auto d =
-        QByteArray::fromRawData(static_cast<const char *>(data), size);
-    auto i = screenCaptureItems.begin();
-    while (i != screenCaptureItems.end()) {
-        if (!i->resp->isHeaderWritten()) {
-            qWarning() << "head not written";
-            i->resp->end();
-        }
-        if (i->resp->isFinished()) {
-            qWarning() << "server request already finished, "
-                          "so removing screen item";
-            const auto id = i->id;
-            i = screenCaptureItems.erase(i);
-            emit itemRemoved(id);
-        } else {
-            i->resp->write(d);
+            i->resp->write(data);
             ++i;
         }
     }
@@ -1848,9 +1804,8 @@ std::optional<QNetworkReply *> ContentServerWorker::Proxy::unmatchSink(
             sourceToSinkMap.erase(it);
             logProxySourceToSinks(*this);
             return reply;
-        } else {
-            ++it;
         }
+        ++it;
     }
 
     return std::nullopt;
@@ -2448,5 +2403,13 @@ void ContentServerWorker::Proxy::updateRageLength(const Source &source) {
             auto &sink = sinks[it->second];
             if (sink.range) sink.range->updateLength(source.length);
         }
+    }
+}
+
+void ContentServerWorker::casterTimeoutHandler() {
+    qDebug() << "caster timeouted";
+    if (caster && caster->state() == Caster::State::Paused) {
+        qDebug() << "caster timeouted => error";
+        emit casterError();
     }
 }

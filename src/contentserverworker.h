@@ -30,12 +30,9 @@
 #include <unordered_map>
 #include <utility>
 
-#include "audiocaster.h"
+#include "caster.hpp"
 #include "contentserver.h"
-#include "miccaster.h"
 #include "playlistparser.h"
-#include "pulseaudiosource.h"
-#include "screencaster.h"
 #include "singleton.h"
 
 class ContentServerWorker : public QObject,
@@ -91,9 +88,9 @@ class ContentServerWorker : public QObject,
     static void sendRedirection(QHttpResponse *resp, const QString &location);
     QNetworkAccessManager *nam;
     QHttpServer *server;
-    static void adjustVolume(QByteArray *data, float factor, bool le = true);
     ContentServerWorker(QObject *parent = nullptr);
     void startProxy(const QUrl &id);
+    void requestToPreStartCaster(ContentServer::ItemType type, const QUrl &url);
 
    signals:
     void streamRecorded(const QString &title, const QString &path);
@@ -101,7 +98,8 @@ class ContentServerWorker : public QObject,
     void streamRecordableChanged(const QUrl &id, bool value,
                                  const QString &tmpFile);
     void shoutcastMetadataUpdated(const QUrl &id, const QByteArray &metadata);
-    void pulseStreamUpdated(const QUrl &id, const QString &name);
+    void playbackCaptureNameUpdated(const QUrl &id, const QString &name);
+    void casterAudioSourceNameChanged(const QString &name);
     void itemAdded(const QUrl &id);
     void itemRemoved(const QUrl &id);
     void proxyConnected(const QUrl &id);
@@ -110,12 +108,18 @@ class ContentServerWorker : public QObject,
                         ContentServerWorker::CacheLimit cacheLimit,
                         const QByteArray &range, QHttpRequest *req,
                         QHttpResponse *resp);
+    void casterData(ContentServer::ItemType type, const QByteArray &data);
+    void casterError();
+    void preStartCaster(ContentServer::ItemType type, const QUrl &url);
 
    public slots:
     void setStreamToRecord(const QUrl &id, bool value);
     void setDisplayStatus(bool status);
 
    private:
+    static const int maxCamBufSize = 10000000;
+    static const int casterTimeout = 3000;
+
     struct Proxy {
         friend class QDebug;
         enum class State { Initial, Streaming, Buffering };
@@ -255,19 +259,12 @@ class ContentServerWorker : public QObject,
         QHttpResponse *resp = nullptr;
     };
 
-    std::unique_ptr<MicCaster> micCaster;
-    std::unique_ptr<PulseAudioSource> pulseSource;
-    std::unique_ptr<AudioCaster> audioCaster;
-    std::unique_ptr<ScreenCaster> screenCaster;
-
+    std::optional<Caster> caster;
     QHash<QUrl, Proxy> proxies;
-
-    QList<ConnectionItem> micItems;
-    QList<ConnectionItem> audioCaptureItems;
-    QList<ConnectionItem> screenCaptureItems;
+    QList<ConnectionItem> casterItems;
     bool displayStatus = true;
-    float volumeBoost = 1.0;
     QTimer proxiesCleanupTimer;
+    QTimer casterTimer;
 
     void streamFile(const QString &path, const QString &mime, QHttpRequest *req,
                     QHttpResponse *resp);
@@ -287,27 +284,19 @@ class ContentServerWorker : public QObject,
                                  QHttpRequest *req, QHttpResponse *resp);
     void requestForUrlHandlerFallback(const QUrl &id, const QUrl &origUrl,
                                       QHttpRequest *req, QHttpResponse *resp);
-    void requestForMicHandler(const QUrl &id,
-                              const ContentServer::ItemMeta *meta,
-                              QHttpRequest *req, QHttpResponse *resp);
+    void requestForCasterHandler(const QUrl &id,
+                                 const ContentServer::ItemMeta *meta,
+                                 QHttpRequest *req, QHttpResponse *resp);
     void handleHeadRequest(const ContentServer::ItemMeta *meta,
                            QHttpRequest *req, QHttpResponse *resp);
-    void requestForAudioCaptureHandler(const QUrl &id,
-                                       const ContentServer::ItemMeta *meta,
-                                       QHttpRequest *req, QHttpResponse *resp);
-    void requestForScreenCaptureHandler(const QUrl &id,
-                                        const ContentServer::ItemMeta *meta,
-                                        QHttpRequest *req, QHttpResponse *resp);
     void makeProxy(const QUrl &id, bool first, CacheLimit cacheLimit,
                    const QByteArray &range = {}, QHttpRequest *req = nullptr,
                    QHttpResponse *resp = nullptr);
     QByteArray processShoutcastMetadata(Proxy &proxy, QNetworkReply *reply,
                                         QByteArray data);
-    void updatePulseStreamName(const QString &name);
-    void dispatchPulseData(const void *data, int size);
-    void sendScreenCaptureData(const void *data, int size);
-    void sendAudioCaptureData(const void *data, int size);
-    void sendMicData(const void *data, int size);
+    void casterAudioSourceNameChangedHandler(const QString &name);
+    void casterDataHandler(ContentServer::ItemType type,
+                           const QByteArray &data);
     static void removePoints(const QList<QPair<int, int>> &rpoints,
                              QByteArray &data);
     void initRecFile(Proxy &proxy, Proxy::Source &source);
@@ -332,12 +321,8 @@ class ContentServerWorker : public QObject,
     void proxyRedirected(const QUrl &url);
     void proxyFinished();
     void proxyReadyRead();
-    void responseForMicDone();
-    void responseForAudioCaptureDone();
-    void responseForScreenCaptureDone();
-    void screenErrorHandler();
-    void audioErrorHandler();
-    void micErrorHandler();
+    void responseForCasterDone();
+    void casterErrorHandler();
     void responseForUrlDone();
     void seqWriteData(std::shared_ptr<QFile> file, int64_t size,
                       QHttpResponse *resp);
@@ -358,6 +343,12 @@ class ContentServerWorker : public QObject,
     void requestAdditionalSource(const QUrl &id, int64_t length,
                                  ContentServer::Type type);
     bool matchedSourceExists(const QUrl &id, const QByteArray &range);
+    bool castingForType(ContentServer::ItemType type) const;
+    static Caster::Config configForCaster(ContentServer::ItemType type,
+                                          const QUrl &url);
+    bool initCaster(ContentServer::ItemType type, const QUrl &url);
+    void casterTimeoutHandler();
+    void preStartCasterHandler(ContentServer::ItemType type, const QUrl &url);
 };
 
 #endif  // CONTENTSERVERWORKER_H

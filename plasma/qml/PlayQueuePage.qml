@@ -194,14 +194,27 @@ Kirigami.ScrollablePage {
             enabled: !root.busy
             label: model.name
             busy: model.toBeActive
-            subtitle: model.artist.length > 0 ? model.artist : ""
+            subtitle: {
+                switch (model.itemType) {
+                case ContentServer.ItemType_Mic:
+                case ContentServer.ItemType_PlaybackCapture:
+                    return model.audioSource
+                case ContentServer.ItemType_Cam:
+                case ContentServer.ItemType_ScreenCapture:
+                    return model.videoSource + " · " + model.videoOrientation + (model.audioSource.length !== 0 ? (" · " + model.audioSource) : "")
+                default:
+                    return model.artist.length !== 0 ? model.artist : ""
+                }
+            }
             defaultIconSource: {
                 if (model.itemType === ContentServer.ItemType_Mic)
                     return "audio-input-microphone"
-                else if (model.itemType === ContentServer.ItemType_AudioCapture)
+                else if (model.itemType === ContentServer.ItemType_PlaybackCapture)
                     return "player-volume"
                 else if (model.itemType === ContentServer.ItemType_ScreenCapture)
                     return "computer"
+                else if (model.itemType === ContentServer.ItemType_Cam)
+                    return "camera-web"
                 else
                     switch (model.type) {
                     case AVTransport.T_Image:
@@ -226,8 +239,9 @@ Kirigami.ScrollablePage {
 
             iconSource: {
                 if (model.itemType === ContentServer.ItemType_Mic ||
-                        model.itemType === ContentServer.ItemType_AudioCapture ||
-                        model.itemType === ContentServer.ItemType_ScreenCapture) {
+                        model.itemType === ContentServer.ItemType_PlaybackCapture ||
+                        model.itemType === ContentServer.ItemType_ScreenCapture ||
+                        model.itemType === ContentServer.ItemType_Cam) {
                     return ""
                 }
                 return model.icon
@@ -320,7 +334,7 @@ Kirigami.ScrollablePage {
         title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
         subtitle: app.streamTitle.length === 0 ?
                       (root.itemType !== ContentServer.ItemType_Mic &&
-                       root.itemType !== ContentServer.ItemType_AudioCapture &&
+                       root.itemType !== ContentServer.ItemType_PlaybackCapture &&
                        root.itemType !== ContentServer.ItemType_ScreenCapture ?
                            av.currentAuthor : "") : app.streamTitle
         itemType: root.itemType

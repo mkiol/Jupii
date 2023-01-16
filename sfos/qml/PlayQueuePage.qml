@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -56,9 +56,7 @@ Page {
                 pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"))
             } else {
                 pageStack.popAttached(root, PageStackAction.Immediate)
-            } /*else if (pageStack.depth === 3) {
-                pageStack.popAttached(root, PageStackAction.Immediate)
-            }*/
+            }
         }
     }
 
@@ -192,10 +190,12 @@ Page {
             defaultIcon.source: {
                 if (model.itemType === ContentServer.ItemType_Mic)
                     return "image://theme/icon-m-mic?" + primaryColor
-                else if (model.itemType === ContentServer.ItemType_AudioCapture)
+                else if (model.itemType === ContentServer.ItemType_PlaybackCapture)
                     return "image://theme/icon-m-speaker?" + primaryColor
                 else if (model.itemType === ContentServer.ItemType_ScreenCapture)
                     return "image://theme/icon-m-display?" + primaryColor
+                else if (model.itemType === ContentServer.ItemType_Cam)
+                    return "image://theme/icon-m-browser-camera?" + primaryColor
                 else {
                     switch (model.type) {
                     case AVTransport.T_Image:
@@ -225,8 +225,9 @@ Page {
             }
             icon.source: {
                 if (model.itemType === ContentServer.ItemType_Mic ||
-                    model.itemType === ContentServer.ItemType_AudioCapture ||
-                    model.itemType === ContentServer.ItemType_ScreenCapture) {
+                    model.itemType === ContentServer.ItemType_PlaybackCapture ||
+                    model.itemType === ContentServer.ItemType_ScreenCapture ||
+                    model.itemType === ContentServer.ItemType_Cam) {
                     return ""
                 }
                 return model.icon
@@ -234,7 +235,18 @@ Page {
             icon.visible: !model.toBeActive
             title.text: model.name
             title.color: primaryColor
-            subtitle.text: model.artist.length > 0 ? model.artist : ""
+            subtitle.text: {
+                switch (model.itemType) {
+                case ContentServer.ItemType_Mic:
+                case ContentServer.ItemType_PlaybackCapture:
+                    return model.audioSource
+                case ContentServer.ItemType_Cam:
+                case ContentServer.ItemType_ScreenCapture:
+                    return model.videoSource + " · " + model.videoOrientation + (model.audioSource.length !== 0 ? (" · " + model.audioSource) : "")
+                default:
+                    return model.artist.length !== 0 ? model.artist : ""
+                }
+            }
             subtitle.color: secondaryColor
 
             onClicked: {
@@ -332,9 +344,11 @@ Page {
         title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
         subtitle: app.streamTitle.length === 0 ?
                       (root.itemType !== ContentServer.ItemType_Mic &&
-                       root.itemType !== ContentServer.ItemType_AudioCapture &&
-                       root.itemType !== ContentServer.ItemType_ScreenCapture ?
+                       root.itemType !== ContentServer.ItemType_PlaybackCapture &&
+                       root.itemType !== ContentServer.ItemType_ScreenCapture &&
+                       root.itemType !== ContentServer.ItemType_Cam ?
                            av.currentAuthor : "") : app.streamTitle
+
         itemType: root.itemType
 
         prevEnabled: playlist.prevSupported &&

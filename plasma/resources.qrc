@@ -43,7 +43,7 @@
         <file>qml/SeekSlider.qml</file>
         <file>qml/DeviceInfoPage.qml</file>
         <file>qml/AddMediaPage.qml</file>
-        <file>qml/AddUrlDialog.qml</file>
+        <file>qml/UrlDialog.qml</file>
         <file>qml/SomafmPage.qml</file>
         <file>qml/RecPage.qml</file>
         <file>qml/UpnpCDirPage.qml</file>
@@ -61,5 +61,11 @@
         <file>qml/AttachedIcon.qml</file>
         <file>qml/BusyIndicatorWithLabel.qml</file>
         <file>qml/SearchDialogHeader.qml</file>
+        <file>qml/CamDialog.qml</file>
+        <file>qml/MicDialog.qml</file>
+        <file>qml/ScreenDialog.qml</file>
+        <file>qml/PlaybackDialog.qml</file>
+        <file>images/icon-cam.png</file>
+        <file>qml/CasterSourceVolume.qml</file>
     </qresource>
 </RCC>

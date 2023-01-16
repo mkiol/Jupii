@@ -226,8 +226,7 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
 
                 onClicked: {
-                    playlist.addItemUrl("jupii://pulse")
-                    app.popToQueue()
+                    pageStack.push(Qt.resolvedUrl("PlaybackDialog.qml"));
                 }
             }
 
@@ -238,8 +237,7 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
 
                 onClicked: {
-                    playlist.addItemUrl("jupii://screen")
-                    app.popToQueue()
+                    pageStack.push(Qt.resolvedUrl("ScreenDialog.qml"));
                 }
             }
 
@@ -249,8 +247,18 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
 
                 onClicked: {
-                    playlist.addItemUrl("jupii://mic")
-                    app.popToQueue()
+                    pageStack.push(Qt.resolvedUrl("MicDialog.qml"));
+                }
+            }
+
+
+            SimpleListItem {
+                title.text: qsTr("Camera")
+                icon.source: "image://theme/icon-m-browser-camera?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("CamDialog.qml"));
                 }
             }
 

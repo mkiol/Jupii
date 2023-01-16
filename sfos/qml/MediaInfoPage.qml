@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,7 @@ Page {
     property bool imgOk: imagep.status === Image.Ready || imagel.status === Image.Ready
     property int itemType: utils.itemTypeFromUrl(av.currentId)
     property bool isShout: app.streamTitle.length !== 0
+    property var urlInfo: cserver.parseUrl(av.currentId)
 
     onStatusChanged: {
         if (status === PageStatus.Active) {
@@ -70,18 +71,6 @@ Page {
             PullDownMenu {
                 visible: itemType === ContentServer.ItemType_LocalFile ||
                          itemType === ContentServer.ItemType_Url
-
-                /*MenuItem {
-                    visible: av.currentRecUrl.length !== 0
-                    text: qsTr("Open recording URL in browser")
-                    onClicked: Qt.openUrlExternally(av.currentRecUrl)
-                }
-
-                MenuItem {
-                    visible: av.currentRecUrl.length !== 0
-                    text: qsTr("Copy recording URL")
-                    onClicked: Clipboard.text = av.currentRecUrl
-                }*/
 
                 MenuItem {
                     visible: av.currentYtdl
@@ -164,10 +153,12 @@ Page {
                             return qsTr("Media Server")
                         case ContentServer.ItemType_ScreenCapture:
                             return qsTr("Screen Capture")
-                        case ContentServer.ItemType_AudioCapture:
+                        case ContentServer.ItemType_PlaybackCapture:
                             return qsTr("Audio Capture")
                         case ContentServer.ItemType_Mic:
                             return qsTr("Microphone")
+                        case ContentServer.ItemType_Cam:
+                            return qsTr("Camera")
                         default:
                             return ""
                         }
@@ -175,23 +166,52 @@ Page {
                 }
 
                 DetailItem {
+                    id: videoLabel
+                    label: qsTr("Video source")
+                    value: urlInfo.videoName
+                    visible: value.length > 0 &&
+                             (itemType === ContentServer.ItemType_Cam ||
+                             itemType === ContentServer.ItemType_ScreenCapture)
+                }
+
+                DetailItem {
+                    id: audioLabel
+                    label: qsTr("Audio source")
+                    value: urlInfo.audioName
+                    visible: value.length > 0 &&
+                             (itemType === ContentServer.ItemType_Cam ||
+                             itemType === ContentServer.ItemType_ScreenCapture ||
+                             itemType === ContentServer.ItemType_Mic ||
+                             itemType === ContentServer.ItemType_PlaybackCapture)
+                }
+
+                DetailItem {
+                    label: qsTr("Video orientation")
+                    value: settings.videoOrientationStr(urlInfo.videoOrientation)
+
+                    visible: itemType === ContentServer.ItemType_Cam ||
+                             itemType === ContentServer.ItemType_ScreenCapture
+                }
+
+                DetailItem {
                     label: isShout ? qsTr("Station name") : qsTr("Title")
                     value: av.currentTitle
                     visible: value.length !== 0 &&
                              itemType !== ContentServer.ItemType_Mic &&
-                             itemType !== ContentServer.ItemType_AudioCapture &&
-                             itemType !== ContentServer.ItemType_ScreenCapture
+                             itemType !== ContentServer.ItemType_PlaybackCapture &&
+                             itemType !== ContentServer.ItemType_ScreenCapture &&
+                             itemType !== ContentServer.ItemType_Cam
                 }
 
                 DetailItem {
-                    label: itemType === ContentServer.ItemType_AudioCapture ||
+                    label: itemType === ContentServer.ItemType_PlaybackCapture ||
                            itemType === ContentServer.ItemType_ScreenCapture ?
-                               qsTr("Audio source") : qsTr("Current title")
+                               qsTr("Application") : qsTr("Current title")
                     value: app.streamTitle.length === 0 &&
-                           (itemType === ContentServer.ItemType_AudioCapture ||
+                           (itemType === ContentServer.ItemType_PlaybackCapture ||
                             itemType === ContentServer.ItemType_ScreenCapture) ?
                                qsTr("None") : app.streamTitle
-                    visible: (itemType === ContentServer.ItemType_AudioCapture ||
+                    visible: (itemType === ContentServer.ItemType_PlaybackCapture ||
                              itemType === ContentServer.ItemType_ScreenCapture ||
                              itemType === ContentServer.ItemType_Url) &&
                              value.length !== 0 && av.currentType !== AVTransport.T_Image
@@ -201,7 +221,8 @@ Page {
                     label: qsTr("Author")
                     value: av.currentAuthor
                     visible: itemType !== ContentServer.ItemType_Mic &&
-                             itemType !== ContentServer.ItemType_AudioCapture &&
+                             itemType !== ContentServer.ItemType_Cam &&
+                             itemType !== ContentServer.ItemType_PlaybackCapture &&
                              itemType !== ContentServer.ItemType_ScreenCapture &&
                              av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
@@ -211,7 +232,8 @@ Page {
                     label: qsTr("Album")
                     value: av.currentAlbum
                     visible: itemType !== ContentServer.ItemType_Mic &&
-                             itemType !== ContentServer.ItemType_AudioCapture &&
+                             itemType !== ContentServer.ItemType_Cam &&
+                             itemType !== ContentServer.ItemType_PlaybackCapture &&
                              itemType !== ContentServer.ItemType_ScreenCapture &&
                              av.currentType !== AVTransport.T_Image &&
                              value.length !== 0
@@ -221,7 +243,11 @@ Page {
                     label: qsTr("Duration")
                     value: utils.secToStr(av.currentTrackDuration)
                     visible: av.currentType !== AVTransport.T_Image &&
-                             av.currentTrackDuration !== 0
+                             av.currentTrackDuration !== 0 &&
+                             itemType !== ContentServer.ItemType_Mic &&
+                             itemType !== ContentServer.ItemType_Cam &&
+                             itemType !== ContentServer.ItemType_PlaybackCapture &&
+                             itemType !== ContentServer.ItemType_ScreenCapture
                 }
 
                 DetailItem {
@@ -240,32 +266,13 @@ Page {
                 DetailItem {
                     label: qsTr("Content type")
                     value: av.currentContentType
-                    visible: itemType !== ContentServer.ItemType_Mic &&
-                             itemType !== ContentServer.ItemType_AudioCapture &&
-                             itemType !== ContentServer.ItemType_ScreenCapture &&
-                             value.length > 0
+                    visible: value.length > 0
                 }
-
-                /*DetailItem {
-                    label: qsTr("Category")
-                    value: {
-                        switch(av.currentType) {
-                        case AVTransport.T_Audio:
-                            return qsTr("Audio")
-                        case AVTransport.T_Video:
-                            return qsTr("Video")
-                        case AVTransport.T_Image:
-                            return qsTr("Image")
-                        default:
-                            return qsTr("Unknown")
-                        }
-                    }
-                }*/
 
                 DetailItem {
                     label: qsTr("Cached")
                     value: cserver.idCached(av.currentId) ? qsTr("Yes") : qsTr("No")
-                    visible: settings.isDebug() && itemType == ContentServer.ItemType_Url
+                    visible: itemType == ContentServer.ItemType_Url
 
                 }
             }
@@ -277,8 +284,9 @@ Page {
                 SectionHeader {
                     text: qsTr("Description")
                     visible: itemType !== ContentServer.ItemType_Mic &&
-                             itemType !== ContentServer.ItemType_AudioCapture &&
+                             itemType !== ContentServer.ItemType_PlaybackCapture &&
                              itemType !== ContentServer.ItemType_ScreenCapture &&
+                             itemType !== ContentServer.ItemType_Cam &&
                              av.currentDescription.length !== 0
                 }
 
@@ -292,16 +300,6 @@ Page {
                     font.pixelSize: Theme.fontSizeSmall
                 }
 
-                /*SectionHeader {
-                    text: qsTr("Recording URL")
-                    visible: av.currentRecUrl.length !== 0
-                }
-
-                PaddedLabel {
-                    text: av.currentRecUrl
-                    visible: text.length !== 0
-                }*/
-
                 SectionHeader {
                     text: av.currentPath.length !== 0 ? qsTr("Path") : qsTr("URL")
                     visible: itemType === ContentServer.ItemType_LocalFile ||
@@ -314,37 +312,28 @@ Page {
                              itemType === ContentServer.ItemType_Url
                 }
 
-                Slider {
-                    visible: itemType === ContentServer.ItemType_Mic
-                    width: parent.width
-                    minimumValue: 1
-                    maximumValue: 100
-                    stepSize: 1
-                    handleVisible: true
-                    value: Math.round(settings.micVolume)
-                    valueText: value
-                    label: qsTr("Sensitivity")
-
-                    onValueChanged: {
-                        settings.micVolume = value
-                    }
+                SectionHeader {
+                    text: qsTr("Volume")
+                    visible: mic.visible || playback.visible
                 }
-                /*Slider {
-                    visible: itemType === ContentServer.ItemType_AudioCapture ||
-                             itemType === ContentServer.ItemType_ScreenCapture
-                    width: parent.width
-                    minimumValue: 1
-                    maximumValue: 10
-                    stepSize: 1
-                    handleVisible: true
-                    value: Math.round(settings.audioBoost)
-                    valueText: value
-                    label: qsTr("Volume boost")
 
-                    onValueChanged: {
-                        settings.audioBoost = value
-                    }
-                }*/
+                CasterSourceVolume {
+                    id: mic
+                    visible: audioLabel.visible &&
+                             (itemType === ContentServer.ItemType_Mic ||
+                             itemType === ContentServer.ItemType_Cam)
+                    volume: settings.casterMicVolume
+                    onVolumeChanged: settings.casterMicVolume = volume
+                }
+
+                CasterSourceVolume {
+                    id: playback
+                    visible: audioLabel.visible &&
+                             (itemType === ContentServer.ItemType_ScreenCapture ||
+                             itemType === ContentServer.ItemType_PlaybackCapture)
+                    volume: settings.casterPlaybackVolume
+                    onVolumeChanged: settings.casterPlaybackVolume = volume
+                }
 
                 SectionHeader {
                     text: qsTr("Tracks history")

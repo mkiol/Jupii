@@ -19,6 +19,7 @@
 #include <QVariant>
 #include <utility>
 
+#include "caster.hpp"
 #include "singleton.h"
 #include "taskexecutor.h"
 
@@ -26,6 +27,8 @@ class Settings : public QSettings,
                  public TaskExecutor,
                  public Singleton<Settings> {
     Q_OBJECT
+    Q_PROPERTY(bool restartRequired READ getRestartRequired NOTIFY
+                   restartRequiredChanged)
     Q_PROPERTY(int port READ getPort WRITE setPort NOTIFY portChanged)
     Q_PROPERTY(
         QString lastDir READ getLastDir WRITE setLastDir NOTIFY lastDirChanged)
@@ -39,28 +42,10 @@ class Settings : public QSettings,
                    useHWVolumeChanged)
     Q_PROPERTY(QString prefNetInf READ getPrefNetInf WRITE setPrefNetInf NOTIFY
                    prefNetInfChanged)
-    Q_PROPERTY(float micVolume READ getMicVolume WRITE setMicVolume NOTIFY
-                   micVolumeChanged)
-    Q_PROPERTY(float audioBoost READ getAudioBoost WRITE setAudioBoost NOTIFY
-                   audioBoostChanged)
     Q_PROPERTY(
         QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
     Q_PROPERTY(
         int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
-    Q_PROPERTY(int screenFramerate READ getScreenFramerate WRITE
-                   setScreenFramerate NOTIFY screenFramerateChanged)
-    Q_PROPERTY(int screenCropTo169 READ getScreenCropTo169 WRITE
-                   setScreenCropTo169 NOTIFY screenCropTo169Changed)
-    Q_PROPERTY(bool screenAudio READ getScreenAudio WRITE setScreenAudio NOTIFY
-                   screenAudioChanged)
-    Q_PROPERTY(bool screenSupported READ getScreenSupported WRITE
-                   setScreenSupported NOTIFY screenSupportedChanged)
-    Q_PROPERTY(int screenQuality READ getScreenQuality WRITE setScreenQuality
-                   NOTIFY screenQualityChanged)
-    Q_PROPERTY(QString screenEncoder READ getScreenEncoder WRITE
-                   setScreenEncoder NOTIFY screenEncoderChanged)
-    Q_PROPERTY(RemoteContentMode remoteContentMode READ getRemoteContentMode
-                   WRITE setRemoteContentMode NOTIFY remoteContentModeChanged)
     Q_PROPERTY(int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType
                    NOTIFY albumQueryTypeChanged)
     Q_PROPERTY(int albumRecQueryType READ getRecQueryType WRITE setRecQueryType
@@ -94,7 +79,70 @@ class Settings : public QSettings,
     Q_PROPERTY(YtPreferredType ytPreferredType READ ytPreferredType WRITE
                    setYtPreferredType NOTIFY ytPreferredTypeChanged)
 
+    // caster
+    Q_PROPERTY(float casterMicVolume READ getCasterMicVolume WRITE
+                   setCasterMicVolume NOTIFY casterMicVolumeChanged)
+    Q_PROPERTY(float casterPlaybackVolume READ getCasterPlaybackVolume WRITE
+                   setCasterPlaybackVolume NOTIFY casterPlaybackVolumeChanged)
+    Q_PROPERTY(bool casterScreenRotate READ getCasterScreenRotate WRITE
+                   setCasterScreenRotate NOTIFY casterScreenRotateChanged)
+    Q_PROPERTY(bool casterScreenAudio READ getCasterScreenAudio WRITE
+                   setCasterScreenAudio NOTIFY casterScreenAudioChanged)
+    Q_PROPERTY(bool casterCamAudio READ getCasterCamAudio WRITE
+                   setCasterCamAudio NOTIFY casterCamAudioChanged)
+    Q_PROPERTY(CasterVideoOrientation casterVideoOrientation READ
+                   getCasterVideoOrientation WRITE setCasterVideoOrientation
+                       NOTIFY casterVideoOrientationChanged)
+    Q_PROPERTY(CasterVideoEncoder casterVideoEncoder READ getCasterVideoEncoder
+                   WRITE setCasterVideoEncoder NOTIFY casterVideoEncoderChanged)
+    Q_PROPERTY(CasterStreamFormat casterVideoStreamFormat READ
+                   getCasterVideoStreamFormat WRITE setCasterVideoStreamFormat
+                       NOTIFY casterVideoStreamFormatChanged)
+    Q_PROPERTY(CasterStreamFormat casterAudioStreamFormat READ
+                   getCasterAudioStreamFormat WRITE setCasterAudioStreamFormat
+                       NOTIFY casterAudioStreamFormatChanged)
+    Q_PROPERTY(QStringList casterScreens READ getCasterScreens NOTIFY
+                   casterSourcesChanged)
+    Q_PROPERTY(
+        QStringList casterCams READ getCasterCams NOTIFY casterSourcesChanged)
+    Q_PROPERTY(
+        QStringList casterMics READ getCasterMics NOTIFY casterSourcesChanged)
+    Q_PROPERTY(QStringList casterPlaybacks READ getCasterPlaybacks NOTIFY
+                   casterSourcesChanged)
+    Q_PROPERTY(int casterScreenIdx READ getCasterScreenIdx WRITE
+                   setCasterScreenIdx NOTIFY casterScreenChanged)
+    Q_PROPERTY(int casterCamIdx READ getCasterCamIdx WRITE setCasterCamIdx
+                   NOTIFY casterCamChanged)
+    Q_PROPERTY(int casterMicIdx READ getCasterMicIdx WRITE setCasterMicIdx
+                   NOTIFY casterMicChanged)
+    Q_PROPERTY(int casterPlaybackIdx READ getCasterPlaybackIdx WRITE
+                   setCasterPlaybackIdx NOTIFY casterPlaybackChanged)
+
    public:
+    enum class CasterStreamFormat {
+        CasterStreamFormat_Mp4 = 0,
+        CasterStreamFormat_MpegTs = 1,
+        CasterStreamFormat_Mp3 = 2
+    };
+    Q_ENUM(CasterStreamFormat)
+
+    enum class CasterVideoOrientation {
+        CasterVideoOrientation_Auto = 0,
+        CasterVideoOrientation_Portrait = 1,
+        CasterVideoOrientation_InvertedPortrait = 2,
+        CasterVideoOrientation_Landscape = 3,
+        CasterVideoOrientation_InvertedLandscape = 4
+    };
+    Q_ENUM(CasterVideoOrientation)
+
+    enum class CasterVideoEncoder {
+        CasterVideoEncoder_Auto = 0,
+        CasterVideoEncoder_X264 = 1,
+        CasterVideoEncoder_Nvenc = 2,
+        CasterVideoEncoder_V4l2 = 3
+    };
+    Q_ENUM(CasterVideoEncoder)
+
     enum class HintType {
         Hint_DeviceSwipeLeft = 1 << 0,
         Hint_NotConnectedTip = 1 << 1,
@@ -116,19 +164,12 @@ class Settings : public QSettings,
     enum class YtPreferredType { YtPreferredType_Video, YtPreferredType_Audio };
     Q_ENUM(YtPreferredType)
 
-    enum class RemoteContentMode {
-        RemoteContentMode_Proxy_All = 0,
-        RemoteContentMode_Redirection_All = 1,
-        RemoteContentMode_None_All = 2,
-        RemoteContentMode_Proxy_Shoutcast_Redirection = 3,
-        RemoteContentMode_Proxy_Shoutcast_None = 4
-    };
-    Q_ENUM(RemoteContentMode)
-
 #ifdef USE_SFOS
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
 #endif
     Settings();
+    void setRestartRequired(bool value);
+    inline bool getRestartRequired() const { return m_restartRequired; }
     void setPort(int value);
     int getPort() const;
     void setForwardTime(int value);
@@ -137,18 +178,6 @@ class Settings : public QSettings,
     int getVolStep() const;
     void setShowAllDevices(bool value);
     bool getShowAllDevices() const;
-    void setScreenSupported(bool value);
-    bool getScreenSupported() const;
-    void setScreenFramerate(int value);
-    int getScreenFramerate() const;
-    void setScreenQuality(int value);
-    int getScreenQuality() const;
-    void setScreenCropTo169(int value);
-    int getScreenCropTo169();
-    void setScreenAudio(bool value);
-    bool getScreenAudio();
-    void setScreenEncoder(const QString &value);
-    QString getScreenEncoder() const;
     void setUseHWVolume(bool value);
     bool getUseHWVolume() const;
     void setLogToFile(bool value);
@@ -179,10 +208,6 @@ class Settings : public QSettings,
     void setLastDir(const QString &value);
     QString getRecDir();
     void setRecDir(const QString &value);
-    void setMicVolume(float value);
-    float getMicVolume() const;
-    void setAudioBoost(float value);
-    float getAudioBoost() const;
     QStringList getLastPlaylist() const;
     void setLastPlaylist(const QStringList &value);
     QByteArray getKey();
@@ -191,8 +216,6 @@ class Settings : public QSettings,
     QString getPlaylistDir() const;
     QString getPrefNetInf() const;
     void setPrefNetInf(const QString &value);
-    void setRemoteContentMode(RemoteContentMode value);
-    RemoteContentMode getRemoteContentMode() const;
     void setContentDirSupported(bool value);
     bool getContentDirSupported() const;
     void setColorScheme(int value);
@@ -232,6 +255,56 @@ class Settings : public QSettings,
     Q_INVOKABLE inline bool sandboxed() const { return m_sandboxed; }
     bool allowNotIsomMp4() const;
     void setAllowNotIsomMp4(bool value);
+    static QString videoOrientationStrStatic(
+        CasterVideoOrientation orientation);
+    Q_INVOKABLE QString
+    videoOrientationStr(CasterVideoOrientation orientation) const;
+
+    // caster
+
+    Q_INVOKABLE void discoverCasterSources();
+    QStringList getCasterCams() const;
+    QStringList getCasterScreens() const;
+    QStringList getCasterMics() const;
+    QStringList getCasterPlaybacks() const;
+    float getCasterMicVolume() const;
+    void setCasterMicVolume(float value);
+    float getCasterPlaybackVolume() const;
+    void setCasterPlaybackVolume(float value);
+    bool getCasterScreenRotate() const;
+    void setCasterScreenRotate(bool value);
+    bool getCasterScreenAudio() const;
+    void setCasterScreenAudio(bool value);
+    bool getCasterCamAudio() const;
+    void setCasterCamAudio(bool value);
+    CasterVideoOrientation getCasterVideoOrientation() const;
+    void setCasterVideoOrientation(CasterVideoOrientation value);
+    CasterVideoEncoder getCasterVideoEncoder() const;
+    void setCasterVideoEncoder(CasterVideoEncoder value);
+    CasterStreamFormat getCasterVideoStreamFormat() const;
+    void setCasterVideoStreamFormat(CasterStreamFormat value);
+    CasterStreamFormat getCasterAudioStreamFormat() const;
+    void setCasterAudioStreamFormat(CasterStreamFormat value);
+    int getCasterCamIdx() const;
+    void setCasterCamIdx(int value);
+    int getCasterMicIdx() const;
+    void setCasterMicIdx(int value);
+    int getCasterScreenIdx() const;
+    void setCasterScreenIdx(int value);
+    int getCasterPlaybackIdx() const;
+    void setCasterPlaybackIdx(int value);
+    QString getCasterMic() const;
+    void setCasterMic(const QString &name);
+    QString getCasterCam() const;
+    void setCasterCam(const QString &name);
+    QString getCasterScreen() const;
+    void setCasterScreen(const QString &name);
+    QString getCasterPlayback() const;
+    void setCasterPlayback(const QString &name);
+    QString casterVideoSourceFriendlyName(const QString &name) const;
+    QString casterAudioSourceFriendlyName(const QString &name) const;
+    bool casterVideoSourceExists(const QString &name) const;
+    bool casterAudioSourceExists(const QString &name) const;
 
    signals:
     void portChanged();
@@ -243,18 +316,9 @@ class Settings : public QSettings,
     void showAllDevicesChanged();
     void forwardTimeChanged();
     void imageSupportedChanged();
-    void pulseSupportedChanged();
     void useHWVolumeChanged();
     void prefNetInfChanged();
-    void micVolumeChanged();
     void volStepChanged();
-    void screenFramerateChanged();
-    void screenCropTo169Changed();
-    void screenAudioChanged();
-    void screenSupportedChanged();
-    void screenQualityChanged();
-    void screenEncoderChanged();
-    void remoteContentModeChanged();
     void albumQueryTypeChanged();
     void recQueryTypeChanged();
     void cdirQueryTypeChanged();
@@ -262,7 +326,6 @@ class Settings : public QSettings,
     void contentDirSupportedChanged();
     void logToFileChanged();
     void colorSchemeChanged();
-    void audioBoostChanged();
     void fsapiPinChanged();
     void bcSearchHistoryChanged();
     void soundcloudSearchHistoryChanged();
@@ -274,6 +337,24 @@ class Settings : public QSettings,
     void ytPreferredTypeChanged();
     void allowNotIsomMp4Changed();
 
+    // caster
+
+    void casterMicVolumeChanged();
+    void casterPlaybackVolumeChanged();
+    void casterScreenRotateChanged();
+    void casterScreenAudioChanged();
+    void casterCamAudioChanged();
+    void casterVideoOrientationChanged();
+    void casterVideoEncoderChanged();
+    void casterVideoStreamFormatChanged();
+    void casterAudioStreamFormatChanged();
+    void casterSourcesChanged();
+    void casterMicChanged();
+    void casterScreenChanged();
+    void casterCamChanged();
+    void casterPlaybackChanged();
+    void restartRequiredChanged();
+
    private:
     inline static const QString settingsFilename =
         QStringLiteral("settings.config");
@@ -282,6 +363,17 @@ class Settings : public QSettings,
     QString hwName;
     int m_colorScheme = 0;
     bool m_sandboxed = false;
+    bool m_restartRequired;
+    std::vector<Caster::VideoSourceProps> m_videoSources;
+    std::vector<Caster::AudioSourceProps> m_audioSources;
+    QStringList m_cams_fn;
+    QStringList m_mics_fn;
+    QStringList m_screens_fn;
+    QStringList m_playbacks_fn;
+    QStringList m_cams;
+    QStringList m_mics;
+    QStringList m_screens;
+    QStringList m_playbacks;
 
 #ifdef USE_SFOS
     static QString readHwInfo();
@@ -290,6 +382,8 @@ class Settings : public QSettings,
     static QString settingsFilepath();
     static void initOpenUrlMode();
     void updateSandboxStatus();
+    static QString casterFriendlyName(const QString &name,
+                                      QString &&friendlyName);
 
     void initLogger() const;
 };

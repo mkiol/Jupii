@@ -108,7 +108,8 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
         E_SomeItemsNotAdded,
         E_ItemNotAdded,
         E_AllItemsNotAdded,
-        E_ProxyError
+        E_ProxyError,
+        E_CasterError
     };
     Q_ENUM(ErrorType)
 
@@ -295,6 +296,8 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
                                  const QUrl &origUrl, const QString &author,
                                  const QUrl &icon, const QString &desc,
                                  QString &&app, bool autoPlay);
+    PlaylistItem *itemFromId(const QString id) const;
+    void casterErrorHandler();
 #ifdef USE_SFOS
     void updateBackgroundActivity();
 #endif
@@ -324,7 +327,11 @@ class PlaylistItem : public ListItem {
         YtdlRole,
         RecDateRole,
         RecUrlRole,
-        DescRole
+        DescRole,
+        LiveRole,
+        VideoSourceRole,
+        AudioSourceRole,
+        VideoOrientationRole
     };
 
    public:
@@ -333,11 +340,13 @@ class PlaylistItem : public ListItem {
                  const QUrl &origUrl, ContentServer::Type type,
                  const QString &ctype, const QString &artist,
                  const QString &album, const QString &date, int duration,
-                 qint64 size, const QUrl &icon, bool ytdl,
+                 qint64 size, const QUrl &icon, bool ytdl, bool live,
                  bool play,  // auto play after adding
                  const QString &desc, const QDateTime &recDate,
                  const QString &recUrl, ContentServer::ItemType itemType,
-                 const QString &devId, QObject *parent = nullptr);
+                 const QString &devId, const QString &videoSource,
+                 const QString &audioSource, const QString &videoOrientation,
+                 QObject *parent = nullptr);
     QVariant data(int role) const override;
     QHash<int, QByteArray> roleNames() const override;
     QString path() const;
@@ -357,6 +366,7 @@ class PlaylistItem : public ListItem {
     inline auto size() const { return m_size; }
     inline auto icon() const { return m_icon; }
     inline auto ytdl() const { return m_ytdl; }
+    inline auto live() const { return m_live; }
     inline auto active() const { return m_active; }
     inline auto toBeActive() const { return m_tobeactive; }
     inline auto play() const { return m_play; }
@@ -364,6 +374,9 @@ class PlaylistItem : public ListItem {
     inline auto recUrl() const { return m_recUrl; }
     inline auto itemType() const { return m_item_type; }
     inline auto devId() const { return m_devid; }
+    inline auto videoSource() const { return m_videoSource; }
+    inline auto audioSource() const { return m_audioSource; }
+    inline auto videoOrientation() const { return m_videoOrientation; }
     void setActive(bool value);
     void setToBeActive(bool value);
     void setPlay(bool value);
@@ -388,11 +401,15 @@ class PlaylistItem : public ListItem {
     bool m_tobeactive = false;
     bool m_play = false;
     bool m_ytdl = false;
+    bool m_live = false;
     QString m_desc;
     QDateTime m_recDate;
     QString m_recUrl;
     ContentServer::ItemType m_item_type = ContentServer::ItemType_Unknown;
     QString m_devid;
+    QString m_videoSource;
+    QString m_audioSource;
+    QString m_videoOrientation;
 };
 
 #endif  // PLAYLISTMODEL_H

@@ -22,6 +22,7 @@
 #endif
 
 #include "avtransport.h"
+#include "contentserverworker.h"
 #include "directory.h"
 #include "dnscontentdeterminator.h"
 #include "playlistparser.h"
@@ -274,6 +275,8 @@ PlaylistModel::PlaylistModel(QObject *parent)
             Qt::QueuedConnection);
     connect(cs, &ContentServer::fullHashesUpdated, this,
             &PlaylistModel::updateActiveId, Qt::QueuedConnection);
+    connect(cs, &ContentServer::casterError, this,
+            &PlaylistModel::casterErrorHandler, Qt::QueuedConnection);
 
 #ifdef USE_SFOS
     m_backgroundActivity = new BackgroundActivity(this);
@@ -1277,20 +1280,29 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
                   ? Utils::cleanId(finalId)
                   : Utils::swapUrlInId(meta->url, finalId);
 
-    qDebug() << "final id:" << Utils::anonymizedId(finalId);
+    qDebug() << "final id:" << finalId;
 
-    return new PlaylistItem(finalId,       // id
-                            name,          // name
-                            meta->url,     // url
-                            origUrl,       // orig url
-                            type,          // type
-                            meta->mime,    // ctype
-                            meta->artist,  // artist
-                            meta->album,   // album
-                            {},            // date
-                            duration, meta->size, iconUrl, ytdl, play,
-                            meta->comment, meta->recDate, meta->recUrl,
-                            meta->itemType, meta->upnpDevId);
+    auto urlInfo = ContentServer::parseUrlStatic(finalId);
+
+    return new PlaylistItem(
+        /*id=*/finalId,
+        /*name=*/name,
+        /*url=*/meta->url,
+        /*origUrl=*/origUrl,
+        /*type=*/type,
+        /*ctype=*/meta->mime,
+        /*artist=*/meta->artist,
+        /*album=*/meta->album,
+        /*date=*/{},
+        /*duration=*/duration, /*size=*/meta->size, /*icon=*/iconUrl,
+        /*ytdl=*/ytdl,
+        /*live=*/!meta->flagSet(ContentServer::MetaFlag::Seek), /*play=*/play,
+        /*desc*/ meta->comment, /*recDate=*/meta->recDate,
+        /*recUrl=*/meta->recUrl, /*itemType=*/meta->itemType,
+        /*devId=*/meta->upnpDevId, /*videoSource=*/urlInfo.videoName,
+        /*audioSource=*/urlInfo.audioName,
+        /*videoOrientation=*/
+        Settings::videoOrientationStrStatic(urlInfo.videoOrientation));
 }
 
 bool PlaylistModel::addId(const QUrl &id) {
@@ -1606,10 +1618,15 @@ void PlaylistModel::togglePlay() {
             play(aid);
         }
     } else {
-        if (av->getPauseSupported())
-            av->pause();
-        else
+        const auto *item = getActiveItem();
+        if (item && item->live()) {
             av->stop();
+        } else {
+            if (av->getPauseSupported())
+                av->pause();
+            else
+                av->stop();
+        }
     }
 }
 
@@ -1774,14 +1791,18 @@ void PlaylistModel::refresh() {
     refresh(std::move(ids));
 }
 
+PlaylistItem *PlaylistModel::itemFromId(const QString id) const {
+    if (id.isEmpty()) return nullptr;
+    auto *item = qobject_cast<PlaylistItem *>(find(id));
+    return item;
+}
+
 void PlaylistModel::setContent(const QString &id1, const QString &id2) {
     auto cachableItem = [this](const QString &id) -> PlaylistItem * {
-        if (id.isEmpty()) return nullptr;
-        auto *item = qobject_cast<PlaylistItem *>(find(id));
-        if (item && item->itemType() == ContentServer::ItemType_Url) {
-            return item;
-        }
-        return nullptr;
+        auto *item = itemFromId(id);
+        return item && item->itemType() == ContentServer::ItemType_Url
+                   ? item
+                   : nullptr;
     };
 
     auto *item1 = cachableItem(id1);
@@ -1825,6 +1846,12 @@ void PlaylistModel::setContent(const QString &id1, const QString &id2) {
             return;
         }
     }*/
+
+    if (auto *item = itemFromId(id1);
+        item && item->itemType() == ContentServer::ItemType_Cam) {
+        ContentServerWorker::instance()->requestToPreStartCaster(
+            ContentServer::ItemType_Cam, id1);
+    }
 
     Services::instance()->avTransport->setLocalContent(id1, id2);
 }
@@ -1957,19 +1984,54 @@ QString PlaylistModel::nextId(const QString &id) const {
     return {};
 }
 
+void PlaylistModel::casterErrorHandler() {
+    emit error(ErrorType::E_CasterError);
+
+    foreach (const auto item, m_list) {
+        auto *pi = qobject_cast<PlaylistItem *>(item);
+        if (pi->itemType() == ContentServer::ItemType_Cam ||
+            pi->itemType() == ContentServer::ItemType_Mic ||
+            pi->itemType() == ContentServer::ItemType_PlaybackCapture ||
+            pi->itemType() == ContentServer::ItemType_ScreenCapture) {
+            pi->setToBeActive(false);
+        }
+    }
+}
+
 PlaylistItem::PlaylistItem(
     const QUrl &id, const QString &name, const QUrl &url, const QUrl &origUrl,
     ContentServer::Type type, const QString &ctype, const QString &artist,
     const QString &album, const QString &date, const int duration,
-    const qint64 size, const QUrl &icon, bool ytdl, bool play,
+    const qint64 size, const QUrl &icon, bool ytdl, bool live, bool play,
     const QString &desc, const QDateTime &recDate, const QString &recUrl,
-    ContentServer::ItemType itemType, const QString &devId, QObject *parent)
-    : ListItem(parent), m_id(id), m_name(name), m_url(url), m_origUrl(origUrl),
-      m_type(type), m_ctype(ctype), m_artist(artist), m_album(album),
-      m_date(date), m_cookie(Utils::cookieFromId(id)), m_duration(duration),
-      m_size(size), m_icon(icon), m_play(play), m_ytdl(ytdl), m_desc(desc),
-      m_recDate(recDate), m_recUrl(recUrl), m_item_type(itemType),
-      m_devid(devId) {}
+    ContentServer::ItemType itemType, const QString &devId,
+    const QString &videoSource, const QString &audioSource,
+    const QString &videoOrientation, QObject *parent)
+    : ListItem(parent),
+      m_id(id),
+      m_name(name),
+      m_url(url),
+      m_origUrl(origUrl),
+      m_type(type),
+      m_ctype(ctype),
+      m_artist(artist),
+      m_album(album),
+      m_date(date),
+      m_cookie(Utils::cookieFromId(id)),
+      m_duration(duration),
+      m_size(size),
+      m_icon(icon),
+      m_play(play),
+      m_ytdl(ytdl),
+      m_live(live),
+      m_desc(desc),
+      m_recDate(recDate),
+      m_recUrl(recUrl),
+      m_item_type(itemType),
+      m_devid(devId),
+      m_videoSource(videoSource),
+      m_audioSource(audioSource),
+      m_videoOrientation(videoOrientation) {}
 
 QHash<int, QByteArray> PlaylistItem::roleNames() const {
     QHash<int, QByteArray> names;
@@ -1993,6 +2055,10 @@ QHash<int, QByteArray> PlaylistItem::roleNames() const {
     names[DescRole] = "desc";
     names[RecDateRole] = "recDate";
     names[RecUrlRole] = "recUrl";
+    names[LiveRole] = "live";
+    names[VideoSourceRole] = "videoSource";
+    names[AudioSourceRole] = "audioSource";
+    names[VideoOrientationRole] = "videoOrientation";
     return names;
 }
 
@@ -2043,6 +2109,14 @@ QVariant PlaylistItem::data(int role) const {
             return recUrl();
         case DescRole:
             return desc();
+        case LiveRole:
+            return live();
+        case VideoSourceRole:
+            return videoSource();
+        case AudioSourceRole:
+            return audioSource();
+        case VideoOrientationRole:
+            return videoOrientation();
         default:
             return {};
     }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -58,7 +58,7 @@ Kirigami.ScrollablePage {
         }
     }
 
-    AddUrlDialog {
+    UrlDialog {
         id: urlDialog
         parent: pageStack.columnView
         anchors.centerIn: parent
@@ -70,6 +70,50 @@ Kirigami.ScrollablePage {
             }
             url = ""
             name = ""
+            pageStack.flickBack()
+        }
+    }
+
+    CamDialog {
+        id: camDialog
+        parent: pageStack.columnView
+        anchors.centerIn: parent
+        width: parent.width - 8 * Kirigami.Units.largeSpacing
+        onAccepted: {
+            playlist.addItemUrl("jupii://cam")
+            pageStack.flickBack()
+        }
+    }
+
+    MicDialog {
+        id: micDialog
+        parent: pageStack.columnView
+        anchors.centerIn: parent
+        width: parent.width - 8 * Kirigami.Units.largeSpacing
+        onAccepted: {
+            playlist.addItemUrl("jupii://mic")
+            pageStack.flickBack()
+        }
+    }
+
+    ScreenDialog {
+        id: screenDialog
+        parent: pageStack.columnView
+        anchors.centerIn: parent
+        width: parent.width - 8 * Kirigami.Units.largeSpacing
+        onAccepted: {
+            playlist.addItemUrl("jupii://screen")
+            pageStack.flickBack()
+        }
+    }
+
+    PlaybackDialog {
+        id: playbackDialog
+        parent: pageStack.columnView
+        anchors.centerIn: parent
+        width: parent.width - 8 * Kirigami.Units.largeSpacing
+        onAccepted: {
+            playlist.addItemUrl("jupii://playback")
             pageStack.flickBack()
         }
     }
@@ -108,7 +152,6 @@ Kirigami.ScrollablePage {
 
         BasicListItemWithArrow {
             Layout.fillWidth: true
-            visible: settings.rec
             label: qsTr("Recording")
             icon: "media-record"
             highlighted: rightPage ? rightPage.objectName === "rec" : false
@@ -127,9 +170,7 @@ Kirigami.ScrollablePage {
             Layout.fillWidth: true
             label: qsTr("URL")
             icon: "folder-remote"
-            onClicked: {
-                urlDialog.open()
-            }
+            onClicked: urlDialog.open()
         }
 
         BasicListItemWithArrow {
@@ -152,31 +193,28 @@ Kirigami.ScrollablePage {
             Layout.fillWidth: true
             label: qsTr("Audio capture")
             icon: "player-volume"
-            onClicked: {
-                playlist.addItemUrl("jupii://pulse")
-                pageStack.flickBack()
-            }
+            onClicked: playbackDialog.open()
         }
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
-            visible: settings.screenSupported
             label: qsTr("Screen capture")
             icon: "computer"
-            onClicked: {
-                playlist.addItemUrl("jupii://screen")
-                pageStack.flickBack()
-            }
+            onClicked: screenDialog.open()
         }
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
             label: qsTr("Microphone")
             icon: "audio-input-microphone"
-            onClicked: {
-                playlist.addItemUrl("jupii://mic")
-                pageStack.flickBack()
-            }
+            onClicked: micDialog.open()
+        }
+
+        Kirigami.BasicListItem {
+            Layout.fillWidth: true
+            label: qsTr("Camera")
+            icon: "camera-web"
+            onClicked: camDialog.open()
         }
 
         Kirigami.ListSectionHeader {

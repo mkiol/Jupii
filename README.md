@@ -34,7 +34,7 @@ cd Jupii
 mkdir build
 cd build
 
-sfdk config --session specfile=../../sfos/harbour-jupii.spec
+sfdk config --session specfile=../sfos/harbour-jupii.spec
 sfdk config --session target=SailfishOS-4.4.0.58-aarch64
 sfdk cmake ../ -DCMAKE_BUILD_TYPE=Release -Dwith_sfos=1
 sfdk package

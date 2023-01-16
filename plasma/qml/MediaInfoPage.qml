@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,12 +13,14 @@ import QtGraphicalEffects 1.0
 
 import harbour.jupii.ContentServer 1.0
 import harbour.jupii.AVTransport 1.0
+import harbour.jupii.Settings 1.0
 
 Kirigami.ScrollablePage {
     id: root
 
     property int itemType: utils.itemTypeFromUrl(av.currentId)
     property bool isShout: app.streamTitle.length !== 0
+    property var urlInfo: cserver.parseUrl(av.currentId)
 
     title: av.currentTitle.length > 0 ? av.currentTitle : qsTr("No media")
 
@@ -31,13 +33,6 @@ Kirigami.ScrollablePage {
             onTriggered: Qt.openUrlExternally(av.currentOrigURL)
         }
         contextualActions: [
-            /*Kirigami.Action {
-                text: qsTr("Open recording URL in browser")
-                iconName: "globe"
-                enabled: av.currentRecUrl.length !== 0
-                visible: enabled
-                onTriggered: Qt.openUrlExternally(av.currentRecUrl)
-            },*/
             Kirigami.Action {
                 text: qsTr("Copy current title")
                 iconName: "edit-copy"
@@ -63,16 +58,6 @@ Kirigami.ScrollablePage {
                                                qsTr("URL was copied to clipboard"))
                 }
             }
-            /*Kirigami.Action {
-                text: qsTr("Copy recording URL")
-                iconName: "edit-copy"
-                enabled: av.currentRecUrl.length !== 0
-                visible: enabled
-                onTriggered: {
-                   utils.setClipboard(av.currentRecUrl)
-                   showPassiveNotification(qsTr("Recording URL was copied to clipboard"))
-                }
-            }*/
         ]
     }
 
@@ -115,12 +100,74 @@ Kirigami.ScrollablePage {
                         return qsTr("Media Server")
                     case ContentServer.ItemType_ScreenCapture:
                         return qsTr("Screen Capture")
-                    case ContentServer.ItemType_AudioCapture:
+                    case ContentServer.ItemType_PlaybackCapture:
                         return qsTr("Audio Capture")
                     case ContentServer.ItemType_Mic:
                         return qsTr("Microphone")
+                    case ContentServer.ItemType_Cam:
+                        return qsTr("Camera")
                     default:
                         return ""
+                    }
+                }
+            }
+
+            Controls.Label {
+                visible: videoLabel.visible
+                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                text: qsTr("Video source")
+                color: Kirigami.Theme.disabledTextColor
+            }
+            Controls.Label {
+                id: videoLabel
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillWidth: true
+                visible: urlInfo.videoName.length > 0 &&
+                         (itemType === ContentServer.ItemType_Cam ||
+                         itemType === ContentServer.ItemType_ScreenCapture)
+                wrapMode: Text.WordWrap
+                text: urlInfo.videoName
+            }
+
+            Controls.Label {
+                visible: audioLabel.visible
+                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                text: qsTr("Audio source")
+                color: Kirigami.Theme.disabledTextColor
+            }
+            Controls.Label {
+                id: audioLabel
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillWidth: true
+                visible: urlInfo.audioName.length > 0 &&
+                         (itemType === ContentServer.ItemType_Cam ||
+                         itemType === ContentServer.ItemType_ScreenCapture ||
+                         itemType === ContentServer.ItemType_Mic ||
+                         itemType === ContentServer.ItemType_PlaybackCapture)
+                wrapMode: Text.WordWrap
+                text: urlInfo.audioName
+            }
+
+            Controls.Label {
+                visible: videoOrientationLabel.visible
+                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                text: qsTr("Video orientation")
+                color: Kirigami.Theme.disabledTextColor
+            }
+            Controls.Label {
+                id: videoOrientationLabel
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillWidth: true
+                visible: itemType === ContentServer.ItemType_Cam ||
+                         itemType === ContentServer.ItemType_ScreenCapture
+                wrapMode: Text.WordWrap
+                text: {
+                    switch (urlInfo.videoOrientation) {
+                    case Settings.CasterVideoOrientation_Auto: return qsTr("Auto")
+                    case Settings.CasterVideoOrientation_Portrait: return qsTr("Portrait")
+                    case Settings.CasterVideoOrientation_InvertedPortrait: return qsTr("Inverted portrait")
+                    case Settings.CasterVideoOrientation_Landscape: return qsTr("Landscape")
+                    case Settings.CasterVideoOrientation_InvertedLandscape: return qsTr("Inverted landscape")
                     }
                 }
             }
@@ -136,9 +183,10 @@ Kirigami.ScrollablePage {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.fillWidth: true
                 visible: text.length !== 0 &&
+                         itemType !== ContentServer.ItemType_PlaybackCapture &&
+                         itemType !== ContentServer.ItemType_ScreenCapture &&
                          itemType !== ContentServer.ItemType_Mic &&
-                         itemType !== ContentServer.ItemType_AudioCapture &&
-                         itemType !== ContentServer.ItemType_ScreenCapture
+                         itemType !== ContentServer.ItemType_Cam
                 wrapMode: Text.WordWrap
                 text: av.currentTitle
             }
@@ -146,22 +194,22 @@ Kirigami.ScrollablePage {
             Controls.Label {
                 visible: curTitleLabel.visible
                 Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                text: itemType === ContentServer.ItemType_AudioCapture ||
+                text: itemType === ContentServer.ItemType_PlaybackCapture ||
                       itemType === ContentServer.ItemType_ScreenCapture ?
-                          qsTr("Audio source") : qsTr("Current title")
+                          qsTr("Application") : qsTr("Current title")
                 color: Kirigami.Theme.disabledTextColor
             }
             Controls.Label {
                 id: curTitleLabel
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.fillWidth: true
-                visible: (itemType === ContentServer.ItemType_AudioCapture ||
+                visible: (itemType === ContentServer.ItemType_PlaybackCapture ||
                           itemType === ContentServer.ItemType_ScreenCapture ||
                           itemType === ContentServer.ItemType_Url) &&
                           text.length !== 0 && av.currentType !== AVTransport.T_Image
                 wrapMode: Text.WordWrap
                 text: app.streamTitle.length === 0 &&
-                      (itemType === ContentServer.ItemType_AudioCapture ||
+                      (itemType === ContentServer.ItemType_PlaybackCapture ||
                        itemType === ContentServer.ItemType_ScreenCapture) ?
                           qsTr("None") : app.streamTitle
             }
@@ -177,7 +225,8 @@ Kirigami.ScrollablePage {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.fillWidth: true
                 visible: itemType !== ContentServer.ItemType_Mic &&
-                         itemType !== ContentServer.ItemType_AudioCapture &&
+                         itemType !== ContentServer.ItemType_Cam &&
+                         itemType !== ContentServer.ItemType_PlaybackCapture &&
                          itemType !== ContentServer.ItemType_ScreenCapture &&
                          av.currentType !== AVTransport.T_Image &&
                          text.length !== 0
@@ -196,7 +245,8 @@ Kirigami.ScrollablePage {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.fillWidth: true
                 visible: itemType !== ContentServer.ItemType_Mic &&
-                         itemType !== ContentServer.ItemType_AudioCapture &&
+                         itemType !== ContentServer.ItemType_Cam &&
+                         itemType !== ContentServer.ItemType_PlaybackCapture &&
                          itemType !== ContentServer.ItemType_ScreenCapture &&
                          av.currentType !== AVTransport.T_Image &&
                          text.length !== 0
@@ -215,7 +265,11 @@ Kirigami.ScrollablePage {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.fillWidth: true
                 visible: av.currentType !== AVTransport.T_Image &&
-                         av.currentTrackDuration !== 0
+                         av.currentTrackDuration !== 0 &&
+                         itemType !== ContentServer.ItemType_Mic &&
+                         itemType !== ContentServer.ItemType_Cam &&
+                         itemType !== ContentServer.ItemType_PlaybackCapture &&
+                         itemType !== ContentServer.ItemType_ScreenCapture
                 wrapMode: Text.WordWrap
                 text: utils.secToStr(av.currentTrackDuration)
             }
@@ -261,10 +315,7 @@ Kirigami.ScrollablePage {
                 id: contentLabel
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.fillWidth: true
-                visible: itemType !== ContentServer.ItemType_Mic &&
-                         itemType !== ContentServer.ItemType_AudioCapture &&
-                         itemType !== ContentServer.ItemType_ScreenCapture &&
-                         text.length !== 0
+                visible: text.length !== 0
                 wrapMode: Text.WordWrap
                 text: av.currentContentType
             }
@@ -284,21 +335,6 @@ Kirigami.ScrollablePage {
                 text: cserver.idCached(av.currentId) ? qsTr("Yes") : qsTr("No")
             }
 
-            /*Controls.Label {
-                visible: recUrlLabel.visible
-                Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                text: qsTr("Recording URL")
-                color: Kirigami.Theme.disabledTextColor
-            }
-            Controls.Label {
-                id: recUrlLabel
-                Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                Layout.fillWidth: true
-                visible: text.length !== 0
-                wrapMode: Text.WrapAnywhere
-                text: av.currentRecUrl
-            }*/
-
             Controls.Label {
                 visible: pathLabel.visible
                 Layout.alignment: Qt.AlignRight | Qt.AlignTop
@@ -316,72 +352,29 @@ Kirigami.ScrollablePage {
             }
 
             Controls.Label {
-                visible: mic.visible
+                visible: mic.visible || playback.visible
                 Layout.alignment: Qt.AlignRight | Qt.AlignCenter
-                text: qsTr("Sensitivity")
+                text: qsTr("Volume")
                 color: Kirigami.Theme.disabledTextColor
             }
-            RowLayout {
+
+            CasterSourceVolume {
                 id: mic
-                Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
-                Layout.fillWidth: true
-                visible: itemType === ContentServer.ItemType_Mic
-                Controls.Slider {
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
-                    Layout.fillWidth: true
-                    from: 1
-                    to: 100
-                    stepSize: 1
-                    snapMode: Controls.Slider.SnapAlways
-                    value: Math.round(settings.micVolume)
-                    onValueChanged: {
-                        settings.micVolume = value
-                    }
-                }
-                Controls.SpinBox {
-                    from: 1
-                    to: 100
-                    value: Math.round(settings.micVolume)
-                    onValueChanged: {
-                        settings.micVolume = value
-                    }
-                }
+                visible: audioLabel.visible &&
+                         (itemType === ContentServer.ItemType_Mic ||
+                         itemType === ContentServer.ItemType_Cam)
+                volume: settings.casterMicVolume
+                onVolumeChanged: settings.casterMicVolume = volume
             }
 
-            Controls.Label {
-                visible: audioBoost.visible
-                Layout.alignment: Qt.AlignRight | Qt.AlignCenter
-                text: qsTr("Volume boost")
-                color: Kirigami.Theme.disabledTextColor
+            CasterSourceVolume {
+                id: playback
+                visible: audioLabel.visible &&
+                         (itemType === ContentServer.ItemType_ScreenCapture ||
+                         itemType === ContentServer.ItemType_PlaybackCapture)
+                volume: settings.casterPlaybackVolume
+                onVolumeChanged: settings.casterPlaybackVolume = volume
             }
-            RowLayout {
-                id: audioBoost
-                Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
-                Layout.fillWidth: true
-                visible: itemType === ContentServer.ItemType_AudioCapture ||
-                         itemType === ContentServer.ItemType_ScreenCapture
-                Controls.Slider {
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
-                    Layout.fillWidth: true
-                    from: 1
-                    to: 10
-                    stepSize: 1
-                    snapMode: Controls.Slider.SnapAlways
-                    value: Math.round(settings.audioBoost)
-                    onValueChanged: {
-                        settings.audioBoost = value
-                    }
-                }
-                Controls.SpinBox {
-                    from: 1
-                    to: 10
-                    value: Math.round(settings.audioBoost)
-                    onValueChanged: {
-                        settings.audioBoost = value
-                    }
-                }
-            }
-
         }
 
         Kirigami.Separator {
@@ -400,7 +393,7 @@ Kirigami.ScrollablePage {
             id: descLabel
             Layout.fillWidth: true
             visible: itemType !== ContentServer.ItemType_Mic &&
-                     itemType !== ContentServer.ItemType_AudioCapture &&
+                     itemType !== ContentServer.ItemType_PlaybackCapture &&
                      itemType !== ContentServer.ItemType_ScreenCapture &&
                      text.length !== 0
             wrapMode: Text.WordWrap

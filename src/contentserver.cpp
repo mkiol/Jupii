@@ -29,7 +29,6 @@
 #include "connectivitydetector.h"
 #include "contentdirectory.h"
 #include "contentserverworker.h"
-#include "miccaster.h"
 #include "playlistmodel.h"
 #include "playlistparser.h"
 #include "services.h"
@@ -433,22 +432,9 @@ bool ContentServer::getContentMetaItem(const QString &id, QString &meta,
 
     QUrl url;
 
-    if (const auto relay = Settings::instance()->getRemoteContentMode();
-        item->itemType == ItemType_Url &&
-        (relay == Settings::RemoteContentMode::RemoteContentMode_None_All ||
-         (relay == Settings::RemoteContentMode::
-                       RemoteContentMode_Proxy_Shoutcast_None &&
-          !item->flagSet(MetaFlag::Seek)))) {
-        url = item->url;
-        if (!makeUrl(id, url, false)) {
-            qWarning() << "cannot make url from id";
-            return false;
-        }
-    } else {
-        if (!makeUrl(id, url)) {
-            qWarning() << "cannot make url from id";
-            return false;
-        }
+    if (!makeUrl(id, url)) {
+        qWarning() << "cannot make url from id";
+        return false;
     }
 
     return getContentMetaItem(id, url, meta, item);
@@ -670,19 +656,7 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         return true;
     }
 
-    if (const auto relay = Settings::instance()->getRemoteContentMode();
-        item->itemType == ItemType_Url &&
-        (relay == Settings::RemoteContentMode::RemoteContentMode_None_All ||
-         (relay == Settings::RemoteContentMode::
-                       RemoteContentMode_Proxy_Shoutcast_None &&
-          !item->flagSet(MetaFlag::Seek)))) {
-        qDebug() << "item is url and relaying is disabled";
-        url = item->url;
-        if (!makeUrl(id, url, false)) {
-            qWarning() << "cannot make url from id";
-            return false;
-        }
-    } else if (!makeUrl(id, url)) {
+    if (!makeUrl(id, url)) {
         qWarning() << "cannot make url from id";
         return false;
     }
@@ -1576,8 +1550,10 @@ ContentServer::ItemType ContentServer::itemTypeFromUrl(const QUrl &url) {
         if (url.host() == QStringLiteral("upnp")) return ItemType_Upnp;
         if (url.host() == QStringLiteral("screen"))
             return ItemType_ScreenCapture;
-        if (url.host() == QStringLiteral("pulse")) return ItemType_AudioCapture;
+        if (url.host() == QStringLiteral("playback"))
+            return ItemType_PlaybackCapture;
         if (url.host() == QStringLiteral("mic")) return ItemType_Mic;
+        if (url.host() == QStringLiteral("cam")) return ItemType_Cam;
     } else if (url.scheme() == QStringLiteral("http") ||
                url.scheme() == QStringLiteral("https")) {
         return ItemType_Url;
@@ -1731,16 +1707,58 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeUpnpItemMeta(
     return m_metaCache.insert(url, meta);
 }
 
+QString ContentServer::mimeForCasterFormat(Settings::CasterStreamFormat format,
+                                           bool video) {
+    switch (format) {
+        case Settings::CasterStreamFormat::CasterStreamFormat_Mp4:
+            return video ? m_videoExtMap.value(QStringLiteral("mp4"))
+                         : m_musicExtMap.value(QStringLiteral("m4a"));
+        case Settings::CasterStreamFormat::CasterStreamFormat_MpegTs:
+            return video ? m_videoExtMap.value(QStringLiteral("tsv"))
+                         : m_musicExtMap.value(QStringLiteral("tsa"));
+        case Settings::CasterStreamFormat::CasterStreamFormat_Mp3:
+            return m_musicExtMap.value(QStringLiteral("mp3"));
+    }
+
+    throw std::runtime_error("unknown format");
+}
+
+QString ContentServer::casterMime(ContentServer::ItemType type) {
+    auto *s = Settings::instance();
+
+    switch (type) {
+        case ContentServer::ItemType_PlaybackCapture:
+        case ContentServer::ItemType_Mic:
+            return mimeForCasterFormat(s->getCasterAudioStreamFormat(),
+                                       /*video=*/false);
+        case ContentServer::ItemType_ScreenCapture:
+        case ContentServer::ItemType_Cam:
+            return mimeForCasterFormat(s->getCasterVideoStreamFormat(),
+                                       /*video=*/true);
+        default:
+            throw std::runtime_error("not caster type");
+    }
+}
+
 QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeMicItemMeta(
     const QUrl &url) {
     ItemMeta meta;
-    meta.url = url;
-    meta.channels = MicCaster::channelCount;
-    meta.sampleRate = MicCaster::sampleRate;
-    meta.mime = m_musicExtMap.value(QStringLiteral("mp3"));
+
+    const auto *s = Settings::instance();
+
+    auto params = ContentServer::parseCasterUrl(url);
+    if (!params.audioSource) params.audioSource = s->getCasterMic();
+
+    if (!s->casterAudioSourceExists(*params.audioSource)) {
+        qDebug() << "mic does not exist: " << *params.audioSource;
+        return m_metaCache.end();
+    }
+
+    meta.title = tr("Microphone capture");
+    meta.url = makeCasterUrl(url, std::move(params));
+    meta.mime = casterMime(ItemType_Mic);
     meta.type = Type::Type_Music;
     meta.size = 0;
-    meta.title = tr("Microphone");
     meta.itemType = ItemType_Mic;
 #if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-mic"));
@@ -1749,18 +1767,29 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeMicItemMeta(
                   static_cast<int>(MetaFlag::Local));
     meta.setFlags(MetaFlag::Seek, false);
 
-    return m_metaCache.insert(url, meta);
+    return m_metaCache.insert(meta.url, meta);
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
-ContentServer::makeAudioCaptureItemMeta(const QUrl &url) {
+ContentServer::makePlaybackCaptureItemMeta(const QUrl &url) {
     ItemMeta meta;
-    meta.url = url;
-    meta.mime = m_musicExtMap.value(QStringLiteral("mp3"));
+
+    const auto *s = Settings::instance();
+
+    auto params = ContentServer::parseCasterUrl(url);
+    if (!params.audioSource) params.audioSource = s->getCasterPlayback();
+
+    if (!s->casterAudioSourceExists(*params.audioSource)) {
+        qDebug() << "playback does not exist: " << *params.audioSource;
+        return m_metaCache.end();
+    }
+
+    meta.title = tr("Audio capture");
+    meta.url = makeCasterUrl(url, std::move(params));
+    meta.mime = casterMime(ItemType_PlaybackCapture);
     meta.type = Type::Type_Music;
     meta.size = 0;
-    meta.title = tr("Audio capture");
-    meta.itemType = ItemType_AudioCapture;
+    meta.itemType = ItemType_PlaybackCapture;
 #if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-pulse"));
 #endif
@@ -1768,17 +1797,41 @@ ContentServer::makeAudioCaptureItemMeta(const QUrl &url) {
                   static_cast<int>(MetaFlag::Local));
     meta.setFlags(MetaFlag::Seek, false);
 
-    return m_metaCache.insert(url, meta);
+    return m_metaCache.insert(meta.url, meta);
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
 ContentServer::makeScreenCaptureItemMeta(const QUrl &url) {
     ItemMeta meta;
-    meta.url = url;
-    meta.mime = m_videoExtMap.value(QStringLiteral("tsv"));
+
+    const auto *s = Settings::instance();
+
+    auto params = ContentServer::parseCasterUrl(url);
+    if (!params.videoSource) params.videoSource = s->getCasterScreen();
+
+    if (!s->casterVideoSourceExists(*params.videoSource)) {
+        qDebug() << "screen does not exist: " << *params.videoSource;
+        return m_metaCache.end();
+    }
+
+    if (!params.audioSource)
+        params.audioSource =
+            (s->getCasterScreenAudio() ? s->getCasterPlayback()
+                                       : QStringLiteral("off"));
+    if (!params.videoOrientation)
+        params.videoOrientation =
+            videoOrientationToStr(s->getCasterVideoOrientation());
+
+    if (s->getCasterScreenAudio() &&
+        !s->casterAudioSourceExists(*params.audioSource)) {
+        params.audioSource = QStringLiteral("off");
+    }
+
+    meta.title = tr("Screen capture");
+    meta.url = makeCasterUrl(url, std::move(params));
+    meta.mime = casterMime(ItemType_ScreenCapture);
     meta.type = Type::Type_Video;
     meta.size = 0;
-    meta.title = tr("Screen capture");
     meta.itemType = ItemType_ScreenCapture;
 #if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-screen"));
@@ -1787,7 +1840,52 @@ ContentServer::makeScreenCaptureItemMeta(const QUrl &url) {
                   static_cast<int>(MetaFlag::Local));
     meta.setFlags(MetaFlag::Seek, false);
 
-    return m_metaCache.insert(url, meta);
+    qDebug() << "screen url:" << meta.url;
+
+    return m_metaCache.insert(meta.url, meta);
+}
+
+QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeCamItemMeta(
+    const QUrl &url) {
+    ItemMeta meta;
+
+    const auto *s = Settings::instance();
+
+    auto params = ContentServer::parseCasterUrl(url);
+
+    if (!params.videoSource) params.videoSource = s->getCasterCam();
+
+    if (!s->casterVideoSourceExists(*params.videoSource)) {
+        qDebug() << "cam does not exist: " << *params.videoSource;
+        return m_metaCache.end();
+    }
+
+    if (!params.audioSource)
+        params.audioSource = (s->getCasterCamAudio() ? s->getCasterMic()
+                                                     : QStringLiteral("off"));
+    if (!params.videoOrientation)
+        params.videoOrientation =
+            videoOrientationToStr(s->getCasterVideoOrientation());
+
+    if (s->getCasterCamAudio() &&
+        !s->casterAudioSourceExists(*params.audioSource)) {
+        params.audioSource = QStringLiteral("off");
+    }
+
+    meta.title = tr("Camera capture");
+    meta.url = makeCasterUrl(url, std::move(params));
+    meta.mime = casterMime(ItemType_Cam);
+    meta.type = Type::Type_Video;
+    meta.size = 0;
+    meta.itemType = ItemType_Cam;
+#if defined(USE_SFOS) || defined(USE_PLASMA)
+    meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-cam"));
+#endif
+    meta.setFlags(static_cast<int>(MetaFlag::Valid) |
+                  static_cast<int>(MetaFlag::Local));
+    meta.setFlags(MetaFlag::Seek, false);
+
+    return m_metaCache.insert(meta.url, meta);
 }
 
 QString ContentServer::mimeFromDisposition(const QString &disposition) {
@@ -2538,17 +2636,15 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeItemMeta(
     } else if (itemType == ItemType_Mic) {
         qDebug() << "mic url detected";
         it = makeMicItemMeta(url);
-    } else if (itemType == ItemType_AudioCapture) {
-        qDebug() << "pulse url detected";
-        it = makeAudioCaptureItemMeta(url);
+    } else if (itemType == ItemType_PlaybackCapture) {
+        qDebug() << "playback url detected";
+        it = makePlaybackCaptureItemMeta(url);
     } else if (itemType == ItemType_ScreenCapture) {
         qDebug() << "screen url detected";
-        if (Settings::instance()->getScreenSupported()) {
-            it = makeScreenCaptureItemMeta(url);
-        } else {
-            qWarning() << "screen capturing is not supported";
-            it = m_metaCache.end();
-        }
+        it = makeScreenCaptureItemMeta(url);
+    } else if (itemType == ItemType_Cam) {
+        qDebug() << "cam url detected";
+        it = makeCamItemMeta(url);
     } else if (itemType == ItemType_Upnp) {
         qDebug() << "upnp url detected";
         it = makeUpnpItemMeta(url);
@@ -2572,12 +2668,15 @@ void ContentServer::run() {
     auto *worker = ContentServerWorker::instance();
     connect(worker, &ContentServerWorker::shoutcastMetadataUpdated, this,
             &ContentServer::shoutcastMetadataHandler);
-    connect(worker, &ContentServerWorker::pulseStreamUpdated, this,
+    connect(worker, &ContentServerWorker::playbackCaptureNameUpdated, this,
             &ContentServer::pulseStreamNameHandler);
     connect(worker, &ContentServerWorker::itemAdded, this,
             &ContentServer::itemAddedHandler);
     connect(worker, &ContentServerWorker::itemRemoved, this,
             &ContentServer::itemRemovedHandler);
+    connect(
+        worker, &ContentServerWorker::casterError, this,
+        [this] { emit casterError(); }, Qt::QueuedConnection);
     connect(this, &ContentServer::requestStreamToRecord, worker,
             &ContentServerWorker::setStreamToRecord);
     connect(worker, &ContentServerWorker::streamToRecordChanged, this,
@@ -3130,6 +3229,7 @@ void ContentServer::shoutcastMetadataHandler(const QUrl &id,
 void ContentServer::cleanCache() {
     Utils::removeFromCacheDir(QStringList{"cache_*.*"});
     emit cacheSizeChanged();
+    Settings::instance()->setRestartRequired(true);
 }
 
 void ContentServer::cancelCaching() {
@@ -3360,4 +3460,110 @@ void ContentServer::cleanCacheFiles(bool force) {
     }
 
     Utils::removeFromCacheDir(filters);
+}
+
+QString ContentServer::videoOrientationToStr(
+    Settings::CasterVideoOrientation videoOrientation) {
+    switch (videoOrientation) {
+        case Settings::CasterVideoOrientation::CasterVideoOrientation_Auto:
+            return QStringLiteral("auto");
+        case Settings::CasterVideoOrientation::CasterVideoOrientation_Landscape:
+            return QStringLiteral("landscape");
+        case Settings::CasterVideoOrientation::
+            CasterVideoOrientation_InvertedLandscape:
+            return QStringLiteral("inverted-landscape");
+        case Settings::CasterVideoOrientation::CasterVideoOrientation_Portrait:
+            return QStringLiteral("portrait");
+        case Settings::CasterVideoOrientation::
+            CasterVideoOrientation_InvertedPortrait:
+            return QStringLiteral("inverted-portrait");
+    }
+    return QStringLiteral("auto");
+}
+
+std::optional<Settings::CasterVideoOrientation>
+ContentServer::videoOrientationFromStr(const QString &str) {
+    if (str == QStringLiteral("auto"))
+        return Settings::CasterVideoOrientation::CasterVideoOrientation_Auto;
+    if (str == QStringLiteral("landscape"))
+        return Settings::CasterVideoOrientation::
+            CasterVideoOrientation_Landscape;
+    if (str == QStringLiteral("inverted-landscape"))
+        return Settings::CasterVideoOrientation::
+            CasterVideoOrientation_InvertedLandscape;
+    if (str == QStringLiteral("portrait"))
+        return Settings::CasterVideoOrientation::
+            CasterVideoOrientation_Portrait;
+    if (str == QStringLiteral("inverted-portrait"))
+        return Settings::CasterVideoOrientation::
+            CasterVideoOrientation_InvertedPortrait;
+    return std::nullopt;
+}
+
+ContentServer::CasterUrlParams ContentServer::parseCasterUrl(const QUrl &url) {
+    CasterUrlParams params;
+
+    QUrlQuery q{url};
+
+    if (q.hasQueryItem(QStringLiteral("video-source"))) {
+        params.videoSource = q.queryItemValue(QStringLiteral("video-source"));
+        if (*params.videoSource == QStringLiteral("off"))
+            params.videoSource->clear();
+    }
+
+    if (q.hasQueryItem(QStringLiteral("audio-source"))) {
+        params.audioSource = q.queryItemValue(QStringLiteral("audio-source"));
+        if (*params.audioSource == QStringLiteral("off"))
+            params.audioSource->clear();
+    }
+
+    if (q.hasQueryItem(QStringLiteral("video-orientation")))
+        params.videoOrientation =
+            q.queryItemValue(QStringLiteral("video-orientation"));
+
+    return params;
+}
+
+QUrl ContentServer::makeCasterUrl(QUrl url, CasterUrlParams &&params) {
+    QUrlQuery q{url};
+
+    q.removeQueryItem(QStringLiteral("video-source"));
+    if (params.videoSource)
+        q.addQueryItem(QStringLiteral("video-source"), *params.videoSource);
+
+    q.removeQueryItem(QStringLiteral("audio-source"));
+    if (params.audioSource)
+        q.addQueryItem(QStringLiteral("audio-source"), *params.audioSource);
+
+    q.removeQueryItem(QStringLiteral("video-orientation"));
+    if (params.videoOrientation)
+        q.addQueryItem(QStringLiteral("video-orientation"),
+                       *params.videoOrientation);
+
+    url.setQuery(q);
+
+    return url;
+}
+
+UrlInfo ContentServer::parseUrl(const QUrl &url) const {
+    return parseUrlStatic(url);
+}
+
+UrlInfo ContentServer::parseUrlStatic(const QUrl &url) {
+    const auto *s = Settings::instance();
+
+    auto params = parseCasterUrl(url);
+
+    UrlInfo info;
+
+    if (params.videoSource)
+        info.videoName = s->casterVideoSourceFriendlyName(*params.videoSource);
+    if (params.audioSource)
+        info.audioName = s->casterAudioSourceFriendlyName(*params.audioSource);
+    if (params.videoOrientation)
+        info.videoOrientation =
+            videoOrientationFromStr(*params.videoOrientation)
+                .value_or(Settings::CasterVideoOrientation::
+                              CasterVideoOrientation_Auto);
+    return info;
 }

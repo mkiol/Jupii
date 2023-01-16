@@ -87,6 +87,8 @@ Settings::Settings()
              << QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
     qDebug() << "settings file:" << fileName();
     qDebug() << "sandboxed:" << m_sandboxed;
+
+    discoverCasterSources();
 }
 
 #ifdef USE_SFOS
@@ -119,6 +121,7 @@ void Settings::setLogToFile(bool value) {
         emit logToFileChanged();
 
         initLogger();
+        setRestartRequired(true);
     }
 }
 
@@ -130,6 +133,7 @@ void Settings::setPort(int value) {
     if (getPort() != value) {
         setValue(QStringLiteral("port"), value);
         emit portChanged();
+        setRestartRequired(true);
     }
 }
 
@@ -183,21 +187,20 @@ QString Settings::getCacheDir() const {
 }
 
 QString Settings::getPlaylistDir() const {
-    const auto path =
-        QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+    auto path = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
 
     if (path.isEmpty()) {
-        qWarning() << "MusicLocation dir is empty";
+        qWarning() << "music location dir is empty";
         return path;
     }
 
-    const QString plsDir = "playlists";
+    QString plsDir = QStringLiteral("playlists");
 
-    QDir dir(path);
+    QDir dir{path};
     if (!dir.exists(plsDir)) {
         if (!dir.mkdir(plsDir)) {
-            qWarning() << "Unable to create playlist dir";
-            return QString();
+            qWarning() << "unable to create playlist dir";
+            return {};
         }
     }
 
@@ -329,6 +332,7 @@ void Settings::setPrefNetInf(const QString &value) {
     if (getPrefNetInf() != value) {
         setValue("prefnetinf", value);
         emit prefNetInfChanged();
+        setRestartRequired(true);
     }
 }
 
@@ -363,118 +367,6 @@ bool Settings::getShowAllDevices() const {
     return value("showalldevices", false).toBool();
 }
 
-void Settings::setScreenSupported([[maybe_unused]] bool value) {
-#ifdef USE_SFOS
-    if (getScreenSupported() != value) {
-        setValue("screensupported", value);
-        emit screenSupportedChanged();
-    }
-#endif
-}
-
-bool Settings::getScreenSupported() const {
-#if defined(USE_SFOS) && !defined(QT_DEBUG)
-    // Sreen Capture does not work with sandboxing
-    return sandboxed() ? false : value("screensupported", false).toBool();
-#else
-    return true;
-#endif
-}
-
-void Settings::setScreenCropTo169(int value) {
-    // 0 - disabled
-    // 1 - scale
-    // 2 - crop
-    if (getScreenCropTo169() != value) {
-        setValue("screencrop169", value);
-        emit screenCropTo169Changed();
-    }
-}
-
-int Settings::getScreenCropTo169() {
-    // 0 - disabled
-    // 1 - scale
-    // 2 - crop
-#ifdef USE_SFOS
-    return value("screencrop169", 1).toInt();
-#else
-    return value("screencrop169", 2).toInt();
-#endif
-}
-
-void Settings::setScreenAudio(bool value) {
-    if (getScreenAudio() != value) {
-        setValue("screenaudio", value);
-        emit screenAudioChanged();
-    }
-}
-
-bool Settings::getScreenAudio() {
-#ifdef USE_SFOS
-    return value("screenaudio", false).toBool();
-#else
-    return value("screenaudio", true).toBool();
-#endif
-}
-
-void Settings::setScreenEncoder(const QString &value) {
-    if (getScreenEncoder() != value) {
-        setValue("screenencoder", value);
-        emit screenEncoderChanged();
-    }
-}
-
-QString Settings::getScreenEncoder() const {
-#ifdef USE_SFOS
-    if (isDebug()) {
-        // valid encoders: libx264, libx264rgb, h264_omx
-        auto enc_name = value("screenencoder").toString();
-        if (enc_name == "libx264" || enc_name == "libx264rgb" ||
-            enc_name == "h264_omx")
-            return enc_name;
-    }
-
-    return {};
-#else
-    // valid encoders: libx264, libx264rgb, h264_nvenc
-    auto enc_name = value("screenencoder").toString();
-    if (enc_name == "libx264" || enc_name == "libx264rgb" ||
-        enc_name == "h264_nvenc" || enc_name == "h264_omx")
-        return enc_name;
-
-    return {};
-#endif
-}
-
-void Settings::setScreenFramerate(int value) {
-    if (getScreenFramerate() != value) {
-        setValue("screenframerate", value);
-        emit screenFramerateChanged();
-    }
-}
-
-int Settings::getScreenFramerate() const {
-#ifdef USE_SFOS
-    // default 5 fps
-    if (isDebug()) return value("screenframerate", 5).toInt();
-    return 5;
-#else
-    // default 15 fps
-    return value("screenframerate", 15).toInt();
-#endif
-}
-
-void Settings::setScreenQuality(int value) {
-    if (getScreenQuality() != value) {
-        setValue("screenquality", value);
-        emit screenQualityChanged();
-    }
-}
-
-int Settings::getScreenQuality() const {
-    return value("screenquality", 3).toInt();
-}
-
 void Settings::setUseHWVolume(bool value) {
 #ifdef USE_SFOS
     if (getUseHWVolume() != value) {
@@ -491,44 +383,6 @@ bool Settings::getUseHWVolume() const {
     return value("usehwvolume", true).toBool();
 #else
     return false;
-#endif
-}
-
-void Settings::setMicVolume(float value) {
-    value = value < 1 ? 1 : value > 100 ? 100 : value;
-
-    if (getMicVolume() > value || getMicVolume() < value) {
-        setValue("micvolume", value);
-        emit micVolumeChanged();
-    }
-}
-
-float Settings::getMicVolume() const {
-#ifdef USE_SFOS
-    return value("micvolume", 50.0).toFloat();
-#else
-    return value("micvolume", 1.0).toFloat();
-#endif
-}
-
-void Settings::setAudioBoost([[maybe_unused]] float value) {
-#ifdef USE_SFOS
-#else
-    value = value < 1 ? 1 : value > 10 ? 10 : value;
-
-    if (getAudioBoost() > value || getAudioBoost() < value) {
-        setValue("audioboost", value);
-        emit audioBoostChanged();
-    }
-#endif
-}
-
-float Settings::getAudioBoost() const {
-#ifdef USE_SFOS
-    // return value("micvolume", 2.3f).toFloat();
-    return 2.3f;
-#else
-    return value("audioboost", 1.0f).toFloat();
 #endif
 }
 
@@ -554,24 +408,6 @@ QByteArray Settings::getKey() {
     }
 
     return key;
-}
-
-void Settings::setRemoteContentMode(RemoteContentMode value) {
-    if (!isDebug()) return;
-
-    if (getRemoteContentMode() != value) {
-        setValue("remotecontentmode2", static_cast<int>(value));
-        emit remoteContentModeChanged();
-    }
-}
-
-Settings::RemoteContentMode Settings::getRemoteContentMode() const {
-    if (!isDebug()) return RemoteContentMode::RemoteContentMode_Proxy_All;
-
-    return static_cast<RemoteContentMode>(
-        value("remotecontentmode2",
-              static_cast<int>(RemoteContentMode::RemoteContentMode_Proxy_All))
-            .toInt());
 }
 
 void Settings::setAlbumQueryType(int value) {
@@ -680,6 +516,8 @@ void Settings::reset() {
     if (!QFile::remove(fileName())) {
         qWarning() << "Cannot remove file:" << fileName();
     }
+
+    setRestartRequired(true);
 }
 
 void Settings::setFsapiPin(const QString &value) {
@@ -857,6 +695,7 @@ void Settings::setCacheType(CacheType value) {
     if (value != cacheType()) {
         setValue("cachetype", static_cast<int>(value));
         emit cacheTypeChanged();
+        setRestartRequired(true);
     }
 }
 
@@ -873,6 +712,7 @@ void Settings::setCacheCleaningType(CacheCleaningType value) {
     if (value != cacheCleaningType()) {
         setValue("cachecleaningtype", static_cast<int>(value));
         emit cacheCleaningTypeChanged();
+        setRestartRequired(true);
     }
 }
 
@@ -936,4 +776,386 @@ bool Settings::isHarbour() const {
 #else
     return false;
 #endif
+}
+
+float Settings::getCasterMicVolume() const {
+    return value(QStringLiteral("caster_mic_volume"), 1.0).toFloat();
+}
+
+void Settings::setCasterMicVolume(float value) {
+    if (value != getCasterMicVolume()) {
+        setValue(QStringLiteral("caster_mic_volume"), value);
+        emit casterMicVolumeChanged();
+    }
+}
+
+float Settings::getCasterPlaybackVolume() const {
+    return value(QStringLiteral("caster_playback_volume"), 1.0).toFloat();
+}
+
+void Settings::setCasterPlaybackVolume(float value) {
+    if (value != getCasterPlaybackVolume()) {
+        setValue(QStringLiteral("caster_playback_volume"), value);
+        emit casterPlaybackVolumeChanged();
+    }
+}
+
+bool Settings::getCasterScreenRotate() const {
+    return value(QStringLiteral("caster_screen_rotate"), false).toBool();
+}
+
+void Settings::setCasterScreenRotate(bool value) {
+    if (value != getCasterScreenRotate()) {
+        setValue(QStringLiteral("caster_screen_rotate"), value);
+        emit casterScreenRotateChanged();
+    }
+}
+
+bool Settings::getCasterScreenAudio() const {
+    return value(QStringLiteral("caster_screen_audio"), false).toBool();
+}
+
+void Settings::setCasterScreenAudio(bool value) {
+    if (value != getCasterScreenAudio()) {
+        setValue(QStringLiteral("caster_screen_audio"), value);
+        emit casterScreenAudioChanged();
+    }
+}
+
+bool Settings::getCasterCamAudio() const {
+    return value(QStringLiteral("caster_cam_audio"), false).toBool();
+}
+
+void Settings::setCasterCamAudio(bool value) {
+    if (value != getCasterCamAudio()) {
+        setValue(QStringLiteral("caster_cam_audio"), value);
+        emit casterCamAudioChanged();
+    }
+}
+
+Settings::CasterVideoOrientation Settings::getCasterVideoOrientation() const {
+    return static_cast<CasterVideoOrientation>(
+        value(QStringLiteral("caster_video_orientation"),
+              static_cast<int>(
+                  CasterVideoOrientation::CasterVideoOrientation_Auto))
+            .toInt());
+}
+
+void Settings::setCasterVideoOrientation(CasterVideoOrientation value) {
+    if (value != getCasterVideoOrientation()) {
+        setValue(QStringLiteral("caster_video_orientation"),
+                 static_cast<int>(value));
+        emit casterVideoOrientationChanged();
+    }
+}
+
+Settings::CasterVideoEncoder Settings::getCasterVideoEncoder() const {
+    return static_cast<CasterVideoEncoder>(
+        value(QStringLiteral("caster_video_encoder"),
+              static_cast<int>(CasterVideoEncoder::CasterVideoEncoder_Auto))
+            .toInt());
+}
+
+void Settings::setCasterVideoEncoder(CasterVideoEncoder value) {
+    if (value != getCasterVideoEncoder()) {
+        setValue(QStringLiteral("caster_video_encoder"),
+                 static_cast<int>(value));
+        emit casterVideoEncoderChanged();
+    }
+}
+
+Settings::CasterStreamFormat Settings::getCasterVideoStreamFormat() const {
+    return static_cast<CasterStreamFormat>(
+        value(QStringLiteral("caster_video_stream_format"),
+              static_cast<int>(CasterStreamFormat::CasterStreamFormat_MpegTs))
+            .toInt());
+}
+
+void Settings::setCasterVideoStreamFormat(CasterStreamFormat value) {
+    if (value != getCasterVideoStreamFormat()) {
+        setValue(QStringLiteral("caster_video_stream_format"),
+                 static_cast<int>(value));
+        emit casterVideoStreamFormatChanged();
+        setRestartRequired(true);
+    }
+}
+
+Settings::CasterStreamFormat Settings::getCasterAudioStreamFormat() const {
+    return static_cast<CasterStreamFormat>(
+        value(QStringLiteral("caster_audio_stream_format"),
+              static_cast<int>(CasterStreamFormat::CasterStreamFormat_Mp3))
+            .toInt());
+}
+
+void Settings::setCasterAudioStreamFormat(CasterStreamFormat value) {
+    if (value != getCasterAudioStreamFormat()) {
+        setValue(QStringLiteral("caster_audio_stream_format"),
+                 static_cast<int>(value));
+        emit casterAudioStreamFormatChanged();
+        setRestartRequired(true);
+    }
+}
+
+QString Settings::getCasterMic() const {
+    auto v = value(QStringLiteral("caster_mic"), QString{}).toString();
+    if (v.isEmpty() || !m_mics.contains(v))
+        return m_mics.empty() ? QString{} : m_mics.front();
+    return v;
+}
+
+void Settings::setCasterMic(const QString &name) {
+    if (name != getCasterMic()) {
+        setValue(QStringLiteral("caster_mic"), name);
+        emit casterMicChanged();
+    }
+}
+
+QString Settings::getCasterCam() const {
+    auto v = value(QStringLiteral("caster_cam"), QString{}).toString();
+    if (v.isEmpty() || !m_cams.contains(v))
+        return m_cams.empty() ? QString{} : m_cams.front();
+    return v;
+}
+
+void Settings::setCasterCam(const QString &name) {
+    if (name != getCasterCam()) {
+        setValue(QStringLiteral("caster_cam"), name);
+        emit casterCamChanged();
+    }
+}
+
+QString Settings::getCasterScreen() const {
+    auto v = value(QStringLiteral("caster_screen"), QString{}).toString();
+    if (v.isEmpty() || !m_screens.contains(v))
+        return m_screens.empty() ? QString{} : m_screens.front();
+    return v;
+}
+
+void Settings::setCasterScreen(const QString &name) {
+    if (name != getCasterScreen()) {
+        setValue(QStringLiteral("caster_screen"), name);
+        emit casterScreenChanged();
+    }
+}
+
+QString Settings::getCasterPlayback() const {
+    auto v = value(QStringLiteral("caster_playback"), QString{}).toString();
+    if (v.isEmpty() || !m_playbacks.contains(v))
+        return m_playbacks.empty() ? QString{} : m_playbacks.front();
+    return v;
+}
+
+void Settings::setCasterPlayback(const QString &name) {
+    if (name != getCasterPlayback()) {
+        setValue(QStringLiteral("caster_playback"), name);
+        emit casterPlaybackChanged();
+    }
+}
+
+QStringList Settings::getCasterCams() const { return m_cams_fn; }
+
+QStringList Settings::getCasterScreens() const { return m_screens_fn; }
+
+QStringList Settings::getCasterMics() const { return m_mics_fn; }
+
+QStringList Settings::getCasterPlaybacks() const { return m_playbacks_fn; }
+
+QString Settings::casterFriendlyName(const QString &name,
+                                     QString &&friendlyName) {
+#ifdef USE_SFOS
+    if (name == "mic") return tr("Built-in microphone");
+    if (name == "playback") return tr("Application playback");
+    if (name == "playback-mute") return tr("Application playback (muted)");
+    if (name == "screen" || name == "screen-rotate") return tr("Screen");
+    if (name == "cam-back" || name == "cam-back-rotate")
+        return tr("Back camera");
+    if (name == "cam-front" || name == "cam-front-rotate")
+        return tr("Front camera");
+#endif
+    return std::move(friendlyName);
+}
+
+void Settings::discoverCasterSources() {
+    m_cams.clear();
+    m_cams_fn.clear();
+    m_screens.clear();
+    m_screens_fn.clear();
+    m_mics.clear();
+    m_mics_fn.clear();
+    m_playbacks.clear();
+    m_playbacks_fn.clear();
+
+    m_videoSources = Caster::videoSources();
+    m_audioSources = Caster::audioSources();
+
+    for (const auto &s : m_audioSources) {
+        auto n = QString::fromStdString(s.name);
+        if (n.startsWith(QStringLiteral("mic"))) {
+            m_mics.push_back(n);
+            m_mics_fn.push_back(
+                casterFriendlyName(n, QString::fromStdString(s.friendlyName)));
+        } else if (n.startsWith(QStringLiteral("playback")) ||
+                   n.startsWith(QStringLiteral("monitor"))) {
+            m_playbacks.push_back(n);
+            m_playbacks_fn.push_back(
+                casterFriendlyName(n, QString::fromStdString(s.friendlyName)));
+        }
+    }
+
+    for (const auto &s : m_videoSources) {
+        auto n = QString::fromStdString(s.name);
+        if (n.startsWith(QStringLiteral("screen")) &&
+            !n.endsWith(QStringLiteral("-rotate"))) {
+            qDebug() << "screen:" << n;
+            m_screens.push_back(n);
+            m_screens_fn.push_back(
+                casterFriendlyName(n, QString::fromStdString(s.friendlyName)));
+        } else if (n.startsWith(QStringLiteral("cam")) &&
+                   !n.endsWith(QStringLiteral("-rotate"))) {
+            m_cams.push_back(n);
+            m_cams_fn.push_back(
+                casterFriendlyName(n, QString::fromStdString(s.friendlyName)));
+        }
+    }
+
+    emit casterSourcesChanged();
+
+    if (!casterVideoSourceExists(getCasterScreen()))
+        setCasterScreen(m_screens.empty() ? QString{} : m_screens.front());
+    if (!casterVideoSourceExists(getCasterCam()))
+        setCasterCam(m_cams.empty() ? QString{} : m_cams.front());
+    if (!casterAudioSourceExists(getCasterMic()))
+        setCasterMic(m_mics.empty() ? QString{} : m_mics.front());
+    if (!casterAudioSourceExists(getCasterPlayback()))
+        setCasterPlayback(m_playbacks.empty() ? QString{}
+                                              : m_playbacks.front());
+
+    emit casterMicChanged();
+    emit casterScreenChanged();
+    emit casterCamChanged();
+    emit casterPlaybackChanged();
+}
+
+int Settings::getCasterCamIdx() const {
+    auto it = std::find(m_cams.cbegin(), m_cams.cend(), getCasterCam());
+    if (it == m_cams.cend()) return 0;
+
+    return static_cast<int>(std::distance(m_cams.cbegin(), it));
+}
+
+void Settings::setCasterCamIdx(int value) {
+    auto idx = getCasterCamIdx();
+    if (value == idx || value > m_cams.size() || value < 0) return;
+
+    setCasterCam(m_cams.at(value));
+}
+
+int Settings::getCasterMicIdx() const {
+    auto it = std::find(m_mics.cbegin(), m_mics.cend(), getCasterMic());
+    if (it == m_mics.cend()) return 0;
+
+    return static_cast<int>(std::distance(m_mics.cbegin(), it));
+}
+
+void Settings::setCasterMicIdx(int value) {
+    auto idx = getCasterMicIdx();
+    if (value == idx || value > m_mics.size() || value < 0) return;
+
+    setCasterMic(m_mics.at(value));
+}
+
+int Settings::getCasterScreenIdx() const {
+    auto it =
+        std::find(m_screens.cbegin(), m_screens.cend(), getCasterScreen());
+    if (it == m_screens.cend()) return 0;
+
+    return static_cast<int>(std::distance(m_screens.cbegin(), it));
+}
+
+void Settings::setCasterScreenIdx(int value) {
+    auto idx = getCasterScreenIdx();
+    if (value == idx || value > m_screens.size() || value < 0) return;
+
+    setCasterScreen(m_screens.at(value));
+}
+
+int Settings::getCasterPlaybackIdx() const {
+    auto it = std::find(m_playbacks.cbegin(), m_playbacks.cend(),
+                        getCasterPlayback());
+    if (it == m_playbacks.cend()) return 0;
+
+    return static_cast<int>(std::distance(m_playbacks.cbegin(), it));
+}
+
+void Settings::setCasterPlaybackIdx(int value) {
+    auto idx = getCasterPlaybackIdx();
+    if (value == idx || value > m_playbacks.size() || value < 0) return;
+
+    setCasterPlayback(m_playbacks.at(value));
+}
+
+QString Settings::casterVideoSourceFriendlyName(const QString &name) const {
+    auto it = std::find_if(m_videoSources.cbegin(), m_videoSources.cend(),
+                           [name = name.toStdString()](const auto &props) {
+                               return props.name == name;
+                           });
+    if (it == m_videoSources.cend()) return {};
+
+    return casterFriendlyName(QString::fromStdString(it->name),
+                              QString::fromStdString(it->friendlyName));
+}
+
+QString Settings::casterAudioSourceFriendlyName(const QString &name) const {
+    auto it = std::find_if(m_audioSources.cbegin(), m_audioSources.cend(),
+                           [name = name.toStdString()](const auto &props) {
+                               return props.name == name;
+                           });
+    if (it == m_audioSources.cend()) return {};
+
+    return casterFriendlyName(QString::fromStdString(it->name),
+                              QString::fromStdString(it->friendlyName));
+}
+
+bool Settings::casterVideoSourceExists(const QString &name) const {
+    auto it = std::find_if(m_videoSources.cbegin(), m_videoSources.cend(),
+                           [name = name.toStdString()](const auto &props) {
+                               return props.name == name;
+                           });
+    return it != m_videoSources.cend();
+}
+
+bool Settings::casterAudioSourceExists(const QString &name) const {
+    auto it = std::find_if(m_audioSources.cbegin(), m_audioSources.cend(),
+                           [name = name.toStdString()](const auto &props) {
+                               return props.name == name;
+                           });
+    return it != m_audioSources.cend();
+}
+
+void Settings::setRestartRequired(bool value) {
+    if (m_restartRequired != value) {
+        m_restartRequired = value;
+        emit restartRequiredChanged();
+    }
+}
+
+QString Settings::videoOrientationStrStatic(
+    CasterVideoOrientation orientation) {
+    switch (orientation) {
+        case CasterVideoOrientation::CasterVideoOrientation_Auto:
+            return tr("Auto");
+        case CasterVideoOrientation::CasterVideoOrientation_Portrait:
+            return tr("Portrait");
+        case CasterVideoOrientation::CasterVideoOrientation_InvertedPortrait:
+            return tr("Inverted portrait");
+        case CasterVideoOrientation::CasterVideoOrientation_Landscape:
+            return tr("Landscape");
+        case CasterVideoOrientation::CasterVideoOrientation_InvertedLandscape:
+            return tr("Inverted landscape");
+    }
+}
+
+QString Settings::videoOrientationStr(
+    CasterVideoOrientation orientation) const {
+    return videoOrientationStrStatic(orientation);
 }

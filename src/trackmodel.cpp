@@ -149,7 +149,7 @@ TrackModel::TrackData TrackModel::makeTrackDataFromId(const QUrl& id) const
         auto itemType = ContentServer::itemTypeFromUrl(id);
         if (itemType == ContentServer::ItemType_Mic)
             data.title = tr("Microphone");
-        else if (itemType == ContentServer::ItemType_AudioCapture)
+        else if (itemType == ContentServer::ItemType_PlaybackCapture)
             data.title = tr("Audio capture");
         else if (itemType == ContentServer::ItemType_ScreenCapture)
             data.title = tr("Screen capture");

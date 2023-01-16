@@ -145,9 +145,14 @@ static void registerTypes() {
     qRegisterMetaType<Settings::CacheCleaningType>(
         "Settings::CacheCleaningType");
     qRegisterMetaType<Settings::YtPreferredType>("Settings::YtPreferredType");
-    qRegisterMetaType<Settings::RemoteContentMode>(
-        "Settings::RemoteContentMode");
+    qRegisterMetaType<Settings::CasterStreamFormat>(
+        "Settings::CasterStreamFormat");
+    qRegisterMetaType<Settings::CasterVideoOrientation>(
+        "Settings::CasterVideoOrientation");
+    qRegisterMetaType<Settings::CasterVideoEncoder>(
+        "Settings::CasterVideoEncoder");
     qRegisterMetaType<ContentServer::Type>("ContentServer::Type");
+    qRegisterMetaType<UrlInfo>("UrlInfo");
     qRegisterMetaType<std::shared_ptr<QFile>>("std::shared_ptr<QFile>");
     qRegisterMetaType<int64_t>("int64_t");
 }

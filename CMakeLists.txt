@@ -2,7 +2,7 @@
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, Yo
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.5)
 
@@ -142,8 +142,6 @@ set(sources
     src/albummodel.h
     src/artistmodel.cpp
     src/artistmodel.h
-    src/audiocaster.cpp
-    src/audiocaster.h
     src/avtransport.cpp
     src/avtransport.h
     src/bcapi.cpp
@@ -205,8 +203,6 @@ set(sources
     src/listmodel.cpp
     src/listmodel.h
     src/main.cpp
-    src/miccaster.cpp
-    src/miccaster.h
     src/notifications.cpp
     src/notifications.h
     src/playlistfilemodel.cpp
@@ -215,14 +211,10 @@ set(sources
     src/playlistmodel.h
     src/playlistparser.cpp
     src/playlistparser.h
-    src/pulseaudiosource.cpp
-    src/pulseaudiosource.h
     src/recmodel.cpp
     src/recmodel.h
     src/renderingcontrol.cpp
     src/renderingcontrol.h
-    src/screencaster.cpp
-    src/screencaster.h
     src/service.cpp
     src/service.h
     src/services.cpp
@@ -271,7 +263,15 @@ set(sources
     src/qtlogger.cpp
     src/qtlogger.hpp
     src/avlogger.cpp
-    src/avlogger.hpp)
+    src/avlogger.hpp
+    src/databuffer.cpp
+    src/databuffer.hpp
+    src/caster.cpp
+    src/caster.hpp
+    src/fftools.cpp
+    src/fftools.hpp
+    src/testsource.cpp
+    src/testsource.hpp)
 
 if(with_plasma)
     list(APPEND sources
@@ -282,16 +282,24 @@ endif()
 if(with_sfos)
     list(APPEND sources
         src/resourcehandler.cpp
-        src/resourcehandler.h
-        src/buffer.cpp
-        src/buffer.h
-        src/frameevent.cpp
-        src/frameevent.h
-        src/recorder.cpp
-        src/recorder.h
+        src/resourcehandler.h)
+endif()
+
+if(with_sfos_screen_capture)
+    list(APPEND sources
+        src/lipstickrecordersource.cpp
+        src/lipstickrecordersource.hpp
         src/wayland-lipstick-recorder-protocol.c
         src/wayland-lipstick-recorder-client-protocol.h
         src/lipstick-recorder.h)
+endif()
+
+if(with_droidcam)
+    list(APPEND sources
+        src/droidcamsource.cpp
+        src/droidcamsource.hpp
+        src/orientationmonitor.cpp
+        src/orientationmonitor.hpp)
 endif()
 
 # executable
@@ -553,6 +561,8 @@ if(build_ffmpeg)
         --enable-demuxer=m4v
         --enable-parser=h264
         --enable-bsf=h264_mp4toannexb
+        --enable-bsf=dump_extradata
+        --enable-bsf=extract_extradata
         --enable-libx264)
 
     if(${with_v4l2} OR ${with_v4l2m2m})

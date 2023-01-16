@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,9 +38,7 @@ Kirigami.ScrollablePage {
         text: qsTr("Reset all settings to defaults?")
         informativeText: qsTr("Restart is required for the changes to take effect.")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
-        onAccepted: {
-            settings.reset()
-        }
+        onAccepted: settings.reset()
     }
 
     ColumnLayout {
@@ -50,9 +48,9 @@ Kirigami.ScrollablePage {
         Kirigami.InlineMessage {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
-            type: Kirigami.MessageType.Warning
-            visible: settings.remoteContentMode == 2
-            text: qsTr("Icecast titles and Stream recorder are disabled.")
+            type: Kirigami.MessageType.Information
+            visible: settings.restartRequired
+            text: qsTr("Restart is required for the changes to take effect.")
         }
 
         Kirigami.FormLayout {
@@ -65,39 +63,6 @@ Kirigami.ScrollablePage {
                     settings.contentDirSupported = !settings.contentDirSupported
                 }
             }
-
-            /*Item {
-                Kirigami.FormData.isSection: true
-            }
-
-            RowLayout {
-                Kirigami.FormData.label: qsTr("Forward/backward step")
-                Controls.Slider {
-                    from: 1
-                    to: 60
-                    stepSize: 1
-                    snapMode: Controls.Slider.SnapAlways
-                    value: settings.forwardTime
-                    onValueChanged: {
-                        settings.forwardTime = value
-                    }
-                }
-                Controls.Label {
-                    text: settings.forwardTime + "s"
-                }
-            }*/
-
-            Item {
-                Kirigami.FormData.isSection: true
-            }
-
-            /*Controls.CheckBox {
-                checked: settings.useHWVolume
-                text: qsTr("Volume control with hardware keys")
-                onClicked: {
-                    settings.useHWVolume = !settings.useHWVolume
-                }
-            }*/
 
             RowLayout {
                 Kirigami.FormData.label: qsTr("Volume level step")
@@ -121,151 +86,64 @@ Kirigami.ScrollablePage {
                 }
             }
 
-            Item {
-                Kirigami.FormData.isSection: true
-            }
-
-            RowLayout {
-                Kirigami.FormData.label: qsTr("Microphone sensitivity")
-                Controls.Slider {
-                    from: 1
-                    to: 100
-                    stepSize: 1
-                    snapMode: Controls.Slider.SnapAlways
-                    value: Math.round(settings.micVolume)
-                    onValueChanged: {
-                        settings.micVolume = value
-                    }
-                }
-                Controls.SpinBox {
-                    from: 1
-                    to: 100
-                    value: Math.round(settings.micVolume)
-                    onValueChanged: {
-                        settings.micVolume = value
-                    }
-                }
-            }
-
-            Item {
-                Kirigami.FormData.isSection: true
-            }
-
-            RowLayout {
-                Kirigami.FormData.label: qsTr("Audio capture volume boost")
-                Controls.Slider {
-                    from: 1
-                    to: 10
-                    stepSize: 1
-                    snapMode: Controls.Slider.SnapAlways
-                    value: Math.round(settings.audioBoost)
-                    onValueChanged: {
-                        settings.audioBoost = value
-                    }
-                }
-                Controls.SpinBox {
-                    from: 1
-                    to: 10
-                    value: Math.round(settings.audioBoost)
-                    onValueChanged: {
-                        settings.audioBoost = value
-                    }
-                }
-            }
-
-            Item {
+            Kirigami.Separator {
+                Kirigami.FormData.label: qsTr("Streaming format")
                 Kirigami.FormData.isSection: true
             }
 
             Controls.ComboBox {
-                Kirigami.FormData.label: qsTr("Screen capture")
-                currentIndex: settings.screenAudio ? 1 : 0
-
-                model: [
-                    qsTr("Enabled"),
-                    qsTr("Enabled with audio")
-                ]
-
-                onCurrentIndexChanged: {
-                    if (currentIndex === 1) {
-                        settings.screenAudio = true;
-                    } else {
-                        settings.screenAudio = false;
-                    }
-                }
-            }
-
-            Controls.ComboBox {
-                enabled: settings.screenSupported
-                Kirigami.FormData.label: qsTr("Force screen 16:9 aspect ratio")
-                currentIndex: settings.screenCropTo169
-                model: [
-                   qsTr("Don't force"),
-                   qsTr("Scale"),
-                   qsTr("Crop")
-                ]
-
-                onCurrentIndexChanged: {
-                    settings.screenCropTo169 = currentIndex
-                }
-            }
-
-            RowLayout {
-                Kirigami.FormData.label: qsTr("Screen capture quality")
-                Controls.Slider {
-                    enabled: settings.screenSupported
-                    from: 1
-                    to: 5
-                    stepSize: 1
-                    snapMode: Controls.Slider.SnapAlways
-                    value: settings.screenQuality
-                    onValueChanged: {
-                        settings.screenQuality = value
-                    }
-                }
-                Controls.SpinBox {
-                    from: 1
-                    to: 5
-                    value: settings.screenQuality
-                    onValueChanged: {
-                        settings.screenQuality = value
-                    }
-                }
-            }
-
-            Controls.ComboBox {
-                enabled: settings.screenSupported
-                Kirigami.FormData.label: qsTr("Screen capture framerate")
+                Kirigami.FormData.label: qsTr("Video streaming format")
                 currentIndex: {
-                    if (settings.screenFramerate < 15) {
-                        return 0
-                    } else if (settings.screenFramerate < 30) {
-                        return 1
-                    } else {
-                        return 2
+                    switch (settings.casterVideoStreamFormat) {
+                    case Settings.CasterStreamFormat_MpegTs: return 0;
+                    case Settings.CasterStreamFormat_Mp4: return 1;
                     }
+                    return 0;
                 }
+
                 model: [
-                    "5 fps",
-                    "15 fps",
-                    "30 fps"
+                    qsTr("MPEG-TS"),
+                    qsTr("MP4"),
                 ]
 
                 onCurrentIndexChanged: {
                     switch (currentIndex) {
-                    case 0:
-                        settings.screenFramerate = 5; break;
-                    case 1:
-                        settings.screenFramerate = 15; break;
-                    case 2:
-                        settings.screenFramerate = 30; break;
-                    default:
-                        settings.screenFramerate = 5;
+                    case 0: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs; break;
+                    case 1: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4; break;
+                    default: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs;
                     }
                 }
             }
 
-            Item {
+            Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Audio streaming format")
+                currentIndex: {
+                    switch (settings.casterAudioStreamFormat) {
+                    case Settings.CasterStreamFormat_Mp3: return 0;
+                    case Settings.CasterStreamFormat_Mp4: return 1;
+                    case Settings.CasterStreamFormat_MpegTs: return 2;
+                    }
+                    return 0;
+                }
+
+                model: [
+                    qsTr("MP3"),
+                    qsTr("MP4"),
+                    qsTr("MPEG-TS")
+                ]
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3; break;
+                    case 1: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp4; break;
+                    case 2: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_MpegTs; break;
+                    default: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3;
+                    }
+                }
+            }
+
+            Kirigami.Separator {
+                Kirigami.FormData.label: qsTr("Recorder")
                 Kirigami.FormData.isSection: true
             }
 
@@ -276,71 +154,12 @@ Kirigami.ScrollablePage {
             }
 
             Kirigami.Separator {
-                Kirigami.FormData.label: qsTr("Advanced")
-                Kirigami.FormData.isSection: true
-            }
-
-            Controls.ComboBox {
-                Kirigami.FormData.label: qsTr("Preferred network interface")
-                currentIndex: utils.prefNetworkInfIndex()
-                model: utils.networkInfs()
-                onCurrentIndexChanged: {
-                    utils.setPrefNetworkInfIndex(currentIndex)
-                }
-
-                Connections {
-                    target: settings
-                    onPrefNetInfChanged: {
-                        parent.model = utils.networkInfs()
-                        parent.currentIndex = utils.prefNetworkInfIndex()
-                    }
-                }
-            }
-
-            Item {
-                Kirigami.FormData.isSection: true
-            }
-
-            Controls.ComboBox {
-                visible: settings.isDebug()
-                Kirigami.FormData.label: qsTr("Stream relaying")
-                currentIndex: {
-                    if (settings.remoteContentMode === Settings.RemoteContentMode_Proxy_All)
-                        return 0
-                    if (settings.remoteContentMode === Settings.RemoteContentMode_Redirection_All ||
-                            settings.remoteContentMode === Settings.RemoteContentMode_None_All)
-                        return 2
-                    if (settings.remoteContentMode === Settings.RemoteContentMode_Proxy_Shoutcast_Redirection ||
-                            settings.remoteContentMode === Settings.RemoteContentMode_Proxy_Shoutcast_None)
-                        return 1
-                    return 0
-                }
-
-                model: [
-                    qsTr("Always"),
-                    qsTr("Only Icecast"),
-                    qsTr("Never")
-                ]
-
-                onCurrentIndexChanged: {
-                    if (currentIndex == 0)
-                        settings.remoteContentMode = Settings.RemoteContentMode_Proxy_All
-                    else if (currentIndex == 1)
-                        settings.remoteContentMode = Settings.RemoteContentMode_Proxy_Shoutcast_None
-                    else if (currentIndex == 2)
-                        settings.remoteContentMode = Settings.RemoteContentMode_None_All
-                    else
-                        settings.remoteContentMode = Settings.RemoteContentMode_Proxy_All
-                }
-            }
-
-            Item {
-                Kirigami.FormData.isSection: true
-            }
-
-            Controls.ComboBox {
-                visible: settings.isDebug()
                 Kirigami.FormData.label: qsTr("Caching")
+                Kirigami.FormData.isSection: true
+            }
+
+            Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Cache remote content")
                 currentIndex: {
                     if (settings.cacheType === Settings.Cache_Auto)
                         return 0
@@ -370,7 +189,6 @@ Kirigami.ScrollablePage {
             }
 
             Controls.ComboBox {
-                visible: settings.isDebug()
                 Kirigami.FormData.label: qsTr("Cache cleaning")
                 currentIndex: {
                     if (settings.cacheCleaningType === Settings.CacheCleaning_Auto)
@@ -411,15 +229,40 @@ Kirigami.ScrollablePage {
                     }
                 }
                 Controls.Button {
-                    enabled: settings.isDebug()
                     text: qsTr("Delete cache")
                     onClicked: cserver.cleanCache()
                 }
             }
 
+            Kirigami.Separator {
+                Kirigami.FormData.label: qsTr("Advanced")
+                Kirigami.FormData.isSection: true
+            }
+
+            Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Preferred network interface")
+                currentIndex: utils.prefNetworkInfIndex()
+                model: utils.networkInfs()
+                onCurrentIndexChanged: {
+                    utils.setPrefNetworkInfIndex(currentIndex)
+                }
+
+                Connections {
+                    target: settings
+                    onPrefNetInfChanged: {
+                        parent.model = utils.networkInfs()
+                        parent.currentIndex = utils.prefNetworkInfIndex()
+                    }
+                }
+            }
+
+            Item {
+                Kirigami.FormData.isSection: true
+            }
+
             Controls.Switch {
                 checked: !settings.allowNotIsomMp4
-                text: qsTr("Block MP4v2 audio streams")
+                text: qsTr("Block fragmented MP4 audio streams")
                 onToggled: {
                     settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
                 }
@@ -430,34 +273,32 @@ Kirigami.ScrollablePage {
             }
 
             Controls.ComboBox {
-                enabled: settings.screenSupported
-                Kirigami.FormData.label: qsTr("Screen capture encoder")
+                Kirigami.FormData.label: qsTr("Video encoder")
                 currentIndex: {
-                    var enc = settings.screenEncoder;
-                    if (enc === "libx264")
-                        return 1;
-                    if (enc === "libx264rgb")
-                        return 2;
-                    if (enc === "h264_nvenc")
-                        return 3;
+                    switch (settings.casterVideoEncoder) {
+                    case Settings.CasterVideoEncoder_Auto: return 0;
+                    case Settings.CasterVideoEncoder_X264: return 1;
+                    case Settings.CasterVideoEncoder_Nvenc: return 2;
+                    case Settings.CasterVideoEncoder_V4l2: return 3;
+                    }
                     return 0;
                 }
+
                 model: [
                     qsTr("Auto"),
-                    "libx264",
-                    "libx264rgb",
-                    "h264_nvenc"
+                    "x264",
+                    "nvenc",
+                    "V4L2"
                 ]
 
                 onCurrentIndexChanged: {
-                    if (currentIndex === 1)
-                        settings.screenEncoder = "libx264";
-                    else if (currentIndex === 2)
-                        settings.screenEncoder = "libx264rgb";
-                    else if (currentIndex === 3)
-                        settings.screenEncoder = "h264_nvenc";
-                    else
-                        settings.screenEncoder = "";
+                    switch (currentIndex) {
+                    case 0: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto; break;
+                    case 1: settings.casterVideoEncoder = Settings.CasterVideoEncoder_X264; break;
+                    case 2: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Nvenc; break;
+                    case 3: settings.casterVideoEncoder = Settings.CasterVideoEncoder_V4l2; break;
+                    default: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
+                    }
                 }
             }
 

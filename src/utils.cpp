@@ -30,10 +30,9 @@
 #include <QMetaObject>
 #endif
 
+#include "contentserver.h"
 #include "directory.h"
 #include "gpoddermodel.h"
-#include "renderingcontrol.h"
-#include "services.h"
 #include "settings.h"
 
 const QString Utils::typeKey = QStringLiteral("jupii_type");
@@ -82,7 +81,7 @@ int Utils::strToSecStatic(const QString &value) {
     if (list.size() > 1)
         return list.at(list.size() - 1).toInt() +
                60 * list.at(list.size() - 2).toInt();
-    if (list.size() > 0) return list.at(list.size() - 1).toInt();
+    if (!list.empty()) return list.at(list.size() - 1).toInt();
     return 0;
 }
 
@@ -308,9 +307,11 @@ bool Utils::pathTypeNameCookieIconFromId(
         if (origUrl && q.hasQueryItem(Utils::origUrlKey))
             *origUrl = QUrl(q.queryItemValue(Utils::origUrlKey));
         if (play && q.hasQueryItem(Utils::playKey))
-            *play = (q.queryItemValue(Utils::playKey) == "true");
+            *play =
+                (q.queryItemValue(Utils::playKey) == QStringLiteral("true"));
         if (ytdl && q.hasQueryItem(Utils::ytdlKey))
-            *ytdl = (q.queryItemValue(Utils::ytdlKey) == "true");
+            *ytdl =
+                (q.queryItemValue(Utils::ytdlKey) == QStringLiteral("true"));
         if (app && q.hasQueryItem(Utils::appKey))
             *app = q.queryItemValue(Utils::appKey);
         if (duration && q.hasQueryItem(Utils::durKey))
@@ -427,8 +428,9 @@ bool Utils::isUrlValid(const QUrl &url) {
 
     if (url.isLocalFile()) return true;
 
-    if ((url.scheme() == "http" || url.scheme() == "https" ||
-         url.scheme() == "jupii") &&
+    if ((url.scheme() == QStringLiteral("http") ||
+         url.scheme() == QStringLiteral("https") ||
+         url.scheme() == QStringLiteral("jupii")) &&
         !url.host().isEmpty())
         return true;
 
@@ -450,19 +452,23 @@ bool Utils::isIdValid(const QUrl &id) {
 }
 
 bool Utils::isUrlMic(const QUrl &url) {
-    return url.scheme() == "jupii" && url.host() == "mic";
+    return url.scheme() == QStringLiteral("jupii") &&
+           url.host() == QStringLiteral("mic");
 }
 
 bool Utils::isUrlPulse(const QUrl &url) {
-    return url.scheme() == "jupii" && url.host() == "pulse";
+    return url.scheme() == QStringLiteral("jupii") &&
+           url.host() == QStringLiteral("pulse");
 }
 
 bool Utils::isUrlScreen(const QUrl &url) {
-    return url.scheme() == "jupii" && url.host() == "screen";
+    return url.scheme() == QStringLiteral("jupii") &&
+           url.host() == QStringLiteral("screen");
 }
 
 bool Utils::isUrlUpnp(const QUrl &url) {
-    return url.scheme() == "jupii" && url.host() == "upnp";
+    return url.scheme() == QStringLiteral("jupii") &&
+           url.host() == QStringLiteral("upnp");
 }
 
 QUrl Utils::urlFromText(const QString &text, const QString &context) {
@@ -736,7 +742,7 @@ QString Utils::escapeName(const QString &filename) {
                        "[_!@#\\$\\^&\\*\\+=\\|\\\\/\"'\\?~`]+"),
         Qt::CaseInsensitive));
     escapedName.replace(QRegExp(QStringLiteral("\\s\\s"), Qt::CaseInsensitive),
-                        " ");
+                        QStringLiteral(" "));
     escapedName = escapedName.trimmed()
                       .normalized(QString::NormalizationForm_KD)
                       .toLower();
@@ -754,7 +760,7 @@ void Utils::activateWindow() {
 #endif
 
 QString Utils::humanFriendlySizeString(int64_t size) {
-    if (size == 0) return "0";
+    if (size == 0) return QStringLiteral("0");
     if (size < 1024) return QStringLiteral("%1 B").arg(size);
     if (size < 1048576) return QStringLiteral("%1 kB").arg(qFloor(size / 1024));
     if (size < 1073741824)

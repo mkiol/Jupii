@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -207,8 +207,9 @@ Rectangle {
 
                     source: {
                         if (itemType === ContentServer.ItemType_Mic ||
-                            itemType === ContentServer.ItemType_AudioCapture ||
-                            itemType === ContentServer.ItemType_ScreenCapture) {
+                            itemType === ContentServer.ItemType_PlaybackCapture ||
+                            itemType === ContentServer.ItemType_ScreenCapture ||
+                            itemType === ContentServer.ItemType_Cam) {
                             return ""
                         }
                         return av.currentAlbumArtURI
@@ -219,10 +220,12 @@ Rectangle {
                         source: {
                             if (itemType === ContentServer.ItemType_Mic)
                                 return "audio-input-microphone"
-                            else if (itemType === ContentServer.ItemType_AudioCapture)
+                            else if (itemType === ContentServer.ItemType_PlaybackCapture)
                                 return "player-volume"
                             else if (itemType === ContentServer.ItemType_ScreenCapture)
                                 return "computer"
+                            else if (itemType === ContentServer.ItemType_Cam)
+                                return "camera-web"
                             switch (av.currentType) {
                             case AVTransport.T_Image:
                                 return "emblem-photos-symbolic"

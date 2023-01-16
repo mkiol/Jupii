@@ -95,7 +95,10 @@ desktop-file-install --delete-original \
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}
+%if 0%{?harbour} == 0
+%attr(2755, root, privileged) %{_bindir}/%{name}
+%endif
+%{_bindir}/%{name}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %if 0%{?harbour} == 0
