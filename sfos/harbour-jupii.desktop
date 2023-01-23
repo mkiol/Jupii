@@ -1,11 +1,12 @@
 [Desktop Entry]
 Type=Application
-X-Nemo-Application-Type=silica-qt5
+X-Nemo-Application-Type=generic
 Icon=harbour-jupii
 Exec=harbour-jupii
 Name=Jupii
 
 [X-Sailjail]
+Sandboxing=Disabled
 Permissions=Internet;Audio;Microphone;RemovableMedia;UserDirs;MediaIndexing;JupiiGpodder
 OrganizationName=org.mkiol
 ApplicationName=jupii
