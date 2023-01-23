@@ -50,14 +50,6 @@ Rectangle {
 
     Kirigami.Theme.colorSet: Kirigami.Theme.Button
 
-    /*opacity: open || !inited ? 1.0 : 0.0
-    visible: opacity > 0
-    height: visible ? column.height : 0
-    Behavior on opacity {
-        NumberAnimation {
-            duration: Kirigami.Units.shortDuration; easing.type: Easing.OutQuad
-        }
-    }*/
     visible: open || !inited
     height: visible ? column.height : 0
 
@@ -133,7 +125,7 @@ Rectangle {
             Layout.fillWidth: true
             Layout.leftMargin: Kirigami.Units.largeSpacing
             Layout.rightMargin: Kirigami.Units.largeSpacing
-            visible: root.full && root.inited
+            visible: root.full && root.inited && av.currentTrackDuration > 0
 
             TextMetrics {
                 id: durationTextMetrics
@@ -157,7 +149,8 @@ Rectangle {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.fillWidth: true
 
-                enabled: av.seekSupported && root.controlable
+                enabled: av.seekSupported && root.controlable && av.currentTrackDuration > 0
+
                 from: 0
                 to: av.currentTrackDuration
                 value: av.relativeTimePosition
@@ -175,8 +168,6 @@ Rectangle {
                                        durationTextMetrics.boundingRect.x
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
-
-                visible: av.currentTrackDuration > 0
 
                 text: utils.secToStr(av.currentTrackDuration)
             }
