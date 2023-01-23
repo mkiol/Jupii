@@ -30,7 +30,6 @@ Kirigami.SwipeListItem {
 
     activeTextColor: Kirigami.Theme.activeTextColor
 
-    //width: parent ? parent.width : implicitWidth
     implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
 
     contentItem: Item {

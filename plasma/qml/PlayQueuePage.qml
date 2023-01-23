@@ -25,8 +25,13 @@ Kirigami.ScrollablePage {
     property int itemType: utils.itemTypeFromUrl(av.currentId)
     property bool inited: av.inited || rc.busy
     property bool busy: playlist.busy || playlist.refreshing || av.busy || rc.busy
-    property bool canCancel: !av.busy && !rc.busy && (playlist.busy || playlist.refreshing)
+    property bool canCancel: (!av.busy && !rc.busy && (playlist.busy || playlist.refreshing)) || root.selectionMode
     property bool networkEnabled: directory.inited
+    property bool selectionMode: false
+
+    onSelectionModeChanged: {
+        if (!selectionMode) playlist.clearSelection()
+    }
 
     Kirigami.Theme.colorSet: Kirigami.Theme.View
 
@@ -42,7 +47,8 @@ Kirigami.ScrollablePage {
             text: qsTr("Add items")
             checked: app.addMediaPageAction.checked
             iconName: "list-add"
-            enabled: !root.busy
+            enabled: !root.busy && !root.selectionMode
+            visible: !root.selectionMode
             onTriggered: app.addMediaPageAction.trigger()
         }
 
@@ -54,7 +60,9 @@ Kirigami.ScrollablePage {
                 enabled: root.canCancel
                 visible: enabled
                 onTriggered: {
-                    if (playlist.busy)
+                    if (root.selectionMode)
+                        root.selectionMode = false
+                    else if (playlist.busy)
                         playlist.cancelAdd()
                     else if (playlist.refreshing)
                         playlist.cancelRefresh()
@@ -64,28 +72,48 @@ Kirigami.ScrollablePage {
                 text: qsTr("Track info")
                 checked: app.trackInfoAction.checked
                 iconName: "documentinfo"
-                enabled: av.controlable
+                enabled: av.controlable && !root.selectionMode
+                visible: !root.selectionMode
                 onTriggered: app.trackInfoAction.trigger()
             },
             Kirigami.Action {
-                displayHint: Kirigami.Action.DisplayHint.AlwaysHide
-                text: qsTr("Save queue")
+                text: qsTr("Select items")
+                iconName: "checkbox"
+                visible: !root.busy && itemList.count !== 0 && !root.selectionMode
+                onTriggered: root.selectionMode = !root.selectionMode
+            },
+            Kirigami.Action {
+                text: playlist.selectedCount == itemList.count ? qsTr("Unselect all") : qsTr("Select all")
+                iconName: "checkbox"
+                visible: !playlist.refreshing && !playlist.busy && itemList.count !== 0 &&
+                         root.selectionMode
+                onTriggered: {
+                    if (playlist.selectedCount == itemList.count)
+                        playlist.clearSelection()
+                    else
+                        playlist.setAllSelected(true)
+                }
+            },
+            Kirigami.Action {
+                text: qsTr("Save %n item(s)", "", playlist.selectedCount)
                 iconName: "document-save"
-                visible: !playlist.refreshing && !playlist.busy && itemList.count !== 0
+                enabled: playlist.selectedCount > 0
+                visible: !playlist.refreshing && !playlist.busy && itemList.count !== 0 &&
+                         root.selectionMode
                 onTriggered: saveDialog.open()
             },
             Kirigami.Action {
-                displayHint: Kirigami.Action.DisplayHint.AlwaysHide
-                text: qsTr("Clear queue")
-                iconName: "edit-clear-all"
-                visible: !root.busy && itemList.count !== 0
+                text: qsTr("Remove %n item(s)", "", playlist.selectedCount)
+                iconName: "delete"
+                enabled: playlist.selectedCount > 0
+                visible: !root.busy && itemList.count !== 0 && root.selectionMode
                 onTriggered: clearDialog.open()
             },
             Kirigami.Action {
                 text: qsTr("Refresh items")
                 iconName: "view-refresh"
-                enabled: root.networkEnabled
-                visible: !root.busy && playlist.refreshable && itemList.count !== 0
+                enabled: root.networkEnabled && !root.selectionMode
+                visible: !root.busy && playlist.refreshable && itemList.count !== 0 && !root.selectionMode
                 onTriggered: playlist.refresh()
             }
         ]
@@ -159,7 +187,7 @@ Kirigami.ScrollablePage {
 
     FileDialog {
         id: saveDialog
-        title: qsTr("Save items to playlist file")
+        title: qsTr("Save %n item(s) to playlist file", "", playlist.selectedCount)
         selectMultiple: false
         selectFolder: false
         selectExisting: false
@@ -167,19 +195,21 @@ Kirigami.ScrollablePage {
         nameFilters: [ "Playlist (*.pls)" ]
         folder: shortcuts.music
         onAccepted: {
-            if (playlist.saveToUrl(saveDialog.fileUrls[0]))
+            if (playlist.saveSelectedToUrl(saveDialog.fileUrls[0]))
                 showPassiveNotification(qsTr("Playlist has been saved"))
+            root.selectionMode = false
         }
     }
 
     MessageDialog {
         id: clearDialog
-        title: qsTr("Clear queue")
+        title: qsTr("Remove items")
         icon: StandardIcon.Question
-        text: qsTr("Remove all items from play queue?")
+        text: qsTr("Remove %n item(s) from play queue?", "", playlist.selectedCount)
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
-            playlist.clear()
+            playlist.removeSelectedItems()
+            root.selectionMode = false
         }
     }
 
@@ -249,10 +279,17 @@ Kirigami.ScrollablePage {
             iconSize: Kirigami.Units.iconSizes.medium
 
             onClicked: {
+                if (root.selectionMode) {
+                    var selected = model.selected
+                    playlist.setSelected(model.index, !selected)
+                    return
+                }
+
                 if (!listItem.enabled)
-                    return;
+                    return
+
                 if (!root.inited)
-                    return;
+                    return
 
                 if (model.active)
                     playlist.togglePlay()
@@ -262,13 +299,15 @@ Kirigami.ScrollablePage {
 
             active: model.active
 
+            highlighted: model.selected
+
             actions: [
                 Kirigami.Action {
                     iconName: listItem.playing ?
                                   "media-playback-pause" : "media-playback-start"
                     text: listItem.playing ?
                               qsTr("Pause") : listItem.isImage ? qsTr("Show") : qsTr("Play")
-                    visible: root.inited
+                    visible: root.inited && !root.selectionMode
                     onTriggered: {
                         if (!model.active)
                             playlist.play(model.id)
@@ -279,6 +318,7 @@ Kirigami.ScrollablePage {
                 Kirigami.Action {
                     iconName: "delete"
                     text: qsTr("Remove")
+                    visible: !root.selectionMode
                     onTriggered: {
                         playlist.remove(model.id)
                     }

@@ -13,12 +13,10 @@ Dialog {
 
     allowedOrientations: Orientation.All
 
-    property var playlist
-
     canAccept: textField.text.trim().length > 0
 
     onAccepted: {
-        if (playlist.saveToFile(textField.text.trim()))
+        if (playlist.saveSelectedToFile(textField.text.trim()))
             notifications.show(qsTr("Playlist has been saved"))
     }
 
@@ -39,7 +37,6 @@ Dialog {
 
             TextField {
                 id: textField
-                //x: Theme.horizontalPageMargin
                 width: parent.width
                 placeholderText: qsTr("Enter playlist name")
                 label: qsTr("Name")

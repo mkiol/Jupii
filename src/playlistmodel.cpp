@@ -16,6 +16,7 @@
 #include <QTextStream>
 #include <QTimer>
 #include <QUrlQuery>
+#include <algorithm>
 #include <utility>
 #ifdef USE_SFOS
 #include <keepalive/backgroundactivity.h>
@@ -611,22 +612,14 @@ void PlaylistModel::setBusy(bool busy) {
     }
 }
 
-bool PlaylistModel::saveToFile(const QString &title) {
-    if (m_list.isEmpty()) {
-        qWarning() << "current playlist is empty";
-        return false;
-    }
-
-    const auto dir = Settings::instance()->getPlaylistDir();
-
-    if (dir.isEmpty()) return false;
+void PlaylistModel::saveSelectedToFile(const QString &title) {
+    auto dir = Settings::instance()->getPlaylistDir();
+    if (dir.isEmpty()) return;
 
     QString name{title.trimmed()};
-    if (name.isEmpty()) {
-        name = tr("Playlist");
-    }
+    if (name.isEmpty()) name = tr("Playlist");
 
-    const QString oname{name};
+    QString oname{name};
 
     QString path;
     for (int i = 0; i < 10; ++i) {
@@ -635,34 +628,40 @@ bool PlaylistModel::saveToFile(const QString &title) {
         if (!QFileInfo::exists(path)) break;
     }
 
-    Utils::writeToFile(path, makePlsData(name));
+    Utils::writeToFile(path, makePlsDataFromSelectedItems(name));
 
-    return true;
+    clearSelection();
+    m_selectedCount = 0;
+    emit selectedCountChanged();
 }
 
-bool PlaylistModel::saveToUrl(const QUrl &path) {
-    if (m_list.isEmpty()) {
-        qWarning() << "current playlist is empty";
-        return false;
+void PlaylistModel::saveSelectedToUrl(const QUrl &path) {
+    Utils::writeToFile(path.toLocalFile(), makePlsDataFromSelectedItems());
+
+    clearSelection();
+    m_selectedCount = 0;
+    emit selectedCountChanged();
+}
+
+QByteArray PlaylistModel::makePlsDataFromSelectedItems(
+    const QString &name) const {
+    QByteArray data;
+
+    auto list = selectedItems();
+    if (list.isEmpty()) {
+        qWarning() << "no items selected";
+        return data;
     }
 
-    Utils::writeToFile(path.toLocalFile(), makePlsData());
-
-    return true;
-}
-
-QByteArray PlaylistModel::makePlsData(const QString &name) {
-    QByteArray data;
     QTextStream sdata{&data};
 
     sdata << "[playlist]\n";
     if (!name.isEmpty()) sdata << "X-GNOME-Title=" << name << "\n";
-    sdata << "NumberOfEntries=" << m_list.size() << "\n";
+    sdata << "NumberOfEntries=" << list.size() << "\n";
 
-    int l = m_list.size();
-    for (int i = 0; i < l; ++i) {
-        const auto *pitem = qobject_cast<PlaylistItem *>(m_list.at(i));
-        const auto url = Utils::bestUrlFromId(QUrl(pitem->id())).toString();
+    for (int i = 0; i < list.size(); ++i) {
+        const auto *pitem = itemFromId(list.at(i));
+        auto url = Utils::bestUrlFromId(QUrl{pitem->id()}).toString();
         auto name = Utils::nameFromId(pitem->id());
         if (name.isEmpty()) {
             if (pitem->artist().isEmpty())
@@ -1086,6 +1085,7 @@ void PlaylistModel::addWorkerDone() {
             }
 
             appendRows(m_add_worker->items);
+            clearSelection();
 
             if (!m_add_worker->urlIsId)
                 emit itemsAdded();
@@ -1406,6 +1406,8 @@ void PlaylistModel::clear(bool save, bool deleteItems) {
 
     if (active_removed) emit activeItemChanged();
 
+    clearSelection();
+
     doUpdate();
 }
 
@@ -1504,6 +1506,15 @@ bool PlaylistModel::removeIndex(int index) {
     }
 
     return ok;
+}
+
+void PlaylistModel::removeSelectedItems() {
+    const auto items = selectedItems();
+    for (const auto &id : std::as_const(items)) remove(id);
+
+    clearSelection();
+    m_selectedCount = 0;
+    emit selectedCountChanged();
 }
 
 bool PlaylistModel::remove(const QString &id) {
@@ -1833,14 +1844,12 @@ void PlaylistModel::setContent(const QString &id1, const QString &id2) {
         return;
     }
 
-    /*if (item1 && result.first == ContentServer::CachingResult::NotCached) {
-        auto err = ContentServer::instance()->startProxy(QUrl{id1});
-        if (err != ContentServer::ProxyError::NoError) {
-            if (err == ContentServer::ProxyError::Canceled) {
-                qWarning() << "proxy did not start => canceled";
-            } else {
-                qWarning() << "proxy did not start => error";
-                emit error(PlaylistModel::ErrorType::E_ProxyError);
+    /*if (item1 && result.first == ContentServer::CachingResult::NotCached)
+    { auto err = ContentServer::instance()->startProxy(QUrl{id1}); if (err
+    != ContentServer::ProxyError::NoError) { if (err ==
+    ContentServer::ProxyError::Canceled) { qWarning() << "proxy did not
+    start => canceled"; } else { qWarning() << "proxy did not start =>
+    error"; emit error(PlaylistModel::ErrorType::E_ProxyError);
             }
             item1->setToBeActive(false);
             return;
@@ -1998,6 +2007,67 @@ void PlaylistModel::casterErrorHandler() {
     }
 }
 
+int PlaylistModel::selectedCount() const { return m_selectedCount; }
+
+void PlaylistModel::clearSelection() { setAllSelected(false); }
+
+void PlaylistModel::setSelected(int index, bool value) {
+    if (index < 0 || index >= m_list.length()) return;
+
+    auto *item = qobject_cast<SelectableItem *>(m_list.at(index));
+
+    if (item->selectable()) {
+        bool cvalue = item->selected();
+
+        if (cvalue != value) {
+            item->setSelected(value);
+
+            if (value)
+                m_selectedCount++;
+            else
+                m_selectedCount--;
+
+            emit selectedCountChanged();
+        }
+    }
+}
+
+void PlaylistModel::setAllSelected(bool value) {
+    if (m_list.isEmpty()) return;
+
+    int oldCount = m_selectedCount;
+
+    for (auto *li : std::as_const(m_list)) {
+        auto item = qobject_cast<SelectableItem *>(li);
+        if (item->selectable()) {
+            bool cvalue = item->selected();
+
+            if (cvalue != value) {
+                item->setSelected(value);
+
+                if (value)
+                    m_selectedCount++;
+                else
+                    m_selectedCount--;
+            }
+        }
+    }
+
+    if (oldCount != m_selectedCount) emit selectedCountChanged();
+}
+
+QStringList PlaylistModel::selectedItems() const {
+    QStringList list;
+    list.reserve(selectedCount());
+
+    for (const auto *item : std::as_const(m_list)) {
+        if (qobject_cast<const SelectableItem *>(item)->selected())
+            list.push_back(item->id());
+    }
+
+    return list;
+}
+
 PlaylistItem::PlaylistItem(
     const QUrl &id, const QString &name, const QUrl &url, const QUrl &origUrl,
     ContentServer::Type type, const QString &ctype, const QString &artist,
@@ -2007,30 +2077,13 @@ PlaylistItem::PlaylistItem(
     ContentServer::ItemType itemType, const QString &devId,
     const QString &videoSource, const QString &audioSource,
     const QString &videoOrientation, QObject *parent)
-    : ListItem(parent),
-      m_id(id),
-      m_name(name),
-      m_url(url),
-      m_origUrl(origUrl),
-      m_type(type),
-      m_ctype(ctype),
-      m_artist(artist),
-      m_album(album),
-      m_date(date),
-      m_cookie(Utils::cookieFromId(id)),
-      m_duration(duration),
-      m_size(size),
-      m_icon(icon),
-      m_play(play),
-      m_ytdl(ytdl),
-      m_live(live),
-      m_desc(desc),
-      m_recDate(recDate),
-      m_recUrl(recUrl),
-      m_item_type(itemType),
-      m_devid(devId),
-      m_videoSource(videoSource),
-      m_audioSource(audioSource),
+    : SelectableItem(parent), m_id(id), m_name(name), m_url(url),
+      m_origUrl(origUrl), m_type(type), m_ctype(ctype), m_artist(artist),
+      m_album(album), m_date(date), m_cookie(Utils::cookieFromId(id)),
+      m_duration(duration), m_size(size), m_icon(icon), m_play(play),
+      m_ytdl(ytdl), m_live(live), m_desc(desc), m_recDate(recDate),
+      m_recUrl(recUrl), m_item_type(itemType), m_devid(devId),
+      m_videoSource(videoSource), m_audioSource(audioSource),
       m_videoOrientation(videoOrientation) {}
 
 QHash<int, QByteArray> PlaylistItem::roleNames() const {
@@ -2059,6 +2112,7 @@ QHash<int, QByteArray> PlaylistItem::roleNames() const {
     names[VideoSourceRole] = "videoSource";
     names[AudioSourceRole] = "audioSource";
     names[VideoOrientationRole] = "videoOrientation";
+    names[SelectedRole] = "selected";
     return names;
 }
 
@@ -2117,6 +2171,8 @@ QVariant PlaylistItem::data(int role) const {
             return audioSource();
         case VideoOrientationRole:
             return videoOrientation();
+        case SelectedRole:
+            return selected();
         default:
             return {};
     }

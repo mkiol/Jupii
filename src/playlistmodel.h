@@ -28,6 +28,7 @@
 #include <optional>
 
 #include "contentserver.h"
+#include "itemmodel.h"
 #include "listmodel.h"
 #include "singleton.h"
 
@@ -98,6 +99,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     Q_PROPERTY(int progressValue READ getProgressValue NOTIFY progressChanged)
     Q_PROPERTY(int progressTotal READ getProgressTotal NOTIFY progressChanged)
     Q_PROPERTY(bool refreshable READ isRefreshable NOTIFY refreshableChanged)
+    Q_PROPERTY(int selectedCount READ selectedCount NOTIFY selectedCountChanged)
 
     friend class PlaylistWorker;
 
@@ -117,9 +119,10 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     Q_ENUM(PlayMode)
 
     PlaylistModel(QObject *parent = nullptr);
-    Q_INVOKABLE void clear(bool save = true, bool deleteItems = true);
+    void clear(bool save = true, bool deleteItems = true);
     Q_INVOKABLE QString firstId() const;
     Q_INVOKABLE QString secondId() const;
+    Q_INVOKABLE void removeSelectedItems();
     Q_INVOKABLE bool remove(const QString &id);
     Q_INVOKABLE bool removeIndex(int index);
     Q_INVOKABLE QString activeId() const;
@@ -127,8 +130,8 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     Q_INVOKABLE QString nextActiveId() const;
     Q_INVOKABLE QString prevActiveId() const;
     Q_INVOKABLE QString nextId(const QString &id) const;
-    Q_INVOKABLE bool saveToFile(const QString &title);
-    Q_INVOKABLE bool saveToUrl(const QUrl &path);
+    Q_INVOKABLE void saveSelectedToFile(const QString &title);
+    Q_INVOKABLE void saveSelectedToUrl(const QUrl &path);
     Q_INVOKABLE void next();
     Q_INVOKABLE void prev();
     Q_INVOKABLE bool play(const QString &id);
@@ -138,7 +141,6 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void cancelRefresh();
     Q_INVOKABLE void cancelAdd();
-
     int getActiveItemIndex() const;
     const PlaylistItem *getActiveItem() const;
     int getPlayMode() const;
@@ -158,6 +160,10 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     inline bool isRefreshing() const {
         return static_cast<bool>(m_refresh_worker);
     }
+    int selectedCount() const;
+    Q_INVOKABLE void setSelected(int index, bool value);
+    Q_INVOKABLE void setAllSelected(bool value);
+    Q_INVOKABLE void clearSelection();
 
    signals:
     void itemsRemoved();
@@ -181,6 +187,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     void soundcloudAlbumUrlAdded(const QUrl &url);
     void soundcloudArtistUrlAdded(const QUrl &url);
     void unknownTypeUrlAdded(const QUrl &url, const QString &name);
+    void selectedCountChanged();
 
    public slots:
     void load();
@@ -248,6 +255,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     int m_progressTotal = 0;
     int m_refreshable_count = 0;
     QHash<QString, QUrl> cookieToUrl;  // use for mapping: cookie => url => meta
+    int m_selectedCount = 0;
 
     void addWorkerDone();
     void progressUpdate(int value, int total);
@@ -275,7 +283,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     bool addId(const QUrl &id);
     PlaylistItem *makeItem(const QUrl &id);
     void save();
-    QByteArray makePlsData(const QString &name = {});
+    QByteArray makePlsDataFromSelectedItems(const QString &name = {}) const;
     void setBusy(bool busy);
     void updateNextSupported();
     void updatePrevSupported();
@@ -298,12 +306,13 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
                                  QString &&app, bool autoPlay);
     PlaylistItem *itemFromId(const QString id) const;
     void casterErrorHandler();
+    QStringList selectedItems() const;
 #ifdef USE_SFOS
     void updateBackgroundActivity();
 #endif
 };
 
-class PlaylistItem : public ListItem {
+class PlaylistItem : public SelectableItem {
     Q_OBJECT
    public:
     enum Roles {
@@ -331,11 +340,12 @@ class PlaylistItem : public ListItem {
         LiveRole,
         VideoSourceRole,
         AudioSourceRole,
-        VideoOrientationRole
+        VideoOrientationRole,
+        SelectedRole
     };
 
    public:
-    PlaylistItem(QObject *parent = nullptr) : ListItem{parent} {}
+    explicit PlaylistItem(QObject *parent = nullptr) : SelectableItem{parent} {}
     PlaylistItem(const QUrl &id, const QString &name, const QUrl &url,
                  const QUrl &origUrl, ContentServer::Type type,
                  const QString &ctype, const QString &artist,

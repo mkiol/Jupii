@@ -24,10 +24,21 @@ Page {
     readonly property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
     readonly property int itemType: utils.itemTypeFromUrl(av.currentId)
     readonly property bool inited: av.inited && rc.inited
+    property bool selectionMode: false
     property bool _doPop: false
 
+    backgroundColor: selectionMode ? Theme.rgba(Theme.overlayBackgroundColor, Theme.opacityLow) : "transparent"
+
+    onSelectionModeChanged: {
+        updateMediaInfoPage()
+        if (selectionMode) playlist.clearSelection()
+    }
+
     onStatusChanged: {
+        root.selectionMode = false
+
         if (status === PageStatus.Active) {
+            playlist.clearSelection()
             settings.disableHint(Settings.Hint_DeviceSwipeLeft)
             updateMediaInfoPage()
             ppanel.update()
@@ -52,9 +63,9 @@ Page {
 
     function updateMediaInfoPage() {
         if (pageStack.currentPage === root) {
-            if (av.controlable) {
+            if (av.controlable && !root.selectionMode) {
                 pageStack.pushAttached(Qt.resolvedUrl("MediaInfoPage.qml"))
-            } else {
+            } else if (root.forwardNavigation) {
                 pageStack.popAttached(root, PageStackAction.Immediate)
             }
         }
@@ -111,14 +122,22 @@ Page {
         id: listView
 
         width: parent.width
-        height: ppanel.open ? ppanel.y : parent.height
+        height: selectionPanel.open ? selectionPanel.y :
+                ppanel.open ? ppanel.y : parent.height
 
         clip: true
 
         model: playlist
 
         header: PageHeader {
-            title: av.deviceFriendlyName.length > 0 ? av.deviceFriendlyName : qsTr("Play queue")
+            title: {
+                if (root.selectionMode) {
+                    return playlist.selectedCount === 0 ? qsTr("Select items") :
+                           qsTr("%n selected", "", playlist.selectedCount)
+                }
+
+                return av.deviceFriendlyName.length > 0 ? av.deviceFriendlyName : qsTr("Play queue")
+            }
         }
 
         VerticalScrollDecorator {}
@@ -128,22 +147,51 @@ Page {
             busy: playlist.busy || av.busy || rc.busy || directory.busy || playlist.refreshing
 
             MenuItem {
-                text: qsTr("Save queue")
-                visible: !playlist.refreshing && !playlist.busy && listView.count > 0
+                visible: !playlist.refreshing && !playlist.busy && listView.count !== 0 &&
+                         root.selectionMode
+                text: playlist.selectedCount === listView.count ? qsTr("Unselect all") : qsTr("Select all")
+
                 onClicked: {
-                    pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"), { playlist: playlist })
+                    if (playlist.selectedCount === listView.count)
+                        playlist.clearSelection()
+                    else
+                        playlist.setAllSelected(true)
                 }
             }
 
             MenuItem {
-                text: qsTr("Clear queue")
-                visible: !playlist.refreshing && !playlist.busy && listView.count > 0
-                onClicked: remorse.execute(qsTr("Clearing play queue"), function() { playlist.clear() } )
+                text: qsTr("Save %n item(s)", "", playlist.selectedCount)
+                enabled: playlist.selectedCount > 0
+                visible: !playlist.refreshing && !playlist.busy && listView.count > 0 &&
+                         root.selectionMode
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"))
+                }
+            }
+
+            MenuItem {
+                text: qsTr("Remove %n item(s)", "", playlist.selectedCount)
+                visible: !playlist.refreshing && !playlist.busy && listView.count > 0 &&
+                         root.selectionMode
+                enabled: playlist.selectedCount > 0
+                onClicked: remorse.execute(qsTr("Removing %n item(s) from play queue", "", playlist.selectedCount),
+                                           function() {
+                                               playlist.removeSelectedItems()
+                                               root.selectionMode = false
+                                           } )
+            }
+
+            MenuItem {
+                text: qsTr("Select items")
+                visible: !playlist.refreshing && !playlist.busy &&
+                         listView.count > 0 && !root.selectionMode
+                onClicked: root.selectionMode = true
             }
 
             MenuItem {
                 text: playlist.refreshing ? qsTr("Cancel") : qsTr("Refresh items")
-                visible: playlist.refreshable && !playlist.busy && listView.count > 0
+                visible: playlist.refreshable && !playlist.busy && listView.count > 0 &&
+                         !root.selectionMode
                 onClicked: {
                     if (playlist.refreshing) playlist.cancelRefresh()
                     else playlist.refresh()
@@ -152,7 +200,7 @@ Page {
 
             MenuItem {
                 text: playlist.busy ? qsTr("Cancel") : qsTr("Add items")
-                visible: !playlist.refreshing
+                visible: !playlist.refreshing && !root.selectionMode
                 onClicked: {
                     if (playlist.busy) {
                         playlist.cancelAdd()
@@ -163,7 +211,7 @@ Page {
             }
 
             MenuLabel {
-                visible: (playlist.busy || playlist.refreshing)
+                visible: playlist.busy || playlist.refreshing
                 text: playlist.refreshing ?
                           playlist.progressTotal > 1 ?
                               qsTr("Preparing item %1 of %2...").arg(playlist.progressValue + 1).arg(playlist.progressTotal) :
@@ -248,8 +296,14 @@ Page {
                 }
             }
             subtitle.color: secondaryColor
+            highlighted: root.selectionMode && model.selected
 
             onClicked: {
+                if (root.selectionMode) {
+                    var selected = model.selected
+                    playlist.setSelected(model.index, !selected)
+                    return
+                }
                 if (!listItem.enabled) return;
                 if (!directory.inited) return;
                 if (root.devless) {
@@ -261,6 +315,7 @@ Page {
             }
 
             menu: ContextMenu {
+                enabled: !root.selectionMode
                 MenuItem {
                     text: listItem.isImage ? qsTr("Show") : qsTr("Play")
                     enabled: model.active || listItem.enabled
@@ -335,11 +390,30 @@ Page {
         running: playlist.busy || av.busy || rc.busy
     }
 
+    DockedPanel {
+        id: selectionPanel
+
+        open: root.selectionMode
+        animationDuration: 100
+        width: parent.width
+        height: Theme.itemSizeLarge + Theme.paddingLarge
+        dock: Dock.Bottom
+
+        Button {
+            text: qsTr("Exit selection mode")
+            onClicked: {
+                playlist.clearSelection()
+                root.selectionMode = false
+            }
+            anchors.centerIn: parent
+        }
+    }
+
     PlayerPanel {
         id: ppanel
 
         open: !root.devless && Qt.application.active && !menu.active &&
-              av.controlable && root.status === PageStatus.Active
+              av.controlable && root.status === PageStatus.Active && !root.selectionMode
 
         title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
         subtitle: app.streamTitle.length === 0 ?

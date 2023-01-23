@@ -127,6 +127,10 @@ Kirigami.ApplicationWindow {
             var idx = pageStack.currentIndex
             var depth = pageStack.depth
 
+            var page = mainPagePool.pageForUrl(Qt.resolvedUrl("PlayQueuePage.qml"))
+            if (page !== undefined && pageStack.columnView.containsItem(page))
+                page.selectionMode = false
+
             if (depth > 2 && idx < depth - 1) {
                 removePagesAfter(idx)
             }
