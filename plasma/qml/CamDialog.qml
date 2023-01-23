@@ -116,7 +116,9 @@ Controls.Dialog {
             }
 
             Controls.ComboBox {
-                enabled: settings.casterCamAudio && settings.casterMics.length !== 0
+                enabled: settings.casterCamAudio &&
+                         settings.casterCams.length !== 0 &&
+                         settings.casterMics.length !== 0
 
                 Kirigami.FormData.label: qsTr("Audio source")
                 currentIndex: settings.casterMicIdx
@@ -129,7 +131,9 @@ Controls.Dialog {
             }
 
             CasterSourceVolume {
-                enabled: settings.casterCamAudio && settings.casterMics.length !== 0
+                enabled: settings.casterCamAudio &&
+                         settings.casterCams.length !== 0 &&
+                         settings.casterMics.length !== 0
 
                 Kirigami.FormData.label: qsTr("Volume")
                 volume: settings.casterMicVolume

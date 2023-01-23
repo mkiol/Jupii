@@ -121,7 +121,9 @@ Dialog {
             }
 
             ComboBox {
-                enabled: settings.casterCamAudio && settings.casterMics.length !== 0
+                enabled: settings.casterCamAudio &&
+                         settings.casterCams.length !== 0 &&
+                         settings.casterMics.length !== 0
 
                 label: qsTr("Audio source")
 
@@ -140,7 +142,9 @@ Dialog {
             }
 
             CasterSourceVolume {
-                enabled: settings.casterCamAudio && settings.casterMics.length !== 0
+                enabled: settings.casterCamAudio &&
+                         settings.casterCams.length !== 0 &&
+                         settings.casterMics.length !== 0
 
                 label: qsTr("Volume")
                 volume: settings.casterMicVolume

@@ -114,7 +114,9 @@ Controls.Dialog {
             }
 
             Controls.ComboBox {
-                enabled: settings.casterScreenAudio && settings.casterPlaybacks.length !== 0
+                enabled: settings.casterScreenAudio &&
+                         settings.casterScreens.length !== 0 &&
+                         settings.casterPlaybacks.length !== 0
 
                 Kirigami.FormData.label: qsTr("Audio source")
                 currentIndex: settings.casterPlaybackIdx
@@ -127,7 +129,9 @@ Controls.Dialog {
             }
 
             CasterSourceVolume {
-                enabled: settings.casterScreenAudio && settings.casterPlaybacks.length !== 0
+                enabled: settings.casterScreenAudio &&
+                         settings.casterScreens.length !== 0 &&
+                         settings.casterPlaybacks.length !== 0
 
                 Kirigami.FormData.label: qsTr("Volume")
                 volume: settings.casterPlaybackVolume
