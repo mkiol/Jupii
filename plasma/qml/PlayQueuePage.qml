@@ -25,7 +25,7 @@ Kirigami.ScrollablePage {
     property int itemType: utils.itemTypeFromUrl(av.currentId)
     property bool inited: av.inited || rc.busy
     property bool busy: playlist.busy || playlist.refreshing || av.busy || rc.busy
-    property bool canCancel: (!av.busy && !rc.busy && (playlist.busy || playlist.refreshing)) || root.selectionMode
+    property bool canCancel: !av.busy && !rc.busy && (playlist.busy || playlist.refreshing)
     property bool networkEnabled: directory.inited
     property bool selectionMode: false
 
@@ -44,12 +44,16 @@ Kirigami.ScrollablePage {
     actions {
         main: Kirigami.Action {
             id: addAction
-            text: qsTr("Add items")
-            checked: app.addMediaPageAction.checked
-            iconName: "list-add"
-            enabled: !root.busy && !root.selectionMode
-            visible: !root.selectionMode
-            onTriggered: app.addMediaPageAction.trigger()
+            text: root.selectionMode ? qsTr("Exit selection mode") : qsTr("Add items")
+            checked: root.selectionMode ? true : app.addMediaPageAction.checked
+            iconName: root.selectionMode ? "dialog-cancel" : "list-add"
+            enabled: !root.busy
+            onTriggered: {
+                if (root.selectionMode)
+                    root.selectionMode = false
+                else
+                    app.addMediaPageAction.trigger()
+            }
         }
 
         contextualActions: [
@@ -57,12 +61,10 @@ Kirigami.ScrollablePage {
                 text: qsTr("Cancel")
                 checked: addMediaPageAction.checked
                 iconName: "dialog-cancel"
-                enabled: root.canCancel
+                enabled: root.canCancel && !root.selectionMode
                 visible: enabled
                 onTriggered: {
-                    if (root.selectionMode)
-                        root.selectionMode = false
-                    else if (playlist.busy)
+                    if (playlist.busy)
                         playlist.cancelAdd()
                     else if (playlist.refreshing)
                         playlist.cancelRefresh()
@@ -77,7 +79,7 @@ Kirigami.ScrollablePage {
                 onTriggered: app.trackInfoAction.trigger()
             },
             Kirigami.Action {
-                text: qsTr("Select items")
+                text: qsTr("Select")
                 iconName: "checkbox"
                 visible: !root.busy && itemList.count !== 0 && !root.selectionMode
                 onTriggered: root.selectionMode = !root.selectionMode
@@ -110,7 +112,7 @@ Kirigami.ScrollablePage {
                 onTriggered: clearDialog.open()
             },
             Kirigami.Action {
-                text: qsTr("Refresh items")
+                text: qsTr("Refresh")
                 iconName: "view-refresh"
                 enabled: root.networkEnabled && !root.selectionMode
                 visible: !root.busy && playlist.refreshable && itemList.count !== 0 && !root.selectionMode

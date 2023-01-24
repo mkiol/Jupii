@@ -625,6 +625,28 @@ void Settings::removeTuneinSearchHistory(const QString &value) {
     }
 }
 
+QStringList Settings::radionetSearchHistory() const {
+    return value(QStringLiteral("radionetsearchhistory"), {}).toStringList();
+}
+
+void Settings::addRadionetSearchHistory(const QString &value) {
+    auto v = value.toLower();
+    auto list = radionetSearchHistory();
+    list.removeOne(v);
+    list.push_front(v);
+    if (list.size() > maxSearchHistory) list.removeLast();
+    setValue(QStringLiteral("radionetsearchhistory"), list);
+    emit radionetSearchHistoryChanged();
+}
+
+void Settings::removeRadionetSearchHistory(const QString &value) {
+    auto list = radionetSearchHistory();
+    if (list.removeOne(value.toLower())) {
+        setValue(QStringLiteral("radionetsearchhistory"), list);
+        emit radionetSearchHistoryChanged();
+    }
+}
+
 QStringList Settings::ytSearchHistory() const {
     return value("ytsearchhistory", {}).toStringList();
 }

@@ -266,6 +266,16 @@ Kirigami.ScrollablePage {
 
         BasicListItemWithArrow {
             Layout.fillWidth: true
+            label: "radio.net"
+            icon: "qrc:/images/radionet.svg"
+            highlighted: rightPage ? rightPage.objectName === "radionet" : false
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("RadionetPage.qml"))
+            }
+        }
+
+        BasicListItemWithArrow {
+            Layout.fillWidth: true
             label: "SomaFM"
             icon: "qrc:/images/somafm.svg"
             highlighted: rightPage ? rightPage.objectName === "somafm" : false

@@ -300,6 +300,14 @@ Page {
             }
 
             SimpleListItem {
+                title.text: "radio.net"
+                icon.source: "image://icons/icon-m-radionet"
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("RadionetPage.qml"));
+                }
+            }
+
+            SimpleListItem {
                 title.text: "SomaFM"
                 icon.source: "image://icons/icon-m-somafm"
                 onClicked: {

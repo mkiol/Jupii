@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,7 +8,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-import harbour.jupii.TuneinModel 1.0
+import harbour.jupii.RadionetModel 1.0
 
 Dialog {
     id: root
@@ -38,15 +38,11 @@ Dialog {
 
     function addHistory() {
         var filter = itemModel.filter
-        if (filter.length > 0) settings.addTuneinSearchHistory(filter)
+        if (filter.length > 0) settings.addRadionetSearchHistory(filter)
     }
 
-    TuneinModel {
+    RadionetModel {
         id: itemModel
-
-        onError: {
-            notifications.show(qsTr("Error in getting data"))
-        }
     }
 
     SilicaListView {
@@ -63,10 +59,10 @@ Dialog {
             noSearchCount: -1
             dialog: root
             view: listView
-            recentSearches: itemModel.filter.length === 0 ? settings.tuneinSearchHistory : []
+            recentSearches: itemModel.filter.length === 0 ? settings.radionetSearchHistory : []
             sectionHeaderText: listView.count > 0 && recentSearches.length > 0 ? qsTr("Radio stations") : ""
             onActiveFocusChanged: listView.currentIndex = -1
-            onRemoveSearchHistoryClicked: settings.removeTuneinSearchHistory(value)
+            onRemoveSearchHistoryClicked: settings.removeRadionetSearchHistory(value)
         }
 
         PullDownMenu {
@@ -93,7 +89,13 @@ Dialog {
                                          Theme.highlightColor : Theme.primaryColor
             highlighted: down || model.selected
             title.text: model.name
-            subtitle.text: model.description
+            subtitle.text: {
+                var s = model.city
+                if (model.country.length !== 0) {
+                    if (s.length !== 0) s += " · "
+                    s += model.country
+                }
+            }
             enabled: !itemModel.busy && listView.count > 0
             icon.source: model.icon
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor

@@ -69,6 +69,7 @@
 #include "notifications.h"
 #include "playlistfilemodel.h"
 #include "playlistmodel.h"
+#include "radionetmodel.hpp"
 #include "recmodel.h"
 #include "renderingcontrol.h"
 #include "services.h"
@@ -133,6 +134,8 @@ static void registerTypes() {
     qmlRegisterType<CDirModel>("harbour.jupii.CDirModel", 1, 0, "CDirModel");
     qmlRegisterType<TuneinModel>("harbour.jupii.TuneinModel", 1, 0,
                                  "TuneinModel");
+    qmlRegisterType<RadionetModel>("harbour.jupii.RadionetModel", 1, 0,
+                                   "RadionetModel");
     qmlRegisterUncreatableType<Settings>(
         "harbour.jupii.Settings", 1, 0, "Settings",
         QStringLiteral("Settings is a singleton"));

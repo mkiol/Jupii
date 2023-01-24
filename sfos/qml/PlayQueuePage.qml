@@ -189,7 +189,7 @@ Page {
             }
 
             MenuItem {
-                text: playlist.refreshing ? qsTr("Cancel") : qsTr("Refresh items")
+                text: playlist.refreshing ? qsTr("Cancel") : qsTr("Refresh")
                 visible: playlist.refreshable && !playlist.busy && listView.count > 0 &&
                          !root.selectionMode
                 onClicked: {
@@ -296,7 +296,7 @@ Page {
                 }
             }
             subtitle.color: secondaryColor
-            highlighted: root.selectionMode && model.selected
+            highlighted: (root.selectionMode && model.selected) || down || menuOpen
 
             onClicked: {
                 if (root.selectionMode) {

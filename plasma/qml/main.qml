@@ -20,6 +20,8 @@ Kirigami.ApplicationWindow {
     property alias addMediaPageAction: _addMediaPageAction
     property alias trackInfoAction: _trackInfoAction
 
+    pageStack.columnView.columnResizeMode: Kirigami.ColumnView.SingleColumn
+
     globalDrawer: Kirigami.GlobalDrawer {
         header: RowLayout {
             Layout.fillWidth: true

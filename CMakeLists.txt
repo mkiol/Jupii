@@ -271,7 +271,11 @@ set(sources
     src/fftools.cpp
     src/fftools.hpp
     src/testsource.cpp
-    src/testsource.hpp)
+    src/testsource.hpp
+    src/radionetmodel.cpp
+    src/radionetmodel.hpp
+    src/radionetapi.cpp
+    src/radionetapi.hpp)
 
 if(with_plasma)
     list(APPEND sources

@@ -70,6 +70,8 @@ class Settings : public QSettings,
                    tuneinSearchHistoryChanged)
     Q_PROPERTY(QStringList ytSearchHistory READ ytSearchHistory NOTIFY
                    ytSearchHistoryChanged)
+    Q_PROPERTY(QStringList radionetSearchHistory READ radionetSearchHistory
+                   NOTIFY radionetSearchHistoryChanged)
     Q_PROPERTY(CacheType cacheType READ cacheType WRITE setCacheType NOTIFY
                    cacheTypeChanged)
     Q_PROPERTY(CacheCleaningType cacheCleaningType READ cacheCleaningType WRITE
@@ -243,6 +245,9 @@ class Settings : public QSettings,
     QStringList ytSearchHistory() const;
     Q_INVOKABLE void addYtSearchHistory(const QString &value);
     Q_INVOKABLE void removeYtSearchHistory(const QString &value);
+    QStringList radionetSearchHistory() const;
+    Q_INVOKABLE void addRadionetSearchHistory(const QString &value);
+    Q_INVOKABLE void removeRadionetSearchHistory(const QString &value);
     Q_INVOKABLE QUrl appIcon() const;
     QString pythonChecksum() const;
     void setPythonChecksum(const QString &value);
@@ -332,6 +337,7 @@ class Settings : public QSettings,
     void icecastSearchHistoryChanged();
     void tuneinSearchHistoryChanged();
     void ytSearchHistoryChanged();
+    void radionetSearchHistoryChanged();
     void cacheTypeChanged();
     void cacheCleaningTypeChanged();
     void ytPreferredTypeChanged();

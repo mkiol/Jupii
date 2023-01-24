@@ -20,6 +20,8 @@
         <file>images/icon-screen.png</file>
         <file>images/icon-soundcloud.png</file>
         <file>images/icon-youtube.png</file>
+        <file>images/icon-cam.png</file>
+        <file>images/icon-radionet.png</file>
         <file>images/fosdem.svg</file>
         <file>images/gpodder.svg</file>
         <file>images/icecast.svg</file>
@@ -29,6 +31,7 @@
         <file>images/youtube.svg</file>
         <file>images/tunein.svg</file>
         <file>images/jupii.svg</file>
+        <file>images/radionet.svg</file>
         <file>qml/main.qml</file>
         <file>qml/DevicesPage.qml</file>
         <file>qml/PlayQueuePage.qml</file>
@@ -44,6 +47,7 @@
         <file>qml/DeviceInfoPage.qml</file>
         <file>qml/AddMediaPage.qml</file>
         <file>qml/UrlDialog.qml</file>
+        <file>qml/RadionetPage.qml</file>
         <file>qml/SomafmPage.qml</file>
         <file>qml/RecPage.qml</file>
         <file>qml/UpnpCDirPage.qml</file>
@@ -65,7 +69,6 @@
         <file>qml/MicDialog.qml</file>
         <file>qml/ScreenDialog.qml</file>
         <file>qml/PlaybackDialog.qml</file>
-        <file>images/icon-cam.png</file>
         <file>qml/CasterSourceVolume.qml</file>
     </qresource>
 </RCC>
