@@ -13,7 +13,6 @@ option(with_flatpak "enable flatpak build" OFF)
 
 option(with_v4l2 "enable v4l2 video sources" ON)
 option(with_v4l2m2m "enable v4l2 video sources and v4l2m2m video encoder" ON)
-option(with_mp3_format "enable mp3 audio format" ON)
 option(with_nvenc "enable nvidia video encoder" ON)
 option(with_x11_screen_capture "enable X11 screen capture video source" ON)
 option(with_droidcam "enable gstreamer droidcam video source" ON)
@@ -45,6 +44,10 @@ endif()
 
 if(NOT ${with_plasma} AND NOT ${with_sfos})
     message(FATAL_ERROR "one of the options should be set (with_plasma or with_sfos)")
+endif()
+
+if(with_nvenc)
+    message(INFO "option with_nvenc is supported only on x86/x86_64 architectures")
 endif()
 
 if(with_plasma)
@@ -354,7 +357,6 @@ target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${with_sfos}>:USE_
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${with_sfos_harbour}>:USE_SFOS_HARBOUR>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${with_sfos_screen_capture}>:USE_LIPSTICK_RECORDER>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${with_plasma}>:USE_PLASMA>")
-target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${with_mp3_format}>:USE_MP3FORMAT>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>")
 
@@ -527,8 +529,13 @@ if(build_ffmpeg)
         --enable-filter=color
         --enable-filter=overlay
         --enable-filter=pad
-        --enable-encoder=aac
+        --enable-filter=volume
+        --enable-filter=amix
+        --enable-filter=dynaudnorm
+        --enable-filter=aresample
         --enable-encoder=libx264
+        --enable-encoder=aac
+        --enable-encoder=libmp3lame
         --enable-decoder=h264
         --enable-decoder=rawvideo
         --enable-decoder=pcm_u8
@@ -552,22 +559,32 @@ if(build_ffmpeg)
         --enable-decoder=aac
         --enable-decoder=aac_fixed
         --enable-decoder=aac_latm
+        --enable-decoder=mp3
+        --enable-decoder=mp3adu
+        --enable-decoder=mp3adufloat
+        --enable-decoder=mp3float
+        --enable-decoder=mp3on4
+        --enable-decoder=mp3on4float
         --enable-muxer=mp4
         --enable-muxer=mpegts
+        --enable-muxer=mp3
+        --enable-demuxer=mpegts
         --enable-demuxer=h264
         --enable-demuxer=rawvideo
-        --enable-demuxer=wav
-        --enable-demuxer=matroska
-        --enable-demuxer=mpegvideo
-        --enable-demuxer=ogg
-        --enable-demuxer=mov
         --enable-demuxer=aac
-        --enable-demuxer=m4v
+        --enable-demuxer=mp3
+        --enable-demuxer=mov
+        --enable-demuxer=ogg
+        --enable-demuxer=matroska
+        --enable-demuxer=flac
+        --enable-demuxer=wav
+        --enable-demuxer=mpegvideo
         --enable-parser=h264
         --enable-bsf=h264_mp4toannexb
         --enable-bsf=dump_extradata
         --enable-bsf=extract_extradata
-        --enable-libx264)
+        --enable-libx264
+        --enable-libmp3lame)
 
     if(${with_v4l2} OR ${with_v4l2m2m})
         list(APPEND ffmpeg_opts
@@ -591,13 +608,6 @@ if(build_ffmpeg)
         list(APPEND ffmpeg_opts
             --enable-indev=xcbgrab
             --enable-libxcb)
-    endif()
-
-    if(with_mp3_format)
-        list(APPEND ffmpeg_opts
-            --enable-muxer=mp3
-            --enable-encoder=libmp3lame
-            --enable-libmp3lame)
     endif()
 
     ExternalProject_Add(ffmpeg
@@ -697,29 +707,27 @@ if(with_nvenc)
     endif()
 endif()
 
-if(with_mp3_format)
-    if(build_lame)
-        ExternalProject_Add(lame
-            SOURCE_DIR ${external_dir}/lame
-            BINARY_DIR ${PROJECT_BINARY_DIR}/external/lame
-            INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-            URL "${lame_source_url}"
-            URL_MD5 "${lame_checksum}"
-            CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --bindir=<INSTALL_DIR>/bin
-                --enable-static --enable-nasm --disable-decoder --disable-analyzer-hooks
-                --disable-frontend --with-pic=yes
-            BUILD_COMMAND ${MAKE}
-            BUILD_ALWAYS False
-            INSTALL_COMMAND make DESTDIR=/ install)
-        ExternalProject_Add_StepDependencies(ffmpeg configure lame)
-        set(lame_LIBRARIES ${external_lib_dir}/libmp3lame.a)
-        target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-        target_link_libraries(${info_binary_id} ${lame_LIBRARIES})
-        add_dependencies(${info_binary_id} lame)
-    else()
-        find_library(lame_path mp3lame)
-        target_link_libraries(${info_binary_id} ${lame_path})
-    endif()
+if(build_lame)
+    ExternalProject_Add(lame
+        SOURCE_DIR ${external_dir}/lame
+        BINARY_DIR ${PROJECT_BINARY_DIR}/external/lame
+        INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+        URL "${lame_source_url}"
+        URL_MD5 "${lame_checksum}"
+        CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --bindir=<INSTALL_DIR>/bin
+            --enable-static --enable-nasm --disable-decoder --disable-analyzer-hooks
+            --disable-frontend --with-pic=yes
+        BUILD_COMMAND ${MAKE}
+        BUILD_ALWAYS False
+        INSTALL_COMMAND make DESTDIR=/ install)
+    ExternalProject_Add_StepDependencies(ffmpeg configure lame)
+    set(lame_LIBRARIES ${external_lib_dir}/libmp3lame.a)
+    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
+    target_link_libraries(${info_binary_id} ${lame_LIBRARIES})
+    add_dependencies(${info_binary_id} lame)
+else()
+    find_library(lame_path mp3lame)
+    target_link_libraries(${info_binary_id} ${lame_path})
 endif()
 
 if(build_gumbo)
@@ -874,7 +882,7 @@ if(build_nasm)
         INSTALL_COMMAND make DESTDIR=/ install)
     ExternalProject_Add_StepDependencies(ffmpeg configure nasm)
     ExternalProject_Add_StepDependencies(x264 configure nasm)
-    if(build_lame AND with_mp3format)
+    if(${build_lame} AND ${with_mp3_format})
         ExternalProject_Add_StepDependencies(lame configure nasm)
     endif()
 endif()

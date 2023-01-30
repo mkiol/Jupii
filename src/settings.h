@@ -82,9 +82,9 @@ class Settings : public QSettings,
                    setYtPreferredType NOTIFY ytPreferredTypeChanged)
 
     // caster
-    Q_PROPERTY(float casterMicVolume READ getCasterMicVolume WRITE
+    Q_PROPERTY(int casterMicVolume READ getCasterMicVolume WRITE
                    setCasterMicVolume NOTIFY casterMicVolumeChanged)
-    Q_PROPERTY(float casterPlaybackVolume READ getCasterPlaybackVolume WRITE
+    Q_PROPERTY(int casterPlaybackVolume READ getCasterPlaybackVolume WRITE
                    setCasterPlaybackVolume NOTIFY casterPlaybackVolumeChanged)
     Q_PROPERTY(bool casterScreenRotate READ getCasterScreenRotate WRITE
                    setCasterScreenRotate NOTIFY casterScreenRotateChanged)
@@ -272,10 +272,10 @@ class Settings : public QSettings,
     QStringList getCasterScreens() const;
     QStringList getCasterMics() const;
     QStringList getCasterPlaybacks() const;
-    float getCasterMicVolume() const;
-    void setCasterMicVolume(float value);
-    float getCasterPlaybackVolume() const;
-    void setCasterPlaybackVolume(float value);
+    int getCasterMicVolume() const;
+    void setCasterMicVolume(int value);
+    int getCasterPlaybackVolume() const;
+    void setCasterPlaybackVolume(int value);
     bool getCasterScreenRotate() const;
     void setCasterScreenRotate(bool value);
     bool getCasterScreenAudio() const;

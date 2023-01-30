@@ -800,22 +800,22 @@ bool Settings::isHarbour() const {
 #endif
 }
 
-float Settings::getCasterMicVolume() const {
-    return value(QStringLiteral("caster_mic_volume"), 1.0).toFloat();
+int Settings::getCasterMicVolume() const {
+    return value(QStringLiteral("caster_mic_volume"), 0).toInt();
 }
 
-void Settings::setCasterMicVolume(float value) {
+void Settings::setCasterMicVolume(int value) {
     if (value != getCasterMicVolume()) {
         setValue(QStringLiteral("caster_mic_volume"), value);
         emit casterMicVolumeChanged();
     }
 }
 
-float Settings::getCasterPlaybackVolume() const {
-    return value(QStringLiteral("caster_playback_volume"), 1.0).toFloat();
+int Settings::getCasterPlaybackVolume() const {
+    return value(QStringLiteral("caster_playback_volume"), 0).toInt();
 }
 
-void Settings::setCasterPlaybackVolume(float value) {
+void Settings::setCasterPlaybackVolume(int value) {
     if (value != getCasterPlaybackVolume()) {
         setValue(QStringLiteral("caster_playback_volume"), value);
         emit casterPlaybackVolumeChanged();

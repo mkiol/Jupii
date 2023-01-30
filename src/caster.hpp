@@ -22,9 +22,8 @@ extern "C" {
 #include <libavcodec/bsf.h>
 #include <libavfilter/avfilter.h>
 #include <libavformat/avformat.h>
+#include <libavutil/audio_fifo.h>
 #include <libavutil/time.h>
-#include <libswresample/swresample.h>
-#include <libswscale/swscale.h>
 }
 
 #include <algorithm>
@@ -36,6 +35,7 @@ extern "C" {
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <queue>
 #include <set>
 #include <string>
 #include <string_view>
@@ -66,6 +66,9 @@ class Caster {
         Terminating
     };
     friend std::ostream &operator<<(std::ostream &os, State state);
+
+    enum class TerminationReason { Unknown, Eof, Error };
+    friend std::ostream &operator<<(std::ostream &os, TerminationReason reason);
 
     enum class VideoOrientation {
         Auto,
@@ -110,17 +113,25 @@ class Caster {
     };
     friend std::ostream &operator<<(std::ostream &os, Dim dim);
 
+    struct FileSourceConfig {
+        std::vector<std::string> files;
+        bool loop = false;
+        friend std::ostream &operator<<(std::ostream &os,
+                                        const FileSourceConfig &config);
+    };
+
     struct Config {
         StreamFormat streamFormat = StreamFormat::Mp4;
         std::string videoSource;
         std::string audioSource;
         VideoOrientation videoOrientation = VideoOrientation::Landscape;
-        float audioVolume = 1.0;
+        int audioVolume = 0;  // -50 dB, +50 dB
         std::string streamAuthor{"Caster"};
         std::string streamTitle{"Cast session"};
         VideoEncoder videoEncoder = VideoEncoder::Auto;
         bool useNiceFormats =
             true; /*force output pixel format to nice one (yuv420p)*/
+        std::optional<FileSourceConfig> fileSourceConfig;
         friend std::ostream &operator<<(std::ostream &os, const Config &config);
     };
 
@@ -148,6 +159,10 @@ class Caster {
     void resume();
     inline State state() const { return m_state; }
     inline auto terminating() const { return state() == State::Terminating; }
+    inline auto terminationReason() const { return m_terminationReason; }
+    inline auto error() const {
+        return m_terminationReason == TerminationReason::Error;
+    }
     inline const Config &config() const { return m_config; }
     SensorDirection videoDirection() const;
     void setAudioVolume(float volume);
@@ -171,13 +186,12 @@ class Caster {
     };
     friend std::ostream &operator<<(std::ostream &os, VideoSourceType type);
 
-    enum class AudioSourceType { Unknown, Mic, Monitor, Playback };
+    enum class AudioSourceType { Unknown, Mic, Monitor, Playback, File };
     friend std::ostream &operator<<(std::ostream &os, AudioSourceType type);
 
-    enum class Endianness { Be, Le };
-    friend std::ostream &operator<<(std::ostream &os, Endianness endian);
-
     enum class AudioEncoder { Aac, Mp3Lame };
+
+    enum class DataSource { Buf, Demuxer };
 
     enum class VideoTrans {
         Off,
@@ -196,9 +210,12 @@ class Caster {
         Frame169Vflip,
         Frame169VflipRot90,
         Frame169VflipRot180,
-        Frame169VflipRot270,
+        Frame169VflipRot270
     };
     friend std::ostream &operator<<(std::ostream &os, VideoTrans trans);
+
+    enum class AudioTrans { Off, Volume };
+    friend std::ostream &operator<<(std::ostream &os, AudioTrans trans);
 
     enum class VideoScale { Off, Down25, Down50, Down75 };
     friend std::ostream &operator<<(std::ostream &os, VideoScale scale);
@@ -250,7 +267,6 @@ class Caster {
         uint8_t channels = 0;
         uint32_t rate = 0;
         size_t bps = 0;
-        Endianness endian = Endianness::Be;
         AudioSourceType type = AudioSourceType::Unknown;
         bool muteSource = false;
     };
@@ -321,31 +337,32 @@ class Caster {
     std::thread m_audioPaThread;
     AVFormatContext *m_outFormatCtx = nullptr;
     AVFormatContext *m_inVideoFormatCtx = nullptr;
+    AVFormatContext *m_inAudioFormatCtx = nullptr;
     AVStream *m_outVideoStream = nullptr;
     AVStream *m_outAudioStream = nullptr;
+    int m_inVideoStreamIdx = 0;
+    int m_inAudioStreamIdx = 0;
     AVCodecContext *m_inAudioCtx = nullptr;
     AVCodecContext *m_outAudioCtx = nullptr;
     AVCodecContext *m_inVideoCtx = nullptr;
     AVCodecContext *m_outVideoCtx = nullptr;
-    SwrContext *m_audioSwrCtx = nullptr;
-    SwsContext *m_videoSwsCtx = nullptr;
     AVBSFContext *m_videoBsfExtractExtraCtx = nullptr;
     AVBSFContext *m_videoBsfDumpExtraCtx = nullptr;
+    AVAudioFifo *m_audioFifo = nullptr;
     std::vector<uint8_t> m_pktSideData;
     std::unordered_map<VideoTrans, FilterCtx> m_videoFilterCtxMap;
-    uint8_t *m_videoSwsBuf = nullptr;
-    AVPacket *m_keyAudioPkt = nullptr;
+    std::unordered_map<AudioTrans, FilterCtx> m_audioFilterCtxMap;
     AVFrame *m_audioFrameIn = nullptr;
-    AVFrame *m_audioFrameOut = nullptr;
+    AVFrame *m_audioFrameAfterFilter = nullptr;
     AVFrame *m_videoFrameIn = nullptr;
-    AVFrame *m_videoFrameAfterSws = nullptr;
     AVFrame *m_videoFrameAfterFilter = nullptr;
     pa_mainloop *m_paLoop = nullptr;
     pa_stream *m_paStream = nullptr;
     pa_context *m_paCtx = nullptr;
     int64_t m_audioFrameDuration = 0;  // micro s
     int64_t m_audioPktDuration = 0;    // av time_base
-    int m_audioFrameSize = 0;
+    int m_audioOutFrameSize = 0;       // after resampling
+    int m_audioInFrameSize = 0;        // before resampling
     int m_videoFramerate = 0;
     int m_videoRawFrameSize = 0;
     int64_t m_nextVideoPts = 0;
@@ -359,6 +376,7 @@ class Caster {
     bool m_audioFlushed = false;
     Dim m_inDim;
     VideoTrans m_videoTrans = VideoTrans::Off;
+    AudioTrans m_audioTrans = AudioTrans::Off;
     AVPixelFormat m_inPixfmt = AV_PIX_FMT_NONE;
     VideoPropsMap m_videoProps;
     AudioPropsMap m_audioProps;
@@ -366,7 +384,11 @@ class Caster {
     PaSinkInputMap m_paSinkInputs;
     uint32_t m_connectedPaSinkInput = PA_INVALID_INDEX;
     State m_state = State::Initing;
+    TerminationReason m_terminationReason = TerminationReason::Unknown;
     std::optional<TestSource> m_imageProvider;
+    std::mutex m_filesMtx;
+    std::queue<std::string> m_files;
+    bool m_audioVolumeUpdated = false;
 #ifdef USE_V4L2
     std::vector<V4l2H264EncoderProps> m_v4l2Encoders;
 #endif
@@ -391,40 +413,6 @@ class Caster {
     static void paSourceInfoCallback(pa_context *ctx,
                                      const pa_source_info *info, int eol,
                                      void *userdata);
-
-    template <size_t SampleSize>
-    void changeAudioVolume(Endianness endian, AVPacket *pkt) const {
-        using Sample = std::conditional_t<
-            SampleSize == 1, int8_t,
-            std::conditional_t<SampleSize == 2, int16_t, int64_t>>;
-        using Sample2x = std::conditional_t<
-            SampleSize == 1, int16_t,
-            std::conditional_t<SampleSize == 2, int32_t, int64_t>>;
-
-        auto *buf = reinterpret_cast<Sample *>(pkt->data);
-
-        auto buf_size = m_audioFrameSize / sizeof(Sample);
-        for (auto i = 0U; i < buf_size; ++i) {
-            if (SampleSize > 1 && endian == Endianness::Le) {
-                auto *p = reinterpret_cast<int8_t *>(&buf[i]);
-
-                std::reverse(p, p + SampleSize - 1);
-
-                buf[i] = static_cast<Sample>(std::clamp<Sample2x>(
-                    static_cast<Sample2x>(buf[i]) * m_config.audioVolume,
-                    std::numeric_limits<Sample>::min(),
-                    std::numeric_limits<Sample>::max()));
-
-                std::reverse(p, p + SampleSize - 1);
-            } else {
-                buf[i] = static_cast<Sample>(std::clamp<Sample2x>(
-                    static_cast<Sample2x>(buf[i]) * m_config.audioVolume,
-                    std::numeric_limits<Sample>::min(),
-                    std::numeric_limits<Sample>::max()));
-            }
-        }
-    }
-
     int avReadPacketCallback(uint8_t *buf, int bufSize);
     int avWritePacketCallback(uint8_t *buf, int bufSize);
     void paStreamRequestCallback(pa_stream *stream, size_t nbytes);
@@ -440,35 +428,45 @@ class Caster {
     static void paStateCallback(pa_context *ctx, void *userdata);
     std::string paCorrectedClientName(uint32_t idx) const;
     void doPaTask();
-    void initAvAudio();
-    void initAvAudioDecoder();
+    void initAudioSource();
+    void initVideoSource();
+    void initFiles();
+    void initAvAudioRawDecoderFromProps();
+    void initAvAudioRawDecoderFromInputStream();
+    bool initAvAudioInputFormatFromFile();
     void initAvAudioEncoder();
-    void initAvAudioResampler();
     void initAvVideoForGst();
     void initAvVideoEncoder();
     void initAvVideoInputRawFormat();
     void initAvVideoInputCompressedFormat();
     void initAvVideoEncoder(VideoEncoder type);
     void initAvVideoRawDecoder();
-    void initAvVideoRawDecoderFromInputStream(int idx);
+    void initAvVideoRawDecoderFromInputStream();
+    void initAvAudioFilters();
     void initAvVideoFilters();
-    // void initAvVideoFiltersLipstickRecorder();
     void initAvVideoFiltersFrame169(SensorDirection direction);
     void initAvVideoFiltersFrame169Vflip(SensorDirection direction);
     void initAvVideoFilter(SensorDirection direction, VideoTrans trans,
                            const std::string &fmt);
     void initAvVideoFilter(FilterCtx &ctx, const char *arg);
+    void initAvAudioFilter(FilterCtx &ctx, const char *arg);
     void initAvVideoOutStreamFromEncoder();
     void initAvVideoOutStreamFromInputFormat();
     void initAvVideoBsf();
+    void initAvAudioFifo();
     void allocAvOutputFormat();
     void initAvOutputFormat();
-    void reinitAvOutputFormat();
+    void reInitAvOutputFormat();
+    bool reInitAvAudioInput();
     void initVideoTrans();
+    void initAudioTrans();
     void initAv();
     void initPa();
-    void initAvAudioOutStream();
-    int findAvVideoInputStreamIdx();
+    void initAvAudioOutStreamFromEncoder();
+    void findAvVideoInputStreamIdx();
+    void findAvAudioInputStreamIdx();
+    void startAudioSource();
+    void startVideoSource();
     void startAv();
     void startPa();
     void connectPaSource();
@@ -482,10 +480,16 @@ class Caster {
     void startAudioSourceThread();
     bool muxVideo(AVPacket *pkt);
     bool muxAudio(AVPacket *pkt);
-    bool readRawAudioPkt(AVPacket *pkt, int64_t now);
     void clean();
     void cleanAv();
     void cleanAvOutputFormat();
+    void cleanAvAudioInputFormat();
+    void cleanAvVideoInputFormat();
+    void cleanAvAudioDecoder();
+    void cleanAvAudioEncoder();
+    void cleanAvAudioFifo();
+    void cleanAvVideoFilters();
+    void cleanAvAudioFilters();
     void cleanPa();
     static void cleanAvOpts(AVDictionary **opts);
     void setVideoStreamRotation(VideoOrientation requestedOrientation);
@@ -494,21 +498,31 @@ class Caster {
     int64_t videoDelay(int64_t now) const;
     int64_t audioDelay(int64_t now) const;
     void reportError();
-    bool audioMuted() const;
     bool audioBoosted() const;
     void detectSources();
     static VideoPropsMap detectVideoSources();
     static AudioPropsMap detectPaSources();
+    static AudioPropsMap detectAudioFileSources();
     static AudioPropsMap detectAudioSources();
     void initAvAudioDurations();
     bool readVideoFrameFromBuf(AVPacket *pkt);
     void readNullFrame(AVPacket *pkt);
     void readVideoFrameFromDemuxer(AVPacket *pkt);
+    bool readAudioFrame(AVPacket *pkt, DataSource source,
+                        bool nullWhenNoEnoughData = false);
+    bool readAudioFrameFromDemuxer(AVPacket *pkt);
+    bool readAudioPktFromDemuxer(AVPacket *pkt);
+    bool readAudioFrameFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData);
+    bool readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData);
     bool encodeVideoFrame(AVPacket *pkt);
+    bool encodeAudioFrame(AVPacket *pkt);
+    void updateAudioVolumeFilter();
     bool filterVideoFrame(VideoTrans trans, AVFrame *frameIn,
                           AVFrame *frameOut);
+    bool filterAudioFrame(AudioTrans trans, AVFrame *frameIn,
+                          AVFrame *frameOut);
     AVFrame *filterVideoIfNeeded(AVFrame *frameIn);
-    void convertVideoFramePixfmt(AVFrame *frameIn, AVFrame *frameOut);
+    AVFrame *filterAudioIfNeeded(AVFrame *frameIn);
     bool configValid(const Config &config) const;
     inline bool audioEnabled() const { return !m_config.audioSource.empty(); }
     inline bool videoEnabled() const { return !m_config.videoSource.empty(); }
@@ -523,7 +537,7 @@ class Caster {
     bestVideoFormat(const AVCodec *encoder,
                     const VideoSourceInternalProps &props, bool useNiceFormats);
     static AVSampleFormat bestAudioSampleFormat(
-        const AVCodec *encoder, const AudioSourceInternalProps &props);
+        const AVCodec *encoder, const AVSampleFormat &decoderSampleFmt);
     static void setVideoEncoderOpts(VideoEncoder encoder, AVDictionary **opts);
     static void setAudioEncoderOpts(AudioEncoder encoder, AVDictionary **opts);
     static std::string videoEncoderAvName(VideoEncoder encoder);
@@ -543,7 +557,7 @@ class Caster {
     static bool nicePixfmt(AVPixelFormat fmt);
     static AVPixelFormat toNicePixfmt(AVPixelFormat fmt,
                                       const AVPixelFormat *supportedFmts);
-    static bool videoPktOk(const AVPacket *pkt);
+    static bool avPktOk(const AVPacket *pkt);
     void extractVideoExtradataFromCompressedDemuxer();
     void extractVideoExtradataFromRawDemuxer();
     void extractVideoExtradataFromRawBuf();

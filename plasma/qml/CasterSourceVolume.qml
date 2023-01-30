@@ -15,9 +15,9 @@ RowLayout {
     property double volume
 
     Controls.Slider {
-        from: 0
-        to: 10
-        stepSize: 0.1
+        from: -50
+        to: 50
+        stepSize: 1
         snapMode: Controls.Slider.SnapAlways
         value: root.volume
         onValueChanged: {
@@ -25,24 +25,18 @@ RowLayout {
         }
     }
     Controls.SpinBox {
-        function round(num) {
-            var exp = Math.pow(10, 1);
-            return Math.round(num * exp) / exp
-        }
-
-        from: 0
-        to: 100
+        from: -50
+        to: 50
         stepSize: 1
-        value: round(root.volume) * 10
+        value: root.volume
         textFromValue: function(value) {
-            var v = round(root.volume).toString()
-            return v.indexOf(".") === -1 ? (v + ".0") : v
+            return value.toString()
         }
         valueFromText: function(text) {
-            return parseFloat(text) * 10;
+            return parseInt(text);
         }
         onValueChanged: {
-            root.volume = round(value / 10);
+            root.volume = value;
         }
     }
 }

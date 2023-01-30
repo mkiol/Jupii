@@ -60,10 +60,10 @@ static inline int64_t rescaleFromUsec(int64_t time, AVRational destTimeBase) {
     return av_rescale_q(time, AVRational{1, 1000000}, destTimeBase);
 }
 
-static bool nearlyEqual(float a, float b) {
-    return std::nextafter(a, std::numeric_limits<float>::lowest()) <= b &&
-           std::nextafter(a, std::numeric_limits<float>::max()) >= b;
-}
+// static bool nearlyEqual(float a, float b) {
+//     return std::nextafter(a, std::numeric_limits<float>::lowest()) <= b &&
+//            std::nextafter(a, std::numeric_limits<float>::max()) >= b;
+// }
 
 static void dataToHexStr(std::ostream &os, const uint8_t *data, int size) {
     os << std::hex << std::setfill('0');
@@ -262,23 +262,8 @@ std::ostream &operator<<(std::ostream &os, Caster::VideoEncoder encoder) {
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, Caster::Endianness endian) {
-    switch (endian) {
-        case Caster::Endianness::Be:
-            os << "be";
-            break;
-        case Caster::Endianness::Le:
-            os << "le";
-            break;
-        default:
-            os << "unknown";
-    }
-
-    return os;
-}
-
-std::ostream &operator<<(std::ostream &os, Caster::VideoTrans type) {
-    switch (type) {
+std::ostream &operator<<(std::ostream &os, Caster::VideoTrans trans) {
+    switch (trans) {
         case Caster::VideoTrans::Off:
             os << "off";
             break;
@@ -329,6 +314,21 @@ std::ostream &operator<<(std::ostream &os, Caster::VideoTrans type) {
             break;
         case Caster::VideoTrans::Frame169VflipRot270:
             os << "frame-169-vflip-rot-270";
+            break;
+        default:
+            os << "unknown";
+    }
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, Caster::AudioTrans trans) {
+    switch (trans) {
+        case Caster::AudioTrans::Off:
+            os << "off";
+            break;
+        case Caster::AudioTrans::Volume:
+            os << "volume";
             break;
         default:
             os << "unknown";
@@ -396,6 +396,9 @@ std::ostream &operator<<(std::ostream &os, Caster::AudioSourceType type) {
         case Caster::AudioSourceType::Playback:
             os << "playback";
             break;
+        case Caster::AudioSourceType::File:
+            os << "file";
+            break;
         default:
             os << "unknown";
     }
@@ -452,8 +455,7 @@ std::ostream &operator<<(std::ostream &os,
        << ", fname=" << props.friendlyName << ", dev=" << props.dev
        << ", codec=" << props.codec
        << ", channels=" << static_cast<int>(props.channels)
-       << ", rate=" << props.rate << ", bps=" << props.bps
-       << ", endian=" << props.endian;
+       << ", rate=" << props.rate << ", bps=" << props.bps;
     return os;
 }
 
@@ -471,6 +473,17 @@ std::ostream &operator<<(std::ostream &os, const Caster::PaSinkInput &input) {
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os,
+                         const Caster::FileSourceConfig &config) {
+    os << "files=";
+    if (!config.files.empty())
+        for (const auto &f : config.files) os << "[" << f << "], ";
+    else
+        os << "empty";
+    os << ", loop=" << config.loop;
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const Caster::Config &config) {
     os << "stream-format=" << config.streamFormat << ", video-source="
        << (config.videoSource.empty() ? "off" : config.videoSource)
@@ -481,6 +494,7 @@ std::ostream &operator<<(std::ostream &os, const Caster::Config &config) {
        << ", stream-author=" << config.streamAuthor
        << ", stream-title=" << config.streamTitle
        << ", video-encoder=" << config.videoEncoder;
+    if (config.fileSourceConfig) os << ", " << *config.fileSourceConfig;
     return os;
 }
 
@@ -494,6 +508,13 @@ bool Caster::configValid(const Config &config) const {
     if (!config.audioSource.empty() &&
         m_audioProps.count(config.audioSource) == 0) {
         LOGW("audio-source is invalid");
+        return false;
+    }
+
+    if (!config.audioSource.empty() &&
+        m_audioProps.at(config.audioSource).type == AudioSourceType::File &&
+        (!config.fileSourceConfig || config.fileSourceConfig->files.empty())) {
+        LOGW("no file provided for file source");
         return false;
     }
 
@@ -532,7 +553,7 @@ bool Caster::configValid(const Config &config) const {
         return false;
     }
 
-    if (config.audioVolume < 0.F || config.audioVolume > 10.F) {
+    if (config.audioVolume < -50 || config.audioVolume > 50) {
         LOGW("audio-volume is invalid");
         return false;
     }
@@ -565,61 +586,15 @@ Caster::Caster(Config config, DataReadyHandler dataReadyHandler,
 #ifdef USE_V4L2
         detectV4l2Encoders();
 #endif
-
         if (!configValid(m_config))
             throw std::runtime_error("invalid configuration");
 
         LOGD("audio enabled: " << audioEnabled());
         LOGD("video enabled: " << videoEnabled());
 
-        if (audioEnabled()) initPa();
+        if (audioEnabled()) initAudioSource();
+        if (videoEnabled()) initVideoSource();
 
-        if (videoEnabled()) {
-            initVideoTrans();
-
-            const auto &props = videoProps();
-
-            if (props.type == VideoSourceType::Test)
-                m_imageProvider.emplace(
-                    [this](const uint8_t *data, size_t size) {
-                        rawVideoDataReadyHandler(data, size);
-                    });
-#ifdef USE_LIPSTICK_RECORDER
-            if (props.type == VideoSourceType::LipstickCapture)
-                m_lipstickRecorder.emplace(
-                    [this](const uint8_t *data, size_t size) {
-                        rawVideoDataReadyHandler(data, size);
-                    },
-                    [this] {
-                        LOGE("error in lipstick-recorder");
-                        reportError();
-                    });
-#endif
-#ifdef USE_DROIDCAM
-            if (props.type == VideoSourceType::DroidCamRaw) {
-                m_orientationMonitor.emplace();
-                m_droidCamSource.emplace(
-                    false, std::stoi(props.dev),
-                    [this](const uint8_t *data, size_t size) {
-                        rawVideoDataReadyHandler(data, size);
-                    },
-                    [this] {
-                        LOGE("error in droidcam-source");
-                        reportError();
-                    });
-            } else if (props.type == VideoSourceType::DroidCam) {
-                m_droidCamSource.emplace(
-                    true, std::stoi(props.dev),
-                    [this](const uint8_t *data, size_t size) {
-                        compressedVideoDataReadyHandler(data, size);
-                    },
-                    [this] {
-                        LOGE("error in droidcam-source");
-                        reportError();
-                    });
-            }
-#endif
-        }
         initAv();
     } catch (...) {
         clean();
@@ -642,7 +617,74 @@ Caster::~Caster() {
     LOGD("caster termination completed");
 }
 
+void Caster::initAudioSource() {
+    initAudioTrans();
+
+    const auto &props = audioProps();
+
+    switch (props.type) {
+        case AudioSourceType::Mic:
+        case AudioSourceType::Monitor:
+        case AudioSourceType::Playback:
+            initPa();
+            break;
+        case AudioSourceType::File:
+            initFiles();
+            break;
+        default:
+            break;
+    }
+}
+
+void Caster::initVideoSource() {
+    initVideoTrans();
+
+    const auto &props = videoProps();
+
+    if (props.type == VideoSourceType::Test)
+        m_imageProvider.emplace([this](const uint8_t *data, size_t size) {
+            rawVideoDataReadyHandler(data, size);
+        });
+#ifdef USE_LIPSTICK_RECORDER
+    if (props.type == VideoSourceType::LipstickCapture)
+        m_lipstickRecorder.emplace(
+            [this](const uint8_t *data, size_t size) {
+                rawVideoDataReadyHandler(data, size);
+            },
+            [this] {
+                LOGE("error in lipstick-recorder");
+                reportError();
+            });
+#endif
+#ifdef USE_DROIDCAM
+    if (props.type == VideoSourceType::DroidCamRaw) {
+        m_orientationMonitor.emplace();
+        m_droidCamSource.emplace(
+            false, std::stoi(props.dev),
+            [this](const uint8_t *data, size_t size) {
+                rawVideoDataReadyHandler(data, size);
+            },
+            [this] {
+                LOGE("error in droidcam-source");
+                reportError();
+            });
+    } else if (props.type == VideoSourceType::DroidCam) {
+        m_droidCamSource.emplace(
+            true, std::stoi(props.dev),
+            [this](const uint8_t *data, size_t size) {
+                compressedVideoDataReadyHandler(data, size);
+            },
+            [this] {
+                LOGE("error in droidcam-source");
+                reportError();
+            });
+    }
+#endif
+}
+
 void Caster::reportError() {
+    if (m_terminationReason == TerminationReason::Unknown)
+        m_terminationReason = TerminationReason::Error;
     setState(State::Terminating);
     m_videoCv.notify_all();
 }
@@ -675,6 +717,12 @@ void Caster::initVideoTrans() {
     LOGD("initial video trans: " << m_videoTrans);
 }
 
+void Caster::initAudioTrans() {
+    m_audioTrans = AudioTrans::Volume;
+
+    LOGD("initial audio trans: " << m_audioTrans);
+}
+
 std::vector<Caster::VideoSourceProps> Caster::videoSources() {
     decltype(videoSources()) sources;
 
@@ -695,7 +743,7 @@ std::vector<Caster::VideoSourceProps> Caster::videoSources() {
 std::vector<Caster::AudioSourceProps> Caster::audioSources() {
     decltype(audioSources()) sources;
 
-    auto props = detectPaSources();
+    auto props = detectAudioSources();
     sources.reserve(props.size());
 
     std::transform(
@@ -714,7 +762,14 @@ void Caster::detectSources() {
     m_videoProps = detectVideoSources();
 }
 
-Caster::AudioPropsMap Caster::detectAudioSources() { return detectPaSources(); }
+Caster::AudioPropsMap Caster::detectAudioSources() {
+    AudioPropsMap props;
+
+    props.merge(detectPaSources());
+    props.merge(detectAudioFileSources());
+
+    return props;
+}
 
 void Caster::paSourceInfoCallback([[maybe_unused]] pa_context *ctx,
                                   const pa_source_info *info, int eol,
@@ -761,9 +816,6 @@ void Caster::paSourceInfoCallback([[maybe_unused]] pa_context *ctx,
         /*rate=*/info->sample_spec.rate,
         /*bps=*/
         pa_sample_size(&info->sample_spec),
-        /*endian=*/
-        pa_sample_format_is_be(info->sample_spec.format) == 1 ? Endianness::Be
-                                                              : Endianness::Le,
         /*type=*/info->monitor_of_sink == PA_INVALID_INDEX
             ? AudioSourceType::Mic
             : AudioSourceType::Monitor,
@@ -843,7 +895,6 @@ Caster::AudioPropsMap Caster::detectPaSources() {
             /*channels=*/2,
             /*rate=*/44100,
             /*bps=*/2,
-            /*endian=*/Endianness::Le,
             /*type=*/AudioSourceType::Playback,
             /*muteSource=*/false};
         LOGD("pa source found: " << props);
@@ -860,7 +911,6 @@ Caster::AudioPropsMap Caster::detectPaSources() {
             /*channels=*/2,
             /*rate=*/44100,
             /*bps=*/2,
-            /*endian=*/Endianness::Le,
             /*type=*/AudioSourceType::Playback,
             /*muteSource=*/true};
         LOGD("pa source found: " << props);
@@ -877,13 +927,26 @@ Caster::AudioPropsMap Caster::detectPaSources() {
     return std::move(result.propsMap);
 }
 
-bool Caster::audioMuted() const {
-    return nearlyEqual(m_config.audioVolume, 0.F);
+Caster::AudioPropsMap Caster::detectAudioFileSources() {
+    LOGD("audio file sources detection started");
+
+    AudioPropsMap propsMap;
+
+    Caster::AudioSourceInternalProps props;
+    props.name = "file";
+    props.friendlyName = "File streaming";
+    props.type = AudioSourceType::File;
+
+    LOGD("audio file source found: " << props);
+
+    propsMap.try_emplace(props.name, std::move(props));
+
+    LOGD("audio file sources detection completed");
+
+    return propsMap;
 }
 
-bool Caster::audioBoosted() const {
-    return !nearlyEqual(m_config.audioVolume, 1.F);
-}
+bool Caster::audioBoosted() const { return m_config.audioVolume != 0; }
 
 void Caster::setState(State newState, bool notify) {
     if (m_state != newState) {
@@ -908,21 +971,11 @@ void Caster::start(bool startPaused) {
     setState(State::Starting);
 
     try {
-        if (videoEnabled()) {
-            const auto &vprops = videoProps();
-            if (vprops.type == VideoSourceType::Test) m_imageProvider->start();
-#ifdef USE_LIPSTICK_RECORDER
-            if (m_lipstickRecorder) m_lipstickRecorder->start();
-#endif
-#ifdef USE_DROIDCAM
-            if (m_orientationMonitor) m_orientationMonitor->start();
-            if (m_droidCamSource) m_droidCamSource->start();
-#endif
-        }
+        if (videoEnabled()) startVideoSource();
 
         startAv();
 
-        if (audioEnabled()) startPa();
+        if (audioEnabled()) startAudioSource();
 
         if (startPaused) {
             setState(State::Paused);
@@ -933,6 +986,33 @@ void Caster::start(bool startPaused) {
     } catch (const std::runtime_error &e) {
         LOGW("failed to start: " << e.what());
         reportError();
+    }
+}
+
+void Caster::startVideoSource() {
+    const auto &props = videoProps();
+
+    if (props.type == VideoSourceType::Test) m_imageProvider->start();
+#ifdef USE_LIPSTICK_RECORDER
+    if (m_lipstickRecorder) m_lipstickRecorder->start();
+#endif
+#ifdef USE_DROIDCAM
+    if (m_orientationMonitor) m_orientationMonitor->start();
+    if (m_droidCamSource) m_droidCamSource->start();
+#endif
+}
+
+void Caster::startAudioSource() {
+    const auto &props = audioProps();
+
+    switch (props.type) {
+        case AudioSourceType::Mic:
+        case AudioSourceType::Monitor:
+        case AudioSourceType::Playback:
+            startPa();
+            break;
+        default:
+            break;
     }
 }
 
@@ -954,7 +1034,7 @@ void Caster::resume() {
         return;
     }
 
-    reinitAvOutputFormat();
+    reInitAvOutputFormat();
     setState(State::Started);
     startMuxing();
 }
@@ -986,7 +1066,8 @@ std::string Caster::strForAvOpts(const AVDictionary *opts) {
 void Caster::cleanAvOutputFormat() {
     if (m_outFormatCtx != nullptr) {
         if (m_outFormatCtx->pb != nullptr) {
-            if (m_outFormatCtx->pb->buffer != nullptr)
+            if (m_outFormatCtx->pb->buffer != nullptr &&
+                m_outFormatCtx->flags & AVFMT_FLAG_CUSTOM_IO)
                 av_freep(&m_outFormatCtx->pb->buffer);
             avio_context_free(&m_outFormatCtx->pb);
         }
@@ -995,41 +1076,77 @@ void Caster::cleanAvOutputFormat() {
     }
 }
 
-void Caster::cleanAv() {
-    for (auto p : m_videoFilterCtxMap) {
-        if (p.second.in != nullptr) avfilter_inout_free(&p.second.in);
-        if (p.second.out != nullptr) avfilter_inout_free(&p.second.out);
-        if (p.second.graph != nullptr) avfilter_graph_free(&p.second.graph);
+void Caster::cleanAvAudioInputFormat() {
+    if (m_inAudioFormatCtx != nullptr) {
+        avformat_close_input(&m_inAudioFormatCtx);
     }
+}
 
-    if (m_audioFrameIn != nullptr) av_frame_free(&m_audioFrameIn);
-    if (m_audioFrameOut != nullptr) av_frame_free(&m_audioFrameOut);
-    if (m_videoFrameIn != nullptr) av_frame_free(&m_videoFrameIn);
-    if (m_videoFrameAfterSws != nullptr) av_frame_free(&m_videoFrameAfterSws);
-    if (m_videoFrameAfterFilter != nullptr)
-        av_frame_free(&m_videoFrameAfterFilter);
-
-    cleanAvOutputFormat();
-
+void Caster::cleanAvVideoInputFormat() {
     if (m_inVideoFormatCtx != nullptr) {
-        if (m_inVideoFormatCtx->pb != nullptr) {
+        if (m_inVideoFormatCtx->pb != nullptr &&
+            m_inVideoFormatCtx->flags & AVFMT_FLAG_CUSTOM_IO) {
             if (m_inVideoFormatCtx->pb->buffer != nullptr)
                 av_freep(&m_inVideoFormatCtx->pb->buffer);
             avio_context_free(&m_inVideoFormatCtx->pb);
         }
         avformat_close_input(&m_inVideoFormatCtx);
     }
-    if (m_keyAudioPkt != nullptr) av_packet_free(&m_keyAudioPkt);
-    if (m_audioSwrCtx != nullptr) swr_free(&m_audioSwrCtx);
-    if (m_outAudioCtx != nullptr) avcodec_free_context(&m_outAudioCtx);
+}
+
+void Caster::cleanAvAudioDecoder() {
+    if (m_audioFrameIn != nullptr) av_frame_free(&m_audioFrameIn);
     if (m_inAudioCtx != nullptr) avcodec_free_context(&m_inAudioCtx);
+}
+
+void Caster::cleanAvAudioEncoder() {
+    if (m_outAudioCtx != nullptr) avcodec_free_context(&m_outAudioCtx);
+}
+
+void Caster::cleanAvAudioFifo() {
+    if (m_audioFifo != nullptr) {
+        av_audio_fifo_free(m_audioFifo);
+        m_audioFifo = nullptr;
+    }
+}
+
+void Caster::cleanAvVideoFilters() {
+    for (auto p : m_videoFilterCtxMap) {
+        if (p.second.in != nullptr) avfilter_inout_free(&p.second.in);
+        if (p.second.out != nullptr) avfilter_inout_free(&p.second.out);
+        if (p.second.graph != nullptr) avfilter_graph_free(&p.second.graph);
+    }
+}
+
+void Caster::cleanAvAudioFilters() {
+    for (auto p : m_audioFilterCtxMap) {
+        if (p.second.in != nullptr) avfilter_inout_free(&p.second.in);
+        if (p.second.out != nullptr) avfilter_inout_free(&p.second.out);
+        if (p.second.graph != nullptr) avfilter_graph_free(&p.second.graph);
+    }
+}
+
+void Caster::cleanAv() {
+    cleanAvVideoFilters();
+    cleanAvAudioFilters();
+
+    if (m_videoFrameIn != nullptr) av_frame_free(&m_videoFrameIn);
+    if (m_videoFrameAfterFilter != nullptr)
+        av_frame_free(&m_videoFrameAfterFilter);
+
+    if (m_audioFrameIn != nullptr) av_frame_free(&m_audioFrameIn);
+    if (m_audioFrameAfterFilter != nullptr)
+        av_frame_free(&m_audioFrameAfterFilter);
+
+    cleanAvOutputFormat();
+    cleanAvVideoInputFormat();
+    cleanAvAudioInputFormat();
+    cleanAvAudioEncoder();
+    cleanAvAudioDecoder();
+    cleanAvAudioFifo();
+
     if (m_outVideoCtx != nullptr) avcodec_free_context(&m_outVideoCtx);
     if (m_inVideoCtx != nullptr) avcodec_free_context(&m_inVideoCtx);
-    if (m_videoSwsBuf != nullptr) av_freep(&m_videoSwsBuf);
-    if (m_videoSwsCtx != nullptr) {
-        sws_freeContext(m_videoSwsCtx);
-        m_videoSwsCtx = nullptr;
-    }
 
     m_outAudioStream = nullptr;
     m_outVideoStream = nullptr;
@@ -1295,7 +1412,49 @@ void Caster::initPa() {
     LOGD("pa init completed");
 }
 
-void Caster::initAvAudioDecoder() {
+void Caster::initAvAudioRawDecoderFromInputStream() {
+    LOGD("initing audio decoder");
+
+    const auto *stream = m_inAudioFormatCtx->streams[m_inAudioStreamIdx];
+
+    const auto *decoder = avcodec_find_decoder(stream->codecpar->codec_id);
+    if (decoder == nullptr)
+        throw std::runtime_error("avcodec_find_decoder for audio error");
+
+    if (decoder->sample_fmts == nullptr ||
+        decoder->sample_fmts[0] == AV_SAMPLE_FMT_NONE)
+        throw std::runtime_error(
+            "audio decoder does not support any sample fmts");
+
+    LOGD("sample fmts supported by audio decoder:");
+    for (int i = 0; decoder->sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
+        LOGD("[" << i << "]: " << decoder->sample_fmts[i]);
+    }
+
+    m_inAudioCtx = avcodec_alloc_context3(decoder);
+    if (m_inAudioCtx == nullptr)
+        throw std::runtime_error("avcodec_alloc_context3 for in audio error");
+
+    if (avcodec_parameters_to_context(m_inAudioCtx, stream->codecpar) < 0) {
+        throw std::runtime_error(
+            "avcodec_parameters_to_context for audio error");
+    }
+
+    m_inAudioCtx->time_base = AVRational{1, m_inAudioCtx->sample_rate};
+
+    if (avcodec_open2(m_inAudioCtx, nullptr, nullptr) != 0)
+        throw std::runtime_error("avcodec_open2 for in audio error");
+
+    LOGD("audio decoder: sample fmt=" << m_inAudioCtx->sample_fmt
+                                      << ", frame size="
+                                      << m_inAudioCtx->frame_size);
+
+    m_audioFrameIn = av_frame_alloc();
+    if (m_audioFrameIn == nullptr)
+        throw std::runtime_error("av_frame_alloc error");
+}
+
+void Caster::initAvAudioRawDecoderFromProps() {
     LOGD("initing audio decoder");
 
     const auto &props = audioProps();
@@ -1326,6 +1485,10 @@ void Caster::initAvAudioDecoder() {
     if (avcodec_open2(m_inAudioCtx, nullptr, nullptr) != 0)
         throw std::runtime_error("avcodec_open2 for in audio error");
 
+    LOGD("audio decoder: sample fmt=" << m_inAudioCtx->sample_fmt
+                                      << ", frame size="
+                                      << m_inAudioCtx->frame_size);
+
     m_audioFrameIn = av_frame_alloc();
     if (m_audioFrameIn == nullptr)
         throw std::runtime_error("av_frame_alloc error");
@@ -1341,7 +1504,7 @@ void Caster::setAudioEncoderOpts(AudioEncoder encoder, AVDictionary **opts) {
             av_dict_set(opts, "compression_level", "9", 0);
             break;
         default:
-            LOGE("failed to set audio encoder options");
+            break;
     }
 }
 
@@ -1362,12 +1525,13 @@ void Caster::initAvAudioEncoder() {
     if (m_outAudioCtx == nullptr)
         throw std::runtime_error("avcodec_alloc_context3 for out audio error");
 
-    const auto &props = audioProps();
+    m_outAudioCtx->sample_fmt =
+        bestAudioSampleFormat(encoder, m_inAudioCtx->sample_fmt);
 
-    m_outAudioCtx->sample_fmt = bestAudioSampleFormat(encoder, props);
-    LOGD("audio encoder sample fmt: " << m_outAudioCtx->sample_fmt);
+    LOGD("audio encoder: sample fmt=" << m_outAudioCtx->sample_fmt);
 
-    av_channel_layout_default(&m_outAudioCtx->ch_layout, props.channels);
+    av_channel_layout_default(&m_outAudioCtx->ch_layout,
+                              m_inAudioCtx->ch_layout.nb_channels == 1 ? 1 : 2);
     m_outAudioCtx->sample_rate = m_inAudioCtx->sample_rate;
     m_outAudioCtx->time_base = AVRational{1, m_outAudioCtx->sample_rate};
 
@@ -1381,40 +1545,6 @@ void Caster::initAvAudioEncoder() {
     }
 
     cleanAvOpts(&opts);
-
-    m_audioFrameOut = av_frame_alloc();
-    if (m_audioFrameOut == nullptr)
-        throw std::runtime_error("av_frame_alloc error");
-}
-
-void Caster::initAvAudioResampler() {
-    LOGD("initing audio resampler");
-
-    if (swr_alloc_set_opts2(&m_audioSwrCtx, &m_outAudioCtx->ch_layout,
-                            m_outAudioCtx->sample_fmt,
-                            m_outAudioCtx->sample_rate,
-                            &m_inAudioCtx->ch_layout, m_inAudioCtx->sample_fmt,
-                            m_inAudioCtx->sample_rate, 0, nullptr) != 0) {
-        throw std::runtime_error("swr_alloc error");
-    }
-
-    if (swr_init(m_audioSwrCtx) != 0) {
-        throw std::runtime_error("swr_init error");
-    }
-}
-
-void Caster::initAvAudio() {
-    initAvAudioDecoder();
-    initAvAudioEncoder();
-
-    if (m_inAudioCtx->sample_fmt != m_outAudioCtx->sample_fmt) {
-        LOGD("audio resampling required");
-        initAvAudioResampler();
-    }
-
-    m_audioFrameSize = av_samples_get_buffer_size(
-        nullptr, m_inAudioCtx->ch_layout.nb_channels, m_outAudioCtx->frame_size,
-        m_inAudioCtx->sample_fmt, 0);
 }
 
 void Caster::initAvVideoForGst() {
@@ -1588,70 +1718,11 @@ void Caster::initAvVideoFiltersFrame169Vflip(SensorDirection direction) {
     }
 }
 
-/*void Caster::initAvVideoFiltersLipstickRecorder() {
-    const auto filters = [this] {
-        if (m_inDim.thin())
-            return std::unordered_map<VideoTrans, std::string>{
-                {VideoTrans::Frame169,
-                 "scale=h={1}:w=-1,pad=width={0}:height={1}:x=-1:y=-2:color="
-                 "black"},
-                {VideoTrans::Frame169Rot90,
-                 "transpose=dir=cclock,scale=h=-1:w={0},pad=width={0}:height={"
-                 "1}"
-                 ":x=-1:y=-1:color=black"},
-                {VideoTrans::Frame169Rot180,
-                 "scale=h={1}:w=-1,vflip,pad=width={0}:height={1}:x=-1:y=-1:"
-                 "color=black"},
-                {VideoTrans::Frame169Rot270,
-                 "transpose=dir=clock,scale=h=-1:w={0},pad=width={0}:height={"
-                 "1}:x=-1:y=-1:color=black"},
-                {VideoTrans::Frame169Vflip,
-                 "scale=h={1}:w=-1,vflip,pad=width={0}:height={1}:x=-1:y=-2:"
-                 "color=black"},
-                {VideoTrans::Frame169VflipRot90,
-                 "transpose=dir=cclock_flip,scale=h=-1:w={0},pad=width={0}:"
-                 "height={1}:x=-1:y=-1:color=black"},
-                {VideoTrans::Frame169VflipRot180,
-                 "scale=h={1}:w=-1,hflip,pad=width={0}:height={1}:x=-1:y=-1:"
-                 "color=black"},
-                {VideoTrans::Frame169VflipRot270,
-                 "transpose=dir=clock_flip,scale=h=-1:w={0},pad=width={0}:"
-                 "height={1}:x=-1:y=-1:color=black"}};
-        return std::unordered_map<VideoTrans, std::string>{
-            {VideoTrans::Frame169,
-             "scale=h={1}:w=-1,pad=width={0}:height={1}:x=-1:y=-2:color="
-             "black"},
-            {VideoTrans::Frame169Rot90,
-             "transpose=dir=cclock,scale=h={1}:w=-1,pad=width={0}:height={1}"
-             ":x=-1:y=-1:color=black"},
-            {VideoTrans::Frame169Rot180,
-             "scale=h={1}:w=-1,vflip,pad=width={0}:height={1}:x=-1:y=-1:"
-             "color=black"},
-            {VideoTrans::Frame169Rot270,
-             "transpose=dir=clock,scale=h={1}:w=-1,pad=width={0}:height={"
-             "1}:x=-1:y=-1:color=black"},
-            {VideoTrans::Frame169Vflip,
-             "scale=h={1}:w=-1,vflip,pad=width={0}:height={1}:x=-1:y=-2:"
-             "color=black"},
-            {VideoTrans::Frame169VflipRot90,
-             "transpose=dir=cclock_flip,scale=h={1}:w=-1,pad=width={0}:"
-             "height={1}:x=-1:y=-1:color=black"},
-            {VideoTrans::Frame169VflipRot180,
-             "scale=h={1}:w=-1,hflip,pad=width={0}:height={1}:x=-1:y=-1:"
-             "color=black"},
-            {VideoTrans::Frame169VflipRot270,
-             "transpose=dir=clock_flip,scale=h={1}:w=-1,pad=width={0}:"
-             "height={1}:x=-1:y=-1:color=black"}};
-    }();
-
-    // for (const auto &p : filters) initAvVideoFilter(p.first, p.second);
-}*/
-
 Caster::VideoTrans Caster::orientationToTrans(
     VideoOrientation orientation, const VideoSourceInternalProps &props) {
     switch (orientation) {
         case VideoOrientation::Auto:
-            return VideoTrans::Off;
+            return props.trans;
         case VideoOrientation::Landscape:
             switch (props.orientation) {
                 case VideoOrientation::Portrait:
@@ -1661,8 +1732,9 @@ Caster::VideoTrans Caster::orientationToTrans(
                 case VideoOrientation::InvertedPortrait:
                     return VideoTrans::TransClock;
                 default:
-                    return VideoTrans::Off;
+                    break;
             }
+            break;
         case VideoOrientation::Portrait:
             switch (props.orientation) {
                 case VideoOrientation::Landscape:
@@ -1672,8 +1744,9 @@ Caster::VideoTrans Caster::orientationToTrans(
                 case VideoOrientation::InvertedPortrait:
                     return VideoTrans::VflipHflip;
                 default:
-                    return VideoTrans::Off;
+                    break;
             }
+            break;
         case VideoOrientation::InvertedLandscape:
             switch (props.orientation) {
                 case VideoOrientation::Portrait:
@@ -1683,8 +1756,9 @@ Caster::VideoTrans Caster::orientationToTrans(
                 case VideoOrientation::InvertedPortrait:
                     return VideoTrans::TransCclock;
                 default:
-                    return VideoTrans::Off;
+                    break;
             }
+            break;
         case VideoOrientation::InvertedPortrait:
             switch (props.orientation) {
                 case VideoOrientation::Portrait:
@@ -1694,11 +1768,32 @@ Caster::VideoTrans Caster::orientationToTrans(
                 case VideoOrientation::InvertedLandscape:
                     return VideoTrans::TransClock;
                 default:
-                    return VideoTrans::Off;
+                    break;
             }
+            break;
     }
 
-    return VideoTrans::Off;
+    return props.trans;
+}
+
+void Caster::initAvAudioFilters() {
+    if (m_audioTrans == AudioTrans::Off) {
+        LOGD("audio filtering is not needed");
+        return;
+    }
+
+    m_audioFrameAfterFilter = av_frame_alloc();
+
+    switch (m_audioTrans) {
+        case AudioTrans::Volume:
+            initAvAudioFilter(
+                m_audioFilterCtxMap[AudioTrans::Volume],
+                fmt::format("volume=volume={}dB", m_config.audioVolume)
+                    .c_str());
+            break;
+        default:
+            throw std::runtime_error("unsuported audio trans");
+    }
 }
 
 void Caster::initAvVideoFilters() {
@@ -1751,15 +1846,19 @@ void Caster::initAvVideoFilters() {
                               "scale=h={0}:w={1},transpose=dir={3}_flip");
             break;
         case VideoTrans::Frame169:
+        case VideoTrans::Frame169Rot90:
+        case VideoTrans::Frame169Rot180:
+        case VideoTrans::Frame169Rot270:
+        case VideoTrans::Frame169Vflip:
+        case VideoTrans::Frame169VflipRot90:
+        case VideoTrans::Frame169VflipRot180:
+        case VideoTrans::Frame169VflipRot270:
             switch (props.type) {
                 case VideoSourceType::LipstickCapture:
                     initAvVideoFiltersFrame169Vflip(props.sensorDirection);
                     [[fallthrough]];
-                case VideoSourceType::DroidCamRaw:
-                    initAvVideoFiltersFrame169(props.sensorDirection);
-                    break;
                 default:
-                    throw std::runtime_error("frame169 is not supported");
+                    initAvVideoFiltersFrame169(props.sensorDirection);
             }
             break;
         default:
@@ -1777,8 +1876,92 @@ void Caster::initAvVideoFilter(SensorDirection direction, VideoTrans trans,
             .c_str());
 }
 
+void Caster::initAvAudioFilter(FilterCtx &ctx, const char *arg) {
+    LOGD("initing audio av filter: " << arg);
+
+    ctx.in = avfilter_inout_alloc();
+    ctx.out = avfilter_inout_alloc();
+    ctx.graph = avfilter_graph_alloc();
+    if (ctx.in == nullptr || ctx.out == nullptr || ctx.graph == nullptr)
+        throw std::runtime_error("failed to allocate av filter");
+
+    const auto *buffersrc = avfilter_get_by_name("abuffer");
+    if (buffersrc == nullptr) throw std::runtime_error("no abuffer filter");
+
+    if (m_inAudioCtx->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC)
+        av_channel_layout_default(&m_inAudioCtx->ch_layout,
+                                  m_inAudioCtx->ch_layout.nb_channels);
+
+    std::array<char, 512> srcArgs{};
+    auto s =
+        snprintf(srcArgs.data(), srcArgs.size(),
+                 "sample_rate=%d:sample_fmt=%s:time_base=%d/%d:channel_layout=",
+                 m_inAudioCtx->sample_rate,
+                 av_get_sample_fmt_name(m_inAudioCtx->sample_fmt),
+                 m_inAudioCtx->time_base.num, m_inAudioCtx->time_base.den);
+    av_channel_layout_describe(&m_inAudioCtx->ch_layout, &srcArgs[s],
+                               srcArgs.size() - s);
+    LOGD("filter bufsrc: " << srcArgs.data());
+
+    if (avfilter_graph_create_filter(&ctx.srcCtx, buffersrc, "in",
+                                     srcArgs.data(), nullptr, ctx.graph) < 0) {
+        throw std::runtime_error(
+            "audio src avfilter_graph_create_filter error");
+    }
+
+    const auto *buffersink = avfilter_get_by_name("abuffersink");
+    if (buffersink == nullptr)
+        throw std::runtime_error("no abuffersink filter");
+
+    if (avfilter_graph_create_filter(&ctx.sinkCtx, buffersink, "out", nullptr,
+                                     nullptr, ctx.graph) < 0) {
+        throw std::runtime_error(
+            "audio sink avfilter_graph_create_filter error");
+    }
+
+    const AVSampleFormat out_sample_fmts[] = {m_outAudioCtx->sample_fmt,
+                                              AV_SAMPLE_FMT_NONE};
+    if (av_opt_set_int_list(ctx.sinkCtx, "sample_fmts", out_sample_fmts, -1,
+                            AV_OPT_SEARCH_CHILDREN) < 0) {
+        throw std::runtime_error("av_opt_set_int_list error");
+    }
+
+    std::array<char, 512> chName{};
+    av_channel_layout_describe(&m_outAudioCtx->ch_layout, chName.data(),
+                               chName.size());
+    if (av_opt_set(ctx.sinkCtx, "ch_layouts", chName.data(),
+                   AV_OPT_SEARCH_CHILDREN) < 0) {
+        throw std::runtime_error("av_opt_set error");
+    }
+
+    const int out_sample_rates[] = {m_outAudioCtx->sample_rate, -1};
+    if (av_opt_set_int_list(ctx.sinkCtx, "sample_rates", out_sample_rates, -1,
+                            AV_OPT_SEARCH_CHILDREN) < 0) {
+        throw std::runtime_error("av_opt_set_int_list error");
+    }
+
+    ctx.out->name = av_strdup("in");
+    ctx.out->filter_ctx = ctx.srcCtx;
+    ctx.out->pad_idx = 0;
+    ctx.out->next = nullptr;
+
+    ctx.in->name = av_strdup("out");
+    ctx.in->filter_ctx = ctx.sinkCtx;
+    ctx.in->pad_idx = 0;
+    ctx.in->next = nullptr;
+
+    if (avfilter_graph_parse_ptr(ctx.graph, arg, &ctx.in, &ctx.out, nullptr) <
+        0)
+        throw std::runtime_error("audio avfilter_graph_parse_ptr error");
+
+    if (avfilter_graph_config(ctx.graph, nullptr) < 0)
+        throw std::runtime_error("audio avfilter_graph_config error");
+
+    LOGD("audio av filter successfully inited");
+}
+
 void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg) {
-    LOGD("initing av filter: " << arg);
+    LOGD("initing video av filter: " << arg);
 
     ctx.in = avfilter_inout_alloc();
     ctx.out = avfilter_inout_alloc();
@@ -1789,16 +1972,17 @@ void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg) {
     const auto *buffersrc = avfilter_get_by_name("buffer");
     if (buffersrc == nullptr) throw std::runtime_error("no buffer filter");
 
-    char srcArgs[512];
-    snprintf(srcArgs, sizeof(srcArgs),
+    std::array<char, 512> srcArgs{};
+    snprintf(srcArgs.data(), srcArgs.size(),
              "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d", m_inVideoCtx->width,
              m_inVideoCtx->height, m_inVideoCtx->pix_fmt,
              m_inVideoCtx->time_base.num, m_inVideoCtx->time_base.den);
-    LOGD("filter bufsrc: " << srcArgs);
+    LOGD("filter bufsrc: " << srcArgs.data());
 
-    if (avfilter_graph_create_filter(&ctx.srcCtx, buffersrc, "in", srcArgs,
-                                     nullptr, ctx.graph) < 0) {
-        throw std::runtime_error("src avfilter_graph_create_filter error");
+    if (avfilter_graph_create_filter(&ctx.srcCtx, buffersrc, "in",
+                                     srcArgs.data(), nullptr, ctx.graph) < 0) {
+        throw std::runtime_error(
+            "video src avfilter_graph_create_filter error");
     }
 
     const auto *buffersink = avfilter_get_by_name("buffersink");
@@ -1806,7 +1990,8 @@ void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg) {
 
     if (avfilter_graph_create_filter(&ctx.sinkCtx, buffersink, "out", nullptr,
                                      nullptr, ctx.graph) < 0) {
-        throw std::runtime_error("sink avfilter_graph_create_filter error");
+        throw std::runtime_error(
+            "video sink avfilter_graph_create_filter error");
     }
 
     AVPixelFormat pix_fmts[] = {m_outVideoCtx->pix_fmt, AV_PIX_FMT_NONE};
@@ -1827,39 +2012,25 @@ void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg) {
 
     if (avfilter_graph_parse_ptr(ctx.graph, arg, &ctx.in, &ctx.out, nullptr) <
         0)
-        throw std::runtime_error("avfilter_graph_parse_ptr error");
+        throw std::runtime_error("video avfilter_graph_parse_ptr error");
 
     if (avfilter_graph_config(ctx.graph, nullptr) < 0)
-        throw std::runtime_error("avfilter_graph_config error");
+        throw std::runtime_error("video avfilter_graph_config error");
 
-    LOGD("av filter successfully inited");
+    LOGD("video av filter successfully inited");
 }
 
 AVSampleFormat Caster::bestAudioSampleFormat(
-    const AVCodec *encoder, const AudioSourceInternalProps &props) {
+    const AVCodec *encoder, const AVSampleFormat &decoderSampleFmt) {
     if (encoder->sample_fmts == nullptr)
         throw std::runtime_error(
             "audio encoder does not support any sample fmts");
-
-    LOGD("sample fmts supported by audio encoder:");
-    for (int i = 0; encoder->sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
-        LOGD("[" << i << "]: " << encoder->sample_fmts[i]);
-    }
-
-    const auto *decoder = avcodec_find_decoder(props.codec);
-    if (!decoder)
-        throw std::runtime_error("no audio decoder for codec: "s +
-                                 avCodecName(props.codec));
-    if (decoder->sample_fmts == nullptr ||
-        decoder->sample_fmts[0] == AV_SAMPLE_FMT_NONE)
-        throw std::runtime_error(
-            "audio decoder does not support any sample fmts");
 
     AVSampleFormat bestFmt = AV_SAMPLE_FMT_NONE;
 
     for (int i = 0; encoder->sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
         bestFmt = encoder->sample_fmts[i];
-        if (bestFmt == decoder->sample_fmts[0]) {
+        if (bestFmt == decoderSampleFmt) {
             LOGD("sample fmt exact match");
             break;
         }
@@ -2121,6 +2292,33 @@ void Caster::initAvVideoEncoder() {
     initAvVideoEncoder(m_config.videoEncoder);
 }
 
+void Caster::initFiles() {
+    for (const auto &f : m_config.fileSourceConfig->files) m_files.push(f);
+}
+
+bool Caster::initAvAudioInputFormatFromFile() {
+    std::lock_guard lock{m_filesMtx};
+
+    if (m_files.empty() && m_config.fileSourceConfig &&
+        m_config.fileSourceConfig->loop)
+        initFiles();
+
+    if (m_files.empty()) {
+        LOGD("no more files to cast");
+        return false;
+    }
+
+    LOGD("opening file: " << m_files.front());
+
+    if (avformat_open_input(&m_inAudioFormatCtx, m_files.front().c_str(),
+                            nullptr, nullptr) < 0)
+        throw std::runtime_error("avformat_open_input for audio error");
+
+    m_files.pop();
+
+    return true;
+}
+
 void Caster::initAvVideoInputRawFormat() {
     const auto &props = videoProps();
 
@@ -2161,7 +2359,37 @@ void Caster::allocAvOutputFormat() {
 void Caster::initAv() {
     LOGD("av init started");
 
-    if (audioEnabled()) initAvAudio();
+    if (audioEnabled()) {
+        const auto &props = audioProps();
+
+        switch (props.type) {
+            case AudioSourceType::Mic:
+            case AudioSourceType::Monitor:
+            case AudioSourceType::Playback:
+                initAvAudioRawDecoderFromProps();
+                break;
+            case AudioSourceType::File:
+                if (!initAvAudioInputFormatFromFile())
+                    throw std::runtime_error("no file to cast");
+                findAvAudioInputStreamIdx();
+                initAvAudioRawDecoderFromInputStream();
+                break;
+            default:
+                throw std::runtime_error("unknown audio source type");
+        }
+
+        initAvAudioEncoder();
+        initAvAudioFifo();
+        initAvAudioFilters();
+
+        m_audioInFrameSize = av_samples_get_buffer_size(
+            nullptr, m_inAudioCtx->ch_layout.nb_channels,
+            m_outAudioCtx->frame_size, m_inAudioCtx->sample_fmt, 0);
+
+        m_audioOutFrameSize = av_samples_get_buffer_size(
+            nullptr, m_outAudioCtx->ch_layout.nb_channels,
+            m_outAudioCtx->frame_size, m_outAudioCtx->sample_fmt, 0);
+    }
 
     if (videoEnabled()) {
         const auto &props = videoProps();
@@ -2174,8 +2402,8 @@ void Caster::initAv() {
             case VideoSourceType::X11Capture:
                 initAvVideoEncoder();
                 initAvVideoInputRawFormat();
-                initAvVideoRawDecoderFromInputStream(
-                    findAvVideoInputStreamIdx());
+                findAvVideoInputStreamIdx();
+                initAvVideoRawDecoderFromInputStream();
                 break;
             case VideoSourceType::LipstickCapture:
             case VideoSourceType::Test:
@@ -2218,6 +2446,13 @@ void Caster::initAvVideoInputCompressedFormat() {
 
     if (avformat_find_stream_info(m_inVideoFormatCtx, nullptr) < 0)
         throw std::runtime_error("avformat_find_stream_info for video error");
+}
+
+void Caster::initAvAudioFifo() {
+    m_audioFifo = av_audio_fifo_alloc(m_inAudioCtx->sample_fmt,
+                                      m_inAudioCtx->ch_layout.nb_channels, 1);
+    if (m_audioFifo == nullptr)
+        throw std::runtime_error("av_audio_fifo_alloc error");
 }
 
 void Caster::initAvVideoBsf() {
@@ -2282,8 +2517,8 @@ void Caster::initAvVideoOutStreamFromInputFormat() {
     m_outVideoStream->time_base = AVRational{1, m_videoFramerate};
 }
 
-void Caster::initAvVideoRawDecoderFromInputStream(int idx) {
-    const auto *stream = m_inVideoFormatCtx->streams[idx];
+void Caster::initAvVideoRawDecoderFromInputStream() {
+    const auto *stream = m_inVideoFormatCtx->streams[m_inVideoStreamIdx];
 
     m_inPixfmt = static_cast<AVPixelFormat>(stream->codecpar->format);
 
@@ -2326,7 +2561,20 @@ void Caster::initAvVideoRawDecoderFromInputStream(int idx) {
     m_videoFrameIn = av_frame_alloc();
 }
 
-int Caster::findAvVideoInputStreamIdx() {
+void Caster::findAvAudioInputStreamIdx() {
+    if (avformat_find_stream_info(m_inAudioFormatCtx, nullptr) < 0)
+        throw std::runtime_error("avformat_find_stream_info for audio error");
+
+    auto idx = av_find_best_stream(m_inAudioFormatCtx, AVMEDIA_TYPE_AUDIO, -1,
+                                   -1, nullptr, 0);
+    if (idx < 0) throw std::runtime_error("no audio stream found in input");
+
+    av_dump_format(m_inAudioFormatCtx, idx, "", 0);
+
+    m_inAudioStreamIdx = idx;
+}
+
+void Caster::findAvVideoInputStreamIdx() {
     if (avformat_find_stream_info(m_inVideoFormatCtx, nullptr) < 0)
         throw std::runtime_error("avformat_find_stream_info for video error");
 
@@ -2336,7 +2584,7 @@ int Caster::findAvVideoInputStreamIdx() {
 
     av_dump_format(m_inVideoFormatCtx, idx, "", 0);
 
-    return idx;
+    m_inVideoStreamIdx = idx;
 }
 
 void Caster::initAvVideoOutStreamFromEncoder() {
@@ -2368,10 +2616,11 @@ void Caster::initAvAudioDurations() {
     LOGD("audio frame dur: " << m_audioFrameDuration);
     LOGD("audio pkt dur: " << m_audioPktDuration);
     LOGD("audio samples in frame: " << m_outAudioCtx->frame_size);
-    LOGD("audio frame size: " << m_audioFrameSize);
+    LOGD("audio in-frame size: " << m_audioInFrameSize);
+    LOGD("audio out-frame size: " << m_audioOutFrameSize);
 }
 
-void Caster::initAvAudioOutStream() {
+void Caster::initAvAudioOutStreamFromEncoder() {
     m_outAudioStream = avformat_new_stream(m_outFormatCtx, nullptr);
     if (!m_outAudioStream) {
         throw std::runtime_error("avformat_new_stream for audio error");
@@ -2388,7 +2637,7 @@ void Caster::initAvAudioOutStream() {
     m_outAudioStream->time_base = m_outAudioCtx->time_base;
 }
 
-void Caster::reinitAvOutputFormat() {
+void Caster::reInitAvOutputFormat() {
     cleanAvOutputFormat();
     allocAvOutputFormat();
 
@@ -2411,7 +2660,7 @@ void Caster::reinitAvOutputFormat() {
         }
     }
 
-    if (audioEnabled()) initAvAudioOutStream();
+    if (audioEnabled()) initAvAudioOutStreamFromEncoder();
 
     initAvOutputFormat();
 }
@@ -2507,7 +2756,9 @@ void Caster::startAv() {
         }
     }
 
-    if (audioEnabled()) initAvAudioOutStream();
+    if (audioEnabled()) {
+        initAvAudioOutStreamFromEncoder();
+    }
 
     initAvOutputFormat();
 
@@ -2613,11 +2864,12 @@ void Caster::connectPaSinkInput() {
     if (props.muteSource) mutePaSinkInput(*si);
 
     const pa_buffer_attr attr{
-        /*maxlength=*/static_cast<uint32_t>(-1),
+        /*maxlength=*/
+        static_cast<uint32_t>(-1),
         /*tlength=*/static_cast<uint32_t>(-1),
         /*prebuf=*/static_cast<uint32_t>(-1),
         /*minreq=*/static_cast<uint32_t>(-1),
-        /*fragsize=*/static_cast<uint32_t>(m_audioFrameSize)};
+        /*fragsize=*/static_cast<uint32_t>(m_audioInFrameSize)};
 
     if (pa_stream_set_monitor_stream(m_paStream, idx) < 0) {
         if (props.muteSource) unmutePaSinkInput(*si);
@@ -2655,7 +2907,7 @@ void Caster::connectPaSource() {
         /*tlength=*/static_cast<uint32_t>(-1),
         /*prebuf=*/static_cast<uint32_t>(-1),
         /*minreq=*/static_cast<uint32_t>(-1),
-        /*fragsize=*/static_cast<uint32_t>(m_audioFrameSize)};
+        /*fragsize=*/static_cast<uint32_t>(m_audioInFrameSize)};
 
     LOGD("connecting pa source: " << props.dev);
 
@@ -2736,10 +2988,10 @@ void Caster::startAudioOnlyMuxing() {
     m_avMuxingThread = std::thread([this, sleep = m_audioFrameDuration / 2]() {
         LOGD("starting muxing");
 
-        try {
-            auto *audio_pkt = av_packet_alloc();
-            m_nextAudioPts = 0;
+        auto *audio_pkt = av_packet_alloc();
+        m_nextAudioPts = 0;
 
+        try {
             while (!terminating()) {
                 if (m_state != State::Started) break;
                 if (muxAudio(audio_pkt))
@@ -2747,12 +2999,12 @@ void Caster::startAudioOnlyMuxing() {
                                    nullptr);  // force fragment
                 av_usleep(sleep);
             }
-
-            av_packet_free(&audio_pkt);
         } catch (const std::runtime_error &e) {
             LOGE("error in audio muxing thread: " << e.what());
             reportError();
         }
+
+        av_packet_free(&audio_pkt);
 
         LOGD("muxing ended");
     });
@@ -2912,37 +3164,32 @@ bool Caster::readVideoFrameFromBuf(AVPacket *pkt) {
 }
 
 void Caster::readVideoFrameFromDemuxer(AVPacket *pkt) {
-    if (av_read_frame(m_inVideoFormatCtx, pkt) != 0)
+    if (auto ret = av_read_frame(m_inVideoFormatCtx, pkt); ret != 0) {
+        if (ret == AVERROR_EOF) {
+            LOGD("video stream eof");
+            m_terminationReason = TerminationReason::Eof;
+        }
+
         throw std::runtime_error("av_read_frame for video error");
+    }
 }
 
 bool Caster::filterVideoFrame(VideoTrans trans, AVFrame *frameIn,
                               AVFrame *frameOut) {
-    LOGT("filter frame with trans: " << trans);
+    LOGT("filter video frame with trans: " << trans);
 
     auto &ctx = m_videoFilterCtxMap.at(trans);
 
     if (av_buffersrc_add_frame_flags(ctx.srcCtx, frameIn,
                                      AV_BUFFERSRC_FLAG_PUSH) < 0)
-        throw std::runtime_error("av_buffersrc_add_frame_flags error");
+        throw std::runtime_error("video av_buffersrc_add_frame_flags error");
 
     auto ret = av_buffersink_get_frame(ctx.sinkCtx, frameOut);
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return false;
-    if (ret < 0) throw std::runtime_error("av_buffersink_get_frame error");
+    if (ret < 0)
+        throw std::runtime_error("video av_buffersink_get_frame error");
 
     return true;
-}
-
-void Caster::convertVideoFramePixfmt(AVFrame *frameIn, AVFrame *frameOut) {
-    sws_scale(m_videoSwsCtx, frameIn->data, frameIn->linesize, 0,
-              m_inVideoCtx->height, frameOut->data, frameOut->linesize);
-
-    av_frame_copy_props(frameOut, frameIn);
-    frameOut->format = m_outVideoCtx->pix_fmt;
-    frameOut->width = frameIn->width;
-    frameOut->height = frameIn->height;
-
-    av_frame_unref(frameIn);
 }
 
 Caster::VideoTrans Caster::transForYinverted(VideoTrans trans, bool yinverted) {
@@ -3050,7 +3297,7 @@ AVFrame *Caster::filterVideoIfNeeded(AVFrame *frameIn) {
                     }
                 }
 #endif
-                return VideoTrans::Frame169;
+                break;
         }
         return m_videoTrans;
     }();
@@ -3058,7 +3305,7 @@ AVFrame *Caster::filterVideoIfNeeded(AVFrame *frameIn) {
     if (trans == VideoTrans::Off) return frameIn;
 
     if (!filterVideoFrame(trans, frameIn, m_videoFrameAfterFilter)) {
-        av_frame_unref(m_videoFrameIn);
+        av_frame_unref(frameIn);
         av_frame_unref(m_videoFrameAfterFilter);
         return nullptr;
     }
@@ -3079,7 +3326,7 @@ bool Caster::encodeVideoFrame(AVPacket *pkt) {
 
     if (auto ret = avcodec_receive_frame(m_inVideoCtx, m_videoFrameIn);
         ret != 0) {
-        throw std::runtime_error("avcodec_receive_frame for video error");
+        throw std::runtime_error("video avcodec_receive_frame error");
     }
 
     m_videoFrameIn->format = m_inVideoCtx->pix_fmt;
@@ -3092,7 +3339,7 @@ bool Caster::encodeVideoFrame(AVPacket *pkt) {
     if (auto ret = avcodec_send_frame(m_outVideoCtx, frameOut);
         ret != 0 && ret != AVERROR(EAGAIN)) {
         av_frame_unref(frameOut);
-        throw std::runtime_error("avcodec_send_frame for video error");
+        throw std::runtime_error("video avcodec_send_frame error");
     }
 
     av_frame_unref(frameOut);
@@ -3103,13 +3350,13 @@ bool Caster::encodeVideoFrame(AVPacket *pkt) {
             return false;
         }
 
-        throw std::runtime_error("avcodec_receive_packet for video error");
+        throw std::runtime_error("video avcodec_receive_packet error");
     }
 
     return true;
 }
 
-bool Caster::videoPktOk(const AVPacket *pkt) {
+bool Caster::avPktOk(const AVPacket *pkt) {
     if (pkt->flags & AV_PKT_FLAG_CORRUPT) {
         LOGW("corrupted pkt detected");
         return false;
@@ -3219,7 +3466,6 @@ bool Caster::muxVideo(AVPacket *pkt) {
         case VideoSourceType::LipstickCapture:
         case VideoSourceType::Test:
         case VideoSourceType::DroidCamRaw:
-            // copyVideoFrameFromRawBuf(pkt);
             if (!readVideoFrameFromBuf(pkt)) return false;
             if (!encodeVideoFrame(pkt)) return false;
             break;
@@ -3227,7 +3473,7 @@ bool Caster::muxVideo(AVPacket *pkt) {
             throw std::runtime_error("unknown video source type");
     }
 
-    if (!videoPktOk(pkt)) {
+    if (!avPktOk(pkt)) {
         av_packet_unref(pkt);
         return false;
     }
@@ -3278,50 +3524,216 @@ int64_t Caster::audioDelay(int64_t now) const {
     return now - (m_audioTimeLastFrame + m_audioFrameDuration);
 }
 
-bool Caster::readRawAudioPkt(AVPacket *pkt, int64_t now) {
-    const auto maxAudioDelay = 2 * m_audioFrameDuration;
-    const auto delay = videoEnabled() ? videoAudioDelay() : audioDelay(now);
+bool Caster::reInitAvAudioInput() {
+    cleanAvAudioDecoder();
+    cleanAvAudioInputFormat();
+    cleanAvAudioFifo();
+    cleanAvAudioFilters();
 
-    LOGT("audio: delay=" << delay
-                         << ", audio frame dur=" << m_audioFrameDuration
-                         << ", audio buf size=" << m_audioBuf.size());
-    if (delay < -maxAudioDelay) {
-        LOGD("too much audio, deleting audio frame: delay=" << delay);
-        std::lock_guard lock{m_audioMtx};
-        m_audioBuf.discardExact(m_audioFrameSize);
-        return false;
-    }
+    if (!initAvAudioInputFormatFromFile()) return false;
 
-    if (delay < m_audioFrameDuration) return false;
+    findAvAudioInputStreamIdx();
+    initAvAudioRawDecoderFromInputStream();
+    initAvAudioFifo();
+    initAvAudioFilters();
 
+    m_audioInFrameSize = av_samples_get_buffer_size(
+        nullptr, m_inAudioCtx->ch_layout.nb_channels, m_outAudioCtx->frame_size,
+        m_inAudioCtx->sample_fmt, 0);
+
+    LOGD("audio input re-inited");
+
+    return true;
+}
+
+bool Caster::readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData) {
     std::lock_guard lock{m_audioMtx};
 
-    if (!m_audioBuf.hasEnoughData(m_audioFrameSize)) {
-        const auto pushNull =
-            m_paStream == nullptr || (delay > maxAudioDelay) || audioMuted();
+    if (!m_audioBuf.hasEnoughData(m_audioInFrameSize)) {
+        const auto pushNull = m_paStream == nullptr || nullWhenNoEnoughData;
 
         if (pushNull) {
-            LOGT("audio push null: " << (m_audioFrameSize - m_audioBuf.size()));
-            m_audioBuf.pushNullExactForce(m_audioFrameSize - m_audioBuf.size());
+            LOGT("audio push null: "
+                 << (m_audioInFrameSize - m_audioBuf.size()));
+            m_audioBuf.pushNullExactForce(m_audioInFrameSize -
+                                          m_audioBuf.size());
         } else {
             return false;
         }
     }
 
-    if (av_new_packet(pkt, m_audioFrameSize) < 0) {
+    if (av_new_packet(pkt, m_audioInFrameSize) < 0)
         throw std::runtime_error("av_new_packet for audio error");
+
+    if (!m_audioBuf.pullExact(pkt->data, m_audioInFrameSize))
+        throw std::runtime_error("failed to pull from buf");
+
+    return true;
+}
+
+bool Caster::readAudioPktFromDemuxer(AVPacket *pkt) {
+    if (auto ret = av_read_frame(m_inAudioFormatCtx, pkt); ret != 0) {
+        if (ret == AVERROR_EOF) {
+            LOGD("audio stream eof");
+
+            if (reInitAvAudioInput()) return false;
+
+            m_terminationReason = TerminationReason::Eof;
+        }
+        throw std::runtime_error("av_read_frame from audio demuxer error");
     }
 
-    m_audioBuf.pull(pkt->data, m_audioFrameSize);
+    if (pkt->stream_index != m_inAudioStreamIdx) {
+        av_packet_unref(pkt);
+        return false;
+    }
 
-    if (audioBoosted()) {
-        const auto &props = audioProps();
-        if (props.bps == 1)
-            changeAudioVolume<1>(props.endian, pkt);
-        else if (props.bps == 2)
-            changeAudioVolume<2>(props.endian, pkt);
-        else if (props.bps == 4)
-            changeAudioVolume<4>(props.endian, pkt);
+    return true;
+}
+
+bool Caster::readAudioFrameFromDemuxer(AVPacket *pkt) {
+    return readAudioFrame(pkt, DataSource::Demuxer);
+}
+
+bool Caster::readAudioFrame(AVPacket *pkt, DataSource source,
+                            bool nullWhenNoEnoughData) {
+    while (av_audio_fifo_size(m_audioFifo) < m_outAudioCtx->frame_size) {
+        if (terminating() || m_state == State::Paused) return false;
+
+        if (source == DataSource::Demuxer) {
+            if (!readAudioPktFromDemuxer(pkt)) continue;
+        } else {
+            if (!readAudioPktFromBuf(pkt, nullWhenNoEnoughData)) continue;
+        }
+
+        if (auto ret = avcodec_send_packet(m_inAudioCtx, pkt);
+            ret != 0 && ret != AVERROR(EAGAIN)) {
+            LOGT("audio decoding error")
+
+            av_packet_unref(pkt);
+            return false;
+        }
+
+        av_packet_unref(pkt);
+
+        if (auto ret = avcodec_receive_frame(m_inAudioCtx, m_audioFrameIn);
+            ret != 0) {
+            if (ret == AVERROR(EAGAIN)) continue;
+
+            throw std::runtime_error(
+                "avcodec_receive_frame from audio decoder error");
+        }
+
+        if (av_audio_fifo_realloc(m_audioFifo, av_audio_fifo_size(m_audioFifo) +
+                                                   m_audioFrameIn->nb_samples) <
+            0)
+            throw std::runtime_error("av_audio_fifo_realloc error");
+
+        if (av_audio_fifo_write(
+                m_audioFifo, reinterpret_cast<void **>(m_audioFrameIn->data),
+                m_audioFrameIn->nb_samples) < m_audioFrameIn->nb_samples)
+            throw std::runtime_error("av_audio_fifo_write error");
+
+        av_frame_unref(m_audioFrameIn);
+    }
+
+    m_audioFrameIn->nb_samples = m_outAudioCtx->frame_size;
+    av_channel_layout_copy(&m_audioFrameIn->ch_layout,
+                           &m_inAudioCtx->ch_layout);
+    m_audioFrameIn->format = m_inAudioCtx->sample_fmt;
+    m_audioFrameIn->sample_rate = m_inAudioCtx->sample_rate;
+
+    if (av_frame_get_buffer(m_audioFrameIn, 0) != 0)
+        throw std::runtime_error("av_frame_get_buffer error");
+
+    if (av_audio_fifo_read(
+            m_audioFifo, reinterpret_cast<void **>(m_audioFrameIn->data),
+            m_outAudioCtx->frame_size) < m_outAudioCtx->frame_size) {
+        av_frame_free(&m_audioFrameIn);
+        throw std::runtime_error("av_audio_fifo_read error");
+    }
+
+    return true;
+}
+
+bool Caster::readAudioFrameFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData) {
+    return readAudioFrame(pkt, DataSource::Buf, nullWhenNoEnoughData);
+}
+
+bool Caster::filterAudioFrame(AudioTrans trans, AVFrame *frameIn,
+                              AVFrame *frameOut) {
+    LOGT("filter audio frame with trans: " << trans);
+
+    auto &ctx = m_audioFilterCtxMap.at(trans);
+
+    if (av_buffersrc_add_frame_flags(ctx.srcCtx, frameIn,
+                                     AV_BUFFERSRC_FLAG_PUSH) < 0) {
+        av_frame_unref(frameIn);
+        throw std::runtime_error("audio av_buffersrc_add_frame_flags error");
+    }
+
+    auto ret = av_buffersink_get_frame(ctx.sinkCtx, frameOut);
+    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return false;
+    if (ret < 0) {
+        av_frame_unref(frameIn);
+        throw std::runtime_error("audio av_buffersink_get_frame error");
+    }
+
+    return true;
+}
+
+AVFrame *Caster::filterAudioIfNeeded(AVFrame *frameIn) {
+    if (m_audioTrans == AudioTrans::Off) return frameIn;
+
+    updateAudioVolumeFilter();
+
+    if (!filterAudioFrame(m_audioTrans, frameIn, m_audioFrameAfterFilter)) {
+        av_frame_unref(frameIn);
+        av_frame_unref(m_audioFrameAfterFilter);
+        return nullptr;
+    }
+
+    av_frame_unref(frameIn);
+    return m_audioFrameAfterFilter;
+}
+
+void Caster::updateAudioVolumeFilter() {
+    if (!m_audioVolumeUpdated) return;
+
+    m_audioVolumeUpdated = false;
+
+    if (!m_audioFilterCtxMap.count(AudioTrans::Volume)) return;
+
+    auto ctx = m_audioFilterCtxMap.at(AudioTrans::Volume);
+
+    std::array<char, 512> res{};
+    if (avfilter_graph_send_command(
+            ctx.graph, "volume", "volume",
+            fmt::format("{}dB", m_config.audioVolume).c_str(), res.data(),
+            res.size(), 0) < 0) {
+        throw std::runtime_error("audio avfilter_graph_send_command error");
+    }
+}
+
+bool Caster::encodeAudioFrame(AVPacket *pkt) {
+    auto *frameOut = filterAudioIfNeeded(m_audioFrameIn);
+    if (frameOut == nullptr) return false;
+
+    if (auto ret = avcodec_send_frame(m_outAudioCtx, frameOut);
+        ret != 0 && ret != AVERROR(EAGAIN)) {
+        av_frame_unref(frameOut);
+        throw std::runtime_error("audio avcodec_send_frame error");
+    }
+
+    av_frame_unref(frameOut);
+
+    if (auto ret = avcodec_receive_packet(m_outAudioCtx, pkt); ret != 0) {
+        if (ret == AVERROR(EAGAIN)) {
+            LOGD("audio pkt not ready");
+            return false;
+        }
+
+        throw std::runtime_error("audio avcodec_receive_packet error");
     }
 
     return true;
@@ -3330,53 +3742,31 @@ bool Caster::readRawAudioPkt(AVPacket *pkt, int64_t now) {
 bool Caster::muxAudio(AVPacket *pkt) {
     bool pktDone = false;
 
-    while (!terminating()) {
+    while (!terminating() && m_state != State::Paused) {
         auto now = av_gettime();
 
-        if (!readRawAudioPkt(pkt, now)) break;
+        const auto maxAudioDelay = 2 * m_audioFrameDuration;
+        const auto delay = videoEnabled() ? videoAudioDelay() : audioDelay(now);
 
-        if (auto ret = avcodec_send_packet(m_inAudioCtx, pkt);
-            ret != 0 && ret != AVERROR(EAGAIN)) {
-            throw std::runtime_error("avcodec_send_packet for audio error");
+        LOGT("audio: delay=" << delay
+                             << ", audio frame dur=" << m_audioFrameDuration);
+        if (delay < -maxAudioDelay) {
+            LOGW("too much audio, delay=" << delay);
+            break;
         }
 
-        if (auto ret = avcodec_receive_frame(m_inAudioCtx, m_audioFrameIn);
-            ret != 0) {
-            throw std::runtime_error("avcodec_receive_frame for audio error");
-        }
+        if (delay < m_audioFrameDuration) break;
 
-        if (m_audioSwrCtx == nullptr) {  // resampling not needed
-            m_audioFrameIn->ch_layout = m_outAudioCtx->ch_layout;
-            m_audioFrameIn->format = m_outAudioCtx->sample_fmt;
-            m_audioFrameIn->sample_rate = m_outAudioCtx->sample_rate;
+        if (audioProps().type == AudioSourceType::File) {
+            if (!readAudioFrameFromDemuxer(pkt)) break;
+        } else if (!readAudioFrameFromBuf(pkt, delay > maxAudioDelay))
+            break;
 
-            if (auto ret = avcodec_send_frame(m_outAudioCtx, m_audioFrameIn);
-                ret != 0 && ret != AVERROR(EAGAIN)) {
-                throw std::runtime_error("avcodec_send_frame for audio error");
-            }
-        } else {  // resampling required
-            m_audioFrameOut->ch_layout = m_outAudioCtx->ch_layout;
-            m_audioFrameOut->format = m_outAudioCtx->sample_fmt;
-            m_audioFrameOut->sample_rate = m_outAudioCtx->sample_rate;
+        if (!encodeAudioFrame(pkt)) break;
 
-            if (swr_convert_frame(m_audioSwrCtx, m_audioFrameOut,
-                                  m_audioFrameIn) != 0) {
-                throw std::runtime_error("swr_convert_frame for audio error");
-            }
-
-            if (auto ret = avcodec_send_frame(m_outAudioCtx, m_audioFrameOut);
-                ret != 0 && ret != AVERROR(EAGAIN)) {
-                throw std::runtime_error("avcodec_send_frame for audio error");
-            }
-        }
-
-        if (auto ret = avcodec_receive_packet(m_outAudioCtx, pkt); ret != 0) {
-            if (ret == AVERROR(EAGAIN)) {
-                LOGD("audio pkt not ready");
-                break;
-            }
-
-            throw std::runtime_error("avcodec_receive_packet for audio error");
+        if (!avPktOk(pkt)) {
+            av_packet_unref(pkt);
+            break;
         }
 
         pkt->stream_index = m_outAudioStream->index;
@@ -3488,12 +3878,15 @@ void Caster::updateVideoSampleStats(int64_t now) {
 }
 
 void Caster::setAudioVolume(float volume) {
-    if (volume < 0.F || volume > 10.F) {
+    if (volume < -50 || volume > 50) {
         LOGW("audio-volume is invalid");
         return;
     }
 
+    if (volume == m_config.audioVolume) return;
+
     m_config.audioVolume = volume;
+    m_audioVolumeUpdated = true;
 }
 
 uint32_t Caster::hash(std::string_view str) {
@@ -3558,10 +3951,31 @@ Caster::VideoPropsMap Caster::detectTestVideoSources() {
                 {AV_CODEC_ID_RAWVIDEO,
                  iprops.pixfmt,
                  {{{iprops.width, iprops.height}, {iprops.framerate}}}});
-            props.name = "test-rotate";
-            props.friendlyName = "Test (auto rotate)";
+            props.name = "test-169l";
+            props.friendlyName = "Test (16:9 landscape)";
             props.trans = VideoTrans::Frame169;
-            props.orientation = VideoOrientation::Landscape;
+            props.orientation = iprops.width < iprops.height
+                                    ? VideoOrientation::Portrait
+                                    : VideoOrientation::Landscape;
+
+            LOGD("test source found: " << props);
+
+            map.try_emplace(props.name, std::move(props));
+        }
+
+        {
+            VideoSourceInternalProps props;
+            props.type = VideoSourceType::Test;
+            props.formats.push_back(
+                {AV_CODEC_ID_RAWVIDEO,
+                 iprops.pixfmt,
+                 {{{iprops.width, iprops.height}, {iprops.framerate}}}});
+            props.name = "test-169p";
+            props.friendlyName = "Test (16:9 portrait)";
+            props.trans = VideoTrans::Frame169Rot90;
+            props.orientation = iprops.width < iprops.height
+                                    ? VideoOrientation::Portrait
+                                    : VideoOrientation::Landscape;
 
             LOGD("test source found: " << props);
 
