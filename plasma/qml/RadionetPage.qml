@@ -94,6 +94,10 @@ Kirigami.ScrollablePage {
                     if (s.length !== 0) s += " · "
                     s += model.country
                 }
+                if (model.format.length !== 0) {
+                    if (s.length !== 0) s += " · "
+                    s += model.format
+                }
             }
             defaultIconSource: "audio-x-generic"
             iconSource: model.icon

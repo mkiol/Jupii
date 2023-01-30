@@ -95,6 +95,10 @@ Dialog {
                     if (s.length !== 0) s += " · "
                     s += model.country
                 }
+                if (model.format.length !== 0) {
+                    if (s.length !== 0) s += " · "
+                    s += model.format
+                }
             }
             enabled: !itemModel.busy && listView.count > 0
             icon.source: model.icon

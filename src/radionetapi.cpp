@@ -35,8 +35,9 @@ QJsonDocument RadionetApi::parseJsonData(const QByteArray &data) {
     return json;
 }
 
-std::optional<QUrl> RadionetApi::parseStreams(const QJsonArray &json) {
-    std::optional<QUrl> streamUrl;
+std::optional<std::pair<QUrl, QString>> RadionetApi::parseStreams(
+    const QJsonArray &json) {
+    std::optional<std::pair<QUrl, QString>> streamUrl;
 
     for (int i = 0; i < json.size(); ++i) {
         auto es = json.at(i).toObject();
@@ -47,14 +48,14 @@ std::optional<QUrl> RadionetApi::parseStreams(const QJsonArray &json) {
             if (!url.isValid()) continue;
 
             // blocking HLS urls because they are not supported right now
-            if (url.fileName().endsWith(".m3u8")) continue;
+            if (url.fileName().endsWith(QStringLiteral(".m3u8"))) continue;
 
-            streamUrl.emplace(std::move(url));
+            streamUrl.emplace(
+                std::move(url),
+                es.value(QLatin1String{"contentFormat"}).toString());
 
             // preferring mp3 format
-            if (es.value(QLatin1String{"contentFormat"}).toString() ==
-                QStringLiteral("MP3"))
-                break;
+            if (streamUrl->second == QStringLiteral("MP3")) break;
         }
     }
 
@@ -90,7 +91,8 @@ std::optional<RadionetApi::Station> RadionetApi::parsePlayable(
     auto streamUrl =
         parseStreams(json.value(QLatin1String{"streams"}).toArray());
     if (!streamUrl) return std::nullopt;
-    station.streamUrl = std::move(*streamUrl);
+    station.streamUrl = std::move(streamUrl->first);
+    station.format = std::move(streamUrl->second);
 
     station.imageUrl = parseLogo(json);
 

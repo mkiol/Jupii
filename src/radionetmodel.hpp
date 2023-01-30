@@ -27,6 +27,7 @@ class RadionetItem : public SelectableItem {
         IdRole = Qt::UserRole,
         CountryRole,
         CityRole,
+        FormatRole,
         GenresRole,
         SelectedRole
     };
@@ -34,14 +35,15 @@ class RadionetItem : public SelectableItem {
    public:
     RadionetItem(QObject *parent = nullptr) : SelectableItem(parent) {}
     explicit RadionetItem(QString id, QString name, QString country,
-                          QString city, QStringList genres, QUrl icon, QUrl url,
-                          QObject *parent = nullptr);
+                          QString city, QString format, QStringList genres,
+                          QUrl icon, QUrl url, QObject *parent = nullptr);
     QVariant data(int role) const override;
     QHash<int, QByteArray> roleNames() const override;
     inline QString id() const override { return m_id; }
     inline auto name() const { return m_name; }
     inline auto country() const { return m_country; }
     inline auto city() const { return m_city; }
+    inline auto format() const { return m_format; }
     inline auto genres() const { return m_genres; }
     inline auto icon() const { return m_icon; }
     inline auto url() const { return m_url; }
@@ -51,6 +53,7 @@ class RadionetItem : public SelectableItem {
     QString m_name;
     QString m_country;
     QString m_city;
+    QString m_format;
     QStringList m_genres;
     QUrl m_icon;
     QUrl m_url;

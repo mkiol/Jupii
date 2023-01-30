@@ -16,6 +16,7 @@
 #include <QUrl>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 class RadionetApi : public QObject {
@@ -26,6 +27,7 @@ class RadionetApi : public QObject {
         QString name;
         QString country;
         QString city;
+        QString format;  // MP3, AAC
         QStringList genres;
         std::optional<QUrl> imageUrl;
         QUrl streamUrl;
@@ -47,7 +49,8 @@ class RadionetApi : public QObject {
     static QUrl makeSearchUrl(const QString &phrase);
     static QUrl makeLocalUrl(int count, int offset);
     static QJsonDocument parseJsonData(const QByteArray &data);
-    static std::optional<QUrl> parseStreams(const QJsonArray &json);
+    static std::optional<std::pair<QUrl, QString>> parseStreams(
+        const QJsonArray &json);
     static std::optional<Station> parsePlayable(const QJsonObject &json);
     static std::optional<QUrl> parseLogo(const QJsonObject &json);
 };
