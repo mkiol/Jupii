@@ -32,7 +32,6 @@
 
 #include "caster.hpp"
 #include "contentserver.h"
-#include "playlistparser.h"
 #include "singleton.h"
 
 class ContentServerWorker : public QObject,
@@ -90,7 +89,8 @@ class ContentServerWorker : public QObject,
     QHttpServer *server;
     ContentServerWorker(QObject *parent = nullptr);
     void startProxy(const QUrl &id);
-    void requestToPreStartCaster(ContentServer::ItemType type, const QUrl &url);
+    void requestToPreStartCaster(ContentServer::CasterType type,
+                                 const QUrl &id);
 
    signals:
     void streamRecorded(const QString &title, const QString &path);
@@ -108,9 +108,10 @@ class ContentServerWorker : public QObject,
                         ContentServerWorker::CacheLimit cacheLimit,
                         const QByteArray &range, QHttpRequest *req,
                         QHttpResponse *resp);
-    void casterData(ContentServer::ItemType type, const QByteArray &data);
+    void casterData(ContentServer::CasterType type, const QByteArray &data);
     void casterError();
-    void preStartCaster(ContentServer::ItemType type, const QUrl &url);
+    void preStartCaster(ContentServer::CasterType type, const QUrl &url);
+    void hlsTimeout();
 
    public slots:
     void setStreamToRecord(const QUrl &id, bool value);
@@ -260,6 +261,10 @@ class ContentServerWorker : public QObject,
     };
 
     std::optional<Caster> caster;
+
+    int m_hlsLastSeq = -1;
+    QUrl m_hlsUrl;
+
     QHash<QUrl, Proxy> proxies;
     QList<ConnectionItem> casterItems;
     bool displayStatus = true;
@@ -295,7 +300,7 @@ class ContentServerWorker : public QObject,
     QByteArray processShoutcastMetadata(Proxy &proxy, QNetworkReply *reply,
                                         QByteArray data);
     void casterAudioSourceNameChangedHandler(const QString &name);
-    void casterDataHandler(ContentServer::ItemType type,
+    void casterDataHandler(ContentServer::CasterType type,
                            const QByteArray &data);
     static void removePoints(const QList<QPair<int, int>> &rpoints,
                              QByteArray &data);
@@ -343,12 +348,16 @@ class ContentServerWorker : public QObject,
     void requestAdditionalSource(const QUrl &id, int64_t length,
                                  ContentServer::Type type);
     bool matchedSourceExists(const QUrl &id, const QByteArray &range);
-    bool castingForType(ContentServer::ItemType type) const;
-    static Caster::Config configForCaster(ContentServer::ItemType type,
-                                          const QUrl &url);
-    bool initCaster(ContentServer::ItemType type, const QUrl &url);
+    bool castingForType(ContentServer::CasterType type) const;
+    std::optional<Caster::Config> configForCaster(
+        ContentServer::CasterType type, const ContentServer::ItemMeta *meta);
+    bool initCaster(ContentServer::CasterType type,
+                    const ContentServer::ItemMeta *meta);
+    std::optional<std::vector<std::string>> cacheHlsSegmentsForCaster(
+        const QUrl &url, bool init);
     void casterTimeoutHandler();
-    void preStartCasterHandler(ContentServer::ItemType type, const QUrl &url);
+    bool preStartCasterHandler(ContentServer::CasterType type, const QUrl &id);
+    void hlsTimeoutHandler();
 };
 
 #endif  // CONTENTSERVERWORKER_H

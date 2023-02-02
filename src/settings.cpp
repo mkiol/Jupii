@@ -989,9 +989,9 @@ QString Settings::casterFriendlyName(const QString &name,
     if (name == "playback") return tr("Application playback");
     if (name == "playback-mute") return tr("Application playback (muted)");
     if (name == "screen" || name == "screen-rotate") return tr("Screen");
-    if (name == "cam-back" || name == "cam-back-rotate")
+    if (name == "cam-raw-back" || name == "cam-raw-back-rotate")
         return tr("Back camera");
-    if (name == "cam-front" || name == "cam-front-rotate")
+    if (name == "cam-raw-front" || name == "cam-raw-front-rotate")
         return tr("Front camera");
 #endif
     return std::move(friendlyName);
@@ -1032,7 +1032,7 @@ void Settings::discoverCasterSources() {
             m_screens.push_back(n);
             m_screens_fn.push_back(
                 casterFriendlyName(n, QString::fromStdString(s.friendlyName)));
-        } else if (n.startsWith(QStringLiteral("cam")) &&
+        } else if (n.startsWith(QStringLiteral("cam-raw")) &&
                    !n.endsWith(QStringLiteral("-rotate"))) {
             m_cams.push_back(n);
             m_cams_fn.push_back(

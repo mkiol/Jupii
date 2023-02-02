@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <numeric>
 #include <optional>
+#include <variant>
 
 #include "bcapi.h"
 #include "connectivitydetector.h"
@@ -67,6 +68,33 @@ extern "C" {
 #endif
 
 #include "iconprovider.h"
+
+QDebug operator<<(QDebug dbg, ContentServer::CasterType type) {
+    switch (type) {
+        case ContentServer::CasterType::Mic:
+            dbg << "mic";
+            break;
+        case ContentServer::CasterType::Cam:
+            dbg << "cam";
+            break;
+        case ContentServer::CasterType::Playback:
+            dbg << "playback";
+            break;
+        case ContentServer::CasterType::Screen:
+            dbg << "screen";
+            break;
+        case ContentServer::CasterType::AudioFile:
+            dbg << "file";
+            break;
+    }
+    return dbg;
+}
+
+inline static std::optional<QString> extFromPath(const QString &path) {
+    auto l = path.split(QStringLiteral("."));
+    if (l.isEmpty()) return std::nullopt;
+    return std::make_optional(l.last().toLower());
+}
 
 const QString ContentServer::queryTemplate = QStringLiteral(
     "SELECT ?item "
@@ -274,12 +302,6 @@ QString ContentServer::dlnaContentFeaturesHeader(const QString &mime, bool seek,
     return QStringLiteral("%1;%2;%3")
         .arg(pnFlags, seek ? dlnaOrgOpFlagsSeekBytes : dlnaOrgOpFlagsNoSeek,
              dlnaOrgCiFlags);
-}
-
-inline static std::optional<QString> extFromPath(const QString &path) {
-    auto l = path.split(QStringLiteral("."));
-    if (l.isEmpty()) return std::nullopt;
-    return std::make_optional(l.last().toLower());
 }
 
 ContentServer::Type ContentServer::getContentTypeByExtension(
@@ -1723,21 +1745,22 @@ QString ContentServer::mimeForCasterFormat(Settings::CasterStreamFormat format,
     throw std::runtime_error("unknown format");
 }
 
-QString ContentServer::casterMime(ContentServer::ItemType type) {
+QString ContentServer::casterMime(CasterType type) {
     auto *s = Settings::instance();
 
     switch (type) {
-        case ContentServer::ItemType_PlaybackCapture:
-        case ContentServer::ItemType_Mic:
+        case CasterType::Playback:
+        case CasterType::Mic:
+        case CasterType::AudioFile:
             return mimeForCasterFormat(s->getCasterAudioStreamFormat(),
                                        /*video=*/false);
-        case ContentServer::ItemType_ScreenCapture:
-        case ContentServer::ItemType_Cam:
+        case CasterType::Screen:
+        case CasterType::Cam:
             return mimeForCasterFormat(s->getCasterVideoStreamFormat(),
                                        /*video=*/true);
-        default:
-            throw std::runtime_error("not caster type");
     }
+
+    throw std::runtime_error("unknown caster type");
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeMicItemMeta(
@@ -1756,15 +1779,16 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeMicItemMeta(
 
     meta.title = tr("Microphone capture");
     meta.url = makeCasterUrl(url, std::move(params));
-    meta.mime = casterMime(ItemType_Mic);
+    meta.mime = casterMime(CasterType::Mic);
     meta.type = Type::Type_Music;
     meta.size = 0;
     meta.itemType = ItemType_Mic;
 #if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-mic"));
 #endif
-    meta.setFlags(static_cast<int>(MetaFlag::Valid) |
-                  static_cast<int>(MetaFlag::Local));
+    meta.setFlags(MetaFlag::Valid);
+    meta.setFlags(MetaFlag::Local);
+    meta.setFlags(MetaFlag::Live);
     meta.setFlags(MetaFlag::Seek, false);
 
     return m_metaCache.insert(meta.url, meta);
@@ -1786,15 +1810,16 @@ ContentServer::makePlaybackCaptureItemMeta(const QUrl &url) {
 
     meta.title = tr("Audio capture");
     meta.url = makeCasterUrl(url, std::move(params));
-    meta.mime = casterMime(ItemType_PlaybackCapture);
+    meta.mime = casterMime(CasterType::Playback);
     meta.type = Type::Type_Music;
     meta.size = 0;
     meta.itemType = ItemType_PlaybackCapture;
 #if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-pulse"));
 #endif
-    meta.setFlags(static_cast<int>(MetaFlag::Valid) |
-                  static_cast<int>(MetaFlag::Local));
+    meta.setFlags(MetaFlag::Valid);
+    meta.setFlags(MetaFlag::Local);
+    meta.setFlags(MetaFlag::Live);
     meta.setFlags(MetaFlag::Seek, false);
 
     return m_metaCache.insert(meta.url, meta);
@@ -1829,15 +1854,16 @@ ContentServer::makeScreenCaptureItemMeta(const QUrl &url) {
 
     meta.title = tr("Screen capture");
     meta.url = makeCasterUrl(url, std::move(params));
-    meta.mime = casterMime(ItemType_ScreenCapture);
+    meta.mime = casterMime(CasterType::Screen);
     meta.type = Type::Type_Video;
     meta.size = 0;
     meta.itemType = ItemType_ScreenCapture;
 #if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-screen"));
 #endif
-    meta.setFlags(static_cast<int>(MetaFlag::Valid) |
-                  static_cast<int>(MetaFlag::Local));
+    meta.setFlags(MetaFlag::Valid);
+    meta.setFlags(MetaFlag::Local);
+    meta.setFlags(MetaFlag::Live);
     meta.setFlags(MetaFlag::Seek, false);
 
     qDebug() << "screen url:" << meta.url;
@@ -1874,18 +1900,113 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeCamItemMeta(
 
     meta.title = tr("Camera capture");
     meta.url = makeCasterUrl(url, std::move(params));
-    meta.mime = casterMime(ItemType_Cam);
+    meta.mime = casterMime(CasterType::Cam);
     meta.type = Type::Type_Video;
     meta.size = 0;
     meta.itemType = ItemType_Cam;
 #if defined(USE_SFOS) || defined(USE_PLASMA)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-cam"));
 #endif
-    meta.setFlags(static_cast<int>(MetaFlag::Valid) |
-                  static_cast<int>(MetaFlag::Local));
+    meta.setFlags(MetaFlag::Valid);
+    meta.setFlags(MetaFlag::Local);
+    meta.setFlags(MetaFlag::Live);
     meta.setFlags(MetaFlag::Seek, false);
 
     return m_metaCache.insert(meta.url, meta);
+}
+
+QHash<QUrl, ContentServer::ItemMeta>::iterator
+ContentServer::makeItemMetaFromHlsPlaylist(
+    ItemMeta &meta, QNetworkReply *reply, const QByteArray &data,
+    std::shared_ptr<QNetworkAccessManager> &&nam, int counter) {
+    /*meta.url = url;
+    meta.mime = mime;
+    meta.type = Type::Type_Playlist;
+    meta.filename = url.fileName();
+    meta.itemType = ItemType_Url;
+    meta.setFlags(static_cast<int>(MetaFlag::Valid) |
+                  static_cast<int>(MetaFlag::PlaylistProxy));
+    meta.setFlags(static_cast<int>(MetaFlag::Local) |
+                      static_cast<int>(MetaFlag::Seek),
+                  false);
+    reply->deleteLater();
+    return m_metaCache.insert(url, meta);*/
+
+    auto playlist = PlaylistParser::parseHls(data, reply->url().toString());
+    if (!playlist) {
+        qWarning() << "hls playlist is invalid";
+        return m_metaCache.end();
+    }
+
+    if (std::holds_alternative<PlaylistParser::HlsMasterPlaylist>(*playlist)) {
+        auto &mp = std::get<PlaylistParser::HlsMasterPlaylist>(*playlist);
+
+        qDebug() << "hls master playlist:" << mp;
+
+        return makeItemMetaUsingHTTPRequest2(mp.items.front().url, meta,
+                                             std::move(nam), counter + 1);
+    }
+
+    auto &mp = std::get<PlaylistParser::HlsMediaPlaylist>(*playlist);
+
+    qDebug() << "hls media playlist:" << mp;
+
+    meta.url = reply->url();
+    meta.mime = casterMime(CasterType::AudioFile);
+    meta.type = Type::Type_Music;
+    meta.size = 0;
+    meta.itemType = ItemType_Url;
+    meta.setFlags(MetaFlag::Valid);
+    meta.setFlags(MetaFlag::Hls);
+    if (mp.live) meta.setFlags(MetaFlag::Live);
+    meta.setFlags(MetaFlag::Local, false);
+    meta.setFlags(MetaFlag::Seek, false);
+
+    return m_metaCache.insert(meta.url, meta);
+}
+
+QHash<QUrl, ContentServer::ItemMeta>::iterator
+ContentServer::makeItemMetaFromPlaylist(
+    const QUrl &url, ItemMeta &meta, QNetworkReply *reply,
+    std::shared_ptr<QNetworkAccessManager> &&nam, int counter) {
+    qDebug() << "playlist url:" << url;
+
+    if (reply->bytesAvailable() <= 0) {
+        qWarning() << "playlist is empty";
+        reply->deleteLater();
+        return m_metaCache.end();
+    }
+
+    auto mime = mimeFromReply(reply);
+    auto ptype = playlistTypeFromMime(mime);
+    auto data = reply->readAll();
+
+    reply->deleteLater();
+
+    if (ptype == PlaylistType::M3U && PlaylistParser::hlsPlaylistType(data) !=
+                                          PlaylistParser::HlsType::Unknown) {
+        qDebug() << "hls playlist";
+        return makeItemMetaFromHlsPlaylist(meta, reply, data, std::move(nam),
+                                           counter);
+    }
+
+    auto playlist =
+        ptype == PlaylistType::PLS
+            ? PlaylistParser::parsePls(data, reply->url().toString())
+        : ptype == PlaylistType::XSPF
+            ? PlaylistParser::parseXspf(data, reply->url().toString())
+            : PlaylistParser::parseM3u(data, reply->url().toString());
+
+    if (!playlist) {
+        qWarning() << "playlist is invalid";
+        return m_metaCache.end();
+    }
+
+    qDebug() << "playlist:" << *playlist;
+
+    qDebug() << "getting meta data for first item in a playlist:" << url;
+    return makeItemMetaUsingHTTPRequest2(playlist->items.front().url, meta,
+                                         std::move(nam), counter + 1);
 }
 
 QString ContentServer::mimeFromDisposition(const QString &disposition) {
@@ -1909,13 +2030,9 @@ QString ContentServer::mimeFromDisposition(const QString &disposition) {
     return mime;
 }
 
-bool ContentServer::hlsPlaylist(const QByteArray &data) {
-    return data.contains("#EXT-X-");
-}
-
 QHash<QUrl, ContentServer::ItemMeta>::iterator
 ContentServer::makeItemMetaUsingYtdlApi(
-    QUrl url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> nam,
+    QUrl url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> &&nam,
     int counter) {
     qDebug() << "trying to find url with ytdl:" << url;
 
@@ -1958,6 +2075,11 @@ ContentServer::makeItemMetaUsingYtdlApi(
         meta.setFlags(MetaFlag::NiceAlbumArt);
     }
 
+    // workaround: hls video url will be transcoded to audio in caster
+    if (track->streamAudioUrl.isEmpty() && meta.type == Type::Type_Music &&
+        track->streamUrl.path().endsWith(".m3u8"))
+        track->streamAudioUrl = track->streamUrl;
+
     auto newUrl = meta.type == Type::Type_Music
                       ? std::move(track->streamAudioUrl)
                       : std::move(track->streamUrl);
@@ -1971,8 +2093,8 @@ ContentServer::makeItemMetaUsingYtdlApi(
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
 ContentServer::makeItemMetaUsingBcApi(
-    const QUrl &url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> nam,
-    int counter) {
+    const QUrl &url, ItemMeta &meta,
+    std::shared_ptr<QNetworkAccessManager> &&nam, int counter) {
     qDebug() << "trying to find url with bc:" << url;
 
     if (QThread::currentThread()->isInterruptionRequested()) {
@@ -2008,8 +2130,8 @@ ContentServer::makeItemMetaUsingBcApi(
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
 ContentServer::makeItemMetaUsingSoundcloudApi(
-    const QUrl &url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> nam,
-    int counter) {
+    const QUrl &url, ItemMeta &meta,
+    std::shared_ptr<QNetworkAccessManager> &&nam, int counter) {
     qDebug() << "trying to find url with soundcloud:" << url;
 
     if (QThread::currentThread()->isInterruptionRequested()) {
@@ -2077,7 +2199,8 @@ ContentServer::makeItemMetaUsingHTTPRequest(const QUrl &url,
         }
     }
 
-    return makeItemMetaUsingHTTPRequest2(fixed_url, meta);
+    return makeItemMetaUsingHTTPRequest2(
+        fixed_url, meta, std::shared_ptr<QNetworkAccessManager>(), 0);
 }
 
 void ContentServer::makeItemMetaCopy(const QUrl &newUrl,
@@ -2185,8 +2308,8 @@ static void setCookies(const QList<QNetworkCookie> &cookies,
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
 ContentServer::makeItemMetaUsingHTTPRequest2(
-    const QUrl &url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> nam,
-    int counter) {
+    const QUrl &url, ItemMeta &meta,
+    std::shared_ptr<QNetworkAccessManager> &&nam, int counter) {
     qDebug() << ">> making meta using http request";
 
     if (QThread::currentThread()->isInterruptionRequested()) {
@@ -2361,7 +2484,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
         }
         reply->deleteLater();
         if (newUrl.isValid())
-            return makeItemMetaUsingHTTPRequest2(newUrl, meta, nam,
+            return makeItemMetaUsingHTTPRequest2(newUrl, meta, std::move(nam),
                                                  counter + 1);
 
         return m_metaCache.end();
@@ -2378,8 +2501,8 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
             qWarning() << "url is invalid but origurl provided => checking "
                           "origurl instead";
             reply->deleteLater();
-            return makeItemMetaUsingHTTPRequest2(meta.origUrl, meta, nam,
-                                                 counter + 1);
+            return makeItemMetaUsingHTTPRequest2(meta.origUrl, meta,
+                                                 std::move(nam), counter + 1);
         } else {
             qWarning() << "unsupported response code:" << reply->error();
             reply->deleteLater();
@@ -2396,55 +2519,20 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
 
     auto type = typeFromMime(mime);
 
-    if (!meta.flagSet(MetaFlag::YtDl) && type == Type::Type_Playlist) {
+    //    if (!meta.flagSet(MetaFlag::YtDl) && type == Type::Type_Playlist) {
+    //        qDebug() << "content is a playlist";
+    //        return makeItemMetaFromPlaylist(url, meta, reply, nam, counter);
+    //    }
+
+    if (type == Type::Type_Playlist) {
         qDebug() << "content is a playlist";
-
-        auto size = reply->bytesAvailable();
-        if (size > 0) {
-            auto ptype = playlistTypeFromMime(mime);
-            auto data = reply->readAll();
-
-            if (hlsPlaylist(data)) {
-                qDebug() << "hls playlist";
-                meta.url = url;
-                meta.mime = mime;
-                meta.type = Type::Type_Playlist;
-                meta.filename = url.fileName();
-                meta.itemType = ItemType_Url;
-                meta.setFlags(static_cast<int>(MetaFlag::Valid) |
-                              static_cast<int>(MetaFlag::PlaylistProxy));
-                meta.setFlags(static_cast<int>(MetaFlag::Local) |
-                                  static_cast<int>(MetaFlag::Seek),
-                              false);
-                reply->deleteLater();
-                return m_metaCache.insert(url, meta);
-            }
-
-            auto items = ptype == PlaylistType::PLS
-                             ? parsePls(data, reply->url().toString())
-                         : ptype == PlaylistType::XSPF
-                             ? parseXspf(data, reply->url().toString())
-                             : parseM3u(data, reply->url().toString());
-            if (!items.isEmpty()) {
-                QUrl url = items.first().url;
-                Utils::fixUrl(url);
-                qDebug()
-                    << "trying get meta data for first item in the playlist:"
-                    << Utils::anonymizedUrl(url);
-                reply->deleteLater();
-                return makeItemMetaUsingHTTPRequest2(url, meta, nam,
-                                                     counter + 1);
-            }
-        }
-
-        qWarning() << "playlist content is empty";
-        reply->deleteLater();
-        return m_metaCache.end();
+        return makeItemMetaFromPlaylist(url, meta, reply, std::move(nam),
+                                        counter);
     }
 
     if (!ytdl_broken && type != Type::Type_Music && type != Type::Type_Video &&
-        type != Type::Type_Image) {
-        return makeItemMetaUsingApi(mime, reply, meta, nam, counter);
+        type != Type::Type_Image && type != Type::Type_Playlist) {
+        return makeItemMetaUsingApi(mime, reply, meta, std::move(nam), counter);
     }
 
     bool ranges = QString{reply->rawHeader("Accept-Ranges")}.toLower().contains(
@@ -2468,6 +2556,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
     meta.setFlags(MetaFlag::Valid);
     meta.setFlags(MetaFlag::Local, false);
     meta.setFlags(MetaFlag::Seek, size > 0 && ranges);
+    meta.setFlags(MetaFlag::Live, size > 0 && ranges);
 
     if (type == Type::Type_Image && meta.flagSet(MetaFlag::Art)) {
         saveAlbumArt(*reply, meta);
@@ -2487,22 +2576,25 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
 }
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator
-ContentServer::makeItemMetaUsingApi(const QString &mime, QNetworkReply *reply,
-                                    ItemMeta &meta,
-                                    std::shared_ptr<QNetworkAccessManager> nam,
-                                    int counter) {
+ContentServer::makeItemMetaUsingApi(
+    const QString &mime, QNetworkReply *reply, ItemMeta &meta,
+    std::shared_ptr<QNetworkAccessManager> &&nam, int counter) {
     reply->deleteLater();
 
     if (mime.contains(QStringLiteral("text/html"))) {
         auto url = reply->url();
+
         if (meta.app == QStringLiteral("bc") || BcApi::validUrl(url)) {
-            return makeItemMetaUsingBcApi(url, meta, nam, counter);
+            return makeItemMetaUsingBcApi(url, meta, std::move(nam), counter);
         }
+
         if (meta.app == QStringLiteral("soundcloud") ||
             SoundcloudApi::validUrl(url)) {
-            return makeItemMetaUsingSoundcloudApi(url, meta, nam, counter);
+            return makeItemMetaUsingSoundcloudApi(url, meta, std::move(nam),
+                                                  counter);
         }
-        return makeItemMetaUsingYtdlApi(url, meta, nam, counter);
+
+        return makeItemMetaUsingYtdlApi(url, meta, std::move(nam), counter);
     }
 
     qWarning() << "unsupported type:" << mime;

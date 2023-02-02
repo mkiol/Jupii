@@ -482,6 +482,7 @@ QUrl Utils::urlFromText(const QString &text, const QString &context) {
         QUrl url{text};
         if (url.isRelative()) {
             url = QUrl{context}.resolved(url);
+            fixUrl(url);
             if (Utils::isUrlValid(url)) return url;
         }
     }
@@ -492,6 +493,7 @@ QUrl Utils::urlFromText(const QString &text, const QString &context) {
 
     // check if text is valid URL
     QUrl url(text);
+    fixUrl(url);
     if (Utils::isUrlValid(url)) return url;
 
     return {};

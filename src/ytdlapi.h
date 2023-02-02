@@ -109,7 +109,6 @@ class YtdlApi : public QObject {
     static QUrl bestThumbUrl(const std::vector<meta::Thumbnail>& thumbs);
     static QString bestArtistName(const std::vector<meta::Artist>& artists,
                                   const QString& defaultName = {});
-    static bool urlOk(std::string_view url);
     static QUrl makeYtUrl(std::string_view id);
 };
 

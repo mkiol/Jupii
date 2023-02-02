@@ -47,9 +47,6 @@ std::optional<std::pair<QUrl, QString>> RadionetApi::parseStreams(
 
             if (!url.isValid()) continue;
 
-            // blocking HLS urls because they are not supported right now
-            if (url.fileName().endsWith(QStringLiteral(".m3u8"))) continue;
-
             streamUrl.emplace(
                 std::move(url),
                 es.value(QLatin1String{"contentFormat"}).toString());

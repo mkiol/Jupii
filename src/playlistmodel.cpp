@@ -43,66 +43,71 @@ void PlaylistWorker::cancel() {
 
 PlaylistWorker::~PlaylistWorker() { cancel(); }
 
+void PlaylistWorker::processPlaylist(const QUrl &url, QList<UrlItem> &urls) {
+    auto path = url.toLocalFile();
+
+    qDebug() << "file is a playlist:" << path;
+
+    QFile f{path};
+
+    if (!f.open(QIODevice::ReadOnly)) {
+        qWarning() << "failed to open:" << path;
+        return;
+    }
+
+    auto data = f.readAll();
+
+    if (data.isEmpty()) {
+        qWarning() << "file is empty:" << path;
+        return;
+    }
+
+    QFileInfo fi{f};
+
+    auto dir = fi.absoluteDir().path();
+    auto ptype = ContentServer::playlistTypeFromExtension(path);
+
+    if (ptype == ContentServer::PlaylistType::M3U &&
+        PlaylistParser::hlsPlaylistType(data) !=
+            PlaylistParser::HlsType::Unknown) {
+        qWarning() << "ignoring hls playlist";
+        return;
+    }
+
+    auto playlist = ptype == ContentServer::PlaylistType::PLS
+                        ? PlaylistParser::parsePls(data, dir)
+                    : ptype == ContentServer::PlaylistType::XSPF
+                        ? PlaylistParser::parseXspf(data, dir)
+                        : PlaylistParser::parseM3u(data, dir);
+
+    if (!playlist) {
+        qWarning() << "playlist is invalid:" << path;
+        return;
+    }
+
+    std::transform(playlist->items.begin(), playlist->items.end(),
+                   std::back_inserter(urls), [](auto &pi) {
+                       UrlItem ui;
+                       ui.url = std::move(pi.url);
+                       ui.name = std::move(pi.title);
+                       return ui;
+                   });
+}
+
 void PlaylistWorker::run() {
     if (ids.isEmpty()) {
         QList<UrlItem> nurls;
 
-        // check for playlists
         foreach (const auto &url, urls) {
-            bool isPlaylist = false;
+            bool playlist =
+                url.url.isLocalFile() &&
+                ContentServer::getContentTypeByExtension(url.url.path()) ==
+                    ContentServer::Type::Type_Playlist;
 
-            if (url.url.isLocalFile()) {
-                auto type =
-                    ContentServer::getContentTypeByExtension(url.url.path());
-                if (type == ContentServer::Type::Type_Playlist) {
-                    isPlaylist = true;
-                    auto path = url.url.toLocalFile();
-                    qDebug() << "file is a playlist:" << path;
-
-                    QFile f{path};
-                    if (f.exists()) {
-                        if (f.open(QIODevice::ReadOnly)) {
-                            auto data = f.readAll();
-                            f.close();
-                            if (!data.isEmpty()) {
-                                QFileInfo fi(f);
-                                auto dir = fi.absoluteDir().path();
-                                auto ptype =
-                                    ContentServer::playlistTypeFromExtension(
-                                        path);
-                                auto items =
-                                    ptype == ContentServer::PlaylistType::PLS
-                                        ? parsePls(data, dir)
-                                    : ptype == ContentServer::PlaylistType::XSPF
-                                        ? parseXspf(data, dir)
-                                        : parseM3u(data, dir);
-
-                                if (items.isEmpty()) {
-                                    qWarning() << "playlist doesn't contain "
-                                                  "any valid items";
-                                } else {
-                                    foreach (const auto &item, items) {
-                                        // TODO: Consider playlist item title as
-                                        // well
-                                        UrlItem ui;
-                                        ui.url = item.url;
-                                        nurls << ui;
-                                    }
-                                }
-                            } else {
-                                qWarning() << "playlist content is empty";
-                            }
-                        } else {
-                            qWarning() << "cannot open file" << f.fileName()
-                                       << f.errorString();
-                        }
-                    } else {
-                        qWarning() << "file doesn't exist:" << f.fileName();
-                    }
-                }
-            }
-
-            if (!isPlaylist) nurls << url;
+            if (playlist)
+                processPlaylist(url.url, nurls);
+            else
+                nurls.push_back(url);
         }
 
         urls = nurls;
@@ -742,6 +747,13 @@ const PlaylistItem *PlaylistModel::getActiveItem() const {
                : nullptr;
 }
 
+bool PlaylistModel::isLive() const {
+    auto *ai = getActiveItem();
+    if (ai == nullptr) return false;
+
+    return ai->live();
+}
+
 void PlaylistModel::addItemPaths(const QStringList &paths,
                                  ContentServer::Type type) {
     QList<UrlItem> urls;
@@ -1296,7 +1308,7 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
         /*date=*/{},
         /*duration=*/duration, /*size=*/meta->size, /*icon=*/iconUrl,
         /*ytdl=*/ytdl,
-        /*live=*/!meta->flagSet(ContentServer::MetaFlag::Seek), /*play=*/play,
+        /*live=*/meta->flagSet(ContentServer::MetaFlag::Live), /*play=*/play,
         /*desc*/ meta->comment, /*recDate=*/meta->recDate,
         /*recUrl=*/meta->recUrl, /*itemType=*/meta->itemType,
         /*devId=*/meta->upnpDevId, /*videoSource=*/urlInfo.videoName,
@@ -1802,7 +1814,7 @@ void PlaylistModel::refresh() {
     refresh(std::move(ids));
 }
 
-PlaylistItem *PlaylistModel::itemFromId(const QString id) const {
+PlaylistItem *PlaylistModel::itemFromId(const QString &id) const {
     if (id.isEmpty()) return nullptr;
     auto *item = qobject_cast<PlaylistItem *>(find(id));
     return item;
@@ -1844,23 +1856,25 @@ void PlaylistModel::setContent(const QString &id1, const QString &id2) {
         return;
     }
 
-    /*if (item1 && result.first == ContentServer::CachingResult::NotCached)
-    { auto err = ContentServer::instance()->startProxy(QUrl{id1}); if (err
-    != ContentServer::ProxyError::NoError) { if (err ==
-    ContentServer::ProxyError::Canceled) { qWarning() << "proxy did not
-    start => canceled"; } else { qWarning() << "proxy did not start =>
-    error"; emit error(PlaylistModel::ErrorType::E_ProxyError);
-            }
-            item1->setToBeActive(false);
-            return;
-        }
-    }*/
+    // pre-starting proxy
+    //    if (item1 && result.first == ContentServer::CachingResult::NotCached)
+    //    { auto err = ContentServer::instance()->startProxy(QUrl{id1}); if (err
+    //    != ContentServer::ProxyError::NoError) { if (err ==
+    //    ContentServer::ProxyError::Canceled) { qWarning() << "proxy did not
+    //    start => canceled"; } else { qWarning() << "proxy did not start =>
+    //    error"; emit error(PlaylistModel::ErrorType::E_ProxyError);
+    //            }
+    //            item1->setToBeActive(false);
+    //            return;
+    //        }
+    //    }
 
-    if (auto *item = itemFromId(id1);
-        item && item->itemType() == ContentServer::ItemType_Cam) {
-        ContentServerWorker::instance()->requestToPreStartCaster(
-            ContentServer::ItemType_Cam, id1);
-    }
+    // pre-starting caster
+    //    if (auto *item = itemFromId(id1);
+    //        item && item->itemType() == ContentServer::ItemType_Cam) {
+    //        ContentServerWorker::instance()->requestToPreStartCaster(
+    //            ContentServer::CasterType::Cam, id1);
+    //    }
 
     Services::instance()->avTransport->setLocalContent(id1, id2);
 }

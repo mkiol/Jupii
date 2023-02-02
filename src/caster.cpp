@@ -158,6 +158,27 @@ static auto avCodecName(AVCodecID codec) {
 //    }
 //}
 
+std::ostream &operator<<(std::ostream &os, Caster::OptionsFlags flags) {
+    if (flags & Caster::OptionsFlags::V4l2VideoSources)
+        os << "v4l2-video-sources, ";
+    if (flags & Caster::OptionsFlags::DroidCamVideoSources)
+        os << "droidcam-video-sources, ";
+    if (flags & Caster::OptionsFlags::DroidCamRawVideoSources)
+        os << "droidcam-raw-video-sources, ";
+    if (flags & Caster::OptionsFlags::X11CaptureVideoSources)
+        os << "x11-capture-video-sources, ";
+    if (flags & Caster::OptionsFlags::LipstickCaptureVideoSources)
+        os << "lipstick-capture-video-sources, ";
+    if (flags & Caster::OptionsFlags::PaMicAudioSources)
+        os << "pa-mic-audio-sources, ";
+    if (flags & Caster::OptionsFlags::PaMonitorAudioSources)
+        os << "pa-monitor-audio-sources, ";
+    if (flags & Caster::OptionsFlags::PaPlaybackAudioSources)
+        os << "pa-playback-audio-sources, ";
+
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, Caster::State state) {
     switch (state) {
         case Caster::State::Initing:
@@ -493,7 +514,8 @@ std::ostream &operator<<(std::ostream &os, const Caster::Config &config) {
        << ", audio-volume=" << std::to_string(config.audioVolume)
        << ", stream-author=" << config.streamAuthor
        << ", stream-title=" << config.streamTitle
-       << ", video-encoder=" << config.videoEncoder;
+       << ", video-encoder=" << config.videoEncoder << ", options=["
+       << config.options << "]";
     if (config.fileSourceConfig) os << ", " << *config.fileSourceConfig;
     return os;
 }
@@ -582,7 +604,7 @@ Caster::Caster(Config config, DataReadyHandler dataReadyHandler,
     LOGD("creating caster, config: " << m_config);
 
     try {
-        detectSources();
+        detectSources(m_config.options);
 #ifdef USE_V4L2
         detectV4l2Encoders();
 #endif
@@ -726,7 +748,7 @@ void Caster::initAudioTrans() {
 std::vector<Caster::VideoSourceProps> Caster::videoSources() {
     decltype(videoSources()) sources;
 
-    auto props = detectVideoSources();
+    auto props = detectVideoSources(OptionsFlags::AllVideoSources);
     sources.reserve(props.size());
 
     std::transform(
@@ -743,7 +765,7 @@ std::vector<Caster::VideoSourceProps> Caster::videoSources() {
 std::vector<Caster::AudioSourceProps> Caster::audioSources() {
     decltype(audioSources()) sources;
 
-    auto props = detectAudioSources();
+    auto props = detectAudioSources(OptionsFlags::AllAudioSources);
     sources.reserve(props.size());
 
     std::transform(
@@ -757,16 +779,21 @@ std::vector<Caster::AudioSourceProps> Caster::audioSources() {
     return sources;
 }
 
-void Caster::detectSources() {
-    m_audioProps = detectAudioSources();
-    m_videoProps = detectVideoSources();
+void Caster::detectSources(uint32_t options) {
+    m_audioProps = detectAudioSources(options);
+    m_videoProps = detectVideoSources(options);
 }
 
-Caster::AudioPropsMap Caster::detectAudioSources() {
+Caster::AudioPropsMap Caster::detectAudioSources(uint32_t options) {
     AudioPropsMap props;
 
-    props.merge(detectPaSources());
-    props.merge(detectAudioFileSources());
+    if (options & OptionsFlags::PaMicAudioSources ||
+        options & OptionsFlags::PaMonitorAudioSources ||
+        options & OptionsFlags::PaPlaybackAudioSources)
+        props.merge(detectPaSources(options));
+
+    if (options & OptionsFlags::FileAudioSources)
+        props.merge(detectAudioFileSources());
 
     return props;
 }
@@ -798,15 +825,20 @@ void Caster::paSourceInfoCallback([[maybe_unused]] pa_context *ctx,
     }
 #endif
 
+    bool mic = info->monitor_of_sink == PA_INVALID_INDEX;
+
+    if (mic && !(result->options & OptionsFlags::PaMicAudioSources)) return;
+    if (!mic && !(result->options & OptionsFlags::PaMonitorAudioSources))
+        return;
+
     Caster::AudioSourceInternalProps props{
 #ifdef USE_SFOS
         /*name=*/"mic",
         /*dev=*/info->name,
         /*friendlyName=*/"Microphone",
 #else
-        /*name=*/info->monitor_of_sink == PA_INVALID_INDEX
-            ? fmt::format("mic-{:03}", hash(info->name))
-            : fmt::format("monitor-{:03}", hash(info->name)),
+        /*name=*/mic ? fmt::format("mic-{:03}", hash(info->name))
+                     : fmt::format("monitor-{:03}", hash(info->name)),
         /*dev=*/info->name,
         /*friendlyName=*/info->description,
 #endif
@@ -816,9 +848,7 @@ void Caster::paSourceInfoCallback([[maybe_unused]] pa_context *ctx,
         /*rate=*/info->sample_spec.rate,
         /*bps=*/
         pa_sample_size(&info->sample_spec),
-        /*type=*/info->monitor_of_sink == PA_INVALID_INDEX
-            ? AudioSourceType::Mic
-            : AudioSourceType::Monitor,
+        /*type=*/mic ? AudioSourceType::Mic : AudioSourceType::Monitor,
         /*muteSource=*/false};
 
     if (props.codec == AV_CODEC_ID_NONE) {
@@ -848,7 +878,7 @@ Caster::bestPaSinkInput() {
     return std::nullopt;
 }
 
-Caster::AudioPropsMap Caster::detectPaSources() {
+Caster::AudioPropsMap Caster::detectPaSources(uint32_t options) {
     LOGD("pa sources detection started");
 
     auto *loop = pa_mainloop_new();
@@ -863,6 +893,7 @@ Caster::AudioPropsMap Caster::detectPaSources() {
     }
 
     AudioSourceSearchResult result;
+    result.options = options;
 
     pa_context_set_state_callback(
         ctx,
@@ -886,7 +917,7 @@ Caster::AudioPropsMap Caster::detectPaSources() {
         if (result.done || pa_mainloop_iterate(loop, 0, nullptr) < 0) break;
     }
 
-    {
+    if (options & OptionsFlags::PaPlaybackAudioSources) {
         Caster::AudioSourceInternalProps props{
             /*name=*/"playback",
             /*dev=*/{},
@@ -902,7 +933,7 @@ Caster::AudioPropsMap Caster::detectPaSources() {
     }
 
 #ifdef USE_SFOS
-    {
+    if (options & OptionsFlags::PaPlaybackAudioSources) {
         Caster::AudioSourceInternalProps props{
             /*name=*/"playback-mute",
             /*dev=*/{},
@@ -1111,7 +1142,7 @@ void Caster::cleanAvAudioFifo() {
 }
 
 void Caster::cleanAvVideoFilters() {
-    for (auto p : m_videoFilterCtxMap) {
+    for (auto &p : m_videoFilterCtxMap) {
         if (p.second.in != nullptr) avfilter_inout_free(&p.second.in);
         if (p.second.out != nullptr) avfilter_inout_free(&p.second.out);
         if (p.second.graph != nullptr) avfilter_graph_free(&p.second.graph);
@@ -1119,7 +1150,7 @@ void Caster::cleanAvVideoFilters() {
 }
 
 void Caster::cleanAvAudioFilters() {
-    for (auto p : m_audioFilterCtxMap) {
+    for (auto &p : m_audioFilterCtxMap) {
         if (p.second.in != nullptr) avfilter_inout_free(&p.second.in);
         if (p.second.out != nullptr) avfilter_inout_free(&p.second.out);
         if (p.second.graph != nullptr) avfilter_graph_free(&p.second.graph);
@@ -2296,6 +2327,16 @@ void Caster::initFiles() {
     for (const auto &f : m_config.fileSourceConfig->files) m_files.push(f);
 }
 
+void Caster::addFile(std::string file) {
+    if (terminating()) return;
+
+    std::lock_guard lock{m_filesMtx};
+
+    LOGD("adding file: " << file);
+
+    m_files.push(std::move(file));
+}
+
 bool Caster::initAvAudioInputFormatFromFile() {
     std::lock_guard lock{m_filesMtx};
 
@@ -2314,6 +2355,7 @@ bool Caster::initAvAudioInputFormatFromFile() {
                             nullptr, nullptr) < 0)
         throw std::runtime_error("avformat_open_input for audio error");
 
+    m_currentFile = m_files.front();
     m_files.pop();
 
     return true;
@@ -3576,7 +3618,13 @@ bool Caster::readAudioPktFromDemuxer(AVPacket *pkt) {
         if (ret == AVERROR_EOF) {
             LOGD("audio stream eof");
 
-            if (reInitAvAudioInput()) return false;
+            if (audioProps().type == AudioSourceType::File) {
+                if (m_config.fileSourceConfig &&
+                    m_config.fileSourceConfig->fileStreamingDoneHandler)
+                    m_config.fileSourceConfig->fileStreamingDoneHandler(
+                        m_currentFile, m_files.size());
+                if (reInitAvAudioInput()) return false;
+            }
 
             m_terminationReason = TerminationReason::Eof;
         }
@@ -3893,21 +3941,26 @@ uint32_t Caster::hash(std::string_view str) {
     return std::accumulate(str.cbegin(), str.cend(), 0U) % 999;
 }
 
-Caster::VideoPropsMap Caster::detectVideoSources() {
+Caster::VideoPropsMap Caster::detectVideoSources(uint32_t options) {
     avdevice_register_all();
 
     VideoPropsMap props;
 #ifdef USE_DROIDCAM
-    props.merge(detectDroidCamVideoSources());
+    if (options & OptionsFlags::DroidCamVideoSources ||
+        options & OptionsFlags::DroidCamRawVideoSources)
+        props.merge(detectDroidCamVideoSources(options));
 #endif
 #ifdef USE_V4L2
-    props.merge(detectV4l2VideoSources());
+    if (options & OptionsFlags::V4l2VideoSources)
+        props.merge(detectV4l2VideoSources());
 #endif
 #ifdef USE_X11CAPTURE
-    props.merge(detectX11VideoSources());
+    if (options & OptionsFlags::X11CaptureVideoSources)
+        props.merge(detectX11VideoSources());
 #endif
 #ifdef USE_LIPSTICK_RECORDER
-    props.merge(detectLipstickRecorderVideoSources());
+    if (options & OptionsFlags::LipstickCaptureVideoSources)
+        props.merge(detectLipstickRecorderVideoSources());
 #endif
 #ifdef USE_TESTSOURCE
     props.merge(detectTestVideoSources());
@@ -4100,7 +4153,7 @@ Caster::VideoPropsMap Caster::detectX11VideoSources() {
 #endif  // USE_X11CAPTURE
 
 #ifdef USE_DROIDCAM
-Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
+Caster::VideoPropsMap Caster::detectDroidCamVideoSources(uint32_t options) {
     LOGD("droidcam detection started");
 
     VideoPropsMap props;
@@ -4108,8 +4161,8 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
     if (!DroidCamSource::supported()) return props;
 
     auto dp = DroidCamSource::properties();
-    /*
-    {
+
+    if (options & OptionsFlags::DroidCamVideoSources) {
         VideoSourceInternalProps p;
         p.type = VideoSourceType::DroidCam;
         p.dev = "0";
@@ -4127,7 +4180,7 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
         props.try_emplace(p.name, std::move(p));
     }
 
-    {
+    if (options & OptionsFlags::DroidCamVideoSources) {
         VideoSourceInternalProps p;
         p.type = VideoSourceType::DroidCam;
         p.dev = "1";
@@ -4144,9 +4197,8 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
 
         props.try_emplace(p.name, std::move(p));
     }
-    */
 
-    {
+    if (options & OptionsFlags::DroidCamRawVideoSources) {
         VideoSourceInternalProps p;
         p.type = VideoSourceType::DroidCamRaw;
         p.dev = "0";
@@ -4155,7 +4207,7 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
              dp.first.pixfmt,
              {{{dp.first.width, dp.first.height}, {dp.first.framerate}}}});
         p.sensorDirection = SensorDirection::Back;
-        p.name = "cam-back";
+        p.name = "cam-raw-back";
         p.friendlyName = "Back camera";
         p.orientation = VideoOrientation::Landscape;
 
@@ -4164,7 +4216,7 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
         props.try_emplace(p.name, std::move(p));
     }
 
-    {
+    if (options & OptionsFlags::DroidCamRawVideoSources) {
         VideoSourceInternalProps p;
         p.type = VideoSourceType::DroidCamRaw;
         p.dev = "1";
@@ -4173,7 +4225,7 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
              dp.first.pixfmt,
              {{{dp.first.width, dp.first.height}, {dp.first.framerate}}}});
         p.sensorDirection = SensorDirection::Front;
-        p.name = "cam-front";
+        p.name = "cam-raw-front";
         p.friendlyName = "Front camera";
         p.orientation = VideoOrientation::Landscape;
 
@@ -4182,7 +4234,7 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
         props.try_emplace(p.name, std::move(p));
     }
 
-    {
+    if (options & OptionsFlags::DroidCamRawVideoSources) {
         VideoSourceInternalProps p;
         p.type = VideoSourceType::DroidCamRaw;
         p.dev = "0";
@@ -4191,7 +4243,7 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
              dp.first.pixfmt,
              {{{dp.first.width, dp.first.height}, {dp.first.framerate}}}});
         p.sensorDirection = SensorDirection::Back;
-        p.name = "cam-back-rotate";
+        p.name = "cam-raw-back-rotate";
         p.friendlyName = "Back camera (auto rotate)";
         p.orientation = VideoOrientation::Landscape;
         p.trans = VideoTrans::Frame169;
@@ -4201,7 +4253,7 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
         props.try_emplace(p.name, std::move(p));
     }
 
-    {
+    if (options & OptionsFlags::DroidCamRawVideoSources) {
         VideoSourceInternalProps p;
         p.type = VideoSourceType::DroidCamRaw;
         p.dev = "1";
@@ -4210,7 +4262,7 @@ Caster::VideoPropsMap Caster::detectDroidCamVideoSources() {
              dp.first.pixfmt,
              {{{dp.first.width, dp.first.height}, {dp.first.framerate}}}});
         p.sensorDirection = SensorDirection::Front;
-        p.name = "cam-front-rotate";
+        p.name = "cam-raw-front-rotate";
         p.friendlyName = "Front camera (auto rotate)";
         p.orientation = VideoOrientation::Landscape;
         p.trans = VideoTrans::Frame169;

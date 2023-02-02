@@ -30,6 +30,7 @@ extern "C" {
 #include <array>
 #include <chrono>
 #include <condition_variable>
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -57,6 +58,26 @@ extern "C" {
 
 class Caster {
    public:
+    enum OptionsFlags : uint32_t {
+        V4l2VideoSources = 1 << 10,
+        DroidCamVideoSources = 1 << 11,
+        DroidCamRawVideoSources = 1 << 12,
+        X11CaptureVideoSources = 1 << 13,
+        LipstickCaptureVideoSources = 1 << 14,
+        PaMicAudioSources = 1 << 20,
+        PaMonitorAudioSources = 1 << 21,
+        PaPlaybackAudioSources = 1 << 22,
+        AllPaAudioSources =
+            PaMicAudioSources | PaMonitorAudioSources | PaPlaybackAudioSources,
+        FileAudioSources = 1 << 23,
+        AllVideoSources = V4l2VideoSources | DroidCamVideoSources |
+                          DroidCamRawVideoSources | X11CaptureVideoSources |
+                          LipstickCaptureVideoSources,
+        AllAudioSources = AllPaAudioSources | FileAudioSources,
+        All = AllVideoSources | AllAudioSources
+    };
+    friend std::ostream &operator<<(std::ostream &os, OptionsFlags flags);
+
     enum class State {
         Initing,
         Inited,
@@ -114,8 +135,13 @@ class Caster {
     friend std::ostream &operator<<(std::ostream &os, Dim dim);
 
     struct FileSourceConfig {
+        using FileStreamingDoneHandler = std::function<void(
+            const std::string &fileDone, size_t remainingFiles)>;
+
         std::vector<std::string> files;
         bool loop = false;
+        FileStreamingDoneHandler fileStreamingDoneHandler;
+
         friend std::ostream &operator<<(std::ostream &os,
                                         const FileSourceConfig &config);
     };
@@ -132,6 +158,7 @@ class Caster {
         bool useNiceFormats =
             true; /*force output pixel format to nice one (yuv420p)*/
         std::optional<FileSourceConfig> fileSourceConfig;
+        uint32_t options = OptionsFlags::All;
         friend std::ostream &operator<<(std::ostream &os, const Config &config);
     };
 
@@ -173,6 +200,7 @@ class Caster {
     inline void setDataReadyCallback(DataReadyHandler cb) {
         m_dataReadyHandler = std::move(cb);
     }
+    void addFile(std::string file);
 
    private:
     enum class VideoSourceType {
@@ -302,6 +330,7 @@ class Caster {
         bool done = false;
         int micCount = 0;
         int monitorCount = 0;
+        uint32_t options = OptionsFlags::AllPaAudioSources;
         AudioPropsMap propsMap;
     };
 
@@ -388,6 +417,7 @@ class Caster {
     std::optional<TestSource> m_imageProvider;
     std::mutex m_filesMtx;
     std::queue<std::string> m_files;
+    std::string m_currentFile;
     bool m_audioVolumeUpdated = false;
 #ifdef USE_V4L2
     std::vector<V4l2H264EncoderProps> m_v4l2Encoders;
@@ -499,11 +529,11 @@ class Caster {
     int64_t audioDelay(int64_t now) const;
     void reportError();
     bool audioBoosted() const;
-    void detectSources();
-    static VideoPropsMap detectVideoSources();
-    static AudioPropsMap detectPaSources();
+    void detectSources(uint32_t options);
+    static VideoPropsMap detectVideoSources(uint32_t options);
+    static AudioPropsMap detectPaSources(uint32_t options);
     static AudioPropsMap detectAudioFileSources();
-    static AudioPropsMap detectAudioSources();
+    static AudioPropsMap detectAudioSources(uint32_t options);
     void initAvAudioDurations();
     bool readVideoFrameFromBuf(AVPacket *pkt);
     void readNullFrame(AVPacket *pkt);
@@ -571,7 +601,7 @@ class Caster {
     static VideoPropsMap detectX11VideoSources();
 #endif
 #ifdef USE_DROIDCAM
-    static VideoPropsMap detectDroidCamVideoSources();
+    static VideoPropsMap detectDroidCamVideoSources(uint32_t options);
 #endif
 #ifdef USE_V4L2
     static VideoPropsMap detectV4l2VideoSources();

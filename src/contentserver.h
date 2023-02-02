@@ -27,6 +27,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "downloader.h"
 #include "settings.h"
@@ -118,7 +119,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         Art = 1 << 8,
         Mp4AudioNotIsom = 1 << 9,
         MadeFromCache = 1 << 10,
-        NiceAlbumArt = 1 << 11
+        NiceAlbumArt = 1 << 11,
+        Hls = 1 << 12,
+        Live = 1 << 13
     };
 
     enum class CachingResult {
@@ -129,6 +132,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         NotCachedCanceled
     };
     enum class ProxyError { NoError, Canceled, Error };
+
+    enum class CasterType { Mic, Cam, Playback, Screen, AudioFile };
+    friend QDebug operator<<(QDebug dbg, CasterType type);
 
     struct ItemMeta {
         QString trackerId;
@@ -423,7 +429,6 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static QString getContentMimeByExtension(const QUrl &url);
     static QString getExtensionFromAudioContentType(const QString &mime);
     static QString mimeFromDisposition(const QString &disposition);
-    static bool hlsPlaylist(const QByteArray &data);
     static QString durationStringFromSec(int duration);
     bool getContentMetaItem(const QString &id, const QUrl &url, QString &meta,
                             ItemMeta *item);
@@ -446,31 +451,29 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         Type type = Type::Type_Unknown);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingHTTPRequest2(
         const QUrl &url, ItemMeta &meta,
-        std::shared_ptr<QNetworkAccessManager> nam =
-            std::shared_ptr<QNetworkAccessManager>(),
-        int counter = 0);
+        std::shared_ptr<QNetworkAccessManager> &&nam, int counter);
+    QHash<QUrl, ItemMeta>::iterator makeItemMetaFromPlaylist(
+        const QUrl &url, ItemMeta &meta, QNetworkReply *reply,
+        std::shared_ptr<QNetworkAccessManager> &&nam, int counter);
+    QHash<QUrl, ItemMeta>::iterator makeItemMetaFromHlsPlaylist(
+        ItemMeta &meta, QNetworkReply *reply, const QByteArray &data,
+        std::shared_ptr<QNetworkAccessManager> &&nam, int counter);
     QHash<QUrl, ContentServer::ItemMeta>::iterator makeItemMetaUsingCachedFile(
         const QUrl &url, const QString &cachedFile, ItemMeta &meta);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingYtdlApi(
-        QUrl url, ItemMeta &meta,
-        std::shared_ptr<QNetworkAccessManager> nam =
-            std::shared_ptr<QNetworkAccessManager>(),
-        int counter = 0);
+        QUrl url, ItemMeta &meta, std::shared_ptr<QNetworkAccessManager> &&nam,
+        int counter);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingBcApi(
         const QUrl &url, ItemMeta &meta,
-        std::shared_ptr<QNetworkAccessManager> nam =
-            std::shared_ptr<QNetworkAccessManager>(),
-        int counter = 0);
+        std::shared_ptr<QNetworkAccessManager> &&nam, int counter);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingSoundcloudApi(
         const QUrl &url, ItemMeta &meta,
-        std::shared_ptr<QNetworkAccessManager> nam =
-            std::shared_ptr<QNetworkAccessManager>(),
-        int counter = 0);
+        std::shared_ptr<QNetworkAccessManager> &&nam, int counter);
     QHash<QUrl, ItemMeta>::iterator makeUpnpItemMeta(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeMetaUsingExtension(const QUrl &url);
     QHash<QUrl, ContentServer::ItemMeta>::iterator makeItemMetaUsingApi(
         const QString &mime, QNetworkReply *reply, ItemMeta &meta,
-        std::shared_ptr<QNetworkAccessManager> nam, int counter);
+        std::shared_ptr<QNetworkAccessManager> &&nam, int counter);
     void run() override;
     static QString extractItemFromDidl(const QString &didl);
     bool saveTmpRec(const QString &path, bool deletePath);
@@ -496,7 +499,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     QStringList unusedArtFiles() const;
     static QString mimeForCasterFormat(Settings::CasterStreamFormat format,
                                        bool video);
-    static QString casterMime(ItemType type);
+    static QString casterMime(CasterType type);
     static QString videoOrientationToStr(
         Settings::CasterVideoOrientation videoOrientation);
     static std::optional<Settings::CasterVideoOrientation>

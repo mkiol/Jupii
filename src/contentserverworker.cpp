@@ -14,6 +14,7 @@
 
 #include "config.h"
 #include "logger.hpp"
+#include "playlistparser.h"
 #include "settings.h"
 #include "transcoder.h"
 #include "utils.h"
@@ -21,6 +22,59 @@
 const int ContentServerWorker::CacheLimit::INF_TIME = -1;
 const int64_t ContentServerWorker::CacheLimit::INF_SIZE = -1;
 const int64_t ContentServerWorker::CacheLimit::DEFAULT_DELTA = 300'000;
+
+inline static std::optional<QString> extFromPath(const QString &path) {
+    auto l = path.split(QStringLiteral("."));
+    if (l.isEmpty()) return std::nullopt;
+    return std::make_optional(l.last().toLower());
+}
+
+static Caster::VideoEncoder convertVideoEncoder(
+    Settings::CasterVideoEncoder videoEncoder) {
+    switch (videoEncoder) {
+        case Settings::CasterVideoEncoder::CasterVideoEncoder_Auto:
+            return Caster::VideoEncoder::Auto;
+        case Settings::CasterVideoEncoder::CasterVideoEncoder_Nvenc:
+            return Caster::VideoEncoder::Nvenc;
+        case Settings::CasterVideoEncoder::CasterVideoEncoder_V4l2:
+            return Caster::VideoEncoder::V4l2;
+        case Settings::CasterVideoEncoder::CasterVideoEncoder_X264:
+            return Caster::VideoEncoder::X264;
+    }
+    return Caster::VideoEncoder::Auto;
+}
+
+static Caster::StreamFormat convertStreamFormat(
+    Settings::CasterStreamFormat streamFormat) {
+    switch (streamFormat) {
+        case Settings::CasterStreamFormat::CasterStreamFormat_Mp4:
+            return Caster::StreamFormat::Mp4;
+        case Settings::CasterStreamFormat::CasterStreamFormat_MpegTs:
+            return Caster::StreamFormat::MpegTs;
+        case Settings::CasterStreamFormat::CasterStreamFormat_Mp3:
+            return Caster::StreamFormat::Mp3;
+    }
+    return Caster::StreamFormat::Mp4;
+}
+
+static Caster::VideoOrientation convertVideoOrientation(
+    Settings::CasterVideoOrientation videoOrientation) {
+    switch (videoOrientation) {
+        case Settings::CasterVideoOrientation::CasterVideoOrientation_Auto:
+            return Caster::VideoOrientation::Auto;
+        case Settings::CasterVideoOrientation::CasterVideoOrientation_Landscape:
+            return Caster::VideoOrientation::Landscape;
+        case Settings::CasterVideoOrientation::
+            CasterVideoOrientation_InvertedLandscape:
+            return Caster::VideoOrientation::InvertedLandscape;
+        case Settings::CasterVideoOrientation::CasterVideoOrientation_Portrait:
+            return Caster::VideoOrientation::Portrait;
+        case Settings::CasterVideoOrientation::
+            CasterVideoOrientation_InvertedPortrait:
+            return Caster::VideoOrientation::InvertedPortrait;
+    }
+    return Caster::VideoOrientation::Auto;
+}
 
 ContentServerWorker::ContentServerWorker(QObject *parent)
     : QObject{parent}, nam{new QNetworkAccessManager{parent}},
@@ -44,6 +98,11 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
             Qt::QueuedConnection);
     connect(this, &ContentServerWorker::preStartCaster, this,
             &ContentServerWorker::preStartCasterHandler, Qt::QueuedConnection);
+    connect(this, &ContentServerWorker::preStartCaster, this,
+            &ContentServerWorker::preStartCasterHandler, Qt::QueuedConnection);
+
+    connect(this, &ContentServerWorker::hlsTimeout, this,
+            &ContentServerWorker::hlsTimeoutHandler, Qt::QueuedConnection);
 
     connect(
         Settings::instance(), &Settings::casterPlaybackVolumeChanged, this,
@@ -226,6 +285,8 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
             if (!meta->path.isEmpty() &&
                 !meta->flagSet(ContentServer::MetaFlag::MadeFromCache)) {
                 requestForFileHandler(*id, meta, req, resp);
+            } else if (meta->flagSet(ContentServer::MetaFlag::Hls)) {
+                requestForCasterHandler(*id, meta, req, resp);
             } else {
                 requestForUrlHandler(*id, meta, req, resp);
             }
@@ -633,110 +694,132 @@ void ContentServerWorker::handleHeadRequest(const ContentServer::ItemMeta *meta,
     sendResponse(resp, 200);
 }
 
-static Caster::VideoEncoder convertVideoEncoder(
-    Settings::CasterVideoEncoder videoEncoder) {
-    switch (videoEncoder) {
-        case Settings::CasterVideoEncoder::CasterVideoEncoder_Auto:
-            return Caster::VideoEncoder::Auto;
-        case Settings::CasterVideoEncoder::CasterVideoEncoder_Nvenc:
-            return Caster::VideoEncoder::Nvenc;
-        case Settings::CasterVideoEncoder::CasterVideoEncoder_V4l2:
-            return Caster::VideoEncoder::V4l2;
-        case Settings::CasterVideoEncoder::CasterVideoEncoder_X264:
-            return Caster::VideoEncoder::X264;
-    }
-    return Caster::VideoEncoder::Auto;
-}
-
-static Caster::StreamFormat convertStreamFormat(
-    Settings::CasterStreamFormat streamFormat) {
-    switch (streamFormat) {
-        case Settings::CasterStreamFormat::CasterStreamFormat_Mp4:
-            return Caster::StreamFormat::Mp4;
-        case Settings::CasterStreamFormat::CasterStreamFormat_MpegTs:
-            return Caster::StreamFormat::MpegTs;
-        case Settings::CasterStreamFormat::CasterStreamFormat_Mp3:
-            return Caster::StreamFormat::Mp3;
-    }
-    return Caster::StreamFormat::Mp4;
-}
-
-static Caster::VideoOrientation convertVideoOrientation(
-    Settings::CasterVideoOrientation videoOrientation) {
-    switch (videoOrientation) {
-        case Settings::CasterVideoOrientation::CasterVideoOrientation_Auto:
-            return Caster::VideoOrientation::Auto;
-        case Settings::CasterVideoOrientation::CasterVideoOrientation_Landscape:
-            return Caster::VideoOrientation::Landscape;
-        case Settings::CasterVideoOrientation::
-            CasterVideoOrientation_InvertedLandscape:
-            return Caster::VideoOrientation::InvertedLandscape;
-        case Settings::CasterVideoOrientation::CasterVideoOrientation_Portrait:
-            return Caster::VideoOrientation::Portrait;
-        case Settings::CasterVideoOrientation::
-            CasterVideoOrientation_InvertedPortrait:
-            return Caster::VideoOrientation::InvertedPortrait;
-    }
-    return Caster::VideoOrientation::Auto;
-}
-
-Caster::Config ContentServerWorker::configForCaster(
-    ContentServer::ItemType type, const QUrl &url) {
+std::optional<Caster::Config> ContentServerWorker::configForCaster(
+    ContentServer::CasterType type, const ContentServer::ItemMeta *meta) {
     const auto *s = Settings::instance();
 
     Caster::Config config;
     config.streamAuthor = APP_NAME;
 
-    auto params = ContentServer::parseCasterUrl(url);
+    switch (type) {
+        case ContentServer::CasterType::Cam: {
+            auto params = ContentServer::parseCasterUrl(meta->url);
 
-    if (type == ContentServer::ItemType::ItemType_Cam) {
-        config.videoSource = params.videoSource
-                                 ? params.videoSource->toStdString()
-                                 : s->getCasterCam().toStdString();
-        config.audioSource =
-            params.audioSource
-                ? params.audioSource->toStdString()
-                : (s->getCasterCamAudio() ? s->getCasterMic().toStdString()
+            config.videoSource = params.videoSource
+                                     ? params.videoSource->toStdString()
+                                     : s->getCasterCam().toStdString();
+            config.audioSource =
+                params.audioSource
+                    ? params.audioSource->toStdString()
+                    : (s->getCasterCamAudio() ? s->getCasterMic().toStdString()
+                                              : "");
+            config.videoOrientation =
+                params.videoOrientation
+                    ? convertVideoOrientation(
+                          ContentServer::videoOrientationFromStr(
+                              *params.videoOrientation)
+                              .value_or(s->getCasterVideoOrientation()))
+                    : convertVideoOrientation(s->getCasterVideoOrientation());
+            config.audioVolume = s->getCasterMicVolume();
+            config.videoEncoder =
+                convertVideoEncoder(s->getCasterVideoEncoder());
+            config.streamFormat =
+                convertStreamFormat(s->getCasterVideoStreamFormat());
+
+            config.options = Caster::OptionsFlags::DroidCamRawVideoSources |
+                             Caster::OptionsFlags::V4l2VideoSources;
+            if (!config.audioSource.empty())
+                config.options |= Caster::OptionsFlags::PaMicAudioSources;
+
+            break;
+        }
+        case ContentServer::CasterType::Mic: {
+            auto params = ContentServer::parseCasterUrl(meta->url);
+
+            config.audioSource = params.audioSource
+                                     ? params.audioSource->toStdString()
+                                     : s->getCasterMic().toStdString();
+            config.audioVolume = s->getCasterMicVolume();
+            config.streamFormat =
+                convertStreamFormat(s->getCasterAudioStreamFormat());
+
+            config.options = Caster::OptionsFlags::PaMicAudioSources;
+
+            break;
+        }
+        case ContentServer::CasterType::Playback: {
+            auto params = ContentServer::parseCasterUrl(meta->url);
+
+            config.audioSource = params.audioSource
+                                     ? params.audioSource->toStdString()
+                                     : s->getCasterPlayback().toStdString();
+            config.audioVolume = s->getCasterPlaybackVolume();
+            config.streamFormat =
+                convertStreamFormat(s->getCasterAudioStreamFormat());
+
+            config.options = Caster::OptionsFlags::PaMonitorAudioSources |
+                             Caster::PaPlaybackAudioSources;
+
+            break;
+        }
+        case ContentServer::CasterType::Screen: {
+            auto params = ContentServer::parseCasterUrl(meta->url);
+
+            config.videoSource = params.videoSource
+                                     ? params.videoSource->toStdString()
+                                     : s->getCasterScreen().toStdString();
+            config.audioSource =
+                params.audioSource ? params.audioSource->toStdString()
+                                   : (s->getCasterScreenAudio()
+                                          ? s->getCasterPlayback().toStdString()
                                           : "");
-        config.videoOrientation =
-            params.videoOrientation
-                ? convertVideoOrientation(
-                      ContentServer::videoOrientationFromStr(
-                          *params.videoOrientation)
-                          .value_or(s->getCasterVideoOrientation()))
-                : convertVideoOrientation(s->getCasterVideoOrientation());
-        config.audioVolume = s->getCasterMicVolume();
-        config.videoEncoder = convertVideoEncoder(s->getCasterVideoEncoder());
-    } else if (type == ContentServer::ItemType::ItemType_Mic) {
-        config.audioSource = params.audioSource
-                                 ? params.audioSource->toStdString()
-                                 : s->getCasterMic().toStdString();
-        config.audioVolume = s->getCasterMicVolume();
-    } else if (type == ContentServer::ItemType::ItemType_PlaybackCapture) {
-        config.audioSource = params.audioSource
-                                 ? params.audioSource->toStdString()
-                                 : s->getCasterPlayback().toStdString();
-        config.audioVolume = s->getCasterPlaybackVolume();
-        config.streamFormat =
-            convertStreamFormat(s->getCasterAudioStreamFormat());
-    } else if (type == ContentServer::ItemType::ItemType_ScreenCapture) {
-        config.videoSource = params.videoSource
-                                 ? params.videoSource->toStdString()
-                                 : s->getCasterScreen().toStdString();
-        config.audioSource = params.audioSource
-                                 ? params.audioSource->toStdString()
-                                 : (s->getCasterScreenAudio()
-                                        ? s->getCasterPlayback().toStdString()
-                                        : "");
-        config.videoOrientation =
-            params.videoOrientation
-                ? convertVideoOrientation(
-                      ContentServer::videoOrientationFromStr(
-                          *params.videoOrientation)
-                          .value_or(s->getCasterVideoOrientation()))
-                : convertVideoOrientation(s->getCasterVideoOrientation());
-        config.audioVolume = s->getCasterMicVolume();
-        config.videoEncoder = convertVideoEncoder(s->getCasterVideoEncoder());
+            config.streamFormat =
+                convertStreamFormat(s->getCasterVideoStreamFormat());
+
+            config.videoOrientation =
+                params.videoOrientation
+                    ? convertVideoOrientation(
+                          ContentServer::videoOrientationFromStr(
+                              *params.videoOrientation)
+                              .value_or(s->getCasterVideoOrientation()))
+                    : convertVideoOrientation(s->getCasterVideoOrientation());
+            config.audioVolume = s->getCasterMicVolume();
+            config.videoEncoder =
+                convertVideoEncoder(s->getCasterVideoEncoder());
+
+            config.options = Caster::OptionsFlags::LipstickCaptureVideoSources |
+                             Caster::OptionsFlags::X11CaptureVideoSources;
+            if (!config.audioSource.empty())
+                config.options |= Caster::OptionsFlags::PaMonitorAudioSources |
+                                  Caster::OptionsFlags::PaPlaybackAudioSources;
+
+            break;
+        }
+        case ContentServer::CasterType::AudioFile: {
+            auto files = cacheHlsSegmentsForCaster(meta->url, true);
+            if (!files) return std::nullopt;
+
+            config.audioSource = "file";
+            config.streamFormat =
+                convertStreamFormat(s->getCasterAudioStreamFormat());
+
+            if (meta->flagSet(ContentServer::MetaFlag::Live)) {
+                config.fileSourceConfig = Caster::FileSourceConfig{
+                    std::move(*files), false,
+                    [this](const std::string &fileDone, size_t remainingFiles) {
+                        qDebug() << "hls remaining files:" << remainingFiles;
+                        Utils::removeFile(QString::fromStdString(fileDone));
+                        if (remainingFiles < 2) emit hlsTimeout();
+                    }};
+            } else {
+                config.fileSourceConfig =
+                    Caster::FileSourceConfig{std::move(*files), false, {}};
+            }
+
+            config.options = Caster::OptionsFlags::FileAudioSources;
+
+            break;
+        }
     }
 
 #ifdef USE_SFOS
@@ -745,34 +828,36 @@ Caster::Config ContentServerWorker::configForCaster(
         config.videoSource += "-rotate";
 #endif
 
-    config.streamFormat = convertStreamFormat(s->getCasterVideoStreamFormat());
-
     return config;
 }
 
-bool ContentServerWorker::castingForType(ContentServer::ItemType type) const {
+bool ContentServerWorker::castingForType(ContentServer::CasterType type) const {
     if (!caster) return false;
 
     switch (type) {
-        case ContentServer::ItemType::ItemType_Cam:
+        case ContentServer::CasterType::Cam:
             return QString::fromStdString(caster->config().videoSource)
                 .startsWith(QStringLiteral("cam"));
-        case ContentServer::ItemType::ItemType_Mic:
+        case ContentServer::CasterType::Mic:
             return caster->config().videoSource.empty() &&
                    QString::fromStdString(caster->config().audioSource)
                        .startsWith(QStringLiteral("mic"));
-        case ContentServer::ItemType::ItemType_ScreenCapture:
+        case ContentServer::CasterType::Screen:
             return QString::fromStdString(caster->config().videoSource)
                 .startsWith(QStringLiteral("screen"));
-        case ContentServer::ItemType::ItemType_PlaybackCapture: {
+        case ContentServer::CasterType::Playback: {
             if (!caster->config().videoSource.empty()) return false;
             auto n = QString::fromStdString(caster->config().audioSource);
             return n.startsWith(QStringLiteral("playback")) ||
                    n.startsWith(QStringLiteral("monitor"));
         }
-        default:
-            return false;
+        case ContentServer::CasterType::AudioFile:
+            if (!caster->config().videoSource.empty()) return false;
+            return QString::fromStdString(caster->config().audioSource)
+                .startsWith(QStringLiteral("file"));
     }
+
+    return false;
 }
 
 void ContentServerWorker::requestForCasterHandler(
@@ -780,7 +865,24 @@ void ContentServerWorker::requestForCasterHandler(
     QHttpResponse *resp) {
     qDebug() << "caster request handler:" << id;
 
-    if (!castingForType(meta->itemType) && !initCaster(meta->itemType, id)) {
+    auto type = [type = meta->itemType]() {
+        switch (type) {
+            case ContentServer::ItemType::ItemType_Cam:
+                return ContentServer::CasterType::Cam;
+            case ContentServer::ItemType::ItemType_Mic:
+                return ContentServer::CasterType::Mic;
+            case ContentServer::ItemType::ItemType_PlaybackCapture:
+                return ContentServer::CasterType::Playback;
+            case ContentServer::ItemType::ItemType_ScreenCapture:
+                return ContentServer::CasterType::Screen;
+            case ContentServer::ItemType::ItemType_Url:
+                return ContentServer::CasterType::AudioFile;
+            default:
+                throw std::runtime_error("item type is not for caster");
+        }
+    }();
+
+    if (!castingForType(type) && !initCaster(type, meta)) {
         sendEmptyResponse(resp, 500);
         return;
     }
@@ -812,9 +914,82 @@ void ContentServerWorker::requestForCasterHandler(
     casterTimer.start();
 }
 
-bool ContentServerWorker::initCaster(ContentServer::ItemType type,
-                                     const QUrl &url) {
-    qDebug() << "init caster";
+void ContentServerWorker::hlsTimeoutHandler() {
+    qDebug() << "hls timeout";
+    if (!castingForType(ContentServer::CasterType::AudioFile)) return;
+
+    auto files = cacheHlsSegmentsForCaster(m_hlsUrl, false);
+
+    if (!files || !caster) return;
+
+    for (auto &file : *files) caster->addFile(std::move(file));
+}
+
+std::optional<std::vector<std::string>>
+ContentServerWorker::cacheHlsSegmentsForCaster(const QUrl &url, bool init) {
+    std::vector<std::string> files;
+
+    auto nam = std::make_shared<QNetworkAccessManager>();
+
+    auto ddata = Downloader{nam}.downloadData(url);
+
+    if (ddata.bytes.isEmpty()) {
+        qWarning() << "failed to download hls media playlist";
+        return std::nullopt;
+    }
+
+    auto playlist = PlaylistParser::parseHls(ddata.bytes, url.toString());
+    if (!playlist) {
+        qWarning() << "hls playlist is invalid";
+        return std::nullopt;
+    }
+
+    if (!std::holds_alternative<PlaylistParser::HlsMediaPlaylist>(*playlist)) {
+        qWarning() << "hls media playlist was expected";
+        return std::nullopt;
+    }
+
+    auto &mp = std::get<PlaylistParser::HlsMediaPlaylist>(*playlist);
+
+    qDebug() << "caching hls segments";
+
+    files.reserve(mp.items.size());
+
+    if (init) m_hlsLastSeq = -1;
+
+    for (const auto &item : mp.items) {
+        if (item.seq <= m_hlsLastSeq) {
+            qDebug() << "skip seq:" << item.seq;
+            continue;
+        }
+
+        auto file = ContentServer::contentCachePath(
+            item.url.toString(),
+            extFromPath(item.url.toString()).value_or("ts"));
+
+        if (!QFile::exists(file) &&
+            !Downloader{nam}.downloadToFile(item.url, file, true)) {
+            qWarning() << "failed to download:" << file;
+        }
+
+        files.push_back(file.toStdString());
+
+        m_hlsLastSeq = item.seq;
+    }
+
+    if (files.empty() && init) {
+        qWarning() << "empty playlist";
+        return std::nullopt;
+    }
+
+    m_hlsUrl = url;
+
+    return files;
+}
+
+bool ContentServerWorker::initCaster(ContentServer::CasterType type,
+                                     const ContentServer::ItemMeta *meta) {
+    qDebug() << "init caster:" << type;
 
     casterTimer.stop();
 
@@ -828,65 +1003,77 @@ bool ContentServerWorker::initCaster(ContentServer::ItemType type,
     caster.reset();
 
     try {
-        if (type == ContentServer::ItemType::ItemType_ScreenCapture ||
-            type == ContentServer::ItemType::ItemType_PlaybackCapture) {
-            caster.emplace(
-                configForCaster(type, url),
-                [this, type](const uint8_t *data, size_t size) {
-                    emit casterData(
-                        type,
-                        QByteArray(reinterpret_cast<const char *>(data), size));
-                    return size;
-                },
-                [this](Caster::State state) {
-                    if (state == Caster::State::Terminating) emit casterError();
-                },
-                [this](const auto &name) {
-                    emit casterAudioSourceNameChanged(
-                        QString::fromStdString(name));
-                });
-        } else {
-            caster.emplace(
-                configForCaster(type, url),
-                [this, type](const uint8_t *data, size_t size) {
-                    emit casterData(
-                        type,
-                        QByteArray(reinterpret_cast<const char *>(data), size));
-                    return size;
-                },
-                [this](Caster::State state) {
-                    if (state == Caster::State::Terminating) emit casterError();
-                });
+        auto config = configForCaster(type, meta);
+        if (!config) return false;
+
+        switch (type) {
+            case ContentServer::CasterType::Cam:
+            case ContentServer::CasterType::Mic:
+            case ContentServer::CasterType::AudioFile:
+                caster.emplace(
+                    std::move(*config),
+                    [this, type](const uint8_t *data, size_t size) {
+                        emit casterData(
+                            type,
+                            QByteArray(reinterpret_cast<const char *>(data),
+                                       size));
+                        return size;
+                    },
+                    [this](Caster::State state) {
+                        if (state == Caster::State::Terminating)
+                            emit casterError();
+                    });
+                break;
+            case ContentServer::CasterType::Screen:
+            case ContentServer::CasterType::Playback:
+                caster.emplace(
+                    std::move(*config),
+                    [this, type](const uint8_t *data, size_t size) {
+                        emit casterData(
+                            type,
+                            QByteArray(reinterpret_cast<const char *>(data),
+                                       size));
+                        return size;
+                    },
+                    [this](Caster::State state) {
+                        if (state == Caster::State::Terminating)
+                            emit casterError();
+                    },
+                    [this](const auto &name) {
+                        emit casterAudioSourceNameChanged(
+                            QString::fromStdString(name));
+                    });
+                break;
         }
     } catch (const std::runtime_error &e) {
-        LOGW("failed to init cam caster: " << e.what());
+        LOGW("failed to init caster: " << e.what());
         return false;
     }
 
     return true;
 }
 
-void ContentServerWorker::preStartCasterHandler(ContentServer::ItemType type,
-                                                const QUrl &url) {
-    if (type != ContentServer::ItemType::ItemType_Cam) {
-        qDebug() << "pre-start caster is only for cam";
-        return;
-    }
+bool ContentServerWorker::preStartCasterHandler(ContentServer::CasterType type,
+                                                const QUrl &id) {
+    const auto *meta = ContentServer::instance()->getMetaForId(id, false);
+    if (meta == nullptr) return false;
 
-    if (!initCaster(type, url)) {
+    if (!initCaster(type, meta)) {
         qWarning() << "failed to pre-start caster";
-        return;
+        return false;
     }
 
     caster->start(true);
     casterTimer.start();
 
     qDebug() << "caster pre-started";
+
+    return true;
 }
 
-void ContentServerWorker::requestToPreStartCaster(ContentServer::ItemType type,
-                                                  const QUrl &url) {
-    emit preStartCaster(type, url);
+void ContentServerWorker::requestToPreStartCaster(
+    ContentServer::CasterType type, const QUrl &id) {
+    emit preStartCaster(type, id);
 }
 
 void ContentServerWorker::seqWriteData(std::shared_ptr<QFile> file,
@@ -1292,7 +1479,7 @@ void ContentServerWorker::proxyFinished() {
         auto data = reply->readAll();
         if (!data.isEmpty()) {
             // Resolving relative URLs in a playlist
-            resolveM3u(data, reply->url().toString());
+            PlaylistParser::resolveM3u(data, reply->url().toString());
             if (proxy.matchedSourceExists(reply))
                 proxy.writeAll(reply, data);
             else
@@ -1717,7 +1904,7 @@ void ContentServerWorker::streamFile(const QString &path, const QString &mime,
 }
 
 void ContentServerWorker::casterDataHandler(
-    [[maybe_unused]] ContentServer::ItemType type, const QByteArray &data) {
+    [[maybe_unused]] ContentServer::CasterType type, const QByteArray &data) {
     if (casterItems.isEmpty()) {
         qDebug() << "no caster items";
         return;

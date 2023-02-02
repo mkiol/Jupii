@@ -5,18 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "trackmodel.h"
+
 #include <QDebug>
+#include <QFileInfo>
 #include <QHash>
 #include <QUrl>
-#include <QFileInfo>
 
+#include "playlistparser.h"
 #include "tracker.h"
-#include "trackmodel.h"
 #include "trackercursor.h"
 #include "utils.h"
-#include "playlistparser.h"
 
-const QString TrackModel::queryByAlbumTemplate {
+const QString TrackModel::queryByAlbumTemplate{
     "SELECT ?song "
     "nie:title(?song) "
     "nmm:artistName(%3(?song)) "
@@ -28,12 +29,13 @@ const QString TrackModel::queryByAlbumTemplate {
     "WHERE { "
     "?song a nmm:MusicPiece; "
     "nie:isStoredAs ?url . "
-    "FILTER (regex(nie:title(?song), \"%2\", \"i\") && (nmm:musicAlbum(?song) in ( %1 ))) "
+    "FILTER (regex(nie:title(?song), \"%2\", \"i\") && (nmm:musicAlbum(?song) "
+    "in ( %1 ))) "
     "} "
     "ORDER BY nmm:trackNumber(?song) "
     "LIMIT 500"};
 
-const QString TrackModel::queryByArtistTemplate {
+const QString TrackModel::queryByArtistTemplate{
     "SELECT ?song "
     "nie:title(?song) "
     "nmm:artistName(%3(?song)) "
@@ -48,21 +50,22 @@ const QString TrackModel::queryByArtistTemplate {
     "%3 \"%1\" . "
     "FILTER regex(nie:title(?song), \"%2\", \"i\") "
     "} "
-    "ORDER BY nie:title(nmm:musicAlbum(?song)) nmm:trackNumber(?song) LIMIT 500"};
+    "ORDER BY nie:title(nmm:musicAlbum(?song)) nmm:trackNumber(?song) LIMIT "
+    "500"};
 
-const QString TrackModel::queryByPlaylistTemplate {
+const QString TrackModel::queryByPlaylistTemplate{
     "SELECT nfo:hasMediaFileListEntry(?list) nie:url(?list) "
     "WHERE { ?list a nmm:Playlist . "
     "FILTER ( ?list in ( <%1> ) ) "
     "} LIMIT 1"};
 
-const QString TrackModel::queryByEntriesTemplate {
+const QString TrackModel::queryByEntriesTemplate{
     "SELECT nfo:entryUrl(?song) "
     "WHERE { ?song a nfo:MediaFileListEntry . "
     "FILTER ( ?song in ( %1 )) "
     "} LIMIT 500"};
 
-const QString TrackModel::queryByUrlsTemplate {
+const QString TrackModel::queryByUrlsTemplate{
     "SELECT nie:url(?url) "
     "nie:mimeType(?item) "
     "nie:title(?item) "
@@ -71,13 +74,10 @@ const QString TrackModel::queryByUrlsTemplate {
     "WHERE { ?item a nmm:MusicPiece; nie:isStoredAs ?url . "
     "FILTER ( nie:url(?url) in ( %1 ) ) }"};
 
-TrackModel::TrackModel(QObject *parent) :
-    SelectableItemModel(new TrackItem, parent)
-{
-}
+TrackModel::TrackModel(QObject* parent)
+    : SelectableItemModel(new TrackItem, parent) {}
 
-QList<ListItem*> TrackModel::makeItems()
-{
+QList<ListItem*> TrackModel::makeItems() {
     QString query;
     TrackerTasks task = TaskUnknown;
 
@@ -109,30 +109,25 @@ QList<ListItem*> TrackModel::makeItems()
     return {};
 }
 
-QList<ListItem*> TrackModel::processTrackerReplyForAlbumArtist(TrackerCursor& cursor)
-{
+QList<ListItem*> TrackModel::processTrackerReplyForAlbumArtist(
+    TrackerCursor& cursor) {
     QList<ListItem*> items;
 
-    while(cursor.next()) {
+    while (cursor.next()) {
         auto type = ContentServer::typeFromMime(cursor.value(7).toString());
         items << new TrackItem(
-                     cursor.value(0).toString(), // id
-                     cursor.value(1).toString(),
-                     cursor.value(2).toString(),
-                     cursor.value(3).toString(),
-                     QUrl(cursor.value(4).toString()), // url
-                     QUrl(), // icon
-                     type,
-                     cursor.value(5).toInt(),
-                     cursor.value(6).toInt()
-                     );
+            cursor.value(0).toString(),  // id
+            cursor.value(1).toString(), cursor.value(2).toString(),
+            cursor.value(3).toString(),
+            QUrl(cursor.value(4).toString()),  // url
+            QUrl(),                            // icon
+            type, cursor.value(5).toInt(), cursor.value(6).toInt());
     }
 
     return items;
 }
 
-TrackModel::TrackData TrackModel::makeTrackDataFromId(const QUrl& id) const
-{
+TrackModel::TrackData TrackModel::makeTrackDataFromId(const QUrl& id) const {
     TrackData data;
     QString name;
     int t = 0;
@@ -141,9 +136,8 @@ TrackModel::TrackData TrackModel::makeTrackDataFromId(const QUrl& id) const
                                         &data.icon, nullptr, &data.author,
                                         &data.album);
 
-    data.type = t == 0 ?
-                ContentServer::getContentTypeByExtension(id) :
-                static_cast<ContentServer::Type>(t);
+    data.type = t == 0 ? ContentServer::getContentTypeByExtension(id)
+                       : static_cast<ContentServer::Type>(t);
 
     if (name.isEmpty()) {
         auto itemType = ContentServer::itemTypeFromUrl(id);
@@ -160,45 +154,42 @@ TrackModel::TrackData TrackModel::makeTrackDataFromId(const QUrl& id) const
     return data;
 }
 
-QList<ListItem*> TrackModel::makeTrackItemsFromPlaylistFile(const QString& playlist)
-{
+QList<ListItem*> TrackModel::makeTrackItemsFromPlaylistFile(
+    const QString& playlist) {
     QList<ListItem*> items;
 
     QByteArray data;
-    if (QFile f{playlist}; f.open(QIODevice::ReadOnly)) {
-        data = f.readAll();
-        f.close();
-    }
+    if (QFile f{playlist}; f.open(QIODevice::ReadOnly)) data = f.readAll();
 
-    const auto list = parsePls(data);
+    auto p = PlaylistParser::parsePls(data);
+
+    if (!p) return items;
+
     const auto& filter = getFilter();
 
-    foreach (const auto& item, list) {
-        const auto title = item.title.isEmpty() ? item.url.fileName() : item.title;
-        if (filter.isEmpty() ||
-            title.contains(filter, Qt::CaseInsensitive)) {
-            items << new TrackItem {
-                item.url.toString(), // id
-                title, // title
-                {}, // artist
-                {}, // album
-                item.url, // url
-                {}, // icon
-                ContentServer::Type::Type_Unknown, // type
-                0, // number
-                0, // length
-                ContentServer::itemTypeFromUrl(item.url)
-            };
+    foreach (const auto& item, p->items) {
+        auto title = item.title.isEmpty() ? item.url.fileName() : item.title;
+        if (filter.isEmpty() || title.contains(filter, Qt::CaseInsensitive)) {
+            items << new TrackItem{item.url.toString(),                // id
+                                   title,                              // title
+                                   {},                                 // artist
+                                   {},                                 // album
+                                   item.url,                           // url
+                                   {},                                 // icon
+                                   ContentServer::Type::Type_Unknown,  // type
+                                   0,                                  // number
+                                   0,                                  // length
+                                   ContentServer::itemTypeFromUrl(item.url)};
         }
     }
 
     return items;
 }
 
-QList<ListItem*> TrackModel::processTrackerReplyForPlaylist(TrackerCursor& cursor)
-{
+QList<ListItem*> TrackModel::processTrackerReplyForPlaylist(
+    TrackerCursor& cursor) {
     QString entries;
-    while(cursor.next()) {
+    while (cursor.next()) {
         if (cursor.value(0).isNull()) {
             qWarning() << "Tracker reply for playlist's entries is null";
             if (const auto url = cursor.value(1).toUrl(); url.isLocalFile()) {
@@ -218,7 +209,8 @@ QList<ListItem*> TrackModel::processTrackerReplyForPlaylist(TrackerCursor& curso
         auto query = queryByEntriesTemplate.arg(entries);
         if (tracker->query(query, false)) {
             auto result = tracker->getResult();
-            return processTrackerReply(TaskEntries, result.first, result.second);
+            return processTrackerReply(TaskEntries, result.first,
+                                       result.second);
         } else {
             qWarning() << "Tracker query error";
         }
@@ -227,23 +219,27 @@ QList<ListItem*> TrackModel::processTrackerReplyForPlaylist(TrackerCursor& curso
     return {};
 }
 
-QList<ListItem*> TrackModel::processTrackerReplyForEntries(TrackerCursor& cursor)
-{
+QList<ListItem*> TrackModel::processTrackerReplyForEntries(
+    TrackerCursor& cursor) {
     QStringList fileUrls;
 
-    while(cursor.next()) {
+    while (cursor.next()) {
         QUrl url{cursor.value(0).toString()};
         if (!url.isEmpty()) {
             if (url.isLocalFile())
-                fileUrls.append('"' + url.toString(QUrl::EncodeUnicode|QUrl::EncodeSpaces) + '"');
+                fileUrls.append(
+                    '"' +
+                    url.toString(QUrl::EncodeUnicode | QUrl::EncodeSpaces) +
+                    '"');
             m_ids.push_back(std::move(url));
         }
     }
 
     if (!fileUrls.isEmpty()) {
         auto tracker = Tracker::instance();
-        auto query = queryByUrlsTemplate.arg(fileUrls.join(","),
-                                             tracker->tracker3() ? "nmm:artist" : "nmm:performer");
+        auto query = queryByUrlsTemplate.arg(
+            fileUrls.join(","),
+            tracker->tracker3() ? "nmm:artist" : "nmm:performer");
         if (tracker->query(query, false)) {
             auto result = tracker->getResult();
             return processTrackerReply(TaskUrls, result.first, result.second);
@@ -255,8 +251,7 @@ QList<ListItem*> TrackModel::processTrackerReplyForEntries(TrackerCursor& cursor
     return makeTrackItemsFromTrackData();
 }
 
-QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
-{
+QList<ListItem*> TrackModel::makeTrackItemsFromTrackData() {
     QList<ListItem*> items;
 
     const auto& filter = getFilter();
@@ -265,12 +260,9 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
         auto id_data = makeTrackDataFromId(id);
         if (m_trackdata_by_id.contains(id)) {
             auto& data = m_trackdata_by_id[id];
-            if (!id_data.title.isEmpty())
-                data.title = id_data.title;
-            if (!id_data.author.isEmpty())
-                data.author = id_data.author;
-            if (!id_data.icon.isEmpty())
-                data.icon = id_data.icon;
+            if (!id_data.title.isEmpty()) data.title = id_data.title;
+            if (!id_data.author.isEmpty()) data.author = id_data.author;
+            if (!id_data.icon.isEmpty()) data.icon = id_data.icon;
             if (id_data.type != ContentServer::Type::Type_Unknown)
                 data.type = id_data.type;
         } else {
@@ -280,24 +272,24 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
 
     foreach (const auto& id, m_ids) {
         const auto& data = m_trackdata_by_id.value(id);
-        const auto title = data.title.isEmpty() ?
-                    id.fileName().isEmpty() ? id.path().isEmpty() ?
-                    id.toString() : id.path() : id.fileName() : data.title;
-        if (filter.isEmpty() ||
-                title.contains(filter, Qt::CaseInsensitive) ||
-                data.author.contains(filter, Qt::CaseInsensitive)) {
-            items << new TrackItem(
-                         id.toString(), // id
-                         title, // title-
-                         data.author, // artist
-                         QString(), // album
-                         id, // url
-                         data.icon, // icon
-                         data.type, // type
-                         0, // number
-                         0, // length
-                         ContentServer::itemTypeFromUrl(id)
-                         );
+        const auto title =
+            data.title.isEmpty()
+                ? id.fileName().isEmpty()
+                      ? id.path().isEmpty() ? id.toString() : id.path()
+                      : id.fileName()
+                : data.title;
+        if (filter.isEmpty() || title.contains(filter, Qt::CaseInsensitive) ||
+            data.author.contains(filter, Qt::CaseInsensitive)) {
+            items << new TrackItem(id.toString(),  // id
+                                   title,          // title-
+                                   data.author,    // artist
+                                   QString(),      // album
+                                   id,             // url
+                                   data.icon,      // icon
+                                   data.type,      // type
+                                   0,              // number
+                                   0,              // length
+                                   ContentServer::itemTypeFromUrl(id));
         }
     }
 
@@ -307,15 +299,15 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData()
     return items;
 }
 
-QList<ListItem*> TrackModel::processTrackerReplyForUrls(TrackerCursor& cursor)
-{
-    while(cursor.next()) {
+QList<ListItem*> TrackModel::processTrackerReplyForUrls(TrackerCursor& cursor) {
+    while (cursor.next()) {
         const auto id = QUrl{cursor.value(0).toString()};
 
         TrackData data;
         data.title = cursor.value(2).toString();
         data.author = cursor.value(3).toString();
-        data.icon = QUrl::fromLocalFile(Tracker::genAlbumArtFile(cursor.value(4).toString(), data.author));
+        data.icon = QUrl::fromLocalFile(
+            Tracker::genAlbumArtFile(cursor.value(4).toString(), data.author));
         data.type = ContentServer::typeFromMime(cursor.value(1).toString());
 
         m_trackdata_by_id.insert(id, data);
@@ -324,11 +316,9 @@ QList<ListItem*> TrackModel::processTrackerReplyForUrls(TrackerCursor& cursor)
     return makeTrackItemsFromTrackData();
 }
 
-QList<ListItem*> TrackModel::processTrackerReply(
-        TrackerTasks task,
-        const QStringList& varNames,
-        const QByteArray& data)
-{
+QList<ListItem*> TrackModel::processTrackerReply(TrackerTasks task,
+                                                 const QStringList& varNames,
+                                                 const QByteArray& data) {
     TrackerCursor cursor(varNames, data);
     int n = cursor.columnCount();
 
@@ -347,8 +337,7 @@ QList<ListItem*> TrackModel::processTrackerReply(
     return {};
 }
 
-QVariantList TrackModel::selectedItems()
-{
+QVariantList TrackModel::selectedItems() {
     QVariantList list;
 
     foreach (const auto item, m_list) {
@@ -363,8 +352,7 @@ QVariantList TrackModel::selectedItems()
     return list;
 }
 
-void TrackModel::setAlbumId(const QString &id)
-{
+void TrackModel::setAlbumId(const QString& id) {
     if (!m_artistId.isEmpty()) {
         m_artistId.clear();
         emit artistIdChanged();
@@ -378,8 +366,7 @@ void TrackModel::setAlbumId(const QString &id)
     }
 }
 
-void TrackModel::setArtistId(const QString &id)
-{
+void TrackModel::setArtistId(const QString& id) {
     if (!m_albumId.isEmpty()) {
         m_albumId.clear();
         emit albumIdChanged();
@@ -393,8 +380,7 @@ void TrackModel::setArtistId(const QString &id)
     }
 }
 
-void TrackModel::setPlaylistId(const QString &id)
-{
+void TrackModel::setPlaylistId(const QString& id) {
     if (!m_playlistId.isEmpty()) {
         m_playlistId.clear();
         emit playlistIdChanged();
@@ -408,48 +394,22 @@ void TrackModel::setPlaylistId(const QString &id)
     }
 }
 
-QString TrackModel::getAlbumId()
-{
-    return m_albumId;
-}
+QString TrackModel::getAlbumId() { return m_albumId; }
 
-QString TrackModel::getArtistId()
-{
-    return m_artistId;
-}
+QString TrackModel::getArtistId() { return m_artistId; }
 
-QString TrackModel::getPlaylistId()
-{
-    return m_playlistId;
-}
+QString TrackModel::getPlaylistId() { return m_playlistId; }
 
-TrackItem::TrackItem(const QString &id,
-                   const QString &title,
-                   const QString &artist,
-                   const QString &album,
-                   const QUrl &url,
-                   const QUrl &icon,
-                   ContentServer::Type type,
-                   int number,
-                   int length,
-                   ContentServer::ItemType itemType,
-                   QObject *parent) :
-    SelectableItem(parent),
-    m_id(id),
-    m_title(title),
-    m_artist(artist),
-    m_album(album),
-    m_url(url),
-    m_icon(icon),
-    m_type(type),
-    m_number(number),
-    m_length(length),
-    m_item_type(itemType)
-{
-}
+TrackItem::TrackItem(const QString& id, const QString& title,
+                     const QString& artist, const QString& album,
+                     const QUrl& url, const QUrl& icon,
+                     ContentServer::Type type, int number, int length,
+                     ContentServer::ItemType itemType, QObject* parent)
+    : SelectableItem(parent), m_id(id), m_title(title), m_artist(artist),
+      m_album(album), m_url(url), m_icon(icon), m_type(type), m_number(number),
+      m_length(length), m_item_type(itemType) {}
 
-QHash<int, QByteArray> TrackItem::roleNames() const
-{
+QHash<int, QByteArray> TrackItem::roleNames() const {
     QHash<int, QByteArray> names;
     names[IdRole] = "id";
     names[TitleRole] = "title";
@@ -465,33 +425,31 @@ QHash<int, QByteArray> TrackItem::roleNames() const
     return names;
 }
 
-QVariant TrackItem::data(int role) const
-{
-    switch(role) {
-    case IdRole:
-        return id();
-    case TitleRole:
-        return title();
-    case ArtistRole:
-        return artist();
-    case AlbumRole:
-        return album();
-    case UrlRole:
-        return url();
-    case IconRole:
-        return icon();
-    case NumberRole:
-        return number();
-    case LengthRole:
-        return length();
-    case TypeRole:
-        return static_cast<int>(type());
-    case ItemTypeRole:
-        return itemType();
-    case SelectedRole:
-        return selected();
-    default:
-        return {};
+QVariant TrackItem::data(int role) const {
+    switch (role) {
+        case IdRole:
+            return id();
+        case TitleRole:
+            return title();
+        case ArtistRole:
+            return artist();
+        case AlbumRole:
+            return album();
+        case UrlRole:
+            return url();
+        case IconRole:
+            return icon();
+        case NumberRole:
+            return number();
+        case LengthRole:
+            return length();
+        case TypeRole:
+            return static_cast<int>(type());
+        case ItemTypeRole:
+            return itemType();
+        case SelectedRole:
+            return selected();
+        default:
+            return {};
     }
 }
-

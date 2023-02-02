@@ -155,6 +155,7 @@ static void registerTypes() {
     qRegisterMetaType<Settings::CasterVideoEncoder>(
         "Settings::CasterVideoEncoder");
     qRegisterMetaType<ContentServer::Type>("ContentServer::Type");
+    qRegisterMetaType<ContentServer::CasterType>("ContentServer::CasterType");
     qRegisterMetaType<UrlInfo>("UrlInfo");
     qRegisterMetaType<std::shared_ptr<QFile>>("std::shared_ptr<QFile>");
     qRegisterMetaType<int64_t>("int64_t");

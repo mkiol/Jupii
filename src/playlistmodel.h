@@ -80,6 +80,7 @@ class PlaylistWorker : public QThread {
     QList<QUrl> ids;
     QHash<ListItem *, QUrl> itemToOrigId;
     ContentServer::Type type = ContentServer::Type::Type_Unknown;
+    static void processPlaylist(const QUrl &url, QList<UrlItem> &urls);
     bool urlIsId;
     void run() override;
 };
@@ -88,6 +89,8 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     Q_OBJECT
     Q_PROPERTY(int activeItemIndex READ getActiveItemIndex NOTIFY
                    activeItemIndexChanged)
+    Q_PROPERTY(bool active READ isActive NOTIFY activeItemIndexChanged)
+    Q_PROPERTY(bool live READ isLive NOTIFY activeItemIndexChanged)
     Q_PROPERTY(
         int playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
     Q_PROPERTY(bool busy READ isBusy NOTIFY busyChanged)
@@ -160,6 +163,8 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     inline bool isRefreshing() const {
         return static_cast<bool>(m_refresh_worker);
     }
+    inline bool isActive() const { return m_activeItemIndex > -1; }
+    bool isLive() const;
     int selectedCount() const;
     Q_INVOKABLE void setSelected(int index, bool value);
     Q_INVOKABLE void setAllSelected(bool value);
@@ -304,7 +309,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
                                  const QUrl &origUrl, const QString &author,
                                  const QUrl &icon, const QString &desc,
                                  QString &&app, bool autoPlay);
-    PlaylistItem *itemFromId(const QString id) const;
+    PlaylistItem *itemFromId(const QString &id) const;
     void casterErrorHandler();
     QStringList selectedItems() const;
 #ifdef USE_SFOS

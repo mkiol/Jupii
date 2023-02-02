@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,20 +8,77 @@
 #ifndef PLAYLISTPARSER_H
 #define PLAYLISTPARSER_H
 
+#include <QByteArray>
 #include <QString>
 #include <QUrl>
-#include <QByteArray>
-#include <QList>
+#include <optional>
+#include <variant>
+#include <vector>
 
-struct PlaylistItemMeta {
+namespace PlaylistParser {
+static const auto m3utag_extm3u = "#EXTM3U";
+static const auto m3utag_playlist = "#PLAYLIST:";
+static const auto m3utag_extinf = "#EXTINF:";
+static const auto m3utag_extxmediasequence = "#EXT-X-MEDIA-SEQUENCE:";
+static const auto m3utag_extxtargetduration = "#EXT-X-TARGETDURATION:";
+static const auto m3utag_extxendlist = "#EXT-X-ENDLIST";
+static const auto m3utag_extxstreaminf = "#EXT-X-STREAM-INF:";
+
+enum class HlsType { Unknown, MasterPlaylist, MediaPlaylist };
+QDebug operator<<(QDebug dbg, HlsType type);
+
+struct Item {
     QUrl url;
-    QString title;
     int length = 0;
+    QString title;
+    friend QDebug operator<<(QDebug dbg, const Item &item);
 };
 
-QList<PlaylistItemMeta> parsePls(const QByteArray &data, const QString &context = {});
-QList<PlaylistItemMeta> parseM3u(const QByteArray &data, const QString &context = {});
-QList<PlaylistItemMeta> parseXspf(const QByteArray &data, const QString &context = {});
-void resolveM3u(QByteArray &data, const QString &context);
+struct Playlist {
+    QString title;
+    std::vector<Item> items;
+    friend QDebug operator<<(QDebug dbg, const Playlist &playlist);
+};
 
-#endif // PLAYLISTPARSER_H
+struct HlsMasterItem {
+    QUrl url;
+    int bandwidth = 0;
+    QString codecs;
+    friend QDebug operator<<(QDebug dbg, const HlsMasterItem &item);
+};
+
+struct HlsMediaItem {
+    QUrl url;
+    int length = 0;
+    QString title;
+    int seq = 0;
+    friend QDebug operator<<(QDebug dbg, const HlsMediaItem &item);
+};
+
+struct HlsMasterPlaylist {
+    QString title;
+    std::vector<HlsMasterItem> items;
+    friend QDebug operator<<(QDebug dbg, const HlsMasterPlaylist &playlist);
+};
+
+struct HlsMediaPlaylist {
+    QString title;
+    int targetDuration = 0;
+    bool live = true;
+    std::vector<HlsMediaItem> items;
+    friend QDebug operator<<(QDebug dbg, const HlsMediaPlaylist &playlist);
+};
+
+HlsType hlsPlaylistType(const QByteArray &data);
+std::optional<std::variant<HlsMasterPlaylist, HlsMediaPlaylist>> parseHls(
+    const QByteArray &data, const QString &context = {});
+std::optional<Playlist> parsePls(const QByteArray &data,
+                                 const QString &context = {});
+std::optional<Playlist> parseM3u(const QByteArray &data,
+                                 const QString &context = {});
+std::optional<Playlist> parseXspf(const QByteArray &data,
+                                  const QString &context = {});
+void resolveM3u(QByteArray &data, const QString &context);
+}  // namespace PlaylistParser
+
+#endif  // PLAYLISTPARSER_H

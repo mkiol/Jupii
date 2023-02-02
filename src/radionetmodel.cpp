@@ -36,6 +36,8 @@ QVariantList RadionetModel::selectedItems() {
     return list;
 }
 
+static auto hlsUrl(const QUrl &url) { return url.path().endsWith(".m3u8"); }
+
 QList<ListItem *> RadionetModel::makeItems() {
     QList<ListItem *> items;
 
@@ -63,7 +65,9 @@ QList<ListItem *> RadionetModel::makeItems() {
             /*name=*/std::move(entry.name),
             /*country=*/std::move(entry.country),
             /*city=*/std::move(entry.city),
-            /*format=*/std::move(entry.format),
+            /*format=*/
+            hlsUrl(entry.streamUrl) ? QStringLiteral("HLS")
+                                    : std::move(entry.format),
             /*genres=*/std::move(entry.genres),
             /*icon=*/
             entry.imageUrl.value_or(

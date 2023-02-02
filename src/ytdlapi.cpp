@@ -29,6 +29,7 @@
 #include <QThread>
 #include <QTimer>
 #include <algorithm>
+#include <cctype>
 #include <fstream>
 #include <sstream>
 
@@ -344,11 +345,17 @@ static void logVideoInfo(const video_info::VideoInfo& info) {
     }
 }
 
-bool YtdlApi::urlOk(std::string_view url) {
-    if (url.empty()) return false;
-    if (url.find("manifest.googlevideo.com") != std::string::npos) return false;
-    return true;
-}
+// static bool hlsUrl(std::string_view url) {
+//     static const auto* m3u8 = ".m3u8";
+
+//    if (url.empty() || url.size() < strlen(m3u8)) return false;
+
+//    auto data = url.substr(url.size() - strlen(m3u8));
+//    std::transform(data.begin(), data.end(), data.begin(),
+//                   [](char c) { return std::tolower(c); });
+
+//    return data == m3u8;
+//}
 
 QUrl YtdlApi::makeYtUrl(std::string_view id) {
     return QUrl{
@@ -359,9 +366,8 @@ QUrl YtdlApi::bestAudioUrl(const std::vector<video_info::Format>& formats) {
     std::vector<video_info::Format> audioFormats{};
     std::copy_if(formats.cbegin(), formats.cend(),
                  std::back_inserter(audioFormats), [](const auto& format) {
-                     return format.vcodec == "none" &&
-                            format.acodec.find("mp4a") != std::string::npos &&
-                            urlOk(format.url);
+                     return !format.url.empty() && format.vcodec == "none" &&
+                            format.acodec.find("mp4a") != std::string::npos;
                  });
 
     auto it = std::max_element(audioFormats.cbegin(), audioFormats.cend(),
@@ -383,9 +389,9 @@ QUrl YtdlApi::bestVideoUrl(const std::vector<video_info::Format>& formats) {
 
     std::copy_if(formats.cbegin(), formats.cend(),
                  std::back_inserter(videoFormats), [](const auto& format) {
-                     return format.vcodec.find("avc1") != std::string::npos &&
-                            format.acodec.find("mp4a") != std::string::npos &&
-                            urlOk(format.url);
+                     return !format.url.empty() &&
+                            format.vcodec.find("avc1") != std::string::npos &&
+                            format.acodec.find("mp4a") != std::string::npos;
                  });
 
     auto it = std::max_element(videoFormats.cbegin(), videoFormats.cend(),
