@@ -580,6 +580,9 @@ if(build_ffmpeg)
         --enable-demuxer=wav
         --enable-demuxer=mpegvideo
         --enable-parser=h264
+        --enable-parser=aac
+        --enable-parser=aac_latm
+        --enable-parser=ac3
         --enable-bsf=h264_mp4toannexb
         --enable-bsf=dump_extradata
         --enable-bsf=extract_extradata

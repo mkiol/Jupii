@@ -2607,13 +2607,20 @@ void Caster::findAvAudioInputStreamIdx() {
     if (avformat_find_stream_info(m_inAudioFormatCtx, nullptr) < 0)
         throw std::runtime_error("avformat_find_stream_info for audio error");
 
-    auto idx = av_find_best_stream(m_inAudioFormatCtx, AVMEDIA_TYPE_AUDIO, -1,
-                                   -1, nullptr, 0);
-    if (idx < 0) throw std::runtime_error("no audio stream found in input");
+    auto audioIdx = av_find_best_stream(m_inAudioFormatCtx, AVMEDIA_TYPE_AUDIO,
+                                        -1, -1, nullptr, 0);
+    if (audioIdx < 0)
+        throw std::runtime_error("no audio stream found in input");
 
-    av_dump_format(m_inAudioFormatCtx, idx, "", 0);
+    auto dataIdx = av_find_best_stream(m_inAudioFormatCtx, AVMEDIA_TYPE_DATA,
+                                       -1, -1, nullptr, 0);
+    if (dataIdx >= 0)
+        LOGD("data stream found, type="
+             << m_inAudioFormatCtx->streams[dataIdx]->codecpar->codec_id);
 
-    m_inAudioStreamIdx = idx;
+    av_dump_format(m_inAudioFormatCtx, audioIdx, "", 0);
+
+    m_inAudioStreamIdx = audioIdx;
 }
 
 void Caster::findAvVideoInputStreamIdx() {
@@ -2677,6 +2684,8 @@ void Caster::initAvAudioOutStreamFromEncoder() {
     }
 
     m_outAudioStream->time_base = m_outAudioCtx->time_base;
+
+    av_dump_format(m_outFormatCtx, m_outAudioStream->id, "", 1);
 }
 
 void Caster::reInitAvOutputFormat() {
