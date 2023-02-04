@@ -982,12 +982,12 @@ QStringList Settings::getCasterMics() const { return m_mics_fn; }
 
 QStringList Settings::getCasterPlaybacks() const { return m_playbacks_fn; }
 
-QString Settings::casterFriendlyName(const QString &name,
+QString Settings::casterFriendlyName([[maybe_unused]] const QString &name,
                                      QString &&friendlyName) {
 #ifdef USE_SFOS
     if (name == "mic") return tr("Built-in microphone");
-    if (name == "playback") return tr("Application playback");
-    if (name == "playback-mute") return tr("Application playback (muted)");
+    if (name == "playback") return tr("Audio capture");
+    if (name == "playback-mute") return tr("Audio capture (muted source)");
     if (name == "screen" || name == "screen-rotate") return tr("Screen");
     if (name == "cam-raw-back" || name == "cam-raw-back-rotate")
         return tr("Back camera");

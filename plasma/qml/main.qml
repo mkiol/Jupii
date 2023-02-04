@@ -20,8 +20,6 @@ Kirigami.ApplicationWindow {
     property alias addMediaPageAction: _addMediaPageAction
     property alias trackInfoAction: _trackInfoAction
 
-    pageStack.columnView.columnResizeMode: Kirigami.ColumnView.SingleColumn
-
     globalDrawer: Kirigami.GlobalDrawer {
         header: RowLayout {
             Layout.fillWidth: true
@@ -36,7 +34,6 @@ Kirigami.ApplicationWindow {
         actions: [
             Kirigami.Action {
                 text: qsTr("Play queue")
-                checked: homeAction.checked
                 iconName: "view-media-playlist"
                 onTriggered: homeAction.trigger()
             },
@@ -53,7 +50,7 @@ Kirigami.ApplicationWindow {
             },
             Kirigami.PagePoolAction {
                 id: _addMediaPageAction
-                text: qsTr("Add items")
+                text: qsTr("Add")
                 iconName: "list-add"
                 shortcut: "Alt+A"
                 pagePool: mainPagePool

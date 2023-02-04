@@ -182,13 +182,6 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("Select items")
-                visible: !playlist.refreshing && !playlist.busy &&
-                         listView.count > 0 && !root.selectionMode
-                onClicked: root.selectionMode = true
-            }
-
-            MenuItem {
                 text: playlist.refreshing ? qsTr("Cancel") : qsTr("Refresh")
                 visible: playlist.refreshable && !playlist.busy && listView.count > 0 &&
                          !root.selectionMode
@@ -199,7 +192,14 @@ Page {
             }
 
             MenuItem {
-                text: playlist.busy ? qsTr("Cancel") : qsTr("Add items")
+                text: qsTr("Select")
+                visible: !playlist.refreshing && !playlist.busy &&
+                         listView.count > 0 && !root.selectionMode
+                onClicked: root.selectionMode = true
+            }
+
+            MenuItem {
+                text: playlist.busy ? qsTr("Cancel") : qsTr("Add")
                 visible: !playlist.refreshing && !root.selectionMode
                 onClicked: {
                     if (playlist.busy) {
@@ -285,12 +285,13 @@ Page {
             title.color: primaryColor
             subtitle.text: {
                 switch (model.itemType) {
-                case ContentServer.ItemType_Mic:
                 case ContentServer.ItemType_PlaybackCapture:
                     return model.audioSource
                 case ContentServer.ItemType_Cam:
-                case ContentServer.ItemType_ScreenCapture:
                     return model.videoSource + " · " + model.videoOrientation + (model.audioSource.length !== 0 ? (" · " + model.audioSource) : "")
+                case ContentServer.ItemType_Mic:
+                case ContentServer.ItemType_ScreenCapture:
+                    return ""
                 default:
                     return model.artist.length !== 0 ? model.artist : ""
                 }

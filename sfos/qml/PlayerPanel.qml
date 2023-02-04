@@ -106,7 +106,7 @@ DockedPanel_ {
                     width: Theme.itemSizeLarge
                     height: Theme.itemSizeLarge
                     anchors.left: parent.left
-                    source: "image://theme/graphic-grid-playlist?" + Theme.primaryColor
+                    source: utils.noresIcon("icon-itemart")
                 }
 
                 Image {

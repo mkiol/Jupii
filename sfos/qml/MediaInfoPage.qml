@@ -270,6 +270,17 @@ Page {
                 }
 
                 DetailItem {
+                    label: qsTr("Live")
+                    value: playlist.live ? qsTr("Yes") : qsTr("No")
+                    visible: playlist.active && (itemType === ContentServer.ItemType_Mic ||
+                                                 itemType === ContentServer.ItemType_Cam ||
+                                                 itemType === ContentServer.ItemType_PlaybackCapture ||
+                                                 itemType === ContentServer.ItemType_ScreenCapture ||
+                                                 itemType === ContentServer.ItemType_Url)
+
+                }
+
+                DetailItem {
                     label: qsTr("Cached")
                     value: cserver.idCached(av.currentId) ? qsTr("Yes") : qsTr("No")
                     visible: itemType == ContentServer.ItemType_Url

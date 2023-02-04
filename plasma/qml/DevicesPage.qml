@@ -43,6 +43,7 @@ Kirigami.ScrollablePage {
         if (deviceId) {
             rc.init(deviceId)
             av.init(deviceId)
+            removePagesAfterPlayQueue();
         }
     }
 

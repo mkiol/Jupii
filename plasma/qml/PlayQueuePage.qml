@@ -44,7 +44,7 @@ Kirigami.ScrollablePage {
     actions {
         main: Kirigami.Action {
             id: addAction
-            text: root.selectionMode ? qsTr("Exit selection mode") : qsTr("Add items")
+            text: root.selectionMode ? qsTr("Exit selection mode") : qsTr("Add")
             checked: root.selectionMode ? true : app.addMediaPageAction.checked
             iconName: root.selectionMode ? "dialog-cancel" : "list-add"
             enabled: !root.busy
@@ -346,7 +346,7 @@ Kirigami.ScrollablePage {
             helpfulAction: Kirigami.Action {
                 enabled: root.networkEnabled
                 iconName: "list-add"
-                text: qsTr("Add items")
+                text: qsTr("Add")
                 onTriggered: addAction.trigger()
             }
         }

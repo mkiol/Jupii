@@ -28,7 +28,7 @@ Kirigami.ScrollablePage {
 
     Kirigami.Theme.colorSet: Kirigami.Theme.Window
 
-    title: qsTr("Add items")
+    title: qsTr("Add")
 
     Component.onCompleted: {
         if (openUrlDialog) {

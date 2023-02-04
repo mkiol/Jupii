@@ -41,11 +41,11 @@ Dialog {
                 title: qsTr("Add screen capture")
             }
 
-            InlineMessage {
+            /*InlineMessage {
                 visible: settings.casterScreens.length === 0
                 width: parent.width
                 text: qsTr("Could not find any screen to capture.")
-            }
+            }*/
 
             InlineMessage {
                 visible: settings.casterScreenAudio && settings.casterPlaybacks.length === 0
@@ -53,7 +53,7 @@ Dialog {
                 text: qsTr("Could not find any audio source to capture.")
             }
 
-            ComboBox {
+            /*ComboBox {
                 enabled: settings.casterScreens.length !== 0
 
                 label: qsTr("Video source")
@@ -70,7 +70,7 @@ Dialog {
                 onCurrentIndexChanged: {
                     settings.casterScreenIdx = currentIndex
                 }
-            }
+            }*/
 
             ComboBox {
                 enabled: settings.casterScreens.length !== 0

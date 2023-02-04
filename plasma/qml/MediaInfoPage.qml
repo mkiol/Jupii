@@ -39,8 +39,8 @@ Kirigami.ScrollablePage {
                 enabled: itemType === ContentServer.ItemType_Url && isShout
                 visible: enabled
                 onTriggered: {
-                   utils.setClipboard(app.streamTitle)
-                   showPassiveNotification(qsTr("Current title was copied to clipboard"))
+                    utils.setClipboard(app.streamTitle)
+                    showPassiveNotification(qsTr("Current title was copied to clipboard"))
                 }
             },
             Kirigami.Action {
@@ -51,11 +51,11 @@ Kirigami.ScrollablePage {
                          itemType === ContentServer.ItemType_LocalFile
                 visible: true
                 onTriggered: {
-                   utils.setClipboard(itemType === ContentServer.ItemType_LocalFile ?
-                                          av.currentPath : av.currentOrigURL)
-                   showPassiveNotification(itemType === ContentServer.ItemType_LocalFile ?
-                                               qsTr("Path was copied to clipboard") :
-                                               qsTr("URL was copied to clipboard"))
+                    utils.setClipboard(itemType === ContentServer.ItemType_LocalFile ?
+                                           av.currentPath : av.currentOrigURL)
+                    showPassiveNotification(itemType === ContentServer.ItemType_LocalFile ?
+                                                qsTr("Path was copied to clipboard") :
+                                                qsTr("URL was copied to clipboard"))
                 }
             }
         ]
@@ -124,7 +124,7 @@ Kirigami.ScrollablePage {
                 Layout.fillWidth: true
                 visible: urlInfo.videoName.length > 0 &&
                          (itemType === ContentServer.ItemType_Cam ||
-                         itemType === ContentServer.ItemType_ScreenCapture)
+                          itemType === ContentServer.ItemType_ScreenCapture)
                 wrapMode: Text.WordWrap
                 text: urlInfo.videoName
             }
@@ -141,9 +141,9 @@ Kirigami.ScrollablePage {
                 Layout.fillWidth: true
                 visible: urlInfo.audioName.length > 0 &&
                          (itemType === ContentServer.ItemType_Cam ||
-                         itemType === ContentServer.ItemType_ScreenCapture ||
-                         itemType === ContentServer.ItemType_Mic ||
-                         itemType === ContentServer.ItemType_PlaybackCapture)
+                          itemType === ContentServer.ItemType_ScreenCapture ||
+                          itemType === ContentServer.ItemType_Mic ||
+                          itemType === ContentServer.ItemType_PlaybackCapture)
                 wrapMode: Text.WordWrap
                 text: urlInfo.audioName
             }
@@ -206,7 +206,7 @@ Kirigami.ScrollablePage {
                 visible: (itemType === ContentServer.ItemType_PlaybackCapture ||
                           itemType === ContentServer.ItemType_ScreenCapture ||
                           itemType === ContentServer.ItemType_Url) &&
-                          text.length !== 0 && av.currentType !== AVTransport.T_Image
+                         text.length !== 0 && av.currentType !== AVTransport.T_Image
                 wrapMode: Text.WordWrap
                 text: app.streamTitle.length === 0 &&
                       (itemType === ContentServer.ItemType_PlaybackCapture ||
@@ -321,6 +321,25 @@ Kirigami.ScrollablePage {
             }
 
             Controls.Label {
+                visible: liveLabel.visible
+                Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                text: qsTr("Live")
+                color: Kirigami.Theme.disabledTextColor
+            }
+            Controls.Label {
+                id: liveLabel
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillWidth: true
+                visible: playlist.active && (itemType === ContentServer.ItemType_Mic ||
+                         itemType === ContentServer.ItemType_Cam ||
+                         itemType === ContentServer.ItemType_PlaybackCapture ||
+                         itemType === ContentServer.ItemType_ScreenCapture ||
+                         itemType === ContentServer.ItemType_Url)
+                wrapMode: Text.WordWrap
+                text: playlist.live ? qsTr("Yes") : qsTr("No")
+            }
+
+            Controls.Label {
                 visible: cachedLabel.visible
                 Layout.alignment: Qt.AlignRight | Qt.AlignTop
                 text: qsTr("Cached")
@@ -362,7 +381,7 @@ Kirigami.ScrollablePage {
                 id: mic
                 visible: audioLabel.visible &&
                          (itemType === ContentServer.ItemType_Mic ||
-                         itemType === ContentServer.ItemType_Cam)
+                          itemType === ContentServer.ItemType_Cam)
                 volume: settings.casterMicVolume
                 onVolumeChanged: settings.casterMicVolume = volume
             }
@@ -371,7 +390,7 @@ Kirigami.ScrollablePage {
                 id: playback
                 visible: audioLabel.visible &&
                          (itemType === ContentServer.ItemType_ScreenCapture ||
-                         itemType === ContentServer.ItemType_PlaybackCapture)
+                          itemType === ContentServer.ItemType_PlaybackCapture)
                 volume: settings.casterPlaybackVolume
                 onVolumeChanged: settings.casterPlaybackVolume = volume
             }

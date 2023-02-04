@@ -106,7 +106,7 @@ Page {
             }
 
             PageHeader {
-                title: qsTr("Add item")
+                title: qsTr("Add")
             }
 
             SectionHeader {

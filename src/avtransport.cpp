@@ -5,21 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QDebug>
-#include <QUrl>
-#include <QThread>
-#include <QGuiApplication>
-#include <QTime>
-#include <QFileInfo>
-
 #include "avtransport.h"
-#include "directory.h"
-#include "devicemodel.h"
-#include "utils.h"
-#include "taskexecutor.h"
-#include "contentserver.h"
-#include "playlistmodel.h"
+
+#include <QDebug>
+#include <QFileInfo>
+#include <QGuiApplication>
+#include <QThread>
+#include <QTime>
+#include <QUrl>
+
 #include "connectivitydetector.h"
+#include "contentserver.h"
+#include "devicemodel.h"
+#include "directory.h"
+#include "playlistmodel.h"
+#include "taskexecutor.h"
+#include "utils.h"
 
 AVTransport::AVTransport(QObject *parent) :
     Service(parent),

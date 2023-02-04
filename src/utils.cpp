@@ -33,6 +33,7 @@
 #include "contentserver.h"
 #include "directory.h"
 #include "gpoddermodel.h"
+#include "iconprovider.h"
 #include "settings.h"
 
 const QString Utils::typeKey = QStringLiteral("jupii_type");
@@ -366,6 +367,10 @@ QString Utils::clipboard() const {
 bool Utils::clipboardContainsUrl() const {
     auto text = QGuiApplication::clipboard()->text();
     return Utils::isUrlOk(QUrl{text});
+}
+
+QUrl Utils::noresIcon(const QString &id) const {
+    return QUrl::fromLocalFile(IconProvider::pathToNoResId(id));
 }
 
 int Utils::itemTypeFromUrl(const QUrl &url) const {
