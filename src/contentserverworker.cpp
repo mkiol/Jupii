@@ -804,8 +804,9 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
                 convertStreamFormat(s->getCasterAudioStreamFormat());
 
             if (meta->flagSet(ContentServer::MetaFlag::Live)) {
+                auto flags = Caster::FileSourceFlags::SameFormatForAllFiles;
                 config.fileSourceConfig = Caster::FileSourceConfig{
-                    std::move(*files), false,
+                    std::move(*files), flags,
                     [this](const std::string &fileDone, size_t remainingFiles) {
                         qDebug() << "hls remaining files:" << remainingFiles;
                         Utils::removeFile(QString::fromStdString(fileDone));
@@ -813,7 +814,7 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
                     }};
             } else {
                 config.fileSourceConfig =
-                    Caster::FileSourceConfig{std::move(*files), false, {}};
+                    Caster::FileSourceConfig{std::move(*files), 0, {}};
             }
 
             config.options = Caster::OptionsFlags::FileAudioSources;

@@ -134,12 +134,18 @@ class Caster {
     };
     friend std::ostream &operator<<(std::ostream &os, Dim dim);
 
+    enum FileSourceFlags : uint32_t {
+        Loop = 1 << 1,
+        SameFormatForAllFiles = 1 << 2
+    };
+    friend std::ostream &operator<<(std::ostream &os, FileSourceFlags flags);
+
     struct FileSourceConfig {
         using FileStreamingDoneHandler = std::function<void(
             const std::string &fileDone, size_t remainingFiles)>;
 
         std::vector<std::string> files;
-        bool loop = false;
+        uint32_t flags = 0;
         FileStreamingDoneHandler fileStreamingDoneHandler;
 
         friend std::ostream &operator<<(std::ostream &os,
@@ -192,7 +198,7 @@ class Caster {
     }
     inline const Config &config() const { return m_config; }
     SensorDirection videoDirection() const;
-    void setAudioVolume(float volume);
+    void setAudioVolume(int volume);
     inline void setStateChangedHandler(StateChangedHandler cb) {
         m_stateChangedHandler = std::move(cb);
     }
@@ -488,6 +494,7 @@ class Caster {
     void initAvOutputFormat();
     void reInitAvOutputFormat();
     bool reInitAvAudioInput();
+    void reInitAvAudioDecoder();
     void initVideoTrans();
     void initAudioTrans();
     void initAv();
@@ -567,7 +574,7 @@ class Caster {
     bestVideoFormat(const AVCodec *encoder,
                     const VideoSourceInternalProps &props, bool useNiceFormats);
     static AVSampleFormat bestAudioSampleFormat(
-        const AVCodec *encoder, const AVSampleFormat &decoderSampleFmt);
+        const AVCodec *encoder, AVSampleFormat decoderSampleFmt);
     static void setVideoEncoderOpts(VideoEncoder encoder, AVDictionary **opts);
     static void setAudioEncoderOpts(AudioEncoder encoder, AVDictionary **opts);
     static std::string videoEncoderAvName(VideoEncoder encoder);

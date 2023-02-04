@@ -494,6 +494,14 @@ std::ostream &operator<<(std::ostream &os, const Caster::PaSinkInput &input) {
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, Caster::FileSourceFlags flags) {
+    if (flags & Caster::FileSourceFlags::Loop) os << "loop, ";
+    if (flags & Caster::FileSourceFlags::SameFormatForAllFiles)
+        os << "same-format-for-all-files, ";
+
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os,
                          const Caster::FileSourceConfig &config) {
     os << "files=";
@@ -501,7 +509,7 @@ std::ostream &operator<<(std::ostream &os,
         for (const auto &f : config.files) os << "[" << f << "], ";
     else
         os << "empty";
-    os << ", loop=" << config.loop;
+    os << ", flags=[" << config.flags << "]";
     return os;
 }
 
@@ -2051,8 +2059,8 @@ void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg) {
     LOGD("video av filter successfully inited");
 }
 
-AVSampleFormat Caster::bestAudioSampleFormat(
-    const AVCodec *encoder, const AVSampleFormat &decoderSampleFmt) {
+AVSampleFormat Caster::bestAudioSampleFormat(const AVCodec *encoder,
+                                             AVSampleFormat decoderSampleFmt) {
     if (encoder->sample_fmts == nullptr)
         throw std::runtime_error(
             "audio encoder does not support any sample fmts");
@@ -2341,7 +2349,7 @@ bool Caster::initAvAudioInputFormatFromFile() {
     std::lock_guard lock{m_filesMtx};
 
     if (m_files.empty() && m_config.fileSourceConfig &&
-        m_config.fileSourceConfig->loop)
+        m_config.fileSourceConfig->flags & FileSourceFlags::Loop)
         initFiles();
 
     if (m_files.empty()) {
@@ -3576,14 +3584,22 @@ int64_t Caster::audioDelay(int64_t now) const {
 }
 
 bool Caster::reInitAvAudioInput() {
-    cleanAvAudioDecoder();
     cleanAvAudioInputFormat();
-    cleanAvAudioFifo();
-    cleanAvAudioFilters();
 
     if (!initAvAudioInputFormatFromFile()) return false;
 
     findAvAudioInputStreamIdx();
+
+    LOGD("audio input re-inited");
+
+    return true;
+}
+
+void Caster::reInitAvAudioDecoder() {
+    cleanAvAudioDecoder();
+    cleanAvAudioFifo();
+    cleanAvAudioFilters();
+
     initAvAudioRawDecoderFromInputStream();
     initAvAudioFifo();
     initAvAudioFilters();
@@ -3592,9 +3608,7 @@ bool Caster::reInitAvAudioInput() {
         nullptr, m_inAudioCtx->ch_layout.nb_channels, m_outAudioCtx->frame_size,
         m_inAudioCtx->sample_fmt, 0);
 
-    LOGD("audio input re-inited");
-
-    return true;
+    LOGD("audio decoder re-inited");
 }
 
 bool Caster::readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData) {
@@ -3628,11 +3642,19 @@ bool Caster::readAudioPktFromDemuxer(AVPacket *pkt) {
             LOGD("audio stream eof");
 
             if (audioProps().type == AudioSourceType::File) {
+                cleanAvAudioInputFormat();
                 if (m_config.fileSourceConfig &&
                     m_config.fileSourceConfig->fileStreamingDoneHandler)
                     m_config.fileSourceConfig->fileStreamingDoneHandler(
                         m_currentFile, m_files.size());
-                if (reInitAvAudioInput()) return false;
+
+                if (reInitAvAudioInput()) {
+                    if (!m_config.fileSourceConfig ||
+                        !(m_config.fileSourceConfig->flags &
+                          FileSourceFlags::SameFormatForAllFiles))
+                        reInitAvAudioDecoder();
+                    return false;
+                }
             }
 
             m_terminationReason = TerminationReason::Eof;
@@ -3664,7 +3686,7 @@ bool Caster::readAudioFrame(AVPacket *pkt, DataSource source,
         }
 
         if (auto ret = avcodec_send_packet(m_inAudioCtx, pkt);
-            ret != 0 && ret != AVERROR(EAGAIN)) {
+            ret != 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF) {
             LOGT("audio decoding error")
 
             av_packet_unref(pkt);
@@ -3934,7 +3956,7 @@ void Caster::updateVideoSampleStats(int64_t now) {
     m_videoTimeLastFrame = now;
 }
 
-void Caster::setAudioVolume(float volume) {
+void Caster::setAudioVolume(int volume) {
     if (volume < -50 || volume > 50) {
         LOGW("audio-volume is invalid");
         return;

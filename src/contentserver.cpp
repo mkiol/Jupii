@@ -703,8 +703,8 @@ QString ContentServer::bestName(const ContentServer::ItemMeta &meta) {
         name = meta.title;
     else if (!meta.filename.isEmpty() && meta.filename.length() > 1)
         name = meta.filename;
-    else if (!meta.url.isEmpty())
-        name = meta.url.toString();
+    else if (!meta.url.fileName().isEmpty())
+        name = meta.url.fileName();
     else
         name = tr("Unknown");
 
@@ -2556,7 +2556,7 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
     meta.setFlags(MetaFlag::Valid);
     meta.setFlags(MetaFlag::Local, false);
     meta.setFlags(MetaFlag::Seek, size > 0 && ranges);
-    meta.setFlags(MetaFlag::Live, size > 0 && ranges);
+    meta.setFlags(MetaFlag::Live, size <= 0 && !ranges);
 
     if (type == Type::Type_Image && meta.flagSet(MetaFlag::Art)) {
         saveAlbumArt(*reply, meta);
