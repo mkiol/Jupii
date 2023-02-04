@@ -43,6 +43,13 @@ Dialog {
 
     RadionetModel {
         id: itemModel
+
+        onBusyChanged: {
+            if (!busy) {
+                var idx = itemModel.lastIndex();
+                if (idx > 0) listView.positionViewAtIndex(idx, ListView.Beginning)
+            }
+        }
     }
 
     SilicaListView {
@@ -53,6 +60,14 @@ Dialog {
         currentIndex: -1
 
         model: itemModel
+
+        footer: ShowMoreItem {
+            enabled: !itemModel.busy && itemModel.canShowMore
+            onClicked: {
+                itemModel.requestMoreItems()
+                itemModel.updateModel()
+            }
+        }
 
         header: SearchDialogHeader {
             implicitWidth: root.width
@@ -100,6 +115,7 @@ Dialog {
                     s += model.format
                 }
             }
+            dimmed: itemModel.filter.length == 0
             enabled: !itemModel.busy && listView.count > 0
             icon.source: model.icon
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor

@@ -17,27 +17,43 @@
 #include <QThread>
 #include <QTimer>
 #include <QUrlQuery>
+#include <limits>
 
 #include "downloader.h"
 
-RadionetApi::RadionetApi(std::shared_ptr<QNetworkAccessManager> nam, QObject *parent)
-    : QObject{parent}, nam{std::move(nam)} {}
+std::vector<RadionetApi::Item> RadionetApi::m_localItems{};
+int RadionetApi::m_localItemsMaxCount = std::numeric_limits<int>::max();
+int RadionetApi::m_localItemsOffset = 0;
+const int RadionetApi::m_count = 50;
+
+RadionetApi::RadionetApi(std::shared_ptr<QNetworkAccessManager> nam,
+                         QObject *parent)
+    : QObject{parent}, m_nam{std::move(nam)} {}
 
 QJsonDocument RadionetApi::parseJsonData(const QByteArray &data) {
     QJsonParseError err{};
 
     auto json = QJsonDocument::fromJson(data, &err);
 
-    if (err.error != QJsonParseError::NoError) {
+    if (err.error != QJsonParseError::NoError)
         qWarning() << "error parsing json:" << err.errorString();
-    }
 
     return json;
 }
 
-std::optional<std::pair<QUrl, QString>> RadionetApi::parseStreams(
+static auto hlsUrl(const QUrl &url) {
+    return url.path().endsWith(QStringLiteral(".m3u8"));
+}
+
+static RadionetApi::Format formatFromStr(const QString &str) {
+    if (str == QStringLiteral("MP3")) return RadionetApi::Format::Mp3;
+    if (str == QStringLiteral("AAC")) return RadionetApi::Format::Aac;
+    return RadionetApi::Format::Unknown;
+}
+
+std::optional<std::pair<QUrl, RadionetApi::Format>> RadionetApi::parseStreams(
     const QJsonArray &json) {
-    std::optional<std::pair<QUrl, QString>> streamUrl;
+    decltype(parseStreams(json)) streamUrl;
 
     for (int i = 0; i < json.size(); ++i) {
         auto es = json.at(i).toObject();
@@ -47,12 +63,15 @@ std::optional<std::pair<QUrl, QString>> RadionetApi::parseStreams(
 
             if (!url.isValid()) continue;
 
-            streamUrl.emplace(
-                std::move(url),
-                es.value(QLatin1String{"contentFormat"}).toString());
+            auto format =
+                hlsUrl(url)
+                    ? Format::Hls
+                    : formatFromStr(
+                          es.value(QLatin1String{"contentFormat"}).toString());
+            streamUrl.emplace(std::move(url), format);
 
             // preferring mp3 format
-            if (streamUrl->second == QStringLiteral("MP3")) break;
+            if (streamUrl->second == Format::Mp3) break;
         }
     }
 
@@ -69,7 +88,7 @@ std::optional<QUrl> RadionetApi::parseLogo(const QJsonObject &json) {
     return QUrl{json.value(QLatin1String{"logo100x100"}).toString()};
 }
 
-std::optional<RadionetApi::Station> RadionetApi::parsePlayable(
+std::optional<RadionetApi::Item> RadionetApi::parsePlayable(
     const QJsonObject &json) {
     if (json.value(QLatin1String{"type"}).toString() !=
         QStringLiteral("STATION"))
@@ -77,7 +96,7 @@ std::optional<RadionetApi::Station> RadionetApi::parsePlayable(
     if (!json.value(QLatin1String{"hasValidStreams"}).toBool())
         return std::nullopt;
 
-    Station station;
+    Item station;
 
     station.id = json.value(QLatin1String{"id"}).toString();
     if (station.id.isEmpty()) return std::nullopt;
@@ -99,11 +118,10 @@ std::optional<RadionetApi::Station> RadionetApi::parsePlayable(
     return station;
 }
 
-std::vector<RadionetApi::Station> RadionetApi::search(
-    const QString &query) const {
-    std::vector<Station> items;
+std::vector<RadionetApi::Item> RadionetApi::search(const QString &query) const {
+    std::vector<Item> items;
 
-    auto data = Downloader{nam}.downloadData(makeSearchUrl(query));
+    auto data = Downloader{m_nam}.downloadData(makeSearchUrl(query));
     if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return items;
@@ -113,7 +131,7 @@ std::vector<RadionetApi::Station> RadionetApi::search(
 
     auto json = parseJsonData(data.bytes);
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "cannot parse json data";
+        qWarning() << "failed to parse json data";
         return items;
     }
 
@@ -129,39 +147,55 @@ std::vector<RadionetApi::Station> RadionetApi::search(
     return items;
 }
 
-std::vector<RadionetApi::Station> RadionetApi::local() {
-    std::vector<Station> items;
+bool RadionetApi::makeMoreLocalItems() {
+    auto count =
+        std::min<int>(m_count, m_localItemsMaxCount - m_localItemsOffset);
 
-    auto data = Downloader{nam}.downloadData(makeLocalUrl(maxLocal, 0));
+    if (count <= 0) return false;
+
+    auto data = Downloader{m_nam}.downloadData(
+        makeLocalUrl(count, m_localItems.size()));
+
     if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
-        return items;
+        return false;
     }
 
-    if (QThread::currentThread()->isInterruptionRequested()) return items;
+    if (QThread::currentThread()->isInterruptionRequested()) return false;
 
     auto json = parseJsonData(data.bytes);
     if (json.isNull() || !json.isObject()) {
-        qWarning() << "cannot parse json data";
-        return items;
+        qWarning() << "failed to parse json data";
+        return false;
     }
+
+    m_localItemsOffset += json.object().value(QLatin1String{"count"}).toInt();
+    m_localItemsMaxCount =
+        json.object().value(QLatin1String{"totalCount"}).toInt();
 
     auto res = json.object().value(QLatin1String{"playables"}).toArray();
 
-    items.reserve(res.size());
+    m_localItemsOffset += count;
+
+    m_localItems.reserve(m_localItems.size() + res.size());
 
     for (int i = 0; i < res.size(); ++i) {
         auto station = parsePlayable(res.at(i).toObject());
-        if (station) items.push_back(std::move(*station));
+        if (station) m_localItems.push_back(std::move(*station));
     }
 
-    return items;
+    return true;
+}
+
+std::vector<RadionetApi::Item> RadionetApi::local() {
+    if (m_localItems.empty()) makeMoreLocalItems();
+    return m_localItems;
 }
 
 QUrl RadionetApi::makeSearchUrl(const QString &phrase) {
     QUrlQuery qurl;
     qurl.addQueryItem(QStringLiteral("query"), phrase);
-    qurl.addQueryItem(QStringLiteral("count"), QString::number(maxSearch));
+    qurl.addQueryItem(QStringLiteral("count"), QString::number(m_count));
     QUrl url{QStringLiteral("https://prod.radio-api.net/stations/search")};
     url.setQuery(qurl);
     return url;

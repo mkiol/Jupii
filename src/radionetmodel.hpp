@@ -61,12 +61,24 @@ class RadionetItem : public SelectableItem {
 
 class RadionetModel : public SelectableItemModel {
     Q_OBJECT
+    Q_PROPERTY(bool canShowMore READ canShowMore NOTIFY canShowMoreChanged)
    public:
     explicit RadionetModel(QObject *parent = nullptr);
     Q_INVOKABLE QVariantList selectedItems() override;
+    Q_INVOKABLE inline void requestMoreItems() {
+        m_lastIndex = getCount();
+        m_showMoreRequested = true;
+    }
+    Q_INVOKABLE inline int lastIndex() const { return m_lastIndex; }
+
+   signals:
+    void canShowMoreChanged();
 
    private:
+    bool m_showMoreRequested = false;
+    int m_lastIndex = 0;
     QList<ListItem *> makeItems() override;
+    bool canShowMore() const;
 };
 
 #endif  // TUNEINMODEL_H

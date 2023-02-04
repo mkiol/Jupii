@@ -36,21 +36,43 @@ QVariantList RadionetModel::selectedItems() {
     return list;
 }
 
-static auto hlsUrl(const QUrl &url) { return url.path().endsWith(".m3u8"); }
+static auto formatToStr(RadionetApi::Format format) {
+    switch (format) {
+        case RadionetApi::Format::Mp3:
+            return QStringLiteral("MP3");
+        case RadionetApi::Format::Aac:
+            return QStringLiteral("AAC");
+        case RadionetApi::Format::Hls:
+            return QStringLiteral("HLS");
+        default:
+            return QString{};
+    }
+}
+
+bool RadionetModel::canShowMore() const {
+    return RadionetApi::canMakeMoreLocalItems();
+}
 
 QList<ListItem *> RadionetModel::makeItems() {
     QList<ListItem *> items;
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
-    std::vector<RadionetApi::Station> entries;
+    std::vector<RadionetApi::Item> entries;
 
     auto filter = getFilter();
 
+    RadionetApi api{};
+
     if (filter.isEmpty()) {
-        entries = RadionetApi{}.local();
+        if (m_showMoreRequested) {
+            m_showMoreRequested = false;
+            if (api.makeMoreLocalItems()) emit canShowMoreChanged();
+        }
+        entries = api.local();
     } else {
-        entries = RadionetApi{}.search(filter);
+        m_lastIndex = 0;
+        entries = api.search(filter);
     }
 
     if (entries.empty()) return items;
@@ -65,10 +87,8 @@ QList<ListItem *> RadionetModel::makeItems() {
             /*name=*/std::move(entry.name),
             /*country=*/std::move(entry.country),
             /*city=*/std::move(entry.city),
-            /*format=*/
-            hlsUrl(entry.streamUrl) ? QStringLiteral("HLS")
-                                    : std::move(entry.format),
-            /*genres=*/std::move(entry.genres),
+            /*format=*/formatToStr(entry.format),
+            /*genres=*/{},
             /*icon=*/
             entry.imageUrl.value_or(
                 IconProvider::urlToNoResId(QStringLiteral("icon-radionet"))),

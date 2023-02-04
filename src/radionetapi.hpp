@@ -22,36 +22,43 @@
 class RadionetApi : public QObject {
     Q_OBJECT
    public:
-    struct Station {
+    enum class Format { Unknown, Mp3, Aac, Hls };
+    struct Item {
         QString id;
         QString name;
         QString country;
         QString city;
-        QString format;  // MP3, AAC
-        QStringList genres;
+        Format format;
         std::optional<QUrl> imageUrl;
         QUrl streamUrl;
     };
 
     RadionetApi(std::shared_ptr<QNetworkAccessManager> nam = {},
           QObject *parent = nullptr);
-    std::vector<Station> search(const QString &query) const;
-    std::vector<Station> local();
+    std::vector<Item> search(const QString &query) const;
+    std::vector<Item> local();
+    bool makeMoreLocalItems();
+    static inline bool canMakeMoreLocalItems() {
+        return m_localItemsOffset < m_localItemsMaxCount;
+    }
 
    signals:
     void progressChanged(int n, int total);
 
    private:
-    static const int maxSearch = 100;
-    static const int maxLocal = 100;
-    std::shared_ptr<QNetworkAccessManager> nam;
+    static const int m_count;
+    static int m_localItemsMaxCount;
+    static int m_localItemsOffset;
+    static std::vector<Item> m_localItems;
+
+    std::shared_ptr<QNetworkAccessManager> m_nam;
 
     static QUrl makeSearchUrl(const QString &phrase);
     static QUrl makeLocalUrl(int count, int offset);
     static QJsonDocument parseJsonData(const QByteArray &data);
-    static std::optional<std::pair<QUrl, QString>> parseStreams(
+    static std::optional<std::pair<QUrl, Format>> parseStreams(
         const QJsonArray &json);
-    static std::optional<Station> parsePlayable(const QJsonObject &json);
+    static std::optional<Item> parsePlayable(const QJsonObject &json);
     static std::optional<QUrl> parseLogo(const QJsonObject &json);
 };
 

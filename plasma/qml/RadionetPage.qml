@@ -79,6 +79,13 @@ Kirigami.ScrollablePage {
 
     RadionetModel {
         id: itemModel
+
+        onBusyChanged: {
+            if (!busy) {
+                var idx = itemModel.lastIndex();
+                if (idx > 0) itemList.positionViewAtIndex(idx, ListView.Beginning)
+            }
+        }
     }
 
     Component {
@@ -128,6 +135,14 @@ Kirigami.ScrollablePage {
         delegate: Kirigami.DelegateRecycler {
             anchors.left: parent.left; anchors.right: parent.right
             sourceComponent: listItemComponent
+        }
+
+        footer: ShowmoreItem {
+            visible: !itemModel.busy && itemModel.canShowMore
+            onClicked: {
+                itemModel.requestMoreItems()
+                itemModel.updateModel()
+            }
         }
 
         Kirigami.PlaceholderMessage {
