@@ -36,6 +36,7 @@ BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(python3)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libarchive)
+BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gstreamer-1.0)
 BuildRequires:  pkgconfig(gstreamer-app-1.0)
 BuildRequires:  bzip2-devel
