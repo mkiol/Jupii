@@ -63,12 +63,14 @@ class UrlInfo {
     Q_PROPERTY(QString audioName MEMBER audioName)
     Q_PROPERTY(Settings::CasterVideoOrientation videoOrientation MEMBER
                    videoOrientation)
+    Q_PROPERTY(bool audioSourceMuted MEMBER audioSourceMuted)
 
    public:
     QString videoName;
     QString audioName;
     Settings::CasterVideoOrientation videoOrientation =
         Settings::CasterVideoOrientation::CasterVideoOrientation_Auto;
+    bool audioSourceMuted = false;
 };
 
 class ContentServer : public QThread, public Singleton<ContentServer> {
@@ -509,6 +511,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         std::optional<QString> videoSource;
         std::optional<QString> audioSource;
         std::optional<QString> videoOrientation;
+        std::optional<bool> audioSourceMuted;
     };
     static CasterUrlParams parseCasterUrl(const QUrl &url);
     static QUrl makeCasterUrl(QUrl url, CasterUrlParams &&params);

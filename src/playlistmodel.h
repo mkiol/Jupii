@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -346,6 +346,7 @@ class PlaylistItem : public SelectableItem {
         VideoSourceRole,
         AudioSourceRole,
         VideoOrientationRole,
+        AudioSourceMutedRole,
         SelectedRole
     };
 
@@ -361,7 +362,7 @@ class PlaylistItem : public SelectableItem {
                  const QString &recUrl, ContentServer::ItemType itemType,
                  const QString &devId, const QString &videoSource,
                  const QString &audioSource, const QString &videoOrientation,
-                 QObject *parent = nullptr);
+                 bool audioSourceMuted, QObject *parent = nullptr);
     QVariant data(int role) const override;
     QHash<int, QByteArray> roleNames() const override;
     QString path() const;
@@ -392,6 +393,7 @@ class PlaylistItem : public SelectableItem {
     inline auto videoSource() const { return m_videoSource; }
     inline auto audioSource() const { return m_audioSource; }
     inline auto videoOrientation() const { return m_videoOrientation; }
+    inline auto audioSourceMuted() const { return m_audioSourceMuted; }
     void setActive(bool value);
     void setToBeActive(bool value);
     void setPlay(bool value);
@@ -425,6 +427,7 @@ class PlaylistItem : public SelectableItem {
     QString m_videoSource;
     QString m_audioSource;
     QString m_videoOrientation;
+    bool m_audioSourceMuted = false;
 };
 
 #endif  // PLAYLISTMODEL_H

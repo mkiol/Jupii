@@ -758,7 +758,9 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
                 convertStreamFormat(s->getCasterAudioStreamFormat());
 
             config.options = Caster::OptionsFlags::PaMonitorAudioSources |
-                             Caster::PaPlaybackAudioSources;
+                             Caster::OptionsFlags::PaPlaybackAudioSources;
+            if (params.audioSourceMuted.value_or(false))
+                config.options |= Caster::OptionsFlags::MuteAudioSource;
 
             break;
         }
@@ -789,9 +791,12 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
 
             config.options = Caster::OptionsFlags::LipstickCaptureVideoSources |
                              Caster::OptionsFlags::X11CaptureVideoSources;
-            if (!config.audioSource.empty())
+            if (!config.audioSource.empty()) {
                 config.options |= Caster::OptionsFlags::PaMonitorAudioSources |
                                   Caster::OptionsFlags::PaPlaybackAudioSources;
+                if (params.audioSourceMuted.value_or(false))
+                    config.options |= Caster::OptionsFlags::MuteAudioSource;
+            }
 
             break;
         }
@@ -919,11 +924,7 @@ void ContentServerWorker::hlsTimeoutHandler() {
     qDebug() << "hls timeout";
     if (!castingForType(ContentServer::CasterType::AudioFile)) return;
 
-    auto files = cacheHlsSegmentsForCaster(m_hlsUrl, false);
-
-    if (!files || !caster) return;
-
-    for (auto &file : *files) caster->addFile(std::move(file));
+    cacheHlsSegmentsForCaster(m_hlsUrl, false);
 }
 
 std::optional<std::vector<std::string>>
@@ -973,7 +974,15 @@ ContentServerWorker::cacheHlsSegmentsForCaster(const QUrl &url, bool init) {
             qWarning() << "failed to download:" << file;
         }
 
-        files.push_back(file.toStdString());
+        if (init) {
+            files.push_back(file.toStdString());
+        } else {
+            if (!caster) {
+                qWarning() << "failed to add hls sement to caster";
+                return std::nullopt;
+            }
+            caster->addFile(file.toStdString());
+        }
 
         m_hlsLastSeq = item.seq;
     }

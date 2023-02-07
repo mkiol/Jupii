@@ -285,12 +285,13 @@ Page {
             title.color: primaryColor
             subtitle.text: {
                 switch (model.itemType) {
-                case ContentServer.ItemType_PlaybackCapture:
-                    return model.audioSource
                 case ContentServer.ItemType_Cam:
                     return model.videoSource + " · " + model.videoOrientation + (model.audioSource.length !== 0 ? (" · " + model.audioSource) : "")
-                case ContentServer.ItemType_Mic:
+                case ContentServer.ItemType_PlaybackCapture:
+                    return model.audioSource.length !== 0 && model.audioSourceMuted ? qsTr("Audio source muted") : ""
                 case ContentServer.ItemType_ScreenCapture:
+                    return model.audioSource.length !== 0 ? model.audioSourceMuted ? qsTr("Audio capture (audio source muted)") : qsTr("Audio capture") : ""
+                case ContentServer.ItemType_Mic:
                     return ""
                 default:
                     return model.artist.length !== 0 ? model.artist : ""
@@ -399,6 +400,15 @@ Page {
         width: parent.width
         height: Theme.itemSizeLarge + Theme.paddingLarge
         dock: Dock.Bottom
+
+        Button {
+            text: qsTr("Exit selection mode")
+            onClicked: {
+                playlist.clearSelection()
+                root.selectionMode = false
+            }
+            anchors.centerIn: parent
+        }
 
         Button {
             text: qsTr("Exit selection mode")

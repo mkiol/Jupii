@@ -86,6 +86,8 @@ class Settings : public QSettings,
                    setCasterMicVolume NOTIFY casterMicVolumeChanged)
     Q_PROPERTY(int casterPlaybackVolume READ getCasterPlaybackVolume WRITE
                    setCasterPlaybackVolume NOTIFY casterPlaybackVolumeChanged)
+    Q_PROPERTY(bool casterPlaybackMuted READ getCasterPlaybackMuted WRITE
+                   setCasterPlaybackMuted NOTIFY casterPlaybackMutedChanged)
     Q_PROPERTY(bool casterScreenRotate READ getCasterScreenRotate WRITE
                    setCasterScreenRotate NOTIFY casterScreenRotateChanged)
     Q_PROPERTY(bool casterScreenAudio READ getCasterScreenAudio WRITE
@@ -276,6 +278,8 @@ class Settings : public QSettings,
     void setCasterMicVolume(int value);
     int getCasterPlaybackVolume() const;
     void setCasterPlaybackVolume(int value);
+    bool getCasterPlaybackMuted() const;
+    void setCasterPlaybackMuted(bool value);
     bool getCasterScreenRotate() const;
     void setCasterScreenRotate(bool value);
     bool getCasterScreenAudio() const;
@@ -348,6 +352,7 @@ class Settings : public QSettings,
     void casterMicVolumeChanged();
     void casterPlaybackVolumeChanged();
     void casterScreenRotateChanged();
+    void casterPlaybackMutedChanged();
     void casterScreenAudioChanged();
     void casterCamAudioChanged();
     void casterVideoOrientationChanged();

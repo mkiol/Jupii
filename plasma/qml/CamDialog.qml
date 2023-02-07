@@ -135,7 +135,7 @@ Controls.Dialog {
                          settings.casterCams.length !== 0 &&
                          settings.casterMics.length !== 0
 
-                Kirigami.FormData.label: qsTr("Volume")
+                Kirigami.FormData.label: qsTr("Volume boost")
                 volume: settings.casterMicVolume
                 onVolumeChanged: settings.casterMicVolume = volume
             }

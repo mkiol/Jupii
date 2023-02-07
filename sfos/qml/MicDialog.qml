@@ -69,7 +69,7 @@ Dialog {
             CasterSourceVolume {
                 enabled: settings.casterMics.length !== 0
 
-                label: qsTr("Volume")
+                label: qsTr("Volume boost")
                 volume: settings.casterMicVolume
                 onVolumeChanged: settings.casterMicVolume = volume
             }

@@ -62,7 +62,7 @@ Dialog {
         model: itemModel
 
         footer: ShowMoreItem {
-            enabled: !itemModel.busy && itemModel.canShowMore
+            enabled: !itemModel.busy && itemModel.canShowMore && itemModel.filter.length === 0
             onClicked: {
                 itemModel.requestMoreItems()
                 itemModel.updateModel()

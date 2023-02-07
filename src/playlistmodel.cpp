@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,7 +23,6 @@
 #endif
 
 #include "avtransport.h"
-#include "contentserverworker.h"
 #include "directory.h"
 #include "dnscontentdeterminator.h"
 #include "playlistparser.h"
@@ -1314,7 +1313,8 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
         /*devId=*/meta->upnpDevId, /*videoSource=*/urlInfo.videoName,
         /*audioSource=*/urlInfo.audioName,
         /*videoOrientation=*/
-        Settings::videoOrientationStrStatic(urlInfo.videoOrientation));
+        Settings::videoOrientationStrStatic(urlInfo.videoOrientation),
+        /*audioSourceMuted=*/urlInfo.audioSourceMuted);
 }
 
 bool PlaylistModel::addId(const QUrl &id) {
@@ -2090,7 +2090,7 @@ PlaylistItem::PlaylistItem(
     const QString &desc, const QDateTime &recDate, const QString &recUrl,
     ContentServer::ItemType itemType, const QString &devId,
     const QString &videoSource, const QString &audioSource,
-    const QString &videoOrientation, QObject *parent)
+    const QString &videoOrientation, bool audioSourceMuted, QObject *parent)
     : SelectableItem(parent), m_id(id), m_name(name), m_url(url),
       m_origUrl(origUrl), m_type(type), m_ctype(ctype), m_artist(artist),
       m_album(album), m_date(date), m_cookie(Utils::cookieFromId(id)),
@@ -2098,7 +2098,8 @@ PlaylistItem::PlaylistItem(
       m_ytdl(ytdl), m_live(live), m_desc(desc), m_recDate(recDate),
       m_recUrl(recUrl), m_item_type(itemType), m_devid(devId),
       m_videoSource(videoSource), m_audioSource(audioSource),
-      m_videoOrientation(videoOrientation) {}
+      m_videoOrientation(videoOrientation),
+      m_audioSourceMuted(audioSourceMuted) {}
 
 QHash<int, QByteArray> PlaylistItem::roleNames() const {
     QHash<int, QByteArray> names;
@@ -2126,6 +2127,7 @@ QHash<int, QByteArray> PlaylistItem::roleNames() const {
     names[VideoSourceRole] = "videoSource";
     names[AudioSourceRole] = "audioSource";
     names[VideoOrientationRole] = "videoOrientation";
+    names[AudioSourceMutedRole] = "audioSourceMuted";
     names[SelectedRole] = "selected";
     return names;
 }
@@ -2185,6 +2187,8 @@ QVariant PlaylistItem::data(int role) const {
             return audioSource();
         case VideoOrientationRole:
             return videoOrientation();
+        case AudioSourceMutedRole:
+            return audioSourceMuted();
         case SelectedRole:
             return selected();
         default:

@@ -62,7 +62,7 @@ Controls.Dialog {
             CasterSourceVolume {
                 enabled: settings.casterPlaybacks.length !== 0
 
-                Kirigami.FormData.label: qsTr("Volume")
+                Kirigami.FormData.label: qsTr("Volume boost")
                 volume: settings.casterPlaybackVolume
                 onVolumeChanged: settings.casterPlaybackVolume = volume
             }

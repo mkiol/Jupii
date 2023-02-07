@@ -1808,6 +1808,9 @@ ContentServer::makePlaybackCaptureItemMeta(const QUrl &url) {
         return m_metaCache.end();
     }
 
+    if (!params.audioSourceMuted)
+        params.audioSourceMuted = s->getCasterPlaybackMuted();
+
     meta.title = tr("Audio capture");
     meta.url = makeCasterUrl(url, std::move(params));
     meta.mime = casterMime(CasterType::Playback);
@@ -1851,6 +1854,9 @@ ContentServer::makeScreenCaptureItemMeta(const QUrl &url) {
         !s->casterAudioSourceExists(*params.audioSource)) {
         params.audioSource = QStringLiteral("off");
     }
+
+    if (!params.audioSourceMuted)
+        params.audioSourceMuted = s->getCasterPlaybackMuted();
 
     meta.title = tr("Screen capture");
     meta.url = makeCasterUrl(url, std::move(params));
@@ -3613,6 +3619,11 @@ ContentServer::CasterUrlParams ContentServer::parseCasterUrl(const QUrl &url) {
         params.videoOrientation =
             q.queryItemValue(QStringLiteral("video-orientation"));
 
+    if (q.hasQueryItem(QStringLiteral("audio-source-muted")))
+        params.audioSourceMuted =
+            q.queryItemValue(QStringLiteral("audio-source-muted")) ==
+            QStringLiteral("yes");
+
     return params;
 }
 
@@ -3631,6 +3642,12 @@ QUrl ContentServer::makeCasterUrl(QUrl url, CasterUrlParams &&params) {
     if (params.videoOrientation)
         q.addQueryItem(QStringLiteral("video-orientation"),
                        *params.videoOrientation);
+
+    q.removeQueryItem(QStringLiteral("audio-source-muted"));
+    if (params.audioSourceMuted)
+        q.addQueryItem(QStringLiteral("audio-source-muted"),
+                       *params.audioSourceMuted ? QStringLiteral("yes")
+                                                : QStringLiteral("no"));
 
     url.setQuery(q);
 
@@ -3657,5 +3674,7 @@ UrlInfo ContentServer::parseUrlStatic(const QUrl &url) {
             videoOrientationFromStr(*params.videoOrientation)
                 .value_or(Settings::CasterVideoOrientation::
                               CasterVideoOrientation_Auto);
+    if (params.audioSourceMuted)
+        info.audioSourceMuted = *params.audioSourceMuted;
     return info;
 }

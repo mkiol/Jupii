@@ -257,6 +257,8 @@ void DroidCamSource::cleanGst() {
         gst_element_set_state(m_gstPipe.pipeline, GST_STATE_NULL);
         gst_object_unref(m_gstPipe.pipeline);
         m_gstPipe.pipeline = nullptr;
+        m_gstPipe.source = nullptr;
+        m_gstPipe.sink = nullptr;
     } else {
         if (m_gstPipe.source != nullptr) {
             gst_object_unref(m_gstPipe.source);

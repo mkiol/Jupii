@@ -822,6 +822,17 @@ void Settings::setCasterPlaybackVolume(int value) {
     }
 }
 
+bool Settings::getCasterPlaybackMuted() const {
+    return value(QStringLiteral("caster_playback_muted"), false).toBool();
+}
+
+void Settings::setCasterPlaybackMuted(bool value) {
+    if (value != getCasterPlaybackMuted()) {
+        setValue(QStringLiteral("caster_playback_muted"), value);
+        emit casterPlaybackMutedChanged();
+    }
+}
+
 bool Settings::getCasterScreenRotate() const {
     return value(QStringLiteral("caster_screen_rotate"), false).toBool();
 }
@@ -987,7 +998,6 @@ QString Settings::casterFriendlyName([[maybe_unused]] const QString &name,
 #ifdef USE_SFOS
     if (name == "mic") return tr("Built-in microphone");
     if (name == "playback") return tr("Audio capture");
-    if (name == "playback-mute") return tr("Audio capture (muted source)");
     if (name == "screen" || name == "screen-rotate") return tr("Screen");
     if (name == "cam-raw-back" || name == "cam-raw-back-rotate")
         return tr("Back camera");
@@ -1007,8 +1017,13 @@ void Settings::discoverCasterSources() {
     m_playbacks.clear();
     m_playbacks_fn.clear();
 
-    m_videoSources = Caster::videoSources();
-    m_audioSources = Caster::audioSources();
+    m_videoSources =
+        Caster::videoSources(Caster::OptionsFlags::V4l2VideoSources |
+                             Caster::OptionsFlags::X11CaptureVideoSources |
+                             Caster::OptionsFlags::DroidCamRawVideoSources |
+                             Caster::OptionsFlags::LipstickCaptureVideoSources);
+    m_audioSources =
+        Caster::audioSources(Caster::OptionsFlags::AllAudioSources);
 
     for (const auto &s : m_audioSources) {
         auto n = QString::fromStdString(s.name);
@@ -1032,7 +1047,7 @@ void Settings::discoverCasterSources() {
             m_screens.push_back(n);
             m_screens_fn.push_back(
                 casterFriendlyName(n, QString::fromStdString(s.friendlyName)));
-        } else if (n.startsWith(QStringLiteral("cam-raw")) &&
+        } else if (n.startsWith(QStringLiteral("cam")) &&
                    !n.endsWith(QStringLiteral("-rotate"))) {
             m_cams.push_back(n);
             m_cams_fn.push_back(

@@ -170,8 +170,7 @@ Page {
                     label: qsTr("Video source")
                     value: urlInfo.videoName
                     visible: value.length > 0 &&
-                             (itemType === ContentServer.ItemType_Cam ||
-                             itemType === ContentServer.ItemType_ScreenCapture)
+                             itemType === ContentServer.ItemType_Cam
                 }
 
                 DetailItem {
@@ -179,10 +178,9 @@ Page {
                     label: qsTr("Audio source")
                     value: urlInfo.audioName
                     visible: value.length > 0 &&
-                             (itemType === ContentServer.ItemType_Cam ||
-                             itemType === ContentServer.ItemType_ScreenCapture ||
-                             itemType === ContentServer.ItemType_Mic ||
-                             itemType === ContentServer.ItemType_PlaybackCapture)
+                             (itemType === ContentServer.ItemType_Mic ||
+                              itemType === ContentServer.ItemType_Cam ||
+                              itemType === ContentServer.ItemType_ScreenCapture)
                 }
 
                 DetailItem {
@@ -206,7 +204,7 @@ Page {
                 DetailItem {
                     label: itemType === ContentServer.ItemType_PlaybackCapture ||
                            itemType === ContentServer.ItemType_ScreenCapture ?
-                               qsTr("Application") : qsTr("Current title")
+                               qsTr("Captured application") : qsTr("Current title")
                     value: app.streamTitle.length === 0 &&
                            (itemType === ContentServer.ItemType_PlaybackCapture ||
                             itemType === ContentServer.ItemType_ScreenCapture) ?
@@ -283,7 +281,7 @@ Page {
                 DetailItem {
                     label: qsTr("Cached")
                     value: cserver.idCached(av.currentId) ? qsTr("Yes") : qsTr("No")
-                    visible: itemType == ContentServer.ItemType_Url
+                    visible: settings.isDebug() && itemType == ContentServer.ItemType_Url
 
                 }
             }
@@ -324,13 +322,13 @@ Page {
                 }
 
                 SectionHeader {
-                    text: qsTr("Volume")
+                    text: qsTr("Volume boost")
                     visible: mic.visible || playback.visible
                 }
 
                 CasterSourceVolume {
                     id: mic
-                    visible: audioLabel.visible &&
+                    visible: urlInfo.audioName.length !== 0 &&
                              (itemType === ContentServer.ItemType_Mic ||
                              itemType === ContentServer.ItemType_Cam)
                     volume: settings.casterMicVolume
@@ -339,7 +337,7 @@ Page {
 
                 CasterSourceVolume {
                     id: playback
-                    visible: audioLabel.visible &&
+                    visible: urlInfo.audioName.length !== 0 &&
                              (itemType === ContentServer.ItemType_ScreenCapture ||
                              itemType === ContentServer.ItemType_PlaybackCapture)
                     volume: settings.casterPlaybackVolume

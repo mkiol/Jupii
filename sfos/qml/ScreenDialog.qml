@@ -120,24 +120,17 @@ Dialog {
                 }
             }
 
-            ComboBox {
+            TextSwitch {
                 enabled: settings.casterScreenAudio &&
                          settings.casterScreens.length !== 0 &&
                          settings.casterPlaybacks.length !== 0
 
-                label: qsTr("Audio source")
+                automaticCheck: false
+                checked: settings.casterPlaybackMuted
+                text: qsTr("Mute audio source")
 
-                currentIndex: settings.casterPlaybackIdx
-
-                menu: ContextMenu {
-                    Repeater {
-                        model: settings.casterPlaybacks
-                        MenuItem { text: modelData }
-                    }
-                }
-
-                onCurrentIndexChanged: {
-                    settings.casterPlaybackIdx = currentIndex
+                onClicked: {
+                    settings.casterPlaybackMuted = !settings.casterPlaybackMuted
                 }
             }
 
@@ -146,7 +139,7 @@ Dialog {
                          settings.casterScreens.length !== 0 &&
                          settings.casterPlaybacks.length !== 0
 
-                label: qsTr("Volume")
+                label: qsTr("Volume boost")
                 volume: settings.casterPlaybackVolume
                 onVolumeChanged: settings.casterPlaybackVolume = volume
             }

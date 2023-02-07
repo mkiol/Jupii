@@ -196,7 +196,7 @@ Kirigami.ScrollablePage {
                 Layout.alignment: Qt.AlignRight | Qt.AlignTop
                 text: itemType === ContentServer.ItemType_PlaybackCapture ||
                       itemType === ContentServer.ItemType_ScreenCapture ?
-                          qsTr("Application") : qsTr("Current title")
+                          qsTr("Captured application") : qsTr("Current title")
                 color: Kirigami.Theme.disabledTextColor
             }
             Controls.Label {
@@ -349,7 +349,7 @@ Kirigami.ScrollablePage {
                 id: cachedLabel
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.fillWidth: true
-                visible: itemType === ContentServer.ItemType_Url
+                visible: settings.isDebug() && itemType === ContentServer.ItemType_Url
                 wrapMode: Text.WordWrap
                 text: cserver.idCached(av.currentId) ? qsTr("Yes") : qsTr("No")
             }
@@ -373,7 +373,7 @@ Kirigami.ScrollablePage {
             Controls.Label {
                 visible: mic.visible || playback.visible
                 Layout.alignment: Qt.AlignRight | Qt.AlignCenter
-                text: qsTr("Volume")
+                text: qsTr("Volume boost")
                 color: Kirigami.Theme.disabledTextColor
             }
 
