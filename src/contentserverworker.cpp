@@ -1555,8 +1555,11 @@ QByteArray ContentServerWorker::processShoutcastMetadata(Proxy &proxy,
         throw std::runtime_error("source.metaint < source.metacounter");
 
     const int nmeta = bytes / (source.metaint + 1);
+
     int totalsize = 0;
-    QList<QPair<int, int>> rpoints;  // (start,size) to remove from data
+
+    std::vector<std::pair<int, int>> rpoints;
+    rpoints.reserve(nmeta);
 
     int mcount = 0;
     for (int i = 0; i < nmeta; ++i) {
@@ -1568,8 +1571,8 @@ QByteArray ContentServerWorker::processShoutcastMetadata(Proxy &proxy,
             const int maxsize = count - (start + offset);
 
             if (size > maxsize) {  // partial metadata received
-                // qDebug() << "Partial metadata received";
                 const auto metadata = data.mid(start + offset, maxsize);
+                qDebug() << "partial metadata received:" << metadata;
                 data.remove(start + offset, maxsize);
                 source.prevData = metadata;
                 source.metacounter = bytes - metadata.size();
@@ -1581,19 +1584,12 @@ QByteArray ContentServerWorker::processShoutcastMetadata(Proxy &proxy,
             if (size > 0) {
                 const auto metadata = data.mid(start + offset + 1, size);
                 if (metadata != proxy.metadata) {
-                    const auto newTitle =
-                        ContentServer::streamTitleFromShoutcastMetadata(
-                            metadata);
-#ifdef QT_DEBUG
-                    const auto oldTitle =
-                        ContentServer::streamTitleFromShoutcastMetadata(
-                            proxy.metadata);
-                    qDebug() << "metadata:" << proxy.metadata << oldTitle
-                             << "->" << metadata << newTitle;
-#endif
                     if (source.recFile) {
                         if (source.recFile->isOpen())
                             saveRecFile(proxy, source);
+                        auto newTitle =
+                            ContentServer::streamTitleFromShoutcastMetadata(
+                                metadata);
                         if (!newTitle.isEmpty()) openRecFile(proxy, source);
                     }
 
@@ -1604,7 +1600,7 @@ QByteArray ContentServerWorker::processShoutcastMetadata(Proxy &proxy,
                 totalsize += size;
             }
 
-            rpoints.append({start + offset, size + 1});
+            rpoints.push_back({start + offset, size + 1});
             mcount += source.metaint + 1;
         } else {
             mcount += source.metaint;
@@ -1614,16 +1610,17 @@ QByteArray ContentServerWorker::processShoutcastMetadata(Proxy &proxy,
 
     source.metacounter = bytes - mcount - totalsize;
 
-    if (!rpoints.isEmpty()) removePoints(rpoints, data);
+    if (!rpoints.empty()) removePoints(rpoints, data);
     return data;
 }
 
-void ContentServerWorker::removePoints(const QList<QPair<int, int>> &rpoints,
+void ContentServerWorker::removePoints(std::vector<std::pair<int, int>> rpoints,
                                        QByteArray &data) {
     int offset = 0;
+
     for (auto &p : rpoints) {
-        data.remove(offset + p.first, p.second);
-        offset = p.second;
+        data.remove(p.first - offset, p.second);
+        offset += p.second;
     }
 }
 

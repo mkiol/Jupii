@@ -29,6 +29,7 @@
 #include <optional>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "caster.hpp"
 #include "contentserver.h"
@@ -302,7 +303,7 @@ class ContentServerWorker : public QObject,
     void casterAudioSourceNameChangedHandler(const QString &name);
     void casterDataHandler(ContentServer::CasterType type,
                            const QByteArray &data);
-    static void removePoints(const QList<QPair<int, int>> &rpoints,
+    static void removePoints(std::vector<std::pair<int, int>> rpoints,
                              QByteArray &data);
     void initRecFile(Proxy &proxy, Proxy::Source &source);
     void openRecFile(Proxy &proxy, Proxy::Source &source);
