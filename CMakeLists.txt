@@ -370,16 +370,19 @@ target_link_libraries(${info_binary_id}
 
 # translations
 
-set(enabled_translations "de en es nl nl_BE pl ru sv sl_SI it zh_CN")
+set(enabled_translations de en es nl nl_BE pl ru sv sl_SI it zh_CN)
 
 find_package(Qt5 COMPONENTS Core LinguistTools)
 
-file(GLOB ts_files ${translations_dir}/*.ts)
+set(ts_files "")
+foreach(lang ${enabled_translations})
+    list(APPEND ts_files "${translations_dir}/jupii-${lang}.ts")
+endforeach()
 qt5_create_translation(qm_files ${CMAKE_SOURCE_DIR}/src ${plasma_dir}/qml ${sfos_dir}/qml ${ts_files})
 
 add_custom_command(
   OUTPUT translations.qrc
-  COMMAND sh -c "${tools_dir}/make_translations_qrc.sh ${info_translations_id} /translations ${enabled_translations}" >
+  COMMAND sh -c ${tools_dir}/make_translations_qrc.sh ${info_translations_id} /translations ${enabled_translations} >
     "${CMAKE_BINARY_DIR}/translations.qrc"
   DEPENDS ${qm_files}
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -485,6 +488,10 @@ if(with_sfos)
 endif()
 
 if(with_droidcam)
+    pkg_search_module(glib REQUIRED glib-2.0)
+    target_include_directories(${info_binary_id} PRIVATE ${glib_INCLUDE_DIRS})
+    target_link_libraries(${info_binary_id} ${glib_LIBRARIES})
+
     pkg_search_module(gst REQUIRED gstreamer-1.0)
     target_include_directories(${info_binary_id} PRIVATE ${gst_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${gst_LIBRARIES})
@@ -533,6 +540,7 @@ if(build_ffmpeg)
         --enable-filter=amix
         --enable-filter=dynaudnorm
         --enable-filter=aresample
+        --enable-filter=aformat
         --enable-encoder=libx264
         --enable-encoder=aac
         --enable-encoder=libmp3lame
@@ -632,7 +640,7 @@ if(build_ffmpeg)
         INSTALL_COMMAND CPATH=${external_include_dir}
             LIBRARY_PATH=${external_lib_dir}
             PATH=$ENV{PATH}:${PROJECT_BINARY_DIR}/external/bin make DESTDIR=/ install)
-    find_library(libm_path m)
+    target_link_libraries(${info_binary_id} m)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     set(ffmpeg_LIBRARIES
         ${PROJECT_BINARY_DIR}/external/lib/libavfilter.a
@@ -641,8 +649,7 @@ if(build_ffmpeg)
         ${PROJECT_BINARY_DIR}/external/lib/libavcodec.a
         ${PROJECT_BINARY_DIR}/external/lib/libswresample.a
         ${PROJECT_BINARY_DIR}/external/lib/libswscale.a
-        ${PROJECT_BINARY_DIR}/external/lib/libavutil.a
-        ${libm_path})
+        ${PROJECT_BINARY_DIR}/external/lib/libavutil.a)
     target_link_libraries(${info_binary_id} ${ffmpeg_LIBRARIES})
     add_dependencies(${info_binary_id} ffmpeg)
 else()
@@ -885,7 +892,7 @@ if(build_nasm)
         INSTALL_COMMAND make DESTDIR=/ install)
     ExternalProject_Add_StepDependencies(ffmpeg configure nasm)
     ExternalProject_Add_StepDependencies(x264 configure nasm)
-    if(${build_lame})
+    if(build_lame)
         ExternalProject_Add_StepDependencies(lame configure nasm)
     endif()
 endif()
