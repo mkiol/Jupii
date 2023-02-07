@@ -1,8 +1,16 @@
 [Desktop Entry]
 Type=Application
+X-Nemo-Application-Type=generic
 Name=Jupii
 Icon=harbour-jupii
 NoDisplay=true
-MimeType=audio/*;video/*;x-scheme-handler/http;x-scheme-handler/https;
+MimeType=image/*;audio/*;video/*;x-scheme-handler/http;x-scheme-handler/https;
 X-Maemo-Service=org.mkiol.jupii
 X-Maemo-Method=org.mkiol.jupii.Playlist.openUrl
+
+[X-Sailjail]
+Sandboxing=Disabled
+Permissions=Internet;Audio;Microphone;RemovableMedia;UserDirs;MediaIndexing;JupiiGpodder
+OrganizationName=org.mkiol
+ApplicationName=jupii
+ExecDBus=harbour-jupii
