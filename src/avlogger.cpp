@@ -17,7 +17,8 @@ extern "C" {
 
 #include "logger.hpp"
 
-static void avLog(void *avcl, int level, const char *fmt, va_list vl) {
+[[maybe_unused]] static void avLog(void *avcl, int level, const char *fmt,
+                                   va_list vl) {
     if (level > av_log_get_level()) return;
 
     const auto tag = [=]() {
@@ -66,7 +67,11 @@ static void avLog(void *avcl, int level, const char *fmt, va_list vl) {
 }
 
 void initAvLogger() {
+#ifdef DEBUG
+    av_log_set_level(AV_LOG_TRACE);
+#else
     av_log_set_level(Logger::match(Logger::LogType::Debug) ? AV_LOG_ERROR
                                                            : AV_LOG_QUIET);
     av_log_set_callback(avLog);
+#endif
 }
