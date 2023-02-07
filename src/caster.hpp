@@ -59,6 +59,8 @@ extern "C" {
 class Caster {
    public:
     enum OptionsFlags : uint32_t {
+        OnlyNiceVideoFormats = 1 << 1,
+        MuteAudioSource = 1 << 2,
         V4l2VideoSources = 1 << 10,
         DroidCamVideoSources = 1 << 11,
         DroidCamRawVideoSources = 1 << 12,
@@ -73,8 +75,7 @@ class Caster {
         AllVideoSources = V4l2VideoSources | DroidCamVideoSources |
                           DroidCamRawVideoSources | X11CaptureVideoSources |
                           LipstickCaptureVideoSources,
-        AllAudioSources = AllPaAudioSources | FileAudioSources,
-        All = AllVideoSources | AllAudioSources
+        AllAudioSources = AllPaAudioSources | FileAudioSources
     };
     friend std::ostream &operator<<(std::ostream &os, OptionsFlags flags);
 
@@ -161,10 +162,9 @@ class Caster {
         std::string streamAuthor{"Caster"};
         std::string streamTitle{"Cast session"};
         VideoEncoder videoEncoder = VideoEncoder::Auto;
-        bool useNiceFormats =
-            true; /*force output pixel format to nice one (yuv420p)*/
         std::optional<FileSourceConfig> fileSourceConfig;
-        uint32_t options = OptionsFlags::All;
+        uint32_t options =
+            OptionsFlags::AllVideoSources | OptionsFlags::AllAudioSources;
         friend std::ostream &operator<<(std::ostream &os, const Config &config);
     };
 
@@ -184,8 +184,10 @@ class Caster {
         AudioSourceNameChangedHandler audioSourceNameChangedHandler = {});
     ~Caster();
 
-    static std::vector<VideoSourceProps> videoSources();
-    static std::vector<AudioSourceProps> audioSources();
+    static std::vector<VideoSourceProps> videoSources(
+        uint32_t options = OptionsFlags::AllVideoSources);
+    static std::vector<AudioSourceProps> audioSources(
+        uint32_t options = OptionsFlags::AllAudioSources);
 
     void start(bool startPaused = false);
     void pause();
@@ -302,7 +304,6 @@ class Caster {
         uint32_t rate = 0;
         size_t bps = 0;
         AudioSourceType type = AudioSourceType::Unknown;
-        bool muteSource = false;
     };
     friend std::ostream &operator<<(std::ostream &os,
                                     const AudioSourceInternalProps &props);
@@ -365,7 +366,6 @@ class Caster {
     DataBuffer m_videoBuf{m_videoBufSize, m_videoBufSize * 100};
     DataBuffer m_audioBuf{m_audioBufSize, m_audioBufSize * 100};
     std::mutex m_videoMtx;
-    std::mutex m_muxMtx;
     std::mutex m_audioMtx;
     std::condition_variable m_videoCv;
     std::thread m_avMuxingThread;
@@ -409,6 +409,7 @@ class Caster {
     bool m_muxedFlushed = false;
     bool m_videoFlushed = false;
     bool m_audioFlushed = false;
+    bool m_paDataReceived = false;
     Dim m_inDim;
     VideoTrans m_videoTrans = VideoTrans::Off;
     AudioTrans m_audioTrans = AudioTrans::Off;
