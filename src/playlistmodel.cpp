@@ -640,7 +640,8 @@ void PlaylistModel::saveSelectedToFile(const QString &title) {
 }
 
 void PlaylistModel::saveSelectedToUrl(const QUrl &path) {
-    Utils::writeToFile(path.toLocalFile(), makePlsDataFromSelectedItems());
+    Utils::writeToFile(path.toLocalFile(), makePlsDataFromSelectedItems(),
+                       true);
 
     clearSelection();
     m_selectedCount = 0;
