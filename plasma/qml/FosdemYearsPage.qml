@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,6 +23,10 @@ Kirigami.ScrollablePage {
 
     ListView {
         model: ListModel {
+            ListElement {
+                title: "FOSDEM 2023"
+                year: 2023
+            }
             ListElement {
                 title: "FOSDEM 2022"
                 year: 2022
