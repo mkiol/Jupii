@@ -1777,7 +1777,7 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeMicItemMeta(
         return m_metaCache.end();
     }
 
-    meta.title = tr("Microphone capture");
+    meta.title = tr("Microphone");
     meta.url = makeCasterUrl(url, std::move(params));
     meta.mime = casterMime(CasterType::Mic);
     meta.type = Type::Type_Music;
@@ -1904,7 +1904,7 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeCamItemMeta(
         params.audioSource = QStringLiteral("off");
     }
 
-    meta.title = tr("Camera capture");
+    meta.title = tr("Camera");
     meta.url = makeCasterUrl(url, std::move(params));
     meta.mime = casterMime(CasterType::Cam);
     meta.type = Type::Type_Video;

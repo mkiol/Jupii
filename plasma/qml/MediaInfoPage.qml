@@ -95,7 +95,7 @@ Kirigami.ScrollablePage {
                     case ContentServer.ItemType_LocalFile:
                         return qsTr("Local file")
                     case ContentServer.ItemType_Url:
-                        return isShout ? qsTr("Icecast URL") : qsTr("URL")
+                        return qsTr("URL")
                     case ContentServer.ItemType_Upnp:
                         return qsTr("Media Server")
                     case ContentServer.ItemType_ScreenCapture:

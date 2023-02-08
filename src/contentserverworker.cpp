@@ -458,7 +458,7 @@ void ContentServerWorker::makeProxy(const QUrl &id, bool first,
     if (req && resp) {
         resp->disconnect(this);
         connect(resp, &QHttpResponse::done, this,
-                &ContentServerWorker::responseForUrlDone);
+                &ContentServerWorker::responseForUrlDone, Qt::QueuedConnection);
 
         proxy.addSink(req, resp);
         auto source = proxy.replyMatched(resp);
@@ -2275,21 +2275,21 @@ void ContentServerWorker::Proxy::endAll() {
 }
 
 void ContentServerWorker::Proxy::endSinks(QNetworkReply *reply) {
-    for (auto &[source, sink] : sourceToSinkMap) {
+    for (auto [source, sink] : sourceToSinkMap) {
         if (source == reply && sink->isFinished()) sink->end();
     }
 }
 
 void ContentServerWorker::Proxy::sendEmptyResponseAll(QNetworkReply *reply,
                                                       int code) {
-    for (auto &[source, sink] : sourceToSinkMap) {
+    for (auto [source, sink] : sourceToSinkMap) {
         if (source == reply) ContentServerWorker::sendEmptyResponse(sink, code);
     }
 }
 
 void ContentServerWorker::Proxy::sendResponseAll(QNetworkReply *reply, int code,
                                                  const QByteArray &data) {
-    for (auto &[source, sink] : sourceToSinkMap) {
+    for (auto [source, sink] : sourceToSinkMap) {
         if (source == reply)
             ContentServerWorker::sendResponse(sink, code, data);
     }
@@ -2297,7 +2297,7 @@ void ContentServerWorker::Proxy::sendResponseAll(QNetworkReply *reply, int code,
 
 void ContentServerWorker::Proxy::sendRedirectionAll(QNetworkReply *reply,
                                                     const QString &location) {
-    for (auto &[source, sink] : sourceToSinkMap) {
+    for (auto [source, sink] : sourceToSinkMap) {
         if (source == reply)
             ContentServerWorker::sendRedirection(sink, location);
     }

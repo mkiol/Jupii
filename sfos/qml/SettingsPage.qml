@@ -82,11 +82,11 @@ Page {
                 }
 
                 ExpandingSection {
-                    title: qsTr("Streaming format")
+                    title: qsTr("Formats")
 
                     content.sourceComponent: Column {
                         ComboBox {
-                            label: qsTr("Video streaming format")
+                            label: qsTr("Live video")
                             currentIndex: {
                                 switch (settings.casterVideoStreamFormat) {
                                 case Settings.CasterStreamFormat_MpegTs: return 0;
@@ -96,8 +96,8 @@ Page {
                             }
 
                             menu: ContextMenu {
-                                MenuItem { text: qsTr("MPEG-TS") }
-                                MenuItem { text: qsTr("MP4") }
+                                MenuItem { text: "MPEG-TS" }
+                                MenuItem { text: "MP4" }
                             }
 
                             onCurrentIndexChanged: {
@@ -111,7 +111,7 @@ Page {
                         }
 
                         ComboBox {
-                            label: qsTr("Audio streaming format")
+                            label: qsTr("Live audio")
                             currentIndex: {
                                 switch (settings.casterAudioStreamFormat) {
                                 case Settings.CasterStreamFormat_Mp3: return 0;
@@ -122,9 +122,9 @@ Page {
                             }
 
                             menu: ContextMenu {
-                                MenuItem { text: qsTr("MP3") }
-                                MenuItem { text: qsTr("MP4") }
-                                MenuItem { text: qsTr("MPEG-TS") }
+                                MenuItem { text: "MP3" }
+                                MenuItem { text: "MP4" }
+                                MenuItem { text: "MPEG-TS" }
                             }
 
                             onCurrentIndexChanged: {

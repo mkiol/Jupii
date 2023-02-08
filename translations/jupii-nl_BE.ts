@@ -56,7 +56,7 @@
     <name>AddMediaPage</name>
     <message>
         <source>Add item</source>
-        <translation>Item toevoegen</translation>
+        <translation type="vanished">Item toevoegen</translation>
     </message>
     <message>
         <source>Music</source>
@@ -123,10 +123,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Choose a file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -138,36 +134,24 @@
         <source>Audio from video</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Camera</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AddUrlDialog</name>
     <message>
-        <source>Add URL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>URL</source>
-        <translation type="unfinished">URL</translation>
-    </message>
-    <message>
-        <source>Enter URL</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">URL</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation type="unfinished">Naam</translation>
-    </message>
-    <message>
-        <source>Enter Name (optional)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add only audio stream</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Naam</translation>
     </message>
 </context>
 <context>
@@ -312,6 +296,61 @@
     </message>
 </context>
 <context>
+    <name>CamDialog</name>
+    <message>
+        <source>Add camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not find any camera connected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not find any microphone connected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Video source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Video orientation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Capture with audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume boost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Portrait</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inverted portrait</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Landscape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inverted landscape</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChangelogPage</name>
     <message>
         <source>Version %1</source>
@@ -329,15 +368,19 @@
         <translation type="unfinished">Onbekend</translation>
     </message>
     <message>
-        <source>Microphone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Audio capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Screen capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Camera</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -684,15 +727,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sensitivity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Media Server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Icecast URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -729,6 +764,65 @@
     </message>
     <message>
         <source>No</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Video source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Video orientation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Captured application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Live</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Portrait</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inverted portrait</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Landscape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inverted landscape</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MicDialog</name>
+    <message>
+        <source>Add microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not find any microphone connected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume boost</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -782,27 +876,11 @@
         <translation type="unfinished">Onbekend</translation>
     </message>
     <message>
-        <source>Save queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Pull down to add new items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh items</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -822,10 +900,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Clearing play queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Play queue</source>
         <translation type="unfinished"></translation>
     </message>
@@ -842,15 +916,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Save items to playlist file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Playlist has been saved</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove all items from play queue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -875,6 +941,108 @@
     </message>
     <message>
         <source>Connect to a device to control playback.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n selected</source>
+        <translation type="unfinished">
+            <numerusform>%n geselecteerd</numerusform>
+            <numerusform>%n geselecteerd</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Remove %n item(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>Removing %n item(s) from play queue</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio source muted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio capture (audio source muted)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit selection mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Save %n item(s) to playlist file</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Remove items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Remove %n item(s) from play queue?</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+</context>
+<context>
+    <name>PlaybackDialog</name>
+    <message>
+        <source>Add audio capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not find any audio source to capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mute audio source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume boost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio source</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -963,6 +1131,44 @@
     </message>
     <message>
         <source>No playlists</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RadionetPage</name>
+    <message>
+        <source>Radio stations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type the words to search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No stations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Add %n selected</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Add selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle selection</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1080,6 +1286,65 @@
     </message>
 </context>
 <context>
+    <name>ScreenDialog</name>
+    <message>
+        <source>Add screen capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not find any audio source to capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Video orientation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Capture with audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mute audio source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume boost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not find any screen to capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Video source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Portrait</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inverted portrait</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Landscape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inverted landscape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio source</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SearchDialogHeader</name>
     <message numerus="yes">
         <source>%n selected</source>
@@ -1095,6 +1360,49 @@
     <message>
         <source>Remove</source>
         <translation type="unfinished">Verwijderen</translation>
+    </message>
+</context>
+<context>
+    <name>Settings</name>
+    <message>
+        <source>Built-in microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Back camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Front camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Portrait</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inverted portrait</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Landscape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inverted landscape</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1114,10 +1422,6 @@
     <message>
         <source></source>
         <translation></translation>
-    </message>
-    <message>
-        <source>Experiments</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Change</source>
@@ -1144,10 +1448,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stream relaying</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Always</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1157,18 +1457,6 @@
     </message>
     <message>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only Icecast</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Microphone sensitivity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1224,50 +1512,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Screen capture encoder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen capture framerate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen capture</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enabled with audio</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Force screen 16:9 aspect ratio</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Don&apos;t force</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scale</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Crop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Screen capture quality</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Cache size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1276,15 +1520,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Block MP4v2 audio streams</source>
+        <source>Restart is required for the changes to take effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Some UPnP devices don&apos;t support audio stream in MP4 version 2 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to MP4v1. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
+        <source>Hardware keys</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
+        <source>Change if you observe problems with video playback in Camera or Screen capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change if you observe problems with audio playback in Microphone or Audio capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recorder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cache remote content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Block fragmented MP4 audio streams</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Some UPnP devices don&apos;t support audio stream in fragmented MP4 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to standard MP4. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Formats</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Live video</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Live audio</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1568,6 +1844,37 @@
     </message>
 </context>
 <context>
+    <name>UrlDialog</name>
+    <message>
+        <source>Add URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished">URL</translation>
+    </message>
+    <message>
+        <source>Enter URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">Naam</translation>
+    </message>
+    <message>
+        <source>Enter Name (optional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add only audio stream</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Utils</name>
     <message>
         <source>Today</source>
@@ -1672,10 +1979,6 @@
         <translation type="unfinished">Apparaten</translation>
     </message>
     <message>
-        <source>Add items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Track info</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1689,6 +1992,10 @@
     </message>
     <message>
         <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

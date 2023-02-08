@@ -87,12 +87,12 @@ Kirigami.ScrollablePage {
             }
 
             Kirigami.Separator {
-                Kirigami.FormData.label: qsTr("Streaming format")
+                Kirigami.FormData.label: qsTr("Formats")
                 Kirigami.FormData.isSection: true
             }
 
             Controls.ComboBox {
-                Kirigami.FormData.label: qsTr("Video streaming format")
+                Kirigami.FormData.label: qsTr("Live video")
                 currentIndex: {
                     switch (settings.casterVideoStreamFormat) {
                     case Settings.CasterStreamFormat_MpegTs: return 0;
@@ -102,8 +102,8 @@ Kirigami.ScrollablePage {
                 }
 
                 model: [
-                    qsTr("MPEG-TS"),
-                    qsTr("MP4"),
+                    "MPEG-TS",
+                    "MP4",
                 ]
 
                 onCurrentIndexChanged: {
@@ -116,7 +116,7 @@ Kirigami.ScrollablePage {
             }
 
             Controls.ComboBox {
-                Kirigami.FormData.label: qsTr("Audio streaming format")
+                Kirigami.FormData.label: qsTr("Live audio")
                 currentIndex: {
                     switch (settings.casterAudioStreamFormat) {
                     case Settings.CasterStreamFormat_Mp3: return 0;
@@ -127,9 +127,9 @@ Kirigami.ScrollablePage {
                 }
 
                 model: [
-                    qsTr("MP3"),
-                    qsTr("MP4"),
-                    qsTr("MPEG-TS")
+                    "MP3",
+                    "MP4",
+                    "MPEG-TS"
                 ]
 
                 onCurrentIndexChanged: {

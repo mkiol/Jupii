@@ -97,7 +97,7 @@ Kirigami.ScrollablePage {
                 }
             },
             Kirigami.Action {
-                text: qsTr("Save %n item(s)", "", playlist.selectedCount)
+                text: qsTr("Save %n item(s) to playlist file", "", playlist.selectedCount)
                 iconName: "document-save"
                 enabled: playlist.selectedCount > 0
                 visible: !playlist.refreshing && !playlist.busy && itemList.count !== 0 &&
