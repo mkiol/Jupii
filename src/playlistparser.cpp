@@ -82,14 +82,14 @@ HlsType hlsPlaylistType(const QByteArray &data) {
 std::optional<std::variant<HlsMasterPlaylist, HlsMediaPlaylist>> parseHls(
     const QByteArray &data, const QString &context) {
     if (!data.startsWith(m3utag_extm3u)) {
-        qWarning() << "not m3u playlist";
+        qWarning() << "not m3u playlist:" << data;
         return std::nullopt;
     }
 
     auto type = hlsPlaylistType(data);
 
     if (type == HlsType::Unknown) {
-        qWarning() << "not hls playlist";
+        qWarning() << "not hls playlist:" << data;
         return std::nullopt;
     }
 
@@ -191,8 +191,7 @@ std::optional<std::variant<HlsMasterPlaylist, HlsMediaPlaylist>> parseHls(
 std::optional<Playlist> parseM3u(const QByteArray &data,
                                  const QString &context) {
     if (!data.startsWith(m3utag_extm3u)) {
-        qWarning() << "not m3u playlist";
-        return std::nullopt;
+        qWarning() << "extm3u tag is missing";
     }
 
     Playlist playlist;
@@ -290,7 +289,7 @@ std::optional<Playlist> parseXspf(const QByteArray &data,
 std::optional<Playlist> parsePls(const QByteArray &data,
                                  const QString &context) {
     if (!data.startsWith("[playlist]")) {
-        qWarning() << "not pls playlist";
+        qWarning() << "not pls playlist:" << data;
         return std::nullopt;
     }
 
