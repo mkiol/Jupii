@@ -71,6 +71,14 @@ Page {
         }
     }
 
+    function removeSelectedItems() {
+        remorse.execute(qsTr("Removing items from play queue"),
+                                                   function() {
+                                                       playlist.removeSelectedItems()
+                                                       root.selectionMode = false
+                                                   } )
+    }
+
     Connections {
         target: pageStack
         onBusyChanged: {
@@ -160,7 +168,7 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("Save %n item(s) to playlist file", "", playlist.selectedCount)
+                text: qsTr("Save selected items")
                 enabled: playlist.selectedCount > 0
                 visible: !playlist.refreshing && !playlist.busy && listView.count > 0 &&
                          root.selectionMode
@@ -170,15 +178,11 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("Remove %n item(s)", "", playlist.selectedCount)
+                text: qsTr("Remove selected items")
                 visible: !playlist.refreshing && !playlist.busy && listView.count > 0 &&
                          root.selectionMode
                 enabled: playlist.selectedCount > 0
-                onClicked: remorse.execute(qsTr("Removing %n item(s) from play queue", "", playlist.selectedCount),
-                                           function() {
-                                               playlist.removeSelectedItems()
-                                               root.selectionMode = false
-                                           } )
+                onClicked: root.removeSelectedItems()
             }
 
             MenuItem {
@@ -401,22 +405,29 @@ Page {
         height: Theme.itemSizeLarge + Theme.paddingLarge
         dock: Dock.Bottom
 
-        Button {
-            text: qsTr("Exit selection mode")
-            onClicked: {
-                playlist.clearSelection()
-                root.selectionMode = false
-            }
+        Row {
             anchors.centerIn: parent
-        }
+            spacing: Theme.paddingLarge
 
-        Button {
-            text: qsTr("Exit selection mode")
-            onClicked: {
-                playlist.clearSelection()
-                root.selectionMode = false
+            IconButton {
+               icon.source: "image://theme/icon-m-delete"
+               enabled: playlist.selectedCount > 0
+               onClicked: root.removeSelectedItems()
             }
-            anchors.centerIn: parent
+
+            IconButton {
+               icon.source: "image://theme/icon-m-media-playlists"
+               enabled: playlist.selectedCount > 0
+               onClicked: pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"))
+            }
+
+            Button {
+                text: qsTr("Exit selection mode")
+                onClicked: {
+                    playlist.clearSelection()
+                    root.selectionMode = false
+                }
+            }
         }
     }
 

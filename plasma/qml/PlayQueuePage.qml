@@ -97,7 +97,7 @@ Kirigami.ScrollablePage {
                 }
             },
             Kirigami.Action {
-                text: qsTr("Save %n item(s) to playlist file", "", playlist.selectedCount)
+                text: qsTr("Save selected items")
                 iconName: "document-save"
                 enabled: playlist.selectedCount > 0
                 visible: !playlist.refreshing && !playlist.busy && itemList.count !== 0 &&
@@ -105,7 +105,7 @@ Kirigami.ScrollablePage {
                 onTriggered: saveDialog.open()
             },
             Kirigami.Action {
-                text: qsTr("Remove %n item(s)", "", playlist.selectedCount)
+                text: qsTr("Remove selected items")
                 iconName: "delete"
                 enabled: playlist.selectedCount > 0
                 visible: !root.busy && itemList.count !== 0 && root.selectionMode
@@ -189,7 +189,7 @@ Kirigami.ScrollablePage {
 
     FileDialog {
         id: saveDialog
-        title: qsTr("Save %n item(s) to playlist file", "", playlist.selectedCount)
+        title: qsTr("Save selected items")
         selectMultiple: false
         selectFolder: false
         selectExisting: false
@@ -205,9 +205,9 @@ Kirigami.ScrollablePage {
 
     MessageDialog {
         id: clearDialog
-        title: qsTr("Remove items")
+        title: qsTr("Remove selected items")
         icon: StandardIcon.Question
-        text: qsTr("Remove %n item(s) from play queue?", "", playlist.selectedCount)
+        text: qsTr("Remove selected items from play queue?", "", playlist.selectedCount)
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
             playlist.removeSelectedItems()
