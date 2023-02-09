@@ -17,7 +17,6 @@ DockedPanel_ {
     id: root
 
     property bool full: false
-    property bool controlable: true
     property int playMode: PlayListModel.PM_Normal
     property bool nextEnabled: false
     property bool prevEnabled: false
@@ -90,8 +89,8 @@ DockedPanel_ {
 
             TrackSlider {
                 id: trackSlider
-                visible: root.isPortrait && root.full && av.currentTrackDuration > 0
-                enabled: root.controlable && av.seekSupported
+                visible: root.isPortrait && root.full && av.currentTrackDuration > 0 && !playlist.live
+                enabled: av.controlable && av.seekSupported
                 width: parent.width
             }
 
@@ -227,7 +226,7 @@ DockedPanel_ {
                     icon.source: av.transportState !== AVTransport.Playing ?
                                      "image://theme/icon-l-play" :
                                      "image://theme/icon-l-pause"
-                    enabled: root.controlable
+                    enabled: av.controlable
                     onClicked: togglePlayClicked()
 
                     ProgressCircle {
@@ -237,7 +236,7 @@ DockedPanel_ {
                                    0
                         progressColor: Theme.highlightColor
                         backgroundColor: "transparent"
-                        enabled: root.controlable && !root.full && av.currentTrackDuration > 0
+                        enabled: av.controlable && !root.full && av.currentTrackDuration > 0 && !playlist.live
                         opacity: enabled ? 0.4 : 0.0
                         visible: opacity > 0.0
                     }
@@ -274,7 +273,7 @@ DockedPanel_ {
                 y: -Theme.paddingLarge
                 x: Theme.itemSizeExtraSmall
                 visible: root.isLandscape && av.currentTrackDuration > 0
-                enabled: root.controlable && av.seekSupported
+                enabled: av.controlable && av.seekSupported
                 width: parent.width * 0.60
             }
 

@@ -23,7 +23,6 @@ Rectangle {
     property bool open: false
     property bool inited: false
 
-    property bool controlable: true
     property int playMode: PlayListModel.PM_Normal
     property alias nextEnabled: nextButton.enabled
     property alias prevEnabled: prevButton.enabled
@@ -149,7 +148,7 @@ Rectangle {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.fillWidth: true
 
-                enabled: av.seekSupported && root.controlable && av.currentTrackDuration > 0
+                enabled: av.seekSupported && av.controlable && av.currentTrackDuration > 0
 
                 from: 0
                 to: av.currentTrackDuration
@@ -301,7 +300,7 @@ Rectangle {
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: Kirigami.Units.largeSpacing
 
-                enabled: root.controlable
+                enabled: av.controlable
                 progressEnabled: !root.full
                 onClicked: togglePlayClicked()
             }

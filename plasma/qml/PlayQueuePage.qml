@@ -395,8 +395,6 @@ Kirigami.ScrollablePage {
 
         playMode: playlist.playMode
 
-        controlable: av.controlable
-
         onNextClicked: playlist.next()
         onPrevClicked: playlist.prev()
         onTogglePlayClicked: playlist.togglePlay()

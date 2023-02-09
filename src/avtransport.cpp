@@ -402,15 +402,11 @@ int AVTransport::getCurrentTrack()
 
 int AVTransport::getCurrentTrackDuration()
 {
-    const auto* ai = PlaylistModel::instance()->getActiveItem();
-    if (ai && ai->live()) return 0;
     return m_currentTrackDuration > 0 ? m_currentTrackDuration : 0;
 }
 
 int AVTransport::getRelativeTimePosition()
 {
-    const auto* ai = PlaylistModel::instance()->getActiveItem();
-    if (ai && ai->live()) return 0;
     return m_relativeTimePosition > 0 ? m_relativeTimePosition : 0;
 }
 

@@ -461,8 +461,6 @@ Page {
 
         playMode: playlist.playMode
 
-        controlable: av.controlable
-
         onRunningChanged: {
             if (open && !running)
                 root.showActiveItem()
