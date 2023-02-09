@@ -45,6 +45,7 @@ class Utils : public QObject, public Singleton<Utils> {
 
     Utils(QObject *parent = nullptr);
     static bool ethNetworkInf(const QNetworkInterface &interface);
+    static bool localNetworkInf(const QNetworkInterface &interface);
     static bool wlanNetworkInf(const QNetworkInterface &interface);
     Q_INVOKABLE QStringList networkInfs(bool onlyUp = true);
     Q_INVOKABLE int prefNetworkInfIndex();

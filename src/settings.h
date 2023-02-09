@@ -80,6 +80,8 @@ class Settings : public QSettings,
                    setAllowNotIsomMp4 NOTIFY allowNotIsomMp4Changed)
     Q_PROPERTY(YtPreferredType ytPreferredType READ ytPreferredType WRITE
                    setYtPreferredType NOTIFY ytPreferredTypeChanged)
+    Q_PROPERTY(bool controlMpdService READ controlMpdService WRITE
+                   setControlMpdService NOTIFY controlMpdServiceChanged)
 
     // caster
     Q_PROPERTY(int casterMicVolume READ getCasterMicVolume WRITE
@@ -266,6 +268,8 @@ class Settings : public QSettings,
         CasterVideoOrientation orientation);
     Q_INVOKABLE QString
     videoOrientationStr(CasterVideoOrientation orientation) const;
+    bool controlMpdService() const;
+    void setControlMpdService(bool value);
 
     // caster
 
@@ -346,6 +350,7 @@ class Settings : public QSettings,
     void cacheCleaningTypeChanged();
     void ytPreferredTypeChanged();
     void allowNotIsomMp4Changed();
+    void controlMpdServiceChanged();
 
     // caster
 

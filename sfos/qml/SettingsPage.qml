@@ -297,6 +297,7 @@ Page {
                 ExpandingSection {
                     title: qsTr("Advanced")
                     content.sourceComponent: Column {
+
                         ComboBox {
                             label: qsTr("Preferred network interface")
                             currentIndex: utils.prefNetworkInfIndex()
@@ -337,6 +338,17 @@ Page {
                                               "in your local network.")
                             onClicked: {
                                 settings.showAllDevices = !settings.showAllDevices
+                            }
+                        }
+
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.controlMpdService
+                            text: qsTr("Start/stop local MPD and upmpdcli services")
+                            description: qsTr("When MPD and upmpdcli are installed they will be started " +
+                                              "together with Jupii and stopped on exit.")
+                            onClicked: {
+                                settings.controlMpdService = !settings.controlMpdService
                             }
                         }
 

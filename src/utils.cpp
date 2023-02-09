@@ -95,6 +95,14 @@ bool Utils::ethNetworkInf(const QNetworkInterface &interface) {
 #endif
 }
 
+bool Utils::localNetworkInf(const QNetworkInterface &interface) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+    return interface.name().startsWith("lo");
+#else
+    return interface.type() == QNetworkInterface::Loopback;
+#endif
+}
+
 bool Utils::wlanNetworkInf(const QNetworkInterface &interface) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
     return interface.name().startsWith('w') ||
@@ -108,10 +116,11 @@ QStringList Utils::networkInfs(bool onlyUp) {
     lastNetIfs.clear();
     lastNetIfs.append(tr("Auto"));
     for (auto &interface : QNetworkInterface::allInterfaces()) {
-        if (interface.isValid() &&
-            (ethNetworkInf(interface) || wlanNetworkInf(interface))) {
-            if (!onlyUp ||
-                interface.flags().testFlag(QNetworkInterface::IsRunning))
+        if (interface.isValid()) {
+            if (((!onlyUp ||
+                  interface.flags().testFlag(QNetworkInterface::IsRunning)) &&
+                 (ethNetworkInf(interface) || wlanNetworkInf(interface))) ||
+                localNetworkInf(interface))
                 lastNetIfs.append(interface.name());
         }
     }

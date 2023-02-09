@@ -327,6 +327,14 @@ Kirigami.ScrollablePage {
                 }
             }
 
+            Controls.Switch {
+                checked: settings.controlMpdService
+                text: qsTr("Start/stop local MPD and upmpdcli services")
+                onClicked: {
+                    settings.controlMpdService = !settings.controlMpdService
+                }
+            }
+
             Item {
                 Kirigami.FormData.isSection: true
             }

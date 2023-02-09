@@ -39,7 +39,9 @@ class ConnectivityDetector : public QObject,
     QString ifname;
 
     void handleNetworkConfChanged(const QNetworkConfiguration &conf);
-    static void selectIfnameCandidates(QStringList &eth, QStringList &wlan);
+    static void selectIfnameCandidates(QStringList &ethCandidates,
+                                       QStringList &wlanCandidates,
+                                       QStringList &localCandidates);
     static QString fixAddress(const QString &address);
 };
 

@@ -278,7 +278,9 @@ set(sources
     src/radionetmodel.cpp
     src/radionetmodel.hpp
     src/radionetapi.cpp
-    src/radionetapi.hpp)
+    src/radionetapi.hpp
+    src/mpdtools.cpp
+    src/mpdtools.hpp)
 
 if(with_plasma)
     list(APPEND sources

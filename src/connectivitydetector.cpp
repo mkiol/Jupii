@@ -30,8 +30,9 @@ bool ConnectivityDetector::networkConnected() const {
     return !ifname.isEmpty();
 }
 
-void ConnectivityDetector::selectIfnameCandidates(QStringList &ethCandidates,
-                                                  QStringList &wlanCandidates) {
+void ConnectivityDetector::selectIfnameCandidates(
+    QStringList &ethCandidates, QStringList &wlanCandidates,
+    QStringList &localCandidates) {
     foreach (const auto &interface, QNetworkInterface::allInterfaces()) {
         if (interface.flags().testFlag(QNetworkInterface::IsRunning) &&
             !interface.addressEntries().isEmpty()) {
@@ -41,6 +42,9 @@ void ConnectivityDetector::selectIfnameCandidates(QStringList &ethCandidates,
             } else if (Utils::wlanNetworkInf(interface)) {
                 // qDebug() << "wlan interface:" << interface.name();
                 wlanCandidates << interface.name();
+            } else if (Utils::localNetworkInf(interface)) {
+                // qDebug() << "local interface:" << interface.name();
+                localCandidates << interface.name();
             }
         }
     }
@@ -58,22 +62,25 @@ void ConnectivityDetector::handleNetworkConfChanged(
 void ConnectivityDetector::update() {
     QStringList ethCandidates;
     QStringList wlanCandidates;
+    QStringList localCandidates;
 
-    selectIfnameCandidates(ethCandidates, wlanCandidates);
+    selectIfnameCandidates(ethCandidates, wlanCandidates, localCandidates);
 
     QString newIfname;
 
-    if (ethCandidates.isEmpty() && wlanCandidates.isEmpty()) {
-        qWarning() << "No connected network interface found";
+    if (ethCandidates.isEmpty() && wlanCandidates.isEmpty() &&
+        localCandidates.isEmpty()) {
+        qWarning() << "no connected network interface found";
     } else {
         QString prefIfname = Settings::instance()->getPrefNetInf();
 #ifdef QT_DEBUG
-        qDebug() << "Preferred network interface:" << prefIfname;
+        qDebug() << "preferred network interface:" << prefIfname;
 #endif
 
         if (!prefIfname.isEmpty() && (ethCandidates.contains(prefIfname) ||
-                                      wlanCandidates.contains(prefIfname))) {
-            qDebug() << "Preferred network interface found";
+                                      wlanCandidates.contains(prefIfname) ||
+                                      localCandidates.contains(prefIfname))) {
+            qDebug() << "preferred network interface found";
             newIfname = prefIfname;
         } else {
 #ifdef USE_SFOS
@@ -82,22 +89,26 @@ void ConnectivityDetector::update() {
                 newIfname = "tether";
             } else if (!wlanCandidates.isEmpty()) {
                 newIfname = wlanCandidates.first();
-            } else {
+            } else if (!ethCandidates.isEmpty()) {
                 newIfname = ethCandidates.first();
+            } else {
+                newIfname = localCandidates.first();
             }
 #else
             // preferred Ethernet
             if (!ethCandidates.isEmpty()) {
                 newIfname = ethCandidates.first();
-            } else {
+            } else if (!wlanCandidates.isEmpty()) {
                 newIfname = wlanCandidates.first();
+            } else {
+                newIfname = localCandidates.first();
             }
 #endif
         }
     }
 
     if (ifname != newIfname) {
-        qDebug() << "Connected network interface changed:" << newIfname;
+        qDebug() << "connected network interface changed:" << newIfname;
         ifname = newIfname;
         emit networkStateChanged();
     }
@@ -132,7 +143,7 @@ bool ConnectivityDetector::selectNetworkIf(QString &ifname,
                 }
             }
 
-            qWarning() << "Cannot find valid ip addr for interface:"
+            qWarning() << "cannot find valid ip addr for interface:"
                        << this->ifname;
         }
     }

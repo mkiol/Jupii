@@ -1196,3 +1196,14 @@ QString Settings::videoOrientationStr(
     CasterVideoOrientation orientation) const {
     return videoOrientationStrStatic(orientation);
 }
+
+bool Settings::controlMpdService() const {
+    return value(QStringLiteral("control_mpd_service"), true).toBool();
+}
+
+void Settings::setControlMpdService(bool value) {
+    if (value != controlMpdService()) {
+        setValue(QStringLiteral("control_mpd_service"), value);
+        emit controlMpdServiceChanged();
+    }
+}
