@@ -24,7 +24,7 @@ Page {
     readonly property bool devless: av.deviceId.length === 0 && rc.deviceId.length === 0
     readonly property int itemType: utils.itemTypeFromUrl(av.currentId)
     readonly property bool inited: av.inited && rc.inited
-    property bool selectionMode: false
+    property alias selectionMode: selectionPanel.open
     property bool _doPop: false
 
     backgroundColor: selectionMode ? Theme.rgba(Theme.overlayBackgroundColor, Theme.opacityLow) : "transparent"
@@ -155,15 +155,12 @@ Page {
             busy: playlist.busy || av.busy || rc.busy || directory.busy || playlist.refreshing
 
             MenuItem {
-                visible: !playlist.refreshing && !playlist.busy && listView.count !== 0 &&
+                text: qsTr("Exit selection mode")
+                visible: !playlist.refreshing && !playlist.busy && listView.count > 0 &&
                          root.selectionMode
-                text: playlist.selectedCount === listView.count ? qsTr("Unselect all") : qsTr("Select all")
-
                 onClicked: {
-                    if (playlist.selectedCount === listView.count)
-                        playlist.clearSelection()
-                    else
-                        playlist.setAllSelected(true)
+                    playlist.clearSelection()
+                    root.selectionMode = false
                 }
             }
 
@@ -183,6 +180,19 @@ Page {
                          root.selectionMode
                 enabled: playlist.selectedCount > 0
                 onClicked: root.removeSelectedItems()
+            }
+
+            MenuItem {
+                visible: !playlist.refreshing && !playlist.busy && listView.count !== 0 &&
+                         root.selectionMode
+                text: playlist.selectedCount === listView.count ? qsTr("Unselect all") : qsTr("Select all")
+
+                onClicked: {
+                    if (playlist.selectedCount === listView.count)
+                        playlist.clearSelection()
+                    else
+                        playlist.setAllSelected(true)
+                }
             }
 
             MenuItem {
@@ -399,14 +409,18 @@ Page {
     DockedPanel {
         id: selectionPanel
 
-        open: root.selectionMode
+        open: false
         animationDuration: 100
         width: parent.width
         height: Theme.itemSizeLarge + Theme.paddingLarge
         dock: Dock.Bottom
 
         Row {
-            anchors.centerIn: parent
+            anchors {
+                verticalCenter: parent.verticalCenter
+                leftMargin: Theme.horizontalPageMargin
+                left: parent.left
+            }
             spacing: Theme.paddingLarge
 
             IconButton {
@@ -420,13 +434,19 @@ Page {
                enabled: playlist.selectedCount > 0
                onClicked: pageStack.push(Qt.resolvedUrl("SavePlaylistPage.qml"))
             }
+        }
 
-            Button {
-                text: qsTr("Exit selection mode")
-                onClicked: {
-                    playlist.clearSelection()
-                    root.selectionMode = false
-                }
+        IconButton {
+            anchors {
+                verticalCenter: parent.verticalCenter
+                rightMargin: Theme.horizontalPageMargin
+                right: parent.right
+            }
+
+            icon.source: "image://theme/icon-m-cancel"
+            onClicked: {
+                playlist.clearSelection()
+                root.selectionMode = false
             }
         }
     }
