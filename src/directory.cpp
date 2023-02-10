@@ -30,8 +30,11 @@
 #include "libupnpp/control/discovery.hxx"
 #include "libupnpp/upnpplib.hxx"
 #include "settings.h"
-#include "utils.h"
 #include "xc.h"
+
+#ifndef USE_SFOS_HARBOUR
+#include "mpdtools.hpp"
+#endif
 
 Directory::Directory(QObject* parent) : QObject{parent}, TaskExecutor{parent} {
     connect(this, &Directory::busyChanged, this, &Directory::handleBusyChanged);
@@ -86,7 +89,7 @@ void Directory::init() {
 
     qDebug() << "LibUPnP init:" << ifname << addr;
 
-    m_lib = UPnPP::LibUPnP::getLibUPnP(false, nullptr, ifname.toStdString());
+    m_lib = UPnPP::LibUPnP::getLibUPnP(false, nullptr, "*");
 
     if (!m_lib) {
         qWarning() << "Cannot initialize UPnPP lib (lib == nullptr)";
@@ -258,6 +261,9 @@ void Directory::discover() {
                        true);
         emit discoveryFavReady();
 
+#ifndef USE_SFOS_HARBOUR
+        if (Settings::instance()->controlMpdService()) mpdtools::start();
+#endif
         // discovery
 
         m_directory->traverse(std::bind(&Directory::visitorCallback, this,

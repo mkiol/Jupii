@@ -239,9 +239,6 @@ int main(int argc, char** argv) {
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     auto* settings = Settings::instance();
-#ifndef USE_SFOS_HARBOUR
-    if (settings->controlMpdService()) mpdtools::start();
-#endif
     auto* utils = Utils::instance();
     auto* dir = Directory::instance();
     auto* cserver = ContentServer::instance();
