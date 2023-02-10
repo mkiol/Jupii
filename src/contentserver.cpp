@@ -2525,11 +2525,6 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
 
     auto type = typeFromMime(mime);
 
-    //    if (!meta.flagSet(MetaFlag::YtDl) && type == Type::Type_Playlist) {
-    //        qDebug() << "content is a playlist";
-    //        return makeItemMetaFromPlaylist(url, meta, reply, nam, counter);
-    //    }
-
     if (type == Type::Type_Playlist) {
         qDebug() << "content is a playlist";
         return makeItemMetaFromPlaylist(url, meta, reply, std::move(nam),
@@ -2538,6 +2533,17 @@ ContentServer::makeItemMetaUsingHTTPRequest2(
 
     if (!ytdl_broken && type != Type::Type_Music && type != Type::Type_Video &&
         type != Type::Type_Image && type != Type::Type_Playlist) {
+        // extra fix for buggy tune-in
+        if (reply->url().toString().contains(
+                QStringLiteral("index.html?sid="))) {
+            reply->deleteLater();
+            return makeItemMetaUsingHTTPRequest2(
+                QUrl{reply->url().toString().replace(
+                    QLatin1String{"index.html?sid="},
+                    QLatin1String{"listen.pls?sid="})},
+                meta, std::move(nam), counter + 1);
+        }
+
         return makeItemMetaUsingApi(mime, reply, meta, std::move(nam), counter);
     }
 
@@ -2600,7 +2606,9 @@ ContentServer::makeItemMetaUsingApi(
                                                   counter);
         }
 
-        return makeItemMetaUsingYtdlApi(url, meta, std::move(nam), counter);
+        if (meta.app != QStringLiteral("tunein") &&
+            meta.app != QStringLiteral("radionet"))
+            return makeItemMetaUsingYtdlApi(url, meta, std::move(nam), counter);
     }
 
     qWarning() << "unsupported type:" << mime;

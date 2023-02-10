@@ -138,7 +138,6 @@ bool ConnectivityDetector::selectNetworkIf(QString &ifname,
                     ha.protocol() == QAbstractSocket::IPv6Protocol) {
                     address = fixAddress(ha.toString());
 
-                    // qDebug() << "Net interface:" << ifname << address;
                     return true;
                 }
             }
