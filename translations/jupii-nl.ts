@@ -339,43 +339,48 @@
 <context>
     <name>BcPage</name>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="115"/>
+        <location filename="../sfos/qml/BcPage.qml" line="113"/>
+        <source>Open website</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/BcPage.qml" line="121"/>
         <location filename="../plasma/qml/BcPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>Niets selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="115"/>
+        <location filename="../sfos/qml/BcPage.qml" line="121"/>
         <location filename="../plasma/qml/BcPage.qml" line="54"/>
         <source>Select all</source>
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="146"/>
+        <location filename="../sfos/qml/BcPage.qml" line="152"/>
         <location filename="../plasma/qml/BcPage.qml" line="148"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="147"/>
+        <location filename="../sfos/qml/BcPage.qml" line="153"/>
         <location filename="../plasma/qml/BcPage.qml" line="149"/>
         <source>Artist</source>
         <translation>Artiest</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="166"/>
+        <location filename="../sfos/qml/BcPage.qml" line="172"/>
         <location filename="../plasma/qml/BcPage.qml" line="207"/>
         <source>Type the words to search</source>
         <translation>Voer een zoekopdracht in</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="166"/>
+        <location filename="../sfos/qml/BcPage.qml" line="172"/>
         <location filename="../plasma/qml/BcPage.qml" line="207"/>
         <source>No items</source>
         <translation>Geen items</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="166"/>
+        <location filename="../sfos/qml/BcPage.qml" line="172"/>
         <location filename="../plasma/qml/BcPage.qml" line="207"/>
         <source>No albums</source>
         <translation>Geen albums</translation>
@@ -496,13 +501,13 @@
     </message>
     <message>
         <location filename="../sfos/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="91"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="105"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="148"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="175"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="207"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="243"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="309"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="83"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="142"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="156"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="199"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="226"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="258"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="294"/>
         <source>Version %1</source>
         <translation>Versie %1</translation>
     </message>
@@ -623,7 +628,7 @@
 <context>
     <name>DeviceModel</name>
     <message>
-        <location filename="../src/devicemodel.cpp" line="68"/>
+        <location filename="../src/devicemodel.cpp" line="69"/>
         <source>Invalid PIN for %1</source>
         <translation>Ongeldige pincode van %1</translation>
     </message>
@@ -654,71 +659,71 @@
         <translation>Zoeken naar apparaten</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="120"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="121"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="82"/>
         <source>Connect</source>
         <translation>Verbinden</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="120"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="121"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="82"/>
         <source>Disconnect</source>
         <translation>Verbinding verbreken</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="129"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="130"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="101"/>
         <source>Show description</source>
         <translation>Beschrijving tonen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="137"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="138"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="92"/>
         <source>Power Off</source>
         <translation>Uitzetten</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="137"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="138"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="92"/>
         <source>Power On</source>
         <translation>Aanzetten</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="145"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="147"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="109"/>
         <source>Remove from favorites</source>
         <translation>Verwijderen uit favorieten</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="145"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="147"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="109"/>
         <source>Add to favorites</source>
         <translation>Toevoegen aan favorieten</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="166"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="168"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="134"/>
         <source>No devices</source>
         <translation>Geen apparaten</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="166"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="168"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="134"/>
         <source>No network connection</source>
         <translation>Geen internetverbinding</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="168"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="170"/>
         <source>Pull down to find more devices in your network</source>
         <translation>Trek omlaag om te zoeken naar meer apparaten op je netwerk</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="177"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="179"/>
         <source>Connect to a device or flick left to access play queue</source>
         <translation>Maak verbinding met een apparaat of veeg naar links om de afspeelwachtrij te bekijken</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="169"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="171"/>
         <source>Connect WLAN to find devices in your network</source>
         <translation>Maak verbinding met wifi om te zoeken naar meer apparaten op je netwerk</translation>
     </message>
@@ -796,7 +801,7 @@
 <context>
     <name>FosdemYearsPage</name>
     <message>
-        <location filename="../sfos/qml/FosdemYearsPage.qml" line="90"/>
+        <location filename="../sfos/qml/FosdemYearsPage.qml" line="94"/>
         <location filename="../plasma/qml/FosdemYearsPage.qml" line="22"/>
         <source>FOSDEM Conferences</source>
         <translation>FOSDEM-conferenties</translation>
@@ -1182,31 +1187,31 @@
 <context>
     <name>PlayQueuePage</name>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="100"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="108"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="178"/>
         <source>Item cannot be added</source>
         <translation>Het item kan niet worden toegevoegd</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="102"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="110"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="180"/>
         <source>Some items cannot be added</source>
         <translation>Enkele items kunnen niet worden toegevoegd</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="104"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="112"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="182"/>
         <source>Items cannot be added</source>
         <translation>De items kunnen niet worden toegevoegd</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="106"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="114"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="184"/>
         <source>Unable to play item</source>
         <translation>Het item kan niet worden afgespeeld</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="108"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="116"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="186"/>
         <source>Unknown error</source>
         <translation>Onbekende foutmelding</translation>
@@ -1224,8 +1229,8 @@
         <translation type="vanished">Wachtrij wissen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="185"/>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="202"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="61"/>
         <source>Cancel</source>
         <translation>Annuleren</translation>
@@ -1235,41 +1240,41 @@
         <translation type="vanished">Items toevoegen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="217"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="231"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="361"/>
         <source>Preparing item %1 of %2...</source>
         <translation>Bezig met voorbereiden van item %1 van %2…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="218"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="232"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="362"/>
         <source>Preparing item...</source>
         <translation>Bezig met voorbereiden van item…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="378"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="392"/>
         <source>Pull down to add new items</source>
         <translation>Trek omlaag om items toe te voegen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="322"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="336"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="311"/>
         <source>Show</source>
         <translation>Tonen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="98"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="106"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="176"/>
         <source>Item is already in play queue</source>
         <translation>Dit item staat al in de wachtrij</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="135"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="143"/>
         <source>Select items</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="136"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="144"/>
         <source>%n selected</source>
         <translation type="unfinished">
             <numerusform>%n geselecteerd</numerusform>
@@ -1277,7 +1282,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="139"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="147"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="42"/>
         <source>Play queue</source>
         <translation>Afspeelwachtrij</translation>
@@ -1287,139 +1292,140 @@
         <translation type="vanished">Bezig met wissen…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="220"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="178"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="108"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="208"/>
+        <source>Remove selected items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="75"/>
+        <source>Removing items from play queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="168"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="100"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="192"/>
+        <source>Save selected items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="234"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="364"/>
         <source>Adding item %1 of %2...</source>
         <translation>Bezig met toevoegen van item %1 van %2…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="221"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="235"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="365"/>
         <source>Adding item...</source>
         <translation>Bezig met toevoegen van item…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="291"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="305"/>
         <source>Audio source muted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="293"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
         <source>Audio capture (audio source muted)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="293"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
         <source>Audio capture</source>
         <translation type="unfinished">Audio-opname</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="322"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="336"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="311"/>
         <source>Play</source>
         <translation>Afspelen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="337"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="351"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="311"/>
         <source>Pause</source>
         <translation>Pauzeren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="347"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="361"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="322"/>
         <source>Remove</source>
         <translation>Verwijderen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="377"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="391"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="345"/>
         <source>No items</source>
         <translation>Geen items</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="405"/>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="414"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="158"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="47"/>
         <source>Exit selection mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="429"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="460"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="376"/>
         <source>Unknown</source>
         <translation>Onbekend</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="503"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="532"/>
         <source>Connect to a device to control playback.</source>
         <translation>Maak verbinding met een apparaat om het te bedienen.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="525"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="554"/>
         <source>Tap to access playback &amp; volume controls</source>
         <translation>Druk om de afspeelbediening en volumeregeling te tonen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="543"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="572"/>
         <source>Flick left to see current track details</source>
         <translation>Veeg naar links om informatie over het huidige nummer te bekijken</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="502"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="531"/>
         <source>Not connected</source>
         <translation>Niet verbonden</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="152"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="88"/>
         <source>Unselect all</source>
         <translation type="unfinished">Niets selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="152"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="88"/>
         <source>Select all</source>
         <translation type="unfinished">Alles selecteren</translation>
     </message>
-    <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="173"/>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="108"/>
-        <source>Remove %n item(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="177"/>
-        <source>Removing %n item(s) from play queue</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="185"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="115"/>
         <source>Refresh</source>
         <translation type="unfinished">Vernieuwen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="195"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="209"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="82"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="202"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="47"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="349"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="504"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="533"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>Zonder internetverbinding zijn alle items in de afspeelwachtrij beschikbaar op andere apparaten in je lokale netwerk.</translation>
     </message>
@@ -1428,33 +1434,15 @@
         <source>Track info</source>
         <translation>Nummerinformatie</translation>
     </message>
-    <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="163"/>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="100"/>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="192"/>
-        <source>Save %n item(s) to playlist file</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
     <message>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="201"/>
         <source>Playlist has been saved</source>
         <translation>De afspeellijst is opgeslagen</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="208"/>
-        <source>Remove items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
         <location filename="../plasma/qml/PlayQueuePage.qml" line="210"/>
-        <source>Remove %n item(s) from play queue?</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <source>Remove selected items from play queue?</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Remove all items from play queue?</source>
@@ -1499,63 +1487,63 @@
 <context>
     <name>PlayerPanel</name>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="108"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="107"/>
         <source>No network connection</source>
         <translation>Geen internetverbinding</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="109"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="108"/>
         <source>Not connected</source>
         <translation>Niet verbonden</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="109"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="108"/>
         <source>Connect to a device to control playback.</source>
         <translation>Maak verbinding met een apparaat om het te bedienen.</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="110"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="109"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>Zonder internetverbinding zijn alle items in de afspeelwachtrij beschikbaar op andere apparaten in je lokale netwerk.</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="116"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="115"/>
         <source>Devices</source>
         <translation>Apparaten</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="326"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="325"/>
         <source>Skip Backward</source>
         <translation>Vorig nummer</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="336"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="335"/>
         <source>Seek Backward</source>
         <translation>Terugspoelen</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="346"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="345"/>
         <source>Seek Forward</source>
         <translation>Vooruitspoelen</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="356"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="355"/>
         <source>Skip Forward</source>
         <translation>Volgend nummer</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="368"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="367"/>
         <source>Toggle Record</source>
         <translation>Opname aan/uit</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="382"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="381"/>
         <source>Toggle Repeat One</source>
         <translation>Eenmalig herhalen aan/uit</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="421"/>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="459"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="420"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="458"/>
         <source>Toggle Mute</source>
         <translation>Dempen aan/uit</translation>
     </message>
@@ -2046,17 +2034,17 @@
         <translation type="vanished">Framesnelheid van opname</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="402"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="415"/>
         <source>Reset tips and hints</source>
         <translation>Tips en hulpballonnen herstellen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="404"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="417"/>
         <source>Resetting tips and hints</source>
         <translation>Bezig met herstellen…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="301"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="303"/>
         <source>Preferred network interface</source>
         <translation>Netwerkadapter</translation>
     </message>
@@ -2129,22 +2117,22 @@
         <translation type="vanished">Sommige UPnP-apparaten hebben geen ondersteuning voor audiostreams met mp4-versie 2. Hierdoor kan een apparaat vastlopen. Jupii probeert daarom de stream te converteren naar mp4v1. Als dat mislukt en deze optie is ingeschakeld, dan wordt het item in kwestie niet afgespeeld.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="332"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="334"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>Alle soorten upnp-apparaten getoond, inclusief niet-ondersteunde, zoals thuisrouters of mediaservers. Van niet-ondersteunde apparaten kan %1 enkel basisomschrijvingen tonen. Deze optie kan nuttig zijn om upnp-apparaten op je lokale netwerk te controleren.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="380"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="393"/>
         <source>Enter Frontier Silicon PIN</source>
         <translation>Voer de pincode van Frontier Silicon in</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="414"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="427"/>
         <source>Resetting settings</source>
         <translation>Bezig met herstellen…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="331"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="333"/>
         <source>All devices visible</source>
         <translation>Alle apparaten tonen</translation>
     </message>
@@ -2174,22 +2162,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="318"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="320"/>
         <source>Block fragmented MP4 audio streams</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="319"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="321"/>
         <source>Some UPnP devices don&apos;t support audio stream in fragmented MP4 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to standard MP4. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="390"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="348"/>
+        <source>Start/stop local MPD and upmpdcli services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="349"/>
+        <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="403"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Benodigd voor foutopsporingsdoeleinden. Alles wordt vastgelegd in %1.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="389"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="402"/>
         <source>Enable logging</source>
         <translation>Logboek aanleggen</translation>
     </message>
@@ -2209,7 +2207,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="412"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="425"/>
         <source>Reset settings</source>
         <translation>Bezig met herstellen…</translation>
     </message>
@@ -2219,7 +2217,7 @@
         <translation>Geavanceerd</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="377"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="390"/>
         <source>Frontier Silicon PIN</source>
         <translation>Frontier Silicon-pincode</translation>
     </message>
@@ -2320,25 +2318,30 @@
         <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="111"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="110"/>
+        <source>Open website</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="117"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>Niets selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="111"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="117"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="54"/>
         <source>Select all</source>
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="142"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="148"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="145"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="143"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="149"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="146"/>
         <source>Artist</source>
         <translation>Artiest</translation>
@@ -2349,13 +2352,13 @@
         <translation>Selectie aan/uit</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="162"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="168"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="204"/>
         <source>Type the words to search</source>
         <translation>Voer een zoekopdracht in</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="162"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="168"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="204"/>
         <source>No items</source>
         <translation>Geen items</translation>
@@ -2634,17 +2637,17 @@
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../src/utils.cpp" line="109"/>
+        <location filename="../src/utils.cpp" line="117"/>
         <source>Auto</source>
         <translation>Automatisch</translation>
     </message>
     <message>
-        <location filename="../src/utils.cpp" line="406"/>
+        <location filename="../src/utils.cpp" line="415"/>
         <source>Today</source>
         <translation>Vandaag</translation>
     </message>
     <message>
-        <location filename="../src/utils.cpp" line="408"/>
+        <location filename="../src/utils.cpp" line="417"/>
         <source>Yesterday</source>
         <translation>Gisteren</translation>
     </message>

@@ -343,43 +343,48 @@
 <context>
     <name>BcPage</name>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="115"/>
+        <location filename="../sfos/qml/BcPage.qml" line="113"/>
+        <source>Open website</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/BcPage.qml" line="121"/>
         <location filename="../plasma/qml/BcPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>Počisti vse</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="115"/>
+        <location filename="../sfos/qml/BcPage.qml" line="121"/>
         <location filename="../plasma/qml/BcPage.qml" line="54"/>
         <source>Select all</source>
         <translation>Izberi vse</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="146"/>
+        <location filename="../sfos/qml/BcPage.qml" line="152"/>
         <location filename="../plasma/qml/BcPage.qml" line="148"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="147"/>
+        <location filename="../sfos/qml/BcPage.qml" line="153"/>
         <location filename="../plasma/qml/BcPage.qml" line="149"/>
         <source>Artist</source>
         <translation>Izvajalec</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="166"/>
+        <location filename="../sfos/qml/BcPage.qml" line="172"/>
         <location filename="../plasma/qml/BcPage.qml" line="207"/>
         <source>Type the words to search</source>
         <translation>Za iskanje vnesi nekaj besed</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="166"/>
+        <location filename="../sfos/qml/BcPage.qml" line="172"/>
         <location filename="../plasma/qml/BcPage.qml" line="207"/>
         <source>No items</source>
         <translation>Ni elementov</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="166"/>
+        <location filename="../sfos/qml/BcPage.qml" line="172"/>
         <location filename="../plasma/qml/BcPage.qml" line="207"/>
         <source>No albums</source>
         <translation>Ni albumov</translation>
@@ -502,13 +507,13 @@
     </message>
     <message>
         <location filename="../sfos/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="91"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="105"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="148"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="175"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="207"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="243"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="309"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="83"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="142"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="156"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="199"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="226"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="258"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="294"/>
         <source>Version %1</source>
         <translation>Različica %1</translation>
     </message>
@@ -629,7 +634,7 @@
 <context>
     <name>DeviceModel</name>
     <message>
-        <location filename="../src/devicemodel.cpp" line="68"/>
+        <location filename="../src/devicemodel.cpp" line="69"/>
         <source>Invalid PIN for %1</source>
         <translation>Neveljaven PIN za %1</translation>
     </message>
@@ -660,71 +665,71 @@
         <translation>Iskanje naprav</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="120"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="121"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="82"/>
         <source>Connect</source>
         <translation>Poveži</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="120"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="121"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="82"/>
         <source>Disconnect</source>
         <translation>Brez povezave</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="129"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="130"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="101"/>
         <source>Show description</source>
         <translation>Prikaži opis</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="137"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="138"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="92"/>
         <source>Power Off</source>
         <translation>Izključi</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="137"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="138"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="92"/>
         <source>Power On</source>
         <translation>Vključi</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="145"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="147"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="109"/>
         <source>Remove from favorites</source>
         <translation>Odstrani iz priljubljenih</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="145"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="147"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="109"/>
         <source>Add to favorites</source>
         <translation>Dodaj med priljubljene</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="166"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="168"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="134"/>
         <source>No devices</source>
         <translation>Ni naprav</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="166"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="168"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="134"/>
         <source>No network connection</source>
         <translation>Ni omrežne povezave</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="168"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="170"/>
         <source>Pull down to find more devices in your network</source>
         <translation>Za iskanje naprav v lokalni mreži potegni navzdol.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="177"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="179"/>
         <source>Connect to a device or flick left to access play queue</source>
         <translation>Poveži z napravo ali podrsaj v levo za prikaz seznama predvajanja</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="169"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="171"/>
         <source>Connect WLAN to find devices in your network</source>
         <translation>Za iskanje naprav se priključite v brezžično omrežje</translation>
     </message>
@@ -804,7 +809,7 @@
 <context>
     <name>FosdemYearsPage</name>
     <message>
-        <location filename="../sfos/qml/FosdemYearsPage.qml" line="90"/>
+        <location filename="../sfos/qml/FosdemYearsPage.qml" line="94"/>
         <location filename="../plasma/qml/FosdemYearsPage.qml" line="22"/>
         <source>FOSDEM Conferences</source>
         <translation>FOSDEM konference</translation>
@@ -1192,31 +1197,31 @@
 <context>
     <name>PlayQueuePage</name>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="100"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="108"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="178"/>
         <source>Item cannot be added</source>
         <translation>Elementa ni možno dodati</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="102"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="110"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="180"/>
         <source>Some items cannot be added</source>
         <translation>Nekaterih elementov ni možno dodati</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="104"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="112"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="182"/>
         <source>Items cannot be added</source>
         <translation>Elementov ni možno dodati</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="106"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="114"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="184"/>
         <source>Unable to play item</source>
         <translation>Elementa ni mogoče predvajati</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="108"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="116"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="186"/>
         <source>Unknown error</source>
         <translation>Neznana napaka</translation>
@@ -1234,8 +1239,8 @@
         <translation type="vanished">Počisti seznam predvajanja</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="185"/>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="202"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="61"/>
         <source>Cancel</source>
         <translation>Prekliči</translation>
@@ -1245,41 +1250,41 @@
         <translation type="vanished">Dodaj elemente</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="217"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="231"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="361"/>
         <source>Preparing item %1 of %2...</source>
         <translation>Pripravljam element %1 od %2 ...</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="218"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="232"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="362"/>
         <source>Preparing item...</source>
         <translation>Pripravljam element</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="378"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="392"/>
         <source>Pull down to add new items</source>
         <translation>Za dodajanje novih elementov potegni navzdol</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="322"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="336"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="311"/>
         <source>Show</source>
         <translation>Prikaži</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="98"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="106"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="176"/>
         <source>Item is already in play queue</source>
         <translation>Element je že na seznamu predvajanja</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="135"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="143"/>
         <source>Select items</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="136"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="144"/>
         <source>%n selected</source>
         <translation type="unfinished">
             <numerusform>%n izbran</numerusform>
@@ -1289,7 +1294,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="139"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="147"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="42"/>
         <source>Play queue</source>
         <translation>Seznam predvajanja</translation>
@@ -1299,143 +1304,140 @@
         <translation type="vanished">Čiščenje seznama predvajanja</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="220"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="178"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="108"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="208"/>
+        <source>Remove selected items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="75"/>
+        <source>Removing items from play queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="168"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="100"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="192"/>
+        <source>Save selected items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="234"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="364"/>
         <source>Adding item %1 of %2...</source>
         <translation>Dodajanje elementa %1 od %2 ...</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="221"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="235"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="365"/>
         <source>Adding item...</source>
         <translation>Dodajanje elementa</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="291"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="305"/>
         <source>Audio source muted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="293"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
         <source>Audio capture (audio source muted)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="293"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
         <source>Audio capture</source>
         <translation type="unfinished">Zajem zvoka</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="322"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="336"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="311"/>
         <source>Play</source>
         <translation>Predvajaj</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="337"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="351"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="311"/>
         <source>Pause</source>
         <translation>Pavza</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="347"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="361"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="322"/>
         <source>Remove</source>
         <translation>Odstrani</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="377"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="391"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="345"/>
         <source>No items</source>
         <translation>Ni elementov</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="405"/>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="414"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="158"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="47"/>
         <source>Exit selection mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="429"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="460"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="376"/>
         <source>Unknown</source>
         <translation>Neznano</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="503"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="532"/>
         <source>Connect to a device to control playback.</source>
         <translation>Za upravljanje predvanja najprej poveži napravo.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="525"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="554"/>
         <source>Tap to access playback &amp; volume controls</source>
         <translation>Pritisni za dostop do ukazov za predvajanje in glasnost</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="543"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="572"/>
         <source>Flick left to see current track details</source>
         <translation>Podrsaj v levo za prikaz podrobnosti trenutnega posnetka</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="502"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="531"/>
         <source>Not connected</source>
         <translation>Brez povezave</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="152"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="88"/>
         <source>Unselect all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="152"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="88"/>
         <source>Select all</source>
         <translation type="unfinished">Izberi vse</translation>
     </message>
-    <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="173"/>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="108"/>
-        <source>Remove %n item(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="177"/>
-        <source>Removing %n item(s) from play queue</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="185"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="115"/>
         <source>Refresh</source>
         <translation type="unfinished">Osveži</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="195"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="209"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="82"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="202"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="47"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="349"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="504"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="533"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>Četudi brez povezave, so vsi elementi v čakalni vrsti še vedno dostopni v drugih napravah v vašem lokalnem omrežju.</translation>
     </message>
@@ -1444,37 +1446,15 @@
         <source>Track info</source>
         <translation>Podrobnosti posnetka</translation>
     </message>
-    <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="163"/>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="100"/>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="192"/>
-        <source>Save %n item(s) to playlist file</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
     <message>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="201"/>
         <source>Playlist has been saved</source>
         <translation>Seznam predvajanja je bil shranjen</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="208"/>
-        <source>Remove items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
         <location filename="../plasma/qml/PlayQueuePage.qml" line="210"/>
-        <source>Remove %n item(s) from play queue?</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+        <source>Remove selected items from play queue?</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Remove all items from play queue?</source>
@@ -1519,63 +1499,63 @@
 <context>
     <name>PlayerPanel</name>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="108"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="107"/>
         <source>No network connection</source>
         <translation>Ni omrežne povezave</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="109"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="108"/>
         <source>Not connected</source>
         <translation>Brez povezave</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="109"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="108"/>
         <source>Connect to a device to control playback.</source>
         <translation>Za upravljanje predvanja najprej poveži napravo.</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="110"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="109"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>Četudi brez povezave, so vsi elementi v čakalni vrsti še vedno dostopni v drugih napravah v vašem lokalnem omrežju.</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="116"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="115"/>
         <source>Devices</source>
         <translation>Naprave</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="326"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="325"/>
         <source>Skip Backward</source>
         <translation>Prekoči nazaj</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="336"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="335"/>
         <source>Seek Backward</source>
         <translation>Išči nazaj</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="346"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="345"/>
         <source>Seek Forward</source>
         <translation>Išči naprej</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="356"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="355"/>
         <source>Skip Forward</source>
         <translation>Preskoči naprej</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="368"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="367"/>
         <source>Toggle Record</source>
         <translation>Preklopi snemanje</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="382"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="381"/>
         <source>Toggle Repeat One</source>
         <translation>Preklopi Ponovi enega</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="421"/>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="459"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="420"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="458"/>
         <source>Toggle Mute</source>
         <translation>Preklopi Utišaj</translation>
     </message>
@@ -2078,17 +2058,17 @@
         <translation type="vanished">Število slik pri zajemanju zaslonskega posnetka</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="402"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="415"/>
         <source>Reset tips and hints</source>
         <translation>Ponastavi nasvete in namige</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="404"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="417"/>
         <source>Resetting tips and hints</source>
         <translation>Ponstavljam nasvete in namige</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="301"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="303"/>
         <source>Preferred network interface</source>
         <translation>Prednostni omrežni vmesnik</translation>
     </message>
@@ -2161,22 +2141,22 @@
         <translation type="vanished">Nekatere naprave UPnP ne podpirajo zvočnega toka v formatu MP4v2. Ta vrsta toka lahko napravo celo zaustavi. Za odpravo te težave poskuša Jupii prekodirati tok v MP4v1. Če ponovno kodiranje ni uspešno in je ta možnost omogočena, se element sploh ne bo predvajal.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="332"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="334"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>Prikazane so vse UPnP naprave vključno z uradno nepodprtimi, kot so domači usmerjevalniki in serverji. Za nepodprte naprave so prikazane le najbolj osnovne informacije. Ta možnost je dobrodošla za primer, ko želite videti vse UPnP naprave v domačem omrežju.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="380"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="393"/>
         <source>Enter Frontier Silicon PIN</source>
         <translation>Vnesite Frontier Silicon PIN</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="414"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="427"/>
         <source>Resetting settings</source>
         <translation>Ponastavljam nastavitve</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="331"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="333"/>
         <source>All devices visible</source>
         <translation>Vse naprave so vidne</translation>
     </message>
@@ -2206,22 +2186,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="318"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="320"/>
         <source>Block fragmented MP4 audio streams</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="319"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="321"/>
         <source>Some UPnP devices don&apos;t support audio stream in fragmented MP4 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to standard MP4. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="390"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="348"/>
+        <source>Start/stop local MPD and upmpdcli services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="349"/>
+        <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="403"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Potrebno za odpravljanje težav. Vsebina je shranjena v datoteki %1.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="389"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="402"/>
         <source>Enable logging</source>
         <translation>Omogoči beleženje</translation>
     </message>
@@ -2241,7 +2231,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="412"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="425"/>
         <source>Reset settings</source>
         <translation>Ponastavi nastavitve</translation>
     </message>
@@ -2251,7 +2241,7 @@
         <translation>Napredno</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="377"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="390"/>
         <source>Frontier Silicon PIN</source>
         <translation>Frontier Silicon PIN</translation>
     </message>
@@ -2356,25 +2346,30 @@
         <translation>Napaka pri pridobivanju podatkov</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="111"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="110"/>
+        <source>Open website</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="117"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>Počisti vse</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="111"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="117"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="54"/>
         <source>Select all</source>
         <translation>Izberi vse</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="142"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="148"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="145"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="143"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="149"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="146"/>
         <source>Artist</source>
         <translation>Izvajalec</translation>
@@ -2385,13 +2380,13 @@
         <translation>Preklopi izbor</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="162"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="168"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="204"/>
         <source>Type the words to search</source>
         <translation>Za iskanje vnesi nekaj besed</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="162"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="168"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="204"/>
         <source>No items</source>
         <translation>Ni elementov</translation>
@@ -2674,17 +2669,17 @@
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../src/utils.cpp" line="109"/>
+        <location filename="../src/utils.cpp" line="117"/>
         <source>Auto</source>
         <translation>Samodejno</translation>
     </message>
     <message>
-        <location filename="../src/utils.cpp" line="406"/>
+        <location filename="../src/utils.cpp" line="415"/>
         <source>Today</source>
         <translation>Danes</translation>
     </message>
     <message>
-        <location filename="../src/utils.cpp" line="408"/>
+        <location filename="../src/utils.cpp" line="417"/>
         <source>Yesterday</source>
         <translation>Včeraj</translation>
     </message>

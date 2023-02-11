@@ -294,6 +294,10 @@
         <source>Error in getting data</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Open website</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CamDialog</name>
@@ -962,20 +966,6 @@
         <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
-    <message numerus="yes">
-        <source>Remove %n item(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <source>Removing %n item(s) from play queue</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
     <message>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
@@ -1004,23 +994,21 @@
         <source>Exit selection mode</source>
         <translation type="unfinished"></translation>
     </message>
-    <message numerus="yes">
-        <source>Save %n item(s) to playlist file</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
     <message>
-        <source>Remove items</source>
+        <source>Remove selected items</source>
         <translation type="unfinished"></translation>
     </message>
-    <message numerus="yes">
-        <source>Remove %n item(s) from play queue?</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
+    <message>
+        <source>Removing items from play queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove selected items from play queue?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save selected items</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1563,6 +1551,14 @@
         <source>Live audio</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Start/stop local MPD and upmpdcli services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ShowMoreItem</name>
@@ -1663,6 +1659,10 @@
     </message>
     <message>
         <source>Error in getting data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open website</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

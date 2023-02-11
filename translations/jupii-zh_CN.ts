@@ -329,43 +329,48 @@
 <context>
     <name>BcPage</name>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="115"/>
+        <location filename="../sfos/qml/BcPage.qml" line="113"/>
+        <source>Open website</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/BcPage.qml" line="121"/>
         <location filename="../plasma/qml/BcPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="115"/>
+        <location filename="../sfos/qml/BcPage.qml" line="121"/>
         <location filename="../plasma/qml/BcPage.qml" line="54"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="146"/>
+        <location filename="../sfos/qml/BcPage.qml" line="152"/>
         <location filename="../plasma/qml/BcPage.qml" line="148"/>
         <source>Album</source>
         <translation>影集</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="147"/>
+        <location filename="../sfos/qml/BcPage.qml" line="153"/>
         <location filename="../plasma/qml/BcPage.qml" line="149"/>
         <source>Artist</source>
         <translation>艺人</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="166"/>
+        <location filename="../sfos/qml/BcPage.qml" line="172"/>
         <location filename="../plasma/qml/BcPage.qml" line="207"/>
         <source>Type the words to search</source>
         <translation>输入词汇以搜索</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="166"/>
+        <location filename="../sfos/qml/BcPage.qml" line="172"/>
         <location filename="../plasma/qml/BcPage.qml" line="207"/>
         <source>No items</source>
         <translation>暂无项目</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="166"/>
+        <location filename="../sfos/qml/BcPage.qml" line="172"/>
         <location filename="../plasma/qml/BcPage.qml" line="207"/>
         <source>No albums</source>
         <translation>暂无影集</translation>
@@ -485,13 +490,13 @@
     </message>
     <message>
         <location filename="../sfos/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="91"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="105"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="148"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="175"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="207"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="243"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="309"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="83"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="142"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="156"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="199"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="226"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="258"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="294"/>
         <source>Version %1</source>
         <translation>版本 %1</translation>
     </message>
@@ -612,7 +617,7 @@
 <context>
     <name>DeviceModel</name>
     <message>
-        <location filename="../src/devicemodel.cpp" line="68"/>
+        <location filename="../src/devicemodel.cpp" line="69"/>
         <source>Invalid PIN for %1</source>
         <translation>%1 PIN 无效</translation>
     </message>
@@ -643,71 +648,71 @@
         <translation>发现设备</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="120"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="121"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="82"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="120"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="121"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="82"/>
         <source>Disconnect</source>
         <translation>断开连接</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="129"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="130"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="101"/>
         <source>Show description</source>
         <translation>显示描述</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="137"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="138"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="92"/>
         <source>Power Off</source>
         <translation>电源关闭</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="137"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="138"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="92"/>
         <source>Power On</source>
         <translation>电源开启</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="145"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="147"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="109"/>
         <source>Remove from favorites</source>
         <translation>移出收藏</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="145"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="147"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="109"/>
         <source>Add to favorites</source>
         <translation>添加到收藏</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="166"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="168"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="134"/>
         <source>No devices</source>
         <translation>没有设备</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="166"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="168"/>
         <location filename="../plasma/qml/DevicesPage.qml" line="134"/>
         <source>No network connection</source>
         <translation>无网络连接</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="168"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="170"/>
         <source>Pull down to find more devices in your network</source>
         <translation>下拉即可从你的本地网络找到更多设备</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="177"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="179"/>
         <source>Connect to a device or flick left to access play queue</source>
         <translation>连接到设备或向左轻扫即可访问播放队列</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/DevicesPage.qml" line="169"/>
+        <location filename="../sfos/qml/DevicesPage.qml" line="171"/>
         <source>Connect WLAN to find devices in your network</source>
         <translation>连接 WLAN 即可从你的本地网络找到更多设备</translation>
     </message>
@@ -784,7 +789,7 @@
 <context>
     <name>FosdemYearsPage</name>
     <message>
-        <location filename="../sfos/qml/FosdemYearsPage.qml" line="90"/>
+        <location filename="../sfos/qml/FosdemYearsPage.qml" line="94"/>
         <location filename="../plasma/qml/FosdemYearsPage.qml" line="22"/>
         <source>FOSDEM Conferences</source>
         <translation>FOSDEM 会议</translation>
@@ -1169,31 +1174,31 @@
 <context>
     <name>PlayQueuePage</name>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="100"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="108"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="178"/>
         <source>Item cannot be added</source>
         <translation>无法添加项目</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="102"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="110"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="180"/>
         <source>Some items cannot be added</source>
         <translation>无法添加某些项目</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="104"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="112"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="182"/>
         <source>Items cannot be added</source>
         <translation>无法添加项目</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="106"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="114"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="184"/>
         <source>Unable to play item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="108"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="116"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="186"/>
         <source>Unknown error</source>
         <translation>未知错误</translation>
@@ -1211,8 +1216,8 @@
         <translation type="vanished">清空队列</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="185"/>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="202"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="61"/>
         <source>Cancel</source>
         <translation>取消</translation>
@@ -1222,48 +1227,48 @@
         <translation type="vanished">添加项目</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="217"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="231"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="361"/>
         <source>Preparing item %1 of %2...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="218"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="232"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="362"/>
         <source>Preparing item...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="378"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="392"/>
         <source>Pull down to add new items</source>
         <translation>下拉以添加新项目</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="322"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="336"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="311"/>
         <source>Show</source>
         <translation>显示</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="98"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="106"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="176"/>
         <source>Item is already in play queue</source>
         <translation>项目已存在于播放队列</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="135"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="143"/>
         <source>Select items</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="136"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="144"/>
         <source>%n selected</source>
         <translation type="unfinished">
             <numerusform>已选择 %n </numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="139"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="147"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="42"/>
         <source>Play queue</source>
         <translation>播放队列</translation>
@@ -1273,137 +1278,140 @@
         <translation type="vanished">清空播放队列</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="220"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="178"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="108"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="208"/>
+        <source>Remove selected items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="75"/>
+        <source>Removing items from play queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="168"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="100"/>
+        <location filename="../plasma/qml/PlayQueuePage.qml" line="192"/>
+        <source>Save selected items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="234"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="364"/>
         <source>Adding item %1 of %2...</source>
         <translation>添加项目 %1 of %2...</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="221"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="235"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="365"/>
         <source>Adding item...</source>
         <translation>添加项目……</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="291"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="305"/>
         <source>Audio source muted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="293"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
         <source>Audio capture (audio source muted)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="293"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
         <source>Audio capture</source>
         <translation type="unfinished">音频采集</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="322"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="336"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="311"/>
         <source>Play</source>
         <translation>播放</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="337"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="351"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="311"/>
         <source>Pause</source>
         <translation>暂停</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="347"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="361"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="322"/>
         <source>Remove</source>
         <translation>移除</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="377"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="391"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="345"/>
         <source>No items</source>
         <translation>暂无项目</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="405"/>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="414"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="158"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="47"/>
         <source>Exit selection mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="429"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="460"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="376"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="503"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="532"/>
         <source>Connect to a device to control playback.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="525"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="554"/>
         <source>Tap to access playback &amp; volume controls</source>
         <translation>点击以访问播放及音量设置</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="543"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="572"/>
         <source>Flick left to see current track details</source>
         <translation>向左轻扫以查看当前曲目详情</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="502"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="531"/>
         <source>Not connected</source>
         <translation>未连接</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="152"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="88"/>
         <source>Unselect all</source>
         <translation type="unfinished">取消全选</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="152"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="88"/>
         <source>Select all</source>
         <translation type="unfinished"></translation>
     </message>
-    <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="173"/>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="108"/>
-        <source>Remove %n item(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="177"/>
-        <source>Removing %n item(s) from play queue</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-        </translation>
-    </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="185"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="115"/>
         <source>Refresh</source>
         <translation type="unfinished">刷新</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="195"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="209"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="82"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="202"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="47"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="349"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="504"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="533"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>在没有连接的情况下，播放队列中的所有项目仍然可以在本地网络的其它设备上访问。</translation>
     </message>
@@ -1412,31 +1420,15 @@
         <source>Track info</source>
         <translation>曲目信息</translation>
     </message>
-    <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="163"/>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="100"/>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="192"/>
-        <source>Save %n item(s) to playlist file</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-        </translation>
-    </message>
     <message>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="201"/>
         <source>Playlist has been saved</source>
         <translation>播放列表已保存</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayQueuePage.qml" line="208"/>
-        <source>Remove items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
         <location filename="../plasma/qml/PlayQueuePage.qml" line="210"/>
-        <source>Remove %n item(s) from play queue?</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-        </translation>
+        <source>Remove selected items from play queue?</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Remove all items from play queue?</source>
@@ -1481,63 +1473,63 @@
 <context>
     <name>PlayerPanel</name>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="108"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="107"/>
         <source>No network connection</source>
         <translation>无网络连接</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="109"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="108"/>
         <source>Not connected</source>
         <translation>未连接</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="109"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="108"/>
         <source>Connect to a device to control playback.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="110"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="109"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>在没有连接的情况下，播放队列中的所有项目仍然可以在本地网络的其它设备上访问。</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="116"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="115"/>
         <source>Devices</source>
         <translation>设备</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="326"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="325"/>
         <source>Skip Backward</source>
         <translation>快退</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="336"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="335"/>
         <source>Seek Backward</source>
         <translation>向后</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="346"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="345"/>
         <source>Seek Forward</source>
         <translation>向前</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="356"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="355"/>
         <source>Skip Forward</source>
         <translation>快进</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="368"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="367"/>
         <source>Toggle Record</source>
         <translation>录制按钮</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="382"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="381"/>
         <source>Toggle Repeat One</source>
         <translation>重复放映</translation>
     </message>
     <message>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="421"/>
-        <location filename="../plasma/qml/PlayerPanel.qml" line="459"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="420"/>
+        <location filename="../plasma/qml/PlayerPanel.qml" line="458"/>
         <source>Toggle Mute</source>
         <translation>静音按钮</translation>
     </message>
@@ -2010,17 +2002,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="402"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="348"/>
+        <source>Start/stop local MPD and upmpdcli services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="349"/>
+        <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="415"/>
         <source>Reset tips and hints</source>
         <translation>重置技巧与提示</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="404"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="417"/>
         <source>Resetting tips and hints</source>
         <translation>重置技巧与提示</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="301"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="303"/>
         <source>Preferred network interface</source>
         <translation>首选网络接口</translation>
     </message>
@@ -2053,22 +2055,22 @@
         <translation>绝不</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="332"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="334"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>​所有类型的 UPnP 设备都会被侦测和显示，包括不受支持的设备，如家用路由器。对于不受支持的设备，仅有基本的描述信息可用。该选项可能对检查本地网络中的 UPnP 设备很有用。</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="380"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="393"/>
         <source>Enter Frontier Silicon PIN</source>
         <translation>输入 Frontier Silicon PIN</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="414"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="427"/>
         <source>Resetting settings</source>
         <translation>正在重置设置</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="331"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="333"/>
         <source>All devices visible</source>
         <translation>所有设备可见</translation>
     </message>
@@ -2098,22 +2100,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="318"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="320"/>
         <source>Block fragmented MP4 audio streams</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="319"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="321"/>
         <source>Some UPnP devices don&apos;t support audio stream in fragmented MP4 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to standard MP4. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="390"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="403"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>用于排除故障。日志数据保存于 %1 文件。</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="389"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="402"/>
         <source>Enable logging</source>
         <translation>开启日志记录</translation>
     </message>
@@ -2133,7 +2135,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="412"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="425"/>
         <source>Reset settings</source>
         <translation>重置设置</translation>
     </message>
@@ -2143,7 +2145,7 @@
         <translation>高级</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="377"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="390"/>
         <source>Frontier Silicon PIN</source>
         <translation>Frontier Silicon PIN</translation>
     </message>
@@ -2242,25 +2244,30 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="111"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="110"/>
+        <source>Open website</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="117"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>取消全选</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="111"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="117"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="54"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="142"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="148"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="145"/>
         <source>Album</source>
         <translation>影集</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="143"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="149"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="146"/>
         <source>Artist</source>
         <translation>艺人</translation>
@@ -2271,13 +2278,13 @@
         <translation>选择按钮</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="162"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="168"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="204"/>
         <source>Type the words to search</source>
         <translation>输入词汇以进行搜索</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="162"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="168"/>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="204"/>
         <source>No items</source>
         <translation>暂无项目</translation>
@@ -2554,17 +2561,17 @@
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../src/utils.cpp" line="109"/>
+        <location filename="../src/utils.cpp" line="117"/>
         <source>Auto</source>
         <translation>自动</translation>
     </message>
     <message>
-        <location filename="../src/utils.cpp" line="406"/>
+        <location filename="../src/utils.cpp" line="415"/>
         <source>Today</source>
         <translation>今日</translation>
     </message>
     <message>
-        <location filename="../src/utils.cpp" line="408"/>
+        <location filename="../src/utils.cpp" line="417"/>
         <source>Yesterday</source>
         <translation>昨日</translation>
     </message>
