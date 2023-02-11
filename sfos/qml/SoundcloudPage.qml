@@ -102,11 +102,17 @@ Dialog {
 
         PullDownMenu {
             id: menu
-            visible: itemModel.selectableCount > 0
+            visible: itemModel.selectableCount > 0 || root.albumMode || root.artistMode
             busy: itemModel.busy
 
             MenuItem {
-                enabled: !itemModel.busy
+                visible: !root.notableMode && (root.albumMode || root.artistMode)
+                text: qsTr("Open website")
+                onClicked: Qt.openUrlExternally(root.albumMode ? root.albumPage : root.artistPage)
+            }
+
+            MenuItem {
+                enabled: !itemModel.busy && itemModel.selectableCount > 0
                 text: itemModel.selectableCount === itemModel.selectedCount ?
                           qsTr("Unselect all") : qsTr("Select all")
                 onClicked: {
