@@ -491,7 +491,6 @@ modules:
         - --enable-v4l2_m2m
         - --enable-libxcb
         - --enable-libmp3lame
-        - --enable-ffnvcodec
         - --enable-indev=v4l2
         - --enable-indev=xcbgrab
       cleanup:
