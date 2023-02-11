@@ -8,9 +8,9 @@ UPnP/DLNA client for Sailfish OS
 - Remote control (Play, Pause, Next, Prev, Seek, Volume up/down)
 - Playing local content (Music, Video, Images) on Media Renderer devices
 - Playing gPodder's podcasts
-- Playing remote content (e.g. internet radio, SomaFM channels, Icecast streams, FOSDEM videos, Bandcamp, SoundCloud, TuneIn stations, YouTube Music)
-- Playing items from Media Servers on Media Renderer devices
-- Streaming of local Microphone to Media Renderer devices
+- Playing remote content (e.g. internet radio, SomaFM channels, Icecast streams, FOSDEM videos, Bandcamp, SoundCloud, TuneIn stations, YouTube Music, radio.net)
+- Playing items from UPnP Media Servers
+- Streaming local camera or/and microphone
 - Streaming of audio playback of any local application
 - Screen casting
 - Recording of music tracks (including tracks in Icecast streams)

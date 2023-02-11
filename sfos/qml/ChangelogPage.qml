@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,6 +26,57 @@ Page {
 
             PageHeader {
                 title: qsTr("Changes")
+            }
+
+            SectionHeader {
+                text: qsTr("Version %1").arg("2.14")
+            }
+
+            LogItem {
+                title: "Camera capture"
+                description: "New capture mode. You can cast your front and back camera to UPnP device."
+            }
+
+            LogItem {
+                title: "Improved screen capture" + (settings.isHarbour() ? " (disabled in Harbour version)" : "")
+                description: "Finally screen capture is usable. Casting framerate is rather low (up to 5 fps) but stable."
+            }
+
+            LogItem {
+                title: "Radio.net"
+                description: "Radio.net is a free internet radio catalogue. " +
+                             "You can browse, search add radio stations from radio.net to play queue."
+            }
+
+            LogItem {
+                title: "HTTP Live Streaming"
+                description: "HLS URLs are supported. Jupii is able to extract audio stream from HLS and redirect it to UPnP device."
+            }
+
+            LogItem {
+                title: "YouTube live channels" + (settings.isHarbour() ? " (disabled in Harbour version)" : "")
+                description: "Live channels from YouTube are supported and can be added to play queue. " +
+                             "YouTube live channel is converted to audio stream and redirected to UPnP device."
+            }
+
+            LogItem {
+                title: "FOSDEM 2023"
+                description: "Video feed for newest FOSDEM converence is enabled."
+            }
+
+            LogItem {
+                title: "Removing/saving multiple play queue items at once"
+                description: "UI improvement. You can select individual play queue items and save them " +
+                             "in a playlist or remove them at once."
+            }
+
+            LogItem {
+                title: "Starting/stopping MPD and upmpdcli" + (settings.isHarbour() ? " (disabled in Harbour version)" : "")
+                description: "Standalone Jupii does not support local playback right now. " +
+                             "With MPD and upmpdcli (both are available in OpenRepos) " +
+                             "you can use Jupii as local audio player. " +
+                             "When MPD and upmpdcli are installed they will be started " +
+                             "together with Jupii and stopped on exit."
             }
 
             SectionHeader {
@@ -305,7 +356,7 @@ Page {
                              "integration with other apps (e.g. Microtube)."
             }
 
-            SectionHeader {
+            /*SectionHeader {
                 text: qsTr("Version %1").arg("2.6")
             }
 
@@ -361,7 +412,7 @@ Page {
                              "for providing updated translations."
             }
 
-            /*SectionHeader {
+            SectionHeader {
                 text: qsTr("Version %1").arg("2.5")
             }
 
