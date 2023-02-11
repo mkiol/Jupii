@@ -299,6 +299,7 @@ Page {
                     content.sourceComponent: Column {
 
                         ComboBox {
+                            visible: settings.isDebug()
                             label: qsTr("Preferred network interface")
                             currentIndex: utils.prefNetworkInfIndex()
                             menu: ContextMenu {

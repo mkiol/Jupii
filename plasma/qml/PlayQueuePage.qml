@@ -207,7 +207,7 @@ Kirigami.ScrollablePage {
         id: clearDialog
         title: qsTr("Remove selected items")
         icon: StandardIcon.Question
-        text: qsTr("Remove selected items from play queue?", "", playlist.selectedCount)
+        text: qsTr("Remove selected items from play queue?")
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
             playlist.removeSelectedItems()
