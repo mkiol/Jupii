@@ -322,8 +322,13 @@ modules:
         - --enable-filter=color
         - --enable-filter=overlay
         - --enable-filter=pad
-        - --enable-encoder=aac
+        - --enable-filter=volume
+        - --enable-filter=amix
+        - --enable-filter=dynaudnorm
+        - --enable-filter=aresample
+        - --enable-filter=aformat
         - --enable-encoder=libx264
+        - --enable-encoder=aac
         - --enable-encoder=h264_v4l2m2m
         - --enable-encoder=libmp3lame
         - --enable-encoder=h264_nvenc
@@ -350,20 +355,34 @@ modules:
         - --enable-decoder=aac
         - --enable-decoder=aac_fixed
         - --enable-decoder=aac_latm
+        - --enable-decoder=mp3
+        - --enable-decoder=mp3adu
+        - --enable-decoder=mp3adufloat
+        - --enable-decoder=mp3float
+        - --enable-decoder=mp3on4
+        - --enable-decoder=mp3on4float
         - --enable-muxer=mp4
         - --enable-muxer=mpegts
         - --enable-muxer=mp3
+        - --enable-demuxer=mpegts
+        - --enable-demuxer=mpegts
         - --enable-demuxer=h264
         - --enable-demuxer=rawvideo
-        - --enable-demuxer=wav
-        - --enable-demuxer=matroska
-        - --enable-demuxer=mpegvideo
-        - --enable-demuxer=ogg
-        - --enable-demuxer=mov
         - --enable-demuxer=aac
-        - --enable-demuxer=m4v
+        - --enable-demuxer=mp3
+        - --enable-demuxer=mov
+        - --enable-demuxer=ogg
+        - --enable-demuxer=matroska
+        - --enable-demuxer=flac
+        - --enable-demuxer=wav
+        - --enable-demuxer=mpegvideo
         - --enable-parser=h264
+        - --enable-parser=aac
+        - --enable-parser=aac_latm
+        - --enable-parser=ac3
         - --enable-bsf=h264_mp4toannexb
+        - --enable-bsf=dump_extradata
+        - --enable-bsf=extract_extradata
         - --enable-libx264
         - --enable-v4l2_m2m
         - --enable-libxcb
@@ -408,8 +427,13 @@ modules:
         - --enable-filter=color
         - --enable-filter=overlay
         - --enable-filter=pad
-        - --enable-encoder=aac
+        - --enable-filter=volume
+        - --enable-filter=amix
+        - --enable-filter=dynaudnorm
+        - --enable-filter=aresample
+        - --enable-filter=aformat
         - --enable-encoder=libx264
+        - --enable-encoder=aac
         - --enable-encoder=h264_v4l2m2m
         - --enable-encoder=libmp3lame
         - --enable-decoder=h264
@@ -435,20 +459,34 @@ modules:
         - --enable-decoder=aac
         - --enable-decoder=aac_fixed
         - --enable-decoder=aac_latm
+        - --enable-decoder=mp3
+        - --enable-decoder=mp3adu
+        - --enable-decoder=mp3adufloat
+        - --enable-decoder=mp3float
+        - --enable-decoder=mp3on4
+        - --enable-decoder=mp3on4float
         - --enable-muxer=mp4
         - --enable-muxer=mpegts
         - --enable-muxer=mp3
+        - --enable-demuxer=mpegts
+        - --enable-demuxer=mpegts
         - --enable-demuxer=h264
         - --enable-demuxer=rawvideo
-        - --enable-demuxer=wav
-        - --enable-demuxer=matroska
-        - --enable-demuxer=mpegvideo
-        - --enable-demuxer=ogg
-        - --enable-demuxer=mov
         - --enable-demuxer=aac
-        - --enable-demuxer=m4v
+        - --enable-demuxer=mp3
+        - --enable-demuxer=mov
+        - --enable-demuxer=ogg
+        - --enable-demuxer=matroska
+        - --enable-demuxer=flac
+        - --enable-demuxer=wav
+        - --enable-demuxer=mpegvideo
         - --enable-parser=h264
+        - --enable-parser=aac
+        - --enable-parser=aac_latm
+        - --enable-parser=ac3
         - --enable-bsf=h264_mp4toannexb
+        - --enable-bsf=dump_extradata
+        - --enable-bsf=extract_extradata
         - --enable-libx264
         - --enable-v4l2_m2m
         - --enable-libxcb
@@ -500,7 +538,6 @@ modules:
         - -Dwith_sfos=0
         - -Dwith_v4l2=1
         - -Dwith_v4l2m2m=1
-        - -Dwith_mp3_format=1
         - -Dwith_nvenc=1
         - -Dwith_x11_screen_capture=1
         - -Dwith_droidcam=0
@@ -552,7 +589,6 @@ modules:
         - -Dwith_sfos=0
         - -Dwith_v4l2=1
         - -Dwith_v4l2m2m=1
-        - -Dwith_mp3_format=1
         - -Dwith_nvenc=0
         - -Dwith_x11_screen_capture=1
         - -Dwith_droidcam=0
