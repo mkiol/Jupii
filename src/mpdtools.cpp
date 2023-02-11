@@ -7,19 +7,28 @@
 
 #include "mpdtools.hpp"
 
+#include <arpa/inet.h>
+#include <ifaddrs.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
 #include <QDebug>
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QProcess>
 #include <QStandardPaths>
 #include <cstring>
 #include <optional>
+#include <set>
+#include <string>
 
 namespace mpdtools {
 
 static const auto* const mpdConfing =
     "db_file                 \"~/.config/mpd/database\"\n"
     "log_file                \"~/.config/mpd/log\"\n"
-    "state_file              \"~/.config/mpd/state\"\n"
     "sticker_file            \"~/.config/mpd/sticker.sql\"\n"
     "bind_to_address         \"127.0.0.1\"\n"
     "port                    \"6600\"\n"
@@ -29,6 +38,64 @@ static const auto* const mpdConfing =
     "    name        \"PulseAudio\"\n"
     "}\n";
 
+static bool startCheckDone = false;
+
+static std::string ntop(const sockaddr* sockAddr) {
+    std::string addrStr;
+
+    if (sockAddr->sa_family == AF_INET) {
+        char addr[INET_ADDRSTRLEN];
+        if (inet_ntop(AF_INET,
+                      &reinterpret_cast<const sockaddr_in*>(sockAddr)->sin_addr,
+                      addr, INET_ADDRSTRLEN) != nullptr) {
+            addrStr.assign(addr);
+        }
+    } else if (sockAddr->sa_family == AF_INET6) {
+        if (!IN6_IS_ADDR_LINKLOCAL(
+                &reinterpret_cast<const sockaddr_in6*>(sockAddr)->sin6_addr)) {
+            char addr[INET6_ADDRSTRLEN];
+            if (inet_ntop(
+                    AF_INET6,
+                    &reinterpret_cast<const sockaddr_in6*>(sockAddr)->sin6_addr,
+                    addr, INET6_ADDRSTRLEN) != nullptr) {
+                addrStr.assign(addr);
+            }
+        }
+    }
+
+    return addrStr;
+}
+
+static std::set<std::string> machineAddresses() {
+    std::set<std::string> addrs;
+
+    ifaddrs* ifap;
+    if (getifaddrs(&ifap) != 0) return addrs;
+
+    for (auto* ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr == nullptr) continue;
+        auto addr = ntop(ifa->ifa_addr);
+        if (!addr.empty()) addrs.insert(std::move(addr));
+    }
+
+    freeifaddrs(ifap);
+
+    return addrs;
+}
+
+bool upmpdcliDev(const QString& modelName, const QUrl& url) {
+    if (!modelName.contains(QLatin1String{"UpMPD"})) return false;
+
+    auto host = url.host();
+
+    if (host.isEmpty()) return false;
+
+    for (const auto& addr : machineAddresses())
+        if (host == QString::fromStdString(addr)) return true;
+
+    return false;
+}
+
 static std::optional<QString> execSystemctl(const QString& arg1,
                                             const QString& arg2) {
     QProcess process;
@@ -37,7 +104,7 @@ static std::optional<QString> execSystemctl(const QString& arg1,
                                 << QStringLiteral("/usr/bin/systemctl")
                                 << QStringLiteral("--user") << arg1 << arg2);
 
-    process.waitForFinished(-1);
+    if (!process.waitForFinished(10000)) return std::nullopt;
 
     if (process.exitCode() != 0) return std::nullopt;
 
@@ -81,6 +148,8 @@ static void makeMpdConfig() {
 
     if (config.exists()) return;
 
+    QDir{}.mkpath(QFileInfo{config}.absoluteDir().absolutePath());
+
     if (!config.open(QIODevice::WriteOnly)) {
         qWarning() << "failed to write mpd config";
         return;
@@ -91,6 +160,10 @@ static void makeMpdConfig() {
 }
 
 void start() {
+    if (startCheckDone) return;
+
+    startCheckDone = true;
+
     if (!servicesExist(QStringLiteral("mpd"), QStringLiteral("upmpdcli"))) {
         qDebug() << "mpd or upmpdcli not installed";
         return;

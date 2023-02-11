@@ -16,6 +16,7 @@ ListItem {
     property alias defaultIcon: _dicon
     property bool active: false
     property bool fav: false
+    property bool showFavOption: true
 
     readonly property bool _iconDisabled: _icon.status !== Image.Ready &&
                                          _dicon.status !== Image.Ready
@@ -72,6 +73,7 @@ ListItem {
 
     Image {
         id: _icon_fav
+        visible: root.showFavOption || root.fav
 
         anchors {
             right: parent.right

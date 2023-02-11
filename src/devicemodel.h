@@ -17,6 +17,7 @@
 #include <QModelIndex>
 #include <QString>
 #include <QUrl>
+#include <cstdint>
 
 #include "listmodel.h"
 #include "singleton.h"
@@ -25,6 +26,8 @@
 class DeviceItem : public ListItem {
     Q_OBJECT
    public:
+    enum Flags { Upmpd = 1 << 1, Xc = 1 << 2, Supported = 1 << 3 };
+
     enum Roles {
         TitleRole = Qt::DisplayRole,
         TypeRole = Qt::ToolTipRole,
@@ -36,13 +39,14 @@ class DeviceItem : public ListItem {
         FavRole,
         SupportedRole,
         XcRole,
-        PowerRole
+        PowerRole,
+        UpmpdRole
     };
 
     DeviceItem(QObject *parent = nullptr) : ListItem(parent) {}
     DeviceItem(const QString &id, const QString &title, const QString &type,
-               const QString &model, const QUrl &icon, bool supported,
-               bool active, bool jxc, QObject *parent = nullptr);
+               const QString &model, const QUrl &icon, bool active,
+               uint32_t flags, QObject *parent = nullptr);
     QVariant data(int role) const override;
     QHash<int, QByteArray> roleNames() const override;
     inline QString id() const override { return m_id; }
@@ -50,10 +54,11 @@ class DeviceItem : public ListItem {
     inline auto type() const { return m_type; }
     inline auto model() const { return m_model; }
     inline auto icon() const { return m_icon; }
-    inline auto supported() const { return m_supported; }
+    inline bool supported() const { return m_flags & Flags::Supported; }
     inline auto active() const { return m_active; }
-    inline auto xc() const { return m_xc; }
+    inline bool xc() const { return m_flags & Flags::Xc; }
     inline auto power() const { return m_power; }
+    inline bool upmpd() const { return m_flags & Flags::Upmpd; }
     bool isFav() const;
     void setActive(bool value);
     void setPower(bool value);
@@ -66,9 +71,8 @@ class DeviceItem : public ListItem {
     QString m_model;
     QUrl m_icon;
     bool m_active = false;
-    bool m_supported = false;
-    bool m_xc = false;
     bool m_power = false;
+    uint32_t m_flags = 0;
 };
 
 class DeviceModel : public ListModel, public Singleton<DeviceModel> {

@@ -101,8 +101,9 @@ Page {
             icon.source: model.icon
             active: model.active
             fav: model.fav
+            showFavOption: !model.upmpd
             enabled: directory.inited && listView.count > 0
-            defaultIcon.source: "image://icons/icon-m-device?" +
+            defaultIcon.source: (model.upmpd ? "image://theme/icon-m-device?" : "image://icons/icon-m-device?") +
                                 (highlighted || model.active ?
                                 Theme.highlightColor : Theme.primaryColor)
 
@@ -142,6 +143,7 @@ Page {
                 }
 
                 MenuItem {
+                    visible: !model.upmpd
                     text: model.fav ? qsTr("Remove from favorites") : qsTr("Add to favorites")
                     onClicked: {
                         if (model.fav) settings.removeFavDevice(model.id)

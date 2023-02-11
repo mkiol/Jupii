@@ -9,10 +9,12 @@
 #define MPDTOOLS_HPP
 
 #include <QString>
+#include <QUrl>
 
 namespace mpdtools {
 void start();
 void stop();
+bool upmpdcliDev(const QString& modelName, const QUrl& url);
 }  // namespace mpdtools
 
 #endif  // MPDTOOLS_HPP

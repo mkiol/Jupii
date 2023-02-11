@@ -19,6 +19,7 @@
 #include "directory.h"
 #include "filedownloader.h"
 #include "libupnpp/control/description.hxx"
+#include "mpdtools.hpp"
 #include "notifications.h"
 #include "renderingcontrol.h"
 #include "service.h"
@@ -97,20 +98,31 @@ void DeviceModel::updateModel() {
         if ((supported &&
              QString::fromStdString(ddesc.UDN) != ownMediaServerId) ||
             showAll) {
-            const auto id = QString::fromStdString(ddesc.UDN);
-            const auto iconUrl = d->getDeviceIconUrl(ddesc);
-            const auto iconPath = Utils::deviceIconFilePath(id);
-            bool active = av && av->getDeviceId() == id;
+            auto id = QString::fromStdString(ddesc.UDN);
+            auto iconUrl = Directory::getDeviceIconUrl(ddesc);
+            auto iconPath = Utils::deviceIconFilePath(id);
+            auto model = QString::fromStdString(ddesc.modelName);
             auto xc = d->xc(it.key());
+
+            bool active = av && av->getDeviceId() == id;
+            bool upmdp = mpdtools::upmpdcliDev(
+                model, QUrl{QString::fromStdString(ddesc.URLBase)});
+
+            uint32_t flags = 0;
+            if (xc) flags |= DeviceItem::Flags::Xc;
+            if (supported) flags |= DeviceItem::Flags::Supported;
+            if (upmdp) flags |= DeviceItem::Flags::Upmpd;
+
             auto *item = new DeviceItem{
-                id,
-                QString::fromStdString(ddesc.friendlyName),
-                type,
-                QString::fromStdString(ddesc.modelName),
-                iconPath.isEmpty() ? QUrl{} : QUrl::fromLocalFile(iconPath),
-                supported,
-                active,
-                static_cast<bool>(xc)};
+                /*id=*/id,
+                /*title=*/QString::fromStdString(ddesc.friendlyName),
+                /*type=*/type,
+                /*model=*/model,
+                /*icon=*/upmdp || iconPath.isEmpty()
+                    ? QUrl{}
+                    : QUrl::fromLocalFile(iconPath),
+                /*active=*/active,
+                /*flags=*/flags};
             if (xc) {
                 connect(xc->get().get(), &XC::error, this,
                         &DeviceModel::handleXcError, Qt::QueuedConnection);
@@ -174,17 +186,10 @@ void DeviceModel::updatePower(const QString &id, bool value) {
 
 DeviceItem::DeviceItem(const QString &id, const QString &title,
                        const QString &type, const QString &model,
-                       const QUrl &icon, bool supported, bool active, bool jxc,
+                       const QUrl &icon, bool active, uint32_t flags,
                        QObject *parent)
-    : ListItem{parent},
-      m_id(id),
-      m_title(title),
-      m_type(type),
-      m_model(model),
-      m_icon(icon),
-      m_active(active),
-      m_supported(supported),
-      m_xc(jxc) {}
+    : ListItem{parent}, m_id{id}, m_title{title}, m_type{type}, m_model{model},
+      m_icon{icon}, m_active{active}, m_flags{flags} {}
 
 QHash<int, QByteArray> DeviceItem::roleNames() const {
     QHash<int, QByteArray> names;
@@ -198,6 +203,7 @@ QHash<int, QByteArray> DeviceItem::roleNames() const {
     names[ActiveRole] = "active";
     names[XcRole] = "xc";
     names[PowerRole] = "power";
+    names[UpmpdRole] = "upmpd";
     return names;
 }
 
@@ -223,13 +229,16 @@ QVariant DeviceItem::data(int role) const {
             return xc();
         case PowerRole:
             return power();
+        case UpmpdRole:
+            return upmpd();
         default:
             return {};
     }
 }
 
 bool DeviceItem::isFav() const {
-    return Settings::instance()->getFavDevices().contains(m_id);
+    return upmpd() ? false
+                   : Settings::instance()->getFavDevices().contains(m_id);
 }
 
 void DeviceItem::setActive(bool value) {
