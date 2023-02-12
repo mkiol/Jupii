@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sv" sourcelanguage="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="sv" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -73,14 +71,10 @@
 <context>
     <name>AddMediaPage</name>
     <message>
-        <source>Add item</source>
-        <translation type="vanished">Lägg till objekt</translation>
-    </message>
-    <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="109"/>
         <location filename="../plasma/qml/AddMediaPage.qml" line="31"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="113"/>
@@ -182,7 +176,7 @@
         <location filename="../sfos/qml/AddMediaPage.qml" line="256"/>
         <location filename="../plasma/qml/AddMediaPage.qml" line="215"/>
         <source>Camera</source>
-        <translation type="unfinished"></translation>
+        <translation>Kamera</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="266"/>
@@ -191,44 +185,9 @@
         <translation>Appar &amp; tjänster</translation>
     </message>
     <message>
-        <source>Add items</source>
-        <translation type="vanished">Lägg till objekt</translation>
-    </message>
-    <message>
         <location filename="../plasma/qml/AddMediaPage.qml" line="48"/>
         <source>Choose a file</source>
         <translation>Välj en fil</translation>
-    </message>
-</context>
-<context>
-    <name>AddUrlDialog</name>
-    <message>
-        <source>Add URL</source>
-        <translation type="vanished">Lägg till URL</translation>
-    </message>
-    <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="vanished">När URL inte pekar direkt på ljud-, video- eller bildfil, identifieras medieinnehåll med youtube-dl.</translation>
-    </message>
-    <message>
-        <source>URL</source>
-        <translation type="vanished">URL</translation>
-    </message>
-    <message>
-        <source>Enter URL</source>
-        <translation type="vanished">Ange URL</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="vanished">Namn</translation>
-    </message>
-    <message>
-        <source>Enter Name (optional)</source>
-        <translation type="vanished">Ange namn (valfritt)</translation>
-    </message>
-    <message>
-        <source>Add only audio stream</source>
-        <translation type="vanished">Lägg endast till ljudström</translation>
     </message>
 </context>
 <context>
@@ -294,10 +253,7 @@
     <message numerus="yes">
         <location filename="../sfos/qml/AlbumsPage.qml" line="87"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n spår</numerusform>
-            <numerusform>%n spår</numerusform>
-        </translation>
+        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
     </message>
     <message>
         <location filename="../sfos/qml/AlbumsPage.qml" line="95"/>
@@ -320,10 +276,7 @@
     <message numerus="yes">
         <location filename="../sfos/qml/ArtistPage.qml" line="75"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n spår</numerusform>
-            <numerusform>%n spår</numerusform>
-        </translation>
+        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
     </message>
     <message>
         <location filename="../sfos/qml/ArtistPage.qml" line="83"/>
@@ -341,7 +294,7 @@
     <message>
         <location filename="../sfos/qml/BcPage.qml" line="113"/>
         <source>Open website</source>
-        <translation type="unfinished"></translation>
+        <translation>Öppna webbsidan</translation>
     </message>
     <message>
         <location filename="../sfos/qml/BcPage.qml" line="121"/>
@@ -399,10 +352,7 @@
     <message numerus="yes">
         <location filename="../plasma/qml/BcPage.qml" line="43"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../sfos/qml/BcPage.qml" line="59"/>
@@ -422,74 +372,74 @@
         <location filename="../sfos/qml/CamDialog.qml" line="41"/>
         <location filename="../plasma/qml/CamDialog.qml" line="23"/>
         <source>Add camera</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till kamera</translation>
     </message>
     <message>
         <location filename="../sfos/qml/CamDialog.qml" line="47"/>
         <location filename="../plasma/qml/CamDialog.qml" line="42"/>
         <source>Could not find any camera connected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunde inte hitta någon ansluten kamera.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/CamDialog.qml" line="53"/>
         <location filename="../plasma/qml/CamDialog.qml" line="49"/>
         <source>Could not find any microphone connected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunde inte hitta någon ansluten mikrofon.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/CamDialog.qml" line="59"/>
         <location filename="../plasma/qml/CamDialog.qml" line="59"/>
         <source>Video source</source>
-        <translation type="unfinished"></translation>
+        <translation>Videokälla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/CamDialog.qml" line="78"/>
         <location filename="../plasma/qml/CamDialog.qml" line="72"/>
         <source>Video orientation</source>
-        <translation type="unfinished"></translation>
+        <translation>Videoorientering</translation>
     </message>
     <message>
         <location filename="../sfos/qml/CamDialog.qml" line="116"/>
         <location filename="../plasma/qml/CamDialog.qml" line="112"/>
         <source>Capture with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Spela in med ljud</translation>
     </message>
     <message>
         <location filename="../sfos/qml/CamDialog.qml" line="128"/>
         <location filename="../plasma/qml/CamDialog.qml" line="123"/>
         <source>Audio source</source>
-        <translation type="unfinished">Ljudkälla</translation>
+        <translation>Ljudkälla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/CamDialog.qml" line="149"/>
         <location filename="../plasma/qml/CamDialog.qml" line="138"/>
         <source>Volume boost</source>
-        <translation type="unfinished">Volymförstärkning</translation>
+        <translation>Volymförstärkning</translation>
     </message>
     <message>
         <location filename="../plasma/qml/CamDialog.qml" line="85"/>
         <source>Auto</source>
-        <translation type="unfinished">Auto</translation>
+        <translation>Auto</translation>
     </message>
     <message>
         <location filename="../plasma/qml/CamDialog.qml" line="86"/>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Stående</translation>
     </message>
     <message>
         <location filename="../plasma/qml/CamDialog.qml" line="87"/>
         <source>Inverted portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Omvänt stående</translation>
     </message>
     <message>
         <location filename="../plasma/qml/CamDialog.qml" line="88"/>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Liggande</translation>
     </message>
     <message>
         <location filename="../plasma/qml/CamDialog.qml" line="89"/>
         <source>Inverted landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Omvänt liggande</translation>
     </message>
 </context>
 <context>
@@ -525,11 +475,6 @@
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1907"/>
-        <source>Camera</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/contentserver.cpp" line="1814"/>
         <source>Audio capture</source>
         <translation>Ljudinspelning</translation>
@@ -538,6 +483,11 @@
         <location filename="../src/contentserver.cpp" line="1861"/>
         <source>Screen capture</source>
         <translation>Skärminspelning</translation>
+    </message>
+    <message>
+        <location filename="../src/contentserver.cpp" line="1907"/>
+        <source>Camera</source>
+        <translation>Kamera</translation>
     </message>
 </context>
 <context>
@@ -787,10 +737,7 @@
     <message numerus="yes">
         <location filename="../plasma/qml/FosdemPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../plasma/qml/FosdemPage.qml" line="108"/>
@@ -871,10 +818,7 @@
     <message numerus="yes">
         <location filename="../plasma/qml/IcecastPage.qml" line="35"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../plasma/qml/IcecastPage.qml" line="124"/>
@@ -909,10 +853,6 @@
         <translation>Lokal fil</translation>
     </message>
     <message>
-        <source>Icecast URL</source>
-        <translation type="vanished">Icecast URL</translation>
-    </message>
-    <message>
         <location filename="../sfos/qml/MediaInfoPage.qml" line="155"/>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="102"/>
         <source>Screen Capture</source>
@@ -934,19 +874,19 @@
         <location filename="../sfos/qml/MediaInfoPage.qml" line="161"/>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="108"/>
         <source>Camera</source>
-        <translation type="unfinished"></translation>
+        <translation>Kamera</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MediaInfoPage.qml" line="170"/>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="118"/>
         <source>Video source</source>
-        <translation type="unfinished"></translation>
+        <translation>Videokälla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MediaInfoPage.qml" line="187"/>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="154"/>
         <source>Video orientation</source>
-        <translation type="unfinished"></translation>
+        <translation>Videoorientering</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MediaInfoPage.qml" line="195"/>
@@ -964,7 +904,7 @@
         <location filename="../sfos/qml/MediaInfoPage.qml" line="207"/>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="199"/>
         <source>Captured application</source>
-        <translation type="unfinished"></translation>
+        <translation>Inspelad app</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MediaInfoPage.qml" line="211"/>
@@ -976,7 +916,7 @@
         <location filename="../sfos/qml/MediaInfoPage.qml" line="271"/>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="326"/>
         <source>Live</source>
-        <translation type="unfinished"></translation>
+        <translation>Live</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MediaInfoPage.qml" line="282"/>
@@ -999,10 +939,6 @@
         <location filename="../plasma/qml/MediaInfoPage.qml" line="354"/>
         <source>No</source>
         <translation>Nej</translation>
-    </message>
-    <message>
-        <source>Sensitivity</source>
-        <translation type="vanished">Känslighet</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MediaInfoPage.qml" line="348"/>
@@ -1115,27 +1051,27 @@
     <message>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="166"/>
         <source>Auto</source>
-        <translation type="unfinished">Auto</translation>
+        <translation>Auto</translation>
     </message>
     <message>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="167"/>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Stående</translation>
     </message>
     <message>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="168"/>
         <source>Inverted portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Omvänt stående</translation>
     </message>
     <message>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="169"/>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Liggande</translation>
     </message>
     <message>
         <location filename="../plasma/qml/MediaInfoPage.qml" line="170"/>
         <source>Inverted landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Omvänt liggande</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MediaInfoPage.qml" line="325"/>
@@ -1150,25 +1086,25 @@
         <location filename="../sfos/qml/MicDialog.qml" line="41"/>
         <location filename="../plasma/qml/MicDialog.qml" line="23"/>
         <source>Add microphone</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till mikrofon</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MicDialog.qml" line="47"/>
         <location filename="../plasma/qml/MicDialog.qml" line="42"/>
         <source>Could not find any microphone connected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunde inte hitta någon ansluten mikrofon.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MicDialog.qml" line="53"/>
         <location filename="../plasma/qml/MicDialog.qml" line="52"/>
         <source>Audio source</source>
-        <translation type="unfinished">Ljudkälla</translation>
+        <translation>Ljudkälla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MicDialog.qml" line="72"/>
         <location filename="../plasma/qml/MicDialog.qml" line="65"/>
         <source>Volume boost</source>
-        <translation type="unfinished">Volymförstärkning</translation>
+        <translation>Volymförstärkning</translation>
     </message>
 </context>
 <context>
@@ -1217,27 +1153,11 @@
         <translation>Okänt fel</translation>
     </message>
     <message>
-        <source>Refresh items</source>
-        <translation type="vanished">Uppdatera objekt</translation>
-    </message>
-    <message>
-        <source>Save queue</source>
-        <translation type="vanished">Spara kö</translation>
-    </message>
-    <message>
-        <source>Clear queue</source>
-        <translation type="vanished">Rensa kön</translation>
-    </message>
-    <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="61"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
-    </message>
-    <message>
-        <source>Add items</source>
-        <translation type="vanished">Lägg till objekt</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="231"/>
@@ -1271,15 +1191,12 @@
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="143"/>
         <source>Select items</source>
-        <translation type="unfinished"></translation>
+        <translation>Välj objekt</translation>
     </message>
     <message numerus="yes">
         <location filename="../sfos/qml/PlayQueuePage.qml" line="144"/>
         <source>%n selected</source>
-        <translation type="unfinished">
-            <numerusform>%n markerad</numerusform>
-            <numerusform>%n markerade</numerusform>
-        </translation>
+        <translation><numerusform>%n markerad</numerusform><numerusform>%n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="147"/>
@@ -1288,27 +1205,23 @@
         <translation>Spela upp kö</translation>
     </message>
     <message>
-        <source>Clearing play queue</source>
-        <translation type="vanished">Rensar uppspelningskön</translation>
-    </message>
-    <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="178"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="108"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="208"/>
         <source>Remove selected items</source>
-        <translation type="unfinished"></translation>
+        <translation>Ta bort markerade objekt</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="75"/>
         <source>Removing items from play queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Tar bort objekt från uppspelningskön</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="168"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="100"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="192"/>
         <source>Save selected items</source>
-        <translation type="unfinished"></translation>
+        <translation>Spara markerade objekt</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="234"/>
@@ -1325,17 +1238,17 @@
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="305"/>
         <source>Audio source muted</source>
-        <translation type="unfinished"></translation>
+        <translation>Ljudkälla tystad</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
         <source>Audio capture (audio source muted)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ljudinspelning (ljudkälla tystad)</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
         <source>Audio capture</source>
-        <translation type="unfinished">Ljudinspelning</translation>
+        <translation>Ljudinspelning</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="336"/>
@@ -1365,7 +1278,7 @@
         <location filename="../sfos/qml/PlayQueuePage.qml" line="158"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="47"/>
         <source>Exit selection mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Avsluta markeringsläge</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="460"/>
@@ -1397,32 +1310,40 @@
         <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="88"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Avmarkera alla</translation>
+        <translation>Avmarkera alla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="88"/>
         <source>Select all</source>
-        <translation type="unfinished">Markera alla</translation>
+        <translation>Markera alla</translation>
+    </message>
+    <message numerus="yes">
+        <source>Remove %n item(s)</source>
+        <translation type="vanished"><numerusform>Ta bort %n objekt</numerusform><numerusform>Ta bort %n objekt</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>Removing %n item(s) from play queue</source>
+        <translation type="vanished"><numerusform>Tar bort %n objekt från uppspelningskön</numerusform><numerusform>Tar bort %n objekt från uppspelningskön</numerusform></translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="115"/>
         <source>Refresh</source>
-        <translation type="unfinished">Uppdatera</translation>
+        <translation>Uppdatera</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="209"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="82"/>
         <source>Select</source>
-        <translation type="unfinished"></translation>
+        <translation>Välj</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="47"/>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="349"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlayQueuePage.qml" line="533"/>
@@ -1434,6 +1355,10 @@
         <source>Track info</source>
         <translation>Spårinformation</translation>
     </message>
+    <message numerus="yes">
+        <source>Save %n item(s) to playlist file</source>
+        <translation type="vanished"><numerusform>Spara %n objekt i en spelningslista</numerusform><numerusform>Spara %n objekt i en spelningslista</numerusform></translation>
+    </message>
     <message>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="201"/>
         <source>Playlist has been saved</source>
@@ -1442,15 +1367,11 @@
     <message>
         <location filename="../plasma/qml/PlayQueuePage.qml" line="210"/>
         <source>Remove selected items from play queue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vill du ta bort markerade objekt från uppspelningskön?</translation>
     </message>
-    <message>
-        <source>Remove all items from play queue?</source>
-        <translation type="vanished">Vill du ta bort alla objekt från uppspelningskön?</translation>
-    </message>
-    <message>
-        <source>Save items to playlist file</source>
-        <translation type="vanished">Spara objekten i en spelningslista</translation>
+    <message numerus="yes">
+        <source>Remove %n item(s) from play queue?</source>
+        <translation type="vanished"><numerusform>Vill du ta bort %n objekt från uppspelningskön?</numerusform><numerusform>Vill du ta bort %n objekt från uppspelningskön?</numerusform></translation>
     </message>
 </context>
 <context>
@@ -1459,29 +1380,29 @@
         <location filename="../sfos/qml/PlaybackDialog.qml" line="41"/>
         <location filename="../plasma/qml/PlaybackDialog.qml" line="23"/>
         <source>Add audio capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till ljudinspelning</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlaybackDialog.qml" line="47"/>
         <location filename="../plasma/qml/PlaybackDialog.qml" line="42"/>
         <source>Could not find any audio source to capture.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunde inte hitta någon ljudkälla att spela in.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlaybackDialog.qml" line="55"/>
         <source>Mute audio source</source>
-        <translation type="unfinished"></translation>
+        <translation>Tysta ljudkälla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlaybackDialog.qml" line="65"/>
         <location filename="../plasma/qml/PlaybackDialog.qml" line="65"/>
         <source>Volume boost</source>
-        <translation type="unfinished">Volymförstärkning</translation>
+        <translation>Volymförstärkning</translation>
     </message>
     <message>
         <location filename="../plasma/qml/PlaybackDialog.qml" line="52"/>
         <source>Audio source</source>
-        <translation type="unfinished">Ljudkälla</translation>
+        <translation>Ljudkälla</translation>
     </message>
 </context>
 <context>
@@ -1566,10 +1487,7 @@
     <message numerus="yes">
         <location filename="../sfos/qml/PlaylistPage.qml" line="78"/>
         <source>%n track(s)</source>
-        <translation>
-            <numerusform>%n spår</numerusform>
-            <numerusform>%n spår</numerusform>
-        </translation>
+        <translation><numerusform>%n spår</numerusform><numerusform>%n spår</numerusform></translation>
     </message>
     <message>
         <location filename="../sfos/qml/PlaylistPage.qml" line="86"/>
@@ -1597,49 +1515,46 @@
     <message>
         <location filename="../sfos/qml/RadionetPage.qml" line="78"/>
         <source>Radio stations</source>
-        <translation type="unfinished">Radiostationer</translation>
+        <translation>Radiostationer</translation>
     </message>
     <message>
         <location filename="../sfos/qml/RadionetPage.qml" line="91"/>
         <location filename="../plasma/qml/RadionetPage.qml" line="45"/>
         <source>Unselect all</source>
-        <translation type="unfinished">Avmarkera alla</translation>
+        <translation>Avmarkera alla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/RadionetPage.qml" line="92"/>
         <location filename="../plasma/qml/RadionetPage.qml" line="45"/>
         <source>Select all</source>
-        <translation type="unfinished">Markera alla</translation>
+        <translation>Markera alla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/RadionetPage.qml" line="133"/>
         <location filename="../plasma/qml/RadionetPage.qml" line="153"/>
         <source>Type the words to search</source>
-        <translation type="unfinished">Skriv något att söka efter</translation>
+        <translation>Skriv något att söka efter</translation>
     </message>
     <message>
         <location filename="../sfos/qml/RadionetPage.qml" line="133"/>
         <location filename="../plasma/qml/RadionetPage.qml" line="153"/>
         <source>No stations</source>
-        <translation type="unfinished">Inga stationer</translation>
+        <translation>Inga stationer</translation>
     </message>
     <message numerus="yes">
         <location filename="../plasma/qml/RadionetPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation type="unfinished">
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../plasma/qml/RadionetPage.qml" line="34"/>
         <source>Add selected</source>
-        <translation type="unfinished">Lägg till markerat</translation>
+        <translation>Lägg till markerat</translation>
     </message>
     <message>
         <location filename="../plasma/qml/RadionetPage.qml" line="121"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla markerat</translation>
     </message>
 </context>
 <context>
@@ -1664,10 +1579,7 @@
         <location filename="../sfos/qml/RecPage.qml" line="72"/>
         <location filename="../sfos/qml/RecPage.qml" line="132"/>
         <source>Deleting %n item(s)</source>
-        <translation>
-            <numerusform>Tar bort ett objekt</numerusform>
-            <numerusform>Tar bort %n objekt</numerusform>
-        </translation>
+        <translation><numerusform>Tar bort ett objekt</numerusform><numerusform>Tar bort %n objekt</numerusform></translation>
     </message>
     <message>
         <location filename="../sfos/qml/RecPage.qml" line="80"/>
@@ -1728,18 +1640,12 @@
     <message numerus="yes">
         <location filename="../plasma/qml/RecPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../plasma/qml/RecPage.qml" line="73"/>
         <source>Delete %n recording(s)?</source>
-        <translation>
-            <numerusform>Vill du ta bort %n inspelning?</numerusform>
-            <numerusform>Vill du ta bort %n inspelningar?</numerusform>
-        </translation>
+        <translation><numerusform>Vill du ta bort %n inspelning?</numerusform><numerusform>Vill du ta bort %n inspelningar?</numerusform></translation>
     </message>
     <message>
         <location filename="../plasma/qml/RecPage.qml" line="93"/>
@@ -1794,76 +1700,76 @@
         <location filename="../sfos/qml/ScreenDialog.qml" line="41"/>
         <location filename="../plasma/qml/ScreenDialog.qml" line="23"/>
         <source>Add screen capture</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till skärminspelning</translation>
     </message>
     <message>
         <location filename="../sfos/qml/ScreenDialog.qml" line="53"/>
         <location filename="../plasma/qml/ScreenDialog.qml" line="49"/>
         <source>Could not find any audio source to capture.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunde inte hitta någon ljudkälla att spela in.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/ScreenDialog.qml" line="78"/>
         <location filename="../plasma/qml/ScreenDialog.qml" line="72"/>
         <source>Video orientation</source>
-        <translation type="unfinished"></translation>
+        <translation>Videoorientering</translation>
     </message>
     <message>
         <location filename="../sfos/qml/ScreenDialog.qml" line="116"/>
         <location filename="../plasma/qml/ScreenDialog.qml" line="110"/>
         <source>Capture with audio</source>
-        <translation type="unfinished"></translation>
+        <translation>Spela in med ljud</translation>
     </message>
     <message>
         <location filename="../sfos/qml/ScreenDialog.qml" line="130"/>
         <source>Mute audio source</source>
-        <translation type="unfinished"></translation>
+        <translation>Tysta ljudkälla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/ScreenDialog.qml" line="142"/>
         <location filename="../plasma/qml/ScreenDialog.qml" line="136"/>
         <source>Volume boost</source>
-        <translation type="unfinished">Volymförstärkning</translation>
+        <translation>Volymförstärkning</translation>
     </message>
     <message>
         <location filename="../plasma/qml/ScreenDialog.qml" line="42"/>
         <source>Could not find any screen to capture.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunde inte hitta någon skärm att spela in.</translation>
     </message>
     <message>
         <location filename="../plasma/qml/ScreenDialog.qml" line="59"/>
         <source>Video source</source>
-        <translation type="unfinished"></translation>
+        <translation>Videokälla</translation>
     </message>
     <message>
         <location filename="../plasma/qml/ScreenDialog.qml" line="85"/>
         <source>Auto</source>
-        <translation type="unfinished">Auto</translation>
+        <translation>Auto</translation>
     </message>
     <message>
         <location filename="../plasma/qml/ScreenDialog.qml" line="86"/>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Stående</translation>
     </message>
     <message>
         <location filename="../plasma/qml/ScreenDialog.qml" line="87"/>
         <source>Inverted portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Omvänt stående</translation>
     </message>
     <message>
         <location filename="../plasma/qml/ScreenDialog.qml" line="88"/>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Liggande</translation>
     </message>
     <message>
         <location filename="../plasma/qml/ScreenDialog.qml" line="89"/>
         <source>Inverted landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Omvänt liggande</translation>
     </message>
     <message>
         <location filename="../plasma/qml/ScreenDialog.qml" line="121"/>
         <source>Audio source</source>
-        <translation type="unfinished">Ljudkälla</translation>
+        <translation>Ljudkälla</translation>
     </message>
 </context>
 <context>
@@ -1871,10 +1777,7 @@
     <message numerus="yes">
         <location filename="../sfos/qml/SearchDialogHeader.qml" line="43"/>
         <source>%n selected</source>
-        <translation>
-            <numerusform>%n markerad</numerusform>
-            <numerusform>%n markerade</numerusform>
-        </translation>
+        <translation><numerusform>%n markerad</numerusform><numerusform>%n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../sfos/qml/SearchDialogHeader.qml" line="72"/>
@@ -1892,52 +1795,52 @@
     <message>
         <location filename="../src/settings.cpp" line="999"/>
         <source>Built-in microphone</source>
-        <translation type="unfinished"></translation>
+        <translation>Inbyggd mikrofon</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="1000"/>
         <source>Audio capture</source>
-        <translation type="unfinished">Ljudinspelning</translation>
+        <translation>Ljudinspelning</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="1001"/>
         <source>Screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Skärm</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="1003"/>
         <source>Back camera</source>
-        <translation type="unfinished"></translation>
+        <translation>Bakre kamera</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="1005"/>
         <source>Front camera</source>
-        <translation type="unfinished"></translation>
+        <translation>Främre kamera</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="1183"/>
         <source>Auto</source>
-        <translation type="unfinished">Auto</translation>
+        <translation>Auto</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="1185"/>
         <source>Portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Stående</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="1187"/>
         <source>Inverted portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>Omvänt stående</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="1189"/>
         <source>Landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Liggande</translation>
     </message>
     <message>
         <location filename="../src/settings.cpp" line="1191"/>
         <source>Inverted landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Omvänt liggande</translation>
     </message>
 </context>
 <context>
@@ -1946,10 +1849,6 @@
         <location filename="../sfos/qml/SettingsPage.qml" line="30"/>
         <source>Settings</source>
         <translation>Inställningar</translation>
-    </message>
-    <message>
-        <source>Experiments</source>
-        <translation type="vanished">Experiment</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="59"/>
@@ -1969,7 +1868,7 @@
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="36"/>
         <source>Restart is required for the changes to take effect.</source>
-        <translation type="unfinished"></translation>
+        <translation>Omstart krävs för att ändringar skall tillämpas.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="43"/>
@@ -1977,8 +1876,19 @@
         <translation>Vid aktivering är objekten i uppspelningskön tillgängliga för UPnP-enheter i ditt lokala nätverk.</translation>
     </message>
     <message>
-        <source>Microphone sensitivity</source>
-        <translation type="vanished">Mikrofonkänslighet</translation>
+        <location filename="../sfos/qml/SettingsPage.qml" line="85"/>
+        <source>Formats</source>
+        <translation>Format</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="89"/>
+        <source>Live video</source>
+        <translation>Live-video</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="114"/>
+        <source>Live audio</source>
+        <translation>Live-ljud</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="161"/>
@@ -1994,10 +1904,6 @@
         <location filename="../sfos/qml/SettingsPage.qml" line="183"/>
         <source>Set default</source>
         <translation>Ange standard</translation>
-    </message>
-    <message>
-        <source>Screen casting feature. Capturing video is still in beta stage, so the quality may be not of the best.</source>
-        <translation type="vanished">Skärminspelningsfunktion. Videoinspelning är fortfarande i betastadiet, så kvaliteten kanske inte är den bästa.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="194"/>
@@ -2026,12 +1932,14 @@
         <translation>Ta bort cache</translation>
     </message>
     <message>
-        <source>Screen capture encoder</source>
-        <translation type="vanished">Skärminspelningskodare</translation>
+        <location filename="../sfos/qml/SettingsPage.qml" line="348"/>
+        <source>Start/stop local MPD and upmpdcli services</source>
+        <translation>Starta/Stoppa lokala MPD- och upmpdcli-tjänster</translation>
     </message>
     <message>
-        <source>Screen capture framerate</source>
-        <translation type="vanished">Bildhastighet för skärminspelning</translation>
+        <location filename="../sfos/qml/SettingsPage.qml" line="349"/>
+        <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
+        <translation>När MPD och upmpdcli är installerade kommer de att startas tillsammans med Jupii och stoppas vid avslut.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="415"/>
@@ -2049,72 +1957,16 @@
         <translation>Föredraget nätverksgränssnitt</translation>
     </message>
     <message>
-        <source>Screen capture</source>
-        <translation type="vanished">Skärminspelning</translation>
-    </message>
-    <message>
-        <source>Disabled</source>
-        <translation type="vanished">Inaktiverad</translation>
-    </message>
-    <message>
-        <source>Enabled</source>
-        <translation type="vanished">Aktiverad</translation>
-    </message>
-    <message>
-        <source>Enabled with audio</source>
-        <translation type="vanished">Aktiverad med ljud</translation>
-    </message>
-    <message>
-        <source>Force screen 16:9 aspect ratio</source>
-        <translation type="vanished">Framtvinga bildförhållande 16:9</translation>
-    </message>
-    <message>
-        <source>Don&apos;t force</source>
-        <translation type="vanished">Framtvinga inte</translation>
-    </message>
-    <message>
-        <source>Scale</source>
-        <translation type="vanished">Skala</translation>
-    </message>
-    <message>
-        <source>Crop</source>
-        <translation type="vanished">Beskär</translation>
-    </message>
-    <message>
-        <source>Screen capture quality</source>
-        <translation type="vanished">Skärminspelningskvalitet</translation>
-    </message>
-    <message>
-        <source>Stream relaying</source>
-        <translation type="vanished">Strömvidarebefordran</translation>
-    </message>
-    <message>
-        <source>Internet streams are relayed to UPnP device through %1. Recommended option is &apos;Always&apos; because it provides best compatibility. When relaying is disabled (&apos;Never&apos; option), Icecast titles and Stream recorder are not available.</source>
-        <translation type="vanished">Internetströmmar reläas till UPnP-enhet genom %1. Rekommenderat alternativ är &quot;Alltid&quot;, eftersom det tillhandahåller bäst kompatibilitet. När vidarebefordran avaktiverats (alternativet &quot;Aldrig&quot;), är Icecast-titlar och ströminspelning inte tillgängligt.</translation>
-    </message>
-    <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="211"/>
         <location filename="../sfos/qml/SettingsPage.qml" line="242"/>
         <source>Always</source>
         <translation>Alltid</translation>
     </message>
     <message>
-        <source>Only Icecast</source>
-        <translation type="vanished">Endast Icecast</translation>
-    </message>
-    <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="212"/>
         <location filename="../sfos/qml/SettingsPage.qml" line="243"/>
         <source>Never</source>
         <translation>Aldrig</translation>
-    </message>
-    <message>
-        <source>Block MP4v2 audio streams</source>
-        <translation type="vanished">Blockera MP4v2 ljudströmmar</translation>
-    </message>
-    <message>
-        <source>Some UPnP devices don&apos;t support audio stream in MP4 version 2 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to MP4v1. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
-        <translation type="vanished">Vissa UPnP-enheter stödjer inte ljudström i MP4 version 2-format. Den här typen av ström kan till och med hänga en enhet. För att lösa detta problem försöker Jupii koda om strömmen till MP4v1. När omkodningen misslyckas och det här alternativet är aktiverat spelas inte objektet alls.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="334"/>
@@ -2139,47 +1991,37 @@
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="52"/>
         <source>Hardware keys</source>
-        <translation type="unfinished"></translation>
+        <translation>Hårdvarunycklar</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="110"/>
         <source>Change if you observe problems with video playback in Camera or Screen capture.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ändra om du får problem med videouppspelning vid kamera- eller skärminspelning.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="139"/>
         <source>Change if you observe problems with audio playback in Microphone or Audio capture.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ändra om du får problem med ljuduppspelning vid mikrofon- eller ljudinspelning.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="144"/>
         <source>Recorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Inspelare</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="198"/>
         <source>Cache remote content</source>
-        <translation type="unfinished"></translation>
+        <translation>Cache-lagra fjärrinnehåll</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="320"/>
         <source>Block fragmented MP4 audio streams</source>
-        <translation type="unfinished"></translation>
+        <translation>Blockera MP4-ljudströmmar</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="321"/>
         <source>Some UPnP devices don&apos;t support audio stream in fragmented MP4 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to standard MP4. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="348"/>
-        <source>Start/stop local MPD and upmpdcli services</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="349"/>
-        <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vissa UPnP-enheter stödjer inte ljudström i fragmenterat MP4-format. Den här typen av ström kan till och med hänga en enhet. För att lösa detta problem försöker Jupii koda om strömmen till standard-MP4. När omkodning misslyckas och det här alternativet är aktiverat spelas objektet inte alls.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="403"/>
@@ -2190,21 +2032,6 @@
         <location filename="../sfos/qml/SettingsPage.qml" line="402"/>
         <source>Enable logging</source>
         <translation>Aktivera loggning</translation>
-    </message>
-    <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="85"/>
-        <source>Formats</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="89"/>
-        <source>Live video</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="114"/>
-        <source>Live audio</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="425"/>
@@ -2279,10 +2106,7 @@
     <message numerus="yes">
         <location filename="../plasma/qml/SomafmPage.qml" line="33"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../plasma/qml/SomafmPage.qml" line="110"/>
@@ -2301,10 +2125,7 @@
     <message numerus="yes">
         <location filename="../plasma/qml/SoundcloudPage.qml" line="43"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../plasma/qml/SoundcloudPage.qml" line="43"/>
@@ -2320,7 +2141,7 @@
     <message>
         <location filename="../sfos/qml/SoundcloudPage.qml" line="110"/>
         <source>Open website</source>
-        <translation type="unfinished"></translation>
+        <translation>Öppna webbsidan</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SoundcloudPage.qml" line="117"/>
@@ -2445,10 +2266,7 @@
     <message numerus="yes">
         <location filename="../plasma/qml/TuneinPage.qml" line="34"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../plasma/qml/TuneinPage.qml" line="106"/>
@@ -2580,10 +2398,7 @@
     <message numerus="yes">
         <location filename="../plasma/qml/UpnpCDirPage.qml" line="32"/>
         <source>Add %n selected</source>
-        <translation>
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
+        <translation><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
     <message>
         <location filename="../plasma/qml/UpnpCDirPage.qml" line="72"/>
@@ -2601,37 +2416,37 @@
     <message>
         <location filename="../plasma/qml/UrlDialog.qml" line="25"/>
         <source>Add URL</source>
-        <translation type="unfinished">Lägg till URL</translation>
+        <translation>Lägg till URL</translation>
     </message>
     <message>
         <location filename="../plasma/qml/UrlDialog.qml" line="53"/>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="unfinished">När URL inte pekar direkt på ljud-, video- eller bildfil, identifieras medieinnehåll med youtube-dl.</translation>
+        <translation>När URL inte pekar direkt på ljud-, video- eller bildfil, identifieras medieinnehåll med youtube-dl.</translation>
     </message>
     <message>
         <location filename="../plasma/qml/UrlDialog.qml" line="59"/>
         <source>URL</source>
-        <translation type="unfinished">URL</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../plasma/qml/UrlDialog.qml" line="61"/>
         <source>Enter URL</source>
-        <translation type="unfinished">Ange URL</translation>
+        <translation>Ange URL</translation>
     </message>
     <message>
         <location filename="../plasma/qml/UrlDialog.qml" line="73"/>
         <source>Name</source>
-        <translation type="unfinished">Namn</translation>
+        <translation>Namn</translation>
     </message>
     <message>
         <location filename="../plasma/qml/UrlDialog.qml" line="74"/>
         <source>Enter Name (optional)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ange namn (valfritt)</translation>
     </message>
     <message>
         <location filename="../plasma/qml/UrlDialog.qml" line="86"/>
         <source>Add only audio stream</source>
-        <translation type="unfinished">Lägg endast till ljudström</translation>
+        <translation>Lägg endast till ljudström</translation>
     </message>
 </context>
 <context>
@@ -2709,20 +2524,9 @@
         <source>No items</source>
         <translation>Inga objekt</translation>
     </message>
-    <message>
-        <source>Home</source>
-        <translation type="obsolete">Hem</translation>
-    </message>
     <message numerus="yes">
         <source>Add %n selected</source>
-        <translation type="obsolete">
-            <numerusform>Lägg till %n markerad</numerusform>
-            <numerusform>Lägg till %n markerade</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>Add selected</source>
-        <translation type="obsolete">Lägg till markerat</translation>
+        <translation type="vanished"><numerusform>Lägg till %n markerad</numerusform><numerusform>Lägg till %n markerade</numerusform></translation>
     </message>
 </context>
 <context>
@@ -2785,13 +2589,9 @@
         <translation>Enheter</translation>
     </message>
     <message>
-        <source>Add items</source>
-        <translation type="vanished">Lägg till objekt</translation>
-    </message>
-    <message>
         <location filename="../plasma/qml/main.qml" line="53"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till</translation>
     </message>
     <message>
         <location filename="../plasma/qml/main.qml" line="63"/>
