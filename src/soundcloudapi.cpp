@@ -149,6 +149,14 @@ QString SoundcloudApi::extractUsernameFromTitle(const QString &text) {
     return {};
 }
 
+QString SoundcloudApi::extractUsernameFromPage(const QString &text) {
+    static QRegExp rx("^.+\"username\":\"([^\"]+)\",.+$", Qt::CaseSensitive);
+    if (rx.indexIn(text) != -1) {
+        return rx.cap(1);
+    }
+    return {};
+}
+
 void SoundcloudApi::addClientId(QUrl *url) {
     QUrlQuery query{*url};
     if (query.hasQueryItem(QStringLiteral("client_id")))
@@ -514,8 +522,18 @@ SoundcloudApi::User SoundcloudApi::user(const QUrl &url) {
 
     this->user(makeUserStreamUrl(userId), &user);
 
-    user.name = extractUsernameFromTitle(gumbo::node_text(
-        gumbo::search_for_tag_one(output->root, GUMBO_TAG_TITLE)));
+    user.name = [&output] {
+        auto tags = gumbo::search_for_tag(output->root, GUMBO_TAG_SCRIPT);
+        for (const auto &tag : tags) {
+            auto content = gumbo::node_text(tag);
+            if (!content.isEmpty()) {
+                auto id = extractUsernameFromPage(content);
+                if (!id.isEmpty()) return id;
+            }
+        }
+        return QString{};
+    }();
+
     user.webUrl = url;
 
     return user;

@@ -128,6 +128,7 @@ class SoundcloudApi : public QObject {
     static QString extractUserId(const QString &text);
     static QString extractPlaylistId(const QString &text);
     static QString extractUsernameFromTitle(const QString &text);
+    static QString extractUsernameFromPage(const QString &text);
     static bool mediaOk(const QJsonArray &media);
     QJsonArray extractItems(const QUrl &url) const;
     static void addClientId(QUrl *url);
