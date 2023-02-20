@@ -107,6 +107,7 @@ QList<ListItem *> BcModel::makeNotableItems(bool more) {
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     setArtistName({});
+    setAlbumTitle({});
 
     items.reserve(static_cast<int>(results.size()));
     for (const auto &result : results) {
@@ -175,6 +176,7 @@ QList<ListItem *> BcModel::makeAlbumItems() {
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     setAlbumTitle(album.title);
+    setArtistName(album.artist);
 
     items.reserve(static_cast<int>(album.tracks.size()));
     for (const auto &track : album.tracks) {
@@ -200,6 +202,7 @@ QList<ListItem *> BcModel::makeArtistItems() {
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     setArtistName(artist.name);
+    setAlbumTitle({});
 
     items.reserve(static_cast<int>(artist.albums.size()));
     for (const auto &album : artist.albums) {

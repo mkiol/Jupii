@@ -126,6 +126,18 @@ Dialog {
                         itemModel.setAllSelected(true)
                 }
             }
+
+             MenuLabel {
+                 visible: albumMode || (artistMode && !notableMode)
+                 text: {
+                     var label = itemModel.artistName
+                     if (itemModel.albumTitle.length !== 0) {
+                         if (label.length !== 0) label += " — " + itemModel.albumTitle
+                         else label += itemModel.albumTitle
+                     }
+                     return label;
+                 }
+             }
         }
 
         delegate: DoubleListItem {

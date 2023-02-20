@@ -108,6 +108,7 @@ QList<ListItem *> SoundcloudModel::makeFeaturedItems(bool more) {
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     setArtistName({});
+    setAlbumTitle({});
 
     items.reserve(static_cast<int>(results.size()));
     for (const auto &result : results) {
@@ -173,6 +174,7 @@ QList<ListItem *> SoundcloudModel::makeAlbumItems() {
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
     setAlbumTitle(album.title);
+    setArtistName(album.artist);
 
     items.reserve(static_cast<int>(album.tracks.size()));
     for (const auto &track : album.tracks) {
@@ -194,6 +196,7 @@ QList<ListItem *> SoundcloudModel::makeArtistItems() {
     if (!mLastArtist || mLastArtist->webUrl != mArtistUrl) {
         mLastArtist = SoundcloudApi{}.user(mArtistUrl);
         setArtistName(mLastArtist->name);
+        setAlbumTitle({});
     }
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
