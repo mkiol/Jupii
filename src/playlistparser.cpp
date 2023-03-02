@@ -116,8 +116,15 @@ std::optional<std::variant<HlsMasterPlaylist, HlsMediaPlaylist>> parseHls(
                     if (sp.size() < 2) continue;
                     if (sp.at(0) == QStringLiteral("BANDWIDTH"))
                         item.bandwidth = sp.at(1).toInt();
-                    else if (sp.at(0) == QStringLiteral("CODECS"))
+                    else if (sp.at(0) == QStringLiteral("CODECS")) {
                         item.codecs = sp.at(1);
+                        if (item.codecs.size() > 1 &&
+                            item.codecs.startsWith('"') &&
+                            item.codecs.endsWith('"')) {
+                            item.codecs =
+                                item.codecs.mid(1, item.codecs.size() - 2);
+                        }
+                    }
                 }
             } else if (item.bandwidth > 0) {
                 auto url = Utils::urlFromText(line, context);
