@@ -81,7 +81,7 @@ QList<ListItem*> TrackModel::makeItems() {
     QString query;
     TrackerTasks task = TaskUnknown;
 
-    auto tracker = Tracker::instance();
+    auto* tracker = Tracker::instance();
     const QString aattr = tracker->tracker3() ? "nmm:artist" : "nmm:performer";
 
     if (!m_albumId.isEmpty()) {
@@ -94,16 +94,16 @@ QList<ListItem*> TrackModel::makeItems() {
         query = queryByPlaylistTemplate.arg(m_playlistId);
         task = TaskPlaylist;
     } else {
-        qWarning() << "Id not defined";
+        qWarning() << "id not defined";
     }
 
     if (!query.isEmpty()) {
         if (tracker->query(query, false)) {
             auto result = tracker->getResult();
             return processTrackerReply(task, result.first, result.second);
-        } else {
-            qWarning() << "Tracker query error";
         }
+
+        qWarning() << "tracker query error";
     }
 
     return {};
@@ -115,13 +115,15 @@ QList<ListItem*> TrackModel::processTrackerReplyForAlbumArtist(
 
     while (cursor.next()) {
         auto type = ContentServer::typeFromMime(cursor.value(7).toString());
-        items << new TrackItem(
-            cursor.value(0).toString(),  // id
-            cursor.value(1).toString(), cursor.value(2).toString(),
-            cursor.value(3).toString(),
-            QUrl(cursor.value(4).toString()),  // url
-            QUrl(),                            // icon
-            type, cursor.value(5).toInt(), cursor.value(6).toInt());
+        items.push_back(new TrackItem{/*id=*/cursor.value(0).toString(),
+                                      /*title=*/cursor.value(1).toString(),
+                                      /*artist=*/cursor.value(2).toString(),
+                                      /*album=*/cursor.value(3).toString(),
+                                      /*url=*/QUrl{cursor.value(4).toString()},
+                                      /*icon=*/{},
+                                      /*type=*/type,
+                                      /*number=*/cursor.value(5).toInt(),
+                                      /*length=*/cursor.value(6).toInt()});
     }
 
     return items;
@@ -170,16 +172,17 @@ QList<ListItem*> TrackModel::makeTrackItemsFromPlaylistFile(
     foreach (const auto& item, p->items) {
         auto title = item.title.isEmpty() ? item.url.fileName() : item.title;
         if (filter.isEmpty() || title.contains(filter, Qt::CaseInsensitive)) {
-            items << new TrackItem{item.url.toString(),                // id
-                                   title,                              // title
-                                   {},                                 // artist
-                                   {},                                 // album
-                                   item.url,                           // url
-                                   {},                                 // icon
-                                   ContentServer::Type::Type_Unknown,  // type
-                                   0,                                  // number
-                                   0,                                  // length
-                                   ContentServer::itemTypeFromUrl(item.url)};
+            items.push_back(new TrackItem{
+                /*id=*/item.url.toString(),
+                /*title=*/title,
+                /*artist=*/{},
+                /*album=*/{},
+                /*url=*/item.url,
+                /*icon=*/{},
+                /*type=*/ContentServer::Type::Type_Unknown,
+                /*number=*/0,
+                /*length=*/0,
+                /*itemType=*/ContentServer::itemTypeFromUrl(item.url)});
         }
     }
 
@@ -191,7 +194,7 @@ QList<ListItem*> TrackModel::processTrackerReplyForPlaylist(
     QString entries;
     while (cursor.next()) {
         if (cursor.value(0).isNull()) {
-            qWarning() << "Tracker reply for playlist's entries is null";
+            qWarning() << "tracker reply for playlist's entries is null";
             if (const auto url = cursor.value(1).toUrl(); url.isLocalFile()) {
                 return makeTrackItemsFromPlaylistFile(url.toLocalFile());
             }
@@ -205,15 +208,15 @@ QList<ListItem*> TrackModel::processTrackerReplyForPlaylist(
     }
 
     if (!entries.isEmpty()) {
-        auto tracker = Tracker::instance();
+        auto* tracker = Tracker::instance();
         auto query = queryByEntriesTemplate.arg(entries);
         if (tracker->query(query, false)) {
             auto result = tracker->getResult();
             return processTrackerReply(TaskEntries, result.first,
                                        result.second);
-        } else {
-            qWarning() << "Tracker query error";
         }
+
+        qWarning() << "tracker query error";
     }
 
     return {};
@@ -243,9 +246,9 @@ QList<ListItem*> TrackModel::processTrackerReplyForEntries(
         if (tracker->query(query, false)) {
             auto result = tracker->getResult();
             return processTrackerReply(TaskUrls, result.first, result.second);
-        } else {
-            qWarning() << "Tracker query error";
         }
+
+        qWarning() << "tracker query error";
     }
 
     return makeTrackItemsFromTrackData();
@@ -280,16 +283,17 @@ QList<ListItem*> TrackModel::makeTrackItemsFromTrackData() {
                 : data.title;
         if (filter.isEmpty() || title.contains(filter, Qt::CaseInsensitive) ||
             data.author.contains(filter, Qt::CaseInsensitive)) {
-            items << new TrackItem(id.toString(),  // id
-                                   title,          // title-
-                                   data.author,    // artist
-                                   QString(),      // album
-                                   id,             // url
-                                   data.icon,      // icon
-                                   data.type,      // type
-                                   0,              // number
-                                   0,              // length
-                                   ContentServer::itemTypeFromUrl(id));
+            items.push_back(
+                new TrackItem{/*id=*/id.toString(),
+                              /*title=*/title,
+                              /*artist=*/data.author,
+                              /*album=*/{},
+                              /*url=*/id,
+                              /*icon=*/data.icon,
+                              /*type=*/data.type,
+                              /*number=*/0,
+                              /*length=*/0,
+                              /*itemType=*/ContentServer::itemTypeFromUrl(id)});
         }
     }
 
@@ -322,17 +326,15 @@ QList<ListItem*> TrackModel::processTrackerReply(TrackerTasks task,
     TrackerCursor cursor(varNames, data);
     int n = cursor.columnCount();
 
-    if (task == TaskPlaylist && n == 2) {
+    if (task == TaskPlaylist && n == 2)
         return processTrackerReplyForPlaylist(cursor);
-    } else if (task == TaskEntries && n == 1) {
+    if (task == TaskEntries && n == 1)
         return processTrackerReplyForEntries(cursor);
-    } else if (task == TaskUrls && n == 5) {
-        return processTrackerReplyForUrls(cursor);
-    } else if ((task == TaskAlbum || task == TaskArtist) && n == 8) {
+    if (task == TaskUrls && n == 5) return processTrackerReplyForUrls(cursor);
+    if ((task == TaskAlbum || task == TaskArtist) && n == 8)
         return processTrackerReplyForAlbumArtist(cursor);
-    } else {
-        qWarning() << "Tracker reply is incorrect";
-    }
+
+    qWarning() << "tracker reply is incorrect";
 
     return {};
 }
@@ -341,7 +343,7 @@ QVariantList TrackModel::selectedItems() {
     QVariantList list;
 
     foreach (const auto item, m_list) {
-        const auto track = qobject_cast<TrackItem*>(item);
+        const auto* track = qobject_cast<TrackItem*>(item);
         if (track->selected()) {
             QVariantMap map;
             map.insert("url", QVariant(track->url()));
