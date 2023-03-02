@@ -37,6 +37,7 @@ option(build_taglib "download taglib, build and link statically" ON)
 option(build_pybind11 "download pybind11, build and link statically" ON)
 option(build_libarchive "download libarchive, build and link statically" ON)
 option(build_pymodules "make python modules archive" ON)
+option(build_catch2 "download catch2, build and link statically" ON)
 
 if(${with_plasma} AND ${with_sfos})
     message(FATAL_ERROR "options with_plasma and with_sfos cannot be set together")
@@ -47,7 +48,7 @@ if(NOT ${with_plasma} AND NOT ${with_sfos})
 endif()
 
 if(with_nvenc)
-    message(INFO "option with_nvenc is supported only on x86/x86_64 architectures")
+    message("option with_nvenc is supported only on x86/x86_64 architectures")
 endif()
 
 if(with_plasma)
@@ -98,6 +99,8 @@ set(upnpp_source_url "https://www.lesbonscomptes.com/upmpdcli/downloads/libupnpp
 set(upnpp_checksum "31b2bd7cb9b4d6f4306046c07960c029")
 set(libarchive_source_url "https://libarchive.org/downloads/libarchive-3.6.2.tar.gz")
 set(libarchive_checksum "b5b8efa8cba29396816d0dd5f61f3de3")
+set(catch2_source_url "https://github.com/catchorg/Catch2/archive/refs/tags/v3.3.2.tar.gz")
+set(catch2_checksum "6a15aa49dbdee13f279b73cab16ae203")
 
 set(info_id "jupii")
 set(info_binary_id ${info_id})
@@ -137,156 +140,151 @@ set(flatpak_dir ${PROJECT_SOURCE_DIR}/flatpak)
 set(translations_dir ${PROJECT_SOURCE_DIR}/translations)
 set(tools_dir ${PROJECT_SOURCE_DIR}/tools)
 set(patches_dir ${PROJECT_SOURCE_DIR}/patches)
+set(tests_dir ${PROJECT_SOURCE_DIR}/tests)
+set(sources_dir ${PROJECT_SOURCE_DIR}/src)
 
 # sources
 
 set(sources
-    src/albummodel.cpp
-    src/albummodel.h
-    src/artistmodel.cpp
-    src/artistmodel.h
-    src/avtransport.cpp
-    src/avtransport.h
-    src/bcapi.cpp
-    src/bcapi.h
-    src/bcmodel.cpp
-    src/bcmodel.h
-    src/cdirmodel.cpp
-    src/cdirmodel.h
-    src/connectivitydetector.cpp
-    src/connectivitydetector.h
-    src/contentdirectory.cpp
-    src/contentdirectory.h
-    src/contentserver.cpp
-    src/contentserver.h
-    src/contentserverworker.cpp
-    src/contentserverworker.h
-    src/dbusapp.cpp
-    src/dbusapp.h
-    src/dbus_jupii_adaptor.cpp
-    src/dbus_jupii_adaptor.h
-    src/dbus_notifications_inf.cpp
-    src/dbus_notifications_inf.h
-    src/dbus_tracker_inf.cpp
-    src/dbus_tracker_inf.h
-    src/device.cpp
-    src/device.h
-    src/deviceinfo.cpp
-    src/deviceinfo.h
-    src/devicemodel.cpp
-    src/devicemodel.h
-    src/directory.cpp
-    src/directory.h
-    src/dirmodel.cpp
-    src/dirmodel.h
-    src/dnscontentdeterminator.cpp
-    src/dnscontentdeterminator.h
-    src/downloader.cpp
-    src/downloader.h
-    src/exif.cpp
-    src/exif.h
-    src/filedownloader.cpp
-    src/filedownloader.h
-    src/filemetadata.cpp
-    src/filemetadata.h
-    src/fosdemmodel.cpp
-    src/fosdemmodel.h
-    src/frontiersiliconxc.cpp
-    src/frontiersiliconxc.h
-    src/gpoddermodel.cpp
-    src/gpoddermodel.h
-    src/gumbotools.cpp
-    src/gumbotools.h
-    src/icecastmodel.cpp
-    src/icecastmodel.h
-    src/iconprovider.cpp
-    src/iconprovider.h
-    src/itemmodel.cpp
-    src/itemmodel.h
-    src/listmodel.cpp
-    src/listmodel.h
-    src/main.cpp
-    src/notifications.cpp
-    src/notifications.h
-    src/playlistfilemodel.cpp
-    src/playlistfilemodel.h
-    src/playlistmodel.cpp
-    src/playlistmodel.h
-    src/playlistparser.cpp
-    src/playlistparser.h
-    src/recmodel.cpp
-    src/recmodel.h
-    src/renderingcontrol.cpp
-    src/renderingcontrol.h
-    src/service.cpp
-    src/service.h
-    src/services.cpp
-    src/services.h
-    src/settings.cpp
-    src/settings.h
-    src/singleton.h
-    src/somafmmodel.cpp
-    src/somafmmodel.h
-    src/soundcloudapi.cpp
-    src/soundcloudapi.h
-    src/soundcloudmodel.cpp
-    src/soundcloudmodel.h
-    src/taskexecutor.cpp
-    src/taskexecutor.h
-    src/thumb.cpp
-    src/thumb.h
-    src/tracker.cpp
-    src/trackercursor.cpp
-    src/trackercursor.h
-    src/tracker.h
-    src/trackmodel.cpp
-    src/trackmodel.h
-    src/transcoder.cpp
-    src/transcoder.h
-    src/tuneinmodel.cpp
-    src/tuneinmodel.h
-    src/utils.cpp
-    src/utils.h
-    src/xc.cpp
-    src/xc.h
-    src/yamahaxc.cpp
-    src/yamahaxc.h
-    src/ytdlapi.cpp
-    src/ytdlapi.h
-    src/ytmodel.cpp
-    src/ytmodel.h
-    src/ytmusic.cpp
-    src/ytmusic.h
-    src/contentdirectoryservice.cpp
-    src/contentdirectoryservice.h
-    src/connectionmanagerservice.cpp
-    src/connectionmanagerservice.h
-    src/logger.cpp
-    src/logger.hpp
-    src/qtlogger.cpp
-    src/qtlogger.hpp
-    src/avlogger.cpp
-    src/avlogger.hpp
-    src/databuffer.cpp
-    src/databuffer.hpp
-    src/caster.cpp
-    src/caster.hpp
-    src/fftools.cpp
-    src/fftools.hpp
-    src/testsource.cpp
-    src/testsource.hpp
-    src/radionetmodel.cpp
-    src/radionetmodel.hpp
-    src/radionetapi.cpp
-    src/radionetapi.hpp
-    src/mpdtools.cpp
-    src/mpdtools.hpp)
-
-if(with_plasma)
-    list(APPEND sources
-        ${plasma_dir}/resources.qrc
-        ${CMAKE_BINARY_DIR}/translations.qrc)
-endif()
+    ${sources_dir}/albummodel.cpp
+    ${sources_dir}/albummodel.h
+    ${sources_dir}/artistmodel.cpp
+    ${sources_dir}/artistmodel.h
+    ${sources_dir}/avtransport.cpp
+    ${sources_dir}/avtransport.h
+    ${sources_dir}/bcapi.cpp
+    ${sources_dir}/bcapi.h
+    ${sources_dir}/bcmodel.cpp
+    ${sources_dir}/bcmodel.h
+    ${sources_dir}/cdirmodel.cpp
+    ${sources_dir}/cdirmodel.h
+    ${sources_dir}/connectivitydetector.cpp
+    ${sources_dir}/connectivitydetector.h
+    ${sources_dir}/contentdirectory.cpp
+    ${sources_dir}/contentdirectory.h
+    ${sources_dir}/contentserver.cpp
+    ${sources_dir}/contentserver.h
+    ${sources_dir}/contentserverworker.cpp
+    ${sources_dir}/contentserverworker.h
+    ${sources_dir}/dbusapp.cpp
+    ${sources_dir}/dbusapp.h
+    ${sources_dir}/dbus_jupii_adaptor.cpp
+    ${sources_dir}/dbus_jupii_adaptor.h
+    ${sources_dir}/dbus_notifications_inf.cpp
+    ${sources_dir}/dbus_notifications_inf.h
+    ${sources_dir}/dbus_tracker_inf.cpp
+    ${sources_dir}/dbus_tracker_inf.h
+    ${sources_dir}/device.cpp
+    ${sources_dir}/device.h
+    ${sources_dir}/deviceinfo.cpp
+    ${sources_dir}/deviceinfo.h
+    ${sources_dir}/devicemodel.cpp
+    ${sources_dir}/devicemodel.h
+    ${sources_dir}/directory.cpp
+    ${sources_dir}/directory.h
+    ${sources_dir}/dirmodel.cpp
+    ${sources_dir}/dirmodel.h
+    ${sources_dir}/dnscontentdeterminator.cpp
+    ${sources_dir}/dnscontentdeterminator.h
+    ${sources_dir}/downloader.cpp
+    ${sources_dir}/downloader.h
+    ${sources_dir}/exif.cpp
+    ${sources_dir}/exif.h
+    ${sources_dir}/filedownloader.cpp
+    ${sources_dir}/filedownloader.h
+    ${sources_dir}/filemetadata.cpp
+    ${sources_dir}/filemetadata.h
+    ${sources_dir}/fosdemmodel.cpp
+    ${sources_dir}/fosdemmodel.h
+    ${sources_dir}/frontiersiliconxc.cpp
+    ${sources_dir}/frontiersiliconxc.h
+    ${sources_dir}/gpoddermodel.cpp
+    ${sources_dir}/gpoddermodel.h
+    ${sources_dir}/gumbotools.cpp
+    ${sources_dir}/gumbotools.h
+    ${sources_dir}/icecastmodel.cpp
+    ${sources_dir}/icecastmodel.h
+    ${sources_dir}/iconprovider.cpp
+    ${sources_dir}/iconprovider.h
+    ${sources_dir}/itemmodel.cpp
+    ${sources_dir}/itemmodel.h
+    ${sources_dir}/listmodel.cpp
+    ${sources_dir}/listmodel.h
+    ${sources_dir}/notifications.cpp
+    ${sources_dir}/notifications.h
+    ${sources_dir}/playlistfilemodel.cpp
+    ${sources_dir}/playlistfilemodel.h
+    ${sources_dir}/playlistmodel.cpp
+    ${sources_dir}/playlistmodel.h
+    ${sources_dir}/playlistparser.cpp
+    ${sources_dir}/playlistparser.h
+    ${sources_dir}/recmodel.cpp
+    ${sources_dir}/recmodel.h
+    ${sources_dir}/renderingcontrol.cpp
+    ${sources_dir}/renderingcontrol.h
+    ${sources_dir}/service.cpp
+    ${sources_dir}/service.h
+    ${sources_dir}/services.cpp
+    ${sources_dir}/services.h
+    ${sources_dir}/settings.cpp
+    ${sources_dir}/settings.h
+    ${sources_dir}/singleton.h
+    ${sources_dir}/somafmmodel.cpp
+    ${sources_dir}/somafmmodel.h
+    ${sources_dir}/soundcloudapi.cpp
+    ${sources_dir}/soundcloudapi.h
+    ${sources_dir}/soundcloudmodel.cpp
+    ${sources_dir}/soundcloudmodel.h
+    ${sources_dir}/taskexecutor.cpp
+    ${sources_dir}/taskexecutor.h
+    ${sources_dir}/thumb.cpp
+    ${sources_dir}/thumb.h
+    ${sources_dir}/tracker.cpp
+    ${sources_dir}/trackercursor.cpp
+    ${sources_dir}/trackercursor.h
+    ${sources_dir}/tracker.h
+    ${sources_dir}/trackmodel.cpp
+    ${sources_dir}/trackmodel.h
+    ${sources_dir}/transcoder.cpp
+    ${sources_dir}/transcoder.h
+    ${sources_dir}/tuneinmodel.cpp
+    ${sources_dir}/tuneinmodel.h
+    ${sources_dir}/utils.cpp
+    ${sources_dir}/utils.h
+    ${sources_dir}/xc.cpp
+    ${sources_dir}/xc.h
+    ${sources_dir}/yamahaxc.cpp
+    ${sources_dir}/yamahaxc.h
+    ${sources_dir}/ytdlapi.cpp
+    ${sources_dir}/ytdlapi.h
+    ${sources_dir}/ytmodel.cpp
+    ${sources_dir}/ytmodel.h
+    ${sources_dir}/ytmusic.cpp
+    ${sources_dir}/ytmusic.h
+    ${sources_dir}/contentdirectoryservice.cpp
+    ${sources_dir}/contentdirectoryservice.h
+    ${sources_dir}/connectionmanagerservice.cpp
+    ${sources_dir}/connectionmanagerservice.h
+    ${sources_dir}/logger.cpp
+    ${sources_dir}/logger.hpp
+    ${sources_dir}/qtlogger.cpp
+    ${sources_dir}/qtlogger.hpp
+    ${sources_dir}/avlogger.cpp
+    ${sources_dir}/avlogger.hpp
+    ${sources_dir}/databuffer.cpp
+    ${sources_dir}/databuffer.hpp
+    ${sources_dir}/caster.cpp
+    ${sources_dir}/caster.hpp
+    ${sources_dir}/fftools.cpp
+    ${sources_dir}/fftools.hpp
+    ${sources_dir}/testsource.cpp
+    ${sources_dir}/testsource.hpp
+    ${sources_dir}/radionetmodel.cpp
+    ${sources_dir}/radionetmodel.hpp
+    ${sources_dir}/radionetapi.cpp
+    ${sources_dir}/radionetapi.hpp
+    ${sources_dir}/mpdtools.cpp
+    ${sources_dir}/mpdtools.hpp)
 
 if(with_sfos)
     list(APPEND sources
@@ -311,12 +309,21 @@ if(with_droidcam)
         src/orientationmonitor.hpp)
 endif()
 
-# executable
+set(resources "")
 
+if(with_plasma)
+    list(APPEND resources
+        ${plasma_dir}/resources.qrc
+        ${CMAKE_BINARY_DIR}/translations.qrc)
+endif()
+
+# executable
+set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOMOC ON)
 
-add_executable(${info_binary_id} ${sources})
+add_executable(${info_binary_id} ${sources} ${resources} "${sources_dir}/main.cpp")
 
 # strip
 
@@ -324,6 +331,41 @@ add_custom_command(TARGET ${info_binary_id} POST_BUILD
     COMMAND $<$<CONFIG:Release>:${CMAKE_STRIP}>
     ARGS --strip-all $<TARGET_FILE:${info_binary_id}>
 )
+
+# tests
+
+if(build_catch2)
+    include(FetchContent)
+
+    FetchContent_Declare(
+      Catch2
+      URL ${catch2_source_url}
+      URL_HASH MD5=${catch2_checksum}
+      SOURCE_DIR "${external_dir}/catch2"
+      BINARY_DIR "${PROJECT_BINARY_DIR}/external/catch2"
+      INSTALL_DIR "${PROJECT_BINARY_DIR}/external"
+    )
+    FetchContent_MakeAvailable(Catch2)
+else()
+    find_package(Catch2 3 REQUIRED)
+endif()
+
+file(GLOB tests_src
+    "${tests_dir}/*.hpp"
+    "${tests_dir}/*.cpp"
+)
+
+add_executable(tests ${tests_src} ${sources})
+
+target_link_libraries(tests Catch2::Catch2WithMain)
+target_include_directories(tests PRIVATE ${sources_dir})
+
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+
+include(CTest)
+include(Catch)
+
+catch_discover_tests(tests)
 
 # flags and definitions
 
@@ -363,8 +405,15 @@ target_compile_definitions(compiler_flags INTERFACE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>")
 
 set_property(TARGET ${info_binary_id} PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET tests PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(${info_binary_id}
+    compiler_flags
+    pthread
+    ${CMAKE_DL_LIBS}
+)
+
+target_link_libraries(tests
     compiler_flags
     pthread
     ${CMAKE_DL_LIBS}
@@ -398,6 +447,8 @@ target_link_libraries(${info_binary_id} translations)
 configure_file(config.h.in config.h)
 target_include_directories(${info_binary_id} PRIVATE ${PROJECT_BINARY_DIR})
 target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
+target_include_directories(tests PRIVATE ${PROJECT_BINARY_DIR})
+target_include_directories(tests PRIVATE ${external_include_dir})
 
 # dependencies
 
@@ -407,52 +458,75 @@ include(ExternalProject)
 add_subdirectory(${external_dir}/qhttpserver)
 target_include_directories(${info_binary_id} PRIVATE ${external_dir}/qhttpserver/src)
 target_link_libraries(${info_binary_id} qhttpserver)
+target_include_directories(tests PRIVATE ${external_dir}/qhttpserver/src)
+target_link_libraries(tests qhttpserver)
 
 pkg_search_module(pulse REQUIRED libpulse)
 target_include_directories(${info_binary_id} PRIVATE ${pulse_INCLUDE_DIRS})
 target_link_libraries(${info_binary_id} ${pulse_LIBRARIES})
+target_include_directories(tests PRIVATE ${pulse_INCLUDE_DIRS})
+target_link_libraries(tests ${pulse_LIBRARIES})
 
 pkg_search_module(zlib REQUIRED zlib)
 target_include_directories(${info_binary_id} PRIVATE ${zlib_INCLUDE_DIRS})
 target_link_libraries(${info_binary_id} ${zlib_LIBRARIES})
+target_include_directories(tests PRIVATE ${zlib_INCLUDE_DIRS})
+target_link_libraries(tests ${zlib_LIBRARIES})
 
 pkg_search_module(curl REQUIRED libcurl)
 target_include_directories(${info_binary_id} PRIVATE ${curl_INCLUDE_DIRS})
 target_link_libraries(${info_binary_id} ${curl_LIBRARIES})
+target_include_directories(tests PRIVATE ${curl_INCLUDE_DIRS})
+target_link_libraries(tests ${curl_LIBRARIES})
 
 pkg_search_module(expat REQUIRED expat)
 target_include_directories(${info_binary_id} PRIVATE ${expat_INCLUDE_DIRS})
 target_link_libraries(${info_binary_id} ${expat_LIBRARIES})
+target_include_directories(tests PRIVATE ${expat_INCLUDE_DIRS})
+target_link_libraries(tests ${expat_LIBRARIES})
 
 find_package(Qt5 COMPONENTS Core Network Multimedia Qml Xml Sql Gui Quick DBus LinguistTools REQUIRED)
 target_link_libraries(${info_binary_id} Qt5::Core Qt5::Network Qt5::Multimedia
+    Qt5::Xml Qt5::Sql Qt5::Gui Qt5::Quick Qt5::DBus)
+target_link_libraries(tests Qt5::Core Qt5::Network Qt5::Multimedia
     Qt5::Xml Qt5::Sql Qt5::Gui Qt5::Quick Qt5::DBus)
 
 if(with_plasma)
     find_package(Qt5 COMPONENTS QuickControls2 Widgets REQUIRED)
     target_link_libraries(${info_binary_id} Qt5::QuickControls2 Qt5::Widgets)
+    target_link_libraries(tests Qt5::QuickControls2 Qt5::Widgets)
 endif()
 
 if(with_sfos)
     pkg_search_module(sailfish REQUIRED sailfishapp)
     target_include_directories(${info_binary_id} PRIVATE ${sailfish_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${sailfish_LIBRARIES})
+    target_include_directories(tests PRIVATE ${sailfish_INCLUDE_DIRS})
+    target_link_libraries(tests ${sailfish_LIBRARIES})
 
     pkg_search_module(audioresource REQUIRED audioresource)
     target_include_directories(${info_binary_id} PRIVATE ${audioresource_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${audioresource_LIBRARIES})
+    target_include_directories(tests PRIVATE ${audioresource_INCLUDE_DIRS})
+    target_link_libraries(tests ${audioresource_LIBRARIES})
 
     pkg_search_module(mlite5 REQUIRED mlite5)
     target_include_directories(${info_binary_id} PRIVATE ${mlite5_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${mlite5_LIBRARIES})
+    target_include_directories(tests PRIVATE ${mlite5_INCLUDE_DIRS})
+    target_link_libraries(tests ${mlite5_LIBRARIES})
 
     pkg_search_module(lzma REQUIRED liblzma)
     target_include_directories(${info_binary_id} PRIVATE ${lzma_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${lzma_LIBRARIES})
+    target_include_directories(tests PRIVATE ${lzma_INCLUDE_DIRS})
+    target_link_libraries(tests ${lzma_LIBRARIES})
 
     pkg_search_module(keepalive REQUIRED keepalive)
     target_include_directories(${info_binary_id} PRIVATE ${keepalive_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${keepalive_LIBRARIES})
+    target_include_directories(tests PRIVATE ${keepalive_INCLUDE_DIRS})
+    target_link_libraries(tests ${keepalive_LIBRARIES})
 
     if(build_libarchive)
         ExternalProject_Add(libarchive
@@ -473,10 +547,15 @@ if(with_sfos)
         target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
         target_link_libraries(${info_binary_id} ${libarchive_LIBRARIES})
         add_dependencies(${info_binary_id} libarchive)
+        target_include_directories(tests PRIVATE ${external_include_dir})
+        target_link_libraries(tests ${libarchive_LIBRARIES})
+        add_dependencies(tests libarchive)
     else()
         pkg_search_module(libarchive REQUIRED libarchive)
         target_include_directories(${info_binary_id} PRIVATE ${libarchive_INCLUDE_DIRS})
         target_link_libraries(${info_binary_id} ${libarchive_LIBRARIES})
+        target_include_directories(tests PRIVATE ${libarchive_INCLUDE_DIRS})
+        target_link_libraries(tests ${libarchive_LIBRARIES})
     endif()
 
     if(build_pymodules)
@@ -494,30 +573,40 @@ if(with_droidcam)
     pkg_search_module(glib REQUIRED glib-2.0)
     target_include_directories(${info_binary_id} PRIVATE ${glib_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${glib_LIBRARIES})
+    target_include_directories(tests PRIVATE ${glib_INCLUDE_DIRS})
+    target_link_libraries(tests ${glib_LIBRARIES})
 
     pkg_search_module(gst REQUIRED gstreamer-1.0)
     target_include_directories(${info_binary_id} PRIVATE ${gst_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${gst_LIBRARIES})
+    target_include_directories(tests PRIVATE ${gst_INCLUDE_DIRS})
+    target_link_libraries(tests ${gst_LIBRARIES})
 
     pkg_search_module(gst_app REQUIRED gstreamer-app-1.0)
     target_include_directories(${info_binary_id} PRIVATE ${gst_app_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${gst_app_LIBRARIES})
+    target_include_directories(tests PRIVATE ${gst_app_INCLUDE_DIRS})
+    target_link_libraries(tests ${gst_app_LIBRARIES})
 endif()
 
 if (with_sfos_screen_capture)
     pkg_search_module(wayland REQUIRED wayland-client)
     target_include_directories(${info_binary_id} PRIVATE ${wayland_INCLUDE_DIRS} ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${wayland_LIBRARIES})
+    target_include_directories(tests PRIVATE ${wayland_INCLUDE_DIRS} ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
+    target_link_libraries(tests ${wayland_LIBRARIES})
 endif()
 
 if (with_x11_screen_capture)
     pkg_search_module(xcb REQUIRED xcb)
     include_directories(${xcb_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${xcb_LIBRARIES})
+    target_link_libraries(tests ${xcb_LIBRARIES})
 
     pkg_search_module(x11 REQUIRED x11)
     include_directories(${x11_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${x11_LIBRARIES})
+    target_link_libraries(tests ${x11_LIBRARIES})
 endif()
 
 if(build_ffmpeg)
@@ -645,6 +734,8 @@ if(build_ffmpeg)
             PATH=$ENV{PATH}:${PROJECT_BINARY_DIR}/external/bin make DESTDIR=/ install)
     target_link_libraries(${info_binary_id} m)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
+    target_link_libraries(tests m)
+    target_include_directories(tests PRIVATE ${external_include_dir})
     set(ffmpeg_LIBRARIES
         ${PROJECT_BINARY_DIR}/external/lib/libavfilter.a
         ${PROJECT_BINARY_DIR}/external/lib/libavdevice.a
@@ -654,7 +745,9 @@ if(build_ffmpeg)
         ${PROJECT_BINARY_DIR}/external/lib/libswscale.a
         ${PROJECT_BINARY_DIR}/external/lib/libavutil.a)
     target_link_libraries(${info_binary_id} ${ffmpeg_LIBRARIES})
+    target_link_libraries(tests ${ffmpeg_LIBRARIES})
     add_dependencies(${info_binary_id} ffmpeg)
+    add_dependencies(tests ffmpeg)
 else()
     pkg_search_module(ffmpeg_avutil REQUIRED libavutil>=57.17.100)
     pkg_search_module(ffmpeg_avcodec REQUIRED libavcodec>=59.18.100)
@@ -679,6 +772,22 @@ else()
         ${ffmpeg_swresample_LIBRARIES}
         ${ffmpeg_swscale_LIBRARIES}
         ${ffmpeg_avutil_LIBRARIES})
+    target_include_directories(tests PRIVATE
+        ${ffmpeg_avutil_INCLUDE_DIRS}
+        ${ffmpeg_avcoodec_INCLUDE_DIRS}
+        ${ffmpeg_avformat_INCLUDE_DIRS}
+        ${ffmpeg_avdevice_INCLUDE_DIRS}
+        ${ffmpeg_avfilter_INCLUDE_DIRS}
+        ${ffmpeg_swresample_INCLUDE_DIRS}
+        ${ffmpeg_swscale_INCLUDE_DIRS})
+    target_link_libraries(tests
+        ${ffmpeg_avdevice_LIBRARIES}
+        ${ffmpeg_avfilter_LIBRARIES}
+        ${ffmpeg_avformat_LIBRARIES}
+        ${ffmpeg_avcoodec_LIBRARIES}
+        ${ffmpeg_swresample_LIBRARIES}
+        ${ffmpeg_swscale_LIBRARIES}
+        ${ffmpeg_avutil_LIBRARIES})
 endif()
 
 if(build_x264)
@@ -696,11 +805,16 @@ if(build_x264)
     set(x264_LIBRARIES ${external_lib_dir}/libx264.a)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${x264_LIBRARIES} ${CMAKE_DL_LIBS})
+    target_include_directories(tests PRIVATE ${external_include_dir})
+    target_link_libraries(tests ${x264_LIBRARIES} ${CMAKE_DL_LIBS})
     add_dependencies(${info_binary_id} x264)
+    add_dependencies(tests x264)
 else()
     pkg_search_module(x264 REQUIRED x264)
     target_include_directories(${info_binary_id} PRIVATE ${x264_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${x264_LIBRARIES})
+    target_include_directories(tests PRIVATE ${x264_INCLUDE_DIRS})
+    target_link_libraries(tests ${x264_LIBRARIES})
 endif()
 
 if(with_nvenc)
@@ -717,6 +831,7 @@ if(with_nvenc)
             INSTALL_COMMAND make DESTDIR=/ PREFIX=<INSTALL_DIR> install)
         ExternalProject_Add_StepDependencies(ffmpeg configure ffnvc)
         target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
+        target_include_directories(tests PRIVATE ${external_include_dir})
     endif()
 endif()
 
@@ -738,9 +853,13 @@ if(build_lame)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${lame_LIBRARIES})
     add_dependencies(${info_binary_id} lame)
+    target_include_directories(tests PRIVATE ${external_include_dir})
+    target_link_libraries(tests ${lame_LIBRARIES})
+    add_dependencies(tests lame)
 else()
     find_library(lame_path mp3lame)
     target_link_libraries(${info_binary_id} ${lame_path})
+    target_link_libraries(tests ${lame_path})
 endif()
 
 if(build_gumbo)
@@ -760,10 +879,15 @@ if(build_gumbo)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${gumbo_LIBRARIES})
     add_dependencies(${info_binary_id} gumbo)
+    target_include_directories(tests PRIVATE ${external_include_dir})
+    target_link_libraries(tests ${gumbo_LIBRARIES})
+    add_dependencies(tests gumbo)
 else()
     pkg_search_module(gumbo REQUIRED gumbo)
     target_include_directories(${info_binary_id} PRIVATE ${gumbo_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${gumbo_LIBRARIES})
+    target_include_directories(tests PRIVATE ${gumbo_INCLUDE_DIRS})
+    target_link_libraries(tests ${gumbo_LIBRARIES})
 endif()
 
 if(build_upnpp)
@@ -782,10 +906,15 @@ if(build_upnpp)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${upnpp_LIBRARIES})
     add_dependencies(${info_binary_id} upnpp)
+    target_include_directories(tests PRIVATE ${external_include_dir})
+    target_link_libraries(tests ${upnpp_LIBRARIES})
+    add_dependencies(tests upnpp)
 else()
     pkg_search_module(upnpp REQUIRED libupnpp)
     target_include_directories(${info_binary_id} PRIVATE ${upnpp_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${upnpp_LIBRARIES} upnpputil)
+    target_include_directories(tests PRIVATE ${upnpp_INCLUDE_DIRS})
+    target_link_libraries(tests ${upnpp_LIBRARIES} upnpputil)
 endif()
 
 if(build_npupnp)
@@ -805,10 +934,15 @@ if(build_npupnp)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${npupnp_LIBRARIES})
     add_dependencies(${info_binary_id} npupnp)
+    target_include_directories(tests PRIVATE ${external_include_dir})
+    target_link_libraries(tests ${npupnp_LIBRARIES})
+    add_dependencies(tests npupnp)
 else()
     pkg_search_module(npupnp REQUIRED libnpupnp)
     target_include_directories(${info_binary_id} PRIVATE ${npupnp_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${npupnp_LIBRARIES})
+    target_include_directories(tests PRIVATE ${npupnp_INCLUDE_DIRS})
+    target_link_libraries(tests ${npupnp_LIBRARIES})
 endif()
 
 if(build_mhd)
@@ -831,10 +965,15 @@ if(build_mhd)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${mhd_LIBRARIES})
     add_dependencies(${info_binary_id} mhd)
+    target_include_directories(tests PRIVATE ${external_include_dir})
+    target_link_libraries(tests ${mhd_LIBRARIES})
+    add_dependencies(tests mhd)
 else()
     pkg_search_module(mhd REQUIRED libmicrohttpd)
     target_include_directories(${info_binary_id} PRIVATE ${mhd_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${mhd_LIBRARIES})
+    target_include_directories(tests PRIVATE ${mhd_INCLUDE_DIRS})
+    target_link_libraries(tests ${mhd_LIBRARIES})
 endif()
 
 if(build_fmt)
@@ -853,10 +992,15 @@ if(build_fmt)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${fmt_LIBRARIES})
     add_dependencies(${info_binary_id} fmt)
+    target_include_directories(tests PRIVATE ${external_include_dir})
+    target_link_libraries(tests ${fmt_LIBRARIES})
+    add_dependencies(tests fmt)
 else()
     pkg_search_module(fmt REQUIRED fmt)
     target_include_directories(${info_binary_id} PRIVATE ${fmt_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${fmt_LIBRARIES})
+    target_include_directories(tests PRIVATE ${fmt_INCLUDE_DIRS})
+    target_link_libraries(tests ${fmt_LIBRARIES})
 endif()
 
 if(build_taglib)
@@ -876,10 +1020,15 @@ if(build_taglib)
     target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
     target_link_libraries(${info_binary_id} ${taglib_LIBRARIES})
     add_dependencies(${info_binary_id} taglib)
+    target_include_directories(tests PRIVATE ${external_include_dir})
+    target_link_libraries(tests ${taglib_LIBRARIES})
+    add_dependencies(tests taglib)
 else()
     pkg_search_module(taglib REQUIRED taglib)
     target_include_directories(${info_binary_id} PRIVATE ${taglib_INCLUDE_DIRS})
     target_link_libraries(${info_binary_id} ${taglib_LIBRARIES})
+    target_include_directories(tests PRIVATE ${taglib_INCLUDE_DIRS})
+    target_link_libraries(tests ${taglib_LIBRARIES})
 endif()
 
 if(build_nasm)
@@ -905,6 +1054,9 @@ if(NOT ${with_sfos_harbour})
     target_include_directories(${info_binary_id} PRIVATE ${Python_INCLUDE_DIRS})
     target_link_directories(${info_binary_id} PRIVATE ${Python_LIBRARY_DIRS})
     target_link_libraries(${info_binary_id} ${Python_LIBRARIES})
+    target_include_directories(tests PRIVATE ${Python_INCLUDE_DIRS})
+    target_link_directories(tests PRIVATE ${Python_LIBRARY_DIRS})
+    target_link_libraries(tests ${Python_LIBRARIES})
 
     if(build_pybind11)
         ExternalProject_Add(pybind11
@@ -923,10 +1075,15 @@ if(NOT ${with_sfos_harbour})
         target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
         target_link_libraries(${info_binary_id} ${pybind11_LIBRARIES})
         add_dependencies(${info_binary_id} pybind11)
+        target_include_directories(tests PRIVATE ${external_include_dir})
+        target_link_libraries(tests ${pybind11_LIBRARIES})
+        add_dependencies(tests pybind11)
     else()
         pkg_search_module(pybind11 REQUIRED pybind11)
         target_include_directories(${info_binary_id} PRIVATE ${pybind11_INCLUDE_DIRS})
         target_link_libraries(${info_binary_id} ${pybind11_LIBRARIES})
+        target_include_directories(tests PRIVATE ${pybind11_INCLUDE_DIRS})
+        target_link_libraries(tests ${pybind11_LIBRARIES})
     endif()
 endif()
 
