@@ -15,11 +15,11 @@ sources:
     url: https://files.pythonhosted.org/packages/03/ee/114d7016d2e34f341e212fefb5e7bd87785077ebcfff0ad23a497c70eea1/mutagen-1.46.0-py3-none-any.whl
     sha256: 8af0728aa2d5c3ee5a727e28d0627966641fddfe804c23eabb5926a4d770aed5
   - type: file
-    url: https://files.pythonhosted.org/packages/5d/22/575c7dd7c86843e07a791cfa2143e7292d6b380f5a7cce966a49b9d6c9f4/pycryptodomex-3.16.0.tar.gz
-    sha256: e9ba9d8ed638733c9e95664470b71d624a6def149e2db6cc52c1aca5a6a2df1d
+    url: https://files.pythonhosted.org/packages/3d/07/cfd8f52b9068877801317d26dc7225e19421bc659e1395d2cd6933b1a351/pycryptodomex-3.17.tar.gz
+    sha256: 0af93aad8d62e810247beedef0261c148790c52f3cd33643791cc6396dd217c1
   - type: file
     url: https://files.pythonhosted.org/packages/85/dc/549a807a53c13fd4a8dac286f117a7a71260defea9ec0c05d6027f2ae273/websockets-10.4.tar.gz
     sha256: eef610b23933c54d5d921c92578ae5f89813438fded840c2e9809d378dc765d3
   - type: file
-    url: https://files.pythonhosted.org/packages/a7/49/b49e0ae6fdc959235ecb89a3a5be77dd050493dc30845f89482fb83e38b4/yt_dlp-2023.1.6-py2.py3-none-any.whl
-    sha256: bcac3231e2022cad128a83f69948c845b364b2a85fde53415378f7c199808849
+    url: https://files.pythonhosted.org/packages/a7/df/498c57f641e9993376cf52489047158e6d660e8bab06b72c470ad5cce2bd/yt_dlp-2023.3.4-py2.py3-none-any.whl
+    sha256: 40ca421407ce07c8fd700854fd978d58526ec6fff3468caa34ff1c7333b8dc34
