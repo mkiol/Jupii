@@ -48,7 +48,7 @@ if(NOT ${with_plasma} AND NOT ${with_sfos})
 endif()
 
 if(with_nvenc)
-    message("option with_nvenc is supported only on x86/x86_64 architectures")
+    message(STATUS "option with_nvenc is supported only on x86/x86_64 architectures")
 endif()
 
 if(with_plasma)
@@ -143,9 +143,20 @@ set(patches_dir ${PROJECT_SOURCE_DIR}/patches)
 set(tests_dir ${PROJECT_SOURCE_DIR}/tests)
 set(sources_dir ${PROJECT_SOURCE_DIR}/src)
 
-# sources
+# global config
 
-set(sources
+set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOMOC ON)
+
+# includes
+
+set(includes ${sources_dir} ${PROJECT_BINARY_DIR} ${external_include_dir})
+
+# jupii_lib
+
+set(jupii_lib_sources
     ${sources_dir}/albummodel.cpp
     ${sources_dir}/albummodel.h
     ${sources_dir}/artistmodel.cpp
@@ -287,13 +298,13 @@ set(sources
     ${sources_dir}/mpdtools.hpp)
 
 if(with_sfos)
-    list(APPEND sources
+    list(APPEND jupii_lib_sources
         src/resourcehandler.cpp
         src/resourcehandler.h)
 endif()
 
 if(with_sfos_screen_capture)
-    list(APPEND sources
+    list(APPEND jupii_lib_sources
         src/lipstickrecordersource.cpp
         src/lipstickrecordersource.hpp
         src/wayland-lipstick-recorder-protocol.c
@@ -302,15 +313,20 @@ if(with_sfos_screen_capture)
 endif()
 
 if(with_droidcam)
-    list(APPEND sources
+    list(APPEND jupii_lib_sources
         src/droidcamsource.cpp
         src/droidcamsource.hpp
         src/orientationmonitor.cpp
         src/orientationmonitor.hpp)
 endif()
 
-set(resources "")
+configure_file(config.h.in config.h)
 
+add_library(jupii_lib STATIC ${jupii_lib_sources})
+
+# resources
+
+set(resources "")
 if(with_plasma)
     list(APPEND resources
         ${plasma_dir}/resources.qrc
@@ -318,14 +334,9 @@ if(with_plasma)
 endif()
 
 # executable
-set(BUILD_SHARED_LIBS OFF)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOMOC ON)
 
-add_executable(${info_binary_id} ${sources} ${resources} "${sources_dir}/main.cpp")
-
-# strip
+add_executable(${info_binary_id} ${resources} "${sources_dir}/main.cpp")
+target_link_libraries(${info_binary_id} jupii_lib)
 
 add_custom_command(TARGET ${info_binary_id} POST_BUILD
     COMMAND $<$<CONFIG:Release>:${CMAKE_STRIP}>
@@ -355,10 +366,9 @@ file(GLOB tests_src
     "${tests_dir}/*.cpp"
 )
 
-add_executable(tests ${tests_src} ${sources})
-
+add_executable(tests ${tests_src})
 target_link_libraries(tests Catch2::Catch2WithMain)
-target_include_directories(tests PRIVATE ${sources_dir})
+target_link_libraries(tests jupii_lib)
 
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 
@@ -368,6 +378,11 @@ include(Catch)
 catch_discover_tests(tests)
 
 # flags and definitions
+
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
+endif ()
 
 add_library(compiler_flags INTERFACE)
 target_compile_features(compiler_flags INTERFACE cxx_std_17)
@@ -404,20 +419,8 @@ target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${with_plasma}>:US
 target_compile_definitions(compiler_flags INTERFACE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>")
 
-set_property(TARGET ${info_binary_id} PROPERTY POSITION_INDEPENDENT_CODE ON)
-set_property(TARGET tests PROPERTY POSITION_INDEPENDENT_CODE ON)
-
-target_link_libraries(${info_binary_id}
-    compiler_flags
-    pthread
-    ${CMAKE_DL_LIBS}
-)
-
-target_link_libraries(tests
-    compiler_flags
-    pthread
-    ${CMAKE_DL_LIBS}
-)
+#set_property(TARGET ${info_binary_id} PROPERTY POSITION_INDEPENDENT_CODE ON)
+#set_property(TARGET tests PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 # translations
 
@@ -442,91 +445,56 @@ add_custom_command(
 add_library(translations STATIC "${CMAKE_BINARY_DIR}/translations.qrc")
 target_link_libraries(${info_binary_id} translations)
 
-# config
-
-configure_file(config.h.in config.h)
-target_include_directories(${info_binary_id} PRIVATE ${PROJECT_BINARY_DIR})
-target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-target_include_directories(tests PRIVATE ${PROJECT_BINARY_DIR})
-target_include_directories(tests PRIVATE ${external_include_dir})
-
 # dependencies
+
+set(deps "")
+set(deps_libs compiler_flags pthread ${CMAKE_DL_LIBS})
+set(deps_dirs "")
 
 include(FindPkgConfig)
 include(ExternalProject)
 
 add_subdirectory(${external_dir}/qhttpserver)
-target_include_directories(${info_binary_id} PRIVATE ${external_dir}/qhttpserver/src)
-target_link_libraries(${info_binary_id} qhttpserver)
-target_include_directories(tests PRIVATE ${external_dir}/qhttpserver/src)
-target_link_libraries(tests qhttpserver)
+list(APPEND deps_libs qhttpserver)
+list(APPEND includes ${external_dir}/qhttpserver/src)
 
 pkg_search_module(pulse REQUIRED libpulse)
-target_include_directories(${info_binary_id} PRIVATE ${pulse_INCLUDE_DIRS})
-target_link_libraries(${info_binary_id} ${pulse_LIBRARIES})
-target_include_directories(tests PRIVATE ${pulse_INCLUDE_DIRS})
-target_link_libraries(tests ${pulse_LIBRARIES})
+list(APPEND deps_libs ${pulse_LIBRARIES})
+list(APPEND includes ${pulse_INCLUDE_DIRS})
 
 pkg_search_module(zlib REQUIRED zlib)
-target_include_directories(${info_binary_id} PRIVATE ${zlib_INCLUDE_DIRS})
-target_link_libraries(${info_binary_id} ${zlib_LIBRARIES})
-target_include_directories(tests PRIVATE ${zlib_INCLUDE_DIRS})
-target_link_libraries(tests ${zlib_LIBRARIES})
-
-pkg_search_module(curl REQUIRED libcurl)
-target_include_directories(${info_binary_id} PRIVATE ${curl_INCLUDE_DIRS})
-target_link_libraries(${info_binary_id} ${curl_LIBRARIES})
-target_include_directories(tests PRIVATE ${curl_INCLUDE_DIRS})
-target_link_libraries(tests ${curl_LIBRARIES})
-
-pkg_search_module(expat REQUIRED expat)
-target_include_directories(${info_binary_id} PRIVATE ${expat_INCLUDE_DIRS})
-target_link_libraries(${info_binary_id} ${expat_LIBRARIES})
-target_include_directories(tests PRIVATE ${expat_INCLUDE_DIRS})
-target_link_libraries(tests ${expat_LIBRARIES})
+list(APPEND deps_libs ${zlib_LIBRARIES})
+list(APPEND includes ${zlib_INCLUDE_DIRS})
 
 find_package(Qt5 COMPONENTS Core Network Multimedia Qml Xml Sql Gui Quick DBus LinguistTools REQUIRED)
-target_link_libraries(${info_binary_id} Qt5::Core Qt5::Network Qt5::Multimedia
-    Qt5::Xml Qt5::Sql Qt5::Gui Qt5::Quick Qt5::DBus)
-target_link_libraries(tests Qt5::Core Qt5::Network Qt5::Multimedia
+list(APPEND deps_libs Qt5::Core Qt5::Network Qt5::Multimedia
     Qt5::Xml Qt5::Sql Qt5::Gui Qt5::Quick Qt5::DBus)
 
 if(with_plasma)
     find_package(Qt5 COMPONENTS QuickControls2 Widgets REQUIRED)
-    target_link_libraries(${info_binary_id} Qt5::QuickControls2 Qt5::Widgets)
-    target_link_libraries(tests Qt5::QuickControls2 Qt5::Widgets)
+    list(APPEND deps_libs Qt5::QuickControls2 Qt5::Widgets)
 endif()
 
 if(with_sfos)
     pkg_search_module(sailfish REQUIRED sailfishapp)
-    target_include_directories(${info_binary_id} PRIVATE ${sailfish_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${sailfish_LIBRARIES})
-    target_include_directories(tests PRIVATE ${sailfish_INCLUDE_DIRS})
-    target_link_libraries(tests ${sailfish_LIBRARIES})
+    list(APPEND deps_libs ${sailfish_LIBRARIES})
+    list(APPEND includes ${sailfish_INCLUDE_DIRS})
 
     pkg_search_module(audioresource REQUIRED audioresource)
-    target_include_directories(${info_binary_id} PRIVATE ${audioresource_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${audioresource_LIBRARIES})
-    target_include_directories(tests PRIVATE ${audioresource_INCLUDE_DIRS})
-    target_link_libraries(tests ${audioresource_LIBRARIES})
+    list(APPEND deps_libs ${audioresource_LIBRARIES})
+    list(APPEND includes ${audioresource_INCLUDE_DIRS})
 
     pkg_search_module(mlite5 REQUIRED mlite5)
-    target_include_directories(${info_binary_id} PRIVATE ${mlite5_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${mlite5_LIBRARIES})
-    target_include_directories(tests PRIVATE ${mlite5_INCLUDE_DIRS})
-    target_link_libraries(tests ${mlite5_LIBRARIES})
+    list(APPEND deps_libs ${mlite5_LIBRARIES})
+    list(APPEND includes ${mlite5_INCLUDE_DIRS})
 
     pkg_search_module(lzma REQUIRED liblzma)
-    target_include_directories(${info_binary_id} PRIVATE ${lzma_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${lzma_LIBRARIES})
-    target_include_directories(tests PRIVATE ${lzma_INCLUDE_DIRS})
-    target_link_libraries(tests ${lzma_LIBRARIES})
+    list(APPEND deps_libs ${lzma_LIBRARIES})
+    list(APPEND includes ${lzma_INCLUDE_DIRS})
 
     pkg_search_module(keepalive REQUIRED keepalive)
-    target_include_directories(${info_binary_id} PRIVATE ${keepalive_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${keepalive_LIBRARIES})
-    target_include_directories(tests PRIVATE ${keepalive_INCLUDE_DIRS})
-    target_link_libraries(tests ${keepalive_LIBRARIES})
+    list(APPEND deps_libs ${keepalive_LIBRARIES})
+    list(APPEND includes ${keepalive_INCLUDE_DIRS})
 
     if(build_libarchive)
         ExternalProject_Add(libarchive
@@ -543,19 +511,12 @@ if(with_sfos)
             BUILD_COMMAND ${MAKE}
             BUILD_ALWAYS False
             INSTALL_COMMAND make DESTDIR=/ install)
-        set(libarchive_LIBRARIES ${external_lib_dir}/libarchive.a)
-        target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-        target_link_libraries(${info_binary_id} ${libarchive_LIBRARIES})
-        add_dependencies(${info_binary_id} libarchive)
-        target_include_directories(tests PRIVATE ${external_include_dir})
-        target_link_libraries(tests ${libarchive_LIBRARIES})
-        add_dependencies(tests libarchive)
+        list(APPEND deps libarchive)
+        list(APPEND deps_libs ${external_lib_dir}/libarchive.a)
     else()
         pkg_search_module(libarchive REQUIRED libarchive)
-        target_include_directories(${info_binary_id} PRIVATE ${libarchive_INCLUDE_DIRS})
-        target_link_libraries(${info_binary_id} ${libarchive_LIBRARIES})
-        target_include_directories(tests PRIVATE ${libarchive_INCLUDE_DIRS})
-        target_link_libraries(tests ${libarchive_LIBRARIES})
+        list(APPEND deps_libs ${libarchive_LIBRARIES})
+        list(APPEND includes ${libarchive_INCLUDE_DIRS})
     endif()
 
     if(build_pymodules)
@@ -571,42 +532,32 @@ endif()
 
 if(with_droidcam)
     pkg_search_module(glib REQUIRED glib-2.0)
-    target_include_directories(${info_binary_id} PRIVATE ${glib_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${glib_LIBRARIES})
-    target_include_directories(tests PRIVATE ${glib_INCLUDE_DIRS})
-    target_link_libraries(tests ${glib_LIBRARIES})
+    list(APPEND deps_libs ${glib_LIBRARIES})
+    list(APPEND includes ${glib_INCLUDE_DIRS})
 
     pkg_search_module(gst REQUIRED gstreamer-1.0)
-    target_include_directories(${info_binary_id} PRIVATE ${gst_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${gst_LIBRARIES})
-    target_include_directories(tests PRIVATE ${gst_INCLUDE_DIRS})
-    target_link_libraries(tests ${gst_LIBRARIES})
+    list(APPEND deps_libs ${gst_LIBRARIES})
+    list(APPEND includes ${gst_INCLUDE_DIRS})
 
     pkg_search_module(gst_app REQUIRED gstreamer-app-1.0)
-    target_include_directories(${info_binary_id} PRIVATE ${gst_app_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${gst_app_LIBRARIES})
-    target_include_directories(tests PRIVATE ${gst_app_INCLUDE_DIRS})
-    target_link_libraries(tests ${gst_app_LIBRARIES})
+    list(APPEND deps_libs ${gst_app_LIBRARIES})
+    list(APPEND includes ${gst_app_INCLUDE_DIRS})
 endif()
 
 if (with_sfos_screen_capture)
     pkg_search_module(wayland REQUIRED wayland-client)
-    target_include_directories(${info_binary_id} PRIVATE ${wayland_INCLUDE_DIRS} ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${wayland_LIBRARIES})
-    target_include_directories(tests PRIVATE ${wayland_INCLUDE_DIRS} ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
-    target_link_libraries(tests ${wayland_LIBRARIES})
+    list(APPEND deps_libs ${wayland_LIBRARIES})
+    list(APPEND includes ${wayland_INCLUDE_DIRS} ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 endif()
 
 if (with_x11_screen_capture)
     pkg_search_module(xcb REQUIRED xcb)
-    include_directories(${xcb_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${xcb_LIBRARIES})
-    target_link_libraries(tests ${xcb_LIBRARIES})
+    list(APPEND deps_libs ${xcb_LIBRARIES})
+    list(APPEND includes ${xcb_INCLUDE_DIRS})
 
     pkg_search_module(x11 REQUIRED x11)
-    include_directories(${x11_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${x11_LIBRARIES})
-    target_link_libraries(tests ${x11_LIBRARIES})
+    list(APPEND deps_libs ${x11_LIBRARIES})
+    list(APPEND includes ${x11_INCLUDE_DIRS})
 endif()
 
 if(build_ffmpeg)
@@ -732,11 +683,8 @@ if(build_ffmpeg)
         INSTALL_COMMAND CPATH=${external_include_dir}
             LIBRARY_PATH=${external_lib_dir}
             PATH=$ENV{PATH}:${PROJECT_BINARY_DIR}/external/bin make DESTDIR=/ install)
-    target_link_libraries(${info_binary_id} m)
-    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-    target_link_libraries(tests m)
-    target_include_directories(tests PRIVATE ${external_include_dir})
-    set(ffmpeg_LIBRARIES
+    list(APPEND deps_libs
+        m
         ${PROJECT_BINARY_DIR}/external/lib/libavfilter.a
         ${PROJECT_BINARY_DIR}/external/lib/libavdevice.a
         ${PROJECT_BINARY_DIR}/external/lib/libavformat.a
@@ -744,10 +692,7 @@ if(build_ffmpeg)
         ${PROJECT_BINARY_DIR}/external/lib/libswresample.a
         ${PROJECT_BINARY_DIR}/external/lib/libswscale.a
         ${PROJECT_BINARY_DIR}/external/lib/libavutil.a)
-    target_link_libraries(${info_binary_id} ${ffmpeg_LIBRARIES})
-    target_link_libraries(tests ${ffmpeg_LIBRARIES})
-    add_dependencies(${info_binary_id} ffmpeg)
-    add_dependencies(tests ffmpeg)
+    list(APPEND deps ffmpeg)
 else()
     pkg_search_module(ffmpeg_avutil REQUIRED libavutil>=57.17.100)
     pkg_search_module(ffmpeg_avcodec REQUIRED libavcodec>=59.18.100)
@@ -756,15 +701,7 @@ else()
     pkg_search_module(ffmpeg_avfilter REQUIRED libavfilter>=8.44.100)
     pkg_search_module(ffmpeg_swresample REQUIRED libswresample>=4.3.100)
     pkg_search_module(ffmpeg_swscale REQUIRED libswscale>=6.7.100)
-    target_include_directories(${info_binary_id} PRIVATE
-        ${ffmpeg_avutil_INCLUDE_DIRS}
-        ${ffmpeg_avcoodec_INCLUDE_DIRS}
-        ${ffmpeg_avformat_INCLUDE_DIRS}
-        ${ffmpeg_avdevice_INCLUDE_DIRS}
-        ${ffmpeg_avfilter_INCLUDE_DIRS}
-        ${ffmpeg_swresample_INCLUDE_DIRS}
-        ${ffmpeg_swscale_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id}
+    list(APPEND deps_libs
         ${ffmpeg_avdevice_LIBRARIES}
         ${ffmpeg_avfilter_LIBRARIES}
         ${ffmpeg_avformat_LIBRARIES}
@@ -772,7 +709,7 @@ else()
         ${ffmpeg_swresample_LIBRARIES}
         ${ffmpeg_swscale_LIBRARIES}
         ${ffmpeg_avutil_LIBRARIES})
-    target_include_directories(tests PRIVATE
+    list(APPEND includes
         ${ffmpeg_avutil_INCLUDE_DIRS}
         ${ffmpeg_avcoodec_INCLUDE_DIRS}
         ${ffmpeg_avformat_INCLUDE_DIRS}
@@ -780,14 +717,6 @@ else()
         ${ffmpeg_avfilter_INCLUDE_DIRS}
         ${ffmpeg_swresample_INCLUDE_DIRS}
         ${ffmpeg_swscale_INCLUDE_DIRS})
-    target_link_libraries(tests
-        ${ffmpeg_avdevice_LIBRARIES}
-        ${ffmpeg_avfilter_LIBRARIES}
-        ${ffmpeg_avformat_LIBRARIES}
-        ${ffmpeg_avcoodec_LIBRARIES}
-        ${ffmpeg_swresample_LIBRARIES}
-        ${ffmpeg_swscale_LIBRARIES}
-        ${ffmpeg_avutil_LIBRARIES})
 endif()
 
 if(build_x264)
@@ -802,19 +731,12 @@ if(build_x264)
         BUILD_ALWAYS False
         INSTALL_COMMAND PATH=$ENV{PATH}:${PROJECT_BINARY_DIR}/external/bin make DESTDIR=/ install)
     ExternalProject_Add_StepDependencies(ffmpeg configure x264)
-    set(x264_LIBRARIES ${external_lib_dir}/libx264.a)
-    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-    target_link_libraries(${info_binary_id} ${x264_LIBRARIES} ${CMAKE_DL_LIBS})
-    target_include_directories(tests PRIVATE ${external_include_dir})
-    target_link_libraries(tests ${x264_LIBRARIES} ${CMAKE_DL_LIBS})
-    add_dependencies(${info_binary_id} x264)
-    add_dependencies(tests x264)
+    list(APPEND deps_libs ${x264_LIBRARIES} ${external_lib_dir}/libx264.a)
+    list(APPEND deps x264)
 else()
     pkg_search_module(x264 REQUIRED x264)
-    target_include_directories(${info_binary_id} PRIVATE ${x264_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${x264_LIBRARIES})
-    target_include_directories(tests PRIVATE ${x264_INCLUDE_DIRS})
-    target_link_libraries(tests ${x264_LIBRARIES})
+    list(APPEND deps_libs ${x264_LIBRARIES})
+    list(APPEND includes ${x264_INCLUDE_DIRS})
 endif()
 
 if(with_nvenc)
@@ -830,8 +752,6 @@ if(with_nvenc)
             BUILD_ALWAYS False
             INSTALL_COMMAND make DESTDIR=/ PREFIX=<INSTALL_DIR> install)
         ExternalProject_Add_StepDependencies(ffmpeg configure ffnvc)
-        target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-        target_include_directories(tests PRIVATE ${external_include_dir})
     endif()
 endif()
 
@@ -849,17 +769,11 @@ if(build_lame)
         BUILD_ALWAYS False
         INSTALL_COMMAND make DESTDIR=/ install)
     ExternalProject_Add_StepDependencies(ffmpeg configure lame)
-    set(lame_LIBRARIES ${external_lib_dir}/libmp3lame.a)
-    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-    target_link_libraries(${info_binary_id} ${lame_LIBRARIES})
-    add_dependencies(${info_binary_id} lame)
-    target_include_directories(tests PRIVATE ${external_include_dir})
-    target_link_libraries(tests ${lame_LIBRARIES})
-    add_dependencies(tests lame)
+    list(APPEND deps_libs ${external_lib_dir}/libmp3lame.a)
+    list(APPEND deps lame)
 else()
     find_library(lame_path mp3lame)
-    target_link_libraries(${info_binary_id} ${lame_path})
-    target_link_libraries(tests ${lame_path})
+    list(APPEND deps_libs ${lame_path})
 endif()
 
 if(build_gumbo)
@@ -875,19 +789,12 @@ if(build_gumbo)
         BUILD_COMMAND ${MAKE}
         BUILD_ALWAYS False
         INSTALL_COMMAND make DESTDIR=/ install)
-    set(gumbo_LIBRARIES ${external_lib_dir}/libgumbo.a)
-    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-    target_link_libraries(${info_binary_id} ${gumbo_LIBRARIES})
-    add_dependencies(${info_binary_id} gumbo)
-    target_include_directories(tests PRIVATE ${external_include_dir})
-    target_link_libraries(tests ${gumbo_LIBRARIES})
-    add_dependencies(tests gumbo)
+    list(APPEND deps_libs ${external_lib_dir}/libgumbo.a)
+    list(APPEND deps gumbo)
 else()
     pkg_search_module(gumbo REQUIRED gumbo)
-    target_include_directories(${info_binary_id} PRIVATE ${gumbo_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${gumbo_LIBRARIES})
-    target_include_directories(tests PRIVATE ${gumbo_INCLUDE_DIRS})
-    target_link_libraries(tests ${gumbo_LIBRARIES})
+    list(APPEND deps_libs ${gumbo_LIBRARIES})
+    list(APPEND includes ${gumbo_INCLUDE_DIRS})
 endif()
 
 if(build_upnpp)
@@ -902,19 +809,12 @@ if(build_upnpp)
         BUILD_COMMAND ${MAKE}
         BUILD_ALWAYS False
         INSTALL_COMMAND make DESTDIR=/ install)
-    set(upnpp_LIBRARIES ${external_lib_dir}/libupnpp.a ${external_lib_dir}/libupnpputil.a)
-    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-    target_link_libraries(${info_binary_id} ${upnpp_LIBRARIES})
-    add_dependencies(${info_binary_id} upnpp)
-    target_include_directories(tests PRIVATE ${external_include_dir})
-    target_link_libraries(tests ${upnpp_LIBRARIES})
-    add_dependencies(tests upnpp)
+    list(APPEND deps_libs ${external_lib_dir}/libupnpp.a ${external_lib_dir}/libupnpputil.a)
+    list(APPEND deps upnpp)
 else()
     pkg_search_module(upnpp REQUIRED libupnpp)
-    target_include_directories(${info_binary_id} PRIVATE ${upnpp_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${upnpp_LIBRARIES} upnpputil)
-    target_include_directories(tests PRIVATE ${upnpp_INCLUDE_DIRS})
-    target_link_libraries(tests ${upnpp_LIBRARIES} upnpputil)
+    list(APPEND deps_libs ${upnpp_LIBRARIES} upnpputil)
+    list(APPEND includes ${upnpp_INCLUDE_DIRS})
 endif()
 
 if(build_npupnp)
@@ -930,19 +830,12 @@ if(build_npupnp)
         BUILD_ALWAYS False
         INSTALL_COMMAND make DESTDIR=/ install)
     ExternalProject_Add_StepDependencies(upnpp configure npupnp)
-    set(npupnp_LIBRARIES ${external_lib_dir}/libnpupnp.a)
-    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-    target_link_libraries(${info_binary_id} ${npupnp_LIBRARIES})
-    add_dependencies(${info_binary_id} npupnp)
-    target_include_directories(tests PRIVATE ${external_include_dir})
-    target_link_libraries(tests ${npupnp_LIBRARIES})
-    add_dependencies(tests npupnp)
+    list(APPEND deps_libs ${external_lib_dir}/libnpupnp.a)
+    list(APPEND deps npupnp)
 else()
     pkg_search_module(npupnp REQUIRED libnpupnp)
-    target_include_directories(${info_binary_id} PRIVATE ${npupnp_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${npupnp_LIBRARIES})
-    target_include_directories(tests PRIVATE ${npupnp_INCLUDE_DIRS})
-    target_link_libraries(tests ${npupnp_LIBRARIES})
+    list(APPEND deps_libs ${npupnp_LIBRARIES})
+    list(APPEND includes ${npupnp_INCLUDE_DIRS})
 endif()
 
 if(build_mhd)
@@ -961,19 +854,12 @@ if(build_mhd)
         BUILD_ALWAYS False
         INSTALL_COMMAND make DESTDIR=/ install)
     ExternalProject_Add_StepDependencies(npupnp configure mhd)
-    set(mhd_LIBRARIES ${external_lib_dir}/libmicrohttpd.a)
-    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-    target_link_libraries(${info_binary_id} ${mhd_LIBRARIES})
-    add_dependencies(${info_binary_id} mhd)
-    target_include_directories(tests PRIVATE ${external_include_dir})
-    target_link_libraries(tests ${mhd_LIBRARIES})
-    add_dependencies(tests mhd)
+    list(APPEND deps_libs ${external_lib_dir}/libmicrohttpd.a)
+    list(APPEND deps mhd)
 else()
     pkg_search_module(mhd REQUIRED libmicrohttpd)
-    target_include_directories(${info_binary_id} PRIVATE ${mhd_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${mhd_LIBRARIES})
-    target_include_directories(tests PRIVATE ${mhd_INCLUDE_DIRS})
-    target_link_libraries(tests ${mhd_LIBRARIES})
+    list(APPEND deps_libs ${mhd_LIBRARIES})
+    list(APPEND includes ${mhd_INCLUDE_DIRS})
 endif()
 
 if(build_fmt)
@@ -988,19 +874,12 @@ if(build_fmt)
             -DFMT_TEST=OFF -DFMT_FUZZ=OFF
         BUILD_ALWAYS False
         INSTALL_COMMAND make DESTDIR=${PROJECT_BINARY_DIR}/external install/local)
-    set(fmt_LIBRARIES ${external_lib_dir}/libfmt.a)
-    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-    target_link_libraries(${info_binary_id} ${fmt_LIBRARIES})
-    add_dependencies(${info_binary_id} fmt)
-    target_include_directories(tests PRIVATE ${external_include_dir})
-    target_link_libraries(tests ${fmt_LIBRARIES})
-    add_dependencies(tests fmt)
+    list(APPEND deps_libs ${external_lib_dir}/libfmt.a)
+    list(APPEND deps fmt)
 else()
     pkg_search_module(fmt REQUIRED fmt)
-    target_include_directories(${info_binary_id} PRIVATE ${fmt_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${fmt_LIBRARIES})
-    target_include_directories(tests PRIVATE ${fmt_INCLUDE_DIRS})
-    target_link_libraries(tests ${fmt_LIBRARIES})
+    list(APPEND deps_libs ${fmt_LIBRARIES})
+    list(APPEND includes ${fmt_INCLUDE_DIRS})
 endif()
 
 if(build_taglib)
@@ -1016,19 +895,12 @@ if(build_taglib)
             -DENABLE_STATIC_RUNTIME=OFF
         BUILD_ALWAYS False
         INSTALL_COMMAND make DESTDIR=${PROJECT_BINARY_DIR}/external install)
-    set(taglib_LIBRARIES ${external_lib_dir}/libtag.a)
-    target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-    target_link_libraries(${info_binary_id} ${taglib_LIBRARIES})
-    add_dependencies(${info_binary_id} taglib)
-    target_include_directories(tests PRIVATE ${external_include_dir})
-    target_link_libraries(tests ${taglib_LIBRARIES})
-    add_dependencies(tests taglib)
+    list(APPEND deps_libs ${external_lib_dir}/libtag.a)
+    list(APPEND deps taglib)
 else()
     pkg_search_module(taglib REQUIRED taglib)
-    target_include_directories(${info_binary_id} PRIVATE ${taglib_INCLUDE_DIRS})
-    target_link_libraries(${info_binary_id} ${taglib_LIBRARIES})
-    target_include_directories(tests PRIVATE ${taglib_INCLUDE_DIRS})
-    target_link_libraries(tests ${taglib_LIBRARIES})
+    list(APPEND deps_libs ${taglib_LIBRARIES})
+    list(APPEND includes ${taglib_INCLUDE_DIRS})
 endif()
 
 if(build_nasm)
@@ -1051,12 +923,9 @@ endif()
 
 if(NOT ${with_sfos_harbour})
     find_package(Python COMPONENTS Development REQUIRED)
-    target_include_directories(${info_binary_id} PRIVATE ${Python_INCLUDE_DIRS})
-    target_link_directories(${info_binary_id} PRIVATE ${Python_LIBRARY_DIRS})
-    target_link_libraries(${info_binary_id} ${Python_LIBRARIES})
-    target_include_directories(tests PRIVATE ${Python_INCLUDE_DIRS})
-    target_link_directories(tests PRIVATE ${Python_LIBRARY_DIRS})
-    target_link_libraries(tests ${Python_LIBRARIES})
+    list(APPEND deps_dirs ${Python_LIBRARY_DIRS})
+    list(APPEND deps_libs ${Python_LIBRARIES})
+    list(APPEND includes ${Python_INCLUDE_DIRS})
 
     if(build_pybind11)
         ExternalProject_Add(pybind11
@@ -1071,21 +940,38 @@ if(NOT ${with_sfos_harbour})
                 -DPYBIND11_TEST=OFF -DPYBIND11_FINDPYTHON=ON
             BUILD_ALWAYS False
             INSTALL_COMMAND make DESTDIR=${PROJECT_BINARY_DIR}/external install)
-        set(pybind11_LIBRARIES ${external_lib_dir}/libtag.a)
-        target_include_directories(${info_binary_id} PRIVATE ${external_include_dir})
-        target_link_libraries(${info_binary_id} ${pybind11_LIBRARIES})
-        add_dependencies(${info_binary_id} pybind11)
-        target_include_directories(tests PRIVATE ${external_include_dir})
-        target_link_libraries(tests ${pybind11_LIBRARIES})
-        add_dependencies(tests pybind11)
+        list(APPEND deps_libs ${external_lib_dir}/libtag.a)
+        list(APPEND deps pybind11)
     else()
         pkg_search_module(pybind11 REQUIRED pybind11)
-        target_include_directories(${info_binary_id} PRIVATE ${pybind11_INCLUDE_DIRS})
-        target_link_libraries(${info_binary_id} ${pybind11_LIBRARIES})
-        target_include_directories(tests PRIVATE ${pybind11_INCLUDE_DIRS})
-        target_link_libraries(tests ${pybind11_LIBRARIES})
+        list(APPEND deps_libs ${pybind11_LIBRARIES})
+        list(APPEND includes ${pybind11_INCLUDE_DIRS})
     endif()
 endif()
+
+pkg_search_module(curl REQUIRED libcurl)
+list(APPEND deps_libs ${curl_LIBRARIES})
+list(APPEND includes ${curl_INCLUDE_DIRS})
+
+pkg_search_module(expat REQUIRED expat)
+list(APPEND deps_libs ${expat_LIBRARIES})
+list(APPEND includes ${expat_INCLUDE_DIRS})
+
+target_include_directories(${info_binary_id} PRIVATE ${includes})
+target_include_directories(jupii_lib PRIVATE ${includes})
+target_include_directories(tests PRIVATE ${includes})
+
+target_link_libraries(${info_binary_id} ${deps_libs})
+target_link_libraries(jupii_lib ${deps_libs})
+target_link_libraries(tests ${deps_libs})
+
+target_link_directories(${info_binary_id} PRIVATE ${deps_dirs})
+target_link_directories(jupii_lib PRIVATE ${deps_dirs})
+target_link_directories(tests PRIVATE ${deps_dirs})
+
+add_dependencies(${info_binary_id} ${deps})
+add_dependencies(jupii_lib ${deps})
+add_dependencies(tests ${deps})
 
 # install
 
