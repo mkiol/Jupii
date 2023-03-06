@@ -10,6 +10,7 @@ option(with_plasma "enable plasma ui" OFF)
 option(with_sfos "enable sfos ui" OFF)
 
 option(with_flatpak "enable flatpak build" OFF)
+option(with_tests "enable tests" OFF)
 
 option(with_v4l2 "enable v4l2 video sources" ON)
 option(with_v4l2m2m "enable v4l2 video sources and v4l2m2m video encoder" ON)
@@ -126,7 +127,7 @@ set(info_dbus_interface "org.mkiol.jupii")
 set(info_translators_str "Åke Engelbrektson · Atlochowski · Carlos Gonzalez · d9h20f · Вячеслав Диконов · drosjesjaafoer · Rui Kon · Boštjan Štrumbelj · jgibbon · Fra · Petr Tsymbarovich · Carmen Fernández B.")
 set(info_libs_str "Qt · QHTTPServer · npupnp · Libupnpp · TagLib · FFmpeg · LAME · x264 · Gumbo · yt-dlp · ytmusicapi · EasyEXIF · AudioTube · {fmt}")
 
-project(${info_id} VERSION 2.14.1)
+project(${info_id} VERSION 2.14.2)
 
 # dirs
 
@@ -345,37 +346,39 @@ add_custom_command(TARGET ${info_binary_id} POST_BUILD
 
 # tests
 
-if(build_catch2)
-    include(FetchContent)
+if(with_tests)
+    if(build_catch2)
+        include(FetchContent)
 
-    FetchContent_Declare(
-      Catch2
-      URL ${catch2_source_url}
-      URL_HASH MD5=${catch2_checksum}
-      SOURCE_DIR "${external_dir}/catch2"
-      BINARY_DIR "${PROJECT_BINARY_DIR}/external/catch2"
-      INSTALL_DIR "${PROJECT_BINARY_DIR}/external"
+        FetchContent_Declare(
+          Catch2
+          URL ${catch2_source_url}
+          URL_HASH MD5=${catch2_checksum}
+          SOURCE_DIR "${external_dir}/catch2"
+          BINARY_DIR "${PROJECT_BINARY_DIR}/external/catch2"
+          INSTALL_DIR "${PROJECT_BINARY_DIR}/external"
+        )
+        FetchContent_MakeAvailable(Catch2)
+    else()
+        find_package(Catch2 3 REQUIRED)
+    endif()
+
+    file(GLOB tests_src
+        "${tests_dir}/*.hpp"
+        "${tests_dir}/*.cpp"
     )
-    FetchContent_MakeAvailable(Catch2)
-else()
-    find_package(Catch2 3 REQUIRED)
+
+    add_executable(tests ${tests_src})
+    target_link_libraries(tests Catch2::Catch2WithMain)
+    target_link_libraries(tests jupii_lib)
+
+    list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+
+    include(CTest)
+    include(Catch)
+
+    catch_discover_tests(tests)
 endif()
-
-file(GLOB tests_src
-    "${tests_dir}/*.hpp"
-    "${tests_dir}/*.cpp"
-)
-
-add_executable(tests ${tests_src})
-target_link_libraries(tests Catch2::Catch2WithMain)
-target_link_libraries(tests jupii_lib)
-
-list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-
-include(CTest)
-include(Catch)
-
-catch_discover_tests(tests)
 
 # flags and definitions
 
@@ -418,9 +421,6 @@ target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${with_sfos_screen
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${with_plasma}>:USE_PLASMA>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>")
-
-#set_property(TARGET ${info_binary_id} PROPERTY POSITION_INDEPENDENT_CODE ON)
-#set_property(TARGET tests PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 # translations
 
@@ -958,20 +958,25 @@ list(APPEND deps_libs ${expat_LIBRARIES})
 list(APPEND includes ${expat_INCLUDE_DIRS})
 
 target_include_directories(${info_binary_id} PRIVATE ${includes})
-target_include_directories(jupii_lib PRIVATE ${includes})
-target_include_directories(tests PRIVATE ${includes})
-
 target_link_libraries(${info_binary_id} ${deps_libs})
+if(deps)
+    add_dependencies(${info_binary_id} ${deps})
+endif()
+
+target_include_directories(jupii_lib PRIVATE ${includes})
 target_link_libraries(jupii_lib ${deps_libs})
-target_link_libraries(tests ${deps_libs})
-
-target_link_directories(${info_binary_id} PRIVATE ${deps_dirs})
 target_link_directories(jupii_lib PRIVATE ${deps_dirs})
-target_link_directories(tests PRIVATE ${deps_dirs})
+if(deps)
+    add_dependencies(jupii_lib ${deps})
+endif()
 
-add_dependencies(${info_binary_id} ${deps})
-add_dependencies(jupii_lib ${deps})
-add_dependencies(tests ${deps})
+if(with_tests)
+    target_include_directories(tests PRIVATE ${includes})
+    target_link_libraries(tests ${deps_libs})
+    if(deps)
+        add_dependencies(tests ${deps})
+    endif()
+endif()
 
 # install
 
