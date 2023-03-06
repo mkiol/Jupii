@@ -299,8 +299,14 @@ bool YtdlApi::check() {
     scoped_interpreter guard{};
 
     try {
-        module::import("ytmusicapi");
-        module::import("yt_dlp");
+        auto ytmusic_mod = module::import("ytmusicapi");
+        qDebug()
+            << "ytmusicapi version:"
+            << ytmusic_mod.attr("version")("ytmusicapi").cast<std::string>();
+
+        auto ytdlp_mod = module::import("yt_dlp").attr("version");
+        qDebug() << "yt_dlp version:"
+                 << ytdlp_mod.attr("__version__").cast<std::string>();
     } catch (const std::exception& err) {
         qDebug() << "ytdl check failed:" << err.what();
         return false;
@@ -339,9 +345,9 @@ static void logVideoInfo(const video_info::VideoInfo& info) {
         qDebug() << "    quality:" << f.quality.value_or(0);
         qDebug() << "    acodec:" << f.acodec;
         qDebug() << "    vcodec:" << f.vcodec;
-#ifdef QT_DEBUG
+        // #ifdef QT_DEBUG
         qDebug() << "    url:" << f.url;
-#endif
+        // #endif
     }
 }
 
