@@ -44,7 +44,7 @@ class Downloader final : public QObject {
     static const int httpTimeout = 10000;  // 10s
     static const int startTimeout = 5000;  // 5s
     static const int timeRateCheck = 3;    // 3s
-    static const int minRate = 50000;      // 50 kBps
+    static const int minRate = 30000;      // 30 kBps
     bool mCancelRequested = false;
     QNetworkReply *mReply = nullptr;
     std::pair<int64_t, int64_t> mProgress;
