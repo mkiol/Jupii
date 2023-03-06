@@ -532,31 +532,23 @@ modules:
         - i386
       buildsystem: cmake
       config-opts:
-        - -Dwith_flatpak=1
-        - -Dwith_plasma=1
-        - -Dwith_sfos=0
-        - -Dwith_v4l2=1
-        - -Dwith_v4l2m2m=1
-        - -Dwith_nvenc=1
-        - -Dwith_x11_screen_capture=1
-        - -Dwith_droidcam=0
-        - -Dwith_sfos_screen_capture=0
-        - -Dwith_sfos_harbour=0
-        - -Dwith_trace_logs=0
-        - -Dwith_static_sanitizers=0
-        - -Dbuild_x264=0
-        - -Dbuild_ffmpeg=0
-        - -Dbuild_mhd=0
-        - -Dbuild_fmt=0
-        - -Dbuild_lame=0
-        - -Dbuild_ffnvc=0
-        - -Dbuild_nasm=0
-        - -Dbuild_gumbo=0
-        - -Dbuild_npupnp=0
-        - -Dbuild_upnpp=0
-        - -Dbuild_taglib=0
-        - -Dbuild_libarchive=0
-        - -Dbuild_pybind11=0
+        - -DCMAKE_BUILD_TYPE=Release
+        - -Dwith_flatpak=ON
+        - -Dwith_plasma=ON
+        - -Dbuild_x264=OFF
+        - -Dbuild_ffmpeg=OFF
+        - -Dbuild_mhd=OFF
+        - -Dbuild_fmt=OFF
+        - -Dbuild_lame=OFF
+        - -Dbuild_ffnvc=OFF
+        - -Dbuild_nasm=OFF
+        - -Dbuild_gumbo=OFF
+        - -Dbuild_npupnp=OFF
+        - -Dbuild_upnpp=OFF
+        - -Dbuild_taglib=OFF
+        - -Dbuild_libarchive=OFF
+        - -Dbuild_pybind11=OFF
+        - -Dbuild_catch2=OFF
       sources:
         - type: dir
           path: ../
@@ -583,31 +575,24 @@ modules:
         - aarch64
       buildsystem: cmake
       config-opts:
-        - -Dwith_flatpak=1
-        - -Dwith_plasma=1
-        - -Dwith_sfos=0
-        - -Dwith_v4l2=1
-        - -Dwith_v4l2m2m=1
-        - -Dwith_nvenc=0
-        - -Dwith_x11_screen_capture=1
-        - -Dwith_droidcam=0
-        - -Dwith_sfos_screen_capture=0
-        - -Dwith_sfos_harbour=0
-        - -Dwith_trace_logs=0
-        - -Dwith_static_sanitizers=0
-        - -Dbuild_x264=0
-        - -Dbuild_ffmpeg=0
-        - -Dbuild_mhd=0
-        - -Dbuild_fmt=0
-        - -Dbuild_lame=0
-        - -Dbuild_ffnvc=0
-        - -Dbuild_nasm=0
-        - -Dbuild_gumbo=0
-        - -Dbuild_npupnp=0
-        - -Dbuild_upnpp=0
-        - -Dbuild_taglib=0
-        - -Dbuild_libarchive=0
-        - -Dbuild_pybind11=0
+        - -DCMAKE_BUILD_TYPE=Release
+        - -Dwith_flatpak=ON
+        - -Dwith_plasma=ON
+        - -Dwith_nvenc=OFF
+        - -Dbuild_x264=OFF
+        - -Dbuild_ffmpeg=OFF
+        - -Dbuild_mhd=OFF
+        - -Dbuild_fmt=OFF
+        - -Dbuild_lame=OFF
+        - -Dbuild_ffnvc=OFF
+        - -Dbuild_nasm=OFF
+        - -Dbuild_gumbo=OFF
+        - -Dbuild_npupnp=OFF
+        - -Dbuild_upnpp=OFF
+        - -Dbuild_taglib=OFF
+        - -Dbuild_libarchive=OFF
+        - -Dbuild_pybind11=OFF
+        - -Dbuild_catch2=OFF
       sources:
         - type: dir
           path: ../
