@@ -940,7 +940,6 @@ if(NOT ${with_sfos_harbour})
                 -DPYBIND11_TEST=OFF -DPYBIND11_FINDPYTHON=ON
             BUILD_ALWAYS False
             INSTALL_COMMAND make DESTDIR=${PROJECT_BINARY_DIR}/external install)
-        list(APPEND deps_libs ${external_lib_dir}/libtag.a)
         list(APPEND deps pybind11)
     else()
         pkg_search_module(pybind11 REQUIRED pybind11)
