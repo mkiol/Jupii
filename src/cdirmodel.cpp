@@ -1,77 +1,68 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "cdirmodel.h"
+
 #include <QDebug>
 
-#include "settings.h"
-#include "cdirmodel.h"
 #include "contentdirectory.h"
-#include "services.h"
-#include "utils.h"
 #include "contentserver.h"
-
 #include "libupnpp/control/cdircontent.hxx"
+#include "services.h"
+#include "settings.h"
+#include "utils.h"
 
-const QHash<QString,CDirModel::Types> CDirModel::containerClasses {
+const QHash<QString, CDirModel::Types> CDirModel::containerClasses{
     {"object.container.album.musicAlbum", CDirModel::MusicAlbumType},
     {"object.container.person.musicArtist", CDirModel::ArtistType},
-    {"object.container.album.photoAlbum", CDirModel::PhotoAlbumType}
-};
+    {"object.container.album.photoAlbum", CDirModel::PhotoAlbumType}};
 
-CDirModel::CDirModel(QObject *parent) :
-    SelectableItemModel(new CDirItem, parent),
-    m_id("0"), m_pid("0"), m_type(CDirModel::DirType)
-{
-    m_queryType = Settings::instance()->getCDirQueryType();
+CDirModel::CDirModel(QObject *parent)
+    : SelectableItemModel(new CDirItem, parent),
+      m_title{Services::instance()->contentDir->getDeviceFriendlyName()},
+      m_queryType{Settings::instance()->getCDirQueryType()} {
+    connect(Services::instance()->contentDir.get(), &Service::initedChanged,
+            this, &CDirModel::handleContentDirectoryInited,
+            Qt::QueuedConnection);
 
-    auto cd = Services::instance()->contentDir;
-    m_title = cd->getDeviceFriendlyName();
-    connect(cd.get(), &Service::initedChanged, this,
-            &CDirModel::handleContentDirectoryInited, Qt::QueuedConnection);
-    if (cd->getInited())
-        updateModel();
+    if (Services::instance()->contentDir->getInited()) updateModel();
 }
 
-void CDirModel::handleContentDirectoryInited()
-{
-    if (Services::instance()->contentDir->getInited())
-        updateModel();
+void CDirModel::handleContentDirectoryInited() {
+    if (Services::instance()->contentDir->getInited()) updateModel();
 }
 
-CDirModel::Types CDirModel::typeFromItemClass(const QString &upnpClass)
-{
+CDirModel::Types CDirModel::typeFromItemClass(const QString &upnpClass) {
     switch (ContentServer::typeFromUpnpClass(upnpClass)) {
-    case ContentServer::Type::Type_Music:
-        return AudioType;
-    case ContentServer::Type::Type_Video:
-        return VideoType;
-    case ContentServer::Type::Type_Image:
-        return ImageType;
-    default:
-        return UnknownType;
+        case ContentServer::Type::Type_Music:
+            return AudioType;
+        case ContentServer::Type::Type_Video:
+            return VideoType;
+        case ContentServer::Type::Type_Image:
+            return ImageType;
+        default:
+            return UnknownType;
     }
 }
 
-CDirModel::Types CDirModel::typeFromContainerClass(const QString &upnpClass)
-{
+CDirModel::Types CDirModel::typeFromContainerClass(const QString &upnpClass) {
     if (containerClasses.contains(upnpClass))
         return containerClasses.value(upnpClass);
     return DirType;
 }
 
-QList<ListItem*> CDirModel::makeItems()
-{
-    QList<ListItem*> items;
+QList<ListItem *> CDirModel::makeItems() {
+    QList<ListItem *> items;
 
-    const int maxItems = 500;
+    int maxItems = 500;
 
     auto cd = Services::instance()->contentDir;
     if (!cd->getInited()) {
-        qWarning() << "ContentDirectory is not inited";
+        qWarning() << "content-directory is not inited";
         return items;
     }
 
@@ -79,104 +70,126 @@ QList<ListItem*> CDirModel::makeItems()
 
     if (m_id != m_pid) {
         const auto ppid = findPid(m_pid);
-        //const auto ptitle = findTitle(m_pid);
-        items << new CDirItem(m_pid, ppid, "..", BackType);
+        // const auto ptitle = findTitle(m_pid);
+        items.push_back(
+            new CDirItem{m_pid, ppid, QStringLiteral(".."), BackType});
     }
 
     if (cd->readItems(m_id, content)) {
-        const auto did = cd->getDeviceId();
-        QList<ListItem*> items_dir;
+        auto did = cd->getDeviceId();
+
+        QList<ListItem *> items_dir;
+
         for (const auto &item : content.m_containers) {
             if (items.size() > maxItems) {
-                qWarning() << "Max cdir items";
+                qWarning() << "max cdir items";
                 break;
             }
 
-            const auto type = typeFromContainerClass(QString::fromStdString(item.getprop("upnp:class")));
-            const auto title = QString::fromStdString(item.m_title);
+            auto type = typeFromContainerClass(
+                QString::fromStdString(item.getprop("upnp:class")));
+            auto title = QString::fromStdString(item.m_title);
 
             if (type == MusicAlbumType || type == ArtistType) {
-                const auto artist = Utils::parseArtist(QString::fromStdString(item.getprop("upnp:artist")));
-                const auto album = QString::fromStdString(item.getprop("upnp:album"));
+                auto artist = Utils::parseArtist(
+                    QString::fromStdString(item.getprop("upnp:artist")));
+                auto album = QString::fromStdString(item.getprop("upnp:album"));
 
-                if (const auto& f = getFilter(); !f.isEmpty()) {
+                if (const auto &f = getFilter(); !f.isEmpty()) {
                     if (!title.contains(f, Qt::CaseInsensitive) &&
                         !artist.contains(f, Qt::CaseInsensitive) &&
                         !album.contains(f, Qt::CaseInsensitive)) {
-                        // filtered
+                        // filtered out
                         continue;
                     }
                 }
 
-                items_dir << new CDirItem(
-                                 QString::fromStdString(item.m_id),
-                                 QString::fromStdString(item.m_pid),
-                                 title,
-                                 artist,
-                                 album,
-                                 QUrl(),
-                                 QUrl(QString::fromStdString(item.getprop("upnp:albumArtURI"))),
-                                 0,
-                                 Utils::parseDate(QString::fromStdString(item.getprop("dc:date"))),
-                                 type);
+                items_dir.push_back(new CDirItem{
+                    QString::fromStdString(item.m_id),
+                    QString::fromStdString(item.m_pid), title, artist, album,
+                    QUrl{},
+                    QUrl{QString::fromStdString(
+                        item.getprop("upnp:albumArtURI"))},
+                    0,
+                    Utils::parseDate(
+                        QString::fromStdString(item.getprop("dc:date"))),
+                    type});
             } else {
-                if (const auto& f = getFilter(); !f.isEmpty()) {
+                if (const auto &f = getFilter(); !f.isEmpty()) {
                     if (!title.contains(f, Qt::CaseInsensitive)) {
                         // filtered
                         continue;
                     }
                 }
 
-                items_dir << new CDirItem(
-                                 QString::fromStdString(item.m_id),
+                items_dir.push_back(
+                    new CDirItem{QString::fromStdString(item.m_id),
                                  QString::fromStdString(item.m_pid),
-                                 title,
-                                 DirType);
+                                 std::move(title), DirType});
             }
         }
 
-        QList<ListItem*> items_file;
+        QList<ListItem *> items_file;
+
         for (UPnPClient::UPnPDirObject &item : content.m_items) {
             if (items.size() > maxItems) {
-                qWarning() << "Max cdir items";
+                qWarning() << "max cdir items";
                 break;
             }
 
             if (item.m_resources.empty())
-                continue; // skip item without resource
+                continue;  // skip item without resource
             if (item.m_resources[0].m_uri.empty())
-                continue; // skip item with empty uri
-            auto type = typeFromItemClass(QString::fromStdString(item.getprop("upnp:class")));
-            if (type == UnknownType)
-                continue; // skip item with unknown type
+                continue;  // skip item with empty uri
+            auto type = typeFromItemClass(
+                QString::fromStdString(item.getprop("upnp:class")));
+            if (type == UnknownType) continue;  // skip item with unknown type
 
-            const auto item_id = QString::fromStdString(item.m_id);
-            QUrl url = QUrl("jupii://upnp/" +
-                       QUrl::toPercentEncoding(did.toLatin1()) + "/" +
-                       QUrl::toPercentEncoding(item_id.toLatin1()));
-            const auto title = QString::fromStdString(item.m_title);
-            const auto artist = Utils::parseArtist(QString::fromStdString(item.getprop("upnp:artist")));
-            const auto album = QString::fromStdString(item.getprop("upnp:album"));
+            auto item_id = QString::fromStdString(item.m_id);
+            auto item_pid = QString::fromStdString(item.m_pid);
 
-            if (const auto& f = getFilter(); !f.isEmpty()) {
+            QUrl url = [&]() {
+                if (!item.m_resources.empty() &&
+                    !item.m_resources[0].m_uri.empty()) {
+                    QUrl url{QString::fromStdString(item.m_resources[0].m_uri)};
+                    if (url.host() != cd->getDeviceUrl().host()) {
+                        qDebug() << "upnp url does not match device host "
+                                    "address";
+                        return url;
+                    }
+                }
+
+                return QUrl{"jupii://upnp/" +
+                            QUrl::toPercentEncoding(did.toLatin1()) + "/" +
+                            QUrl::toPercentEncoding(item_id.toLatin1()) + "/" +
+                            QUrl::toPercentEncoding(item_pid.toLatin1())};
+            }();
+
+            auto title = QString::fromStdString(item.m_title);
+            auto artist = Utils::parseArtist(
+                QString::fromStdString(item.getprop("upnp:artist")));
+            auto album = QString::fromStdString(item.getprop("upnp:album"));
+
+            if (const auto &f = getFilter(); !f.isEmpty()) {
                 if (!title.contains(f, Qt::CaseInsensitive) &&
                     !artist.contains(f, Qt::CaseInsensitive) &&
                     !album.contains(f, Qt::CaseInsensitive)) {
-                    continue; // skip item not matched against filter
+                    continue;  // skip item not matched against filter
                 }
             }
 
-            items_file << new CDirItem(
-                             item_id,
-                             QString::fromStdString(item.m_pid),
-                             title,
-                             artist,
-                             album,
-                             url,
-                             type == ImageType ? QUrl(ContentServer::minResUrl(item)) : QUrl(),
-                             QString::fromStdString(item.getprop("upnp:originalTrackNumber")).toInt(),
-                             QDateTime::fromString(QString::fromStdString(item.getprop("dc:date")), Qt::ISODate),
-                             type);
+            items_file.push_back(new CDirItem{
+                std::move(item_id), std::move(item_pid), std::move(title),
+                std::move(artist), std::move(album), std::move(url),
+                type == ImageType ? QUrl{ContentServer::minResUrl(item)}
+                                  : QUrl{QString::fromStdString(
+                                        item.getprop("upnp:albumArtURI"))},
+                QString::fromStdString(item.getprop("upnp:originalTrackNumber"))
+                    .toInt(),
+                QDateTime::fromString(
+                    QString::fromStdString(item.getprop("dc:date")),
+                    Qt::ISODate),
+                type});
         }
 
         // -- Sorting --
@@ -188,17 +201,17 @@ QList<ListItem*> CDirModel::makeItems()
         int queryType = getQueryType();
         bool contener_sort;
         auto sort_fun = [queryType, &contener_sort](ListItem *a, ListItem *b) {
-            auto aa = dynamic_cast<CDirItem*>(a);
-            auto bb = dynamic_cast<CDirItem*>(b);
+            auto *aa = qobject_cast<CDirItem *>(a);
+            auto *bb = qobject_cast<CDirItem *>(b);
             if (queryType == 1) {
                 if (aa->album().isEmpty() && !bb->album().isEmpty())
                     return false;
                 if (!aa->album().isEmpty() && bb->album().isEmpty())
                     return true;
                 if (!aa->album().isEmpty() && !bb->album().isEmpty()) {
-                    auto cmp = aa->album().compare(bb->album(), Qt::CaseInsensitive);
-                    if (cmp != 0)
-                        return  cmp < 0;
+                    auto cmp =
+                        aa->album().compare(bb->album(), Qt::CaseInsensitive);
+                    if (cmp != 0) return cmp < 0;
                 }
             } else if (queryType == 2) {
                 if (aa->artist().isEmpty() && !bb->artist().isEmpty())
@@ -206,23 +219,19 @@ QList<ListItem*> CDirModel::makeItems()
                 if (!aa->artist().isEmpty() && bb->artist().isEmpty())
                     return true;
                 if (!aa->artist().isEmpty() && !bb->artist().isEmpty()) {
-                    auto cmp = aa->artist().compare(bb->artist(), Qt::CaseInsensitive);
-                    if (cmp != 0)
-                        return  cmp < 0;
+                    auto cmp =
+                        aa->artist().compare(bb->artist(), Qt::CaseInsensitive);
+                    if (cmp != 0) return cmp < 0;
                 }
             } else if (!contener_sort && queryType == 3) {
-                if (aa->number() == 0 && bb->number() != 0)
-                    return false;
-                if (aa->number() != 0 && bb->number() == 0)
-                    return true;
+                if (aa->number() == 0 && bb->number() != 0) return false;
+                if (aa->number() != 0 && bb->number() == 0) return true;
                 if (aa->number() != 0 && bb->number() != 0) {
                     return aa->number() < bb->number();
                 }
             } else if (queryType == 4) {
-                if (!aa->date().isValid() && bb->date().isValid())
-                    return false;
-                if (aa->date().isValid() && !bb->date().isValid())
-                    return true;
+                if (!aa->date().isValid() && bb->date().isValid()) return false;
+                if (aa->date().isValid() && !bb->date().isValid()) return true;
                 if (aa->date().isValid() && bb->date().isValid()) {
                     return aa->date() > bb->date();
                 }
@@ -241,55 +250,53 @@ QList<ListItem*> CDirModel::makeItems()
     return items;
 }
 
-QVariantList CDirModel::selectedItems()
-{
+QVariantList CDirModel::selectedItems() {
     QVariantList list;
 
     foreach (const auto item, m_list) {
-        const auto citem = qobject_cast<CDirItem*>(item);
+        const auto citem = qobject_cast<CDirItem *>(item);
         if (citem->selected()) {
             QVariantMap map;
-            //map.insert("name", QVariant(citem->title()));
-            //map.insert("author", QVariant(citem->artist()));
-            map.insert("url", QVariant(citem->url()));
-            list << map;
+            map.insert(QStringLiteral("url"), citem->url());
+
+            if (!Utils::isUrlUpnp(citem->url())) {
+                map.insert(QStringLiteral("name"), citem->title());
+                map.insert(QStringLiteral("author"), citem->artist());
+                map.insert(QStringLiteral("icon"), citem->icon());
+                // map.insert(QStringLiteral("album"), citem->album());
+            }
+
+            list.push_back(map);
         }
     }
 
     return list;
 }
 
-QString CDirModel::findTitle(const QString &id)
-{
-    if (idToTitle.contains(id))
-        return idToTitle.value(id);
+QString CDirModel::findTitle(const QString &id) {
+    if (idToTitle.contains(id)) return idToTitle.value(id);
 
     return Services::instance()->contentDir->getDeviceFriendlyName();
 }
 
-QString CDirModel::findPid(const QString &id)
-{
-    if (idToPid.contains(id))
-        return idToPid.value(id);
+QString CDirModel::findPid(const QString &id) {
+    if (idToPid.contains(id)) return idToPid.value(id);
 
-    return {"0"};
+    return {QStringLiteral("0")};
 }
 
-CDirModel::Types CDirModel::findType(const QString &id)
-{
-    if (idToType.contains(id))
-        return idToType.value(id);
+CDirModel::Types CDirModel::findType(const QString &id) {
+    if (idToType.contains(id)) return idToType.value(id);
 
     return DirType;
 }
 
-void CDirModel::setCurrentId(const QString &id)
-{
+void CDirModel::setCurrentId(const QString &id) {
     if (m_id != id) {
         setAllSelected(false);
-        setFilterNoUpdate("");
+        setFilterNoUpdate(QString{});
         m_id = id;
-        const auto item = qobject_cast<CDirItem*>(find(m_id));
+        const auto item = qobject_cast<CDirItem *>(find(m_id));
         if (item) {
             m_title = item->title();
             m_pid = item->pid();
@@ -307,28 +314,15 @@ void CDirModel::setCurrentId(const QString &id)
     }
 }
 
-QString CDirModel::getCurrentId()
-{
-    return m_id;
-}
+QString CDirModel::getCurrentId() const { return m_id; }
 
-QString CDirModel::getCurrentTitle()
-{
-    return m_title;
-}
+QString CDirModel::getCurrentTitle() const { return m_title; }
 
-CDirModel::Types CDirModel::getCurrentType()
-{
-    return m_type;
-}
+CDirModel::Types CDirModel::getCurrentType() const { return m_type; }
 
-int CDirModel::getQueryType()
-{
-    return m_queryType;
-}
+int CDirModel::getQueryType() const { return m_queryType; }
 
-void CDirModel::setQueryType(int value)
-{
+void CDirModel::setQueryType(int value) {
     if (value != m_queryType) {
         m_queryType = value;
         Settings::instance()->setCDirQueryType(m_queryType);
@@ -337,58 +331,39 @@ void CDirModel::setQueryType(int value)
     }
 }
 
-void CDirModel::switchQueryType()
-{
-    setQueryType((getQueryType() + 1) % 5);
+void CDirModel::switchQueryType() { setQueryType((getQueryType() + 1) % 5); }
+
+CDirItem::CDirItem(QString id, QString pid, QString title, QString artist,
+                   QString album, QUrl url, QUrl icon, int number,
+                   QDateTime date, CDirModel::Types type, QObject *parent)
+    : SelectableItem(parent),
+      m_id{std::move(id)},
+      m_pid{std::move(pid)},
+      m_title{std::move(title)},
+      m_artist{std::move(artist)},
+      m_album{std::move(album)},
+      m_icon{std::move(icon)},
+      m_url{std::move(url)},
+      m_number{number},
+      m_date{std::move(date)},
+      m_type{type} {
+    m_selectable = type != CDirModel::DirType && type != CDirModel::BackType &&
+                   type != CDirModel::MusicAlbumType &&
+                   type != CDirModel::ArtistType;
 }
 
-CDirItem::CDirItem(const QString &id,
-                   const QString &pid,
-                   const QString &title,
-                   const QString &artist,
-                   const QString &album,
-                   const QUrl &url,
-                   const QUrl &icon,
-                   int number,
-                   QDateTime date,
-                   CDirModel::Types type,
-                   QObject *parent) :
-    SelectableItem(parent),
-    m_id(id),
-    m_pid(pid),
-    m_title(title),
-    m_artist(artist),
-    m_album(album),
-    m_icon(icon),
-    m_url(url),
-    m_number(number),
-    m_date(date),
-    m_type(type)
-{
-    m_selectable =
-            type != CDirModel::DirType &&
-            type != CDirModel::BackType &&
-            type != CDirModel::MusicAlbumType &&
-            type != CDirModel::ArtistType;
-}
-
-CDirItem::CDirItem(const QString &id,
-                   const QString &pid,
-                   const QString &title,
-                   CDirModel::Types type,
-                   QObject *parent) :
-    SelectableItem(parent),
-    m_id(id),
-    m_pid(pid),
-    m_title(title),
-    m_number(0),
-    m_type(type)
-{
+CDirItem::CDirItem(QString id, QString pid, QString title,
+                   CDirModel::Types type, QObject *parent)
+    : SelectableItem(parent),
+      m_id{std::move(id)},
+      m_pid{std::move(pid)},
+      m_title{std::move(title)},
+      m_number{0},
+      m_type{type} {
     m_selectable = false;
 }
 
-QHash<int, QByteArray> CDirItem::roleNames() const
-{
+QHash<int, QByteArray> CDirItem::roleNames() const {
     QHash<int, QByteArray> names;
     names[IdRole] = "id";
     names[PidRole] = "pid";
@@ -405,34 +380,33 @@ QHash<int, QByteArray> CDirItem::roleNames() const
     return names;
 }
 
-QVariant CDirItem::data(int role) const
-{
-    switch(role) {
-    case IdRole:
-        return id();
-    case PidRole:
-        return pid();
-    case TitleRole:
-        return title();
-    case AlbumRole:
-        return album();
-    case ArtistRole:
-        return artist();
-    case UrlRole:
-        return url();
-    case NumberRole:
-        return number();
-    case TypeRole:
-        return type();
-    case SelectedRole:
-        return selected();
-    case SelectableRole:
-        return selectable();
-    case IconRole:
-        return icon();
-    case DateRole:
-        return Utils::friendlyDate(m_date);
-    default:
-        return QVariant();
+QVariant CDirItem::data(int role) const {
+    switch (role) {
+        case IdRole:
+            return id();
+        case PidRole:
+            return pid();
+        case TitleRole:
+            return title();
+        case AlbumRole:
+            return album();
+        case ArtistRole:
+            return artist();
+        case UrlRole:
+            return url();
+        case NumberRole:
+            return number();
+        case TypeRole:
+            return type();
+        case SelectedRole:
+            return selected();
+        case SelectableRole:
+            return selectable();
+        case IconRole:
+            return icon();
+        case DateRole:
+            return Utils::friendlyDate(m_date);
+        default:
+            return {};
     }
 }

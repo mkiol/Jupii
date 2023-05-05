@@ -112,6 +112,12 @@ QString Service::getDeviceIconPath() const
     return Utils::deviceIconFilePath(getDeviceId());
 }
 
+QUrl Service::getDeviceUrl() const {
+    if (m_ser && m_inited)
+        return QUrl{QString::fromStdString(m_ser->getActionURL())};
+    return {};
+}
+
 QString Service::getDeviceFriendlyName() const
 {
     auto name = m_ser && m_inited ? QString::fromStdString(m_ser->getFriendlyName()) : QString();

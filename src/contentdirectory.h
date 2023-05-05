@@ -24,9 +24,10 @@ public:
     explicit ContentDirectory(QObject* parent = nullptr);
 
     bool readItems(const QString &id, UPnPClient::UPnPDirContent &content);
-    bool readItem(const QString &id, UPnPClient::UPnPDirContent &content);
+    bool readItem(const QString &id, const QString &pid,
+                  UPnPClient::UPnPDirContent &content);
 
-private:
+   private:
     void changed(const QString &name, const QVariant &value);
     UPnPClient::Service* createUpnpService(const UPnPClient::UPnPDeviceDesc &ddesc,
                                            const UPnPClient::UPnPServiceDesc &sdesc);

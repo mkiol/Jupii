@@ -10,11 +10,11 @@
 
 #include <QObject>
 #include <QRunnable>
-#include <QTimer>
 #include <QString>
+#include <QTimer>
+#include <QUrl>
 #include <QVariant>
 #include <functional>
-
 #include <libupnpp/control/service.hxx>
 
 #include "taskexecutor.h"
@@ -52,8 +52,9 @@ public:
     QString getDeviceId() const;
     QString getDeviceFriendlyName() const;
     QString getDeviceIconPath() const;
+    QUrl getDeviceUrl() const;
 
-signals:
+   signals:
     void initedChanged();
     void busyChanged();
     void error(Service::ErrorType code);

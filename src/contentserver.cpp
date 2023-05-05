@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1627,7 +1627,7 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url) {
 
 QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeUpnpItemMeta(
     const QUrl &url) {
-    qDebug() << "make upnp meta:" << Utils::anonymizedUrl(url);
+    qDebug() << "make upnp meta:" << url;
 
     if (QThread::currentThread()->isInterruptionRequested()) {
         qWarning() << "thread interruption was requested";
@@ -1642,9 +1642,13 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeUpnpItemMeta(
 
     auto did = QUrl::fromPercentEncoding(spl.at(1).toLatin1());  // cdir dev id
     auto id = QUrl::fromPercentEncoding(spl.at(2).toLatin1());   // cdir item id
+    QString pid;                                                 // pid item id
+    if (spl.size() >= 4) pid = QUrl::fromPercentEncoding(spl.at(3).toLatin1());
+
 #ifdef QT_DEBUG
     qDebug() << "did:" << did;
     qDebug() << "id:" << id;
+    qDebug() << "pid:" << pid;
 #endif
 
     auto cd = Services::instance()->contentDir;
@@ -1668,7 +1672,7 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeUpnpItemMeta(
     }
 
     UPnPClient::UPnPDirContent content;
-    if (!cd->readItem(id, content)) {
+    if (!cd->readItem(id, pid, content)) {
         qDebug() << "cannot read from cdir service";
         return m_metaCache.end();
     }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,24 +8,27 @@
 #ifndef CDIRMODEL_H
 #define CDIRMODEL_H
 
-#include <QVariant>
+#include <QDateTime>
 #include <QHash>
 #include <QString>
 #include <QUrl>
-#include <QDateTime>
-#include "listmodel.h"
+#include <QVariant>
+
 #include "itemmodel.h"
+#include "listmodel.h"
 
 class CDirItem;
 
-class CDirModel : public SelectableItemModel
-{
+class CDirModel : public SelectableItemModel {
     Q_OBJECT
-    Q_PROPERTY (QString currentId READ getCurrentId WRITE setCurrentId NOTIFY currentDirChanged)
-    Q_PROPERTY (QString currentTitle READ getCurrentTitle NOTIFY currentDirChanged)
-    Q_PROPERTY (Types currentType READ getCurrentType NOTIFY currentDirChanged)
-    Q_PROPERTY (int queryType READ getQueryType WRITE setQueryType NOTIFY queryTypeChanged)
-public:
+    Q_PROPERTY(QString currentId READ getCurrentId WRITE setCurrentId NOTIFY
+                   currentDirChanged)
+    Q_PROPERTY(
+        QString currentTitle READ getCurrentTitle NOTIFY currentDirChanged)
+    Q_PROPERTY(Types currentType READ getCurrentType NOTIFY currentDirChanged)
+    Q_PROPERTY(int queryType READ getQueryType WRITE setQueryType NOTIFY
+                   queryTypeChanged)
+   public:
     enum Types {
         UnknownType,
         AudioType,
@@ -41,45 +44,44 @@ public:
 
     explicit CDirModel(QObject *parent = nullptr);
     Q_INVOKABLE QVariantList selectedItems() override;
-    void setCurrentId(const QString& id);
-    QString getCurrentId();
-    QString getCurrentTitle();
-    Types getCurrentType();
-    int getQueryType();
+    void setCurrentId(const QString &id);
+    QString getCurrentId() const;
+    QString getCurrentTitle() const;
+    Types getCurrentType() const;
+    int getQueryType() const;
     void setQueryType(int value);
     Q_INVOKABLE void switchQueryType();
 
-signals:
+   signals:
     void currentDirChanged();
     void queryTypeChanged();
 
-private slots:
+   private slots:
     void handleContentDirectoryInited();
 
-private:
-    static const QHash<QString,Types> containerClasses;
-    QString m_id;
-    QString m_pid;
+   private:
+    static const QHash<QString, Types> containerClasses;
+    QString m_id{QStringLiteral("0")};
+    QString m_pid{QStringLiteral("0")};
     QString m_title;
-    Types m_type;
+    Types m_type = Types::DirType;
     int m_queryType = 0;
     int m_musicQueryType = 0;
     int m_imageQueryType = 0;
-    QList<ListItem*> makeItems() override;
+    QList<ListItem *> makeItems() override;
     QHash<QString, QString> idToTitle;
     QHash<QString, QString> idToPid;
     QHash<QString, Types> idToType;
     QString findTitle(const QString &id);
     QString findPid(const QString &id);
     Types findType(const QString &id);
-    Types typeFromItemClass(const QString &upnpClass);
-    Types typeFromContainerClass(const QString &upnpClass);
+    static Types typeFromItemClass(const QString &upnpClass);
+    static Types typeFromContainerClass(const QString &upnpClass);
 };
 
-class CDirItem: public SelectableItem
-{
+class CDirItem : public SelectableItem {
     Q_OBJECT
-public:
+   public:
     enum Roles {
         TitleRole = Qt::DisplayRole,
         IdRole = Qt::UserRole,
@@ -95,26 +97,16 @@ public:
         DateRole
     };
 
-    CDirItem(QObject* parent = nullptr) : SelectableItem(parent) {}
-    explicit CDirItem(const QString &id,
-                      const QString &pid,
-                      const QString &title,
-                      const QString &artist,
-                      const QString &album,
-                      const QUrl &url,
-                      const QUrl &icon,
-                      int number,
-                      QDateTime date,
-                      CDirModel::Types type,
+    CDirItem(QObject *parent = nullptr) : SelectableItem(parent) {}
+    explicit CDirItem(QString id, QString pid, QString title, QString artist,
+                      QString album, QUrl url, QUrl icon, int number,
+                      QDateTime date, CDirModel::Types type,
                       QObject *parent = nullptr);
-    explicit CDirItem(const QString &id,
-                      const QString &pid,
-                      const QString &title,
-                      CDirModel::Types type,
-                      QObject *parent = nullptr);
-    QVariant data(int role) const;
-    QHash<int, QByteArray> roleNames() const;
-    inline QString id() const { return m_id; }
+    explicit CDirItem(QString id, QString pid, QString title,
+                      CDirModel::Types type, QObject *parent = nullptr);
+    QVariant data(int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+    inline QString id() const override { return m_id; }
     inline QString pid() const { return m_pid; }
     inline QString title() const { return m_title; }
     inline QString artist() const { return m_artist; }
@@ -125,7 +117,7 @@ public:
     inline QDateTime date() const { return m_date; }
     inline CDirModel::Types type() const { return m_type; }
 
-private:
+   private:
     QString m_id;
     QString m_pid;
     QString m_title;
@@ -133,9 +125,9 @@ private:
     QString m_album;
     QUrl m_icon;
     QUrl m_url;
-    int m_number;
+    int m_number = 0;
     QDateTime m_date;
-    CDirModel::Types m_type;
+    CDirModel::Types m_type = CDirModel::Types::UnknownType;
 };
 
-#endif // CDIRMODEL_H
+#endif  // CDIRMODEL_H
