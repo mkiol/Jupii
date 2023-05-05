@@ -245,6 +245,8 @@ bool YtdlApi::unpack() {
 #ifdef USE_SFOS
     qDebug() << "unpacking ytdl modules";
 
+    QDir{pythonSitePath()}.removeRecursively();
+
     if (!QFileInfo::exists(pythonArchivePath)) {
         qWarning() << "python archive does not exist";
         return false;
@@ -262,6 +264,7 @@ bool YtdlApi::unpack() {
     if (!tar_decode(unpackPath, pythonUnpackPath())) {
         qWarning() << "cannot extract python tar archive";
         QFile::remove(unpackPath);
+        QDir{pythonSitePath()}.removeRecursively();
         Settings::instance()->setPythonChecksum({});
         return false;
     }

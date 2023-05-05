@@ -4,17 +4,19 @@ patch_file="$1"
 py_dir="$2"
 py_ver="$3"
 out_file="$4"
+py_source_dir="$HOME/.local/lib/python${py_ver}"
 
 if [ -f "${out_file}" ]; then
     echo "python modules already exist"
 else
     rm -Rf "${py_dir}" \
+    && rm -Rf "${py_source_dir}" \
     && pip3 install \
         yt_dlp==2023.3.4 \
         ytmusicapi==0.25.0 \
         brotli==1.0.9 \
         certifi==2022.12.7 \
-        charset-normalizer==3.0.1 \
+        charset-normalizer==2.1.1 \
         idna==3.4 \
         mutagen==1.46.0 \
         pycryptodomex==3.17 \
