@@ -87,7 +87,7 @@ Page {
             subtitle.text: model.artist + " · " + qsTr("%n track(s)", "", model.count)
             enabled: !itemModel.busy && listView.count > 0
             icon.source: model.icon
-            defaultIcon.source: "image://theme/graphic-grid-playlist?" + (highlighted ?
+            defaultIcon.source: "image://theme/icon-m-media-albums?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)
 
             menu: ContextMenu {
