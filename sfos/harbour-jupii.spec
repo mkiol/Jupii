@@ -51,6 +51,7 @@ BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
 BuildRequires:  cmake
+BuildRequires:  m4
 
 %description
 Play audio, video and images on UPnP/DLNA devices
