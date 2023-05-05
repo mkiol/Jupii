@@ -1996,12 +1996,12 @@
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="110"/>
         <source>Change if you observe problems with video playback in Camera or Screen capture.</source>
-        <translation type="unfinished"/>
+        <translation>Spremenite, če opazite težave pri predvajanju videa ali zajemu zaslona</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="139"/>
         <source>Change if you observe problems with audio playback in Microphone or Audio capture.</source>
-        <translation type="unfinished"/>
+        <translation>Spremenite, če opazite težave pri predvajanju ali zajemu zvoka</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="144"/>
