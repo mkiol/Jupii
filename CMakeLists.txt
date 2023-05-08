@@ -127,7 +127,7 @@ set(info_dbus_interface "org.mkiol.jupii")
 set(info_translators_str "Åke Engelbrektson · Atlochowski · Carlos Gonzalez · d9h20f · Вячеслав Диконов · drosjesjaafoer · Rui Kon · Boštjan Štrumbelj · jgibbon · Fra · Petr Tsymbarovich · Carmen Fernández B.")
 set(info_libs_str "Qt · QHTTPServer · npupnp · Libupnpp · TagLib · FFmpeg · LAME · x264 · Gumbo · yt-dlp · ytmusicapi · EasyEXIF · AudioTube · {fmt}")
 
-project(${info_id} VERSION 2.14.2)
+project(${info_id} VERSION 2.14.3)
 
 # dirs
 

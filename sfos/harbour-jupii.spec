@@ -9,7 +9,7 @@ Name:       harbour-jupii
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
-Version:    2.14.2
+Version:    2.14.3
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -50,6 +50,7 @@ BuildRequires:  python3-pip
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
+BuildRequires:  make
 BuildRequires:  cmake
 BuildRequires:  m4
 
