@@ -1713,7 +1713,7 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeUpnpItemMeta(
     meta.artist =
         Utils::parseArtist(QString::fromStdString(item.getprop("upnp:artist")));
     meta.didl = QString::fromStdString(item.getdidl());
-    meta.didl = meta.didl.replace(surl, QStringLiteral("%URL%"));
+    meta.didl = meta.didl.replace(QStringLiteral("%URL%"), surl);
     meta.albumArt =
         meta.type == Type::Type_Image
             ? minResUrl(item)
