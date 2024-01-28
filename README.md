@@ -1,29 +1,48 @@
 # Jupii
 
-UPnP/DLNA client for Sailfish OS
+Linux desktop and Sailfish OS app for playing multimedia content on UPnP/DLNA devices
 
-## Features
+## Contents of this README
 
-- Discovery of UPnP/DLNA devices in a local network
-- Remote control (Play, Pause, Next, Prev, Seek, Volume up/down)
-- Playing local content (Music, Video, Images) on Media Renderer devices
-- Playing gPodder's podcasts
-- Playing remote content (e.g. internet radio, SomaFM channels, Icecast streams, FOSDEM videos, Bandcamp, SoundCloud, TuneIn stations, YouTube Music, radio.net)
-- Playing items from UPnP Media Servers
-- Streaming local camera or/and microphone
-- Streaming of audio playback of any local application
-- Screen casting
-- Recording of music tracks (including tracks in Icecast streams)
-- Play queue (play once/repeat options)
-- Playlists (saving/opening)
-- Sharing content to other devices via UPnP Media Server
+- [Description](#description)
+- [How to install](#how-to-install)
+- [Building from sources](#building-from-sources)
+- [Contributing to Jupii](#contributing-to-jupii)
+- [License](#license)
 
-## Download
+## Description
+
+**Jupii** let you play audio, video and image files on any device on your local network that supports UPnP/DLNA.
+
+Here's a closer look at what it can do:
+
+- **Device Discovery:** Auto detect and connect with DLNA devices present in your local network, such as smart speaker, smart TVs, gaming consoles, and more
+- **Remote Control:** Play, pause, skip, seek, and adjust volume
+- **Local Content Playback:** Share your locally stored music, videos, and images with DLNA device on your network
+- **Internet Radio & Streaming:** Play multimedia content from online services such as: Internet radio, SomaFM channels, Icecast streams, FOSDEM videos, Bandcamp, SoundCloud, TuneIn stations, YouTube Music, radio.net
+- **Media Server Access:** Browse and play media files stored on UPnP Media Servers within your network
+- **Camera & Microphone Casting:** Share real-time camera and microphone output
+- **Audio Playback Streaming:** Capture local audio playback and share it with DLNA device
+- **Screen Casting:** Mirror your device's screen
+- **Music Track Recording:** Capture and save your favorite music tracks, including those from Icecast streams, so you can listen to them offline
+- **Play Queue & Playlists:** Organize your media playback with customizable play queues and playlists
+
+## How to install
 
 - Sailfish OS: [OpenRepos](https://openrepos.net/content/mkiol/jupii)
-- (experimental) Flatpack packages with Plasma UI: [Releases](https://github.com/mkiol/Jupii/releases)
+- Flatpack packages with KDE Plasma UI: [Releases](https://github.com/mkiol/Jupii/releases)
 
 ## Building from sources
+
+### Flatpak
+
+```
+git clone https://github.com/mkiol/Jupii.git
+
+cd Jupii/flatpak
+
+flatpak-builder --user --install-deps-from=flathub --repo="/path/to/local/flatpak/repo" "/path/to/output/dir" net.mkiol.Jupii.yaml
+```
 
 ### Sailfish OS
 
@@ -36,39 +55,26 @@ cd build
 
 sfdk config --session specfile=../sfos/harbour-jupii.spec
 sfdk config --session target=SailfishOS-4.4.0.58-aarch64
-sfdk cmake ../ -DCMAKE_BUILD_TYPE=Release -Dwith_sfos=1
+sfdk cmake ../ -DCMAKE_BUILD_TYPE=Release -DWITH_SFOS=ON
 sfdk package
 ```
 
-### Flatpak
+## Contributing to Jupii
 
-```
-git clone https://github.com/mkiol/Jupii.git
+Any contribution is very welcome!
 
-cd Jupii/flatpak
+Feel free to make a PR, report an issue or reqest for new feature.
 
-flatpak-builder --user --install-deps-from=flathub --repo=~/flatpak ../build org.mkiol.Jupii.yaml
-flatpak build-bundle ~/flatpak jupii.flatpak org.mkiol.Jupii stable
-```
+### Translations
 
-## D-Bus API
+Translation files in Qt format are in [translations dir](https://github.com/mkiol/Jupii/tree/master/translations).
 
-App exposes simple [D-Bus service](https://github.com/mkiol/Jupii/blob/master/dbus/jupii.xml).
-It can be used to make integration with other applications.
-
-## Translations
-
-Enabled translations are [here](https://github.com/mkiol/Jupii/tree/master/translations).
-
-Every new translation is very welcome. There are three ways to contribute:
-
-- [Transifex project](https://www.transifex.com/mkiol/jupii) (preferred)
-- Direct github pull request
-- Translation file sent to me via [e-mail](mailto:jupii@mkiol.net)
+Preferred way to contribute translation is via [Transifex service](https://www.transifex.com/mkiol/jupii),
+but if you would like to make a direct PR, please do it.
 
 ## Libraries
 
-Jupii relies on following open source projects:
+**Jupii** relies on following open source projects:
 
 - [Qt](https://www.qt.io/)
 - [Kirigami2](https://api.kde.org/frameworks/kirigami/html/index.html)
@@ -88,4 +94,6 @@ Jupii relies on following open source projects:
 
 ## License
 
-Jupii is developed as an open source project under [Mozilla Public License Version 2.0](https://www.mozilla.org/MPL/2.0/).
+**Jupii** is an open source project. Source code is released under the
+[Mozilla Public License Version 2.0](https://www.mozilla.org/MPL/2.0/).
+

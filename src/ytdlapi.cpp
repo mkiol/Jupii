@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -40,10 +40,11 @@
 #include "utils.h"
 #endif
 
+#include "settings.h"
 #include "utils.h"
 
 const int YtdlApi::maxHome = 50;
-const int YtdlApi::maxHomeFirstPage = 2;
+const int YtdlApi::maxHomeFirstPage = 5;
 std::vector<home::Section> YtdlApi::m_homeSections{};
 
 YtdlApi::State YtdlApi::state = YtdlApi::State::Unknown;
@@ -54,7 +55,7 @@ const QString YtdlApi::pythonArchivePath{
 
 QString YtdlApi::pythonSitePath() {
     return QStandardPaths::writableLocation(QStandardPaths::DataLocation) +
-           "/python3.8/site-packages";
+           "/python/site-packages";
 }
 
 QString YtdlApi::pythonUnpackPath() {
@@ -237,6 +238,11 @@ QDebug operator<<(QDebug debug, const std::string& s) {
 YtdlApi::YtdlApi(QObject* parent) : QObject{parent} {
 #ifdef USE_SFOS
     ::setenv("PYTHONPATH", pythonSitePath().toStdString().c_str(), true);
+#else
+    if (auto path = Settings::instance()->pyPath(); !path.isEmpty()) {
+        qDebug() << "py path:" << path;
+        ::setenv("PYTHONPATH", path.toStdString().c_str(), true);
+    }
 #endif
     init();
 }
@@ -543,7 +549,8 @@ std::optional<YtdlApi::Album> YtdlApi::playlist(const QString& id) const {
                     QString::fromStdString(*t.video_id),
                     QString::fromStdString(t.title), bestArtistName(t.artists),
                     makeYtUrl(*t.video_id),
-                    Utils::strToSecStatic(QString::fromStdString(t.duration))};
+                    Utils::strToSecStatic(
+                        QString::fromStdString(t.duration.value_or("")))};
             });
 
         return a;
@@ -703,10 +710,11 @@ std::vector<YtdlApi::SearchResultItem> YtdlApi::search(
                     using T = std::decay_t<decltype(arg)>;
                     if constexpr (std::is_same_v<T, search::Album>) {
                         item.type = Type::Album;
-                        item.id = QString::fromStdString(arg.browse_id);
+                        item.id =
+                            QString::fromStdString(arg.browse_id.value_or(""));
                         item.album = QString::fromStdString(arg.title);
                         item.artist = bestArtistName(arg.artists);
-                        auto album = ytm.get_album(arg.browse_id);
+                        auto album = ytm.get_album(arg.browse_id.value_or(""));
                         item.imageUrl = bestThumbUrl(album.thumbnails);
                     } else if constexpr (std::is_same_v<T, search::Artist>) {
                         item.type = Type::Artist;
@@ -732,9 +740,12 @@ std::vector<YtdlApi::SearchResultItem> YtdlApi::search(
                         item.artist = bestArtistName(arg.artists);
 
                         if constexpr (std::is_same_v<T, search::Song>) {
-                            item.album = QString::fromStdString(arg.album.name);
-                            item.duration = Utils::strToSecStatic(
-                                QString::fromStdString(arg.duration));
+                            if (arg.album)
+                                item.album =
+                                    QString::fromStdString(arg.album->name);
+                            item.duration =
+                                Utils::strToSecStatic(QString::fromStdString(
+                                    arg.duration.value_or("")));
                         }
 
                         /*if (auto song = ytm.get_song(arg.video_id)) {

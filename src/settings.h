@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -82,6 +82,7 @@ class Settings : public QSettings,
                    setYtPreferredType NOTIFY ytPreferredTypeChanged)
     Q_PROPERTY(bool controlMpdService READ controlMpdService WRITE
                    setControlMpdService NOTIFY controlMpdServiceChanged)
+    Q_PROPERTY(QString pyPath READ pyPath WRITE setPyPath NOTIFY pyPathChanged)
 
     // caster
     Q_PROPERTY(int casterMicVolume READ getCasterMicVolume WRITE
@@ -230,6 +231,9 @@ class Settings : public QSettings,
     QString prettyName() const;
     Q_INVOKABLE bool isDebug() const;
     Q_INVOKABLE bool isHarbour() const;
+    Q_INVOKABLE bool isWayland() const;
+    Q_INVOKABLE bool isXcb() const;
+    Q_INVOKABLE bool isFlatpak() const;
     Q_INVOKABLE void reset();
     Q_INVOKABLE bool hintEnabled(HintType hint) const;
     Q_INVOKABLE void disableHint(HintType hint);
@@ -270,6 +274,8 @@ class Settings : public QSettings,
     videoOrientationStr(CasterVideoOrientation orientation) const;
     bool controlMpdService() const;
     void setControlMpdService(bool value);
+    QString pyPath() const;
+    void setPyPath(const QString &value);
 
     // caster
 
@@ -351,6 +357,7 @@ class Settings : public QSettings,
     void ytPreferredTypeChanged();
     void allowNotIsomMp4Changed();
     void controlMpdServiceChanged();
+    void pyPathChanged();
 
     // caster
 

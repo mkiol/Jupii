@@ -23,8 +23,6 @@ void pyPrintPretty(py::handle obj) {
 
 #define UNEXPORT __attribute__((visibility("hidden")))
 
-constexpr auto TESTED_YTMUSICAPI_VERSION = "0.22.0";
-
 struct UNEXPORT YTMusicPrivate {
     py::scoped_interpreter guard{};
 
@@ -150,23 +148,23 @@ inline auto extract_py_list(py::handle obj) {
 }
 
 album::Track extract_album_track(py::handle track) {
-    return {track["isExplicit"].cast<bool>(),
-            track["title"].cast<std::string>(),
-            extract_py_list<meta::Artist>(track["artists"]),
-            track["album"].cast<std::optional<std::string>>(),
-            track["videoId"]
-                .cast<std::optional<std::string>>(),  // E rated songs don't
-                                                      // have a videoId
-            track["duration"].cast<std::optional<std::string>>(),  //
-            track["likeStatus"].cast<std::optional<std::string>>()};
+    return {
+        optional_key<bool>(track, "isExplicit"),
+        track["title"].cast<std::string>(),
+        extract_py_list<meta::Artist>(track["artists"]),
+        track["album"].cast<std::optional<std::string>>(),
+        track["videoId"].cast<std::optional<std::string>>(),  // E rated songs don't have a videoId
+        track["duration"].cast<std::optional<std::string>>(), //
+        track["likeStatus"].cast<std::optional<std::string>>()
+    };
 }
 
 video_info::Format extract_format(py::handle format) {
     return {
         optional_key<float>(format, "quality"),
         format["url"].cast<std::string>(),
-        format["vcodec"].is_none() ? "" : format["vcodec"].cast<std::string>(),
-        format["acodec"].is_none() ? "" : format["acodec"].cast<std::string>()};
+        optional_key<std::string>(format, "vcodec").value_or("none"),
+        optional_key<std::string>(format, "acodec").value_or("none")};
 }
 
 meta::Album extract_meta_album(py::handle album) {
@@ -192,26 +190,34 @@ watch::Playlist::Track extract_watch_track(py::handle track) {
 }
 
 playlist::Track extract_playlist_track(py::handle track) {
-    return {track["videoId"].cast<std::optional<std::string>>(),
-            track["title"].cast<std::string>(),
-            extract_py_list<meta::Artist>(track["artists"]),
-            [&]() -> std::optional<meta::Album> {
-                if (track["album"].is_none()) {
-                    return std::nullopt;
-                }
+    return {
+        track["videoId"].cast<std::optional<std::string>>(),
+        track["title"].cast<std::string>(),
+        extract_py_list<meta::Artist>(track["artists"]),
+        [&]() -> std::optional<meta::Album> {
+            if (track["album"].is_none()) {
+                return std::nullopt;
+            }
 
-                return extract_meta_album(track["album"]);
-            }(),
-            track["duration"].cast<std::string>(),
-            track["likeStatus"].cast<std::optional<std::string>>(),
-            extract_py_list<meta::Thumbnail>(track["thumbnails"]),
-            track["isAvailable"].cast<bool>(),
-            track["isExplicit"].cast<bool>()};
+            return extract_meta_album(track["album"]);
+        }(),
+        optional_key<std::string>(track, "duration"),
+        track["likeStatus"].cast<std::optional<std::string>>(),
+        extract_py_list<meta::Thumbnail>(track["thumbnails"]),
+        track["isAvailable"].cast<bool>(),
+        optional_key<bool>(track, "isExplicit")
+    };
 }
 
 artist::Artist::Song::Album extract_song_album(py::handle album) {
-    return {album["name"].cast<std::string>(), album["id"].cast<std::string>()};
-}
+    if (album.is_none() || album["id"].is_none()) {
+        return {};
+    }
+    return {
+        album["name"].cast<std::string>(),
+        album["id"].cast<std::string>()
+    };
+};
 
 home::Section extract_home_section(py::handle section) {
     return {section["title"].cast<std::string>(),
@@ -291,56 +297,85 @@ auto extract_artist_section_results(py::handle section) {
     return results;
 }
 
-template <typename T>
-std::optional<artist::Artist::Section<T>> extract_artist_section(
-    py::handle artist, const char *name) {
+template<typename T>
+std::optional<artist::Artist::Section<T>> extract_artist_section(py::handle artist, const char* name) {
     if (artist.cast<py::dict>().contains(name)) {
         const auto section = artist[name];
-        return artist::Artist::Section<T>{
+        return artist::Artist::Section<T> {
             section["browseId"].cast<std::optional<std::string>>(),
             extract_artist_section_results<T>(section),
-            optional_key<std::string>(section, "params")};
+            optional_key<std::string>(section, "params")
+        };
     } else {
         return std::nullopt;
     }
 }
 
-std::optional<search::SearchResultItem> extract_search_result(
-    py::handle result) {
+std::optional<search::SearchResultItem> extract_search_result(py::handle result) {
     const auto resultType = result["resultType"].cast<std::string>();
+
+    if (result["category"].cast<std::optional<std::string>>() == "Top result") {
+        return search::TopResult {
+            result["category"].cast<std::string>(),
+            result["resultType"].cast<std::string>(),
+            optional_key<std::string>(result, "videoId"),
+            optional_key<std::string>(result, "title"),
+            extract_py_list<meta::Artist>(result["artists"]),
+            extract_py_list<meta::Thumbnail>(result["thumbnails"])
+        };
+    }
+
     if (resultType == "video") {
-        return search::Video{{result["videoId"].cast<std::string>(),
-                              result["title"].cast<std::string>(),
-                              extract_py_list<meta::Artist>(result["artists"]),
-                              result["views"].cast<std::string>()},
-                             result["duration"].cast<std::string>()};
+        return search::Video {
+            {
+                result["videoId"].cast<std::string>(),
+                result["title"].cast<std::string>(),
+                extract_py_list<meta::Artist>(result["artists"]),
+                optional_key<std::string>(result, "duration"),
+                extract_py_list<meta::Thumbnail>(result["thumbnails"])
+            },
+            optional_key<std::string>(result, "views")
+        };
     } else if (resultType == "song") {
-        return search::Song{{result["videoId"].cast<std::string>(),
-                             result["title"].cast<std::string>(),
-                             extract_py_list<meta::Artist>(result["artists"]),
-                             result["duration"].cast<std::string>()},
-                            extract_meta_album(result["album"]),
-                            result["isExplicit"].cast<bool>()};
+        return search::Song {
+            {
+                result["videoId"].cast<std::string>(),
+                result["title"].cast<std::string>(),
+                extract_py_list<meta::Artist>(result["artists"]),
+                optional_key<std::string>(result, "duration"),
+                extract_py_list<meta::Thumbnail>(result["thumbnails"])
+            },
+            result["album"].is_none() ? std::optional<meta::Album> {} : extract_meta_album(result["album"]),
+            optional_key<bool>(result, "isExplicit")
+        };
     } else if (resultType == "album") {
-        return search::Album{result["browseId"].cast<std::string>(),
-                             result["title"].cast<std::string>(),
-                             result["type"].cast<std::string>(),
-                             extract_py_list<meta::Artist>(result["artists"]),
-                             result["year"].cast<std::optional<std::string>>(),
-                             result["isExplicit"].cast<bool>()};
+        return search::Album {
+            result["browseId"].cast<std::optional<std::string>>(),
+            result["title"].cast<std::string>(),
+            result["type"].cast<std::string>(),
+            extract_py_list<meta::Artist>(result["artists"]),
+            result["year"].cast<std::optional<std::string>>(),
+            result["isExplicit"].cast<bool>(),
+            extract_py_list<meta::Thumbnail>(result["thumbnails"])
+        };
     } else if (resultType == "playlist") {
-        return search::Playlist{result["browseId"].cast<std::string>(),
-                                result["title"].cast<std::string>(),
-                                result["author"].cast<std::string>(),
-                                result["itemCount"].cast<std::string>()};
+        return search::Playlist {
+            result["browseId"].cast<std::string>(),
+            result["title"].cast<std::string>(),
+            result["author"].cast<std::optional<std::string>>(),
+            result["itemCount"].cast<std::string>(),
+            extract_py_list<meta::Thumbnail>(result["thumbnails"])
+        };
     } else if (resultType == "artist") {
-        return search::Artist{result["browseId"].cast<std::string>(),
-                              result["artist"].cast<std::string>(),
-                              optional_key<std::string>(result, "shuffleId"),
-                              optional_key<std::string>(result, "radioId")};
+        return search::Artist {
+            result["browseId"].cast<std::string>(),
+            result["artist"].cast<std::string>(),
+            optional_key<std::string>(result, "shuffleId"),
+            optional_key<std::string>(result, "radioId"),
+            extract_py_list<meta::Thumbnail>(result["thumbnails"])
+        };
     } else {
-        std::cerr << "Warning: Unsupported search result type found"
-                  << std::endl;
+        std::cerr << "Warning: Unsupported search result type found" << std::endl;
         std::cerr << "It's called: " << resultType << std::endl;
         pyPrintPretty(result);
         return std::nullopt;
@@ -364,30 +399,36 @@ YTMusic::YTMusic(
 YTMusic::~YTMusic() = default;
 
 std::vector<search::SearchResultItem> YTMusic::search(
-    const std::string &query, const std::optional<std::string> &filter,
-    const std::optional<std::string> &scope, const int limit,
-    const bool ignore_spelling) const {
-    const auto results =
-        d->get_ytmusic()
-            .attr("search")("query"_a = query, "filter"_a = filter,
-                            "scope"_a = scope, "limit"_a = limit,
-                            "ignore_spelling"_a = ignore_spelling)
-            .cast<py::list>();
+        const std::string &query,
+        const std::optional<std::string> &filter,
+        const std::optional<std::string> &scope,
+        const int limit,
+        const bool ignore_spelling) const
+{
+    const auto results = d->get_ytmusic().attr("search")("query"_a=query, "filter"_a=filter, "scope"_a=scope, "limit"_a = limit, "ignore_spelling"_a = ignore_spelling).cast<py::list>();
 
     std::vector<search::SearchResultItem> output;
     for (const auto &result : results) {
-        if (const auto opt = extract_search_result(result); opt.has_value()) {
-            output.push_back(opt.value());
+        if (result.is_none()) {
+            continue;
+        }
+
+        try {
+            if (const auto opt = extract_search_result(result); opt.has_value()) {
+                output.push_back(opt.value());
+            }
+        } catch (const std::exception &e) {
+            std::cerr << "Failed to parse search result because:" << e.what();
         }
     };
 
     return output;
 }
 
-artist::Artist YTMusic::get_artist(const std::string &channel_id) const {
+artist::Artist YTMusic::get_artist(const std::string &channel_id) const
+{
     const auto artist = d->get_ytmusic().attr("get_artist")(channel_id);
-
-    return artist::Artist{
+    return artist::Artist {
         optional_key<std::string>(artist, "description"),
         artist["views"].cast<std::optional<std::string>>(),
         artist["name"].cast<std::string>(),
@@ -402,53 +443,59 @@ artist::Artist YTMusic::get_artist(const std::string &channel_id) const {
     };
 }
 
-album::Album YTMusic::get_album(const std::string &browseId) const {
+album::Album YTMusic::get_album(const std::string &browseId) const
+{
     const auto album = d->get_ytmusic().attr("get_album")(browseId);
-
-    return {album["title"].cast<std::string>(),
-            album["trackCount"].cast<int>(),
-            album["duration"].cast<std::string>(),
-            album["audioPlaylistId"].cast<std::string>(),
-            album["year"].cast<std::string>(),
-            optional_key<std::string>(album, "description"),
-            extract_py_list<meta::Thumbnail>(album["thumbnails"]),
-            extract_py_list<album::Track>(album["tracks"]),
-            extract_py_list<meta::Artist>(album["artists"])};
+    return {
+        album["title"].cast<std::string>(),
+        album["trackCount"].cast<int>(),
+        album["duration"].cast<std::string>(),
+        album["audioPlaylistId"].cast<std::string>(),
+        optional_key<std::string>(album, "year"),
+        optional_key<std::string>(album, "description"),
+        extract_py_list<meta::Thumbnail>(album["thumbnails"]),
+        extract_py_list<album::Track>(album["tracks"]),
+        extract_py_list<meta::Artist>(album["artists"])
+    };
 }
 
-std::optional<song::Song> YTMusic::get_song(const std::string &video_id) const {
+std::optional<song::Song> YTMusic::get_song(const std::string &video_id) const
+{
     const auto song = d->get_ytmusic().attr("get_song")(video_id);
+    auto videoDetails = song["videoDetails"].cast<py::dict>();
 
-    if (!song.cast<py::dict>().contains("videoDetails")) {
+    if (!videoDetails.contains("videoId")) {
         return std::nullopt;
     }
 
-    const auto video_details = song["videoDetails"];
-
-    if (!video_details.cast<py::dict>().contains("videoId")) {
-        return std::nullopt;
-    }
-
-    return song::Song{video_details["videoId"].cast<std::string>(),
-                      video_details["title"].cast<std::string>(),
-                      video_details["lengthSeconds"].cast<std::string>(),
-                      video_details["channelId"].cast<std::string>(),
-                      video_details["isOwnerViewing"].cast<bool>(),
-                      video_details["isCrawlable"].cast<bool>(),
-                      song::Song::Thumbnail{extract_py_list<meta::Thumbnail>(
-                          video_details["thumbnail"]["thumbnails"])},
-                      video_details["allowRatings"].cast<bool>(),
-                      video_details["viewCount"].cast<std::string>(),
-                      video_details["author"].cast<std::string>(),
-                      video_details["isPrivate"].cast<bool>(),
-                      video_details["isUnpluggedCorpus"].cast<bool>(),
-                      video_details["isLiveContent"].cast<bool>()};
+    return song::Song {
+        videoDetails["videoId"].cast<std::string>(),
+        videoDetails["title"].cast<std::string>(),
+        videoDetails["lengthSeconds"].cast<std::string>(),
+        videoDetails["channelId"].cast<std::string>(),
+        videoDetails["isOwnerViewing"].cast<bool>(),
+        videoDetails["isCrawlable"].cast<bool>(),
+        song::Song::Thumbnail {
+            extract_py_list<meta::Thumbnail>(videoDetails["thumbnail"]["thumbnails"])
+        },
+        videoDetails["viewCount"].cast<std::string>(),
+        videoDetails["author"].cast<std::string>(),
+        videoDetails["isPrivate"].cast<bool>(),
+        videoDetails["isUnpluggedCorpus"].cast<bool>(),
+        videoDetails["isLiveContent"].cast<bool>(),
+        [&]() -> std::vector<std::string> {
+            if (videoDetails.contains("artists")) {
+                return extract_py_list<std::string>(videoDetails["artists"]);
+            } else {
+                return {};
+            }
+        }(),
+    };
 }
 
-playlist::Playlist YTMusic::get_playlist(const std::string &playlist_id,
-                                         int limit) const {
-    const auto playlist =
-        d->get_ytmusic().attr("get_playlist")(playlist_id, limit);
+playlist::Playlist YTMusic::get_playlist(const std::string &playlist_id, int limit) const
+{
+    const auto playlist = d->get_ytmusic().attr("get_playlist")(playlist_id, limit);
 
     return {
         playlist["id"].cast<std::string>(),
@@ -456,29 +503,27 @@ playlist::Playlist YTMusic::get_playlist(const std::string &playlist_id,
         playlist["title"].cast<std::string>(),
         extract_py_list<meta::Thumbnail>(playlist["thumbnails"]),
         extract_meta_artist(playlist["author"]),
-        playlist["year"].cast<std::string>(),
+        optional_key<std::string>(playlist, "year"),
         playlist["duration"].cast<std::string>(),
         playlist["trackCount"].cast<int>(),
         extract_py_list<playlist::Track>(playlist["tracks"]),
     };
 }
 
-std::vector<artist::Artist::Album> YTMusic::get_artist_albums(
-    const std::string &channel_id, const std::string &params) const {
-    const auto py_albums =
-        d->get_ytmusic().attr("get_artist_albums")(channel_id, params);
+std::vector<artist::Artist::Album> YTMusic::get_artist_albums(const std::string &channel_id, const std::string &params) const
+{
+    const auto py_albums = d->get_ytmusic().attr("get_artist_albums")(channel_id, params);
     std::vector<artist::Artist::Album> albums;
 
-    std::transform(
-        py_albums.begin(), py_albums.end(), std::back_inserter(albums),
-        [](py::handle album) {
-            return artist::Artist::Album{
-                album["title"].cast<std::string>(),
-                extract_py_list<meta::Thumbnail>(album["thumbnails"]),
-                album["year"].cast<std::string>(),
-                album["browseId"].cast<std::string>(),
-                album["type"].cast<std::string>()};
-        });
+    std::transform(py_albums.begin(), py_albums.end(), std::back_inserter(albums), [](py::handle album) {
+        return artist::Artist::Album {
+            album["title"].cast<std::string>(),
+            extract_py_list<meta::Thumbnail>(album["thumbnails"]),
+            album["year"].cast<std::string>(),
+            album["browseId"].cast<std::string>(),
+            album["type"].cast<std::string>()
+        };
+    });
 
     return albums;
 }

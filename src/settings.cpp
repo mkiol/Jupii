@@ -15,6 +15,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QProcess>
 #include <QStandardPaths>
 #include <QSysInfo>
@@ -680,13 +681,13 @@ void Settings::initOpenUrlMode() {
         QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
         "/dbus-1/services"};
     if (!dbusPath.exists()) dbusPath.mkpath(dbusPath.absolutePath());
-    QFile dbusServiceFile{dbusPath.absolutePath() + "/" + APP_DBUS_SERVICE +
+    QFile dbusServiceFile{dbusPath.absolutePath() + "/" + APP_DBUS_APP_SERVICE +
                           ".service"};
     if (dbusServiceFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream s{&dbusServiceFile};
         s.setCodec("UTF-8");
         s << "[D-BUS Service]\n";
-        s << "Name=" << APP_DBUS_SERVICE << "\n";
+        s << "Name=" << APP_DBUS_APP_SERVICE << "\n";
         s << "Exec=/usr/bin/invoker --type=silica-qt5 --single-instance "
           << APP_BINARY_ID << "\n";
         s.flush();
@@ -798,6 +799,21 @@ bool Settings::isHarbour() const {
 #else
     return false;
 #endif
+}
+
+bool Settings::isFlatpak() const {
+#ifdef USE_FLATPAK
+    return true;
+#endif
+    return false;
+}
+
+bool Settings::isWayland() const {
+    return QGuiApplication::platformName() == "wayland";
+}
+
+bool Settings::isXcb() const {
+    return QGuiApplication::platformName() == "xcb";
 }
 
 int Settings::getCasterMicVolume() const {
@@ -1205,5 +1221,17 @@ void Settings::setControlMpdService(bool value) {
     if (value != controlMpdService()) {
         setValue(QStringLiteral("control_mpd_service"), value);
         emit controlMpdServiceChanged();
+    }
+}
+
+QString Settings::pyPath() const {
+    return value(QStringLiteral("py_path"), {}).toString();
+}
+
+void Settings::setPyPath(const QString &value) {
+    if (pyPath() != value) {
+        setValue(QStringLiteral("py_path"), value);
+        emit pyPathChanged();
+        setRestartRequired(true);
     }
 }

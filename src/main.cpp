@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,7 +23,7 @@
 #include "resourcehandler.h"
 #endif
 
-#ifdef USE_PLASMA
+#ifdef USE_DESKTOP
 #include <QApplication>
 #include <QGuiApplication>
 #include <QIcon>
@@ -43,7 +43,9 @@
 #include <QString>
 #include <QTextCodec>
 #include <QTranslator>
+#include <csignal>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 #include <libupnpp/control/description.hxx>
 #include <libupnpp/control/discovery.hxx>
@@ -84,6 +86,19 @@
 #include "mpdtools.hpp"
 #include "ytmodel.h"
 #endif
+
+static void exitProgram() {
+    qDebug() << "exiting";
+
+    // workaround for python thread locking
+    std::quick_exit(0);
+}
+
+static void signalHandler(int sig) {
+    qDebug() << "received signal:" << sig;
+
+    exitProgram();
+}
 
 static void makeAppDirs() {
     auto root = QDir::root();
@@ -196,7 +211,7 @@ int main(int argc, char** argv) {
     auto* context = view->rootContext();
     auto* engine = view->engine();
 #endif
-#ifdef USE_PLASMA
+#ifdef USE_DESKTOP
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     auto app = std::make_unique<QApplication>(argc, argv);
@@ -233,8 +248,12 @@ int main(int argc, char** argv) {
                                 APP_TRANSLATORS_STR);
     context->setContextProperty(QStringLiteral("APP_LIBS_STR"), APP_LIBS_STR);
 
+    qDebug() << "version:" << APP_VERSION;
+
     installTranslator();
     makeAppDirs();
+
+    signal(SIGINT, signalHandler);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
@@ -277,10 +296,10 @@ int main(int argc, char** argv) {
     view->setSource(SailfishApp::pathTo(QStringLiteral("qml/main.qml")));
     view->show();
     utils->setQmlRootItem(view->rootObject());
-    int ret = QGuiApplication::exec();
+    QGuiApplication::exec();
 #else
     engine->load(QUrl{QStringLiteral("qrc:/qml/main.qml")});
-    int ret = QGuiApplication::exec();
+    QGuiApplication::exec();
 #endif
     fcloseall();
 
@@ -288,5 +307,5 @@ int main(int argc, char** argv) {
     if (settings->controlMpdService()) mpdtools::stop();
 #endif
 
-    return ret;
+    exitProgram();
 }

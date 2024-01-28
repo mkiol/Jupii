@@ -34,7 +34,7 @@ DbusProxy::DbusProxy(QObject* parent)
             throw std::runtime_error("dbus address in use");
         return;
     }
-    if (!con.registerService(APP_DBUS_SERVICE)) {
+    if (!con.registerService(APP_DBUS_APP_SERVICE)) {
         qWarning() << "dbus service registration failed:"
                    << con.lastError().message();
         if (con.lastError().type() == QDBusError::AddressInUse)

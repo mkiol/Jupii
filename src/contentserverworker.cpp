@@ -21,7 +21,7 @@
 
 const int ContentServerWorker::CacheLimit::INF_TIME = -1;
 const int64_t ContentServerWorker::CacheLimit::INF_SIZE = -1;
-const int64_t ContentServerWorker::CacheLimit::DEFAULT_DELTA = 300'000;
+const int64_t ContentServerWorker::CacheLimit::DEFAULT_DELTA = 300000;
 
 inline static std::optional<QString> extFromPath(const QString &path) {
     auto l = path.split(QStringLiteral("."));

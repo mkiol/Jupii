@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2024 Michal Kosciesza -->
+<component type="desktop">
+  <id>net.mkiol.Jupii</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MPL-2.0</project_license>
+  <developer_name>Michal Kosciesza</developer_name>
+  <name>Jupii</name>
+  <summary>Play audio, video and images on UPnP/DLNA devices</summary>
+  <description>
+    <p>Jupii let you play audio, video and image files on any device on your local network that supports UPnP/DLNA.</p>
+    <p>Here's a closer look at what it can do:</p>
+    <ul>
+    <li>Device Discovery: Auto detect and connect with DLNA devices present in your local network, such as smart speaker, smart TVs, gaming consoles, and more</li>
+    <li>Remote Control: Play, pause, skip, seek, and adjust volume</li>
+    <li>Local Content Playback: Share your locally stored music, videos, and images with DLNA device on your network</li>
+    <li>Internet Radio and Streaming: Play multimedia content from online services such as: Internet radio, SomaFM channels, Icecast streams, FOSDEM videos, Bandcamp, SoundCloud, TuneIn stations, YouTube Music, radio.net</li>
+    <li>Media Server Access: Browse and play media files stored on UPnP Media Servers within your network</li>
+    <li>Camera and Microphone Casting:** Share real-time camera and microphone output</li>
+    <li>Audio Playback Streaming: Capture local audio playback and share it with DLNA device</li>
+    <li>Screen Casting: Mirror your device's screen</li>
+    <li>Music Track Recording: Capture and save your favorite music tracks, including those from Icecast streams, so you can listen to them offline</li>
+    <li>Play Queue and Playlists: Organize your media playback with customizable play queues and playlists</li>
+    </ul>
+  </description>
+  <categories>
+    <category>AudioVideo</category>
+  </categories>
+  <keywords>
+    <keyword>upnp</keyword>
+    <keyword>dlna</keyword>
+    <keyword>screen-sharing</keyword>
+    <keyword>screen-mirroring</keyword>
+    <keyword>audio-casting</keyword>
+    <keyword>internet-radio</keyword>
+    <keyword>bandcamp</keyword>
+    <keyword>soundcloud</keyword>
+    <keyword>youtube</keyword>
+    <keyword>somafm</keyword>
+    <keyword>icecast</keyword>
+  </keywords>
+  <url type="homepage">https://github.com/mkiol/Jupii</url>
+  <url type="bugtracker">https://github.com/mkiol/Jupii/issues</url>
+  <url type="translate">https://app.transifex.com/mkiol/jupii</url>
+  <update_contact>jupii_AT_mkiol.net</update_contact>
+  <launchable type="desktop-id">net.mkiol.Jupii.desktop</launchable>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="2.14.3" date="2023-05-08" />
+    <release version="2.14.2" date="2023-03-06" />
+    <release version="2.14.0" date="2023-02-22" />
+    <release version="2.13.4" date="2022-12-05" />
+    <release version="2.13.3" date="2022-11-17" />
+    <release version="2.13.1" date="2022-09-05" />
+    <release version="2.11.3" date="2022-02-10" />
+    <release version="2.9.1" date="2021-03-07" />
+    <release version="2.9.0" date="2021-02-21" />
+    <release version="2.8.2" date="2021-01-09" />
+  </releases>
+</component>
