@@ -70,5 +70,7 @@
         <file>qml/ScreenDialog.qml</file>
         <file>qml/PlaybackDialog.qml</file>
         <file>qml/CasterSourceVolume.qml</file>
+        <file alias="app_icon.svg">jupii.svg</file>
+        <file alias="app_icon.png">jupii.png</file>
     </qresource>
 </RCC>

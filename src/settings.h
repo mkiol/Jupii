@@ -83,6 +83,8 @@ class Settings : public QSettings,
     Q_PROPERTY(bool controlMpdService READ controlMpdService WRITE
                    setControlMpdService NOTIFY controlMpdServiceChanged)
     Q_PROPERTY(QString pyPath READ pyPath WRITE setPyPath NOTIFY pyPathChanged)
+    Q_PROPERTY(QString prevAppVer READ prevAppVer WRITE setPrevAppVer NOTIFY
+                   prevAppVerChanged)
 
     // caster
     Q_PROPERTY(int casterMicVolume READ getCasterMicVolume WRITE
@@ -175,6 +177,8 @@ class Settings : public QSettings,
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
 #endif
     Settings();
+    QString moduleChecksum(const QString &name) const;
+    void setModuleChecksum(const QString &name, const QString &value);
     void setRestartRequired(bool value);
     inline bool getRestartRequired() const { return m_restartRequired; }
     void setPort(int value);
@@ -198,6 +202,8 @@ class Settings : public QSettings,
     void setPlayMode(int value);
     int getPlayMode() const;
     void setFsapiPin(const QString &value);
+    QString prevAppVer() const;
+    void setPrevAppVer(const QString &value);
     QString fsapiPin() const;
     void setFavDevices(const QHash<QString, QVariant> &devs);
     QHash<QString, QVariant> getFavDevices() const;
@@ -358,6 +364,7 @@ class Settings : public QSettings,
     void allowNotIsomMp4Changed();
     void controlMpdServiceChanged();
     void pyPathChanged();
+    void prevAppVerChanged();
 
     // caster
 

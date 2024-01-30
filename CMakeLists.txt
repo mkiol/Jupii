@@ -19,6 +19,7 @@ option(WITH_X11_SCREEN_CAPTURE "enable X11 screen capture video source" ON)
 option(WITH_DROIDCAM "enable gstreamer droidcam video source" ON)
 option(WITH_SFOS_SCREEN_CAPTURE "enable sfos screen capture" ON)
 option(WITH_SFOS_HARBOUR "enable sfos build for harbour" OFF)
+option(WITH_PY "enable python libraries" ON)
 
 option(WITH_TRACE_LOGS "enable trace logging" OFF)
 option(WITH_SANITIZERS "enable asan and ubsan in debug build" ON)
@@ -31,6 +32,7 @@ option(BUILD_UPNPP "download sources of upnpp, build and link statically" ON)
 option(BUILD_TAGLIB "download sources of taglib, build and link statically" ON)
 option(BUILD_PYBIND11 "download sources of pybind11, build and link statically" ON)
 option(BUILD_LIBARCHIVE "download sources of libarchive, build and link statically" ON)
+option(BUILD_XZ "download sources of xz lib, build and link statically" ON)
 option(BUILD_PYTHON_MODULE "make python module archive" ${WITH_SFOS})
 option(BUILD_CATCH2 "download sources of catch2, build and link statically" ON)
 
@@ -311,7 +313,17 @@ set(jupii_lib_sources
     ${sources_dir}/radionetapi.cpp
     ${sources_dir}/radionetapi.hpp
     ${sources_dir}/mpdtools.cpp
-    ${sources_dir}/mpdtools.hpp)
+    ${sources_dir}/mpdtools.hpp
+    ${sources_dir}/py_executor.cpp
+    ${sources_dir}/py_executor.hpp
+    ${sources_dir}/py_tools.cpp
+    ${sources_dir}/py_tools.hpp
+    ${sources_dir}/module_tools.cpp
+    ${sources_dir}/module_tools.hpp
+    ${sources_dir}/checksum_tools.cpp
+    ${sources_dir}/checksum_tools.hpp
+    ${sources_dir}/comp_tools.cpp
+    ${sources_dir}/comp_tools.hpp)
 
 if(WITH_SFOS)
     list(APPEND jupii_lib_sources
@@ -413,6 +425,7 @@ target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${WITH_SFOS_HARBOU
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${WITH_SFOS}>:USE_SFOS>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${WITH_DESKTOP}>:USE_DESKTOP>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${WITH_FLATPAK}>:USE_FLATPAK>")
+target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${WITH_PY}>:USE_PY>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${BUILD_PYTHON_MODULE}>:USE_PYTHON_MODULE>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>")
@@ -488,6 +501,14 @@ else()
     pkg_search_module(libarchive REQUIRED libarchive)
     list(APPEND deps_libs ${libarchive_LIBRARIES})
     list(APPEND includes ${libarchive_INCLUDE_DIRS})
+endif()
+
+if(BUILD_XZ)
+    include(${cmake_path}/xz.cmake)
+else()
+    pkg_search_module(xz REQUIRED liblzma>=5.4.1)
+    list(APPEND deps_libs ${xz_LIBRARIES})
+    list(APPEND includes ${xz_INCLUDE_DIRS})
 endif()
 
 if(WITH_DROIDCAM)

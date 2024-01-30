@@ -71,6 +71,7 @@
 #include "notifications.h"
 #include "playlistfilemodel.h"
 #include "playlistmodel.h"
+#include "py_executor.hpp"
 #include "radionetmodel.hpp"
 #include "recmodel.h"
 #include "renderingcontrol.h"
@@ -214,15 +215,18 @@ int main(int argc, char** argv) {
 #ifdef USE_DESKTOP
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    auto app = std::make_unique<QApplication>(argc, argv);
+    QApplication app(argc, argv);
+    QGuiApplication::setWindowIcon(QIcon::fromTheme(APP_ID));
+    QGuiApplication::setWindowIcon(QIcon{QStringLiteral(":/app_icon.svg")});
+
     auto engine = std::make_unique<QQmlApplicationEngine>();
     auto* context = engine->rootContext();
-    QGuiApplication::setWindowIcon(QIcon::fromTheme(APP_ID));
 #endif
-    QGuiApplication::setApplicationName(APP_ID);
-    QGuiApplication::setOrganizationName(APP_ORG);
-    QGuiApplication::setApplicationDisplayName(APP_NAME);
-    QGuiApplication::setApplicationVersion(APP_VERSION);
+    QGuiApplication::setApplicationName(QStringLiteral(APP_ID));
+    QGuiApplication::setOrganizationName(QStringLiteral(APP_ORG));
+    QGuiApplication::setOrganizationDomain(QStringLiteral(APP_DOMAIN));
+    QGuiApplication::setApplicationDisplayName(QStringLiteral(APP_NAME));
+    QGuiApplication::setApplicationVersion(QStringLiteral(APP_VERSION));
 
     registerTypes();
 
@@ -287,6 +291,8 @@ int main(int argc, char** argv) {
     context->setContextProperty(QStringLiteral("notifications"), notifications);
     context->setContextProperty(QStringLiteral("conn"), conn);
     context->setContextProperty(QStringLiteral("dbus"), &dbus);
+
+    py_executor::instance()->start();
 
 #ifdef USE_SFOS
     ResourceHandler rhandler;

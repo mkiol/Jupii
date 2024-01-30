@@ -1206,6 +1206,8 @@ QString Settings::videoOrientationStrStatic(
         case CasterVideoOrientation::CasterVideoOrientation_InvertedLandscape:
             return tr("Inverted landscape");
     }
+
+    return {};
 }
 
 QString Settings::videoOrientationStr(
@@ -1233,5 +1235,27 @@ void Settings::setPyPath(const QString &value) {
         setValue(QStringLiteral("py_path"), value);
         emit pyPathChanged();
         setRestartRequired(true);
+    }
+}
+
+QString Settings::moduleChecksum(const QString &name) const {
+    return value(QStringLiteral("service/module_%1_checksum").arg(name))
+        .toString();
+}
+
+void Settings::setModuleChecksum(const QString &name, const QString &value) {
+    if (value != moduleChecksum(name)) {
+        setValue(QStringLiteral("service/module_%1_checksum").arg(name), value);
+    }
+}
+
+QString Settings::prevAppVer() const {
+    return value(QStringLiteral("prev_app_ver")).toString();
+}
+
+void Settings::setPrevAppVer(const QString &value) {
+    if (prevAppVer() != value) {
+        setValue(QStringLiteral("prev_app_ver"), value);
+        emit prevAppVerChanged();
     }
 }

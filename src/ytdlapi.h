@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,7 +12,6 @@
 #include <QObject>
 #include <QString>
 #include <QUrl>
-#include <memory>
 #include <optional>
 #include <string_view>
 
@@ -82,34 +81,30 @@ class YtdlApi : public QObject {
     };
 
     YtdlApi(QObject* parent = nullptr);
-    std::vector<SearchResultItem> search(const QString& query) const;
-    std::optional<Track> track(QUrl url) const;
-    std::optional<Album> album(const QString& id) const;
-    std::optional<Album> playlist(const QString& id) const;
-    std::optional<Artist> artist(const QString& id) const;
+    ~YtdlApi();
+
+    bool ready() const;
+    std::vector<SearchResultItem> search(const QString& query);
+    std::optional<Track> track(QUrl url);
+    std::optional<Album> album(const QString& id);
+    std::optional<Album> playlist(const QString& id);
+    std::optional<Artist> artist(const QString& id);
     std::vector<SearchResultItem> home(int limit = maxHome);
     std::vector<SearchResultItem> homeFirstPage();
-    static bool init();
 
    private:
-    enum class State { Unknown, Disabled, Enabled };
-    static const int maxHome;
-    static const int maxHomeFirstPage;
+    static const int maxHome = 50;
+    static const int maxHomeFirstPage = 5;
     static std::vector<home::Section> m_homeSections;
-    static State state;
-#ifdef USE_SFOS
-    const static QString pythonArchivePath;
-    static QString pythonSitePath();
-    static QString pythonUnpackPath();
-#endif
-    static bool unpack();
-    static bool check();
+    std::optional<YTMusic> m_ytmusic;
+
     static QUrl bestAudioUrl(const std::vector<video_info::Format>& formats);
     static QUrl bestVideoUrl(const std::vector<video_info::Format>& formats);
     static QUrl bestThumbUrl(const std::vector<meta::Thumbnail>& thumbs);
     static QString bestArtistName(const std::vector<meta::Artist>& artists,
                                   const QString& defaultName = {});
     static QUrl makeYtUrl(std::string_view id);
+    bool makeYtMusic();
 };
 
 #endif  // YTDLAPI_H
