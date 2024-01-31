@@ -23,7 +23,11 @@ py_executor::~py_executor() {
 }
 
 void py_executor::start() {
+#ifdef USE_SANITIZERS
+    LOGW("don't starting py executor loop because sanitizers are enabled");
+#else
     if (!m_thread.joinable()) m_thread = std::thread{&py_executor::loop, this};
+#endif
 }
 
 void py_executor::stop() {
@@ -38,8 +42,8 @@ void py_executor::stop() {
 }
 
 std::future<std::any> py_executor::execute(task_t task) {
-    if (m_shutting_down)
-        throw std::runtime_error("failed to execute task due to shutdown");
+    if (m_shutting_down || !m_thread.joinable())
+        throw std::runtime_error("failed to execute task");
 
     {
         std::lock_guard lock{m_mutex};
@@ -104,10 +108,16 @@ void py_executor::loop() {
             }
 
             try {
+                LOGD("py task execution: start");
                 m_promise->set_value(task.value()());
+                LOGD("py task execution: end");
             } catch (const std::exception& err) {
-                LOGE("py task error: " << err.what());
-                m_promise->set_exception(std::current_exception());
+                try {
+                    LOGE("py task error: " << err.what());
+                    m_promise->set_exception(std::current_exception());
+                } catch (...) {
+                    std::terminate();
+                }
             }
         }
 

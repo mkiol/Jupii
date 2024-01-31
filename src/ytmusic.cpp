@@ -288,7 +288,7 @@ auto extract_artist_section_results(py::handle section) {
                 return artist::Artist::Single{
                     result["title"].cast<std::string>(),
                     extract_py_list<meta::Thumbnail>(result["thumbnails"]),
-                    result["year"].cast<std::string>(),
+                    result["year"].cast<std::optional<std::string>>(),
                     result["browseId"].cast<std::string>()};
             } else if constexpr (std::is_same_v<T, artist::Artist::Video>) {
                 return artist::Artist::Video{
@@ -414,14 +414,15 @@ std::vector<search::SearchResultItem> YTMusic::search(
     const auto results = d->get_ytmusic().attr("search")("query"_a=query, "filter"_a=filter, "scope"_a=scope, "limit"_a = limit, "ignore_spelling"_a = ignore_spelling).cast<py::list>();
 
     std::vector<search::SearchResultItem> output;
+
     for (const auto &result : results) {
         if (result.is_none()) {
             continue;
         }
 
         try {
-            // pyPrintPretty(result);
-            if (const auto opt = extract_search_result(result); opt.has_value()) {
+            if (const auto opt = extract_search_result(result);
+                opt.has_value()) {
                 output.push_back(opt.value());
             }
         } catch (const std::exception &e) {

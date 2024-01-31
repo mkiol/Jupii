@@ -138,7 +138,7 @@ struct Artist {
     struct Single {
         std::string title;
         std::vector<meta::Thumbnail> thumbnails;
-        std::string year;
+        std::optional<std::string> year;
         std::string browse_id;
     };
 

@@ -429,6 +429,7 @@ target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${WITH_DESKTOP}>:U
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${WITH_FLATPAK}>:USE_FLATPAK>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${WITH_PY}>:USE_PY>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${BUILD_PYTHON_MODULE}>:USE_PYTHON_MODULE>")
+target_compile_definitions(compiler_flags INTERFACE "$<$<AND:$<CONFIG:Debug>,$<BOOL:${WITH_SANITIZERS}>>:USE_SANITIZERS>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<CONFIG:Debug>:DEBUG>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>")
 target_compile_definitions(compiler_flags INTERFACE "$<$<BOOL:${arch_x8632}>:ARCH_X86_32>")
