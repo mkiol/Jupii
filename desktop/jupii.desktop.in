@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Icon=@info_app_icon_id@
+Exec=@info_binary_id@
+Name=@info_name@
+Categories=Audio;AudioVideo;Player;KDE;Qt;
+StartupWMClass=@info_org@.@id@
+Keywords=@info_name@;@id@;
+Comment=Play audio, video and images on UPnP/DLNA devices

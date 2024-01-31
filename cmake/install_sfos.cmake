@@ -1,13 +1,18 @@
 install(TARGETS ${info_binary_id} RUNTIME DESTINATION bin)
 
 if (WITH_SFOS_HARBOUR)
-    install(FILES ${sfos_dir}/${info_binary_id}-harbour.desktop DESTINATION share/applications RENAME ${info_binary_id}.desktop)
+    configure_file(${sfos_dir}/${info_id}-harbour.desktop.in ${PROJECT_BINARY_DIR}/${info_app_icon_id}.desktop)
 else()
-    install(FILES ${sfos_dir}/${info_binary_id}.desktop DESTINATION share/applications)
-    install(FILES ${sfos_dir}/${info_binary_id}-open-url.desktop DESTINATION share/applications)
+    configure_file(${sfos_dir}/${info_id}.desktop.in ${PROJECT_BINARY_DIR}/${info_app_icon_id}.desktop)
+
+    configure_file(${sfos_dir}/${info_id}-open-url.desktop.in ${PROJECT_BINARY_DIR}/${info_app_icon_id}-open-url.desktop)
+    install(FILES ${PROJECT_BINARY_DIR}/${info_app_icon_id}-open-url.desktop DESTINATION share/applications)
+
     install(FILES ${sfos_dir}/sailjail/Jupii.permission DESTINATION /etc/sailjail/permissions)
     install(FILES ${sfos_dir}/sailjail/JupiiGpodder.permission DESTINATION /etc/sailjail/permissions)
 endif()
+
+install(FILES ${PROJECT_BINARY_DIR}/${info_app_icon_id}.desktop DESTINATION share/applications)
 
 if(BUILD_PYTHON_MODULE)
     install(FILES ${PROJECT_BINARY_DIR}/python.tar.xz DESTINATION share/${info_binary_id})

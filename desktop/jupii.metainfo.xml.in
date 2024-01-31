@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2024 Michal Kosciesza -->
 <component type="desktop">
-  <id>net.mkiol.Jupii</id>
+  <id>@info_app_icon_id@</id>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>MPL-2.0</project_license>
-  <developer_name>Michal Kosciesza</developer_name>
-  <name>Jupii</name>
+  <project_license>@info_license_spdx@</project_license>
+  <developer_name>@info_author@</developer_name>
+  <name>@info_name@</name>
   <summary>Play audio, video and images on UPnP/DLNA devices</summary>
   <description>
     <p>Jupii let you play audio, video and image files on any device on your local network that supports UPnP/DLNA.</p>
@@ -43,7 +43,7 @@
   <url type="bugtracker">https://github.com/mkiol/Jupii/issues</url>
   <url type="translate">https://app.transifex.com/mkiol/jupii</url>
   <update_contact>jupii_AT_mkiol.net</update_contact>
-  <launchable type="desktop-id">net.mkiol.Jupii.desktop</launchable>
+  <launchable type="desktop-id">@info_app_icon_id@.desktop</launchable>
   <content_rating type="oars-1.1" />
   <releases>
     <release version="2.14.3" date="2023-05-08" />

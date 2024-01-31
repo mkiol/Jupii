@@ -1,13 +1,13 @@
 [Desktop Entry]
 Type=Application
 X-Nemo-Application-Type=generic
-Icon=harbour-jupii
-Exec=harbour-jupii
-Name=Jupii
+Icon=@info_app_icon_id@
+Exec=@info_binary_id@
+Name=@info_name@
 
 [X-Sailjail]
 Sandboxing=Disabled
 Permissions=Internet;Audio;Microphone;RemovableMedia;UserDirs;MediaIndexing;JupiiGpodder
-OrganizationName=org.mkiol
-ApplicationName=jupii
-ExecDBus=harbour-jupii
+OrganizationName=@info_org@
+ApplicationName=@info_id@
+ExecDBus=@info_binary_id@

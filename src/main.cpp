@@ -216,7 +216,6 @@ int main(int argc, char** argv) {
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     QApplication app(argc, argv);
-    QGuiApplication::setWindowIcon(QIcon::fromTheme(APP_ID));
     QGuiApplication::setWindowIcon(QIcon{QStringLiteral(":/app_icon.svg")});
 
     auto engine = std::make_unique<QQmlApplicationEngine>();
