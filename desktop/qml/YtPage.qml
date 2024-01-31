@@ -10,9 +10,9 @@ import QtQuick.Controls 2.2 as Controls
 import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.14 as Kirigami
 
-import harbour.jupii.Settings 1.0
-import harbour.jupii.ContentServer 1.0
-import harbour.jupii.YtModel 1.0
+import org.mkiol.jupii.Settings 1.0
+import org.mkiol.jupii.ContentServer 1.0
+import org.mkiol.jupii.YtModel 1.0
 
 Kirigami.ScrollablePage {
     id: root

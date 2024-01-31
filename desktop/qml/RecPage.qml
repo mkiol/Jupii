@@ -11,7 +11,7 @@ import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.14 as Kirigami
 import QtQuick.Dialogs 1.1
 
-import harbour.jupii.RecModel 1.0
+import org.mkiol.jupii.RecModel 1.0
 
 Kirigami.ScrollablePage {
     id: root

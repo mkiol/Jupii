@@ -9,7 +9,7 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.14 as Kirigami
 
-import harbour.jupii.DeviceModel 1.0
+import org.mkiol.jupii.DeviceModel 1.0
 
 Kirigami.ScrollablePage {
     id: root

@@ -5,37 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifdef USE_SFOS
-#ifdef QT_QML_DEBUG
-#include <QtQuick>
-#endif
-#include <sailfishapp.h>
-
-#include <QDebug>
-#include <QGuiApplication>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QQuickItem>
-#include <QQuickView>
-#include <QtQml>
-
-#include "iconprovider.h"
-#include "resourcehandler.h"
-#endif
-
-#ifdef USE_DESKTOP
-#include <QApplication>
-#include <QGuiApplication>
-#include <QIcon>
-#include <QQmlApplicationEngine>
-#include <QQmlContext>
-#include <QQuickStyle>
-#include <memory>
-
-#include "iconprovider.h"
-#endif
-
 #include <QFile>
+#include <QGuiApplication>
 #include <QList>
 #include <QLocale>
 #include <QProcess>
@@ -50,6 +21,27 @@
 #include <libupnpp/control/description.hxx>
 #include <libupnpp/control/discovery.hxx>
 #include <variant>
+
+#ifdef USE_SFOS
+#ifdef QT_QML_DEBUG
+#include <QtQuick>
+#endif
+#include <sailfishapp.h>
+
+#include <QDebug>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QQuickItem>
+#include <QQuickView>
+#include <QtQml>
+#else
+#include <QApplication>
+#include <QIcon>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QQuickStyle>
+#include <memory>
+#endif
 
 #include "albummodel.h"
 #include "artistmodel.h"
@@ -87,6 +79,12 @@
 #include "mpdtools.hpp"
 #include "ytmodel.h"
 #endif
+#ifdef USE_SFOS
+#include "iconprovider.h"
+#include "resourcehandler.h"
+#else
+#include "iconprovider.h"
+#endif
 
 static void exitProgram() {
     qDebug() << "exiting";
@@ -112,49 +110,55 @@ static void makeAppDirs() {
 }
 
 static void registerTypes() {
+#ifdef USE_SFOS
+#define QML_IMPORT(str) "harbour.jupii." str
+#else
+#define QML_IMPORT(str) "org.mkiol.jupii." str
+#endif
+
     qmlRegisterUncreatableType<DeviceModel>(
-        "harbour.jupii.DeviceModel", 1, 0, "DeviceModel",
+        QML_IMPORT("DeviceModel"), 1, 0, "DeviceModel",
         QStringLiteral("DeviceModel is a singleton"));
-    qmlRegisterType<RenderingControl>("harbour.jupii.RenderingControl", 1, 0,
+    qmlRegisterType<RenderingControl>(QML_IMPORT("RenderingControl"), 1, 0,
                                       "RenderingControl");
-    qmlRegisterType<AVTransport>("harbour.jupii.AVTransport", 1, 0,
+    qmlRegisterType<AVTransport>(QML_IMPORT("AVTransport"), 1, 0,
                                  "AVTransport");
-    qmlRegisterType<DeviceInfo>("harbour.jupii.DeviceInfo", 1, 0, "DeviceInfo");
-    qmlRegisterType<AlbumModel>("harbour.jupii.AlbumModel", 1, 0, "AlbumModel");
-    qmlRegisterType<ArtistModel>("harbour.jupii.ArtistModel", 1, 0,
+    qmlRegisterType<DeviceInfo>(QML_IMPORT("DeviceInfo"), 1, 0, "DeviceInfo");
+    qmlRegisterType<AlbumModel>(QML_IMPORT("AlbumModel"), 1, 0, "AlbumModel");
+    qmlRegisterType<ArtistModel>(QML_IMPORT("ArtistModel"), 1, 0,
                                  "ArtistModel");
-    qmlRegisterType<PlaylistFileModel>("harbour.jupii.PlaylistFileModel", 1, 0,
+    qmlRegisterType<PlaylistFileModel>(QML_IMPORT("PlaylistFileModel"), 1, 0,
                                        "PlaylistFileModel");
-    qmlRegisterType<TrackModel>("harbour.jupii.TrackModel", 1, 0, "TrackModel");
+    qmlRegisterType<TrackModel>(QML_IMPORT("TrackModel"), 1, 0, "TrackModel");
     qmlRegisterUncreatableType<PlaylistModel>(
-        "harbour.jupii.PlayListModel", 1, 0, "PlayListModel",
+        QML_IMPORT("PlayListModel"), 1, 0, "PlayListModel",
         QStringLiteral("Playlist is a singleton"));
     qmlRegisterUncreatableType<ContentServer>(
-        "harbour.jupii.ContentServer", 1, 0, "ContentServer",
+        QML_IMPORT("ContentServer"), 1, 0, "ContentServer",
         QStringLiteral("ContentServer is a singleton"));
-    qmlRegisterType<SomafmModel>("harbour.jupii.SomafmModel", 1, 0,
+    qmlRegisterType<SomafmModel>(QML_IMPORT("SomafmModel"), 1, 0,
                                  "SomafmModel");
-    qmlRegisterType<FosdemModel>("harbour.jupii.FosdemModel", 1, 0,
+    qmlRegisterType<FosdemModel>(QML_IMPORT("FosdemModel"), 1, 0,
                                  "FosdemModel");
-    qmlRegisterType<BcModel>("harbour.jupii.BcModel", 1, 0, "BcModel");
-    qmlRegisterType<SoundcloudModel>("harbour.jupii.SoundcloudModel", 1, 0,
+    qmlRegisterType<BcModel>(QML_IMPORT("BcModel"), 1, 0, "BcModel");
+    qmlRegisterType<SoundcloudModel>(QML_IMPORT("SoundcloudModel"), 1, 0,
                                      "SoundcloudModel");
 #ifndef USE_SFOS_HARBOUR
-    qmlRegisterType<YtModel>("harbour.jupii.YtModel", 1, 0, "YtModel");
+    qmlRegisterType<YtModel>(QML_IMPORT("YtModel"), 1, 0, "YtModel");
 #endif
-    qmlRegisterType<IcecastModel>("harbour.jupii.IcecastModel", 1, 0,
+    qmlRegisterType<IcecastModel>(QML_IMPORT("IcecastModel"), 1, 0,
                                   "IcecastModel");
-    qmlRegisterType<GpodderEpisodeModel>("harbour.jupii.GpodderEpisodeModel", 1,
+    qmlRegisterType<GpodderEpisodeModel>(QML_IMPORT("GpodderEpisodeModel"), 1,
                                          0, "GpodderEpisodeModel");
-    qmlRegisterType<DirModel>("harbour.jupii.DirModel", 1, 0, "DirModel");
-    qmlRegisterType<RecModel>("harbour.jupii.RecModel", 1, 0, "RecModel");
-    qmlRegisterType<CDirModel>("harbour.jupii.CDirModel", 1, 0, "CDirModel");
-    qmlRegisterType<TuneinModel>("harbour.jupii.TuneinModel", 1, 0,
+    qmlRegisterType<DirModel>(QML_IMPORT("DirModel"), 1, 0, "DirModel");
+    qmlRegisterType<RecModel>(QML_IMPORT("RecModel"), 1, 0, "RecModel");
+    qmlRegisterType<CDirModel>(QML_IMPORT("CDirModel"), 1, 0, "CDirModel");
+    qmlRegisterType<TuneinModel>(QML_IMPORT("TuneinModel"), 1, 0,
                                  "TuneinModel");
-    qmlRegisterType<RadionetModel>("harbour.jupii.RadionetModel", 1, 0,
+    qmlRegisterType<RadionetModel>(QML_IMPORT("RadionetModel"), 1, 0,
                                    "RadionetModel");
     qmlRegisterUncreatableType<Settings>(
-        "harbour.jupii.Settings", 1, 0, "Settings",
+        QML_IMPORT("Settings"), 1, 0, "Settings",
         QStringLiteral("Settings is a singleton"));
 
     qRegisterMetaType<Service::ErrorType>("Service::ErrorType");

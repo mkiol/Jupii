@@ -11,7 +11,7 @@ import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.14 as Kirigami
 import QtQuick.Dialogs 1.1
 
-import harbour.jupii.Settings 1.0
+import org.mkiol.jupii.Settings 1.0
 
 Kirigami.ScrollablePage {
     id: root
@@ -28,17 +28,6 @@ Kirigami.ScrollablePage {
         folder: utils.pathToUrl(_settings.recDir)
         onAccepted: {
             recDirDialog.fileUrls.forEach(function(url) {_settings.recDir = utils.urlToPath(url)})
-        }
-    }
-
-    FileDialog {
-        id: pyDirDialog
-
-        title: qsTr("Choose a directory with Python libraries")
-        selectMultiple: false
-        selectFolder: true
-        selectExisting: true
-        onAccepted: {
         }
     }
 
@@ -73,29 +62,35 @@ Kirigami.ScrollablePage {
                 onToggled: {
                     settings.contentDirSupported = !settings.contentDirSupported
                 }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("When enabled, items in play queue are accessible " +
+                                            "for other UPnP devices in your local network.")
+                hoverEnabled: true
             }
 
-            RowLayout {
-                Kirigami.FormData.label: qsTr("Volume level step")
-                Controls.Slider {
-                    from: 1
-                    to: 10
-                    stepSize: 1
-                    snapMode: Controls.Slider.SnapAlways
-                    value: settings.volStep
-                    onValueChanged: {
-                        settings.volStep = value
-                    }
-                }
-                Controls.SpinBox {
-                    from: 1
-                    to: 10
-                    value: settings.volStep
-                    onValueChanged: {
-                        settings.volStep = value
-                    }
-                }
-            }
+            // RowLayout {
+            //     Kirigami.FormData.label: qsTr("Volume level step")
+            //     Controls.Slider {
+            //         from: 1
+            //         to: 10
+            //         stepSize: 1
+            //         snapMode: Controls.Slider.SnapAlways
+            //         value: settings.volStep
+            //         onValueChanged: {
+            //             settings.volStep = value
+            //         }
+            //     }
+            //     Controls.SpinBox {
+            //         from: 1
+            //         to: 10
+            //         value: settings.volStep
+            //         onValueChanged: {
+            //             settings.volStep = value
+            //         }
+            //     }
+            // }
 
             Kirigami.Separator {
                 Kirigami.FormData.label: qsTr("Formats")
@@ -124,6 +119,10 @@ Kirigami.ScrollablePage {
                     default: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs;
                     }
                 }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("Change if you observe problems with video playback in Camera or Screen capture.")
             }
 
             Controls.ComboBox {
@@ -151,6 +150,10 @@ Kirigami.ScrollablePage {
                     default: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3;
                     }
                 }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("Change if you observe problems with audio playback in Microphone or Audio capture.")
             }
 
             Kirigami.Separator {
@@ -162,9 +165,21 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.label: qsTr("Directory for recordings")
 
                 Controls.TextField {
+                    Layout.fillWidth: true
                     readOnly: true
                     inputMethodHints: Qt.ImhNoPredictiveText
                     text: settings.recDir
+                }
+
+                Controls.Button {
+                    Layout.alignment: Qt.AlignLeft
+                    icon.name: "edit-clear-symbolic"
+                    onClicked: settings.recDir = ""
+
+                    Controls.ToolTip.visible: hovered
+                    Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                    Controls.ToolTip.text: qsTr("Set default")
+                    hoverEnabled: true
                 }
 
                 Controls.Button {
@@ -286,6 +301,14 @@ Kirigami.ScrollablePage {
                 onToggled: {
                     settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
                 }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("Some UPnP devices don't support audio stream in fragmented MP4 format. " +
+                                            "This kind of stream might even hang a device. " +
+                                            "To overcome this problem, Jupii tries to re-transcode stream to standard MP4. " +
+                                            "When re-transcoding fails and this option is enabled, item will not be played at all.")
+                hoverEnabled: true
             }
 
             Item {
@@ -330,6 +353,7 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.label: qsTr("Frontier Silicon PIN")
                 inputMethodHints: Qt.ImhDigitsOnly
                 text: settings.fsapiPin
+                placeholderText: qsTr("Enter Frontier Silicon PIN")
                 onEditingFinished: {
                     settings.fsapiPin = text
                 }
@@ -345,6 +369,16 @@ Kirigami.ScrollablePage {
                 onToggled: {
                     settings.showAllDevices = !settings.showAllDevices
                 }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("All types of UPnP devices are detected " +
+                                            "and shown, including unsupported devices like " +
+                                            "home routers. For unsupported devices only " +
+                                            "basic description information is available. " +
+                                            "This option might be useful for auditing UPnP devices " +
+                                            "in your local network.")
+                hoverEnabled: true
             }
 
             Controls.Switch {
@@ -353,6 +387,11 @@ Kirigami.ScrollablePage {
                 onClicked: {
                     settings.controlMpdService = !settings.controlMpdService
                 }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("When MPD and upmpdcli are installed they will be started " +
+                                            "together with Jupii and stopped on exit.")
             }
 
             Item {
@@ -376,6 +415,17 @@ Kirigami.ScrollablePage {
                 }
 
                 Controls.Button {
+                    Layout.alignment: Qt.AlignLeft
+                    icon.name: "edit-clear-symbolic"
+                    onClicked: settings.pyPath = ""
+
+                    Controls.ToolTip.visible: hovered
+                    Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                    Controls.ToolTip.text: qsTr("Set default")
+                    hoverEnabled: true
+                }
+
+                Controls.Button {
                     text: qsTr("Save")
                     onClicked: settings.pyPath = pyTextField.text
 
@@ -395,6 +445,12 @@ Kirigami.ScrollablePage {
                 onToggled: {
                     settings.logToFile = !settings.logToFile
                 }
+
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: qsTr("Needed for troubleshooting purposes. " +
+                                            "The log data is stored in %1 file.")
+                                              .arg(settings.getCacheDir() + "/jupii.log")
             }
 
             Item {

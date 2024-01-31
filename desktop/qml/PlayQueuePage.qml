@@ -11,10 +11,10 @@ import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.14 as Kirigami
 import QtQuick.Dialogs 1.1
 
-import harbour.jupii.AVTransport 1.0
-import harbour.jupii.RenderingControl 1.0
-import harbour.jupii.PlayListModel 1.0
-import harbour.jupii.ContentServer 1.0
+import org.mkiol.jupii.AVTransport 1.0
+import org.mkiol.jupii.RenderingControl 1.0
+import org.mkiol.jupii.PlayListModel 1.0
+import org.mkiol.jupii.ContentServer 1.0
 
 Kirigami.ScrollablePage {
     id: root

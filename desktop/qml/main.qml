@@ -10,8 +10,8 @@ import QtQuick.Controls 2.2 as Controls
 import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.11 as Kirigami
 
-import harbour.jupii.AVTransport 1.0
-import harbour.jupii.RenderingControl 1.0
+import org.mkiol.jupii.AVTransport 1.0
+import org.mkiol.jupii.RenderingControl 1.0
 
 Kirigami.ApplicationWindow {
     id: app
