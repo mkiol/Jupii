@@ -121,9 +121,12 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
         },
         Qt::QueuedConnection);
 
+    qDebug() << "starting http server on port:"
+             << Settings::instance()->getPort();
     if (!server->listen(
             static_cast<quint16>(Settings::instance()->getPort()))) {
-        throw std::runtime_error("unable to start http server");
+        throw std::runtime_error(
+            "unable to start http server - maybe another instance is running?");
     }
 
     proxiesCleanupTimer.setTimerType(Qt::TimerType::VeryCoarseTimer);
