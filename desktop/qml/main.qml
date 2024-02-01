@@ -20,6 +20,10 @@ Kirigami.ApplicationWindow {
     property alias addMediaPageAction: _addMediaPageAction
     property alias trackInfoAction: _trackInfoAction
 
+    function showToast(text) {
+        showPassiveNotification(text)
+    }
+
     globalDrawer: Kirigami.GlobalDrawer {
         header: RowLayout {
             Layout.fillWidth: true
@@ -121,6 +125,14 @@ Kirigami.ApplicationWindow {
     }
 
     Connections {
+        target: settings
+        onRestartRequiredChanged: {
+            if (settings.restartRequired)
+                app.showToast(qsTr("Restart is required for the changes to take effect."))
+        }
+    }
+
+    Connections {
         target: pageStack
         onCurrentItemChanged: {
             var idx = pageStack.currentIndex
@@ -193,15 +205,15 @@ Kirigami.ApplicationWindow {
             case AVTransport.E_LostConnection:
             case AVTransport.E_NotInited:
             case RenderingControl.E_LostConnection:
-                notifications.show(qsTr("Cannot connect to device"))
+                app.showToast(qsTr("Cannot connect to device"))
                 break
             case AVTransport.E_ServerError:
             case RenderingControl.E_ServerError:
-                notifications.show(qsTr("Device responded with an error"))
+                app.showToast(qsTr("Device responded with an error"))
                 playlist.resetToBeActive()
                 break
             case AVTransport.E_InvalidPath:
-                notifications.show(qsTr("Cannot play the file"))
+                app.showToast(qsTr("Cannot play the file"))
                 playlist.resetToBeActive()
                 break
             }
@@ -214,7 +226,9 @@ Kirigami.ApplicationWindow {
         onStreamRecordableChanged: updateStreamInfo()
         onStreamToRecordChanged: updateStreamInfo()
         onStreamRecorded: {
-            notifications.show(qsTr("Track \"%1\" saved").arg(title))
+            var text = qsTr("Track \"%1\" saved").arg(title)
+            app.showToast(text )
+            notifications.show(text)
         }
     }
 
@@ -224,10 +238,10 @@ Kirigami.ApplicationWindow {
         onError: {
             switch(code) {
             case 1:
-                notifications.show(qsTr("Cannot connect to a local network"))
+                app.showToast(qsTr("Cannot connect to a local network"))
                 break
             default:
-                notifications.show(qsTr("An internal error occurred"))
+                app.showToast(qsTr("An internal error occurred"))
             }
         }
 

@@ -173,17 +173,17 @@ Kirigami.ScrollablePage {
 
         onError: {
             if (code === PlayListModel.E_FileExists)
-                notifications.show(qsTr("Item is already in play queue"))
+                app.showToast(qsTr("Item is already in play queue"))
             else if (code === PlayListModel.E_ItemNotAdded)
-                notifications.show(qsTr("Item cannot be added"))
+                app.showToast(qsTr("Item cannot be added"))
             else if (code === PlayListModel.E_SomeItemsNotAdded)
-                notifications.show(qsTr("Some items cannot be added"))
+                app.showToast(qsTr("Some items cannot be added"))
             else if (code === PlayListModel.E_AllItemsNotAdded)
-                notifications.show(qsTr("Items cannot be added"))
+                app.showToast(qsTr("Items cannot be added"))
             else if (code === PlayListModel.E_ProxyError)
-                notifications.show(qsTr("Unable to play item"))
+                app.showToast(qsTr("Unable to play item"))
             else
-                notifications.show(qsTr("Unknown error"))
+                app.showToast(qsTr("Unknown error"))
         }
     }
 
@@ -198,7 +198,7 @@ Kirigami.ScrollablePage {
         folder: shortcuts.music
         onAccepted: {
             if (playlist.saveSelectedToUrl(saveDialog.fileUrls[0]))
-                showPassiveNotification(qsTr("Playlist has been saved"))
+                app.showToast(qsTr("Playlist has been saved"))
             root.selectionMode = false
         }
     }
