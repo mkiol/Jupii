@@ -4,8 +4,8 @@ set(ffmpeg_checksum "8684f4b00f94b85461884c3719382f1261f0d9eb3d59640a1f4ac087361
 set(lame_source_url "https://altushost-swe.dl.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz")
 set(lame_checksum "ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e")
 
-set(nasm_source_url "https://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05.tar.gz")
-set(nasm_checksum "9182a118244b058651c576baa9d0366ee05983c4d4ae1d9ddd3236a9f2304997")
+set(nasm_source_url "https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/nasm-2.16.01.tar.gz")
+set(nasm_checksum "d833bf0f5716e89dbcd345b7f545f25fe348c6e2ef16dbc293e1027bcd22d881")
 
 set(ffnvc_source_url "https://github.com/FFmpeg/nv-codec-headers/releases/download/n12.1.14.0/nv-codec-headers-12.1.14.0.tar.gz")
 set(ffnvc_checksum "62b30ab37e4e9be0d0c5b37b8fee4b094e38e570984d56e1135a6b6c2c164c9f")
@@ -19,7 +19,7 @@ ExternalProject_Add(nasm
     INSTALL_DIR ${PROJECT_BINARY_DIR}/external
     URL ${nasm_source_url}
     URL_HASH SHA256=${nasm_checksum}
-    CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
+    CONFIGURE_COMMAND cp -a <SOURCE_DIR>/. <BINARY_DIR> && <BINARY_DIR>/configure --prefix=<INSTALL_DIR>
     BUILD_COMMAND ${MAKE}
     BUILD_ALWAYS False
     INSTALL_COMMAND make DESTDIR=/ install
@@ -165,9 +165,6 @@ ExternalProject_Add(ffmpeg
     INSTALL_DIR ${PROJECT_BINARY_DIR}/external
     URL ${ffmpeg_source_url}
     URL_HASH SHA256=${ffmpeg_checksum}
-    PATCH_COMMAND patch --batch --unified -p1 --directory=<SOURCE_DIR>
-                -i ${patches_dir}/ffmpeg.patch ||
-                    echo "patch cmd failed, likely already patched"
     CONFIGURE_COMMAND CPATH=${external_include_dir}
         LIBRARY_PATH=${external_lib_dir}
         PATH=$ENV{PATH}:${external_bin_dir} PKG_CONFIG_PATH=${external_lib_dir}/pkgconfig

@@ -53,6 +53,7 @@ BuildRequires:  libtool
 BuildRequires:  make
 BuildRequires:  cmake
 BuildRequires:  m4
+BuildRequires:  git
 
 %description
 Play audio, video and images on UPnP/DLNA devices
