@@ -26,6 +26,7 @@
 
 namespace mpdtools {
 
+#ifdef USE_SFOS
 static const auto* const mpdConfing =
     "db_file                 \"~/.config/mpd/database\"\n"
     "log_file                \"~/.config/mpd/log\"\n"
@@ -37,6 +38,7 @@ static const auto* const mpdConfing =
     "    type        \"pulse\"\n"
     "    name        \"PulseAudio\"\n"
     "}\n";
+#endif
 
 static bool startCheckDone = false;
 
@@ -99,10 +101,15 @@ bool upmpdcliDev(const QString& modelName, const QUrl& url) {
 static std::optional<QString> execSystemctl(const QString& arg1,
                                             const QString& arg2) {
     QProcess process;
+#ifdef USE_SFOS
     process.start(QStringLiteral("/usr/bin/invoker"),
                   QStringList() << QStringLiteral("--type=generic")
                                 << QStringLiteral("/usr/bin/systemctl")
                                 << QStringLiteral("--user") << arg1 << arg2);
+#else
+    process.start(QStringLiteral("/usr/bin/systemctl"),
+                  QStringList() << QStringLiteral("--user") << arg1 << arg2);
+#endif
 
     if (!process.waitForFinished(10000)) return std::nullopt;
 
@@ -111,7 +118,8 @@ static std::optional<QString> execSystemctl(const QString& arg1,
     return process.readAllStandardOutput();
 }
 
-static bool servicesExist(const QString& name1, const QString& name2) {
+[[maybe_unused]] static bool servicesExist(const QString& name1,
+                                           const QString& name2) {
     auto output =
         execSystemctl(QStringLiteral("list-units"), QStringLiteral("--all"));
     if (!output) return false;

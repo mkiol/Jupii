@@ -1216,7 +1216,11 @@ QString Settings::videoOrientationStr(
 }
 
 bool Settings::controlMpdService() const {
-    return value(QStringLiteral("control_mpd_service"), true).toBool();
+#ifdef USE_SFOS
+    return value(QStringLiteral("control_mpd_service"), false).toBool();
+#else
+    return false;
+#endif
 }
 
 void Settings::setControlMpdService(bool value) {
