@@ -132,7 +132,6 @@ std::optional<Transcoder::InputAvData> Transcoder::openAudioInput(
     AVFormatContext *ic = nullptr;
     if (avformat_open_input(&ic, cfile, nullptr, nullptr) < 0) {
         qWarning() << "avformat_open_input error";
-        throw std::runtime_error("error");
         return std::nullopt;
     }
 
@@ -168,7 +167,8 @@ std::optional<Transcoder::InputAvData> Transcoder::openAudioInput(
 
     auto *icodec = avcodec_find_decoder(ic->streams[aidx]->codecpar->codec_id);
     if (!icodec) {
-        qWarning() << "avcodec_find_decoder error";
+        qWarning() << "avcodec_find_decoder error:"
+                   << ic->streams[aidx]->codecpar->codec_id;
         avformat_close_input(&ic);
         return std::nullopt;
     }
