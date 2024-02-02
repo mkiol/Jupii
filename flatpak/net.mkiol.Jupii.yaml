@@ -13,7 +13,7 @@ finish-args:
   - --socket=fallback-x11
   - --socket=wayland
   - --socket=pulseaudio
-  - --device=all # webcams
+  - --device=all # v4l2 webcams
   - --filesystem=xdg-desktop
   - --filesystem=xdg-download
   - --filesystem=xdg-music
@@ -447,6 +447,10 @@ modules:
         skip:
           - flatpak
           - build
+          - '*-bak*'
+          - misc
+          - '.git'
+          - '*.user.*'
           - external/ffmpeg
           - external/ffnvc
           - external/fmt
