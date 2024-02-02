@@ -129,7 +129,8 @@ void DroidCamSource::initGstLib() {
                                  std::to_string(err->code));
     }
 
-    gst_debug_set_active(Logger::match(Logger::LogType::Debug) ? TRUE : FALSE);
+    gst_debug_set_active(
+        JupiiLogger::match(JupiiLogger::LogType::Debug) ? TRUE : FALSE);
 }
 
 void DroidCamSource::init() {
