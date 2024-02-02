@@ -40,12 +40,12 @@
   </keywords>
   <screenshots>
     <screenshot type="default">
-      <caption>Speech Note main window</caption>
-      <image>https://raw.githubusercontent.com/mkiol/Jupii/main/desktop/screenshots/jupii-screenshot-light.png</image>
+      <caption>Jupii main window</caption>
+      <image>https://raw.githubusercontent.com/mkiol/Jupii/master/desktop/screenshots/jupii-screenshot-light.png</image>
     </screenshot>
     <screenshot>
-      <caption>Translator mode</caption>
-      <image>https://raw.githubusercontent.com/mkiol/Jupii/main/desktop/screenshots/jupii-screenshot-dark.png</image>
+      <caption>Jupii main window (Dark theme)</caption>
+      <image>https://raw.githubusercontent.com/mkiol/Jupii/master/desktop/screenshots/jupii-screenshot-dark.png</image>
     </screenshot>
   </screenshots>
   <url type="homepage">https://github.com/mkiol/Jupii</url>
