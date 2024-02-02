@@ -55,6 +55,7 @@
   <launchable type="desktop-id">@info_app_icon_id@.desktop</launchable>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="2.14.4" date="2024-02-02" />
     <release version="2.14.3" date="2023-05-08" />
     <release version="2.14.2" date="2023-03-06" />
     <release version="2.14.0" date="2023-02-22" />

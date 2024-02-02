@@ -107,7 +107,7 @@ Petr Tsymbarovich · Carmen Fernández B.")
 set(info_libs_str "Qt · QHTTPServer · npupnp · Libupnpp · TagLib · FFmpeg · LAME · \
 x264 · Gumbo · yt-dlp · ytmusicapi · EasyEXIF · AudioTube · {fmt}")
 
-project(${id} VERSION 2.14.3)
+project(${id} VERSION 2.14.4)
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES ".*arm.*")
     message(STATUS "arm architecture detected")
