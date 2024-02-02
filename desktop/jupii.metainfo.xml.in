@@ -8,19 +8,18 @@
   <name>@info_name@</name>
   <summary>Play audio, video and images on UPnP/DLNA devices</summary>
   <description>
-    <p>Jupii let you play audio, video and image files on any device on your local network that supports UPnP/DLNA.</p>
-    <p>Here's a closer look at what it can do:</p>
+    <p>Jupii let you play audio, video and image files on any device on your local network that supports UPnP/DLNA, such as smart speaker, smart TVs, gaming consoles, and more.</p>
+    <p>In addition to the typical features you might expect from this type of application, Jupii also has some unique functionalities such as:</p>
     <ul>
-    <li>Device Discovery: Auto detect and connect with DLNA devices present in your local network, such as smart speaker, smart TVs, gaming consoles, and more</li>
-    <li>Remote Control: Play, pause, skip, seek, and adjust volume</li>
-    <li>Local Content Playback: Share your locally stored music, videos, and images with DLNA device on your network</li>
-    <li>Internet Radio and Streaming: Play multimedia content from online services such as: Internet radio, SomaFM channels, Icecast streams, FOSDEM videos, Bandcamp, SoundCloud, TuneIn stations, YouTube Music, radio.net</li>
-    <li>Media Server Access: Browse and play media files stored on UPnP Media Servers within your network</li>
-    <li>Camera and Microphone Casting:** Share real-time camera and microphone output</li>
-    <li>Audio Playback Streaming: Capture local audio playback and share it with DLNA device</li>
-    <li>Screen Casting: Mirror your device's screen</li>
-    <li>Music Track Recording: Capture and save your favorite music tracks, including those from Icecast streams, so you can listen to them offline</li>
-    <li>Play Queue and Playlists: Organize your media playback with customizable play queues and playlists</li>
+    <li>support many different internet services as media source (Bandcamp, SoundCloud, YouTube and many more)</li>
+    <li>live casting of video/audio from camera or microphone</li>
+    <li>screen mirroring</li>
+    <li>recorder that let you to extract music from Internet radio streams</li>
+    </ul>
+    <p>This app can be used in two different UPnP/DLNA modes:</p>
+    <ul>
+    <li>Playback control mode: Using Jupii, you connect to the player device (e.g. smart speaker) and transfer media from your phone/computer to this device.</li>
+    <li>Media server mode: Using your playback device (e.g. smart TV), you browse and play media files shared by Jupii</li>
     </ul>
   </description>
   <categories>
