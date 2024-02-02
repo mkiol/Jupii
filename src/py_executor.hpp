@@ -32,7 +32,7 @@ class py_executor : public Singleton<py_executor> {
     std::optional<py_tools::libs_availability_t> libs_availability;
     py_executor() = default;
     ~py_executor() override;
-    std::future<std::any> execute(task_t task);
+    std::optional<std::future<std::any>> execute(task_t task);
     void start();
     void stop();
 

@@ -243,7 +243,7 @@ Kirigami.ScrollablePage {
         }
 
         footer: ShowmoreItem {
-            visible: !itemModel.busy && root.featureMode
+            visible: !itemModel.busy && root.featureMode && itemList.count !== 0
             onClicked: {
                 if (root.featureMode) {
                     pageStack.push(Qt.resolvedUrl("YtPage.qml"),

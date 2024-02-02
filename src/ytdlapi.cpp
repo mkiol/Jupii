@@ -42,17 +42,16 @@ YtdlApi::YtdlApi(QObject* parent) : QObject{parent} {}
 
 YtdlApi::~YtdlApi() {
     if (m_ytmusic) {
-        py_executor::instance()
-            ->execute([&]() {
-                try {
-                    m_ytmusic.reset();
-                    return true;
-                } catch (const std::exception& err) {
-                    qCritical() << "error:" << err.what();
-                    return false;
-                }
-            })
-            .get();
+        auto task = py_executor::instance()->execute([&]() {
+            try {
+                m_ytmusic.reset();
+                return true;
+            } catch (const std::exception& err) {
+                qCritical() << "error:" << err.what();
+                return false;
+            }
+        });
+        if (task) task->get();
     }
 }
 
@@ -188,17 +187,20 @@ std::optional<YtdlApi::Track> YtdlApi::track(QUrl url) {
 
     auto* pe = py_executor::instance();
 
-    auto info = std::any_cast<video_info::VideoInfo>(
-        pe->execute([&]() {
-              try {
-                  if (makeYtMusic())
-                      return m_ytmusic->extract_video_info(
-                          url.toString().toStdString());
-              } catch (const std::exception& err) {
-                  qWarning() << "ytdl error:" << err.what();
-              }
-              return video_info::VideoInfo{};
-          }).get());
+    auto task = pe->execute([&]() {
+        try {
+            if (makeYtMusic())
+                return m_ytmusic->extract_video_info(
+                    url.toString().toStdString());
+        } catch (const std::exception& err) {
+            qWarning() << "ytdl error:" << err.what();
+        }
+        return video_info::VideoInfo{};
+    });
+
+    if (!task) return std::nullopt;
+
+    auto info = std::any_cast<video_info::VideoInfo>(task->get());
 
     logVideoInfo(info);
 
@@ -223,16 +225,18 @@ std::optional<YtdlApi::Album> YtdlApi::album(const QString& id) {
 
     auto* pe = py_executor::instance();
 
-    auto result = std::any_cast<album::Album>(
-        pe->execute([&]() {
-              try {
-                  if (makeYtMusic())
-                      return m_ytmusic->get_album(id.toStdString());
-              } catch (const std::exception& err) {
-                  qWarning() << "ytdl error:" << err.what();
-              }
-              return album::Album{};
-          }).get());
+    auto task = pe->execute([&]() {
+        try {
+            if (makeYtMusic()) return m_ytmusic->get_album(id.toStdString());
+        } catch (const std::exception& err) {
+            qWarning() << "ytdl error:" << err.what();
+        }
+        return album::Album{};
+    });
+
+    if (!task) return std::nullopt;
+
+    auto result = std::any_cast<album::Album>(task->get());
 
     if (result.title.empty()) return std::nullopt;
 
@@ -271,16 +275,18 @@ std::optional<YtdlApi::Album> YtdlApi::playlist(const QString& id) {
 
     auto* pe = py_executor::instance();
 
-    auto result = std::any_cast<playlist::Playlist>(
-        pe->execute([&]() {
-              try {
-                  if (makeYtMusic())
-                      return m_ytmusic->get_playlist(id.toStdString());
-              } catch (const std::exception& err) {
-                  qWarning() << "ytdl error:" << err.what();
-              }
-              return playlist::Playlist{};
-          }).get());
+    auto task = pe->execute([&]() {
+        try {
+            if (makeYtMusic()) return m_ytmusic->get_playlist(id.toStdString());
+        } catch (const std::exception& err) {
+            qWarning() << "ytdl error:" << err.what();
+        }
+        return playlist::Playlist{};
+    });
+
+    if (!task) return std::nullopt;
+
+    auto result = std::any_cast<playlist::Playlist>(task->get());
 
     if (result.title.empty()) return std::nullopt;
 
@@ -318,16 +324,18 @@ std::optional<YtdlApi::Artist> YtdlApi::artist(const QString& id) {
 
     auto* pe = py_executor::instance();
 
-    auto result = std::any_cast<artist::Artist>(
-        pe->execute([&]() {
-              try {
-                  if (makeYtMusic())
-                      return m_ytmusic->get_artist(id.toStdString());
-              } catch (const std::exception& err) {
-                  qWarning() << "ytdl error:" << err.what();
-              }
-              return artist::Artist{};
-          }).get());
+    auto task = pe->execute([&]() {
+        try {
+            if (makeYtMusic()) return m_ytmusic->get_artist(id.toStdString());
+        } catch (const std::exception& err) {
+            qWarning() << "ytdl error:" << err.what();
+        }
+        return artist::Artist{};
+    });
+
+    if (!task) return std::nullopt;
+
+    auto result = std::any_cast<artist::Artist>(task->get());
 
     if (result.name.empty()) return std::nullopt;
 
@@ -386,15 +394,18 @@ std::vector<YtdlApi::SearchResultItem> YtdlApi::home(int limit) {
     auto* pe = py_executor::instance();
 
     if (m_homeSections.empty()) {
-        m_homeSections = std::any_cast<std::vector<home::Section>>(
-            pe->execute([&]() {
-                  try {
-                      if (makeYtMusic()) return m_ytmusic->get_home();
-                  } catch (const std::exception& err) {
-                      qWarning() << "ytdl error:" << err.what();
-                  }
-                  return std::vector<home::Section>{};
-              }).get());
+        auto task = pe->execute([&]() {
+            try {
+                if (makeYtMusic()) return m_ytmusic->get_home();
+            } catch (const std::exception& err) {
+                qWarning() << "ytdl error:" << err.what();
+            }
+            return std::vector<home::Section>{};
+        });
+
+        if (task)
+            m_homeSections =
+                std::any_cast<std::vector<home::Section>>(task->get());
     }
 
     for (const auto& section : m_homeSections) {
@@ -447,127 +458,110 @@ std::vector<YtdlApi::SearchResultItem> YtdlApi::search(const QString& query) {
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
-    auto* pe = py_executor::instance();
+    auto task = py_executor::instance()->execute([&]() {
+        try {
+            if (!makeYtMusic()) return std::vector<SearchResultItem>{};
 
-    items = std::any_cast<std::vector<SearchResultItem>>(
-        pe->execute([&]() {
-              try {
-                  if (!makeYtMusic()) return std::vector<SearchResultItem>{};
+            auto results = m_ytmusic->search(query.toStdString());
 
-                  auto results = m_ytmusic->search(query.toStdString());
+            items.reserve(results.size());
 
-                  items.reserve(results.size());
+            for (const auto& r : results) {
+                if (QThread::currentThread()->isInterruptionRequested())
+                    return items;
 
-                  for (const auto& r : results) {
-                      if (QThread::currentThread()->isInterruptionRequested())
-                          return items;
+                SearchResultItem item;
 
-                      SearchResultItem item;
+                std::visit(
+                    [&](auto&& arg) {
+                        using T = std::decay_t<decltype(arg)>;
+                        if constexpr (std::is_same_v<T, search::Album>) {
+                            item.type = Type::Album;
+                            item.id = QString::fromStdString(
+                                arg.browse_id.value_or(""));
+                            item.album = QString::fromStdString(arg.title);
+                            item.artist = bestArtistName(arg.artists);
+                            auto album = m_ytmusic->get_album(
+                                arg.browse_id.value_or(""));
+                            item.imageUrl = bestThumbUrl(album.thumbnails);
+                        } else if constexpr (std::is_same_v<T,
+                                                            search::Artist>) {
+                            item.type = Type::Artist;
+                            item.id = QString::fromStdString(arg.browse_id);
+                            item.artist = QString::fromStdString(arg.artist);
+                            auto artist = m_ytmusic->get_artist(arg.browse_id);
+                            item.imageUrl = bestThumbUrl(artist.thumbnails);
+                        } else if constexpr (std::is_same_v<T,
+                                                            search::Playlist>) {
+                            item.type = Type::Playlist;
+                            item.id = QString::fromStdString(arg.browse_id);
+                            item.count =
+                                QString::fromStdString(arg.item_count).toInt();
+                            item.title = QString::fromStdString(arg.title);
+                            // item.artist =
+                            // QString::fromStdString(arg.author); auto
+                            // playlist = ytm.get_playlist(arg.browse_id);
+                            // item.imageUrl =
+                            // bestThumbUrl(playlist.thumbnails);
+                        } else if constexpr (std::is_same_v<T, search::Song> ||
+                                             std::is_same_v<T, search::Video>) {
+                            item.type = Type::Video;
+                            item.id = QString::fromStdString(arg.video_id);
+                            item.title = QString::fromStdString(arg.title);
+                            item.webUrl = makeYtUrl(arg.video_id);
+                            item.artist = bestArtistName(arg.artists);
 
-                      std::visit(
-                          [&](auto&& arg) {
-                              using T = std::decay_t<decltype(arg)>;
-                              if constexpr (std::is_same_v<T, search::Album>) {
-                                  item.type = Type::Album;
-                                  item.id = QString::fromStdString(
-                                      arg.browse_id.value_or(""));
-                                  item.album =
-                                      QString::fromStdString(arg.title);
-                                  item.artist = bestArtistName(arg.artists);
-                                  auto album = m_ytmusic->get_album(
-                                      arg.browse_id.value_or(""));
-                                  item.imageUrl =
-                                      bestThumbUrl(album.thumbnails);
-                              } else if constexpr (std::is_same_v<
-                                                       T, search::Artist>) {
-                                  item.type = Type::Artist;
-                                  item.id =
-                                      QString::fromStdString(arg.browse_id);
-                                  item.artist =
-                                      QString::fromStdString(arg.artist);
-                                  auto artist =
-                                      m_ytmusic->get_artist(arg.browse_id);
-                                  item.imageUrl =
-                                      bestThumbUrl(artist.thumbnails);
-                              } else if constexpr (std::is_same_v<
-                                                       T, search::Playlist>) {
-                                  item.type = Type::Playlist;
-                                  item.id =
-                                      QString::fromStdString(arg.browse_id);
-                                  item.count =
-                                      QString::fromStdString(arg.item_count)
-                                          .toInt();
-                                  item.title =
-                                      QString::fromStdString(arg.title);
-                                  // item.artist =
-                                  // QString::fromStdString(arg.author); auto
-                                  // playlist = ytm.get_playlist(arg.browse_id);
-                                  // item.imageUrl =
-                                  // bestThumbUrl(playlist.thumbnails);
-                              } else if constexpr (std::is_same_v<
-                                                       T, search::Song> ||
-                                                   std::is_same_v<
-                                                       T, search::Video>) {
-                                  item.type = Type::Video;
-                                  item.id =
-                                      QString::fromStdString(arg.video_id);
-                                  item.title =
-                                      QString::fromStdString(arg.title);
-                                  item.webUrl = makeYtUrl(arg.video_id);
-                                  item.artist = bestArtistName(arg.artists);
+                            if constexpr (std::is_same_v<T, search::Song>) {
+                                if (arg.album)
+                                    item.album =
+                                        QString::fromStdString(arg.album->name);
+                                item.duration = Utils::strToSecStatic(
+                                    QString::fromStdString(
+                                        arg.duration.value_or("")));
+                            }
 
-                                  if constexpr (std::is_same_v<T,
-                                                               search::Song>) {
-                                      if (arg.album)
-                                          item.album = QString::fromStdString(
-                                              arg.album->name);
-                                      item.duration = Utils::strToSecStatic(
-                                          QString::fromStdString(
-                                              arg.duration.value_or("")));
-                                  }
-
-                                  /*if (auto song =
-                                  m_ytmusic->get_song(arg.video_id)) { if
-                                  (item.artist.isEmpty() &&
-                                          !song->author.empty()) {
-                                          item.artist =
-                                              QString::fromStdString(song->author);
-                                      }
-                                      item.imageUrl =
-                                          bestThumbUrl(song->thumbnail.thumbnails);
-                                      item.duration =
-                                          QString::fromStdString(song->length).toInt();
-                                  }*/
-                              } else if constexpr (std::is_same_v<
-                                                       T, search::TopResult>) {
-                                  if (arg.video_id && arg.title &&
-                                      !arg.title->empty()) {
-                                      item.type = Type::Video;
-                                      item.id =
-                                          QString::fromStdString(*arg.video_id);
-                                      item.title =
-                                          QString::fromStdString(*arg.title);
-                                      item.webUrl = makeYtUrl(*arg.video_id);
-                                      item.artist = bestArtistName(arg.artists);
-                                  }
-                              } else {
+                            /*if (auto song =
+                            m_ytmusic->get_song(arg.video_id)) { if
+                            (item.artist.isEmpty() &&
+                                    !song->author.empty()) {
+                                    item.artist =
+                                        QString::fromStdString(song->author);
+                                }
+                                item.imageUrl =
+                                    bestThumbUrl(song->thumbnail.thumbnails);
+                                item.duration =
+                                    QString::fromStdString(song->length).toInt();
+                            }*/
+                        } else if constexpr (std::is_same_v<
+                                                 T, search::TopResult>) {
+                            if (arg.video_id && arg.title &&
+                                !arg.title->empty()) {
+                                item.type = Type::Video;
+                                item.id = QString::fromStdString(*arg.video_id);
+                                item.title = QString::fromStdString(*arg.title);
+                                item.webUrl = makeYtUrl(*arg.video_id);
+                                item.artist = bestArtistName(arg.artists);
+                            }
+                        } else {
 #ifdef DEBUG
-                                  qWarning() << "unknown type";
+                            qWarning() << "unknown type";
 #endif
-                              }
-                          },
-                          r);
+                        }
+                    },
+                    r);
 
-                      if (!item.id.isEmpty()) items.push_back(std::move(item));
-                  }
+                if (!item.id.isEmpty()) items.push_back(std::move(item));
+            }
 
-              } catch (const std::exception& err) {
-                  qWarning() << "ytdl error:" << err.what();
-                  return std::vector<SearchResultItem>{};
-              }
+        } catch (const std::exception& err) {
+            qWarning() << "ytdl error:" << err.what();
+            return std::vector<SearchResultItem>{};
+        }
 
-              return items;
-          }).get());
+        return items;
+    });
+
+    if (task) items = std::any_cast<std::vector<SearchResultItem>>(task->get());
 
     return items;
 }

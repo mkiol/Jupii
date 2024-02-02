@@ -41,9 +41,13 @@ void py_executor::stop() {
     LOGD("shutdown completed");
 }
 
-std::future<std::any> py_executor::execute(task_t task) {
-    if (m_shutting_down || !m_thread.joinable())
-        throw std::runtime_error("failed to execute task");
+std::optional<std::future<std::any>> py_executor::execute(task_t task) {
+    if (m_shutting_down || !m_thread.joinable()) {
+        LOGW(
+            "task not pushed because py executor loop not running or shutting "
+            "down");
+        return std::nullopt;
+    }
 
     {
         std::lock_guard lock{m_mutex};
