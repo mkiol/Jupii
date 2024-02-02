@@ -51,6 +51,7 @@
   <url type="homepage">https://github.com/mkiol/Jupii</url>
   <url type="bugtracker">https://github.com/mkiol/Jupii/issues</url>
   <url type="translate">https://app.transifex.com/mkiol/jupii</url>
+  <url type="donation">https://github.com/mkiol/Jupii#how-to-support</url>
   <update_contact>jupii_AT_mkiol.net</update_contact>
   <launchable type="desktop-id">@info_app_icon_id@.desktop</launchable>
   <content_rating type="oars-1.1" />
