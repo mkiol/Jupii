@@ -92,7 +92,7 @@ If you find **Jupii** useful and would like to support this project,
 please consider doing one or two of the following:
 
 - Give a &#11088; on [GitHub](https://github.com/mkiol/jupii) or/and [GitLab](https://gitlab.com/mkiol/jupii).
-- Write a review in ypur applications manager app (Discover, Software or any other).
+- Write a review in your applications manager app (Discover, Software or any other).
 - Tell others about this app by mentioning it on social media.
 - If you have spare money, make a small donation via [Liberapay](https://liberapay.com/mkiol/donate).
 
