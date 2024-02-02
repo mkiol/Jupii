@@ -38,6 +38,16 @@
     <keyword>somafm</keyword>
     <keyword>icecast</keyword>
   </keywords>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Speech Note main window</caption>
+      <image>https://raw.githubusercontent.com/mkiol/Jupii/main/desktop/screenshots/jupii-screenshot-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Translator mode</caption>
+      <image>https://raw.githubusercontent.com/mkiol/Jupii/main/desktop/screenshots/jupii-screenshot-dark.png</image>
+    </screenshot>
+  </screenshots>
   <url type="homepage">https://github.com/mkiol/Jupii</url>
   <url type="bugtracker">https://github.com/mkiol/Jupii/issues</url>
   <url type="translate">https://app.transifex.com/mkiol/jupii</url>
