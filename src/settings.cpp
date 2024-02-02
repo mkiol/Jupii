@@ -26,11 +26,9 @@
 #include <libupnpp/control/description.hxx>
 #include <limits>
 
-#include "avlogger.hpp"
 #include "config.h"
 #include "directory.h"
 #include "logger.hpp"
-#include "qtlogger.hpp"
 #include "utils.h"
 
 QString Settings::settingsFilepath() {
@@ -45,15 +43,15 @@ QString Settings::settingsFilepath() {
 }
 
 void Settings::initLogger() const {
-    Logger::init(Logger::LogType::Trace,
-                 getLogToFile() ? QDir{QStandardPaths::writableLocation(
-                                           QStandardPaths::CacheLocation)}
-                                      .filePath(QStringLiteral("jupii.log"))
-                                      .toStdString()
-                                : std::string{});
-
-    initQtLogger();
-    initAvLogger();
+    if (getLogToFile() && !JupiiLogger::logToFileEnabled()) {
+        JupiiLogger::init(JupiiLogger::LogType::Trace,
+                          getLogToFile()
+                              ? QDir{QStandardPaths::writableLocation(
+                                         QStandardPaths::CacheLocation)}
+                                    .filePath(QStringLiteral("jupii.log"))
+                                    .toStdString()
+                              : std::string{});
+    }
 }
 
 Settings::Settings()
@@ -120,8 +118,6 @@ void Settings::setLogToFile(bool value) {
     if (getLogToFile() != value) {
         setValue(QStringLiteral("logtofile"), value);
         emit logToFileChanged();
-
-        initLogger();
         setRestartRequired(true);
     }
 }

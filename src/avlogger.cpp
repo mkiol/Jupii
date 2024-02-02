@@ -38,27 +38,27 @@ extern "C" {
         return os.str();
     }();
 
-    Logger::Message msg{[=] {
-                            switch (level) {
-                                case AV_LOG_QUIET:
-                                    return Logger::LogType::Quiet;
-                                case AV_LOG_DEBUG:
-                                case AV_LOG_VERBOSE:
-                                    return Logger::LogType::Debug;
-                                case AV_LOG_TRACE:
-                                    return Logger::LogType::Trace;
-                                case AV_LOG_INFO:
-                                    return Logger::LogType::Info;
-                                case AV_LOG_WARNING:
-                                    return Logger::LogType::Warning;
-                                case AV_LOG_ERROR:
-                                case AV_LOG_FATAL:
-                                case AV_LOG_PANIC:
-                                    return Logger::LogType::Error;
-                            }
-                            return Logger::LogType::Debug;
-                        }(),
-                        "", tag.c_str(), 0};
+    JupiiLogger::Message msg{[=] {
+                                 switch (level) {
+                                     case AV_LOG_QUIET:
+                                         return JupiiLogger::LogType::Quiet;
+                                     case AV_LOG_DEBUG:
+                                     case AV_LOG_VERBOSE:
+                                         return JupiiLogger::LogType::Debug;
+                                     case AV_LOG_TRACE:
+                                         return JupiiLogger::LogType::Trace;
+                                     case AV_LOG_INFO:
+                                         return JupiiLogger::LogType::Info;
+                                     case AV_LOG_WARNING:
+                                         return JupiiLogger::LogType::Warning;
+                                     case AV_LOG_ERROR:
+                                     case AV_LOG_FATAL:
+                                     case AV_LOG_PANIC:
+                                         return JupiiLogger::LogType::Error;
+                                 }
+                                 return JupiiLogger::LogType::Debug;
+                             }(),
+                             "", tag.c_str(), 0};
 
     char buf[1024];
     vsnprintf(buf, 1024, fmt, vl);
@@ -70,8 +70,9 @@ void initAvLogger() {
 #ifdef DEBUG
     av_log_set_level(AV_LOG_TRACE);
 #else
-    av_log_set_level(Logger::match(Logger::LogType::Debug) ? AV_LOG_ERROR
-                                                           : AV_LOG_QUIET);
+    av_log_set_level(JupiiLogger::match(JupiiLogger::LogType::Debug)
+                         ? AV_LOG_ERROR
+                         : AV_LOG_QUIET);
     av_log_set_callback(avLog);
 #endif
 }

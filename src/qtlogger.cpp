@@ -17,23 +17,23 @@
 
 static void qtLog(QtMsgType qtType, const QMessageLogContext &qtContext,
                   const QString &qtMsg) {
-    Logger::Message msg{[qtType] {
-                            switch (qtType) {
-                                case QtDebugMsg:
-                                    return Logger::LogType::Debug;
-                                case QtInfoMsg:
-                                    return Logger::LogType::Info;
-                                case QtWarningMsg:
-                                    return Logger::LogType::Warning;
-                                case QtCriticalMsg:
-                                case QtFatalMsg:
-                                    return Logger::LogType::Error;
-                            }
-                            return Logger::LogType::Debug;
-                        }(),
-                        qtContext.file ? qtContext.file : "",
-                        qtContext.function ? qtContext.function : "",
-                        qtContext.line};
+    JupiiLogger::Message msg{[qtType] {
+                                 switch (qtType) {
+                                     case QtDebugMsg:
+                                         return JupiiLogger::LogType::Debug;
+                                     case QtInfoMsg:
+                                         return JupiiLogger::LogType::Info;
+                                     case QtWarningMsg:
+                                         return JupiiLogger::LogType::Warning;
+                                     case QtCriticalMsg:
+                                     case QtFatalMsg:
+                                         return JupiiLogger::LogType::Error;
+                                 }
+                                 return JupiiLogger::LogType::Debug;
+                             }(),
+                             qtContext.file ? qtContext.file : "",
+                             qtContext.function ? qtContext.function : "",
+                             qtContext.line};
     msg << qtMsg.toStdString();
 }
 

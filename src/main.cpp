@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <QCommandLineParser>
 #include <QFile>
 #include <QGuiApplication>
 #include <QList>
@@ -45,6 +46,7 @@
 
 #include "albummodel.h"
 #include "artistmodel.h"
+#include "avlogger.hpp"
 #include "avtransport.h"
 #include "bcmodel.h"
 #include "cdirmodel.h"
@@ -60,10 +62,12 @@
 #include "fosdemmodel.h"
 #include "gpoddermodel.h"
 #include "icecastmodel.h"
+#include "logger.hpp"
 #include "notifications.h"
 #include "playlistfilemodel.h"
 #include "playlistmodel.h"
 #include "py_executor.hpp"
+#include "qtlogger.hpp"
 #include "radionetmodel.hpp"
 #include "recmodel.h"
 #include "renderingcontrol.h"
@@ -97,6 +101,37 @@ static void signalHandler(int sig) {
     qDebug() << "received signal:" << sig;
 
     exitProgram();
+}
+
+struct CmdOptions {
+    bool valid = true;
+    bool verbose = false;
+    QString log_file;
+};
+
+static CmdOptions checkOptions(const QCoreApplication& app) {
+    QCommandLineParser parser;
+
+    QCommandLineOption verbose_opt{QStringLiteral("verbose"),
+                                   QStringLiteral("Enables debug output.")};
+    parser.addOption(verbose_opt);
+
+    QCommandLineOption log_file_opt{
+        QStringLiteral("log-file"),
+        QStringLiteral("Write logs to <log-file> instead of stderr."),
+        QStringLiteral("log-file")};
+    parser.addOption(log_file_opt);
+
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    parser.process(app);
+
+    CmdOptions options;
+    options.log_file = parser.value(log_file_opt);
+    options.verbose = parser.isSet(verbose_opt);
+
+    return options;
 }
 
 static void makeAppDirs() {
@@ -211,7 +246,7 @@ static void installTranslator() {
 
 int main(int argc, char** argv) {
 #ifdef USE_SFOS
-    SailfishApp::application(argc, argv);
+    const auto& app = *SailfishApp::application(argc, argv);
     auto* view = SailfishApp::createView();
     auto* context = view->rootContext();
     auto* engine = view->engine();
@@ -230,6 +265,16 @@ int main(int argc, char** argv) {
     QGuiApplication::setOrganizationDomain(QStringLiteral(APP_DOMAIN));
     QGuiApplication::setApplicationDisplayName(QStringLiteral(APP_NAME));
     QGuiApplication::setApplicationVersion(QStringLiteral(APP_VERSION));
+
+    auto cmdOpts = checkOptions(app);
+
+    if (!cmdOpts.valid) return 0;
+
+    JupiiLogger::init(cmdOpts.verbose ? JupiiLogger::LogType::Trace
+                                      : JupiiLogger::LogType::Error,
+                      cmdOpts.log_file.toStdString());
+    initQtLogger();
+    initAvLogger();
 
     registerTypes();
 

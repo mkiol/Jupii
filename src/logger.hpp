@@ -5,30 +5,38 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef LOGGER_H
-#define LOGGER_H
+#ifndef JUPII_LOGGER_H
+#define JUPII_LOGGER_H
 
 #include <fstream>
 #include <optional>
 #include <sstream>
 
 #ifdef USE_TRACE_LOGS
-#define LOGT(msg) \
-    Logger::Message(logger::LogType::Trace, __FILE__, __func__, __LINE__) << msg
+#define LOGT(msg)                                                              \
+    JupiiLogger::Message(logger::LogType::Trace, __FILE__, __func__, __LINE__) \
+        << msg
 #else
 #define LOGT(msg)
 #endif
-#define LOGD(msg) \
-    Logger::Message(Logger::LogType::Debug, __FILE__, __func__, __LINE__) << msg
-#define LOGI(msg) \
-    Logger::Message(Logger::LogType::Info, __FILE__, __func__, __LINE__) << msg
-#define LOGW(msg)                                                           \
-    Logger::Message(Logger::LogType::Warning, __FILE__, __func__, __LINE__) \
+#define LOGD(msg)                                                         \
+    JupiiLogger::Message(JupiiLogger::LogType::Debug, __FILE__, __func__, \
+                         __LINE__)                                        \
         << msg
-#define LOGE(msg) \
-    Logger::Message(Logger::LogType::Error, __FILE__, __func__, __LINE__) << msg
+#define LOGI(msg)                                                        \
+    JupiiLogger::Message(JupiiLogger::LogType::Info, __FILE__, __func__, \
+                         __LINE__)                                       \
+        << msg
+#define LOGW(msg)                                                           \
+    JupiiLogger::Message(JupiiLogger::LogType::Warning, __FILE__, __func__, \
+                         __LINE__)                                          \
+        << msg
+#define LOGE(msg)                                                         \
+    JupiiLogger::Message(JupiiLogger::LogType::Error, __FILE__, __func__, \
+                         __LINE__)                                        \
+        << msg
 
-class Logger {
+class JupiiLogger {
    public:
     enum class LogType {
         Trace = 0,
@@ -61,8 +69,10 @@ class Logger {
     static void init(LogType level, const std::string &file = {});
     static void setLevel(LogType level);
     static LogType level();
+    static void setFile(const std::string &file);
+    static inline bool logToFileEnabled() { return m_file.has_value(); }
     static bool match(LogType type);
-    Logger() = delete;
+    JupiiLogger() = delete;
 
    private:
     inline static const char *m_emptyStr = "()";
@@ -70,4 +80,4 @@ class Logger {
     static std::optional<std::ofstream> m_file;
 };
 
-#endif  // LOGGER_H
+#endif  // JUPII_LOGGER_H

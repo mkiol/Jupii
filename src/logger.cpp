@@ -14,36 +14,48 @@
 #include <chrono>
 #include <cstdio>
 
-Logger::LogType Logger::m_level = Logger::LogType::Error;
-std::optional<std::ofstream> Logger::m_file = std::nullopt;
+JupiiLogger::LogType JupiiLogger::m_level = JupiiLogger::LogType::Error;
+std::optional<std::ofstream> JupiiLogger::m_file = std::nullopt;
 
-std::ostream &operator<<(std::ostream &os, Logger::LogType type) {
+std::ostream &operator<<(std::ostream &os, JupiiLogger::LogType type) {
     switch (type) {
-        case Logger::LogType::Trace:
+        case JupiiLogger::LogType::Trace:
             os << "trace";
             break;
-        case Logger::LogType::Debug:
+        case JupiiLogger::LogType::Debug:
             os << "debug";
             break;
-        case Logger::LogType::Info:
+        case JupiiLogger::LogType::Info:
             os << "info";
             break;
-        case Logger::LogType::Warning:
+        case JupiiLogger::LogType::Warning:
             os << "warning";
             break;
-        case Logger::LogType::Error:
+        case JupiiLogger::LogType::Error:
             os << "error";
             break;
-        case Logger::LogType::Quiet:
+        case JupiiLogger::LogType::Quiet:
             os << "quiet";
             break;
     }
     return os;
 }
 
-void Logger::init(LogType level, const std::string &file) {
+void JupiiLogger::init(LogType level, const std::string &file) {
     m_level = level;
 
+    setFile(file);
+}
+
+void JupiiLogger::setLevel(LogType level) {
+    if (m_level != level) {
+        auto old = m_level;
+        m_level = level;
+        LOGD("logging level changed: " << old << " => " << m_level);
+    }
+}
+
+void JupiiLogger::setFile(const std::string &file) {
     if (file.empty()) {
         m_file.reset();
         LOGI("logging to stderr enabled");
@@ -53,48 +65,40 @@ void Logger::init(LogType level, const std::string &file) {
             m_file.reset();
             LOGW("failed to create log file: " << file);
         } else {
-            LOGI("logging to file enabled");
+            LOGI("logging to file enabled: " << file);
         }
     }
 }
 
-void Logger::setLevel(LogType level) {
-    if (m_level != level) {
-        auto old = m_level;
-        m_level = level;
-        LOGD("logging level changed: " << old << " => " << m_level);
-    }
-}
+JupiiLogger::LogType JupiiLogger::level() { return m_level; }
 
-Logger::LogType Logger::level() { return m_level; }
-
-bool Logger::match(LogType type) {
+bool JupiiLogger::match(LogType type) {
     return static_cast<int>(type) >= static_cast<int>(m_level);
 }
 
-Logger::Message::Message(LogType type, const char *file, const char *function,
-                         int line)
+JupiiLogger::Message::Message(LogType type, const char *file,
+                              const char *function, int line)
     : m_type{type}, m_file{file}, m_fun{function}, m_line{line} {}
 
-inline static auto typeToChar(Logger::LogType type) {
+inline static auto typeToChar(JupiiLogger::LogType type) {
     switch (type) {
-        case Logger::LogType::Trace:
+        case JupiiLogger::LogType::Trace:
             return 'T';
-        case Logger::LogType::Debug:
+        case JupiiLogger::LogType::Debug:
             return 'D';
-        case Logger::LogType::Info:
+        case JupiiLogger::LogType::Info:
             return 'I';
-        case Logger::LogType::Warning:
+        case JupiiLogger::LogType::Warning:
             return 'W';
-        case Logger::LogType::Error:
+        case JupiiLogger::LogType::Error:
             return 'E';
-        case Logger::LogType::Quiet:
+        case JupiiLogger::LogType::Quiet:
             return 'Q';
     }
     return '-';
 }
 
-Logger::Message::~Message() {
+JupiiLogger::Message::~Message() {
     if (!match(m_type)) return;
 
     auto now = std::chrono::system_clock::now();
@@ -114,9 +118,9 @@ Logger::Message::~Message() {
     try {
         auto line = fmt::format(fmt, typeToChar(m_type), now, msecs,
                                 thrd_current(), m_fun, str, m_line);
-        if (Logger::m_file) {
-            *Logger::m_file << line;
-            Logger::m_file->flush();
+        if (JupiiLogger::m_file) {
+            *JupiiLogger::m_file << line;
+            JupiiLogger::m_file->flush();
         } else {
             fmt::print(stderr, line);
             fflush(stderr);
