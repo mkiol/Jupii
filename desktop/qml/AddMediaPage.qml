@@ -198,6 +198,7 @@ Kirigami.ScrollablePage {
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
+            visible: settings.isXcb()
             label: qsTr("Screen capture")
             icon: "computer"
             onClicked: screenDialog.open()

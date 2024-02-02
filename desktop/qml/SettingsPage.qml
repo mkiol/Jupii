@@ -381,19 +381,6 @@ Kirigami.ScrollablePage {
                 hoverEnabled: true
             }
 
-            // Controls.Switch {
-            //     checked: settings.controlMpdService
-            //     text: qsTr("Start/stop local MPD and upmpdcli services")
-            //     onClicked: {
-            //         settings.controlMpdService = !settings.controlMpdService
-            //     }
-
-            //     Controls.ToolTip.visible: hovered
-            //     Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-            //     Controls.ToolTip.text: qsTr("When MPD and upmpdcli are installed they will be started " +
-            //                                 "together with Jupii and stopped on exit.")
-            // }
-
             Item {
                 Kirigami.FormData.isSection: true
             }
