@@ -8,6 +8,7 @@ Linux desktop and Sailfish OS app for playing multimedia on UPnP/DLNA devices
 - [How to install](#how-to-install)
 - [Building from sources](#building-from-sources)
 - [Contributing to Jupii](#contributing-to-jupii)
+- [How to support](#how-to-support)
 - [License](#license)
 
 ## Description
@@ -36,7 +37,7 @@ This app can be used in two different UPnP/DLNA modes:
 ### Flatpak
 
 ```
-git clone https://github.com/mkiol/Jupii.git
+git clone <git repository url>
 
 cd Jupii/flatpak
 
@@ -46,7 +47,7 @@ flatpak-builder --user --install-deps-from=flathub --repo="/path/to/local/flatpa
 ### Sailfish OS
 
 ```
-git clone https://github.com/mkiol/Jupii.git
+git clone <git repository url>
 
 cd Jupii
 mkdir build
@@ -58,18 +59,42 @@ sfdk cmake ../ -DCMAKE_BUILD_TYPE=Release -DWITH_SFOS=ON
 sfdk package
 ```
 
+### Linux (direct build)
+
+```
+git clone <git repository url> jupii
+
+cd jupii
+mkdir build
+cd build
+
+cmake ../ -DCMAKE_BUILD_TYPE=Release -DWITH_DESKTOP=ON
+make
+```
+
 ## Contributing to Jupii
 
 Any contribution is very welcome!
 
-Feel free to make a PR, report an issue or reqest for new feature.
+Project is hosted both on [GitHub](https://github.com/mkiol/jupii) and [GitLab](https://gitlab.com/mkiol/jupii).
+Feel free to make a PR/MR, report an issue or reqest for new feature on the platform you prefer the most.
 
 ### Translations
 
-Translation files in Qt format are in [translations dir](https://github.com/mkiol/Jupii/tree/master/translations).
+Translation files in Qt format are in `translations` directory.
 
 Preferred way to contribute translation is via [Transifex service](https://www.transifex.com/mkiol/jupii),
 but if you would like to make a direct PR, please do it.
+
+## How to support
+
+If you find **Jupii** useful and would like to support this project,
+please consider doing one or two of the following:
+
+- Give a &#11088; on [GitHub](https://github.com/mkiol/jupii) or/and [GitLab](https://gitlab.com/mkiol/jupii).
+- Write a review in ypur applications manager app (Discover, Software or any other).
+- Tell others about this app by mentioning it on social media.
+- If you have spare money, make a small donation via [Liberapay](https://liberapay.com/mkiol/donate).
 
 ## Libraries
 
