@@ -107,7 +107,12 @@ Kirigami.ApplicationWindow {
     }
 
     Component.onCompleted: {
-        console.log(">>>>>>>>>>> QML ApplicationWindow completed <<<<<<<<<<<");
+        console.log("qml completed");
+        if (APP_VERSION !== settings.prevAppVer) {
+            console.log("app update detected:", settings.prevAppVer, "=>", APP_VERSION)
+            settings.prevAppVer = APP_VERSION
+        }
+
         homeAction.trigger()
         conn.update()
     }
