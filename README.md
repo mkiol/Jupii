@@ -2,6 +2,8 @@
 
 Linux desktop and Sailfish OS app for playing multimedia on UPnP/DLNA devices
 
+<a href='https://flathub.org/apps/net.mkiol.Jupii'><img width='240' alt='Download on Flathub' src='https://dl.flathub.org/assets/badges/flathub-badge-en.png'/></a>
+
 ## Contents of this README
 
 - [Description](#description)
@@ -29,8 +31,8 @@ This app can be used in two different UPnP/DLNA modes:
 
 ## How to install
 
+- Linux Desktop: [Flatpak](https://flathub.org/apps/net.mkiol.Jupii)
 - Sailfish OS: [OpenRepos](https://openrepos.net/content/mkiol/jupii)
-- Flatpack packages with KDE Plasma UI: [Releases](https://github.com/mkiol/Jupii/releases)
 
 ## Building from sources
 
