@@ -91,6 +91,7 @@ class CDirItem : public SelectableItem {
         UrlRole,
         NumberRole,
         TypeRole,
+        DurationRole,
         SelectedRole,
         SelectableRole,
         IconRole,
@@ -100,7 +101,7 @@ class CDirItem : public SelectableItem {
     CDirItem(QObject *parent = nullptr) : SelectableItem(parent) {}
     explicit CDirItem(QString id, QString pid, QString title, QString artist,
                       QString album, QUrl url, QUrl icon, int number,
-                      QDateTime date, CDirModel::Types type,
+                      QDateTime date, int duration, CDirModel::Types type,
                       QObject *parent = nullptr);
     explicit CDirItem(QString id, QString pid, QString title,
                       CDirModel::Types type, QObject *parent = nullptr);
@@ -115,6 +116,7 @@ class CDirItem : public SelectableItem {
     inline QUrl icon() const { return m_icon; }
     inline int number() const { return m_number; }
     inline QDateTime date() const { return m_date; }
+    inline int duration() const { return m_duration; }
     inline CDirModel::Types type() const { return m_type; }
 
    private:
@@ -127,6 +129,7 @@ class CDirItem : public SelectableItem {
     QUrl m_url;
     int m_number = 0;
     QDateTime m_date;
+    int m_duration = 0;
     CDirModel::Types m_type = CDirModel::Types::UnknownType;
 };
 

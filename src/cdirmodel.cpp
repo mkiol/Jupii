@@ -113,7 +113,7 @@ QList<ListItem *> CDirModel::makeItems() {
                     0,
                     Utils::parseDate(
                         QString::fromStdString(item.getprop("dc:date"))),
-                    type});
+                    item.getDurationSeconds(), type});
             } else {
                 if (const auto &f = getFilter(); !f.isEmpty()) {
                     if (!title.contains(f, Qt::CaseInsensitive)) {
@@ -189,7 +189,7 @@ QList<ListItem *> CDirModel::makeItems() {
                 QDateTime::fromString(
                     QString::fromStdString(item.getprop("dc:date")),
                     Qt::ISODate),
-                type});
+                item.getDurationSeconds(), type});
         }
 
         // -- Sorting --
@@ -335,7 +335,8 @@ void CDirModel::switchQueryType() { setQueryType((getQueryType() + 1) % 5); }
 
 CDirItem::CDirItem(QString id, QString pid, QString title, QString artist,
                    QString album, QUrl url, QUrl icon, int number,
-                   QDateTime date, CDirModel::Types type, QObject *parent)
+                   QDateTime date, int duration, CDirModel::Types type,
+                   QObject *parent)
     : SelectableItem(parent),
       m_id{std::move(id)},
       m_pid{std::move(pid)},
@@ -346,6 +347,7 @@ CDirItem::CDirItem(QString id, QString pid, QString title, QString artist,
       m_url{std::move(url)},
       m_number{number},
       m_date{std::move(date)},
+      m_duration{duration},
       m_type{type} {
     m_selectable = type != CDirModel::DirType && type != CDirModel::BackType &&
                    type != CDirModel::MusicAlbumType &&
@@ -373,6 +375,7 @@ QHash<int, QByteArray> CDirItem::roleNames() const {
     names[UrlRole] = "url";
     names[NumberRole] = "number";
     names[TypeRole] = "type";
+    names[DurationRole] = "duration";
     names[SelectedRole] = "selected";
     names[SelectableRole] = "selectable";
     names[IconRole] = "icon";
@@ -398,6 +401,8 @@ QVariant CDirItem::data(int role) const {
             return number();
         case TypeRole:
             return type();
+        case DurationRole:
+            return duration();
         case SelectedRole:
             return selected();
         case SelectableRole:

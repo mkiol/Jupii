@@ -103,14 +103,15 @@ Kirigami.ScrollablePage {
             subtitle: {
                 var ctype = itemModel.currentType
                 if (model.selectable) {
+                    var dur = model.duration > 1 ? " · " + utils.secToStr(model.duration) : "";
                     if (model.type === CDirModel.ImageType)
                         return model.date
                     if (model.artist.length > 0 && model.album.length > 0)
-                        return model.artist + " · " + model.album
+                        return model.artist + " · " + model.album + dur
                     if (model.artist.length > 0)
-                        return model.artist
+                        return model.artist + dur
                     if (model.album.length > 0)
-                        return model.artist
+                        return model.artist + dur
                     return ""
                 }
                 if (model.type === CDirModel.MusicAlbumType && model.artist.length > 0)
