@@ -54,6 +54,7 @@ extern "C" {
 
 #include <taglib/attachedpictureframe.h>
 #include <taglib/fileref.h>
+#include <taglib/flacfile.h>
 #include <taglib/id3v2frame.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/mp4file.h>
@@ -1023,25 +1024,21 @@ inline static auto wStr2qStr(const TagLib::String &str) {
     return QString::fromWCharArray(str.toCWString());
 }
 
-bool ContentServer::readMP4MetaUsingTaglib(const TagLib::FileRef &file,
+void ContentServer::readMP4MetaUsingTaglib(TagLib::MP4::File *file,
                                            QString *recUrl, QDateTime *recDate,
                                            Type *otype,
                                            const QString &albumArtPrefix,
                                            QString *artPath) {
-    using namespace TagLib;
-
-    auto *mf = dynamic_cast<MP4::File *>(file.file());
-    if (!mf) return false;
-
-    auto *tag = mf->tag();
-    if (!tag) return false;
-
 #ifdef QT_DEBUG
     qDebug() << "reading MP4 tag";
 #endif
+    using namespace TagLib;
+
+    auto *tag = file->tag();
+    if (!tag) return;
 
     if (recUrl || recDate || otype) {
-        auto tags = file.file()->properties();
+        auto tags = file->properties();
         if (recDate) {
             auto item = tag->item(recMp4TagPrefix +
                                   ContentServer::recDateTagName.toStdString());
@@ -1108,26 +1105,20 @@ bool ContentServer::readMP4MetaUsingTaglib(const TagLib::FileRef &file,
             }
         }
     }
-
-    return true;
 }
 
-bool ContentServer::readID3MetaUsingTaglib(const TagLib::FileRef &file,
+void ContentServer::readID3MetaUsingTaglib(TagLib::MPEG::File *file,
                                            QString *recUrl, QDateTime *recDate,
                                            Type *otype,
                                            const QString &albumArtPrefix,
                                            QString *artPath) {
-    using namespace TagLib;
-
-    auto *mf = dynamic_cast<MPEG::File *>(file.file());
-    if (!mf) return false;
-
 #ifdef QT_DEBUG
     qDebug() << "reading ID3 tag";
 #endif
+    using namespace TagLib;
 
     if (recUrl || recDate || otype) {
-        auto tags = mf->properties();
+        auto tags = file->properties();
         if (recDate) {
             auto it = tags.find(ContentServer::recDateTagName.toStdString());
             if (it != tags.end())
@@ -1156,7 +1147,7 @@ bool ContentServer::readID3MetaUsingTaglib(const TagLib::FileRef &file,
     }
 
     if (artPath && !albumArtPrefix.isEmpty()) {
-        auto *tag = mf->ID3v2Tag(true);
+        auto *tag = file->ID3v2Tag(true);
         auto fl = tag->frameList("APIC");
 
         if (!fl.isEmpty()) {
@@ -1182,8 +1173,86 @@ bool ContentServer::readID3MetaUsingTaglib(const TagLib::FileRef &file,
             }
         }
     }
+}
 
-    return true;
+void ContentServer::readFlacMetaUsingTaglib(TagLib::FLAC::File *file,
+                                            QString *recUrl, QDateTime *recDate,
+                                            Type *otype,
+                                            const QString &albumArtPrefix,
+                                            QString *artPath) {
+#ifdef QT_DEBUG
+    qDebug() << "reading flac tag";
+#endif
+
+    using namespace TagLib;
+
+    auto *tag = file->tag();
+    if (!tag) return;
+
+    if (recUrl || recDate || otype) {
+        auto tags = file->properties();
+        if (recDate) {
+            auto it = tags.find(ContentServer::recDateTagName.toStdString());
+            if (it != tags.end())
+                *recDate = QDateTime::fromString(
+                    wStr2qStr(it->second.toString()), Qt::ISODate);
+        }
+        if (recUrl) {
+            auto it = tags.find(ContentServer::recUrlTagName.toStdString());
+            if (it != tags.end()) {
+                *recUrl = wStr2qStr(it->second.toString());
+            } else {  // old rec url tag
+                it = tags.find(ContentServer::recUrlTagName2.toStdString());
+                if (it != tags.end()) {
+                    *recUrl = wStr2qStr(it->second.toString());
+                }
+            }
+        }
+        if (otype) {
+            auto it = tags.find(ContentServer::typeTagName.toStdString());
+            if (it != tags.end()) {
+                *otype = static_cast<Type>(it->second.toString().toInt());
+            } else {
+                *otype = Type::Type_Invalid;
+            }
+        }
+    }
+
+    if (artPath && !albumArtPrefix.isEmpty()) {
+        auto pl = file->pictureList();
+
+        auto it = std::find_if(pl.begin(), pl.end(), [](FLAC::Picture *pic) {
+            return pic->type() == FLAC::Picture::Type::FrontCover;
+        });
+        if (it == pl.end()) {
+            std::array mimes = {"image/png", "image/jpeg"};
+            it = std::find_first_of(pl.begin(), pl.end(), mimes.cbegin(),
+                                    mimes.cend(),
+                                    [](FLAC::Picture *pic, const auto &mime) {
+                                        return pic->mimeType() == mime;
+                                    });
+        }
+
+        if (it != pl.end()) {
+            const auto *pic = *it;
+            auto ext = m_imgMimeToExtMap.value(
+                QString::fromStdString(pic->mimeType().to8Bit()));
+            if (!ext.isEmpty()) {
+                auto path = Utils::writeToCacheFile(
+                    albumArtPrefix + ext,
+                    QByteArray::fromRawData(
+                        pic->data().data(),
+                        static_cast<int>(pic->data().size())));
+                if (path) {
+                    *artPath = *path;
+                } else {
+                    qWarning() << "cannot write art file:" << *path;
+                }
+            } else {
+                qWarning() << "art unknown format";
+            }
+        }
+    }
 }
 
 bool ContentServer::readMetaUsingTaglib(const QString &path, QString *title,
@@ -1240,10 +1309,15 @@ bool ContentServer::readMetaUsingTaglib(const QString &path, QString *title,
         }
     }
 
-    if (!readID3MetaUsingTaglib(file, recUrl, recDate, otype, albumArtPrefix,
-                                extractArt ? artPath : nullptr)) {
-        readMP4MetaUsingTaglib(file, recUrl, recDate, otype, albumArtPrefix,
+    if (auto *f = dynamic_cast<MPEG::File *>(file.file()); f) {
+        readID3MetaUsingTaglib(f, recUrl, recDate, otype, albumArtPrefix,
                                extractArt ? artPath : nullptr);
+    } else if (auto *f = dynamic_cast<MP4::File *>(file.file()); f) {
+        readMP4MetaUsingTaglib(f, recUrl, recDate, otype, albumArtPrefix,
+                               extractArt ? artPath : nullptr);
+    } else if (auto *f = dynamic_cast<FLAC::File *>(file.file()); f) {
+        readFlacMetaUsingTaglib(f, recUrl, recDate, otype, albumArtPrefix,
+                                extractArt ? artPath : nullptr);
     }
 
     return true;
@@ -1461,31 +1535,17 @@ bool ContentServer::writeGenericMetaUsingTaglib(
         auto tags = f->properties();
 
         if (!recUrl.isEmpty()) {
-            auto key = ContentServer::recUrlTagName.toStdString();
-            auto val = StringList(recUrl.toStdString());
-            auto it = tags.find(key);
-            if (it != tags.end())
-                it->second = val;
-            else
-                tags.insert(key, val);
+            tags.replace(ContentServer::recUrlTagName.toStdString(),
+                         StringList(recUrl.toStdString()));
         }
         if (!recDate.isNull()) {
-            auto key = ContentServer::recDateTagName.toStdString();
-            auto val = StringList(recDate.toString(Qt::ISODate).toStdString());
-            auto it = tags.find(key);
-            if (it != tags.end())
-                it->second = val;
-            else
-                tags.insert(key, val);
+            tags.replace(
+                ContentServer::recDateTagName.toStdString(),
+                StringList(recDate.toString(Qt::ISODate).toStdString()));
         }
         if (otype != Type::Type_Unknown) {
-            auto key = ContentServer::typeTagName.toStdString();
-            auto val = StringList(String::number(static_cast<int>(otype)));
-            auto it = tags.find(key);
-            if (it != tags.end())
-                it->second = val;
-            else
-                tags.insert(key, val);
+            tags.replace(ContentServer::typeTagName.toStdString(),
+                         StringList(String::number(static_cast<int>(otype))));
         }
 
         f->setProperties(tags);

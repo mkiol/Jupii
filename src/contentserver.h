@@ -43,6 +43,18 @@ class UPnPDirObject;
 
 namespace TagLib {
 class FileRef;
+
+namespace FLAC {
+class File;
+}
+
+namespace MPEG {
+class File;
+}
+
+namespace MP4 {
+class File;
+}
 }
 
 class ContentServerWorker;
@@ -237,16 +249,20 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         const QString &comment = {}, const QString &recUrl = {},
         const QDateTime &recDate = {}, QString artPath = {},
         Type otype = Type::Type_Unknown);
-    static bool readID3MetaUsingTaglib(const TagLib::FileRef &file,
+    static void readID3MetaUsingTaglib(TagLib::MPEG::File *file,
                                        QString *recUrl, QDateTime *recDate,
                                        Type *otype,
                                        const QString &albumArtPrefix,
                                        QString *artPath);
-    static bool readMP4MetaUsingTaglib(const TagLib::FileRef &file,
-                                       QString *recUrl, QDateTime *recDate,
-                                       Type *otype,
+    static void readMP4MetaUsingTaglib(TagLib::MP4::File *file, QString *recUrl,
+                                       QDateTime *recDate, Type *otype,
                                        const QString &albumArtPrefix,
                                        QString *artPath);
+    static void readFlacMetaUsingTaglib(TagLib::FLAC::File *file,
+                                        QString *recUrl, QDateTime *recDate,
+                                        Type *otype,
+                                        const QString &albumArtPrefix,
+                                        QString *artPath);
     static bool readMetaUsingTaglib(
         const QString &path, QString *title = nullptr,
         QString *artist = nullptr, QString *album = nullptr,
