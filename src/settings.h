@@ -17,6 +17,9 @@
 #include <QStringList>
 #include <QUrl>
 #include <QVariant>
+#ifdef USE_DESKTOP
+#include <QQmlApplicationEngine>
+#endif
 #include <utility>
 
 #include "caster.hpp"
@@ -85,6 +88,12 @@ class Settings : public QSettings,
     Q_PROPERTY(QString pyPath READ pyPath WRITE setPyPath NOTIFY pyPathChanged)
     Q_PROPERTY(QString prevAppVer READ prevAppVer WRITE setPrevAppVer NOTIFY
                    prevAppVerChanged)
+    Q_PROPERTY(int qtStyleIdx READ qtStyleIdx WRITE setQtStyleIdx NOTIFY
+                   qtStyleChanged)
+    Q_PROPERTY(QString qtStyleName READ qtStyleName WRITE setQtStyleName NOTIFY
+                   qtStyleChanged)
+    Q_PROPERTY(bool qtStyleAuto READ qtStyleAuto WRITE setQtStyleAuto NOTIFY
+                   qtStyleChanged)
 
     // caster
     Q_PROPERTY(int casterMicVolume READ getCasterMicVolume WRITE
@@ -263,6 +272,7 @@ class Settings : public QSettings,
     Q_INVOKABLE void addRadionetSearchHistory(const QString &value);
     Q_INVOKABLE void removeRadionetSearchHistory(const QString &value);
     Q_INVOKABLE QUrl appIcon() const;
+    Q_INVOKABLE QStringList qtStyles() const;
     QString pythonChecksum() const;
     void setPythonChecksum(const QString &value);
     CacheType cacheType() const;
@@ -282,6 +292,15 @@ class Settings : public QSettings,
     void setControlMpdService(bool value);
     QString pyPath() const;
     void setPyPath(const QString &value);
+#ifdef USE_DESKTOP
+    void updateQtStyle(QQmlApplicationEngine *engine);
+#endif
+    int qtStyleIdx() const;
+    void setQtStyleIdx(int value);
+    QString qtStyleName() const;
+    void setQtStyleName(QString value);
+    void setQtStyleAuto(bool value);
+    bool qtStyleAuto() const;
 
     // caster
 
@@ -365,6 +384,7 @@ class Settings : public QSettings,
     void controlMpdServiceChanged();
     void pyPathChanged();
     void prevAppVerChanged();
+    void qtStyleChanged();
 
     // caster
 
@@ -388,6 +408,10 @@ class Settings : public QSettings,
    private:
     inline static const QString settingsFilename =
         QStringLiteral("settings.config");
+    inline static const QString defaultQtStyle =
+        QStringLiteral("org.kde.desktop");
+    inline static const QString defaultQtStyleFallback =
+        QStringLiteral("org.kde.breeze");
     static const int maxSearchHistory = 3;
 
     QString hwName;
@@ -404,6 +428,7 @@ class Settings : public QSettings,
     QStringList m_mics;
     QStringList m_screens;
     QStringList m_playbacks;
+    bool m_native_style = false;
 
 #ifdef USE_SFOS
     static QString readHwInfo();

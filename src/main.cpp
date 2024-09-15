@@ -257,6 +257,7 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
     QGuiApplication::setWindowIcon(QIcon{QStringLiteral(":/app_icon.svg")});
 
+    QCoreApplication::libraryPaths();
     auto engine = std::make_unique<QQmlApplicationEngine>();
     auto* context = engine->rootContext();
 #endif
@@ -310,6 +311,11 @@ int main(int argc, char** argv) {
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     auto* settings = Settings::instance();
+
+#ifdef USE_DESKTOP
+    settings->updateQtStyle(engine.get());
+#endif
+
     auto* utils = Utils::instance();
     auto* dir = Directory::instance();
     auto* cserver = ContentServer::instance();

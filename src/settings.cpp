@@ -9,6 +9,9 @@
 
 #include <unistd.h>
 
+#ifdef USE_DESKTOP
+#include <QQuickStyle>
+#endif
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QDebug>
@@ -29,6 +32,7 @@
 #include "config.h"
 #include "directory.h"
 #include "logger.hpp"
+#include "module_tools.hpp"
 #include "utils.h"
 
 QString Settings::settingsFilepath() {
@@ -1259,3 +1263,157 @@ void Settings::setPrevAppVer(const QString &value) {
         emit prevAppVerChanged();
     }
 }
+
+bool Settings::qtStyleAuto() const {
+    return value(QStringLiteral("qt_style_auto"), true).toBool();
+}
+
+void Settings::setQtStyleAuto(bool value) {
+    if (qtStyleAuto() != value) {
+        setValue(QStringLiteral("qt_style_auto"), value);
+        emit qtStyleChanged();
+        setRestartRequired(true);
+    }
+}
+
+QStringList Settings::qtStyles() const {
+#ifdef USE_DESKTOP
+    auto styles = QQuickStyle::availableStyles();
+    styles.append(tr("Don't force any style"));
+    return styles;
+#else
+    return {};
+#endif
+}
+
+int Settings::qtStyleIdx() const {
+#ifdef USE_DESKTOP
+    auto name = qtStyleName();
+
+    auto styles = QQuickStyle::availableStyles();
+
+    if (name.isEmpty()) return styles.size();
+
+    return styles.indexOf(name);
+#endif
+    return -1;
+}
+
+void Settings::setQtStyleIdx([[maybe_unused]] int value) {
+#ifdef USE_DESKTOP
+    auto styles = QQuickStyle::availableStyles();
+
+    if (value < 0 || value >= styles.size()) {
+        setQtStyleName({});
+        return;
+    }
+
+    setQtStyleName(styles.at(value));
+#endif
+}
+
+QString Settings::qtStyleName() const {
+#ifdef USE_DESKTOP
+    auto name =
+        value(QStringLiteral("qt_style_name"), defaultQtStyle).toString();
+
+    if (!QQuickStyle::availableStyles().contains(name)) return {};
+
+    return name;
+#else
+    return {};
+#endif
+}
+
+void Settings::setQtStyleName([[maybe_unused]] QString name) {
+#ifdef USE_DESKTOP
+    if (!QQuickStyle::availableStyles().contains(name)) name.clear();
+
+    if (qtStyleName() != name) {
+        setValue(QStringLiteral("qt_style_name"), name);
+        emit qtStyleChanged();
+        setRestartRequired(true);
+    }
+#endif
+}
+
+#ifdef USE_DESKTOP
+static bool useDefaultQtStyle() {
+    const auto *desk_name_str = getenv("XDG_CURRENT_DESKTOP");
+    if (!desk_name_str) {
+        qDebug() << "no XDG_CURRENT_DESKTOP";
+        return false;
+    }
+
+    qDebug() << "XDG_CURRENT_DESKTOP:" << desk_name_str;
+
+    QString desk_name{desk_name_str};
+
+    return desk_name.contains("KDE") || desk_name.contains("XFCE");
+}
+
+void Settings::updateQtStyle(QQmlApplicationEngine *engine) {
+    if (auto prefix = module_tools::path_to_dir_for_path(
+            QStringLiteral("lib"), QStringLiteral("plugins"));
+        !prefix.isEmpty()) {
+        QCoreApplication::addLibraryPath(
+            QStringLiteral("%1/plugins").arg(prefix));
+    }
+
+    if (auto prefix = module_tools::path_to_dir_for_path(QStringLiteral("lib"),
+                                                         QStringLiteral("qml"));
+        !prefix.isEmpty()) {
+        engine->addImportPath(QStringLiteral("%1/qml").arg(prefix));
+    }
+
+    if (auto prefix = module_tools::path_to_dir_for_path(
+            QStringLiteral("lib"), QStringLiteral("qml/QtQuick/Controls.2"));
+        !prefix.isEmpty()) {
+        QQuickStyle::addStylePath(
+            QStringLiteral("%1/qml/QtQuick/Controls.2").arg(prefix));
+    }
+
+    auto styles = QQuickStyle::availableStyles();
+
+    qDebug() << "available styles:" << styles;
+    qDebug() << "style paths:" << QQuickStyle::stylePathList();
+    qDebug() << "import paths:" << engine->importPathList();
+    qDebug() << "library paths:" << QCoreApplication::libraryPaths();
+
+    QString style;
+
+    if (qtStyleAuto()) {
+        qDebug() << "using auto qt style";
+
+        if (styles.contains(defaultQtStyleFallback)) {
+            style = useDefaultQtStyle() && styles.contains(defaultQtStyle)
+                        ? defaultQtStyle
+                        : defaultQtStyleFallback;
+        } else if (styles.contains(defaultQtStyle)) {
+            style = defaultQtStyle;
+        } else {
+            qWarning() << "default qt style not found";
+        }
+    } else {
+        auto idx = qtStyleIdx();
+
+        if (idx >= 0 && idx < styles.size()) style = styles.at(idx);
+
+        if (!styles.contains(style)) {
+            qWarning() << "qt style not found:" << style;
+            style.clear();
+        }
+    }
+
+    if (style.isEmpty()) {
+        qDebug() << "don't forcing any qt style";
+        m_native_style = true;
+    } else {
+        qDebug() << "switching to style:" << style;
+
+        QQuickStyle::setStyle(style);
+
+        m_native_style = style == defaultQtStyle;
+    }
+}
+#endif

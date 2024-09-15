@@ -56,6 +56,39 @@ Kirigami.ScrollablePage {
         Kirigami.FormLayout {
             Layout.fillWidth: true
 
+            Kirigami.Separator {
+                Kirigami.FormData.label: qsTr("User Interface")
+                Kirigami.FormData.isSection: true
+            }
+
+            Controls.Switch {
+                checked: !settings.qtStyleAuto
+                text: qsTr("Use custom graphical style")
+                onToggled: {
+                    settings.qtStyleAuto = !checked
+                }
+
+                hoverEnabled: true
+            }
+
+            Controls.ComboBox {
+                enabled: !settings.qtStyleAuto
+                Kirigami.FormData.label: qsTr("Graphical style")
+                currentIndex: settings.qtStyleIdx
+                model: settings.qtStyles()
+                onActivated: settings.qtStyleIdx = index
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("Application graphical interface style.") + " " +
+                                       qsTr("Change if you observe problems with incorrect colors under a dark theme.")
+            }
+
+            Kirigami.Separator {
+                Kirigami.FormData.label: qsTr("Sharing")
+                Kirigami.FormData.isSection: true
+            }
+
             Controls.Switch {
                 checked: settings.contentDirSupported
                 text: qsTr("Share play queue items via UPnP Media Server")
