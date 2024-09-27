@@ -1,4 +1,4 @@
-set(enabled_translations de en es nl nl_BE pl ru sv sl_SI it zh_CN)
+set(enabled_translations de en es et nl nl_BE pl ru sv sl_SI it zh_CN)
 
 find_package(Qt5 COMPONENTS Core LinguistTools)
 

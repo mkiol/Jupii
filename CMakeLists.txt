@@ -103,7 +103,7 @@ set(info_license_url "http://mozilla.org/MPL/2.0")
 set(info_license_spdx "MPL-2.0")
 set(info_translators_str "Åke Engelbrektson · Atlochowski · Carlos Gonzalez · d9h20f · \
 Вячеслав Диконов · drosjesjaafoer · Rui Kon · Boštjan Štrumbelj · jgibbon · Fra · \
-Petr Tsymbarovich · Carmen Fernández B.")
+Petr Tsymbarovich · Carmen Fernández B. · Priit Jõerüüt")
 set(info_libs_str "Qt · QHTTPServer · npupnp · Libupnpp · TagLib · FFmpeg · LAME · \
 x264 · Gumbo · yt-dlp · ytmusicapi · EasyEXIF · AudioTube · {fmt}")
 
