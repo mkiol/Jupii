@@ -101,6 +101,7 @@ set(info_webpage "https://github.com/mkiol/${id}")
 set(info_license "Mozilla Public License 2.0")
 set(info_license_url "http://mozilla.org/MPL/2.0")
 set(info_license_spdx "MPL-2.0")
+set(info_version_type "")
 set(info_translators_str "Åke Engelbrektson · Atlochowski · Carlos Gonzalez · d9h20f · \
 Вячеслав Диконов · drosjesjaafoer · Rui Kon · Boštjan Štrumbelj · jgibbon · Fra · \
 Petr Tsymbarovich · Carmen Fernández B. · Priit Jõerüüt")
@@ -109,6 +110,9 @@ x264 · Gumbo · yt-dlp · ytmusicapi · EasyEXIF · AudioTube · {fmt}")
 
 project(${id} VERSION 2.14.4)
 
+set(arch_arm32 OFF)
+set(arch_arm64 OFF)
+set(arch_x8664 OFF)
 if(CMAKE_SYSTEM_PROCESSOR MATCHES ".*arm.*")
     message(STATUS "arm architecture detected")
     set(arch_arm32 ON)
@@ -158,6 +162,7 @@ set(share_install_dir "${install_dir}/share")
 set(lib_install_dir "${install_dir}/lib")
 set(bin_install_dir "${install_dir}/bin")
 set(rpath_install_dir "${CMAKE_INSTALL_PREFIX}/${lib_install_dir}")
+set(translations_resource_file "${CMAKE_BINARY_DIR}/translations.qrc")
 
 set(xz_path "xz")
 if(WITH_FLATPAK)
@@ -166,6 +171,9 @@ if(WITH_FLATPAK)
 elseif(BUILD_XZ)
     set(xz_path "${external_bin_dir}/xz")
 endif()
+
+set(deps "") # dependencies of dsnote_lib and dsnote
+set(deps_libs "") # libs to link to dsnote_lib and dsnote
 
 # global config
 
@@ -364,14 +372,16 @@ set(resources "")
 
 if(WITH_DESKTOP)
     list(APPEND resources
-        ${desktop_dir}/resources.qrc
-        ${CMAKE_BINARY_DIR}/translations.qrc)
+        "${desktop_dir}/resources.qrc"
+        ${translations_resource_file})
 endif()
 
 # executable
 
 add_executable(${info_binary_id} ${resources} "${sources_dir}/main.cpp")
 set_property(TARGET ${info_binary_id} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+set_property(TARGET ${info_binary_id} PROPERTY AUTORCC TRUE)
+
 target_link_libraries(${info_binary_id} jupii_lib)
 
 add_custom_command(TARGET ${info_binary_id} POST_BUILD
@@ -448,8 +458,11 @@ include(${cmake_path}/translations.cmake)
 
 # dependencies
 
-set(deps "")
-set(deps_libs compiler_flags pthread ${CMAKE_DL_LIBS})
+list(APPEND deps_libs
+    compiler_flags
+    pthread
+    ${CMAKE_DL_LIBS})
+
 set(deps_dirs "")
 
 include(FindPkgConfig)
