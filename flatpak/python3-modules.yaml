@@ -6,7 +6,7 @@ modules:
     buildsystem: simple
     build-commands:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "yt_dlp==2023.12.30" --no-build-isolation
+        --prefix=${FLATPAK_DEST} yt_dlp --no-build-isolation
     cleanup:
       - /bin
       - /share
@@ -37,24 +37,24 @@ modules:
         sha256: 0af93aad8d62e810247beedef0261c148790c52f3cd33643791cc6396dd217c1
       - &id004
         type: file
-        url: https://files.pythonhosted.org/packages/70/8e/0e2d847013cb52cd35b38c009bb167a1a26b2ce6cd6965bf26b47bc0bf44/requests-2.31.0-py3-none-any.whl
-        sha256: 58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f
+        url: https://files.pythonhosted.org/packages/f9/9b/335f9764261e915ed497fcdeb11df5dfd6f7bf257d4a6a2a686d80da4d54/requests-2.32.3-py3-none-any.whl
+        sha256: 70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6
       - &id005
         type: file
         url: https://files.pythonhosted.org/packages/48/fe/a5c6cc46e9fe9171d7ecf0f33ee7aae14642f8d74baa7af4d7840f9358be/urllib3-1.26.17-py2.py3-none-any.whl
         sha256: 94a757d178c9be92ef5539b8840d48dc9cf1b2709c9d6b588232a055c524458b
       - &id009
         type: file
-        url: https://files.pythonhosted.org/packages/2e/62/7a7874b7285413c954a4cca3c11fd851f11b2fe5b4ae2d9bee4f6d9bdb10/websockets-12.0.tar.gz
-        sha256: 81df9cbcbb6c260de1e007e58c011bfebe2dafc8435107b0537f393dd38c8b1b
+        url: https://files.pythonhosted.org/packages/e2/73/9223dbc7be3dcaf2a7bbf756c351ec8da04b1fa573edaf545b95f6b0c7fd/websockets-13.1.tar.gz
+        sha256: a3b3366087c1bc0a2795111edcadddb8b3b59509d5db5d7ea3fdd69f954a8878
       - type: file
-        url: https://files.pythonhosted.org/packages/d6/69/da2592056798716027215f561f2e9eeb3384d48b6b6a5a918916dbad1c98/yt_dlp-2023.12.30-py2.py3-none-any.whl
-        sha256: c00d9a71d64472ad441bcaa1ec0c3797d6e60c9f934f270096a96fe51657e7b3
+        url: https://files.pythonhosted.org/packages/c6/26/5dc3a802bd85c19d3d2fa746e6b36979801e2f32a433799c57f646335a7d/yt_dlp-2024.9.27-py3-none-any.whl
+        sha256: 2717468dd697fcfcf9a89f493ba30a3830cdfb276c09750e5b561b08b9ef5f69
   - name: python3-ytmusicapi
     buildsystem: simple
     build-commands:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "ytmusicapi==1.5.0" --no-build-isolation
+        --prefix=${FLATPAK_DEST} ytmusicapi --no-build-isolation
     cleanup:
       - /bin
       - /share
@@ -65,8 +65,8 @@ modules:
       - *id004
       - *id005
       - type: file
-        url: https://files.pythonhosted.org/packages/92/d6/c1d93c2ea8f5b86b8154d8c93008eee1e09ac1e790fe0d0f62686f7c9562/ytmusicapi-1.5.0-py3-none-any.whl
-        sha256: f175ca8a1eef361c2e5d84f5e12714914f551cd79a72b68b50e231e0e9e9f56c
+        url: https://files.pythonhosted.org/packages/66/34/8b5c4e1ccfe3f27b56db81b642162641c1aa6050ec5992d480292fc0411b/ytmusicapi-1.8.1-py3-none-any.whl
+        sha256: 472f51844541b12818da85217409033ecda93be6d40c1660fd32d064948a8f10
   - name: python3-brotli
     buildsystem: simple
     build-commands:
@@ -119,7 +119,7 @@ modules:
     buildsystem: simple
     build-commands:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "requests==2.31.0" --no-build-isolation
+        --prefix=${FLATPAK_DEST} "requests" --no-build-isolation
     sources:
       - *id001
       - *id002
@@ -137,7 +137,7 @@ modules:
     buildsystem: simple
     build-commands:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "websockets==12.0" --no-build-isolation
+        --prefix=${FLATPAK_DEST} "websockets" --no-build-isolation
     sources:
       - *id009
 name: python3-modules

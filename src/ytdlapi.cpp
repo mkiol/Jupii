@@ -291,7 +291,7 @@ std::optional<YtdlApi::Album> YtdlApi::playlist(const QString& id) {
     if (result.title.empty()) return std::nullopt;
 
     Album a;
-    a.artist = QString::fromStdString(result.author.name);
+    a.artist = result.author ? QString::fromStdString(result.author->name) : "";
     a.title = QString::fromStdString(result.title);
     a.imageUrl = bestThumbUrl(result.thumbnails);
 
@@ -486,11 +486,18 @@ std::vector<YtdlApi::SearchResultItem> YtdlApi::search(const QString& query) {
                             item.imageUrl = bestThumbUrl(album.thumbnails);
                         } else if constexpr (std::is_same_v<T,
                                                             search::Artist>) {
-                            item.type = Type::Artist;
-                            item.id = QString::fromStdString(arg.browse_id);
-                            item.artist = QString::fromStdString(arg.artist);
-                            auto artist = m_ytmusic->get_artist(arg.browse_id);
-                            item.imageUrl = bestThumbUrl(artist.thumbnails);
+                            try {
+                                auto artist =
+                                    m_ytmusic->get_artist(arg.browse_id);
+                                item.imageUrl = bestThumbUrl(artist.thumbnails);
+                                item.type = Type::Artist;
+                                item.id = QString::fromStdString(arg.browse_id);
+                                item.artist =
+                                    QString::fromStdString(arg.artist);
+                            } catch (
+                                [[maybe_unused]] const std::exception& err) {
+                                // KeyError: 'musicImmersiveHeaderRenderer'
+                            }
                         } else if constexpr (std::is_same_v<T,
                                                             search::Playlist>) {
                             item.type = Type::Playlist;

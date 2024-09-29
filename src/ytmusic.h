@@ -12,7 +12,7 @@
 #include <vector>
 #include <memory>
 
-constexpr auto TESTED_YTMUSICAPI_VERSION = "1.5.0";
+constexpr auto TESTED_YTMUSICAPI_VERSION = "1.8.0";
 
 struct YTMusicPrivate;
 
@@ -93,9 +93,9 @@ struct TopResult {
     std::vector<meta::Thumbnail> thumbnails;
 };
 
-using SearchResultItem =
-    std::variant<Video, Playlist, Song, Album, Artist, TopResult>;
-};  // namespace search
+using SearchResultItem = std::variant<Video, Playlist, Song, Album, Artist, TopResult>;
+};
+
 
 namespace artist {
 struct Artist {
@@ -138,7 +138,7 @@ struct Artist {
     struct Single {
         std::string title;
         std::vector<meta::Thumbnail> thumbnails;
-        std::optional<std::string> year;
+        std::string year;
         std::string browse_id;
     };
 
@@ -154,7 +154,7 @@ struct Artist {
     std::optional<Section<Single>> singles;
     std::optional<Section<Video>> videos;
 };
-}  // namespace artist
+}
 
 namespace album {
     struct Track {
@@ -206,7 +206,7 @@ struct Song {
     bool is_live_content;
     std::vector<std::string> artists;
 };
-}  // namespace song
+}
 
 namespace playlist {
 struct Track {
@@ -226,7 +226,7 @@ struct Playlist {
     std::string privacy;
     std::string title;
     std::vector<meta::Thumbnail> thumbnails;
-    meta::Artist author;
+    std::optional<meta::Artist> author;
     std::optional<std::string> year;
     std::string duration;
     int track_count;
@@ -295,29 +295,29 @@ struct Section {
     std::string title;
     std::vector<Content> content;
 };
-}
+}  // namespace home
 
 struct Lyrics {
     std::optional<std::string> source;
     std::string lyrics;
 };
 
-class YTMusic {
-   public:
+class YTMusic
+{
+public:
     YTMusic(const std::optional<std::string> &auth = std::nullopt,
             const std::optional<std::string> &user = std::nullopt,
             const std::optional<bool> requests_session = std::nullopt,
-            const std::optional<std::map<std::string, std::string>> &proxies =
-                std::nullopt,
+            const std::optional<std::map<std::string, std::string>> &proxies = std::nullopt,
             const std::string &language = "en");
 
     ~YTMusic();
 
-    std::vector<search::SearchResultItem> search(
-        const std::string &query,
-        const std::optional<std::string> &filter = std::nullopt,
-        const std::optional<std::string> &scope = std::nullopt,
-        const int limit = 20, const bool ignore_spelling = false) const;
+    std::vector<search::SearchResultItem> search(const std::string &query,
+                                                 const std::optional<std::string> &filter = std::nullopt,
+                                                 const std::optional<std::string> &scope = std::nullopt,
+                                                 const int limit = 100,
+                                                 const bool ignore_spelling = false) const;
 
     /// https://ytmusicapi.readthedocs.io/en/latest/reference.html#ytmusicapi.YTMusic.get_artist
     artist::Artist get_artist(const std::string &channel_id) const;
@@ -329,28 +329,29 @@ class YTMusic {
     std::optional<song::Song> get_song(const std::string &video_id) const;
 
     /// https://ytmusicapi.readthedocs.io/en/latest/reference.html#ytmusicapi.YTMusic.get_playlist
-    playlist::Playlist get_playlist(const std::string &playlist_id,
-                                    int limit = 100) const;
+    playlist::Playlist get_playlist(const std::string &playlist_id, int limit = 1024) const;
 
     /// https://ytmusicapi.readthedocs.io/en/latest/reference.html#ytmusicapi.YTMusic.get_artist_albums
-    std::vector<artist::Artist::Album> get_artist_albums(
-        const std::string &channel_id, const std::string &params) const;
+    std::vector<artist::Artist::Album> get_artist_albums(const std::string &channel_id, const std::string &params) const;
 
     /// youtube-dl's extract_info function
     video_info::VideoInfo extract_video_info(const std::string &video_id) const;
 
     /// https://ytmusicapi.readthedocs.io/en/latest/reference.html#ytmusicapi.YTMusic.get_watch_playlist
-    watch::Playlist get_watch_playlist(
-        const std::optional<std::string> &videoId = std::nullopt,
-        const std::optional<std::string> &playlistId = std::nullopt,
-        int limit = 25) const;
+    watch::Playlist get_watch_playlist(const std::optional<std::string> &videoId = std::nullopt,
+                                      const std::optional<std::string> &playlistId = std::nullopt,
+                                      int limit = 25) const;
+
+    Lyrics get_lyrics(const std::string &browse_id) const;
+
+    std::string get_version() const;
 
     std::vector<home::Section> get_home(int limit = 3) const;
 
     // TODO wrap more methods
 
-   private:
+private:
     std::unique_ptr<YTMusicPrivate> d;
 };
 
-#endif  // YTMUSIC_H
+#endif // YTMUSIC_H
