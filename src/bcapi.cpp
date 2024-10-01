@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -266,13 +266,17 @@ QJsonDocument BcApi::parseJsonData(const QByteArray &data) {
 std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query) const {
     std::vector<SearchResultItem> items;
 
-    auto data = Downloader{nam}.downloadData(makeSearchUrl(query));
+    auto [url, postData] = makeSearchUrl(query);
+    auto data = Downloader{nam}.downloadData(
+        url, {"application/json", std::move(postData)});
     if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return items;
     }
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
+
+    qDebug() << data.bytes;
 
     auto json = parseJsonData(data.bytes);
     if (json.isNull() || !json.isObject()) {
@@ -286,6 +290,12 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query) const {
                    .value(QLatin1String{"results"})
                    .toArray();
 
+    auto extra_img_fix = [](QUrl &url) {
+        // extra fix: add 'a' at the begining of a filename in img url
+        auto fn = url.fileName();
+        url.setPath(url.path().replace(fn, 'a' + fn));
+    };
+
     for (int i = 0; i < res.size(); ++i) {
         auto elm = res.at(i).toObject();
 
@@ -297,20 +307,33 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query) const {
         SearchResultItem item;
         item.type = type;
 
-        item.webUrl = QUrl{elm.value(QLatin1String{"url"}).toString()};
-        if (item.webUrl.isEmpty()) continue;
-
         item.imageUrl = QUrl{elm.value(QLatin1String{"img"}).toString()};
 
         if (type == Type::Track) {
+            item.webUrl =
+                QUrl{elm.value(QLatin1String{"item_url_root"}).toString()};
+            if (item.webUrl.isEmpty()) continue;
+
             item.title = elm.value(QLatin1String{"name"}).toString();
             item.artist = elm.value(QLatin1String{"band_name"}).toString();
             item.album = elm.value(QLatin1String{"album_name"}).toString();
+
+            extra_img_fix(item.imageUrl);
         } else if (type == Type::Artist) {
+            item.webUrl =
+                QUrl{elm.value(QLatin1String{"item_url_root"}).toString()};
+            if (item.webUrl.isEmpty()) continue;
+
             item.artist = elm.value(QLatin1String{"name"}).toString();
         } else if (type == Type::Album) {
+            item.webUrl =
+                QUrl{elm.value(QLatin1String{"item_url_path"}).toString()};
+            if (item.webUrl.isEmpty()) continue;
+
             item.album = elm.value(QLatin1String{"name"}).toString();
             item.artist = elm.value(QLatin1String{"band_name"}).toString();
+
+            extra_img_fix(item.imageUrl);
         }
 
         items.push_back(std::move(item));
@@ -319,13 +342,14 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query) const {
     return items;
 }
 
-QUrl BcApi::makeSearchUrl(const QString &phrase) {
-    QUrlQuery qurl;
-    qurl.addQueryItem(QStringLiteral("q"), phrase);
-    QUrl url{
-        QStringLiteral("https://bandcamp.com/api/fuzzysearch/1/autocomplete")};
-    url.setQuery(qurl);
-    return url;
+std::pair<QUrl, QByteArray> BcApi::makeSearchUrl(const QString &phrase) {
+    return std::make_pair(
+        QUrl{"https://bandcamp.com/api/bcsearch_public_api/1/"
+             "autocomplete_elastic"},
+        QStringLiteral("{\"search_text\":\"%1\",\"search_filter\":\"\",\"full_"
+                       "page\":false,\"fan_id\":null}")
+            .arg(phrase)
+            .toLocal8Bit());
 }
 
 QUrl BcApi::artUrl(const QString &id) {

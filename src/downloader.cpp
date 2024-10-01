@@ -171,8 +171,8 @@ bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
     return true;
 }
 
-Downloader::DownloadedData Downloader::downloadData(const QUrl &url,
-                                                    int timeout) {
+Downloader::Data Downloader::downloadData(const QUrl &url, const Data &postData,
+                                          int timeout) {
     if (busy()) {
         qWarning() << "downloaded is busy";
         return {};
@@ -190,10 +190,22 @@ Downloader::DownloadedData Downloader::downloadData(const QUrl &url,
     std::unique_ptr<QNetworkAccessManager> priv_nam;
 
     if (nam) {
-        mReply = nam->get(request);
+        if (postData.bytes.isEmpty()) {
+            mReply = nam->get(request);
+        } else {
+            request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader,
+                              postData.mime);
+            mReply = nam->post(request, postData.bytes);
+        }
     } else {
         priv_nam = std::make_unique<QNetworkAccessManager>();
-        mReply = priv_nam->get(request);
+        if (postData.bytes.isEmpty()) {
+            mReply = priv_nam->get(request);
+        } else {
+            request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader,
+                              postData.mime);
+            mReply = priv_nam->post(request, postData.bytes);
+        }
     }
 
     QEventLoop loop;

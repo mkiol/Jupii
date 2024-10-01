@@ -60,7 +60,7 @@ void IcecastModel::downloadDir() {
     if (!Utils::cacheFileExists(m_dirFilename)) {
         setRefreshing(true);
 
-        auto data = Downloader{}.downloadData(m_dirUrl, 30000);
+        auto data = Downloader{}.downloadData(m_dirUrl, {}, 30000);
 
         if (QThread::currentThread()->isInterruptionRequested()) return;
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,6 +16,7 @@
 #include <QUrl>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 class BcApi : public QObject {
@@ -98,7 +99,7 @@ class BcApi : public QObject {
     std::optional<SearchResultItem> notableItem(double id) const;
     static SearchResultItem notableItem(const QJsonObject &obj);
     inline static QUrl artUrl(const QString &id);
-    static QUrl makeSearchUrl(const QString &phrase);
+    static std::pair<QUrl, QByteArray> makeSearchUrl(const QString &phrase);
     static QJsonDocument parseJsonData(const QByteArray &data);
     static Type textToType(const QString &text);
     static void storeNotableIds(const QJsonObject &obj);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,14 +21,15 @@ class Downloader final : public QObject {
     Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
 
    public:
-    struct DownloadedData {
+    struct Data {
         QString mime;
         QByteArray bytes;
     };
     Downloader(std::shared_ptr<QNetworkAccessManager> nam = {},
                QObject *parent = nullptr);
     ~Downloader() final;
-    DownloadedData downloadData(const QUrl &url, int timeout = httpTimeout);
+    Data downloadData(const QUrl &url, const Data &postData = {},
+                      int timeout = httpTimeout);
     bool downloadToFile(const QUrl &url, const QString &outputPath, bool abortWhenSlowDownload);
     void cancel();
     void reset();

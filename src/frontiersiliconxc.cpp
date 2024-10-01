@@ -125,7 +125,7 @@ bool FrontierSiliconXC::parseDeviceDescription(const QByteArray& data)
 
 bool FrontierSiliconXC::init()
 {
-    auto data = Downloader{}.downloadData(QUrl{URL.arg(address)}, 1000);
+    auto data = Downloader{}.downloadData(QUrl{URL.arg(address)}, {}, 1000);
     if (data.bytes.isEmpty()) {
         qWarning() << "Cannot download device description";
         return false;
