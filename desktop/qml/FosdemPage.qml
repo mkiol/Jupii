@@ -32,7 +32,7 @@ Kirigami.ScrollablePage {
     actions {
         main: Kirigami.Action {
             text: itemModel.selectedCount > 0 ? qsTr("Add %n selected", "", itemModel.selectedCount) : qsTr("Add selected")
-            enabled: itemModel.selectableCount > 0 && !itemModel.busy
+            enabled: itemModel.selectedCount > 0 && !itemModel.busy
             iconName: "list-add"
             onTriggered: {
                 playlist.addItemUrls(itemModel.selectedItems())
