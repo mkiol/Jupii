@@ -147,8 +147,14 @@ Kirigami.ApplicationWindow {
             if (page !== undefined && pageStack.columnView.containsItem(page))
                 page.selectionMode = false
 
-            if (depth > 2 && idx < depth - 1) {
-                removePagesAfter(idx)
+            if (depth > 2) {
+                if (idx < depth - 1) {
+                    removePagesAfter(idx)
+                } else {
+                    // ugly workaround for partially pushed page in kirigami
+                    pageStack.columnView.columnResizeMode = Kirigami.ColumnView.SingleColumn
+                    pageStack.columnView.columnResizeMode = Kirigami.ColumnView.FixedColumns
+                }
             }
         }
     }
