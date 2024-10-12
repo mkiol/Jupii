@@ -23,6 +23,5 @@ install(FILES ${sfos_dir}/icons/108x108/${info_binary_id}.png DESTINATION share/
 install(FILES ${sfos_dir}/icons/128x128/${info_binary_id}.png DESTINATION share/icons/hicolor/128x128/apps)
 install(FILES ${sfos_dir}/icons/172x172/${info_binary_id}.png DESTINATION share/icons/hicolor/172x172/apps)
 
-install(FILES ${qm_files} DESTINATION share/${info_binary_id}/translations)
 install(DIRECTORY ${sfos_dir}/qml DESTINATION share/${info_binary_id})
 install(DIRECTORY ${sfos_dir}/images DESTINATION share/${info_binary_id})

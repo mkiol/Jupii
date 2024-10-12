@@ -219,12 +219,7 @@ static void registerTypes() {
 
 static void installTranslator() {
     auto* translator = new QTranslator{QCoreApplication::instance()};
-#ifdef USE_SFOS
-    auto transDir =
-        SailfishApp::pathTo(QStringLiteral("translations")).toLocalFile();
-#else
     auto transDir = QStringLiteral(":/translations");
-#endif
     if (!translator->load(QLocale{}, QStringLiteral("jupii"),
                           QStringLiteral("-"), transDir,
                           QStringLiteral(".qm"))) {

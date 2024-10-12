@@ -369,12 +369,9 @@ add_library(jupii_lib STATIC ${jupii_lib_sources})
 # resources
 
 set(resources "")
-
-if(WITH_DESKTOP)
-    list(APPEND resources
-        "${desktop_dir}/resources.qrc"
-        ${translations_resource_file})
-endif()
+list(APPEND resources
+    "${desktop_dir}/resources.qrc"
+    ${translations_resource_file})
 
 # executable
 
@@ -574,6 +571,10 @@ else()
     pkg_search_module(ffmpeg_avfilter REQUIRED libavfilter>=8.44.100)
     pkg_search_module(ffmpeg_swresample REQUIRED libswresample>=4.3.100)
     pkg_search_module(ffmpeg_swscale REQUIRED libswscale>=6.7.100)
+
+    string(REGEX REPLACE "^([0-9]+).*$" "\\1" ffmpeg_ver ${ffmpeg_avformat_VERSION})
+    message(STATUS "found ffmpeg version: ${ffmpeg_ver}")
+
     list(APPEND deps_libs
         ${ffmpeg_avdevice_LIBRARIES}
         ${ffmpeg_avfilter_LIBRARIES}
