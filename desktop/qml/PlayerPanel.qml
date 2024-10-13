@@ -31,6 +31,7 @@ Rectangle {
     property alias playmodeEnabled: playmodeButton.enabled
     property alias recordEnabled: recordButton.enabled
     property bool recordActive: false
+    property bool hideNotConnectedMessage: false
     property int itemType
     readonly property bool narrowMode: root.width < Kirigami.Units.gridUnit * 25
 
@@ -101,7 +102,7 @@ Rectangle {
             Layout.fillWidth: true
             Layout.leftMargin: Kirigami.Units.largeSpacing
             Layout.rightMargin: Kirigami.Units.largeSpacing
-            visible: !root.inited && !root.open
+            visible: !root.inited && !root.open && !root.hideNotConnectedMessage
             icon.source: "network-offline"
             text: {
                 if (!directory.inited) return qsTr("No network connection")
@@ -116,6 +117,11 @@ Rectangle {
                     icon.name: "computer"
                     enabled: directory.inited
                     onTriggered: app.devicesAction.trigger()
+                },
+                Kirigami.Action {
+                    text: qsTr("Hide")
+                    icon.name: "dialog-close-symbolic"
+                    onTriggered: root.hideNotConnectedMessage = true
                 }
             ]
         }
