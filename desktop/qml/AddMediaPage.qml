@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -52,6 +52,22 @@ Kirigami.ScrollablePage {
         folder: shortcuts.music
         onAccepted: {
             playlist.addItemFileUrls(fileDialog.fileUrls,
+                                     asAudio ? ContentServer.Type_Music :
+                                               ContentServer.Type_Unknown)
+            pageStack.flickBack()
+        }
+    }
+
+    FileDialog {
+        id: folderDialog
+        property bool asAudio: false
+        title: qsTr("Choose a folder")
+        selectMultiple: false
+        selectFolder: true
+        selectExisting: true
+        folder: shortcuts.music
+        onAccepted: {
+            playlist.addItemFileUrls(folderDialog.fileUrls,
                                      asAudio ? ContentServer.Type_Music :
                                                ContentServer.Type_Unknown)
             pageStack.flickBack()
@@ -137,6 +153,22 @@ Kirigami.ScrollablePage {
                 fileDialog.asAudio = false
                 fileDialog.open()
             }
+        }
+
+        Kirigami.BasicListItem {
+            Layout.fillWidth: true
+            label: qsTr("Folder") // All files in the folder and subfolders
+            icon: "folder-open"
+            highlighted: folderDialog.visible
+            onClicked: {
+                folderDialog.asAudio = false
+                folderDialog.open()
+            }
+
+            Controls.ToolTip.visible: hovered
+            Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+            Controls.ToolTip.text: qsTr("Add all files in the folder and subfolders")
+            hoverEnabled: true
         }
 
         Kirigami.BasicListItem {

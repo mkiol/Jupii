@@ -294,6 +294,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     Q_INVOKABLE QString pathFromUrl(const QUrl &url) const;
     Q_INVOKABLE QString urlFromUrl(const QUrl &url) const;
     static QStringList extensionsForType(Type type);
+    static QStringList extensionsForMediaTypes();
     QHash<QUrl, ItemMeta>::iterator getMetaCacheIterator(
         const QUrl &url, bool createNew = true, const QUrl &origUrl = {},
         const QString &app = {}, bool ytdl = false, bool img = false,

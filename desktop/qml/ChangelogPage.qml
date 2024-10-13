@@ -26,8 +26,9 @@ Kirigami.ScrollablePage {
 
         RichLabel {
             text: "<ul>
-            <li>A new option that let you switch between different User Interface styles.
+            <li>A new setting option that let you switch between different User Interface styles.
                 Different styles can improve readability on non-KDE Plasma desktops.</li>
+            <li>Menu option for adding all files in the folder and subfolders to the play queue</li>
             <li>User Interface translated into Estonian language</li>
             <li>Fix: YouTube Music browser didn't work due to YouTube API change.</li>
             <li>Fix: Bandcamp search didn't work due to Bandcamp API change.</li>

@@ -108,7 +108,7 @@ Petr Tsymbarovich · Carmen Fernández B. · Priit Jõerüüt")
 set(info_libs_str "Qt · QHTTPServer · npupnp · Libupnpp · TagLib · FFmpeg · LAME · \
 x264 · Gumbo · yt-dlp · ytmusicapi · EasyEXIF · AudioTube · {fmt}")
 
-project(${id} VERSION 2.14.5)
+project(${id} VERSION 2.15.0)
 
 set(arch_arm32 OFF)
 set(arch_arm64 OFF)

@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,6 +10,7 @@
 #include <QDataStream>
 #include <QDebug>
 #include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
 #include <QHash>
@@ -756,22 +757,52 @@ bool PlaylistModel::isLive() const {
 
 void PlaylistModel::addItemPaths(const QStringList &paths,
                                  ContentServer::Type type) {
+    QStringList nameFilter;
+    for (const auto &ext : ContentServer::extensionsForMediaTypes())
+        nameFilter << QStringLiteral("*.%1").arg(ext);
+
     QList<UrlItem> urls;
     foreach (const auto &path, paths) {
-        UrlItem ui;
-        ui.url = QUrl::fromLocalFile(path);
-        urls << ui;
+        if (QFileInfo fi{path}; fi.exists() && fi.isDir()) {
+            QDirIterator it{path, nameFilter,
+                            QDir::Files | QDir::NoSymLinks | QDir::Readable,
+                            QDirIterator::Subdirectories};
+            while (it.hasNext()) {
+                UrlItem ui;
+                ui.url = QUrl::fromLocalFile(it.next());
+                urls << ui;
+            }
+        } else {
+            UrlItem ui;
+            ui.url = QUrl::fromLocalFile(path);
+            urls << ui;
+        }
     }
     addItems(urls, type);
 }
 
 void PlaylistModel::addItemFileUrls(const QList<QUrl> &urls,
                                     ContentServer::Type type) {
+    QStringList nameFilter;
+    for (const auto &ext : ContentServer::extensionsForMediaTypes())
+        nameFilter << QStringLiteral("*.%1").arg(ext);
+
     QList<UrlItem> items;
     foreach (const auto &url, urls) {
-        UrlItem ui;
-        ui.url = url;
-        items << ui;
+        if (QFileInfo fi{url.toLocalFile()}; fi.exists() && fi.isDir()) {
+            QDirIterator it{url.toLocalFile(), nameFilter,
+                            QDir::Files | QDir::NoSymLinks | QDir::Readable,
+                            QDirIterator::Subdirectories};
+            while (it.hasNext()) {
+                UrlItem ui;
+                ui.url = QUrl::fromLocalFile(it.next());
+                items << ui;
+            }
+        } else {
+            UrlItem ui;
+            ui.url = url;
+            items << ui;
+        }
     }
     addItems(items, type);
 }

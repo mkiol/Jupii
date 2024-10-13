@@ -407,6 +407,14 @@ QStringList ContentServer::extensionsForType(Type type) {
     return {};
 }
 
+QStringList ContentServer::extensionsForMediaTypes() {
+    QStringList exts;
+
+    exts << m_imgExtMap.keys() << m_musicExtMap.keys() << m_videoExtMap.keys();
+
+    return exts;
+}
+
 QString ContentServer::getContentMimeByExtension(const QString &path) {
     auto ext = extFromPath(path);
     if (ext) {
