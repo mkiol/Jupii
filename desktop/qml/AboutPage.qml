@@ -49,6 +49,11 @@ Kirigami.ScrollablePage {
             }
         }
 
+        Controls.Button {
+            text: qsTr("Changes")
+            onClicked: pageStack.push(Qt.resolvedUrl("ChangelogPage.qml"))
+        }
+
         Kirigami.Separator {
             Layout.fillWidth: true
         }

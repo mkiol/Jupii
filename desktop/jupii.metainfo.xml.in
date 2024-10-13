@@ -56,6 +56,20 @@
   <launchable type="desktop-id">@info_app_icon_id@.desktop</launchable>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="2.14.5" date="2024-10-12">
+      <description>
+      <ul>
+      <li>A new option that let you switch between different User Interface styles.
+          Different styles can improve readability on non-KDE Plasma desktops.</li>
+      <li>User Interface translated into Estonian language</li>
+      <li>Fix: YouTube Music browser didn't work due to YouTube API change.</li>
+      <li>Fix: Bandcamp search didn't work due to Bandcamp API change.</li>
+      <li>Fix: Thumbnails of FLAC files were not displayed correctly.</li>
+      <li>Fix: Track duration was not displayed when viewing Media Server content.</li>
+      <li>Fix: User Interface glitches</li>
+      </ul>
+      </description>
+    </release>
     <release version="2.14.4" date="2024-02-02" />
     <release version="2.14.3" date="2023-05-08" />
     <release version="2.14.2" date="2023-03-06" />
