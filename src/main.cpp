@@ -255,6 +255,11 @@ int main(int argc, char** argv) {
     QCoreApplication::libraryPaths();
     auto engine = std::make_unique<QQmlApplicationEngine>();
     auto* context = engine->rootContext();
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+    QGuiApplication::setDesktopFileName(APP_ICON_ID);
+    qDebug() << "desktop file:" << QGuiApplication::desktopFileName();
+#endif
 #endif
     QGuiApplication::setApplicationName(QStringLiteral(APP_ID));
     QGuiApplication::setOrganizationName(QStringLiteral(APP_ORG));
