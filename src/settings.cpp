@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -75,6 +75,11 @@ Settings::Settings()
     initOpenUrlMode();
 
     getCacheDir();
+
+    // remove qml cache
+    QDir{QStandardPaths::writableLocation(QStandardPaths::CacheLocation) +
+         "/qmlcache"}
+        .removeRecursively();
 
     updateSandboxStatus();
 
