@@ -4,9 +4,11 @@
   <id>@info_app_icon_id@</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>@info_license_spdx@</project_license>
-  <developer_name>@info_author@</developer_name>
+  <developer id="@info_org@">
+    <name>@info_author@</name>
+  </developer>
   <name>@info_name@</name>
-  <summary>Play audio, video and images on UPnP/DLNA devices</summary>
+  <summary>Play media on UPnP/DLNA devices</summary>
   <description>
     <p>Jupii let you play audio, video and image files on any device on your local network that supports UPnP/DLNA, such as smart speaker, smart TVs, gaming consoles, and more.</p>
     <p>In addition to the typical features you might expect from this type of application, Jupii also has some unique functionalities such as:</p>
@@ -22,6 +24,10 @@
     <li>Media server mode: Using your playback device (e.g. smart TV), you browse and play media files shared by Jupii</li>
     </ul>
   </description>
+  <branding>
+    <color type="primary" scheme_preference="light">#be64ff</color>
+    <color type="primary" scheme_preference="dark">#602695</color>
+  </branding>
   <categories>
     <category>AudioVideo</category>
   </categories>
