@@ -45,6 +45,10 @@ Page {
         model: ListModel {
             id: conferencesModel
             ListElement {
+                title: "FOSDEM 2024"
+                year: 2024
+            }
+            ListElement {
                 title: "FOSDEM 2023"
                 year: 2023
             }
