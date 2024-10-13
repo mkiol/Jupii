@@ -36,18 +36,24 @@ Page {
                 text: qsTr("Restart is required for the changes to take effect.")
             }
 
-            TextSwitch {
-                automaticCheck: false
-                checked: settings.contentDirSupported
-                text: qsTr("Share play queue items via UPnP Media Server")
-                description: qsTr("When enabled, items in play queue are accessible " +
-                                  "for other UPnP devices in your local network.")
-                onClicked: {
-                    settings.contentDirSupported = !settings.contentDirSupported
-                }
-            }
-
             ExpandingSectionGroup {
+                ExpandingSection {
+                    title: qsTr("Sharing")
+
+                    content.sourceComponent: Column {
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.contentDirSupported
+                            text: qsTr("Share play queue items via UPnP Media Server")
+                            description: qsTr("When enabled, items in play queue are accessible " +
+                                              "for other UPnP devices in your local network.")
+                            onClicked: {
+                                settings.contentDirSupported = !settings.contentDirSupported
+                            }
+                        }
+                    }
+                }
+
                 ExpandingSection {
                     title: qsTr("Hardware keys")
 
