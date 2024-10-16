@@ -50,7 +50,7 @@ Controls.Dialog {
             Layout.rightMargin: Kirigami.Units.largeSpacing
             Layout.bottomMargin: Kirigami.Units.largeSpacing
             visible: true
-            text: qsTr("When URL doesn't point directly to audio, video or image file, media content is discovered with youtube-dl.")
+            text: qsTr("When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.").arg("yt-dlp")
         }
 
         Controls.TextField {

@@ -142,6 +142,18 @@
         <source>Camera</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Choose a folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add all files in the folder and subfolders</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AddUrlDialog</name>
@@ -181,7 +193,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
+        <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1084,6 +1096,10 @@
         <source>Connect to a device to control playback.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Hide</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PlaylistModel</name>
@@ -1351,6 +1367,13 @@
     </message>
 </context>
 <context>
+    <name>SectionLabel</name>
+    <message>
+        <source>Authors</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Settings</name>
     <message>
         <source>Built-in microphone</source>
@@ -1390,6 +1413,10 @@
     </message>
     <message>
         <source>Inverted landscape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Don&apos;t force any style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1557,6 +1584,66 @@
     </message>
     <message>
         <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a directory for recordings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset all settings to defaults?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Video encoder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Location of Python libraries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Python libraries directory (%1).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leave blank to use the default value.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This option may be useful if you use %1 module to manage Python libraries.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished">Opslaan</translation>
+    </message>
+    <message>
+        <source>Save changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User Interface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use custom graphical style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Graphical style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Application graphical interface style.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change if you observe problems with incorrect colors under a dark theme.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sharing</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1850,10 +1937,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>URL</source>
         <translation type="unfinished">URL</translation>
     </message>
@@ -1871,6 +1954,10 @@
     </message>
     <message>
         <source>Add only audio stream</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1935,6 +2022,25 @@
         <source>Type: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Home</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Add %n selected</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Add selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle selection</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>main</name>
@@ -1996,6 +2102,10 @@
     </message>
     <message>
         <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restart is required for the changes to take effect.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

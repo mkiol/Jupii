@@ -16,36 +16,37 @@
     </message>
     <message>
         <location filename="../sfos/qml/AboutPage.qml" line="57"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="53"/>
         <source>Changes</source>
         <translation>Cambios</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AboutPage.qml" line="53"/>
-        <location filename="../desktop/qml/AboutPage.qml" line="87"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="92"/>
         <source>Project website</source>
         <translation>Fuente</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AboutPage.qml" line="63"/>
-        <location filename="../desktop/qml/AboutPage.qml" line="103"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="108"/>
         <source>Authors</source>
         <translation>Autores</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AboutPage.qml" line="83"/>
-        <location filename="../desktop/qml/AboutPage.qml" line="116"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="121"/>
         <source>Translators</source>
         <translation>Traductores</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AboutPage.qml" line="92"/>
-        <location filename="../desktop/qml/AboutPage.qml" line="129"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="134"/>
         <source>Libraries in use</source>
         <translation>Librerías en uso</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AboutPage.qml" line="77"/>
-        <location filename="../desktop/qml/AboutPage.qml" line="72"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="77"/>
         <source>%1 is developed as an open source project under %2.</source>
         <translation>%1 se ha desarrollado como un proyecto de código abierto bajo %2.</translation>
     </message>
@@ -55,17 +56,17 @@
         <translation>Reproduce audio, vídeo e imágenes en dispositivos UPnP/DLNA</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/AboutPage.qml" line="59"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="64"/>
         <source>Copyright</source>
         <translation>Derechos de autor</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/AboutPage.qml" line="81"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="86"/>
         <source>Support</source>
         <translation>Soporte</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/AboutPage.qml" line="95"/>
+        <location filename="../desktop/qml/AboutPage.qml" line="100"/>
         <source>Support e-mail</source>
         <translation>Correo de soporte</translation>
     </message>
@@ -80,7 +81,7 @@
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="113"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="128"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="144"/>
         <source>Local</source>
         <translation>Local</translation>
     </message>
@@ -106,7 +107,7 @@
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="153"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="144"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="176"/>
         <source>Audio from video</source>
         <translation>Audio del vídeo</translation>
     </message>
@@ -122,67 +123,67 @@
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="180"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="133"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="149"/>
         <source>File</source>
         <translation>Archivo</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="189"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="155"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="187"/>
         <source>Recording</source>
         <translation>Grabación</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="198"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="166"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="198"/>
         <source>Remote</source>
         <translation>Remoto</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="202"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="171"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="203"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="211"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="178"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="210"/>
         <source>Media Server</source>
         <translation>Servidor multimedia</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="220"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="189"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="221"/>
         <source>Capture</source>
         <translation>Captura</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="224"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="194"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="226"/>
         <source>Audio capture</source>
         <translation>Captura de audio</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="235"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="202"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="234"/>
         <source>Screen capture</source>
         <translation>Captura de pantalla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="245"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="209"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="241"/>
         <source>Microphone</source>
         <translation>Micrófono</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="256"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="216"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="248"/>
         <source>Camera</source>
         <translation>Cámara</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="266"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="224"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="256"/>
         <source>Apps &amp; services</source>
         <translation>Aplicaciones y servicios</translation>
     </message>
@@ -190,6 +191,21 @@
         <location filename="../desktop/qml/AddMediaPage.qml" line="48"/>
         <source>Choose a file</source>
         <translation>Eligir un archivo</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="64"/>
+        <source>Choose a folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="160"/>
+        <source>Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="170"/>
+        <source>Add all files in the folder and subfolders</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -226,8 +242,12 @@
     </message>
     <message>
         <location filename="../sfos/qml/AddUrlPage.qml" line="113"/>
+        <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation>Cuando la URL no apunta directamente a un archivo de audio, video o imagen, el contenido multimedia se obtiene con youtube-dl.</translation>
+        <translation type="vanished">Cuando la URL no apunta directamente a un archivo de audio, video o imagen, el contenido multimedia se obtiene con youtube-dl.</translation>
     </message>
 </context>
 <context>
@@ -457,18 +477,13 @@
     <name>ChangelogPage</name>
     <message>
         <location filename="../sfos/qml/ChangelogPage.qml" line="28"/>
+        <location filename="../desktop/qml/ChangelogPage.qml" line="18"/>
         <source>Changes</source>
         <translation>Cambios</translation>
     </message>
     <message>
         <location filename="../sfos/qml/ChangelogPage.qml" line="32"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="83"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="142"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="156"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="199"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="226"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="258"/>
-        <location filename="../sfos/qml/ChangelogPage.qml" line="294"/>
+        <location filename="../desktop/qml/ChangelogPage.qml" line="24"/>
         <source>Version %1</source>
         <translation>Versión %1</translation>
     </message>
@@ -476,27 +491,27 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../src/contentserver.cpp" line="710"/>
+        <location filename="../src/contentserver.cpp" line="718"/>
         <source>Unknown</source>
         <translation>Desconocido</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1844"/>
+        <location filename="../src/contentserver.cpp" line="1852"/>
         <source>Microphone</source>
         <translation>Micrófono</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1878"/>
+        <location filename="../src/contentserver.cpp" line="1886"/>
         <source>Audio capture</source>
         <translation>Captura de audio</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1925"/>
+        <location filename="../src/contentserver.cpp" line="1933"/>
         <source>Screen capture</source>
         <translation>Captura de pantalla</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1971"/>
+        <location filename="../src/contentserver.cpp" line="1979"/>
         <source>Camera</source>
         <translation>Cámara</translation>
     </message>
@@ -762,7 +777,7 @@
 <context>
     <name>FosdemYearsPage</name>
     <message>
-        <location filename="../sfos/qml/FosdemYearsPage.qml" line="94"/>
+        <location filename="../sfos/qml/FosdemYearsPage.qml" line="98"/>
         <location filename="../desktop/qml/FosdemYearsPage.qml" line="22"/>
         <source>FOSDEM Conferences</source>
         <translation>Conferencias FOSDEM</translation>
@@ -1440,63 +1455,72 @@
 <context>
     <name>PlayerPanel</name>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="107"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="108"/>
         <source>No network connection</source>
         <translation>Sin conexión a la red</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="108"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="109"/>
         <source>Not connected</source>
         <translation>No conectado</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="108"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="109"/>
         <source>Connect to a device to control playback.</source>
         <translation>Conéctate a un dispositivo para controlar la reproducción.</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="109"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="110"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>Sin conexión, aún es posible acceder a todos los elementos de la cola desde otros dispositivos de la red local.</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="115"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="116"/>
         <source>Devices</source>
         <translation>Dispositivos</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="325"/>
+        <source>Cancel</source>
+        <translation type="obsolete">Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="122"/>
+        <source>Hide</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="331"/>
         <source>Skip Backward</source>
         <translation>Saltar hacia atrás</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="335"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="341"/>
         <source>Seek Backward</source>
         <translation>Buscar hacia atrás</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="345"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="351"/>
         <source>Seek Forward</source>
         <translation>Buscar hacia adelante</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="355"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="361"/>
         <source>Skip Forward</source>
         <translation>Saltar hacia adelante</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="367"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="373"/>
         <source>Toggle Record</source>
         <translation>Interruptor grabar</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="381"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="387"/>
         <source>Toggle Repeat One</source>
         <translation>Interruptor repetir</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="420"/>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="458"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="426"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="464"/>
         <source>Toggle Mute</source>
         <translation>Interruptor silenciar</translation>
     </message>
@@ -1504,7 +1528,7 @@
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../src/playlistmodel.cpp" line="624"/>
+        <location filename="../src/playlistmodel.cpp" line="625"/>
         <source>Playlist</source>
         <translation>Lista de reproducción</translation>
     </message>
@@ -1841,59 +1865,67 @@
     </message>
 </context>
 <context>
+    <name>SectionLabel</name>
+    <message>
+        <location filename="../desktop/qml/SectionLabel.qml" line="14"/>
+        <source>Authors</source>
+        <translation type="unfinished">Autores</translation>
+    </message>
+</context>
+<context>
     <name>Settings</name>
     <message>
-        <location filename="../src/settings.cpp" line="1015"/>
+        <location filename="../src/settings.cpp" line="1020"/>
         <source>Built-in microphone</source>
         <translation>Micrófono incorporado</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1016"/>
+        <location filename="../src/settings.cpp" line="1021"/>
         <source>Audio capture</source>
         <translation>Captura de audio</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1017"/>
+        <location filename="../src/settings.cpp" line="1022"/>
         <source>Screen</source>
         <translation>Pantalla</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1019"/>
+        <location filename="../src/settings.cpp" line="1024"/>
         <source>Back camera</source>
         <translation>Cámara trasera</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1021"/>
+        <location filename="../src/settings.cpp" line="1026"/>
         <source>Front camera</source>
         <translation>Cámara frontal</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1199"/>
+        <location filename="../src/settings.cpp" line="1204"/>
         <source>Auto</source>
         <translation>Auto</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1201"/>
+        <location filename="../src/settings.cpp" line="1206"/>
         <source>Portrait</source>
         <translation>Vertical</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1203"/>
+        <location filename="../src/settings.cpp" line="1208"/>
         <source>Inverted portrait</source>
         <translation>Vertical invertido</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1205"/>
+        <location filename="../src/settings.cpp" line="1210"/>
         <source>Landscape</source>
         <translation>Horizontal</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1207"/>
+        <location filename="../src/settings.cpp" line="1212"/>
         <source>Inverted landscape</source>
         <translation>Horizontal invertido</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1282"/>
+        <location filename="../src/settings.cpp" line="1287"/>
         <source>Don&apos;t force any style</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1907,17 +1939,17 @@
         <translation>Ajustes</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="59"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="65"/>
         <source>Volume control with hardware keys</source>
         <translation>Control de volumen con teclas</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="75"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="81"/>
         <source>Volume level step</source>
         <translation>Salto en nivel de volumen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="42"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="47"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="94"/>
         <source>Share play queue items via UPnP Media Server</source>
         <translation>Compartir elementos de la cola</translation>
@@ -1930,57 +1962,57 @@
         <translation>Es necesario reiniciar para que los cambios tengan efecto.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="43"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="48"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="101"/>
         <source>When enabled, items in play queue are accessible for other UPnP devices in your local network.</source>
         <translation>Al habilitar, es posible acceder a los elementos de la cola desde otros dispositivos UPnP de la red local.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="85"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="91"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="129"/>
         <source>Formats</source>
         <translation>Formatos</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="89"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="95"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="134"/>
         <source>Live video</source>
         <translation>Vídeo en directo</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="114"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="120"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="162"/>
         <source>Live audio</source>
         <translation>Audio en directo</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="161"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="167"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="198"/>
         <source>Directory for recordings</source>
         <translation>Directorio de grabaciones</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="174"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="180"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="219"/>
         <source>Change</source>
         <translation>Cambiar</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="183"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="189"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="214"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="444"/>
         <source>Set default</source>
         <translation>Predeterminado</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="194"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="200"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="225"/>
         <source>Caching</source>
         <translation>Almacenamiento en caché</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="210"/>
-        <location filename="../sfos/qml/SettingsPage.qml" line="241"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="216"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="247"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="242"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="272"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="364"/>
@@ -1988,156 +2020,156 @@
         <translation>Auto</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="228"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="234"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="260"/>
         <source>Cache cleaning</source>
         <translation>Limpieza de caché</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="272"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="278"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="290"/>
         <source>Cache size</source>
         <translation>Tamaño de caché</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="289"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="295"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="300"/>
         <source>Delete cache</source>
         <translation>Borrar caché</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="348"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="354"/>
         <source>Start/stop local MPD and upmpdcli services</source>
         <translation>Iniciar/detener los servicios locales MPD y upmpdcli</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="349"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="355"/>
         <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
         <translation>Si MPD y upmpdcli están instalados, se iniciarán al abrir Jupii y  se detendrán al salir de Jupii.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="415"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="421"/>
         <source>Reset tips and hints</source>
         <translation>Restablecer consejos y sugerencias</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="417"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="423"/>
         <source>Resetting tips and hints</source>
         <translation>Restableciendo consejos y sugerencias</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="303"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="309"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="311"/>
         <source>Preferred network interface</source>
         <translation>Interfaz de red preferida</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="211"/>
-        <location filename="../sfos/qml/SettingsPage.qml" line="242"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="217"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="248"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="243"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="273"/>
         <source>Always</source>
         <translation>Siempre</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="212"/>
-        <location filename="../sfos/qml/SettingsPage.qml" line="243"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="218"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="249"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="244"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="274"/>
         <source>Never</source>
         <translation>Nunca</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="334"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="340"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="408"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>Se muestran y detectan todos los tipos de dispositivos UPnP, incluidos los dispositivos no compatibles, como los enrutadores domésticos. Para dispositivos no compatibles, sólo está disponible la información de descripción básica. Esta opción puede ser útil para auditar dispositivos UPnP en la red local.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="393"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="399"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="389"/>
         <source>Enter Frontier Silicon PIN</source>
         <translation>Introduce PIN de Frontier Silicon</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="427"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="433"/>
         <source>Resetting settings</source>
         <translation>Restableciendo ajustes</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="333"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="339"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="401"/>
         <source>All devices visible</source>
         <translation>Mostrar todos los dispositivos</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="52"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="58"/>
         <source>Hardware keys</source>
         <translation>Teclas</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="110"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="116"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="158"/>
         <source>Change if you observe problems with video playback in Camera or Screen capture.</source>
         <translation>Cambia de cámara o captura de pantalla si observas problemas en la reproducción de vídeo.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="139"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="145"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="189"/>
         <source>Change if you observe problems with audio playback in Microphone or Audio capture.</source>
         <translation>Cambia de micrófono o captura de audio si observas problemas en la reproducción de audio.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="144"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="150"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="193"/>
         <source>Recorder</source>
         <translation>Grabadora</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="198"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="204"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="230"/>
         <source>Cache remote content</source>
         <translation>Contenido remoto en caché</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="320"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="326"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="333"/>
         <source>Block fragmented MP4 audio streams</source>
         <translation>Bloquear transmisión de audio MP4 fragmentado</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="321"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="327"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="340"/>
         <source>Some UPnP devices don&apos;t support audio stream in fragmented MP4 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to standard MP4. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
         <translation>Algunos dispositivos UPnP no admiten la transmisión de audio en formato MP4 fragmentado. Este tipo de transmisión podría incluso bloquear el dispositivo. Para resolver este problema, Jupii intenta volver a transcodificar la transmisión a MP4 estándar. Si esta opción está habilitada y la retranscodificación falla, el elemento no se reproducirá en ningún caso.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="403"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="409"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="471"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Necesario para solucionar problemas. Los datos de registro se almacenan en el archivo %1.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="402"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="408"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="464"/>
         <source>Enable logging</source>
         <translation>Habilitar registro</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="425"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="431"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="36"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="482"/>
         <source>Reset settings</source>
         <translation>Restablecer ajustes</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="298"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="304"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="306"/>
         <source>Advanced</source>
         <translation>Avanzado</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="390"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="396"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="386"/>
         <source>Frontier Silicon PIN</source>
         <translation>PIN de Frontier Silicon</translation>
@@ -2178,6 +2210,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="41"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="88"/>
         <source>Sharing</source>
         <translation type="unfinished"></translation>
@@ -2600,9 +2633,13 @@
         <translation>Añadir URL</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UrlDialog.qml" line="53"/>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation>Cuando la URL no apunta directamente a un archivo de audio, video o imagen, se usa youtube-dl para encontrar el contenido multimedia.</translation>
+        <translation type="vanished">Cuando la URL no apunta directamente a un archivo de audio, video o imagen, se usa youtube-dl para encontrar el contenido multimedia.</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/UrlDialog.qml" line="53"/>
+        <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../desktop/qml/UrlDialog.qml" line="59"/>
@@ -2745,43 +2782,43 @@
     <name>main</name>
     <message>
         <location filename="../sfos/qml/main.qml" line="83"/>
-        <location filename="../desktop/qml/main.qml" line="204"/>
+        <location filename="../desktop/qml/main.qml" line="211"/>
         <source>Connected to %1</source>
         <translation>Conectado a %1</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="91"/>
-        <location filename="../desktop/qml/main.qml" line="213"/>
+        <location filename="../desktop/qml/main.qml" line="220"/>
         <source>Cannot connect to device</source>
         <translation>No es posible conectarse al dispositivo</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="95"/>
-        <location filename="../desktop/qml/main.qml" line="217"/>
+        <location filename="../desktop/qml/main.qml" line="224"/>
         <source>Device responded with an error</source>
         <translation>El dispositivo respondió con un error</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="99"/>
-        <location filename="../desktop/qml/main.qml" line="221"/>
+        <location filename="../desktop/qml/main.qml" line="228"/>
         <source>Cannot play the file</source>
         <translation>No es posible reproducir archivo</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="112"/>
-        <location filename="../desktop/qml/main.qml" line="234"/>
+        <location filename="../desktop/qml/main.qml" line="241"/>
         <source>Track &quot;%1&quot; saved</source>
         <translation>Pista %1 guardada</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="121"/>
-        <location filename="../desktop/qml/main.qml" line="246"/>
+        <location filename="../desktop/qml/main.qml" line="253"/>
         <source>Cannot connect to a local network</source>
         <translation>No es posible conectarse a una red local</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="124"/>
-        <location filename="../desktop/qml/main.qml" line="249"/>
+        <location filename="../desktop/qml/main.qml" line="256"/>
         <source>An internal error occurred</source>
         <translation>Ha ocurrido un error interno</translation>
     </message>
