@@ -54,6 +54,8 @@ BuildRequires:  make
 BuildRequires:  cmake
 BuildRequires:  m4
 BuildRequires:  git
+BuildRequires:  unzip
+BuildRequires:  zip
 
 %description
 Play audio, video and images on UPnP/DLNA devices

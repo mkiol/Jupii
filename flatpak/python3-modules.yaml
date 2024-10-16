@@ -1,4 +1,4 @@
-# Generated with flatpak-pip-generator --yaml --output python3-modules yt_dlp==2023.12.30 ytmusicapi==1.5.0 brotli==1.0.9 certifi==2022.12.7 charset-normalizer==2.1.1 idna==3.4 mutagen==1.46.0 pycryptodomex==3.17 requests==2.31.0 urllib3==1.26.17 websockets==12.0
+# Generated with flatpak-pip-generator --yaml --output python3-modules yt_dlp ytmusicapi
 build-commands: []
 buildsystem: simple
 modules:
@@ -48,8 +48,8 @@ modules:
         url: https://files.pythonhosted.org/packages/e2/73/9223dbc7be3dcaf2a7bbf756c351ec8da04b1fa573edaf545b95f6b0c7fd/websockets-13.1.tar.gz
         sha256: a3b3366087c1bc0a2795111edcadddb8b3b59509d5db5d7ea3fdd69f954a8878
       - type: file
-        url: https://files.pythonhosted.org/packages/c6/26/5dc3a802bd85c19d3d2fa746e6b36979801e2f32a433799c57f646335a7d/yt_dlp-2024.9.27-py3-none-any.whl
-        sha256: 2717468dd697fcfcf9a89f493ba30a3830cdfb276c09750e5b561b08b9ef5f69
+        url: https://files.pythonhosted.org/packages/6e/91/ecb07d66110334cdb01e94b187577af3b041897090203c9957728825d46f/yt_dlp-2024.10.7-py3-none-any.whl
+        sha256: 9e336ae663bfd7ad3ea1c02e722747388172719efc0fc39a807dace3073aa704
   - name: python3-ytmusicapi
     buildsystem: simple
     build-commands:
@@ -65,8 +65,8 @@ modules:
       - *id004
       - *id005
       - type: file
-        url: https://files.pythonhosted.org/packages/66/34/8b5c4e1ccfe3f27b56db81b642162641c1aa6050ec5992d480292fc0411b/ytmusicapi-1.8.1-py3-none-any.whl
-        sha256: 472f51844541b12818da85217409033ecda93be6d40c1660fd32d064948a8f10
+        url: https://files.pythonhosted.org/packages/7e/eb/23417507ba393545e98ba7c6d01e136cb3b9426d496a5eb216de7dc79adb/ytmusicapi-1.8.2-py3-none-any.whl
+        sha256: 579dd60704fc2538eb94e2035fb36e904a713f948506ca3d28d151c61c782a86
   - name: python3-brotli
     buildsystem: simple
     build-commands:
