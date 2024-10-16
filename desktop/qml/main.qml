@@ -137,13 +137,9 @@ Kirigami.ApplicationWindow {
         }
     }
 
-    property bool blockPageFix: false
-
     Connections {
         target: pageStack
         onCurrentItemChanged: {
-            if (app.blockPageFix) return
-
             var idx = pageStack.currentIndex
             var depth = pageStack.depth
 
@@ -156,12 +152,9 @@ Kirigami.ApplicationWindow {
                     removePagesAfter(idx)
                 } else {
                     // ugly workaround for partially pushed page in kirigami
-                    app.blockPageFix = true
-                    var rpage = pageStack.columnView.removeItem(0)
-                    pageStack.currentIndex = idx - 1
-                    pageStack.insertPage(0, rpage)
-                    pageStack.currentIndex = idx
-                    app.blockPageFix = false
+                    var width = app.width
+                    app.width = width / 2
+                    app.width = width
                 }
             }
         }
