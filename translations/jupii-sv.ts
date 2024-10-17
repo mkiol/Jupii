@@ -195,17 +195,17 @@
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="64"/>
         <source>Choose a folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Välj en mapp</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="160"/>
         <source>Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Mapp</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="170"/>
         <source>Add all files in the folder and subfolders</source>
-        <translation type="unfinished"></translation>
+        <translation>Lägg till alla filer i mappen och undermappar</translation>
     </message>
 </context>
 <context>
@@ -243,11 +243,7 @@
     <message>
         <location filename="../sfos/qml/AddUrlPage.qml" line="113"/>
         <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="vanished">När URL inte pekar direkt på ljud-, video- eller bildfil, identifieras medieinnehåll med youtube-dl.</translation>
+        <translation>När URL:en inte pekar direkt på ljud-, video- eller bildfil, identifieras medieinnehållet med %1.</translation>
     </message>
 </context>
 <context>
@@ -1399,8 +1395,8 @@
     <message numerus="yes">
         <source>Save %n item(s) to playlist file</source>
         <translation type="vanished">
-            <numerusform>Spara %n objekt i en spelningslista</numerusform>
-            <numerusform>Spara %n objekt i en spelningslista</numerusform>
+            <numerusform>Spara %n objekt i spelningslista</numerusform>
+            <numerusform>Spara %n objekt i spelningslista</numerusform>
         </translation>
     </message>
     <message>
@@ -1480,13 +1476,9 @@
         <translation>Enheter</translation>
     </message>
     <message>
-        <source>Cancel</source>
-        <translation type="obsolete">Avbryt</translation>
-    </message>
-    <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="122"/>
         <source>Hide</source>
-        <translation type="unfinished"></translation>
+        <translation>Dölj</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="331"/>
@@ -1752,7 +1744,7 @@
     <message>
         <location filename="../sfos/qml/SavePlaylistPage.qml" line="35"/>
         <source>Save</source>
-        <translation>Spasra</translation>
+        <translation>Spara</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SavePlaylistPage.qml" line="41"/>
@@ -1869,7 +1861,7 @@
     <message>
         <location filename="../desktop/qml/SectionLabel.qml" line="14"/>
         <source>Authors</source>
-        <translation type="unfinished">Utvecklare</translation>
+        <translation>Utvecklare</translation>
     </message>
 </context>
 <context>
@@ -1927,7 +1919,7 @@
     <message>
         <location filename="../src/settings.cpp" line="1287"/>
         <source>Don&apos;t force any style</source>
-        <translation type="unfinished"></translation>
+        <translation>Framtvinga inte någon stil</translation>
     </message>
 </context>
 <context>
@@ -2177,78 +2169,78 @@
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="24"/>
         <source>Choose a directory for recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Välj en mapp för inspelningar</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="38"/>
         <source>Reset all settings to defaults?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vill du återställa alla inställningar till standardinställning?</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="60"/>
         <source>User Interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafiskt gränssnitt</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="66"/>
         <source>Use custom graphical style</source>
-        <translation type="unfinished"></translation>
+        <translation>Använd anpassad grafisk stil</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="76"/>
         <source>Graphical style</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafisk stil</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="83"/>
         <source>Application graphical interface style.</source>
-        <translation type="unfinished"></translation>
+        <translation>Programmets grafiska gränssnittstil.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="84"/>
         <source>Change if you observe problems with incorrect colors under a dark theme.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ändra om du upplever problem med felaktiga färger under mörkt tema.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="41"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="88"/>
         <source>Sharing</source>
-        <translation type="unfinished"></translation>
+        <translation>Delning</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="422"/>
         <source>Location of Python libraries</source>
-        <translation type="unfinished"></translation>
+        <translation>Plats för Python-bibliotek</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="432"/>
         <source>Python libraries directory (%1).</source>
-        <translation type="unfinished"></translation>
+        <translation>Python biblioteksmapp (%1)</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="433"/>
         <source>Leave blank to use the default value.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lämnas tomt för standardvärde.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="434"/>
         <source>This option may be useful if you use %1 module to manage Python libraries.</source>
-        <translation type="unfinished"></translation>
+        <translation>Det här alternativet kan vara användbart om du använder %1-modulen för att hantera Python-bibliotek.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="449"/>
         <source>Save</source>
-        <translation type="unfinished">Spasra</translation>
+        <translation>Spara</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="454"/>
         <source>Save changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Spara ändringar</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="352"/>
         <source>Video encoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Videokodare</translation>
     </message>
 </context>
 <context>
@@ -2633,13 +2625,9 @@
         <translation>Lägg till URL</translation>
     </message>
     <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="vanished">När URL inte pekar direkt på ljud-, video- eller bildfil, identifieras medieinnehåll med youtube-dl.</translation>
-    </message>
-    <message>
         <location filename="../desktop/qml/UrlDialog.qml" line="53"/>
         <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>När URL:en inte pekar direkt på en ljud-, video- eller bildfil, identifieras medieinnehållet med %1.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/UrlDialog.qml" line="59"/>
@@ -2757,7 +2745,7 @@
     <message>
         <location filename="../desktop/qml/YtPage.qml" line="36"/>
         <source>Home</source>
-        <translation type="unfinished">Hem</translation>
+        <translation>Hem</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/YtPage.qml" line="46"/>
@@ -2770,12 +2758,12 @@
     <message>
         <location filename="../desktop/qml/YtPage.qml" line="46"/>
         <source>Add selected</source>
-        <translation type="unfinished">Lägg till markerat</translation>
+        <translation>Lägg till markerat</translation>
     </message>
     <message>
         <location filename="../desktop/qml/YtPage.qml" line="225"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Växla markerat</translation>
     </message>
 </context>
 <context>
@@ -2865,7 +2853,7 @@
     <message>
         <location filename="../desktop/qml/main.qml" line="136"/>
         <source>Restart is required for the changes to take effect.</source>
-        <translation type="unfinished">Omstart krävs för att ändringar skall tillämpas.</translation>
+        <translation>Omstart krävs för att ändringar skall tillämpas.</translation>
     </message>
 </context>
 </TS>

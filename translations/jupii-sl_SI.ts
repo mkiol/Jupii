@@ -195,17 +195,17 @@
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="64"/>
         <source>Choose a folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Izberi mapo</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="160"/>
         <source>Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Mapa</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="170"/>
         <source>Add all files in the folder and subfolders</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj vse datoteke v mapi in podmapah</translation>
     </message>
 </context>
 <context>
@@ -243,11 +243,7 @@
     <message>
         <location filename="../sfos/qml/AddUrlPage.qml" line="113"/>
         <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="vanished">Kadar naslov URL ne kaže neposredno na zvočno, video ali slikovno datoteko, je medijska vsebina odkrita s pomočjo youtube-dl.</translation>
+        <translation>Kadar naslov URL ne kaže neposredno na zvočno, video ali slikovno datoteko, je medijska vsebina odkrita s pomočjo %1.</translation>
     </message>
 </context>
 <context>
@@ -1434,7 +1430,7 @@
     <message numerus="yes">
         <source>Remove %n item(s) from play queue?</source>
         <translation type="vanished">
-            <numerusform>Odstranim %n elemente iz vrste za predvajanje?</numerusform>
+            <numerusform>Odstranim %n element iz vrste za predvajanje?</numerusform>
             <numerusform>Odstranim %n elementa iz vrste za predvajanje?</numerusform>
             <numerusform>Odstranim %n elemente iz vrste za predvajanje?</numerusform>
             <numerusform>Odstranim %n elementov iz vrste za predvajanje?</numerusform>
@@ -1500,13 +1496,9 @@
         <translation>Naprave</translation>
     </message>
     <message>
-        <source>Cancel</source>
-        <translation type="obsolete">Prekliči</translation>
-    </message>
-    <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="122"/>
         <source>Hide</source>
-        <translation type="unfinished"></translation>
+        <translation>Skrij</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="331"/>
@@ -1901,7 +1893,7 @@
     <message>
         <location filename="../desktop/qml/SectionLabel.qml" line="14"/>
         <source>Authors</source>
-        <translation type="unfinished">Avtorji</translation>
+        <translation>Avtorji</translation>
     </message>
 </context>
 <context>
@@ -1959,7 +1951,7 @@
     <message>
         <location filename="../src/settings.cpp" line="1287"/>
         <source>Don&apos;t force any style</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne vsiljuj nobenega sloga</translation>
     </message>
 </context>
 <context>
@@ -2209,78 +2201,78 @@
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="24"/>
         <source>Choose a directory for recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Izberite mapo za posnetke</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="38"/>
         <source>Reset all settings to defaults?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponastavim vse nastavitve na privzete?</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="60"/>
         <source>User Interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Uporabniški vmesnik</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="66"/>
         <source>Use custom graphical style</source>
-        <translation type="unfinished"></translation>
+        <translation>Uporabi grafični slog po meri</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="76"/>
         <source>Graphical style</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafični slog</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="83"/>
         <source>Application graphical interface style.</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafični slog aplikacije</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="84"/>
         <source>Change if you observe problems with incorrect colors under a dark theme.</source>
-        <translation type="unfinished"></translation>
+        <translation>Spremenite, če pri uporabi temne teme opazite težave z barvami.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="41"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="88"/>
         <source>Sharing</source>
-        <translation type="unfinished"></translation>
+        <translation>Skupna raba</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="422"/>
         <source>Location of Python libraries</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokacija Python knjižnic</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="432"/>
         <source>Python libraries directory (%1).</source>
-        <translation type="unfinished"></translation>
+        <translation>Mapa Python knjižnic (%1).</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="433"/>
         <source>Leave blank to use the default value.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pustite prazno, če želite uporabiti privzeto vrednost.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="434"/>
         <source>This option may be useful if you use %1 module to manage Python libraries.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ta možnost je lahko uporabna, če za upravljanje knjižnic Python uporabljate modul %1.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="449"/>
         <source>Save</source>
-        <translation type="unfinished">Shrani</translation>
+        <translation>Shrani</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="454"/>
         <source>Save changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Shrani spremembe</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="352"/>
         <source>Video encoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Video kodirnik</translation>
     </message>
 </context>
 <context>
@@ -2673,13 +2665,9 @@
         <translation>Dodaj URL</translation>
     </message>
     <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="vanished">Kadar naslov URL ne kaže neposredno na zvočno, video ali slikovno datoteko, je medijska vsebina odkrita s pomočjo youtube-dl.</translation>
-    </message>
-    <message>
         <location filename="../desktop/qml/UrlDialog.qml" line="53"/>
         <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kadar naslov URL ne kaže neposredno na zvočno, video ali slikovno datoteko, je medijska vsebina odkrita s pomočjo %1.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/UrlDialog.qml" line="59"/>
@@ -2797,7 +2785,7 @@
     <message>
         <location filename="../desktop/qml/YtPage.qml" line="36"/>
         <source>Home</source>
-        <translation type="unfinished">Domov</translation>
+        <translation>Domov</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/YtPage.qml" line="46"/>
@@ -2812,12 +2800,12 @@
     <message>
         <location filename="../desktop/qml/YtPage.qml" line="46"/>
         <source>Add selected</source>
-        <translation type="unfinished">Dodaj izbrano</translation>
+        <translation>Dodaj izbrano</translation>
     </message>
     <message>
         <location filename="../desktop/qml/YtPage.qml" line="225"/>
         <source>Toggle selection</source>
-        <translation type="unfinished">Preklopi izbor</translation>
+        <translation>Preklopi izbor</translation>
     </message>
 </context>
 <context>
@@ -2907,7 +2895,7 @@
     <message>
         <location filename="../desktop/qml/main.qml" line="136"/>
         <source>Restart is required for the changes to take effect.</source>
-        <translation type="unfinished">Za uveljavitev sprememb je zahtevan ponoven zagon.</translation>
+        <translation>Za uveljavitev sprememb je zahtevan ponoven zagon.</translation>
     </message>
 </context>
 </TS>

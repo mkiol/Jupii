@@ -203,17 +203,17 @@
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="64"/>
         <source>Choose a folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz folder</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="160"/>
         <source>Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="170"/>
         <source>Add all files in the folder and subfolders</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj wszystkie pliki z foldera oraz z podfolderów</translation>
     </message>
 </context>
 <context>
@@ -282,7 +282,7 @@
     <message>
         <location filename="../sfos/qml/AddUrlPage.qml" line="113"/>
         <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeśli URL nie wskazuje bezpośrednio na plik audio, wideo lub obraz, %1 zostanie użyty do znalezienia treści.</translation>
     </message>
     <message>
         <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
@@ -1575,7 +1575,7 @@
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="122"/>
         <source>Hide</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukryj</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="331"/>
@@ -1964,7 +1964,7 @@
     <message>
         <location filename="../desktop/qml/SectionLabel.qml" line="14"/>
         <source>Authors</source>
-        <translation type="unfinished">Autorzy</translation>
+        <translation>Autorzy</translation>
     </message>
 </context>
 <context>
@@ -2022,7 +2022,7 @@
     <message>
         <location filename="../src/settings.cpp" line="1287"/>
         <source>Don&apos;t force any style</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wymuszaj stylu</translation>
     </message>
 </context>
 <context>
@@ -2366,63 +2366,63 @@
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="60"/>
         <source>User Interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Interfejs użytkownika</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="66"/>
         <source>Use custom graphical style</source>
-        <translation type="unfinished"></translation>
+        <translation>Użyj niestandardowego stylu graficznego</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="76"/>
         <source>Graphical style</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl graficzny</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="83"/>
         <source>Application graphical interface style.</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl graficzny interfejsu użytkownika w aplikacji.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="84"/>
         <source>Change if you observe problems with incorrect colors under a dark theme.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmień jeśli wystąpią problemy z nieprawidłowymi kolorami w motywie ciemnym.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="41"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="88"/>
         <source>Sharing</source>
-        <translation type="unfinished"></translation>
+        <translation>Współdzielenie</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="422"/>
         <source>Location of Python libraries</source>
-        <translation type="unfinished"></translation>
+        <translation>Położenie bibliotek Python</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="432"/>
         <source>Python libraries directory (%1).</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder z bibliotekami Python (%1).</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="433"/>
         <source>Leave blank to use the default value.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zostaw puste aby użyć domyślnej warości.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="434"/>
         <source>This option may be useful if you use %1 module to manage Python libraries.</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcja może być przydatna jeśli używasz modułu %1 do instalowania bibliotek Python.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="449"/>
         <source>Save</source>
-        <translation type="unfinished">Zapisz</translation>
+        <translation>Zapisz</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="454"/>
         <source>Save changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz zmiany</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="352"/>
@@ -2822,7 +2822,7 @@
     <message>
         <location filename="../desktop/qml/UrlDialog.qml" line="53"/>
         <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeśli URL nie wskazuje bezpośrednio na plik audio, wideo lub obraz, %1 zostanie użyty do znalezienia treści.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/UrlDialog.qml" line="59"/>
@@ -3053,7 +3053,7 @@
     <message>
         <location filename="../desktop/qml/main.qml" line="136"/>
         <source>Restart is required for the changes to take effect.</source>
-        <translation type="unfinished">Zmiany będą widoczne po ponownym uruchomieniu aplikacji.</translation>
+        <translation>Zmiany będą widoczne po ponownym uruchomieniu aplikacji.</translation>
     </message>
 </context>
 </TS>
