@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2024 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -121,10 +121,18 @@ bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
             if (abortWhenSlowDownload) {
                 if (auto sec = startTime.secsTo(QTime::currentTime());
                     sec > timeRateCheck) {
-                    if (static_cast<int>(bytesReceived / sec) < minRate) {
-                        qWarning() << "slow download => aborting:"
-                                   << static_cast<int>(bytesReceived / sec);
+                    auto rate = static_cast<int>(bytesReceived / sec);
+
+                    if (rate < minRate) {
+                        qWarning() << "slow download => aborting:" << rate;
                         reply->abort();
+                    } else if (bytesTotal > 0) {
+                        auto eta = bytesTotal / rate;
+                        if (eta > maxEtaSec) {
+                            qWarning()
+                                << "download eta too long => aborting:" << eta;
+                            reply->abort();
+                        }
                     }
                 }
             }
