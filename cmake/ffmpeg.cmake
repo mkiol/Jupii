@@ -108,9 +108,11 @@ set(ffmpeg_opts
     --enable-decoder=mp3float
     --enable-decoder=mp3on4
     --enable-decoder=mp3on4float
+    --enable-decoder=flac
     --enable-muxer=mp4
     --enable-muxer=mpegts
     --enable-muxer=mp3
+    --enable-muxer=flac
     --enable-demuxer=mpegts
     --enable-demuxer=h264
     --enable-demuxer=rawvideo

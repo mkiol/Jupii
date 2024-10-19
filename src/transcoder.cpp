@@ -27,7 +27,7 @@ extern "C" {
 #include "libswscale/swscale.h"
 }
 
-static inline void logAvError(const char *message, int error) {
+[[maybe_unused]] static inline void logAvError(const char *message, int error) {
     char buff[AV_ERROR_MAX_STRING_SIZE];
     qWarning() << message
                << av_make_error_string(buff, AV_ERROR_MAX_STRING_SIZE, error);
@@ -37,6 +37,13 @@ static inline QString removeExtension(const QString &fileName) {
     auto idx = fileName.lastIndexOf('.');
     if (idx == -1) return fileName;
     return fileName.left(idx);
+}
+
+static QDebug &operator<<(QDebug &dbg, AVCodecID codec) {
+    const auto *desc = avcodec_descriptor_get(codec);
+    dbg << (desc ? desc->name : "unknown") << " (" << static_cast<int>(codec)
+        << ')';
+    return dbg;
 }
 
 std::optional<AvMeta> Transcoder::makeAvMeta(const AVCodecParameters *codec) {
@@ -60,13 +67,18 @@ std::optional<AvMeta> Transcoder::makeAvMeta(const AVCodecParameters *codec) {
             meta.type = QStringLiteral("mp4");
             meta.extension = QStringLiteral("m4a");
             break;
+        case AV_CODEC_ID_FLAC:
+            meta.mime = QStringLiteral("audio/flac");
+            meta.type = QStringLiteral("flac");
+            meta.extension = QStringLiteral("flac");
+            break;
         default:
             qWarning() << "not supported codec:" << codec->codec_id;
             return std::nullopt;
     }
 
     meta.bitrate = codec->bit_rate;
-    meta.channels = codec->channels;
+    meta.channels = codec->ch_layout.nb_channels;
 
     return meta;
 }
@@ -161,7 +173,8 @@ std::optional<Transcoder::InputAvData> Transcoder::openAudioInput(
     }
     qDebug() << "  audio codec:";
     qDebug() << "    codec_id:" << ic->streams[aidx]->codecpar->codec_id;
-    qDebug() << "    codec_channels:" << ic->streams[aidx]->codecpar->channels;
+    qDebug() << "    codec_channels:"
+             << ic->streams[aidx]->codecpar->ch_layout.nb_channels;
     qDebug() << "    codec_tag:" << ic->streams[aidx]->codecpar->codec_tag;
 #endif
 
