@@ -3930,12 +3930,12 @@ std::string Caster::strForAvError(int err) {
     return std::string(str);
 }
 
-int Caster::avWritePacketCallbackStatic(void *opaque, uint8_t *buf,
+int Caster::avWritePacketCallbackStatic(void *opaque, ff_buf_type buf,
                                         int bufSize) {
     return static_cast<Caster *>(opaque)->avWritePacketCallback(buf, bufSize);
 }
 
-int Caster::avWritePacketCallback(uint8_t *buf, int bufSize) {
+int Caster::avWritePacketCallback(ff_buf_type buf, int bufSize) {
     if (bufSize < 0)
         throw std::runtime_error("invalid read packet callback buf size");
 

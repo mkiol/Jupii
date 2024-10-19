@@ -440,9 +440,14 @@ class Caster {
     static std::string strForAvOpts(const AVDictionary *opts);
     static std::string strForPaSubscriptionEvent(
         pa_subscription_event_type_t event);
+#if FF_API_AVIO_WRITE_NONCONST
+    using ff_buf_type = uint8_t *;
+#else
+    using ff_buf_type = const uint8_t *;
+#endif
     static int avReadPacketCallbackStatic(void *opaque, uint8_t *buf,
                                           int bufSize);
-    static int avWritePacketCallbackStatic(void *opaque, uint8_t *buf,
+    static int avWritePacketCallbackStatic(void *opaque, ff_buf_type buf,
                                            int bufSize);
     static void paStreamRequestCallbackStatic(pa_stream *stream, size_t nbytes,
                                               void *userdata);
@@ -451,7 +456,7 @@ class Caster {
                                      const pa_source_info *info, int eol,
                                      void *userdata);
     int avReadPacketCallback(uint8_t *buf, int bufSize);
-    int avWritePacketCallback(uint8_t *buf, int bufSize);
+    int avWritePacketCallback(ff_buf_type buf, int bufSize);
     void paStreamRequestCallback(pa_stream *stream, size_t nbytes);
     static void paClientInfoCallback(pa_context *ctx,
                                      const pa_client_info *info, int eol,
