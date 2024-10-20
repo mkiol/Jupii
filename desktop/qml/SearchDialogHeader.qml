@@ -27,7 +27,6 @@ ColumnLayout {
         id: searchField
         Layout.fillWidth: true
         Layout.leftMargin: Kirigami.Units.smallSpacing
-        Layout.rightMargin: Kirigami.Units.smallSpacing
         text: root.view.model.filter
         onTextChanged: {
             root.view.model.filter = text.trim()
