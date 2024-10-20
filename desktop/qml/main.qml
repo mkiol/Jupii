@@ -12,6 +12,7 @@ import org.kde.kirigami 2.11 as Kirigami
 
 import org.mkiol.jupii.AVTransport 1.0
 import org.mkiol.jupii.RenderingControl 1.0
+import org.mkiol.jupii.ContentServer 1.0
 
 Kirigami.ApplicationWindow {
     id: app
@@ -19,6 +20,7 @@ Kirigami.ApplicationWindow {
     property alias devicesAction: _devicesAction
     property alias addMediaPageAction: _addMediaPageAction
     property alias trackInfoAction: _trackInfoAction
+    property alias dropArea: _dropArea
 
     function showToast(text) {
         showPassiveNotification(text)
@@ -261,6 +263,17 @@ Kirigami.ApplicationWindow {
             if (!directory.inited) {
                 homeAction.trigger()
             }
+        }
+    }
+
+    DropArea {
+        id: _dropArea
+
+        enabled: !playlist.busy && !playlist.refreshing && !av.busy && !rc.busy
+        anchors.fill: parent
+        onDropped: {
+            if (!drop.hasUrls) return
+            playlist.addItemFileUrls(drop.urls, ContentServer.Type_Unknown)
         }
     }
 }
