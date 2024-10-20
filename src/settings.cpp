@@ -865,6 +865,21 @@ void Settings::setCasterScreenRotate(bool value) {
     }
 }
 
+bool Settings::getCasterDontUsePipeWire() const {
+    // mic audio source on pipewire is buggy, so by default it is disabled
+    return value(QStringLiteral("caster_dont_use_pipewire"), true).toBool();
+}
+
+void Settings::setCasterDontUsePipeWire(bool value) {
+    if (value != getCasterDontUsePipeWire()) {
+        setValue(QStringLiteral("caster_dont_use_pipewire"), value);
+        emit casterDontUsePipeWireChanged();
+        setRestartRequired(true);
+    }
+}
+
+bool Settings::casterHasPipeWire() const { return m_hasPipeWire; }
+
 bool Settings::getCasterScreenAudio() const {
     return value(QStringLiteral("caster_screen_audio"), false).toBool();
 }
@@ -1038,13 +1053,19 @@ void Settings::discoverCasterSources() {
     m_playbacks.clear();
     m_playbacks_fn.clear();
 
-    m_videoSources =
-        Caster::videoSources(Caster::OptionsFlags::V4l2VideoSources |
-                             Caster::OptionsFlags::X11CaptureVideoSources |
-                             Caster::OptionsFlags::DroidCamRawVideoSources |
-                             Caster::OptionsFlags::LipstickCaptureVideoSources);
-    m_audioSources =
-        Caster::audioSources(Caster::OptionsFlags::AllAudioSources);
+    m_hasPipeWire = Caster::hasPipeWire();
+
+    m_videoSources = Caster::videoSources(
+        Caster::OptionsFlags::V4l2VideoSources |
+        Caster::OptionsFlags::X11CaptureVideoSources |
+        Caster::OptionsFlags::DroidCamRawVideoSources |
+        Caster::OptionsFlags::LipstickCaptureVideoSources |
+        (getCasterDontUsePipeWire() ? Caster::OptionsFlags::DontUsePipeWire
+                                    : 0));
+    m_audioSources = Caster::audioSources(
+        Caster::OptionsFlags::AllAudioSources |
+        (getCasterDontUsePipeWire() ? Caster::OptionsFlags::DontUsePipeWire
+                                    : 0));
 
     for (const auto &s : m_audioSources) {
         auto n = QString::fromStdString(s.name);

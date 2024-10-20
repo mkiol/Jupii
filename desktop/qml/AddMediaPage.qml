@@ -157,7 +157,7 @@ Kirigami.ScrollablePage {
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
-            label: qsTr("Folder") // All files in the folder and subfolders
+            label: qsTr("Folder")
             icon: "folder-open"
             highlighted: folderDialog.visible
             onClicked: {
@@ -223,6 +223,7 @@ Kirigami.ScrollablePage {
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
+            visible: !settings.casterDontUsePipeWire || !settings.casterHasPipeWire()
             label: qsTr("Audio capture")
             icon: "player-volume"
             onClicked: playbackDialog.open()
@@ -238,6 +239,7 @@ Kirigami.ScrollablePage {
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
+            visible: !settings.casterDontUsePipeWire || !settings.casterHasPipeWire()
             label: qsTr("Microphone")
             icon: "audio-input-microphone"
             onClicked: micDialog.open()

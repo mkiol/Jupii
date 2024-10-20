@@ -34,6 +34,7 @@
 #include <limits>
 #include <numeric>
 #include <sstream>
+#include <string_view>
 
 extern "C" {
 #include <libavdevice/avdevice.h>
@@ -191,6 +192,8 @@ std::ostream &operator<<(std::ostream &os, Caster::OptionsFlags flags) {
         os << "pa-monitor-audio-sources, ";
     if (flags & Caster::OptionsFlags::PaPlaybackAudioSources)
         os << "pa-playback-audio-sources, ";
+    if (flags & Caster::OptionsFlags::DontUsePipeWire)
+        os << "dont-use-pipewire, ";
 
     return os;
 }
@@ -539,7 +542,7 @@ std::ostream &operator<<(std::ostream &os, const Caster::Config &config) {
        << ", stream-author=" << config.streamAuthor
        << ", stream-title=" << config.streamTitle
        << ", video-encoder=" << config.videoEncoder << ", options=["
-       << static_cast<Caster::OptionsFlags>(config.options) << "]";
+       << config.options << "]";
     if (config.fileSourceConfig) os << ", " << *config.fileSourceConfig;
     return os;
 }
@@ -901,6 +904,75 @@ Caster::bestPaSinkInput() {
     return std::nullopt;
 }
 
+void Caster::paServerInfoCallback(pa_context *ctx, const pa_server_info *i,
+                                  void *userdata) {
+    if (!i) return;
+    LOGD("pa server: string="
+         << pa_context_get_server(ctx)
+         << ", lib-proto-ver=" << pa_context_get_protocol_version(ctx)
+         << ", server-proto-ver=" << pa_context_get_server_protocol_version(ctx)
+         << ", local=" << pa_context_is_local(ctx)
+         << ", name=" << i->server_name << ", server-ver=" << i->server_version
+         << ", default-sink=" << i->default_sink_name
+         << ", default-source=" << i->default_source_name);
+
+    auto *result = static_cast<AudioSourceSearchResult *>(userdata);
+    result->is_pipewire = std::string_view{i->server_name}.find("PipeWire") !=
+                          std::string_view::npos;
+}
+
+bool Caster::hasPipeWire() {
+    LOGD("pa server detection started");
+
+    auto *loop = pa_mainloop_new();
+    if (loop == nullptr) throw std::runtime_error("pa_mainloop_new error");
+
+    auto *mla = pa_mainloop_get_api(loop);
+
+    auto *ctx = pa_context_new(mla, "caster");
+    if (ctx == nullptr) {
+        pa_mainloop_free(loop);
+        throw std::runtime_error("pa_context_new error");
+    }
+
+    AudioSourceSearchResult result;
+
+    pa_context_set_state_callback(
+        ctx,
+        [](pa_context *ctx, void *userdata) {
+            if (pa_context_get_state(ctx) == PA_CONTEXT_READY) {
+                pa_operation_unref(pa_context_get_server_info(
+                    ctx,
+                    [](pa_context *ctx, const pa_server_info *i,
+                       void *userdata) {
+                        paServerInfoCallback(ctx, i, userdata);
+
+                        auto *result =
+                            static_cast<AudioSourceSearchResult *>(userdata);
+                        result->done = true;
+                    },
+                    userdata));
+            }
+        },
+        &result);
+
+    if (pa_context_connect(ctx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
+        auto err = pa_context_errno(ctx);
+        pa_context_unref(ctx);
+        pa_mainloop_free(loop);
+        throw std::runtime_error("pa_context_connect error: "s +
+                                 pa_strerror(err));
+    }
+
+    while (true) {
+        if (result.done || pa_mainloop_iterate(loop, 0, nullptr) < 0) break;
+    }
+
+    LOGD("pa server detection completed");
+
+    return result.is_pipewire;
+}
+
 Caster::AudioPropsMap Caster::detectPaSources(uint32_t options) {
     LOGD("pa sources detection started");
 
@@ -922,6 +994,8 @@ Caster::AudioPropsMap Caster::detectPaSources(uint32_t options) {
         ctx,
         [](pa_context *ctx, void *userdata) {
             if (pa_context_get_state(ctx) == PA_CONTEXT_READY) {
+                pa_operation_unref(pa_context_get_server_info(
+                    ctx, paServerInfoCallback, userdata));
                 pa_operation_unref(pa_context_get_source_info_list(
                     ctx, paSourceInfoCallback, userdata));
             }
@@ -952,6 +1026,13 @@ Caster::AudioPropsMap Caster::detectPaSources(uint32_t options) {
             /*type=*/AudioSourceType::Playback};
         LOGD("pa source found: " << props);
         result.propsMap.try_emplace(props.name, std::move(props));
+    }
+
+    if ((options & OptionsFlags::DontUsePipeWire) && result.is_pipewire) {
+        LOGD(
+            "pa pipewire server detected but it should not be used => removing "
+            "pa sorces");
+        result.propsMap.clear();
     }
 
     pa_context_disconnect(ctx);

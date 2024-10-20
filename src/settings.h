@@ -135,6 +135,8 @@ class Settings : public QSettings,
                    NOTIFY casterMicChanged)
     Q_PROPERTY(int casterPlaybackIdx READ getCasterPlaybackIdx WRITE
                    setCasterPlaybackIdx NOTIFY casterPlaybackChanged)
+    Q_PROPERTY(bool casterDontUsePipeWire READ getCasterDontUsePipeWire WRITE
+                   setCasterDontUsePipeWire NOTIFY casterDontUsePipeWireChanged)
 
    public:
     enum class CasterStreamFormat {
@@ -349,6 +351,9 @@ class Settings : public QSettings,
     QString casterAudioSourceFriendlyName(const QString &name) const;
     bool casterVideoSourceExists(const QString &name) const;
     bool casterAudioSourceExists(const QString &name) const;
+    void setCasterDontUsePipeWire(bool value);
+    bool getCasterDontUsePipeWire() const;
+    Q_INVOKABLE bool casterHasPipeWire() const;
 
    signals:
     void portChanged();
@@ -403,6 +408,8 @@ class Settings : public QSettings,
     void casterScreenChanged();
     void casterCamChanged();
     void casterPlaybackChanged();
+    void casterDontUsePipeWireChanged();
+
     void restartRequiredChanged();
 
    private:
@@ -418,6 +425,7 @@ class Settings : public QSettings,
     int m_colorScheme = 0;
     bool m_sandboxed = false;
     bool m_restartRequired;
+    bool m_hasPipeWire = false;
     std::vector<Caster::VideoSourceProps> m_videoSources;
     std::vector<Caster::AudioSourceProps> m_audioSources;
     QStringList m_cams_fn;

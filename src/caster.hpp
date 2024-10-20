@@ -75,7 +75,8 @@ class Caster {
         AllVideoSources = V4l2VideoSources | DroidCamVideoSources |
                           DroidCamRawVideoSources | X11CaptureVideoSources |
                           LipstickCaptureVideoSources,
-        AllAudioSources = AllPaAudioSources | FileAudioSources
+        AllAudioSources = AllPaAudioSources | FileAudioSources,
+        DontUsePipeWire = 1 << 24,
     };
     friend std::ostream &operator<<(std::ostream &os, OptionsFlags flags);
 
@@ -188,6 +189,7 @@ class Caster {
         uint32_t options = OptionsFlags::AllVideoSources);
     static std::vector<AudioSourceProps> audioSources(
         uint32_t options = OptionsFlags::AllAudioSources);
+    static bool hasPipeWire();
 
     void start(bool startPaused = false);
     void pause();
@@ -337,6 +339,7 @@ class Caster {
         bool done = false;
         int micCount = 0;
         int monitorCount = 0;
+        bool is_pipewire = false;
         uint32_t options = OptionsFlags::AllPaAudioSources;
         AudioPropsMap propsMap;
     };
@@ -454,6 +457,8 @@ class Caster {
     static bool paClientShouldBeIgnored(const pa_client_info *info);
     static void paSourceInfoCallback(pa_context *ctx,
                                      const pa_source_info *info, int eol,
+                                     void *userdata);
+    static void paServerInfoCallback(pa_context *ctx, const pa_server_info *i,
                                      void *userdata);
     int avReadPacketCallback(uint8_t *buf, int bufSize);
     int avWritePacketCallback(ff_buf_type buf, int bufSize);

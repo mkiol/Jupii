@@ -455,6 +455,18 @@ Kirigami.ScrollablePage {
                 }
             }
 
+//            Item {
+//                Kirigami.FormData.isSection: true
+//            }
+
+//            Controls.Switch {
+//                checked: settings.casterDontUsePipeWire
+//                text: qsTr("Don't use PipeWire for audio capture")
+//                onToggled: {
+//                    settings.casterDontUsePipeWire = !settings.casterDontUsePipeWire
+//                }
+//            }
+
             Item {
                 Kirigami.FormData.isSection: true
             }

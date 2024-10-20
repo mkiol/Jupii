@@ -837,6 +837,13 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
         config.videoSource += "-rotate";
 #endif
 
+    qDebug() << "s->getCasterDontUsePipeWire():"
+             << s->getCasterDontUsePipeWire();
+
+    if (s->getCasterDontUsePipeWire()) {
+        config.options |= Caster::OptionsFlags::DontUsePipeWire;
+    }
+
     return config;
 }
 
