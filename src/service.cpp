@@ -121,7 +121,13 @@ QUrl Service::getDeviceUrl() const {
 QString Service::getDeviceFriendlyName() const
 {
     auto name = m_ser && m_inited ? QString::fromStdString(m_ser->getFriendlyName()) : QString();
-    //qDebug() << "device friendly name:" << name;
+    return name;
+}
+
+QString Service::getDeviceModel() const {
+    auto name = m_ser && m_inited
+                    ? QString::fromStdString(m_ser->getModelName())
+                    : QString();
     return name;
 }
 

@@ -253,6 +253,7 @@ private:
     void setNextURISupported(bool value);
     [[nodiscard]] bool ignoreActions();
     std::string type() const;
+    bool nextUriSupported(const QString &nextUriStr) const;
 };
 
 #endif // AVTRANSPORT_H

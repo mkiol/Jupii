@@ -91,6 +91,26 @@ QUrl AVTransport::getCurrentOrigUrl()
     return ai ? ai->origUrl() : QUrl{getCurrentURL()};
 }
 
+bool AVTransport::nextUriSupported(const QString& nextUriStr) const {
+    switch (Settings::instance()->getAvNextUriPolicy()) {
+        case Settings::AvNextUriPolicy::AvNextUriPolicy_Auto:
+            if (getDeviceModel().compare("Kodi", Qt::CaseInsensitive) == 0) {
+                // recent version of Kodi seems to not support setNextURI during
+                // Playing state
+                return false;
+            }
+            [[fallthrough]];
+        case Settings::AvNextUriPolicy::
+            AvNextUriPolicy_DisableOnlyIfNotSupported:
+            return nextUriStr.compare("NOT_IMPLEMENTED", Qt::CaseInsensitive) !=
+                   0;
+        case Settings::AvNextUriPolicy::AvNextUriPolicy_NeverDisable:
+            return true;
+        case Settings::AvNextUriPolicy::AvNextUriPolicy_AlwaysDisable:
+            return false;
+    }
+}
+
 void AVTransport::changed(const QString& name, const QVariant& _value)
 {
     if (!getInited()) {
@@ -187,7 +207,7 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
         }
 
         if (name == "NextAVTransportURI") {
-            if (value == "NOT_IMPLEMENTED") {
+            if (!nextUriSupported(value)) {
                 setNextURISupported(false);
             } else if (m_nextURI != value) {
                 setNextURISupported(true);
@@ -1465,7 +1485,7 @@ void AVTransport::updateMediaInfo()
             emit preControlableChanged();
         }
 
-        if (nexturi == "NOT_IMPLEMENTED") {
+        if (!nextUriSupported(nexturi)) {
             qWarning() << "nextURI is not supported";
             setNextURISupported(false);
         } else if (m_nextURI != nexturi) {

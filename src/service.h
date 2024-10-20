@@ -53,6 +53,7 @@ public:
     QString getDeviceFriendlyName() const;
     QString getDeviceIconPath() const;
     QUrl getDeviceUrl() const;
+    QString getDeviceModel() const;
 
    signals:
     void initedChanged();

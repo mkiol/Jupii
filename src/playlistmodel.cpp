@@ -283,6 +283,8 @@ PlaylistModel::PlaylistModel(QObject *parent)
             &PlaylistModel::updateActiveId, Qt::QueuedConnection);
     connect(cs, &ContentServer::casterError, this,
             &PlaylistModel::casterErrorHandler, Qt::QueuedConnection);
+    connect(s, &Settings::avNextUriPolicyChanged, this, &PlaylistModel::update,
+            Qt::QueuedConnection);
 
 #ifdef USE_SFOS
     m_backgroundActivity = new BackgroundActivity(this);

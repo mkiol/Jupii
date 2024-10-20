@@ -1290,6 +1290,20 @@ void Settings::setPrevAppVer(const QString &value) {
     }
 }
 
+Settings::AvNextUriPolicy Settings::getAvNextUriPolicy() const {
+    return static_cast<AvNextUriPolicy>(
+        value(QStringLiteral("av_next_uri_policy"),
+              static_cast<int>(AvNextUriPolicy::AvNextUriPolicy_Auto))
+            .toInt());
+}
+
+void Settings::setAvNextUriPolicy(AvNextUriPolicy value) {
+    if (getAvNextUriPolicy() != value) {
+        setValue(QStringLiteral("av_next_uri_policy"), static_cast<int>(value));
+        emit avNextUriPolicyChanged();
+    }
+}
+
 bool Settings::qtStyleAuto() const {
     return value(QStringLiteral("qt_style_auto"), true).toBool();
 }

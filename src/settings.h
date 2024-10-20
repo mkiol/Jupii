@@ -94,6 +94,8 @@ class Settings : public QSettings,
                    qtStyleChanged)
     Q_PROPERTY(bool qtStyleAuto READ qtStyleAuto WRITE setQtStyleAuto NOTIFY
                    qtStyleChanged)
+    Q_PROPERTY(AvNextUriPolicy avNextUriPolicy READ getAvNextUriPolicy WRITE
+                   setAvNextUriPolicy NOTIFY avNextUriPolicyChanged)
 
     // caster
     Q_PROPERTY(int casterMicVolume READ getCasterMicVolume WRITE
@@ -183,6 +185,14 @@ class Settings : public QSettings,
 
     enum class YtPreferredType { YtPreferredType_Video, YtPreferredType_Audio };
     Q_ENUM(YtPreferredType)
+
+    enum class AvNextUriPolicy {
+        AvNextUriPolicy_Auto = 0,
+        AvNextUriPolicy_DisableOnlyIfNotSupported = 1,
+        AvNextUriPolicy_NeverDisable = 2,
+        AvNextUriPolicy_AlwaysDisable = 3
+    };
+    Q_ENUM(AvNextUriPolicy)
 
 #ifdef USE_SFOS
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
@@ -303,6 +313,8 @@ class Settings : public QSettings,
     void setQtStyleName(QString value);
     void setQtStyleAuto(bool value);
     bool qtStyleAuto() const;
+    AvNextUriPolicy getAvNextUriPolicy() const;
+    void setAvNextUriPolicy(AvNextUriPolicy value);
 
     // caster
 
@@ -390,6 +402,7 @@ class Settings : public QSettings,
     void pyPathChanged();
     void prevAppVerChanged();
     void qtStyleChanged();
+    void avNextUriPolicyChanged();
 
     // caster
 
