@@ -418,7 +418,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_link_options(compiler_flags INTERFACE "-pie")
     endif()
 else()
-    target_compile_options(compiler_flags INTERFACE "-pie;-Wall;-Wextra;-Wpedantic;-O3;-g")
+    target_compile_options(compiler_flags INTERFACE "-pie;-Wall;-Wextra;-Wpedantic;-Wno-attributes;-O3;-g")
     target_link_options(compiler_flags INTERFACE "-pie;-fno-stack-protector")
 endif()
 
