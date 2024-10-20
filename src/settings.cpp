@@ -1053,19 +1053,23 @@ void Settings::discoverCasterSources() {
     m_playbacks.clear();
     m_playbacks_fn.clear();
 
-    m_hasPipeWire = Caster::hasPipeWire();
+    try {
+        m_hasPipeWire = Caster::hasPipeWire();
 
-    m_videoSources = Caster::videoSources(
-        Caster::OptionsFlags::V4l2VideoSources |
-        Caster::OptionsFlags::X11CaptureVideoSources |
-        Caster::OptionsFlags::DroidCamRawVideoSources |
-        Caster::OptionsFlags::LipstickCaptureVideoSources |
-        (getCasterDontUsePipeWire() ? Caster::OptionsFlags::DontUsePipeWire
-                                    : 0));
-    m_audioSources = Caster::audioSources(
-        Caster::OptionsFlags::AllAudioSources |
-        (getCasterDontUsePipeWire() ? Caster::OptionsFlags::DontUsePipeWire
-                                    : 0));
+        m_videoSources = Caster::videoSources(
+            Caster::OptionsFlags::V4l2VideoSources |
+            Caster::OptionsFlags::X11CaptureVideoSources |
+            Caster::OptionsFlags::DroidCamRawVideoSources |
+            Caster::OptionsFlags::LipstickCaptureVideoSources |
+            (getCasterDontUsePipeWire() ? Caster::OptionsFlags::DontUsePipeWire
+                                        : 0));
+        m_audioSources = Caster::audioSources(
+            Caster::OptionsFlags::AllAudioSources |
+            (getCasterDontUsePipeWire() ? Caster::OptionsFlags::DontUsePipeWire
+                                        : 0));
+    } catch (const std::runtime_error &err) {
+        qWarning() << "caster error:" << err.what();
+    }
 
     for (const auto &s : m_audioSources) {
         auto n = QString::fromStdString(s.name);
