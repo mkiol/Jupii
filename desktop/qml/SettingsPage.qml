@@ -455,57 +455,57 @@ Kirigami.ScrollablePage {
                 }
             }
 
-            Item {
-                Kirigami.FormData.isSection: true
-            }
+//            Item {
+//                Kirigami.FormData.isSection: true
+//            }
 
-            Controls.Switch {
-                checked: !settings.casterDontUsePipeWire
-                text: qsTr("Use PipeWire to capture audio")
-                onToggled: {
-                    settings.casterDontUsePipeWire = !settings.casterDontUsePipeWire
-                }
+//            Controls.Switch {
+//                checked: !settings.casterDontUsePipeWire
+//                text: qsTr("Use PipeWire to capture audio")
+//                onToggled: {
+//                    settings.casterDontUsePipeWire = !settings.casterDontUsePipeWire
+//                }
 
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("Due to issues, audio playback capture and microphone are " +
-                                            "disabled by default when using PipeWire. You can use this option " +
-                                            "to enable them.")
-            }
+//                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+//                Controls.ToolTip.visible: hovered
+//                Controls.ToolTip.text: qsTr("Due to issues, audio playback capture and microphone are " +
+//                                            "disabled by default when using PipeWire. You can use this option " +
+//                                            "to enable them.")
+//            }
 
-            Item {
-                Kirigami.FormData.isSection: true
-            }
+//            Item {
+//                Kirigami.FormData.isSection: true
+//            }
 
-            Controls.ComboBox {
-                Kirigami.FormData.label: qsTr("Gapless mode (%1)").arg("setNextURI")
-                currentIndex: {
-                    switch (settings.avNextUriPolicy) {
-                    case Settings.AvNextUriPolicy_Auto: return 0;
-                    case Settings.AvNextUriPolicy_DisableOnlyIfNotSupported: return 1;
-                    case Settings.AvNextUriPolicy_NeverDisable: return 2;
-                    case Settings.AvNextUriPolicy_AlwaysDisable: return 3;
-                    }
-                    return 0;
-                }
+//            Controls.ComboBox {
+//                Kirigami.FormData.label: qsTr("Gapless mode (%1)").arg("setNextURI")
+//                currentIndex: {
+//                    switch (settings.avNextUriPolicy) {
+//                    case Settings.AvNextUriPolicy_Auto: return 0;
+//                    case Settings.AvNextUriPolicy_DisableOnlyIfNotSupported: return 1;
+//                    case Settings.AvNextUriPolicy_NeverDisable: return 2;
+//                    case Settings.AvNextUriPolicy_AlwaysDisable: return 3;
+//                    }
+//                    return 0;
+//                }
 
-                model: [
-                    qsTr("Auto"),
-                    qsTr("Disable only if not supported"),
-                    qsTr("Always enabled"),
-                    qsTr("Always disabled")
-                ]
+//                model: [
+//                    qsTr("Auto"),
+//                    qsTr("Disable only if not supported"),
+//                    qsTr("Always enabled"),
+//                    qsTr("Always disabled")
+//                ]
 
-                onCurrentIndexChanged: {
-                    switch (currentIndex) {
-                    case 0: settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto; break;
-                    case 1: settings.avNextUriPolicy = Settings.AvNextUriPolicy_DisableOnlyIfNotSupported; break;
-                    case 2: settings.avNextUriPolicy = Settings.AvNextUriPolicy_NeverDisable; break;
-                    case 3: settings.avNextUriPolicy = Settings.AvNextUriPolicy_AlwaysDisable; break;
-                    default: settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto;
-                    }
-                }
-            }
+//                onCurrentIndexChanged: {
+//                    switch (currentIndex) {
+//                    case 0: settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto; break;
+//                    case 1: settings.avNextUriPolicy = Settings.AvNextUriPolicy_DisableOnlyIfNotSupported; break;
+//                    case 2: settings.avNextUriPolicy = Settings.AvNextUriPolicy_NeverDisable; break;
+//                    case 3: settings.avNextUriPolicy = Settings.AvNextUriPolicy_AlwaysDisable; break;
+//                    default: settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto;
+//                    }
+//                }
+//            }
 
             Item {
                 Kirigami.FormData.isSection: true
