@@ -1111,8 +1111,6 @@ void ContentServerWorker::seqWriteData(std::shared_ptr<QFile> file,
     const auto count = static_cast<int>(file->read(cdata, len));
     rlen = rlen - len;
 
-    qDebug() << file->fileName() << data.size();
-
     if (count > 0) {
         if (rlen > 0 && !resp->property("seq").toBool()) {
             resp->setProperty("seq", true);
