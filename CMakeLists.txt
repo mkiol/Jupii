@@ -605,7 +605,7 @@ if(BUILD_UPNPP)
     include(${cmake_path}/upnpp.cmake)
 else()
     pkg_search_module(upnpp REQUIRED libupnpp)
-    list(APPEND deps_libs ${upnpp_LIBRARIES} upnpputil)
+    list(APPEND deps_libs ${upnpp_LIBRARIES})
     list(APPEND includes ${upnpp_INCLUDE_DIRS})
 
     pkg_search_module(npupnp REQUIRED libnpupnp)

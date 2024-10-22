@@ -56,6 +56,7 @@ BuildRequires:  m4
 BuildRequires:  git
 BuildRequires:  unzip
 BuildRequires:  zip
+BuildRequires:  meson
 
 %description
 Play audio, video and images on UPnP/DLNA devices
