@@ -101,7 +101,7 @@ set(info_webpage "https://github.com/mkiol/${id}")
 set(info_license "Mozilla Public License 2.0")
 set(info_license_url "http://mozilla.org/MPL/2.0")
 set(info_license_spdx "MPL-2.0")
-set(info_version_type "-beta")
+set(info_version_type "")
 set(info_translators_str "Åke Engelbrektson · Atlochowski · Carlos Gonzalez · d9h20f · \
 Вячеслав Диконов · drosjesjaafoer · Rui Kon · Boštjan Štrumbelj · jgibbon · Fra · \
 Petr Tsymbarovich · Carmen Fernández B. · Priit Jõerüüt")
