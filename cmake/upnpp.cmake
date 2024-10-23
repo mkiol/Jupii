@@ -68,7 +68,6 @@ ExternalProject_Add_StepDependencies(npupnp configure mhd)
 
 list(APPEND deps_libs
     ${external_lib_dir}/libupnpp.a
-    ${external_lib_dir}/libupnpputil.a
     ${external_lib_dir}/libnpupnp.a
     ${external_lib_dir}/libmicrohttpd.a)
 list(APPEND deps mhd npupnp upnpp)
