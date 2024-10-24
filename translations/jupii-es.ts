@@ -159,53 +159,53 @@
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="224"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="226"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="227"/>
         <source>Audio capture</source>
         <translation>Captura de audio</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="235"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="234"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="235"/>
         <source>Screen capture</source>
         <translation>Captura de pantalla</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="245"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="241"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="243"/>
         <source>Microphone</source>
         <translation>Micrófono</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="256"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="248"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="250"/>
         <source>Camera</source>
         <translation>Cámara</translation>
     </message>
     <message>
         <location filename="../sfos/qml/AddMediaPage.qml" line="266"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="256"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="258"/>
         <source>Apps &amp; services</source>
         <translation>Aplicaciones y servicios</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="48"/>
         <source>Choose a file</source>
-        <translation>Eligir un archivo</translation>
+        <translation>Elige un archivo</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="64"/>
         <source>Choose a folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Elige una carpeta</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="160"/>
         <source>Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Carpeta</translation>
     </message>
     <message>
         <location filename="../desktop/qml/AddMediaPage.qml" line="170"/>
         <source>Add all files in the folder and subfolders</source>
-        <translation type="unfinished"></translation>
+        <translation>Todos los archivos en la carpeta y subcarpetas</translation>
     </message>
 </context>
 <context>
@@ -243,11 +243,7 @@
     <message>
         <location filename="../sfos/qml/AddUrlPage.qml" line="113"/>
         <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="vanished">Cuando la URL no apunta directamente a un archivo de audio, video o imagen, el contenido multimedia se obtiene con youtube-dl.</translation>
+        <translation>Cuando la URL no apunta directamente a un archivo de audio, video o imagen, el contenido multimedia se obtiene usando %1.</translation>
     </message>
 </context>
 <context>
@@ -805,7 +801,7 @@
     <name>IcecastPage</name>
     <message>
         <location filename="../sfos/qml/IcecastPage.qml" line="49"/>
-        <location filename="../desktop/qml/IcecastPage.qml" line="89"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="88"/>
         <source>Error in getting data</source>
         <translation>Error al obtener datos</translation>
     </message>
@@ -817,7 +813,7 @@
     <message>
         <location filename="../sfos/qml/IcecastPage.qml" line="79"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="46"/>
-        <location filename="../desktop/qml/IcecastPage.qml" line="150"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="149"/>
         <source>Refresh</source>
         <translation>Actualizar</translation>
     </message>
@@ -835,7 +831,7 @@
     </message>
     <message>
         <location filename="../sfos/qml/IcecastPage.qml" line="127"/>
-        <location filename="../desktop/qml/IcecastPage.qml" line="147"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="146"/>
         <source>No stations</source>
         <translation>No hay estaciones</translation>
     </message>
@@ -853,7 +849,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/IcecastPage.qml" line="124"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="123"/>
         <source>Toggle selection</source>
         <translation>Alternar selección</translation>
     </message>
@@ -1399,8 +1395,8 @@
     <message numerus="yes">
         <source>Save %n item(s) to playlist file</source>
         <translation type="vanished">
-            <numerusform>Guardar %n elemento en el archivo de lista de reproducción</numerusform>
-            <numerusform>Guardar %n elementos en el archivo de lista de reproducción</numerusform>
+            <numerusform>Guardar %n elemento al fichero de lista</numerusform>
+            <numerusform>Guardar %n elementos al fichero de lista</numerusform>
         </translation>
     </message>
     <message>
@@ -1480,13 +1476,9 @@
         <translation>Dispositivos</translation>
     </message>
     <message>
-        <source>Cancel</source>
-        <translation type="obsolete">Cancelar</translation>
-    </message>
-    <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="122"/>
         <source>Hide</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocultar</translation>
     </message>
     <message>
         <location filename="../desktop/qml/PlayerPanel.qml" line="331"/>
@@ -1528,7 +1520,7 @@
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../src/playlistmodel.cpp" line="625"/>
+        <location filename="../src/playlistmodel.cpp" line="627"/>
         <source>Playlist</source>
         <translation>Lista de reproducción</translation>
     </message>
@@ -1590,13 +1582,13 @@
     </message>
     <message>
         <location filename="../sfos/qml/RadionetPage.qml" line="133"/>
-        <location filename="../desktop/qml/RadionetPage.qml" line="153"/>
+        <location filename="../desktop/qml/RadionetPage.qml" line="152"/>
         <source>Type the words to search</source>
         <translation>Escribe palabras de búsqueda</translation>
     </message>
     <message>
         <location filename="../sfos/qml/RadionetPage.qml" line="133"/>
-        <location filename="../desktop/qml/RadionetPage.qml" line="153"/>
+        <location filename="../desktop/qml/RadionetPage.qml" line="152"/>
         <source>No stations</source>
         <translation>No hay estaciones</translation>
     </message>
@@ -1614,7 +1606,7 @@
         <translation>Añadir seleccionados</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/RadionetPage.qml" line="121"/>
+        <location filename="../desktop/qml/RadionetPage.qml" line="120"/>
         <source>Toggle selection</source>
         <translation>Alternar seleccción</translation>
     </message>
@@ -1714,8 +1706,8 @@
         <location filename="../desktop/qml/RecPage.qml" line="73"/>
         <source>Delete %n recording(s)?</source>
         <translation>
-            <numerusform>¿Borrar %n grabación?</numerusform>
-            <numerusform>¿Borrar %n grabaciones?</numerusform>
+            <numerusform> ¿Borrar %n grabación?</numerusform>
+            <numerusform> ¿Borrar %n grabaciones?</numerusform>
         </translation>
     </message>
     <message>
@@ -1869,65 +1861,65 @@
     <message>
         <location filename="../desktop/qml/SectionLabel.qml" line="14"/>
         <source>Authors</source>
-        <translation type="unfinished">Autores</translation>
+        <translation>Autores</translation>
     </message>
 </context>
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../src/settings.cpp" line="1020"/>
+        <location filename="../src/settings.cpp" line="1035"/>
         <source>Built-in microphone</source>
         <translation>Micrófono incorporado</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1021"/>
+        <location filename="../src/settings.cpp" line="1036"/>
         <source>Audio capture</source>
         <translation>Captura de audio</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1022"/>
+        <location filename="../src/settings.cpp" line="1037"/>
         <source>Screen</source>
         <translation>Pantalla</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1024"/>
+        <location filename="../src/settings.cpp" line="1039"/>
         <source>Back camera</source>
         <translation>Cámara trasera</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1026"/>
+        <location filename="../src/settings.cpp" line="1041"/>
         <source>Front camera</source>
         <translation>Cámara frontal</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1204"/>
+        <location filename="../src/settings.cpp" line="1231"/>
         <source>Auto</source>
         <translation>Auto</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1206"/>
+        <location filename="../src/settings.cpp" line="1233"/>
         <source>Portrait</source>
         <translation>Vertical</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1208"/>
+        <location filename="../src/settings.cpp" line="1235"/>
         <source>Inverted portrait</source>
         <translation>Vertical invertido</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1210"/>
+        <location filename="../src/settings.cpp" line="1237"/>
         <source>Landscape</source>
         <translation>Horizontal</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1212"/>
+        <location filename="../src/settings.cpp" line="1239"/>
         <source>Inverted landscape</source>
         <translation>Horizontal invertido</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1287"/>
+        <location filename="../src/settings.cpp" line="1328"/>
         <source>Don&apos;t force any style</source>
-        <translation type="unfinished"></translation>
+        <translation>No forzar ningún estilo</translation>
     </message>
 </context>
 <context>
@@ -2145,20 +2137,20 @@
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="409"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="471"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="523"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Necesario para solucionar problemas. Los datos de registro se almacenan en el archivo %1.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="408"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="464"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="516"/>
         <source>Enable logging</source>
         <translation>Habilitar registro</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="431"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="36"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="482"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="534"/>
         <source>Reset settings</source>
         <translation>Restablecer ajustes</translation>
     </message>
@@ -2177,78 +2169,78 @@
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="24"/>
         <source>Choose a directory for recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>Elige un directorio para grabaciones</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="38"/>
         <source>Reset all settings to defaults?</source>
-        <translation type="unfinished"></translation>
+        <translation>¿Restablecer todos los ajustes a predeterminado?</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="60"/>
         <source>User Interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Interfaz de usuario</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="66"/>
         <source>Use custom graphical style</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar un estilo gráfico predeterminado</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="76"/>
         <source>Graphical style</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo gráfico</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="83"/>
         <source>Application graphical interface style.</source>
-        <translation type="unfinished"></translation>
+        <translation>Estilo de la interfaz gráfica de la aplicación.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="84"/>
         <source>Change if you observe problems with incorrect colors under a dark theme.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambia si observas problemas con colores incorrectos bajo un tema oscuro.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SettingsPage.qml" line="41"/>
         <location filename="../desktop/qml/SettingsPage.qml" line="88"/>
         <source>Sharing</source>
-        <translation type="unfinished"></translation>
+        <translation>Uso compartido</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="422"/>
         <source>Location of Python libraries</source>
-        <translation type="unfinished"></translation>
+        <translation>Ubicación de las librerías de Python</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="432"/>
         <source>Python libraries directory (%1).</source>
-        <translation type="unfinished"></translation>
+        <translation>Directorio de las librerías de Pyhton (%1).</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="433"/>
         <source>Leave blank to use the default value.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dejar en blanco para usar el valor predeterminado.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="434"/>
         <source>This option may be useful if you use %1 module to manage Python libraries.</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta opción puede ser útil si usas el módulo %1 para administrar las librerías de Python.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="449"/>
         <source>Save</source>
-        <translation type="unfinished">Guardar</translation>
+        <translation>Guardar</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="454"/>
         <source>Save changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar cambios</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SettingsPage.qml" line="352"/>
         <source>Video encoder</source>
-        <translation type="unfinished"></translation>
+        <translation>Codificador de vídeo</translation>
     </message>
 </context>
 <context>
@@ -2342,7 +2334,7 @@
     </message>
     <message>
         <location filename="../sfos/qml/SoundcloudPage.qml" line="59"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="95"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="94"/>
         <source>Error in getting data</source>
         <translation>Error al obtener datos</translation>
     </message>
@@ -2365,30 +2357,30 @@
     </message>
     <message>
         <location filename="../sfos/qml/SoundcloudPage.qml" line="160"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="145"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="144"/>
         <source>Album</source>
         <translation>Álbum</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SoundcloudPage.qml" line="161"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="146"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="145"/>
         <source>Artist</source>
         <translation>Artista</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="166"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="165"/>
         <source>Toggle selection</source>
         <translation>Alternar selección</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SoundcloudPage.qml" line="180"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="204"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="203"/>
         <source>Type the words to search</source>
         <translation>Escribe palabras para buscar</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SoundcloudPage.qml" line="180"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="204"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="203"/>
         <source>No items</source>
         <translation>No hay elementos</translation>
     </message>
@@ -2433,7 +2425,7 @@
     <name>TuneinPage</name>
     <message>
         <location filename="../sfos/qml/TuneinPage.qml" line="48"/>
-        <location filename="../desktop/qml/TuneinPage.qml" line="82"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="81"/>
         <source>Error in getting data</source>
         <translation>Error al obtener datos</translation>
     </message>
@@ -2456,13 +2448,13 @@
     </message>
     <message>
         <location filename="../sfos/qml/TuneinPage.qml" line="111"/>
-        <location filename="../desktop/qml/TuneinPage.qml" line="130"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="129"/>
         <source>No stations</source>
         <translation>No hay estaciones</translation>
     </message>
     <message>
         <location filename="../sfos/qml/TuneinPage.qml" line="111"/>
-        <location filename="../desktop/qml/TuneinPage.qml" line="130"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="129"/>
         <source>Type the words to search</source>
         <translation>Escribe palabras para buscar</translation>
     </message>
@@ -2480,7 +2472,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/TuneinPage.qml" line="106"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="105"/>
         <source>Toggle selection</source>
         <translation>Alternar selección</translation>
     </message>
@@ -2633,13 +2625,9 @@
         <translation>Añadir URL</translation>
     </message>
     <message>
-        <source>When URL doesn&apos;t point directly to audio, video or image file, media content is discovered with youtube-dl.</source>
-        <translation type="vanished">Cuando la URL no apunta directamente a un archivo de audio, video o imagen, se usa youtube-dl para encontrar el contenido multimedia.</translation>
-    </message>
-    <message>
         <location filename="../desktop/qml/UrlDialog.qml" line="53"/>
         <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cuando la URL no apunta directamente a un archivo de audio, video o imagen, el contenido multimedia se obtiene usando %1.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/UrlDialog.qml" line="59"/>
@@ -2689,7 +2677,7 @@
     <name>YtPage</name>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="67"/>
-        <location filename="../desktop/qml/YtPage.qml" line="115"/>
+        <location filename="../desktop/qml/YtPage.qml" line="114"/>
         <source>Error in getting data</source>
         <translation>Error al obtener datos</translation>
     </message>
@@ -2707,57 +2695,57 @@
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="122"/>
+        <location filename="../desktop/qml/YtPage.qml" line="98"/>
         <location filename="../desktop/qml/YtPage.qml" line="99"/>
-        <location filename="../desktop/qml/YtPage.qml" line="100"/>
         <source>Type: %1</source>
         <translation>Tipo: %1</translation>
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="124"/>
-        <location filename="../desktop/qml/YtPage.qml" line="100"/>
+        <location filename="../desktop/qml/YtPage.qml" line="99"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="124"/>
-        <location filename="../desktop/qml/YtPage.qml" line="99"/>
+        <location filename="../desktop/qml/YtPage.qml" line="98"/>
         <source>Video</source>
         <translation>Vídeo</translation>
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="189"/>
-        <location filename="../desktop/qml/YtPage.qml" line="199"/>
+        <location filename="../desktop/qml/YtPage.qml" line="198"/>
         <source>Album</source>
         <translation>Álbum</translation>
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="191"/>
-        <location filename="../desktop/qml/YtPage.qml" line="201"/>
+        <location filename="../desktop/qml/YtPage.qml" line="200"/>
         <source>Playlist</source>
         <translation>Lista de reproducción</translation>
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="193"/>
-        <location filename="../desktop/qml/YtPage.qml" line="203"/>
+        <location filename="../desktop/qml/YtPage.qml" line="202"/>
         <source>Artist</source>
         <translation>Artista</translation>
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="227"/>
-        <location filename="../desktop/qml/YtPage.qml" line="260"/>
+        <location filename="../desktop/qml/YtPage.qml" line="259"/>
         <source>Type the words to search</source>
         <translation>Escribe palabras para buscar</translation>
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="227"/>
-        <location filename="../desktop/qml/YtPage.qml" line="260"/>
+        <location filename="../desktop/qml/YtPage.qml" line="259"/>
         <source>No items</source>
         <translation>No hay elementos</translation>
     </message>
     <message>
         <location filename="../desktop/qml/YtPage.qml" line="36"/>
         <source>Home</source>
-        <translation type="unfinished">Carpeta de usuario</translation>
+        <translation>Carpeta de usuario</translation>
     </message>
     <message numerus="yes">
         <location filename="../desktop/qml/YtPage.qml" line="46"/>
@@ -2770,102 +2758,102 @@
     <message>
         <location filename="../desktop/qml/YtPage.qml" line="46"/>
         <source>Add selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Añadir %n seleccionados</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/YtPage.qml" line="225"/>
+        <location filename="../desktop/qml/YtPage.qml" line="224"/>
         <source>Toggle selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar selección</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
         <location filename="../sfos/qml/main.qml" line="83"/>
-        <location filename="../desktop/qml/main.qml" line="211"/>
+        <location filename="../desktop/qml/main.qml" line="213"/>
         <source>Connected to %1</source>
         <translation>Conectado a %1</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="91"/>
-        <location filename="../desktop/qml/main.qml" line="220"/>
+        <location filename="../desktop/qml/main.qml" line="222"/>
         <source>Cannot connect to device</source>
         <translation>No es posible conectarse al dispositivo</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="95"/>
-        <location filename="../desktop/qml/main.qml" line="224"/>
+        <location filename="../desktop/qml/main.qml" line="226"/>
         <source>Device responded with an error</source>
         <translation>El dispositivo respondió con un error</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="99"/>
-        <location filename="../desktop/qml/main.qml" line="228"/>
+        <location filename="../desktop/qml/main.qml" line="230"/>
         <source>Cannot play the file</source>
         <translation>No es posible reproducir archivo</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="112"/>
-        <location filename="../desktop/qml/main.qml" line="241"/>
+        <location filename="../desktop/qml/main.qml" line="243"/>
         <source>Track &quot;%1&quot; saved</source>
         <translation>Pista %1 guardada</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="121"/>
-        <location filename="../desktop/qml/main.qml" line="253"/>
+        <location filename="../desktop/qml/main.qml" line="255"/>
         <source>Cannot connect to a local network</source>
         <translation>No es posible conectarse a una red local</translation>
     </message>
     <message>
         <location filename="../sfos/qml/main.qml" line="124"/>
-        <location filename="../desktop/qml/main.qml" line="256"/>
+        <location filename="../desktop/qml/main.qml" line="258"/>
         <source>An internal error occurred</source>
         <translation>Ha ocurrido un error interno</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="40"/>
+        <location filename="../desktop/qml/main.qml" line="42"/>
         <source>Play queue</source>
         <translation>Cola de reproducción</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="47"/>
+        <location filename="../desktop/qml/main.qml" line="49"/>
         <source>Devices (connected to %1)</source>
         <translation>Dispositivos (conectados a %1)</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="48"/>
+        <location filename="../desktop/qml/main.qml" line="50"/>
         <source>Devices</source>
         <translation>Dispositivos</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="57"/>
+        <location filename="../desktop/qml/main.qml" line="59"/>
         <source>Add</source>
         <translation>Añadir</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="67"/>
+        <location filename="../desktop/qml/main.qml" line="69"/>
         <source>Track info</source>
         <translation>Info. de pista</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="76"/>
+        <location filename="../desktop/qml/main.qml" line="78"/>
         <source>Settings</source>
         <translation>Ajustes</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="84"/>
+        <location filename="../desktop/qml/main.qml" line="86"/>
         <source>About %1</source>
         <translation>Acerca de %1</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="91"/>
+        <location filename="../desktop/qml/main.qml" line="93"/>
         <source>Quit</source>
         <translation>Salir</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="136"/>
+        <location filename="../desktop/qml/main.qml" line="138"/>
         <source>Restart is required for the changes to take effect.</source>
-        <translation type="unfinished">Es necesario reiniciar para que los cambios tengan efecto.</translation>
+        <translation>Es necesario reiniciar para que los cambios surtan efecto.</translation>
     </message>
 </context>
 </TS>
