@@ -8,9 +8,9 @@
 #ifndef DATABUFFER_H
 #define DATABUFFER_H
 
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <memory>
 #include <utility>
 #include <vector>
 
