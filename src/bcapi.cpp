@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -391,22 +391,18 @@ BcApi::SearchResultItem BcApi::notableItem(const QJsonObject &obj) {
 }
 
 void BcApi::storeNotableIds(const QJsonObject &obj) {
-    const auto bcnt_seq = obj.value(QLatin1String{"bcnt_seq"}).toArray();
-    if (bcnt_seq.isEmpty()) {
-        qWarning() << "bcnt_seq is missing";
-        return;
-    }
+    auto data = obj.value(QLatin1String{"data"}).toArray();
 
     m_notableIds.clear();
-    m_notableIds.reserve(bcnt_seq.size());
-    for (int i = 0; i < bcnt_seq.size(); ++i) {
-        m_notableIds.push_back(bcnt_seq.at(i).toDouble());
+    m_notableIds.reserve(data.size());
+    for (int i = 0; i < data.size(); ++i) {
+        m_notableIds.push_back(data.at(i).toObject().value("id").toDouble());
     }
 }
 
 bool BcApi::prepareNotableIds() const {
     if (m_notableIds.empty()) {
-        const auto json = parseDataBlob();
+        const auto json = parseNotableBlob();
         if (!json) return false;
         storeNotableIds(json.value().object());
     }
@@ -452,9 +448,14 @@ std::vector<BcApi::SearchResultItem> BcApi::notableItems() {
     return items;
 }
 
-std::optional<QJsonDocument> BcApi::parseDataBlob() const {
+std::optional<QJsonDocument> BcApi::parseNotableBlob() const {
+    Downloader::Data postData;
+    postData.bytes = "{}";
+    postData.mime = "application/json";
     auto data = Downloader{nam}.downloadData(
-        QUrl{QStringLiteral("https://bandcamp.com")});
+        QUrl{QStringLiteral(
+            "https://bandcamp.com/api/homepage_api/1/notable_tralbums_list")},
+        postData);
     if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return std::nullopt;
@@ -463,14 +464,7 @@ std::optional<QJsonDocument> BcApi::parseDataBlob() const {
     if (QThread::currentThread()->isInterruptionRequested())
         return std::nullopt;
 
-    auto output = gumbo::parseHtmlData(data.bytes);
-    if (!output) {
-        qWarning() << "cannot parse html data";
-        return std::nullopt;
-    }
-
-    auto json = parseJsonData(gumbo::attr_data(
-        gumbo::search_for_id(output->root, "pagedata"), "data-blob"));
+    auto json = parseJsonData("{\"data\":" + data.bytes + "}");
     if (json.isNull() || !json.isObject()) {
         qWarning() << "cannot parse json data";
         return std::nullopt;
@@ -483,32 +477,16 @@ std::vector<BcApi::SearchResultItem> BcApi::notableItemsFirstPage() {
     std::vector<SearchResultItem> items;
 
     if (!m_notableItemsDone || m_notableItems.empty()) {
-        auto json = parseDataBlob();
+        auto json = parseNotableBlob();
         if (!json) return items;
-
         storeNotableIds(json.value().object());
-
-        auto bcnt_firstpage = json.value()
-                                  .object()
-                                  .value(QLatin1String{"bcnt_firstpage"})
-                                  .toArray();
-        if (bcnt_firstpage.isEmpty()) {
-            qWarning() << "bcnt_firstpage is missing";
-            return items;
-        }
-
-        auto size = std::min<decltype(maxNotableFirstPage)>(
-            bcnt_firstpage.size(), maxNotableFirstPage);
-        items.reserve(size);
-        for (decltype(size) i = 0; i < size; ++i) {
-            items.push_back(notableItem(bcnt_firstpage.at(i).toObject()));
-        }
-    } else {
-        auto size = std::min<decltype(maxNotableFirstPage)>(
-            m_notableItems.size(), maxNotableFirstPage);
-        items.resize(size);
-        std::copy_n(m_notableItems.cbegin(), size, items.begin());
+        makeMoreNotableItems();
     }
+
+    auto size = std::min<decltype(maxNotableFirstPage)>(m_notableItems.size(),
+                                                        maxNotableFirstPage);
+    items.resize(size);
+    std::copy_n(m_notableItems.cbegin(), size, items.begin());
 
     return items;
 }

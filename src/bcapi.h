@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -95,7 +95,7 @@ class BcApi : public QObject {
     static std::vector<double> m_notableIds;
     std::shared_ptr<QNetworkAccessManager> nam;
 
-    std::optional<QJsonDocument> parseDataBlob() const;
+    std::optional<QJsonDocument> parseNotableBlob() const;
     std::optional<SearchResultItem> notableItem(double id) const;
     static SearchResultItem notableItem(const QJsonObject &obj);
     inline static QUrl artUrl(const QString &id);
