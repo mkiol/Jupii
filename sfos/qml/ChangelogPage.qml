@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,7 +29,7 @@ Page {
             }
 
             SectionHeader {
-                text: qsTr("Version %1").arg(APP_VERSION)
+                text: qsTr("Version %1").arg("2.15")
             }
 
             LogItem {

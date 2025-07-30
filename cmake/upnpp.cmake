@@ -1,8 +1,8 @@
-set(npupnp_source_url "https://www.lesbonscomptes.com/upmpdcli/downloads/libnpupnp-6.2.0.tar.gz")
-set(npupnp_checksum "1c8101607f32a61f2477f23fa33839aa6d64568a83ca23ba43d430290937251d")
+set(npupnp_source_url "https://www.lesbonscomptes.com/upmpdcli/downloads/libnpupnp-6.2.1.tar.gz")
+set(npupnp_checksum "1cc1222512d480826d2923cc7b98b7361183a2add8c6b646a7fa32c2f34b32b3")
 
-set(upnpp_source_url "https://www.lesbonscomptes.com/upmpdcli/downloads/libupnpp-0.26.7.tar.gz")
-set(upnpp_checksum "f6630eb2676eeb435882f0e0feca1c9aef63204744016602c53003e14312db00")
+set(upnpp_source_url "https://www.lesbonscomptes.com/upmpdcli/downloads/libupnpp-0.26.8.tar.gz")
+set(upnpp_checksum "fc7e253b63b21f5638c73f5940c67111ffc93e018e8c7acc4f51333d78616eed")
 
 set(mhd_source_url "https://ftpmirror.gnu.org/libmicrohttpd/libmicrohttpd-0.9.77.tar.gz")
 set(mhd_checksum "9e7023a151120060d2806a6ea4c13ca9933ece4eacfc5c9464d20edddb76b0a0")

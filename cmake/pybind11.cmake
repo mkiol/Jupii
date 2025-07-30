@@ -1,5 +1,5 @@
-set(pybind11_source_url "https://github.com/pybind/pybind11/archive/refs/tags/v2.11.1.tar.gz")
-set(pybind11_checksum "d475978da0cdc2d43b73f30910786759d593a9d8ee05b1b6846d1eb16c6d2e0c")
+set(pybind11_source_url "https://github.com/pybind/pybind11/archive/refs/tags/v2.13.6.tar.gz")
+set(pybind11_checksum "e08cb87f4773da97fa7b5f035de8763abc656d87d5773e62f6da0587d1f0ec20")
 
 ExternalProject_Add(pybind11
     SOURCE_DIR ${external_dir}/pybind11

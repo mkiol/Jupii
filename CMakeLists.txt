@@ -1,10 +1,10 @@
-# Copyright (C) 2023-2024 Michal Kosciesza <michal@mkiol.net>
+# Copyright (C) 2023-2025 Michal Kosciesza <michal@mkiol.net>
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.19)
 
 option(WITH_DESKTOP "enable desktop ui" OFF)
 option(WITH_SFOS "enable sfos ui" OFF)
@@ -35,6 +35,10 @@ option(BUILD_LIBARCHIVE "download sources of libarchive, build and link statical
 option(BUILD_XZ "download sources of xz lib, build and link statically" ON)
 option(BUILD_PYTHON_MODULE "make python module archive" ${WITH_SFOS})
 option(BUILD_CATCH2 "download sources of catch2, build and link statically" ON)
+
+# options used only for testing
+option(DEV_USE_PYTHON311 OFF)
+option(DEV_USE_PYTHON312 OFF)
 
 if(${WITH_DESKTOP} AND ${WITH_SFOS})
     message(FATAL_ERROR "options WITH_DESKTOP and WITH_SFOS cannot be set together")
@@ -95,7 +99,7 @@ if(WITH_FLATPAK)
 endif()
 set(info_author "Michal Kosciesza")
 set(info_author_email "michal@mkiol.net")
-set(info_copyright_year "2018-2024")
+set(info_copyright_year "2018-2025")
 set(info_support_email "${id}@mkiol.net")
 set(info_webpage "https://github.com/mkiol/${id}")
 set(info_license "Mozilla Public License 2.0")
@@ -108,7 +112,7 @@ Petr Tsymbarovich · Carmen Fernández B. · Priit Jõerüüt")
 set(info_libs_str "Qt · QHTTPServer · npupnp · Libupnpp · TagLib · FFmpeg · LAME · \
 x264 · Gumbo · yt-dlp · ytmusicapi · EasyEXIF · AudioTube · {fmt}")
 
-project(${id} VERSION 2.15.0)
+project(${id} VERSION 2.16.0)
 
 set(arch_arm32 OFF)
 set(arch_arm64 OFF)
@@ -172,8 +176,8 @@ elseif(BUILD_XZ)
     set(xz_path "${external_bin_dir}/xz")
 endif()
 
-set(deps "") # dependencies of dsnote_lib and dsnote
-set(deps_libs "") # libs to link to dsnote_lib and dsnote
+set(deps "") # dependencies of jupii_lib and jupii
+set(deps_libs "") # libs to link to jupii_lib and jupii
 
 # global config
 
@@ -634,10 +638,22 @@ else()
 endif()
 
 if(NOT ${WITH_SFOS_HARBOUR})
-    find_package(Python COMPONENTS Development REQUIRED)
-    list(APPEND deps_dirs ${Python_LIBRARY_DIRS})
-    list(APPEND deps_libs ${Python_LIBRARIES})
-    list(APPEND includes ${Python_INCLUDE_DIRS})
+    if(${DEV_USE_PYTHON311} OR ${DEV_USE_PYTHON312})
+        if(DEV_USE_PYTHON311)
+            pkg_search_module(python REQUIRED python-3.11)
+            set(python_LIBRARIES -lpython3.11)
+        else()
+            pkg_search_module(python REQUIRED python-3.12)
+            set(python_LIBRARIES -lpython3.12)
+        endif()
+        list(APPEND deps_libs ${python_LIBRARIES})
+        list(APPEND includes ${python_INCLUDE_DIRS})
+    else()
+        find_package(Python COMPONENTS Development REQUIRED)
+        list(APPEND deps_dirs ${Python_LIBRARY_DIRS})
+        list(APPEND deps_libs ${Python_LIBRARIES})
+        list(APPEND includes ${Python_INCLUDE_DIRS})
+    endif()
 
     if(BUILD_PYBIND11)
         include(${cmake_path}/pybind11.cmake)
