@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,7 +15,6 @@
 #include <QObject>
 #include <QString>
 #include <QUrl>
-#include <functional>
 #include <memory>
 #include <optional>
 
@@ -24,12 +23,7 @@
 class SoundcloudApi : public QObject {
     Q_OBJECT
    public:
-    enum class Type {
-        Unknown = 0,
-        User,
-        Playlist,
-        Track,
-    };
+    enum class Type { Unknown = 0, User, Playlist, Track, Selection };
 
     struct SearchResultItem {
         Type type = Type::Unknown;
@@ -89,13 +83,18 @@ class SoundcloudApi : public QObject {
         std::vector<UserTrack> tracks;
     };
 
+    struct Selection {
+        QString title;
+        std::vector<SearchResultItem> items;
+    };
+
     explicit SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam = {},
                            QObject *parent = nullptr);
     std::vector<SearchResultItem> search(const QString &query) const;
-    std::vector<SearchResultItem> featuredItems() const;
+    std::vector<Selection> featuredItems() const;
     void makeMoreFeaturedItems();
     inline static bool canMakeMoreFeaturedItems() { return m_canMakeMore; }
-    std::vector<SearchResultItem> featuredItemsFirstPage() const;
+    std::vector<Selection> featuredItemsFirstPage() const;
     Track track(const QUrl &url);
     User user(const QUrl &url);
     Playlist playlist(const QUrl &url);
@@ -106,13 +105,14 @@ class SoundcloudApi : public QObject {
     static const int maxFeatured;
     static const int maxFeaturedFirstPage;
     static bool m_canMakeMore;
-    static std::vector<SoundcloudApi::SearchResultItem> m_featuresItems;
-    std::shared_ptr<QNetworkAccessManager> nam;
-    QString locale;
+    static std::vector<Selection> m_featuresItems;
+    std::shared_ptr<QNetworkAccessManager> m_nam;
+    QString m_locale;
 
     void makeFeaturedItems(int max = maxFeatured) const;
     void discoverClientId();
     static std::optional<SearchResultItem> searchItem(const QJsonObject &obj);
+    static std::optional<Selection> selectionItem(const QJsonObject &obj);
     QJsonDocument downloadJsonData(const QUrl &url) const;
     gumbo::GumboOutput_ptr downloadHtmlData(const QUrl &url) const;
     static QJsonDocument parseJsonData(const QByteArray &data);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -102,6 +102,14 @@ Kirigami.ScrollablePage {
     }
 
     Component {
+        id: sectionHeader
+        Kirigami.ListSectionHeader {
+            visible: !itemModel.busy
+            text: section
+        }
+    }
+
+    Component {
         id: listItemComponent
         DoubleListItem {
             id: listItem
@@ -183,7 +191,8 @@ Kirigami.ScrollablePage {
         }
 
         footer: ShowmoreItem {
-            visible: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
+            // visible: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
+            visible: false
             onClicked: {
                 if (root.featureMode) {
                     pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"),
@@ -202,6 +211,10 @@ Kirigami.ScrollablePage {
             text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : qsTr("No items")
         }
+
+        section.property: "section"
+        section.criteria: ViewSection.FullString
+        section.delegate: root.notableMode || root.featureMode ? sectionHeader : null
     }
 
     BusyIndicatorWithLabel {

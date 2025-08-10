@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -76,7 +76,8 @@ Dialog {
         model: itemModel
 
         footer: ShowMoreItem {
-            enabled: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
+            // enabled: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
+            enabled: false
             onClicked: {
                 if (root.featureMode) {
                     pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"),
@@ -172,6 +173,20 @@ Dialog {
                 }
             }
         }
+
+        Component {
+            id: sectionHeader
+            SectionHeader {
+                opacity: text.length > 0 && !itemModel.busy ? 1.0 : 0.0
+                visible: opacity > 0.0
+                Behavior on opacity { FadeAnimation {} }
+                text: section
+            }
+        }
+
+        section.property: "section"
+        section.criteria: ViewSection.FullString
+        section.delegate: root.notableMode || root.featureMode ? sectionHeader : null
 
         ViewPlaceholder {
             verticalOffset: listView.headerItem.height / 2

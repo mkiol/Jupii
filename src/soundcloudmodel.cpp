@@ -79,6 +79,9 @@ QVariantList SoundcloudModel::selectedItems() {
 }
 
 QList<ListItem *> SoundcloudModel::makeItems() {
+    const auto phrase = getFilter().simplified();
+    if (mAlbumUrl.isEmpty() && mArtistUrl.isEmpty() && phrase.isEmpty())
+        return makeFeaturedItems(false);
     if (mAlbumUrl.isEmpty() && mArtistUrl.isEmpty()) return makeSearchItems();
     if (mArtistUrl.isEmpty()) return makeAlbumItems();
     if (mArtistUrl == mFeaturedUrl) {
@@ -112,15 +115,17 @@ QList<ListItem *> SoundcloudModel::makeFeaturedItems(bool more) {
 
     items.reserve(static_cast<int>(results.size()));
     for (const auto &result : results) {
-        items << new SoundcloudItem{
-            result.webUrl.toString(),
-            result.title,
-            result.artist,
-            result.album,
-            result.webUrl,
-            result.imageUrl,
-            static_cast<SoundcloudModel::Type>(result.type),
-            result.genre};
+        if (result.title.isEmpty() || result.items.empty()) continue;
+        for (const auto &item : result.items) {
+            items << new SoundcloudItem{item.webUrl.toString(),
+                                        item.title,
+                                        /*artist=*/{},
+                                        item.album,
+                                        item.webUrl,
+                                        item.imageUrl,
+                                        /*sections=*/result.title,
+                                        SoundcloudModel::Type::Type_Album};
+        }
     }
 
     return items;
@@ -129,11 +134,7 @@ QList<ListItem *> SoundcloudModel::makeFeaturedItems(bool more) {
 QList<ListItem *> SoundcloudModel::makeSearchItems() {
     QList<ListItem *> items;
 
-    const auto phrase = getFilter().simplified();
-
-    const auto results = phrase.isEmpty()
-                             ? SoundcloudApi{}.featuredItemsFirstPage()
-                             : SoundcloudApi{}.search(phrase);
+    auto results = SoundcloudApi{}.search(getFilter().simplified());
 
     if (mCanShowMore != SoundcloudApi::canMakeMoreFeaturedItems()) {
         mCanShowMore = SoundcloudApi::canMakeMoreFeaturedItems();
@@ -151,17 +152,18 @@ QList<ListItem *> SoundcloudModel::makeSearchItems() {
             result.album,
             result.webUrl,
             result.imageUrl,
+            /*section=*/{},
             static_cast<SoundcloudModel::Type>(result.type),
             result.genre};
     }
 
-    if (!phrase.isEmpty()) {
-        std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-            auto *aa = qobject_cast<SoundcloudItem *>(a);
-            auto *bb = qobject_cast<SoundcloudItem *>(b);
-            return aa->type() < bb->type();
-        });
-    }
+    // if (!phrase.isEmpty()) {
+    //     std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
+    //         auto *aa = qobject_cast<SoundcloudItem *>(a);
+    //         auto *bb = qobject_cast<SoundcloudItem *>(b);
+    //         return aa->type() < bb->type();
+    //     });
+    // }
 
     return items;
 }
@@ -184,6 +186,7 @@ QList<ListItem *> SoundcloudModel::makeAlbumItems() {
                                     track.album,
                                     track.webUrl,
                                     track.imageUrl,
+                                    /*section=*/{},
                                     Type_Track};
     }
 
@@ -216,6 +219,7 @@ QList<ListItem *> SoundcloudModel::makeArtistItems() {
                                     album.title,
                                     album.webUrl,
                                     album.imageUrl,
+                                    /*section=*/{},
                                     Type_Album};
     }
 
@@ -233,6 +237,7 @@ QList<ListItem *> SoundcloudModel::makeArtistItems() {
                                     track.album,
                                     track.webUrl,
                                     track.imageUrl,
+                                    /*section=*/{},
                                     Type_Track};
     }
 
@@ -242,10 +247,19 @@ QList<ListItem *> SoundcloudModel::makeArtistItems() {
 SoundcloudItem::SoundcloudItem(const QString &id, const QString &name,
                                const QString &artist, const QString &album,
                                const QUrl &url, const QUrl &icon,
+                               const QString &section,
                                SoundcloudModel::Type type, const QString &genre,
                                QObject *parent)
-    : SelectableItem(parent), m_id(id), m_name(name), m_artist(artist),
-      m_album(album), m_url(url), m_icon(icon), m_type(type), m_genre(genre) {
+    : SelectableItem(parent),
+      m_id(id),
+      m_name(name),
+      m_artist(artist),
+      m_album(album),
+      m_url(url),
+      m_icon(icon),
+      m_section(section),
+      m_type(type),
+      m_genre(genre) {
     m_selectable = type == SoundcloudModel::Type_Track;
 }
 
@@ -259,6 +273,7 @@ QHash<int, QByteArray> SoundcloudItem::roleNames() const {
     names[IconRole] = "icon";
     names[TypeRole] = "type";
     names[GenreRole] = "genre";
+    names[SectionRole] = "section";
     names[SelectedRole] = "selected";
     return names;
 }
@@ -281,6 +296,8 @@ QVariant SoundcloudItem::data(int role) const {
             return type();
         case GenreRole:
             return genre();
+        case SectionRole:
+            return section();
         case SelectedRole:
             return selected();
         default:

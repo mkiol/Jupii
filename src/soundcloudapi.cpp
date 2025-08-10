@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,20 +17,21 @@
 #include <QThread>
 #include <QTimer>
 #include <QUrlQuery>
+#include <utility>
 
 #include "downloader.h"
 
-const int SoundcloudApi::maxFeatured = 20;
-const int SoundcloudApi::maxFeaturedFirstPage = 5;
-bool SoundcloudApi::m_canMakeMore = true;
-std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::m_featuresItems{};
+const int SoundcloudApi::maxFeatured = 10;
+const int SoundcloudApi::maxFeaturedFirstPage = 10;
+bool SoundcloudApi::m_canMakeMore = false;
+std::vector<SoundcloudApi::Selection> SoundcloudApi::m_featuresItems{};
 QString SoundcloudApi::clientId;
 
 SoundcloudApi::SoundcloudApi(std::shared_ptr<QNetworkAccessManager> nam,
                              QObject *parent)
     : QObject{parent},
-      nam{std::move(nam)},
-      locale{QLocale::system().bcp47Name().split('-').first()} {
+      m_nam{std::move(nam)},
+      m_locale{QLocale::system().bcp47Name().split('-').first()} {
     discoverClientId();
 }
 
@@ -49,7 +50,7 @@ void SoundcloudApi::discoverClientId() {
     auto scripts = gumbo::search_for_tag(output->root, GUMBO_TAG_SCRIPT);
     for (auto *script : scripts) {
         if (QUrl url{gumbo::attr_data(script, "src")}; !url.isEmpty()) {
-            if (auto data = Downloader{nam}.downloadData(url);
+            if (auto data = Downloader{m_nam}.downloadData(url);
                 !data.bytes.isEmpty()) {
                 if (auto id = extractClientId(data.bytes); !id.isEmpty()) {
 #ifdef QT_DEBUG
@@ -84,7 +85,7 @@ QJsonDocument SoundcloudApi::parseJsonData(const QByteArray &data) {
 }
 
 gumbo::GumboOutput_ptr SoundcloudApi::downloadHtmlData(const QUrl &url) const {
-    auto data = Downloader{nam}.downloadData(url);
+    auto data = Downloader{m_nam}.downloadData(url);
     if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return {};
@@ -94,7 +95,7 @@ gumbo::GumboOutput_ptr SoundcloudApi::downloadHtmlData(const QUrl &url) const {
 }
 
 QJsonDocument SoundcloudApi::downloadJsonData(const QUrl &url) const {
-    auto data = Downloader{nam}.downloadData(url);
+    auto data = Downloader{m_nam}.downloadData(url);
     if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return {};
@@ -108,6 +109,7 @@ SoundcloudApi::Type SoundcloudApi::textToType(const QString &text) {
         if (text.at(0) == 'u') return SoundcloudApi::Type::User;
         if (text.at(0) == 't') return SoundcloudApi::Type::Track;
         if (text.at(0) == 'p') return SoundcloudApi::Type::Playlist;
+        if (text.at(0) == 's') return SoundcloudApi::Type::Selection;
     }
 
     return SoundcloudApi::Type::Unknown;
@@ -404,7 +406,7 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url) {
                           .toObject()
                           .value(QLatin1String{"album_title"})
                           .toString();
-        if (track.album.isEmpty()) track.artist = playlist.title;
+        if (track.album.isEmpty()) track.album = playlist.title;
 
         playlist.tracks.push_back(std::move(track));
     }
@@ -569,8 +571,14 @@ std::optional<SoundcloudApi::SearchResultItem> SoundcloudApi::searchItem(
         item.imageUrl = QUrl{obj.value(QLatin1String{"avatar_url"}).toString()};
         item.artist = obj.value(QLatin1String{"username"}).toString();
     } else if (type == Type::Playlist) {
-        item.imageUrl = QUrl{obj.value(QLatin1String{"avatar_url"}).toString()};
+        item.imageUrl =
+            QUrl{obj.value(QLatin1String{"artwork_url"}).toString()};
+        if (item.imageUrl.isEmpty()) {
+            item.imageUrl =
+                QUrl{obj.value(QLatin1String{"avatar_url"}).toString()};
+        }
         item.album = obj.value(QLatin1String{"title"}).toString();
+        item.title = obj.value(QLatin1String{"title"}).toString();
         item.artist = obj.value(QLatin1String{"user"})
                           .toObject()
                           .value(QLatin1String{"username"})
@@ -578,6 +586,41 @@ std::optional<SoundcloudApi::SearchResultItem> SoundcloudApi::searchItem(
     }
 
     return item;
+}
+
+std::optional<SoundcloudApi::Selection> SoundcloudApi::selectionItem(
+    const QJsonObject &obj) {
+    if (textToType(obj.value(QLatin1String{"kind"}).toString()) !=
+        Type::Selection) {
+        return std::nullopt;
+    }
+    auto title = obj.value(QLatin1String{"title"}).toString();
+    if (title.isEmpty()) {
+        return std::nullopt;
+    }
+
+    auto colArr = obj.value(QLatin1String{"items"})
+                      .toObject()
+                      .value(QLatin1String{"collection"})
+                      .toArray();
+    if (colArr.isEmpty()) {
+        return std::nullopt;
+    }
+
+    Selection selection;
+    selection.title = std::move(title);
+
+    for (const auto &item : std::as_const(colArr)) {
+        auto sitem = searchItem(item.toObject());
+        if (!sitem) continue;
+        selection.items.push_back(std::move(*sitem));
+    }
+
+    if (selection.items.empty()) {
+        return std::nullopt;
+    }
+
+    return selection;
 }
 
 std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::search(
@@ -602,8 +645,7 @@ std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::search(
     return items;
 }
 
-std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::featuredItems()
-    const {
+std::vector<SoundcloudApi::Selection> SoundcloudApi::featuredItems() const {
     if (m_featuresItems.size() < maxFeatured)
         makeFeaturedItems(maxFeatured - m_featuresItems.size());
 
@@ -621,31 +663,31 @@ void SoundcloudApi::makeFeaturedItems(int max) const {
 
     auto res = json.object().value(QLatin1String{"collection"}).toArray();
 
-    m_canMakeMore = res.size() >= max;
+    // m_canMakeMore = res.size() >= max;
 
     auto size = std::min(res.size(), max);
 
     for (int i = 0; i < size; ++i) {
-        auto item = searchItem(res.at(i).toObject());
+        auto item = selectionItem(res.at(i).toObject());
         if (item) m_featuresItems.push_back(std::move(item.value()));
     }
 }
 
-std::vector<SoundcloudApi::SearchResultItem>
-SoundcloudApi::featuredItemsFirstPage() const {
+std::vector<SoundcloudApi::Selection> SoundcloudApi::featuredItemsFirstPage()
+    const {
     if (m_featuresItems.size() < maxFeaturedFirstPage)
         makeFeaturedItems(maxFeaturedFirstPage);
 
     auto size = std::min<int>(m_featuresItems.size(), maxFeaturedFirstPage);
-    std::vector<SoundcloudApi::SearchResultItem> items;
-    std::copy_n(m_featuresItems.cbegin(), size, std::back_inserter(items));
-    return items;
+    std::vector<Selection> selections;
+    std::copy_n(m_featuresItems.cbegin(), size, std::back_inserter(selections));
+    return selections;
 }
 
 QUrl SoundcloudApi::makeSearchUrl(const QString &phrase) const {
     QUrlQuery qurl;
     qurl.addQueryItem(QStringLiteral("q"), phrase);
-    qurl.addQueryItem(QStringLiteral("app_locale"), locale);
+    qurl.addQueryItem(QStringLiteral("app_locale"), m_locale);
     qurl.addQueryItem(QStringLiteral("client_id"), clientId);
     qurl.addQueryItem(QStringLiteral("limit"), QStringLiteral("50"));
     qurl.addQueryItem(QStringLiteral("offset"), QStringLiteral("0"));
@@ -656,7 +698,7 @@ QUrl SoundcloudApi::makeSearchUrl(const QString &phrase) const {
 
 QUrl SoundcloudApi::makePlaylistUrl(const QString &id) const {
     QUrlQuery qurl;
-    qurl.addQueryItem(QStringLiteral("app_locale"), locale);
+    qurl.addQueryItem(QStringLiteral("app_locale"), m_locale);
     qurl.addQueryItem(QStringLiteral("client_id"), clientId);
     QUrl url{"https://api-v2.soundcloud.com/playlists/" + id};
     url.setQuery(qurl);
@@ -665,7 +707,7 @@ QUrl SoundcloudApi::makePlaylistUrl(const QString &id) const {
 
 QUrl SoundcloudApi::makeTrackUrl(const QString &id) const {
     QUrlQuery qurl;
-    qurl.addQueryItem(QStringLiteral("app_locale"), locale);
+    qurl.addQueryItem(QStringLiteral("app_locale"), m_locale);
     qurl.addQueryItem(QStringLiteral("client_id"), clientId);
     QUrl url{"https://api-v2.soundcloud.com/tracks/" + id};
     url.setQuery(qurl);
@@ -674,7 +716,7 @@ QUrl SoundcloudApi::makeTrackUrl(const QString &id) const {
 
 QUrl SoundcloudApi::makeUserPlaylistsUrl(const QString &id) const {
     QUrlQuery qurl;
-    qurl.addQueryItem(QStringLiteral("app_locale"), locale);
+    qurl.addQueryItem(QStringLiteral("app_locale"), m_locale);
     qurl.addQueryItem(QStringLiteral("client_id"), clientId);
     qurl.addQueryItem(QStringLiteral("limit"), QStringLiteral("50"));
     qurl.addQueryItem(QStringLiteral("offset"), QStringLiteral("0"));
@@ -687,7 +729,7 @@ QUrl SoundcloudApi::makeUserPlaylistsUrl(const QString &id) const {
 
 QUrl SoundcloudApi::makeUserStreamUrl(const QString &id) const {
     QUrlQuery qurl;
-    qurl.addQueryItem(QStringLiteral("app_locale"), locale);
+    qurl.addQueryItem(QStringLiteral("app_locale"), m_locale);
     qurl.addQueryItem(QStringLiteral("client_id"), clientId);
     qurl.addQueryItem(QStringLiteral("limit"), QStringLiteral("50"));
     qurl.addQueryItem(QStringLiteral("offset"), QStringLiteral("0"));
@@ -700,15 +742,14 @@ QUrl SoundcloudApi::makeUserStreamUrl(const QString &id) const {
 
 QUrl SoundcloudApi::makeFeaturedTracksUrl(int limit) const {
     QUrlQuery qurl;
-    qurl.addQueryItem(QStringLiteral("app_locale"), locale);
+    qurl.addQueryItem(QStringLiteral("app_locale"), m_locale);
     qurl.addQueryItem(QStringLiteral("client_id"), clientId);
     qurl.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     qurl.addQueryItem(QStringLiteral("offset"),
                       QString::number(m_featuresItems.size()));
     qurl.addQueryItem(QStringLiteral("linked_partitioning"),
                       QStringLiteral("1"));
-    QUrl url{QStringLiteral(
-        "https://api-v2.soundcloud.com/featured_tracks/top/all-music")};
+    QUrl url{QStringLiteral("https://api-v2.soundcloud.com/mixed-selections")};
     url.setQuery(qurl);
     return url;
 }

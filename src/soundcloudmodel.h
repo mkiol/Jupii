@@ -94,6 +94,7 @@ class SoundcloudItem : public SelectableItem {
         IconRole,
         TypeRole,
         GenreRole,
+        SectionRole,
         SelectedRole
     };
 
@@ -102,7 +103,7 @@ class SoundcloudItem : public SelectableItem {
     explicit SoundcloudItem(const QString &id, const QString &name,
                             const QString &artist, const QString &album,
                             const QUrl &url, const QUrl &icon,
-                            SoundcloudModel::Type type,
+                            const QString &section, SoundcloudModel::Type type,
                             const QString &genre = {},
                             QObject *parent = nullptr);
     QVariant data(int role) const override;
@@ -113,6 +114,7 @@ class SoundcloudItem : public SelectableItem {
     inline auto album() const { return m_album; }
     inline auto url() const { return m_url; }
     inline auto icon() const { return m_icon; }
+    inline auto section() const { return m_section; }
     inline auto type() const { return m_type; }
     inline auto genre() const { return m_genre; }
     void refresh();
@@ -124,6 +126,7 @@ class SoundcloudItem : public SelectableItem {
     QString m_album;
     QUrl m_url;
     QUrl m_icon;
+    QString m_section;
     SoundcloudModel::Type m_type = SoundcloudModel::Type::Type_Unknown;
     QString m_genre;
 };

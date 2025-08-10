@@ -1671,6 +1671,7 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url) {
 
     if (meta.type == Type::Type_Image) {
         meta.setFlags(MetaFlag::Seek, false);
+        meta.duration = 30;
         if (QFile f{meta.path}; f.open(QIODevice::ReadOnly)) {
             if (auto thumbPath =
                     Thumb::save(f.readAll(), meta.url,
