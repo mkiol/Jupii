@@ -123,6 +123,7 @@ class SoundcloudApi : public QObject {
     QUrl makeUserStreamUrl(const QString &id) const;
     QUrl makeTrackUrl(const QString &id) const;
     QUrl makeFeaturedTracksUrl(int limit = maxFeatured) const;
+    QUrl makeTracksUrl(const std::vector<QString> &ids) const;
     static QString extractData(const QString &text);
     static QString extractClientId(const QString &text);
     static QString extractUserId(const QString &text);
@@ -133,6 +134,9 @@ class SoundcloudApi : public QObject {
     QJsonArray extractItems(const QUrl &url) const;
     static void addClientId(QUrl *url);
     void user(const QUrl &url, User *user, int count = 0) const;
+    static void addTracksFromJson(const QJsonArray &json,
+                                  std::vector<PlaylistTrack> &tracks,
+                                  std::vector<QString> &missingTrackIds);
 };
 
 #endif  // SOUNDCLOUDAPI_H

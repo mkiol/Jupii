@@ -375,18 +375,54 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url) {
         return playlist;
     }
 
-    for (int i = 0; i < tracks.size(); ++i) {
-        auto elm = tracks.at(i).toObject();
+    std::vector<QString> missingTrackIds;
+    addTracksFromJson(tracks, playlist.tracks, missingTrackIds);
+
+    if (!missingTrackIds.empty()) {
+        auto json = downloadJsonData(makeTracksUrl(missingTrackIds));
+        if (!json.isNull() && json.isArray()) {
+            addTracksFromJson(json.array(), playlist.tracks, missingTrackIds);
+        }
+    }
+
+    for (auto &track : playlist.tracks) {
+        if (track.album.isEmpty()) track.album = playlist.title;
+    }
+
+    return playlist;
+}
+
+void SoundcloudApi::addTracksFromJson(const QJsonArray &json,
+                                      std::vector<PlaylistTrack> &tracks,
+                                      std::vector<QString> &missingTrackIds) {
+    for (int i = 0; i < json.size(); ++i) {
+        auto elm = json.at(i).toObject();
+
         auto type = textToType(elm.value(QLatin1String{"kind"}).toString());
         if (type != Type::Track) continue;
+
+        auto id = elm.value(QLatin1String{"id"}).toDouble();
+        if (id <= 0) continue;
+
+        if (elm.value(QLatin1String{"policy"})
+                .toString()
+                .compare("ALLOW", Qt::CaseInsensitive) != 0) {
+            // policy could be: ALLOW, SNIP, BLOCK
+            continue;
+        }
+
+        QUrl webUrl{elm.value(QLatin1String{"permalink_url"}).toString()};
+        if (webUrl.isEmpty()) {
+            missingTrackIds.push_back(QString::number(id, 'f', 0));
+            continue;
+        }
+
         if (!mediaOk(elm.value(QLatin1String{"media"})
                          .toObject()
                          .value(QLatin1String{"transcodings"})
-                         .toArray()))
+                         .toArray())) {
             continue;
-
-        QUrl webUrl{elm.value(QLatin1String{"permalink_url"}).toString()};
-        if (webUrl.isEmpty()) continue;
+        }
 
         PlaylistTrack track;
         track.imageUrl =
@@ -406,12 +442,9 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url) {
                           .toObject()
                           .value(QLatin1String{"album_title"})
                           .toString();
-        if (track.album.isEmpty()) track.album = playlist.title;
 
-        playlist.tracks.push_back(std::move(track));
+        tracks.push_back(std::move(track));
     }
-
-    return playlist;
 }
 
 void SoundcloudApi::user(const QUrl &url, User *user, int count) const {
@@ -646,8 +679,7 @@ std::vector<SoundcloudApi::SearchResultItem> SoundcloudApi::search(
 }
 
 std::vector<SoundcloudApi::Selection> SoundcloudApi::featuredItems() const {
-    if (m_featuresItems.size() < maxFeatured)
-        makeFeaturedItems(maxFeatured - m_featuresItems.size());
+    if (m_featuresItems.empty()) makeFeaturedItems(maxFeaturedFirstPage);
 
     return m_featuresItems;
 }
@@ -675,8 +707,7 @@ void SoundcloudApi::makeFeaturedItems(int max) const {
 
 std::vector<SoundcloudApi::Selection> SoundcloudApi::featuredItemsFirstPage()
     const {
-    if (m_featuresItems.size() < maxFeaturedFirstPage)
-        makeFeaturedItems(maxFeaturedFirstPage);
+    if (m_featuresItems.empty()) makeFeaturedItems(maxFeaturedFirstPage);
 
     auto size = std::min<int>(m_featuresItems.size(), maxFeaturedFirstPage);
     std::vector<Selection> selections;
@@ -710,6 +741,22 @@ QUrl SoundcloudApi::makeTrackUrl(const QString &id) const {
     qurl.addQueryItem(QStringLiteral("app_locale"), m_locale);
     qurl.addQueryItem(QStringLiteral("client_id"), clientId);
     QUrl url{"https://api-v2.soundcloud.com/tracks/" + id};
+    url.setQuery(qurl);
+    return url;
+}
+
+QUrl SoundcloudApi::makeTracksUrl(const std::vector<QString> &ids) const {
+    QUrlQuery qurl;
+
+    qurl.addQueryItem(
+        QStringLiteral("ids"),
+        std::accumulate(std::next(ids.cbegin()), ids.cend(), ids.front(),
+                        [](auto idsStr, const auto &id) {
+                            return std::move(idsStr) + ',' + id;
+                        }));
+    qurl.addQueryItem(QStringLiteral("app_locale"), m_locale);
+    qurl.addQueryItem(QStringLiteral("client_id"), clientId);
+    QUrl url{"https://api-v2.soundcloud.com/tracks"};
     url.setQuery(qurl);
     return url;
 }
