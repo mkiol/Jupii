@@ -1,143 +1,38 @@
-# Generated with flatpak-pip-generator --yaml --output python3-modules yt_dlp ytmusicapi
+# Generated with flatpak-pip-generator --yaml --output python3-modules yt_dlp==2025.9.26 ytmusicapi==1.11.1
 build-commands: []
 buildsystem: simple
 modules:
-  - name: python3-yt_dlp
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} yt_dlp --no-build-isolation
-    cleanup:
-      - /bin
-      - /share
-    sources:
-      - &id006
-        type: file
-        url: https://files.pythonhosted.org/packages/2a/18/70c32fe9357f3eea18598b23aa9ed29b1711c3001835f7cf99a9818985d0/Brotli-1.0.9.zip
-        sha256: 4d1b810aa0ed773f81dceda2cc7b403d01057458730e309856356d4ef4188438
-      - &id001
-        type: file
-        url: https://files.pythonhosted.org/packages/71/4c/3db2b8021bd6f2f0ceb0e088d6b2d49147671f25832fb17970e9b583d742/certifi-2022.12.7-py3-none-any.whl
-        sha256: 4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18
-      - &id002
-        type: file
-        url: https://files.pythonhosted.org/packages/db/51/a507c856293ab05cdc1db77ff4bc1268ddd39f29e7dc4919aa497f0adbec/charset_normalizer-2.1.1-py3-none-any.whl
-        sha256: 83e9a75d1911279afd89352c68b45348559d1fc0506b054b346651b5e7fee29f
-      - &id003
-        type: file
-        url: https://files.pythonhosted.org/packages/fc/34/3030de6f1370931b9dbb4dad48f6ab1015ab1d32447850b9fc94e60097be/idna-3.4-py3-none-any.whl
-        sha256: 90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2
-      - &id007
-        type: file
-        url: https://files.pythonhosted.org/packages/03/ee/114d7016d2e34f341e212fefb5e7bd87785077ebcfff0ad23a497c70eea1/mutagen-1.46.0-py3-none-any.whl
-        sha256: 8af0728aa2d5c3ee5a727e28d0627966641fddfe804c23eabb5926a4d770aed5
-      - &id008
-        type: file
-        url: https://files.pythonhosted.org/packages/3d/07/cfd8f52b9068877801317d26dc7225e19421bc659e1395d2cd6933b1a351/pycryptodomex-3.17.tar.gz
-        sha256: 0af93aad8d62e810247beedef0261c148790c52f3cd33643791cc6396dd217c1
-      - &id004
-        type: file
-        url: https://files.pythonhosted.org/packages/f9/9b/335f9764261e915ed497fcdeb11df5dfd6f7bf257d4a6a2a686d80da4d54/requests-2.32.3-py3-none-any.whl
-        sha256: 70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6
-      - &id005
-        type: file
-        url: https://files.pythonhosted.org/packages/48/fe/a5c6cc46e9fe9171d7ecf0f33ee7aae14642f8d74baa7af4d7840f9358be/urllib3-1.26.17-py2.py3-none-any.whl
-        sha256: 94a757d178c9be92ef5539b8840d48dc9cf1b2709c9d6b588232a055c524458b
-      - &id009
-        type: file
-        url: https://files.pythonhosted.org/packages/e2/73/9223dbc7be3dcaf2a7bbf756c351ec8da04b1fa573edaf545b95f6b0c7fd/websockets-13.1.tar.gz
-        sha256: a3b3366087c1bc0a2795111edcadddb8b3b59509d5db5d7ea3fdd69f954a8878
-      - type: file
-        url: https://files.pythonhosted.org/packages/6e/91/ecb07d66110334cdb01e94b187577af3b041897090203c9957728825d46f/yt_dlp-2024.10.7-py3-none-any.whl
-        sha256: 9e336ae663bfd7ad3ea1c02e722747388172719efc0fc39a807dace3073aa704
-  - name: python3-ytmusicapi
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} ytmusicapi --no-build-isolation
-    cleanup:
-      - /bin
-      - /share
-    sources:
-      - *id001
-      - *id002
-      - *id003
-      - *id004
-      - *id005
-      - type: file
-        url: https://files.pythonhosted.org/packages/7e/eb/23417507ba393545e98ba7c6d01e136cb3b9426d496a5eb216de7dc79adb/ytmusicapi-1.8.2-py3-none-any.whl
-        sha256: 579dd60704fc2538eb94e2035fb36e904a713f948506ca3d28d151c61c782a86
-  - name: python3-brotli
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "brotli==1.0.9" --no-build-isolation
-    sources:
-      - *id006
-  - name: python3-certifi
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "certifi==2022.12.7" --no-build-isolation
-    sources:
-      - *id001
-  - name: python3-charset-normalizer
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "charset-normalizer==2.1.1" --no-build-isolation
-    cleanup:
-      - /bin
-      - /share
-    sources:
-      - *id002
-  - name: python3-idna
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "idna==3.4" --no-build-isolation
-    sources:
-      - *id003
-  - name: python3-mutagen
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "mutagen==1.46.0" --no-build-isolation
-    cleanup:
-      - /bin
-      - /share
-    sources:
-      - *id007
-  - name: python3-pycryptodomex
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "pycryptodomex==3.17" --no-build-isolation
-    sources:
-      - *id008
-  - name: python3-requests
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "requests" --no-build-isolation
-    sources:
-      - *id001
-      - *id002
-      - *id003
-      - *id004
-      - *id005
-  - name: python3-urllib3
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "urllib3==1.26.17" --no-build-isolation
-    sources:
-      - *id005
-  - name: python3-websockets
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "websockets" --no-build-isolation
-    sources:
-      - *id009
+- name: python3-yt_dlp
+  buildsystem: simple
+  build-commands:
+  - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+    --prefix=${FLATPAK_DEST} "yt_dlp==2025.9.26" --no-build-isolation
+  sources:
+  - type: file
+    url: https://files.pythonhosted.org/packages/35/94/18210c5e6a9d7e622a3b3f4a73dde205f7adf0c46b42b27d0da8c6e5c872/yt_dlp-2025.9.26-py3-none-any.whl
+    sha256: 36f5fbc153600f759abd48d257231f0e0a547a115ac7ffb05d5b64e5c7fdf8a2
+- name: python3-ytmusicapi
+  buildsystem: simple
+  build-commands:
+  - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+    --prefix=${FLATPAK_DEST} "ytmusicapi==1.11.1" --no-build-isolation
+  sources:
+  - type: file
+    url: https://files.pythonhosted.org/packages/e5/48/1549795ba7742c948d2ad169c1c8cdbae65bc450d6cd753d124b17c8cd32/certifi-2025.8.3-py3-none-any.whl
+    sha256: f6c12493cfb1b06ba2ff328595af9350c65d6644968e5d3a2ffd78699af217a5
+  - type: file
+    url: https://files.pythonhosted.org/packages/83/2d/5fd176ceb9b2fc619e63405525573493ca23441330fcdaee6bef9460e924/charset_normalizer-3.4.3.tar.gz
+    sha256: 6fce4b8500244f6fcb71465d4a4930d132ba9ab8e71a7859e6a5d59851068d14
+  - type: file
+    url: https://files.pythonhosted.org/packages/76/c6/c88e154df9c4e1a2a66ccf0005a88dfb2650c1dffb6f5ce603dfbd452ce3/idna-3.10-py3-none-any.whl
+    sha256: 946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3
+  - type: file
+    url: https://files.pythonhosted.org/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1d235b70dc0b4e6e3/requests-2.32.5-py3-none-any.whl
+    sha256: 2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6
+  - type: file
+    url: https://files.pythonhosted.org/packages/a7/c2/fe1e52489ae3122415c51f387e221dd0773709bad6c6cdaa599e8a2c5185/urllib3-2.5.0-py3-none-any.whl
+    sha256: e6b01673c0fa6a13e374b50871808eb3bf7046c4b125b216f6bf1cc604cff0dc
+  - type: file
+    url: https://files.pythonhosted.org/packages/88/ac/a91784a8f9be3eff10959ccd2a680181941194d7ee7da2c7be10e9c32ab5/ytmusicapi-1.11.1-py3-none-any.whl
+    sha256: bcaf208fd18c9b5b8971bc4436b17af132a4296de98708049d7638fdba90f6c9
 name: python3-modules
