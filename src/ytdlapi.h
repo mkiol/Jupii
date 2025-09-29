@@ -47,6 +47,7 @@ class YtdlApi : public QObject {
         QString id;
         QString title;
         QString artist;
+        QUrl imageUrl;
         QUrl webUrl;
         int duration = 0;
     };

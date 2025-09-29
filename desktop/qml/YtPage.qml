@@ -172,8 +172,8 @@ Kirigami.ScrollablePage {
                 return defaultIconSource
             }
             iconSource: {
-                if (model.type === YtModel.Type_Video && albumMode)
-                    return ""
+                // if (model.type === YtModel.Type_Video && albumMode)
+                //     return ""
                 return model.icon
             }
             iconSize: Kirigami.Units.iconSizes.medium
@@ -241,15 +241,15 @@ Kirigami.ScrollablePage {
             sourceComponent: listItemComponent
         }
 
-        footer: ShowmoreItem {
-            visible: !itemModel.busy && root.featureMode && itemList.count !== 0
-            onClicked: {
-                if (root.featureMode) {
-                    pageStack.push(Qt.resolvedUrl("YtPage.qml"),
-                                   {artistPage: itemModel.homeId})
-                }
-            }
-        }
+        // footer: ShowmoreItem {
+        //     visible: !itemModel.busy && root.featureMode && itemList.count !== 0
+        //     onClicked: {
+        //         if (root.featureMode) {
+        //             pageStack.push(Qt.resolvedUrl("YtPage.qml"),
+        //                            {artistPage: itemModel.homeId})
+        //         }
+        //     }
+        // }
 
         Kirigami.PlaceholderMessage {
             anchors.centerIn: parent

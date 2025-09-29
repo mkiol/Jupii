@@ -251,18 +251,18 @@ std::optional<YtdlApi::Album> YtdlApi::album(const QString& id) {
             [](const auto& t) { return !static_cast<bool>(t.video_id); }),
         result.tracks.end());
 
-    std::
-        transform(
-            result.tracks.cbegin(), result.tracks.cend(),
-            std::back_inserter(a.tracks), [&a](const auto& t) {
-                return AlbumTrack{
-                    QString::fromStdString(*t.video_id),
-                    QString::fromStdString(t.title),
-                    bestArtistName(t.artists, a.artist), makeYtUrl(*t.video_id),
-                    t.duration ? Utils::strToSecStatic(
-                                     QString::fromStdString(*t.duration))
-                               : 0};
-            });
+    std::transform(result.tracks.cbegin(), result.tracks.cend(),
+                   std::back_inserter(a.tracks), [&a](const auto& t) {
+                       return AlbumTrack{
+                           QString::fromStdString(*t.video_id),
+                           QString::fromStdString(t.title),
+                           bestArtistName(t.artists, a.artist),
+                           QUrl{},
+                           makeYtUrl(*t.video_id),
+                           t.duration ? Utils::strToSecStatic(
+                                            QString::fromStdString(*t.duration))
+                                      : 0};
+                   });
 
     return a;
 }
@@ -301,17 +301,18 @@ std::optional<YtdlApi::Album> YtdlApi::playlist(const QString& id) {
             [](const auto& t) { return !static_cast<bool>(t.video_id); }),
         result.tracks.end());
 
-    std::
-        transform(
-            result.tracks.cbegin(), result.tracks.cend(),
-            std::back_inserter(a.tracks), [](const auto& t) {
-                return AlbumTrack{
-                    QString::fromStdString(*t.video_id),
-                    QString::fromStdString(t.title), bestArtistName(t.artists),
-                    makeYtUrl(*t.video_id),
-                    Utils::strToSecStatic(
-                        QString::fromStdString(t.duration.value_or("")))};
-            });
+    std::transform(result.tracks.cbegin(), result.tracks.cend(),
+                   std::back_inserter(a.tracks), [&a](const auto& t) {
+                       auto thumb = bestThumbUrl(t.thumbnails);
+                       return AlbumTrack{
+                           QString::fromStdString(*t.video_id),
+                           QString::fromStdString(t.title),
+                           bestArtistName(t.artists),
+                           thumb.isEmpty() ? a.imageUrl : std::move(thumb),
+                           makeYtUrl(*t.video_id),
+                           Utils::strToSecStatic(QString::fromStdString(
+                               t.duration.value_or("")))};
+                   });
 
     return a;
 }
@@ -383,7 +384,7 @@ std::optional<YtdlApi::Artist> YtdlApi::artist(const QString& id) {
 }
 
 std::vector<YtdlApi::SearchResultItem> YtdlApi::homeFirstPage() {
-    return home(maxHomeFirstPage);
+    return home(maxHome);
 }
 
 std::vector<YtdlApi::SearchResultItem> YtdlApi::home(int limit) {

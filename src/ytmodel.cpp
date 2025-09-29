@@ -162,25 +162,26 @@ QList<ListItem *> YtModel::makeAlbumItems() {
 
     setAlbumTitle(album->title);
 
-    std::transform(std::make_move_iterator(album->tracks.begin()),
-                   std::make_move_iterator(album->tracks.end()),
-                   std::back_inserter(items),
-                   [&album, icon = mAlbumType == Type::Type_Playlist
-                                       ? QUrl{}
-                                       : Thumb::makeCache(album->imageUrl)](
-                       auto result) {
-                       return new YtItem{std::move(result.id),
-                                         std::move(result.title),
-                                         std::move(result.artist),
-                                         album->title,
-                                         /*url=*/std::move(result.webUrl),
-                                         /*origUrl=*/{},
-                                         /*icon=*/icon,
-                                         /*section=*/{},
-                                         result.duration,
-                                         Type::Type_Video};
-                   });
-
+    std::transform(
+        std::make_move_iterator(album->tracks.begin()),
+        std::make_move_iterator(album->tracks.end()), std::back_inserter(items),
+        [&album, icon = mAlbumType == Type::Type_Playlist
+                            ? QUrl{}
+                            : Thumb::makeCache(album->imageUrl)](auto result) {
+            return new YtItem{
+                std::move(result.id),
+                std::move(result.title),
+                std::move(result.artist),
+                album->title,
+                /*url=*/std::move(result.webUrl),
+                /*origUrl=*/{},
+                /*icon=*/icon.isEmpty() && !result.imageUrl.isEmpty()
+                    ? Thumb::makeCache(result.imageUrl)
+                    : icon,
+                /*section=*/{},
+                result.duration,
+                Type::Type_Video};
+        });
     return items;
 }
 

@@ -12,7 +12,7 @@
 #include <vector>
 #include <memory>
 
-constexpr auto TESTED_YTMUSICAPI_VERSION = "1.8.0";
+constexpr auto TESTED_YTMUSICAPI_VERSION = "1.10.2";
 
 struct YTMusicPrivate;
 
@@ -138,7 +138,7 @@ struct Artist {
     struct Single {
         std::string title;
         std::vector<meta::Thumbnail> thumbnails;
-        std::string year;
+        std::optional<std::string> year;
         std::string browse_id;
     };
 
@@ -177,7 +177,7 @@ namespace album {
         std::string title;
         int track_count;
         std::string duration;
-        std::string audio_playlist_id;
+        std::optional<std::string> audio_playlist_id;
         std::optional<std::string> year;
         std::optional<std::string> description;
         std::vector<meta::Thumbnail> thumbnails;
@@ -248,6 +248,7 @@ struct VideoInfo {
     std::string id;
     std::string title;
     std::string artist;
+    std::string album;
     std::string channel;
     std::vector<Format> formats;
     std::string thumbnail;
