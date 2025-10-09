@@ -169,3 +169,12 @@ std::optional<QString> Thumb::save(QByteArray &&data, const QUrl &url,
     return Utils::writeToCacheFile(
         ContentServer::albumArtCacheName(url.toString(), ext), data, true);
 }
+
+ThumbIconProvider::ThumbIconProvider()
+    : QQuickImageProvider{QQuickImageProvider::Image} {}
+
+QImage ThumbIconProvider::requestImage(const QString &id, QSize *size,
+                                       const QSize &requestedSize) {
+    auto path = Thumb::download(QUrl{id});
+    return QImage{path.value_or({})};
+}

@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,7 +17,6 @@
 #include <QString>
 #include <QUrl>
 #include <QVariant>
-#include <memory>
 
 #include "itemmodel.h"
 #include "listmodel.h"
@@ -45,6 +44,9 @@ class SomafmItem : public SelectableItem {
     inline auto description() const { return m_description; }
     inline auto url() const { return m_url; }
     inline auto icon() const { return m_icon; }
+    inline auto iconThumb() const {
+        return QUrl{ICON_PROVIDER_PREFIX + m_icon.toString()};
+    }
 
    private:
     QString m_id;
@@ -72,14 +74,12 @@ class SomafmModel : public SelectableItemModel {
    private:
     static const QUrl m_dirUrl;
     static const QString m_dirFilename;
-    static const QString m_imageFilename;
     QDomNodeList m_entries;
     bool m_refreshing = false;
 
     QList<ListItem *> makeItems() override;
     bool parseData();
     bool parseData(const QByteArray &data);
-    bool downloadImages(std::shared_ptr<QNetworkAccessManager> nam);
     void downloadDir();
     static QString bestImage(const QDomElement &entry);
     void setRefreshing(bool value);

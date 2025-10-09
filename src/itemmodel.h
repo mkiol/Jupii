@@ -15,6 +15,8 @@
 
 #include "listmodel.h"
 
+#define ICON_PROVIDER_PREFIX "image://thumb/"
+
 class ItemModel;
 
 class ItemWorker : public QThread

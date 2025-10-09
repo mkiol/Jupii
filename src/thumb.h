@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,7 +9,8 @@
 #define THUMB_H
 
 #include <QByteArray>
-#include <QPixmap>
+#include <QImage>
+#include <QQuickImageProvider>
 #include <QString>
 #include <QUrl>
 #include <optional>
@@ -35,6 +36,13 @@ class Thumb {
         const QByteArray &format, QByteArray &data,
         ImageOrientation orientation = ImageOrientation::Unknown);
     static bool convertPixmap(QPixmap &pixmap, ImageOrientation orientation);
+};
+
+class ThumbIconProvider : public QQuickImageProvider {
+   public:
+    ThumbIconProvider();
+    QImage requestImage(const QString &id, QSize *size,
+                        const QSize &requestedSize) override;
 };
 
 #endif // THUMB_H

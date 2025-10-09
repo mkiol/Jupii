@@ -75,6 +75,7 @@
 #include "settings.h"
 #include "somafmmodel.h"
 #include "soundcloudmodel.h"
+#include "thumb.h"
 #include "trackmodel.h"
 #include "tuneinmodel.h"
 #include "utils.h"
@@ -358,6 +359,7 @@ int main(int argc, char** argv) {
     utils->setQmlRootItem(view->rootObject());
     QGuiApplication::exec();
 #else
+    engine->addImageProvider(QLatin1String("thumb"), new ThumbIconProvider{});
     engine->load(QUrl{QStringLiteral("qrc:/qml/main.qml")});
     QGuiApplication::exec();
 #endif

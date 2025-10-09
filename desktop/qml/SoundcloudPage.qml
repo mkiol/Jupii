@@ -128,11 +128,7 @@ Kirigami.ScrollablePage {
                 }
                 return "emblem-music-symbolic"
             }
-            iconSource: {
-                // if (model.type === SoundcloudModel.Type_Track && albumMode)
-                //     return ""
-                return model.icon
-            }
+            iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
             next: model.type !== SoundcloudModel.Type_Track
 

@@ -11,6 +11,7 @@
 #include <QList>
 #include <vector>
 
+#include "settings.h"
 #include "soundcloudapi.h"
 
 const QUrl SoundcloudModel::mFeaturedUrl{
@@ -178,6 +179,8 @@ QList<ListItem *> SoundcloudModel::makeAlbumItems() {
     setAlbumTitle(album.title);
     setArtistName(album.artist);
 
+    auto isShowIcon = Settings::instance()->getShowPlaylistItemIcon();
+
     items.reserve(static_cast<int>(album.tracks.size()));
     for (const auto &track : album.tracks) {
         items << new SoundcloudItem{track.webUrl.toString(),
@@ -185,7 +188,7 @@ QList<ListItem *> SoundcloudModel::makeAlbumItems() {
                                     track.artist,
                                     track.album,
                                     track.webUrl,
-                                    track.imageUrl,
+                                    isShowIcon ? track.imageUrl : QUrl{},
                                     /*section=*/{},
                                     Type_Track};
     }
@@ -291,7 +294,7 @@ QVariant SoundcloudItem::data(int role) const {
         case UrlRole:
             return url();
         case IconRole:
-            return icon();
+            return iconThumb();
         case TypeRole:
             return type();
         case GenreRole:

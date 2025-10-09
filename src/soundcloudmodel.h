@@ -114,6 +114,9 @@ class SoundcloudItem : public SelectableItem {
     inline auto album() const { return m_album; }
     inline auto url() const { return m_url; }
     inline auto icon() const { return m_icon; }
+    inline auto iconThumb() const {
+        return QUrl{ICON_PROVIDER_PREFIX + m_icon.toString()};
+    }
     inline auto section() const { return m_section; }
     inline auto type() const { return m_type; }
     inline auto genre() const { return m_genre; }

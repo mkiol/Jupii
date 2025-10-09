@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "bcapi.h"
+#include "settings.h"
 
 const QUrl BcModel::mNotableUrl{QStringLiteral("jupii://bc-notable")};
 
@@ -178,6 +179,8 @@ QList<ListItem *> BcModel::makeAlbumItems() {
     setAlbumTitle(album.title);
     setArtistName(album.artist);
 
+    auto isShowIcon = Settings::instance()->getShowPlaylistItemIcon();
+
     items.reserve(static_cast<int>(album.tracks.size()));
     for (const auto &track : album.tracks) {
         items << new BcItem{track.webUrl.toString(),
@@ -186,7 +189,7 @@ QList<ListItem *> BcModel::makeAlbumItems() {
                             album.title,
                             track.streamUrl,
                             track.webUrl,  // origUrl
-                            album.imageUrl,
+                            isShowIcon ? album.imageUrl : QUrl{},
                             track.duration,
                             Type_Track};
     }
@@ -224,9 +227,17 @@ BcItem::BcItem(const QString &id, const QString &name, const QString &artist,
                const QString &album, const QUrl &url, const QUrl &origUrl,
                const QUrl &icon, int duration, BcModel::Type type,
                const QString &genre, QObject *parent)
-    : SelectableItem(parent), m_id(id), m_name(name), m_artist(artist),
-      m_album(album), m_url(url), m_origUrl(origUrl), m_icon(icon),
-      m_duration(duration), m_type(type), m_genre(genre) {
+    : SelectableItem(parent),
+      m_id(id),
+      m_name(name),
+      m_artist(artist),
+      m_album(album),
+      m_url(url),
+      m_origUrl(origUrl),
+      m_icon(icon),
+      m_duration(duration),
+      m_type(type),
+      m_genre(genre) {
     m_selectable = type == BcModel::Type_Track;
 }
 
@@ -260,7 +271,7 @@ QVariant BcItem::data(int role) const {
         case OrigUrlRole:
             return origUrl();
         case IconRole:
-            return icon();
+            return iconThumb();
         case TypeRole:
             return type();
         case GenreRole:

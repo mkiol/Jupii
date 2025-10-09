@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -171,11 +171,7 @@ Kirigami.ScrollablePage {
                     return ""
                 return defaultIconSource
             }
-            iconSource: {
-                // if (model.type === YtModel.Type_Video && albumMode)
-                //     return ""
-                return model.icon
-            }
+            iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
             next: model.type !== YtModel.Type_Video
 

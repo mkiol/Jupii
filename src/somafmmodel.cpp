@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,13 +20,11 @@
 #include <memory>
 
 #include "downloader.h"
-#include "iconprovider.h"
 #include "utils.h"
 
 const QUrl SomafmModel::m_dirUrl{
     QStringLiteral("https://somafm.com/channels.xml")};
 const QString SomafmModel::m_dirFilename{QStringLiteral("somafm2.xml")};
-const QString SomafmModel::m_imageFilename{QStringLiteral("somafm_image_")};
 
 SomafmModel::SomafmModel(QObject *parent)
     : SelectableItemModel(new SomafmItem, parent) {
@@ -64,17 +62,18 @@ bool SomafmModel::parseData() {
 }
 
 QString SomafmModel::bestImage(const QDomElement &entry) {
-    auto image = entry.elementsByTagName(QStringLiteral("ximage"))
+    auto image = entry.elementsByTagName(QStringLiteral("image"))
                      .at(0)
                      .toElement()
                      .text();
+
     if (image.isEmpty()) {
         image = entry.elementsByTagName(QStringLiteral("largeimage"))
                     .at(0)
                     .toElement()
                     .text();
         if (image.isEmpty()) {
-            image = entry.elementsByTagName(QStringLiteral("image"))
+            image = entry.elementsByTagName(QStringLiteral("ximage"))
                         .at(0)
                         .toElement()
                         .text();
@@ -85,35 +84,6 @@ QString SomafmModel::bestImage(const QDomElement &entry) {
     }
 
     return image;
-}
-
-bool SomafmModel::downloadImages(std::shared_ptr<QNetworkAccessManager> nam) {
-    Utils::removeFromCacheDir({m_imageFilename + "*"});
-
-    for (int i = 0; i < m_entries.length(); ++i) {
-        if (QThread::currentThread()->isInterruptionRequested()) return false;
-
-        auto entry = m_entries.at(i).toElement();
-
-        if (!entry.isNull() && entry.hasAttribute(QStringLiteral("id"))) {
-            auto id = entry.attribute(QStringLiteral("id"));
-            auto url = QUrl{bestImage(entry)};
-            if (!id.isEmpty() && !url.isEmpty()) {
-                auto data = Downloader{nam}.downloadData(url);
-                if (!data.bytes.isEmpty()) {
-                    auto filename = m_imageFilename + id;
-                    if (auto ext = url.fileName().split('.').last();
-                        !ext.isEmpty())
-                        filename = filename + "." + ext;
-                    Utils::writeToCacheFile(filename, data.bytes, true);
-                }
-            }
-        }
-
-        emit progressChanged(i + 1, m_entries.length());
-    }
-
-    return true;
 }
 
 void SomafmModel::downloadDir() {
@@ -139,9 +109,6 @@ void SomafmModel::downloadDir() {
             return;
         }
 
-        if (downloadImages(std::move(nam))) {
-            Utils::writeToCacheFile(m_dirFilename, data.bytes, true);
-        }
         setRefreshing(false);
     } else if (!parseData()) {
         emit error();
@@ -233,23 +200,14 @@ QList<ListItem *> SomafmModel::makeItems() {
                     desc.contains(filter, Qt::CaseInsensitive) ||
                     genre.contains(filter, Qt::CaseInsensitive) ||
                     dj.contains(filter, Qt::CaseInsensitive)) {
-                    auto id = entry.attribute(QStringLiteral("id"));
-                    auto icon = [&] {
-                        auto filename = m_imageFilename + id;
-                        auto imgpath =
-                            Utils::pathToCacheFile(filename + ".jpg");
-                        if (!QFileInfo::exists(imgpath)) {
-                            imgpath = Utils::pathToCacheFile(filename + ".png");
-                            if (!QFileInfo::exists(imgpath))
-                                return IconProvider::urlToNoResId(
-                                    QStringLiteral("icon-somafm"));
-                        }
-                        return QUrl::fromLocalFile(imgpath);
-                    }();
-
-                    items.push_back(new SomafmItem{
-                        std::move(id), std::move(name), std::move(desc),
-                        QUrl{url}, std::move(icon)});
+                    auto entry = m_entries.at(i).toElement();
+                    if (!entry.isNull() &&
+                        entry.hasAttribute(QStringLiteral("id"))) {
+                        items.push_back(new SomafmItem{
+                            entry.attribute(QStringLiteral("id")),
+                            std::move(name), std::move(desc), QUrl{url},
+                            QUrl{bestImage(entry)}});
+                    }
                 }
             }
         }
@@ -266,8 +224,11 @@ QList<ListItem *> SomafmModel::makeItems() {
 
 SomafmItem::SomafmItem(QString id, QString name, QString description, QUrl url,
                        QUrl icon, QObject *parent)
-    : SelectableItem(parent), m_id{std::move(id)}, m_name{std::move(name)},
-      m_description{std::move(description)}, m_url{std::move(url)},
+    : SelectableItem(parent),
+      m_id{std::move(id)},
+      m_name{std::move(name)},
+      m_description{std::move(description)},
+      m_url{std::move(url)},
       m_icon{std::move(icon)} {}
 
 QHash<int, QByteArray> SomafmItem::roleNames() const {
@@ -292,7 +253,7 @@ QVariant SomafmItem::data(int role) const {
         case UrlRole:
             return url();
         case IconRole:
-            return icon();
+            return iconThumb();
         case SelectedRole:
             return selected();
         default:

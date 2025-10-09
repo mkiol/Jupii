@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,7 +11,7 @@
 #include <QList>
 #include <vector>
 
-#include "thumb.h"
+#include "settings.h"
 #include "utils.h"
 #include "ytdlapi.h"
 
@@ -101,7 +101,7 @@ QList<ListItem *> YtModel::makeHomeItems() {
                                     std::move(result.album),
                                     /*url=*/std::move(result.webUrl),
                                     /*origUrl=*/{},
-                                    /*icon=*/Thumb::makeCache(result.imageUrl),
+                                    /*icon=*/std::move(result.imageUrl),
                                     /*section=*/std::move(result.section),
                                     result.duration,
                                     static_cast<Type>(result.type)};
@@ -131,7 +131,7 @@ QList<ListItem *> YtModel::makeSearchItems() {
                                     std::move(result.album),
                                     /*url=*/std::move(result.webUrl),
                                     /*origUrl=*/{},
-                                    /*icon=*/Thumb::makeCache(result.imageUrl),
+                                    /*icon=*/std::move(result.imageUrl),
                                     /*section=*/std::move(result.section),
                                     result.duration,
                                     static_cast<Type>(result.type)};
@@ -165,22 +165,18 @@ QList<ListItem *> YtModel::makeAlbumItems() {
     std::transform(
         std::make_move_iterator(album->tracks.begin()),
         std::make_move_iterator(album->tracks.end()), std::back_inserter(items),
-        [&album, icon = mAlbumType == Type::Type_Playlist
-                            ? QUrl{}
-                            : Thumb::makeCache(album->imageUrl)](auto result) {
+        [&album, isAlbum = (mAlbumType == Type::Type_Playlist)](auto result) {
             return new YtItem{
-                std::move(result.id),
-                std::move(result.title),
-                std::move(result.artist),
-                album->title,
+                std::move(result.id), std::move(result.title),
+                std::move(result.artist), album->title,
                 /*url=*/std::move(result.webUrl),
                 /*origUrl=*/{},
-                /*icon=*/icon.isEmpty() && !result.imageUrl.isEmpty()
-                    ? Thumb::makeCache(result.imageUrl)
-                    : icon,
-                /*section=*/{},
-                result.duration,
-                Type::Type_Video};
+                /*icon=*/
+                isAlbum ? Settings::instance()->getShowPlaylistItemIcon()
+                              ? result.imageUrl
+                              : QUrl{}
+                        : album->imageUrl,
+                /*section=*/{}, result.duration, Type::Type_Video};
         });
     return items;
 }
@@ -199,17 +195,16 @@ QList<ListItem *> YtModel::makeArtistItems() {
     std::transform(std::make_move_iterator(artist->albums.begin()),
                    std::make_move_iterator(artist->albums.end()),
                    std::back_inserter(items), [&artist](auto result) {
-                       return new YtItem{
-                           std::move(result.id),
-                           result.title,
-                           artist->name,
-                           /*album=*/std::move(result.title),
-                           /*url=*/{},
-                           /*origUrl=*/{},
-                           /*icon=*/Thumb::makeCache(result.imageUrl),
-                           /*section=*/{},
-                           0,
-                           Type::Type_Album};
+                       return new YtItem{std::move(result.id),
+                                         result.title,
+                                         artist->name,
+                                         /*album=*/std::move(result.title),
+                                         /*url=*/{},
+                                         /*origUrl=*/{},
+                                         /*icon=*/std::move(result.imageUrl),
+                                         /*section=*/{},
+                                         0,
+                                         Type::Type_Album};
                    });
     std::transform(std::make_move_iterator(artist->tracks.begin()),
                    std::make_move_iterator(artist->tracks.end()),
@@ -231,11 +226,17 @@ QList<ListItem *> YtModel::makeArtistItems() {
 YtItem::YtItem(QString id, QString name, QString artist, QString album,
                QUrl url, QUrl origUrl, QUrl icon, QString section, int duration,
                YtModel::Type type, QObject *parent)
-    : SelectableItem(parent), m_id{std::move(id)}, m_name{std::move(name)},
-      m_artist{std::move(artist)}, m_album{std::move(album)},
-      m_url{std::move(url)}, m_origUrl{std::move(origUrl)}, m_icon{std::move(
-                                                                icon)},
-      m_section{std::move(section)}, m_duration{duration}, m_type{type} {
+    : SelectableItem(parent),
+      m_id{std::move(id)},
+      m_name{std::move(name)},
+      m_artist{std::move(artist)},
+      m_album{std::move(album)},
+      m_url{std::move(url)},
+      m_origUrl{std::move(origUrl)},
+      m_icon{std::move(icon)},
+      m_section{std::move(section)},
+      m_duration{duration},
+      m_type{type} {
     m_selectable = type == YtModel::Type_Video;
 }
 
@@ -270,7 +271,7 @@ QVariant YtItem::data(int role) const {
         case OrigUrlRole:
             return origUrl();
         case IconRole:
-            return iconCached();
+            return iconThumb();
         case DurationRole:
             return durationStr();
         case TypeRole:
@@ -286,11 +287,5 @@ QVariant YtItem::data(int role) const {
 
 QString YtItem::durationStr() const {
     if (duration() > 0) return Utils::secToStrStatic(duration());
-    return {};
-}
-
-QUrl YtItem::iconCached() const {
-    auto path = Thumb::path(m_icon);
-    if (path) return QUrl::fromLocalFile(*path);
     return {};
 }

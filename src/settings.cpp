@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -135,26 +135,18 @@ bool Settings::getLogToFile() const {
     return value(QStringLiteral("logtofile"), false).toBool();
 }
 
-void Settings::setPort(int value) {
-    if (getPort() != value) {
-        setValue(QStringLiteral("port"), value);
-        emit portChanged();
-        setRestartRequired(true);
+#define X(name, getter, setter, key, type, dvalue)                       \
+    type Settings::getter() const {                                      \
+        return qvariant_cast<type>(value(QStringLiteral(#key), dvalue)); \
+    }                                                                    \
+    void Settings::setter(const type &value) {                           \
+        if (getter() != value) {                                         \
+            setValue(QStringLiteral(#key), value);                       \
+            emit name##Changed();                                        \
+        }                                                                \
     }
-}
-
-int Settings::getPort() const {
-    return value(QStringLiteral("port"), 9092).toInt();
-}
-
-void Settings::setVolStep(int value) {
-    if (getVolStep() != value) {
-        setValue("volstep", value);
-        emit volStepChanged();
-    }
-}
-
-int Settings::getVolStep() const { return value("volstep", 5).toInt(); }
+SETTINGS_PROPERTY_TABLE
+#undef X
 
 void Settings::setForwardTime([[maybe_unused]] int value) {
     // disabled option
@@ -299,15 +291,6 @@ QHash<QString, QVariant> Settings::getFavDevices() const {
     return value("favdevices", QHash<QString, QVariant>()).toHash();
 }
 
-void Settings::setLastDir(const QString &value) {
-    if (getLastDir() != value) {
-        setValue("lastdir", value);
-        emit lastDirChanged();
-    }
-}
-
-QString Settings::getLastDir() const { return value("lastdir", "").toString(); }
-
 void Settings::setRecDir(const QString &value) {
     if (getRecDir() != value) {
         setValue("recdir", QDir(value).exists() ? value : "");
@@ -360,17 +343,6 @@ void Settings::setLastPlaylist(const QStringList &value) {
 
 QStringList Settings::getLastPlaylist() const {
     return value("lastplaylist").toStringList();
-}
-
-void Settings::setShowAllDevices(bool value) {
-    if (getShowAllDevices() != value) {
-        setValue("showalldevices", value);
-        emit showAllDevicesChanged();
-    }
-}
-
-bool Settings::getShowAllDevices() const {
-    return value("showalldevices", false).toBool();
 }
 
 void Settings::setUseHWVolume(bool value) {

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,7 +15,6 @@
 #include <QUrl>
 #include <QVariant>
 #include <QVariantList>
-#include <utility>
 
 #include "itemmodel.h"
 #include "listmodel.h"
@@ -112,7 +111,9 @@ class YtItem : public SelectableItem {
     inline auto url() const { return m_url; }
     inline auto origUrl() const { return m_origUrl; }
     inline auto icon() const { return m_icon; }
-    QUrl iconCached() const;
+    inline auto iconThumb() const {
+        return QUrl{ICON_PROVIDER_PREFIX + m_icon.toString()};
+    }
     inline auto section() const { return m_section; }
     inline auto duration() const { return m_duration; }
     inline auto type() const { return m_type; }

@@ -19,7 +19,7 @@ Kirigami.SwipeListItem {
     property alias defaultIconSource: iconItem.fallback
     property alias attachedIconName: attachedIcon.source
     property alias attachedIcon2Name: attachedIcon2.source
-    property alias iconSize: iconItem.size
+    property alias iconSize: iconPack.size
     property bool active: false
     property alias next: nextIcon.visible
     property alias busy: busyIndicator.running
@@ -44,38 +44,44 @@ Kirigami.SwipeListItem {
             anchors.right: contItem.right
             anchors.rightMargin: root.trailingPadding
 
-            Controls.BusyIndicator {
-                id: busyIndicator
-                running: false
-                visible: running
-                Layout.minimumHeight: root.iconSize
-                Layout.maximumHeight: root.iconSize
-                Layout.minimumWidth: root.iconSize
-                Layout.maximumWidth: root.iconSize
-            }
-            Kirigami.Icon {
-                id: iconItem
-                //Layout.alignment: Qt.AlignVCenter
+            Item {
+                id: iconPack
                 property int size: Kirigami.Units.iconSizes.smallMedium
-                source: iconSource.length == 0 ? defaultIconSource : iconSource
                 Layout.minimumHeight: size
                 Layout.maximumHeight: size
                 Layout.minimumWidth: size
                 Layout.maximumWidth: size
-                visible: !root.busy && typeof source !== "undefined"
 
-                Column {
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    width: Kirigami.Units.iconSizes.small
+                Kirigami.Icon {
+                    id: iconItem
+                    source: root.iconSource.length == 0 ? root.defaultIconSource : root.iconSource
+                    anchors.fill: parent
+                    visible: !root.busy && iconItem.status === Kirigami.Icon.Ready && typeof source !== "undefined"
 
-                    AttachedIcon {
-                        id: attachedIcon
+                    Column {
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        width: Kirigami.Units.iconSizes.small
+
+                        AttachedIcon {
+                            id: attachedIcon
+                        }
+
+                        AttachedIcon {
+                            id: attachedIcon2
+                        }
                     }
-
-                    AttachedIcon {
-                        id: attachedIcon2
-                    }
+                }
+                Kirigami.Icon {
+                    source: iconItem.fallback
+                    anchors.fill: parent
+                    visible: !root.busy && iconItem.status !== Kirigami.Icon.Ready && typeof iconItem.fallback !== "undefined"
+                }
+                Controls.BusyIndicator {
+                    id: busyIndicator
+                    running: false
+                    visible: running
+                    anchors.fill: parent
                 }
             }
             ColumnLayout {

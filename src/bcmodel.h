@@ -117,6 +117,9 @@ class BcItem : public SelectableItem {
     inline auto url() const { return m_url; }
     inline auto origUrl() const { return m_origUrl; }
     inline auto icon() const { return m_icon; }
+    inline auto iconThumb() const {
+        return QUrl{ICON_PROVIDER_PREFIX + m_icon.toString()};
+    }
     inline auto duration() const { return m_duration; }
     inline auto type() const { return m_type; }
     inline auto genre() const { return m_genre; }

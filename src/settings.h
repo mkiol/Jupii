@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,17 +26,27 @@
 #include "singleton.h"
 #include "taskexecutor.h"
 
+#define SETTINGS_PROPERTY_TABLE                                               \
+    X(port, getPort, setPort, port, int, 9092)                                \
+    X(volStep, getVolStep, setVolStep, volstep, int, 5)                       \
+    X(lastDir, getLastDir, setLastDir, lastdir, QString, "")                  \
+    X(showAllDevices, getShowAllDevices, setShowAllDevices, showalldevices,   \
+      bool, false)                                                            \
+    X(showPlaylistItemIcon, getShowPlaylistItemIcon, setShowPlaylistItemIcon, \
+      show_playlist_item_icon, bool, true)
+
 class Settings : public QSettings,
                  public TaskExecutor,
                  public Singleton<Settings> {
     Q_OBJECT
+
+#define X(name, getter, setter, key, type, dvalue) \
+    Q_PROPERTY(type name READ getter WRITE setter NOTIFY name##Changed)
+    SETTINGS_PROPERTY_TABLE
+#undef X
+
     Q_PROPERTY(bool restartRequired READ getRestartRequired NOTIFY
                    restartRequiredChanged)
-    Q_PROPERTY(int port READ getPort WRITE setPort NOTIFY portChanged)
-    Q_PROPERTY(
-        QString lastDir READ getLastDir WRITE setLastDir NOTIFY lastDirChanged)
-    Q_PROPERTY(bool showAllDevices READ getShowAllDevices WRITE
-                   setShowAllDevices NOTIFY showAllDevicesChanged)
     Q_PROPERTY(int forwardTime READ getForwardTime WRITE setForwardTime NOTIFY
                    forwardTimeChanged)
     Q_PROPERTY(QStringList lastPlaylist READ getLastPlaylist WRITE
@@ -47,8 +57,6 @@ class Settings : public QSettings,
                    prefNetInfChanged)
     Q_PROPERTY(
         QString recDir READ getRecDir WRITE setRecDir NOTIFY recDirChanged)
-    Q_PROPERTY(
-        int volStep READ getVolStep WRITE setVolStep NOTIFY volStepChanged)
     Q_PROPERTY(int albumQueryType READ getAlbumQueryType WRITE setAlbumQueryType
                    NOTIFY albumQueryTypeChanged)
     Q_PROPERTY(int albumRecQueryType READ getRecQueryType WRITE setRecQueryType
@@ -198,18 +206,17 @@ class Settings : public QSettings,
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
 #endif
     Settings();
+#define X(name, getter, setter, key, type, dvalue) \
+    type getter() const;                           \
+    void setter(const type &value);
+    SETTINGS_PROPERTY_TABLE
+#undef X
     QString moduleChecksum(const QString &name) const;
     void setModuleChecksum(const QString &name, const QString &value);
     void setRestartRequired(bool value);
-    inline bool getRestartRequired() const { return m_restartRequired; }
-    void setPort(int value);
-    int getPort() const;
+    bool getRestartRequired() const { return m_restartRequired; }
     void setForwardTime(int value);
     int getForwardTime() const;
-    void setVolStep(int value);
-    int getVolStep() const;
-    void setShowAllDevices(bool value);
-    bool getShowAllDevices() const;
     void setUseHWVolume(bool value);
     bool getUseHWVolume() const;
     void setLogToFile(bool value);
@@ -238,8 +245,6 @@ class Settings : public QSettings,
     Q_INVOKABLE void asyncRemoveFavDevice(const QString &id);
     static bool readDeviceXML(const QString &id, QByteArray &xml);
     static bool writeDeviceXML(const QString &id, QString &url);
-    QString getLastDir() const;
-    void setLastDir(const QString &value);
     QString getRecDir();
     void setRecDir(const QString &value);
     QStringList getLastPlaylist() const;
@@ -368,18 +373,17 @@ class Settings : public QSettings,
     Q_INVOKABLE bool casterHasPipeWire() const;
 
    signals:
-    void portChanged();
+#define X(name, getter, setter, key, type, dvalue) void name##Changed();
+    SETTINGS_PROPERTY_TABLE
+#undef X
     void favDevicesChanged();
     void favDeviceChanged(const QString &id);
-    void lastDirChanged();
     void recDirChanged();
     void lastPlaylistChanged();
-    void showAllDevicesChanged();
     void forwardTimeChanged();
     void imageSupportedChanged();
     void useHWVolumeChanged();
     void prefNetInfChanged();
-    void volStepChanged();
     void albumQueryTypeChanged();
     void recQueryTypeChanged();
     void cdirQueryTypeChanged();
