@@ -330,8 +330,10 @@ Page {
                 }
             }
 
+            // Disabling YTMusic because ytdlp is not supported on SFOS (it requires python >= 3.10)
             SimpleListItem {
-                visible: !settings.isHarbour()
+                // visible: !settings.isHarbour()
+                visible: false
                 title.text: "YouTube Music"
                 icon.source: "image://icons/icon-m-youtube"
                 onClicked: {
