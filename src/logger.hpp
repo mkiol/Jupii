@@ -35,6 +35,13 @@
     JupiiLogger::Message(JupiiLogger::LogType::Error, __FILE__, __func__, \
                          __LINE__)                                        \
         << msg
+#define LOGF(msg)                                                         \
+    JupiiLogger::Message(JupiiLogger::LogType::Error, __FILE__, __func__, \
+                         __LINE__)                                        \
+        << msg;                                                           \
+    std::ostringstream ss;                                                \
+    ss << __func__ << ':' << __LINE__ << " - " << msg;                    \
+    throw std::runtime_error { ss.str() }
 
 class JupiiLogger {
    public:
