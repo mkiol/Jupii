@@ -40,8 +40,8 @@ std::ostream &operator<<(std::ostream &os,
 
 LipstickRecorderSource::LipstickRecorderSource(
     DataReadyHandler dataReadyHandler, ErrorHandler errorHandler)
-    : m_dataReadyHandler{std::move(dataReadyHandler)}, m_errorHandler{std::move(
-                                                           errorHandler)} {
+    : m_dataReadyHandler{std::move(dataReadyHandler)},
+      m_errorHandler{std::move(errorHandler)} {
     LOGD("creating lipstick-recorder");
 
     if (!checkCredentials())
@@ -400,4 +400,16 @@ void LipstickRecorderSource::wlOutputScaleCallback(
     [[maybe_unused]] void *data, [[maybe_unused]] wl_output *wl_output,
     int32_t factor) {
     LOGD("wl output scale: factor=" << factor);
+}
+
+void LipstickRecorderSource::wlOutputNameCallback(
+    [[maybe_unused]] void *data, [[maybe_unused]] wl_output *wl_output,
+    const char *name) {
+    LOGD("wl output name: name=" << name);
+}
+
+void LipstickRecorderSource::wlOutputDescriptionCallback(
+    [[maybe_unused]] void *data, [[maybe_unused]] wl_output *wl_output,
+    const char *description) {
+    LOGD("wl output description: description=" << description);
 }

@@ -59,16 +59,20 @@ class OrientationMonitor {
                                      uint32_t flags, int32_t width,
                                      int32_t height, int32_t refresh);
     static void wlOutputDoneCallback(void *data, wl_output *wl_output);
-
     static void wlOutputScaleCallback(void *data, wl_output *wl_output,
                                       int32_t factor);
+    static void wlOutputNameCallback(void *data, wl_output *wl_output,
+                                     const char *name);
+    static void wlOutputDescriptionCallback(void *data, wl_output *wl_output,
+                                            const char *description);
 
     inline static const wl_registry_listener wlGlobalListener{
         wlGlobalCallback, wlGlobalRemoveCallback};
     inline static const wl_callback_listener wlCallback{wlCallbackCallback};
     inline static const wl_output_listener wlOutputListener{
-        wlOutputGeometryCallback, wlOutputModeCallback, wlOutputDoneCallback,
-        wlOutputScaleCallback};
+        wlOutputGeometryCallback, wlOutputModeCallback,
+        wlOutputDoneCallback,     wlOutputScaleCallback,
+        wlOutputNameCallback,     wlOutputDescriptionCallback};
 };
 
 #endif  // ORIENTATIONMONITOR_H

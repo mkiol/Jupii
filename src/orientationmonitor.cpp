@@ -168,3 +168,11 @@ void OrientationMonitor::wlOutputDoneCallback(
 void OrientationMonitor::wlOutputScaleCallback(
     [[maybe_unused]] void *data, [[maybe_unused]] wl_output *wl_output,
     [[maybe_unused]] int32_t factor) {}
+
+void OrientationMonitor::wlOutputNameCallback(
+    [[maybe_unused]] void *data, [[maybe_unused]] wl_output *wl_output,
+    [[maybe_unused]] const char *name) {}
+
+void OrientationMonitor::wlOutputDescriptionCallback(
+    [[maybe_unused]] void *data, [[maybe_unused]] wl_output *wl_output,
+    [[maybe_unused]] const char *description) {}
