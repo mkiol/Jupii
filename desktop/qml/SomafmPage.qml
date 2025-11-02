@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -83,7 +83,11 @@ Kirigami.ScrollablePage {
             notifications.show(qsTr("Error in getting data"))
         }
         onProgressChanged: {
-            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
+            if (total > 0) {
+                busyIndicator.text = "" + n + "/" + total
+            } else {
+                busyIndicator.text = ""
+            }
         }
     }
 
@@ -91,17 +95,23 @@ Kirigami.ScrollablePage {
         id: listItemComponent
         DoubleListItem {
             id: listItem
-            highlighted: model.selected
+            highlighted: model && model.selected
             enabled: !itemModel.busy
-            label: model.name
-            subtitle: model.description
+            label: model ? model.name : ""
+            subtitle: model ? model.description : ""
             defaultIconSource: "audio-x-generic"
-            iconSource: model.icon
+            attachedIconName: {
+                if (!showingIcon || iconSource.length === 0)
+                    return ""
+                return "emblem-music-symbolic"
+            }
+            iconSource: model ? model.icon : ""
             iconSize: Kirigami.Units.iconSizes.medium
 
             onClicked: {
+                if (!model) return
                 var selected = model.selected
-                itemModel.setSelected(model.index, !selected);
+                itemModel.setSelected(model.index, !selected)
             }
 
             actions: [
@@ -109,8 +119,9 @@ Kirigami.ScrollablePage {
                     iconName: "checkbox"
                     text: qsTr("Toggle selection")
                     onTriggered: {
+                        if (!model) return
                         var selected = model.selected
-                        itemModel.setSelected(model.index, !selected);
+                        itemModel.setSelected(model.index, !selected)
                     }
                 }
             ]

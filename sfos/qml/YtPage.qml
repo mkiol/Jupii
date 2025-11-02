@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,7 +29,7 @@ Dialog {
     readonly property bool artistMode: artistPage && artistPage.length > 0
     readonly property bool searchMode: !albumMode && !artistMode
     readonly property bool homeMode: artistPage && artistPage === itemModel.homeId
-    readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
+    readonly property bool featureMode: root.searchMode && itemModel.filter.length === 0
 
     canAccept: itemModel.selectedCount > 0
     acceptDestination: app.queuePage()
@@ -134,13 +134,14 @@ Dialog {
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
-            highlighted: down || model.selected
+            highlighted: down || (model && model.selected)
             title.text: {
+                if (!model) return ""
                 switch (model.type) {
-                case YtModel.Type_Album: return model.album;
-                case YtModel.Type_Artist: return model.artist;
-                default: return model.name;
+                case YtModel.Type_Album: return model.album
+                case YtModel.Type_Artist: return model.artist
                 }
+                return model.name
             }
 
             function addDur(text, dur) {
@@ -148,6 +149,7 @@ Dialog {
             }
 
             subtitle.text: {
+                if (!model) return ""
                 switch (model.type) {
                 case YtModel.Type_Video:
                     return root.artistMode ? addDur(model.album, model.duration) :
@@ -158,9 +160,10 @@ Dialog {
                 }
                 return addDur("", model.duration)
             }
-            dimmed: itemModel.filter.length == 0
+            dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
             defaultIcon.source: {
+                if (!model) return ""
                 switch (model.type) {
                 case YtModel.Type_Playlist:
                     return "image://theme/icon-m-media-playlists?" + primaryColor
@@ -174,27 +177,13 @@ Dialog {
                         + primaryColor
             }
             attachedIcon.source: {
-                if (model.type !== YtModel.Type_Video || icon.source == "")
+                if (!model || icon.source == "" || icon.status !== Image.Ready)
                     return ""
                 return defaultIcon.source
             }
-            icon.source: {
-                if (model.type === YtModel.Type_Video && albumMode)
-                    return ""
-                return model.icon
-            }
-            extra: {
-                switch (model.type) {
-                case YtModel.Type_Album:
-                    return qsTr("Album");
-                case YtModel.Type_Playlist:
-                    return qsTr("Playlist");
-                case YtModel.Type_Artist:
-                    return qsTr("Artist");
-                default: return "";
-                }
-            }
+            icon.source: model ? model.icon : ""
             onClicked: {
+                if (!model) return
                 if (model.type === YtModel.Type_Video) {
                     var selected = model.selected
                     itemModel.setSelected(model.index, !selected);
@@ -223,7 +212,7 @@ Dialog {
         ViewPlaceholder {
             verticalOffset: listView.headerItem.height / 2
             enabled: listView.count === 0 && !itemModel.busy
-            text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
+            text: itemModel.filter.length === 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : qsTr("No items")
         }
     }

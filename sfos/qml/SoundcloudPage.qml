@@ -26,7 +26,7 @@ Dialog {
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
     readonly property bool notableMode: artistPage && artistPage === itemModel.featuredUrl
-    readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0 && listView.count > 0
+    readonly property bool featureMode: root.searchMode && itemModel.filter.length === 0 && listView.count > 0
 
     canAccept: itemModel.selectedCount > 0
     acceptDestination: app.queuePage()
@@ -140,36 +140,58 @@ Dialog {
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
-            highlighted: down || model.selected
-            title.text: model.type === SoundcloudModel.Type_Track ? model.name :
-                        model.type === SoundcloudModel.Type_Album ? model.album :
-                        model.type === SoundcloudModel.Type_Artist ? model.artist : ""
-            subtitle.text: model.type === SoundcloudModel.Type_Track ||
-                           model.type === SoundcloudModel.Type_Album ? model.artist : ""
-            dimmed: itemModel.filter.length == 0
-            enabled: !itemModel.busy && listView.count > 0
-            defaultIcon.source: model.type === SoundcloudModel.Type_Album ?
-                                    "image://theme/icon-m-media-albums?" + primaryColor :
-                                model.type === SoundcloudModel.Type_Artist ?
-                                    "image://theme/icon-m-media-artists?" + primaryColor :
-                                "image://theme/icon-m-file-audio?" + primaryColor
-            icon.source: {
-                if (model.type === SoundcloudModel.Type_Track && albumMode)
-                    return ""
-                return model.icon
+            highlighted: down || (model && model.selected)
+            title.text: {
+                if (!model) return ""
+                switch (model.type) {
+                case SoundcloudModel.Type_Album:
+                case SoundcloudModel.Type_Playlist:
+                    return model.album
+                case SoundcloudModel.Type_Artist:
+                    return model.artist
+                }
+                return model.name
             }
-            extra: model.type === SoundcloudModel.Type_Album ? qsTr("Album") :
-                   model.type === SoundcloudModel.Type_Artist ? qsTr("Artist") : ""
-            extra2: model.genre
-
+            subtitle.text: {
+                if (!model) return ""
+                switch (model.type) {
+                case SoundcloudModel.Type_Track:
+                case SoundcloudModel.Type_Playlist:
+                case SoundcloudModel.Type_Album:
+                    return model.artist
+                }
+                return ""
+            }
+            dimmed: listView.count > 0
+            enabled: !itemModel.busy && listView.count > 0
+            defaultIcon.source: {
+                if (!model) return ""
+                switch (model.type) {
+                case SoundcloudModel.Type_Artist:
+                    return "image://theme/icon-m-media-artists?" + primaryColor
+                case SoundcloudModel.Type_Album:
+                    return "image://theme/icon-m-media-albums?" + primaryColor
+                case SoundcloudModel.Type_Playlist:
+                    return "image://theme/icon-m-media-playlists?" + primaryColor
+                }
+                return "image://theme/icon-m-file-audio?" + primaryColor
+            }
+            attachedIcon.source: {
+                if (!model || icon.source.length === 0 || icon.status !== Image.Ready)
+                    return ""
+                return defaultIcon.source
+            }
+            icon.source: model ? model.icon : ""
+            extra: model ? model.genre : ""
             onClicked: {
+                if (!model) return
                 if (model.type === SoundcloudModel.Type_Track) {
                     var selected = model.selected
-                    itemModel.setSelected(model.index, !selected);
-                } else {
-                    pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"),
-                                   model.type === SoundcloudModel.Type_Album ?
-                                       {albumPage: model.url} : {artistPage: model.url})
+                    itemModel.setSelected(model.index, !selected)
+                } else if (model.type === SoundcloudModel.Type_Album || model.type === SoundcloudModel.Type_Playlist) {
+                    pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {albumPage: model.url})
+                } else if (model.type === SoundcloudModel.Type_Artist) {
+                    pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {artistPage: model.url})
                 }
             }
         }
@@ -191,7 +213,7 @@ Dialog {
         ViewPlaceholder {
             verticalOffset: listView.headerItem.height / 2
             enabled: listView.count === 0 && !itemModel.busy
-            text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
+            text: itemModel.filter.length === 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : qsTr("No items")
         }
     }

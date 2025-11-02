@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2023-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -102,9 +102,10 @@ Dialog {
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
-            highlighted: down || model.selected
-            title.text: model.name
+            highlighted: down || (model && model.selected)
+            title.text: model ? model.name : ""
             subtitle.text: {
+                if (!model) return ""
                 var s = model.city
                 if (model.country.length !== 0) {
                     if (s.length !== 0) s += " · "
@@ -115,12 +116,17 @@ Dialog {
                     s += model.format
                 }
             }
-            dimmed: itemModel.filter.length == 0
+            dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
-            icon.source: model.icon
+            icon.source: model ? model.icon : ""
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
-
+            attachedIcon.source: {
+                if (!model || icon.source == "" || icon.status !== Image.Ready)
+                    return ""
+                return defaultIcon.source
+            }
             onClicked: {
+                if (!model) return
                 var selected = model.selected
                 itemModel.setSelected(model.index, !selected);
             }
@@ -129,7 +135,7 @@ Dialog {
         ViewPlaceholder {
             verticalOffset: listView.headerItem.height / 2
             enabled: listView.count === 0 && !itemModel.busy
-            text: itemModel.filter.length == 0 ?
+            text: itemModel.filter.length === 0 ?
                       qsTr("Type the words to search") : qsTr("No stations")
         }
     }

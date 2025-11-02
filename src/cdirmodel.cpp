@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -408,10 +408,16 @@ QVariant CDirItem::data(int role) const {
         case SelectableRole:
             return selectable();
         case IconRole:
-            return icon();
+            return iconThumb();
         case DateRole:
             return Utils::friendlyDate(m_date);
         default:
             return {};
     }
+}
+
+QUrl CDirItem::iconThumb() const {
+    auto url = ContentServer::instance()->thumbUrl(m_icon);
+    if (url.isEmpty()) return m_icon;
+    return url;
 }

@@ -11,6 +11,7 @@
 #include <QList>
 #include <vector>
 
+#include "contentserver.h"
 #include "settings.h"
 #include "utils.h"
 #include "ytdlapi.h"
@@ -288,4 +289,10 @@ QVariant YtItem::data(int role) const {
 QString YtItem::durationStr() const {
     if (duration() > 0) return Utils::secToStrStatic(duration());
     return {};
+}
+
+QUrl YtItem::iconThumb() const {
+    auto url = ContentServer::instance()->thumbUrl(m_icon);
+    if (url.isEmpty()) return m_icon;
+    return url;
 }

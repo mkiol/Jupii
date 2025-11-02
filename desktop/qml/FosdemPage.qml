@@ -94,6 +94,11 @@ Kirigami.ScrollablePage {
             label: model.name
             subtitle: model.track
             defaultIconSource: "video-x-generic"
+            attachedIconName: {
+                if (!showingIcon || iconSource.length === 0)
+                    return ""
+                return defaultIconSource
+            }
             iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
 

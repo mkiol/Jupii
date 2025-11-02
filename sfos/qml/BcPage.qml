@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,7 +26,7 @@ Dialog {
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
     readonly property bool notableMode: artistPage && artistPage === itemModel.notableUrl
-    readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0 && listView.count > 0
+    readonly property bool featureMode: root.searchMode && itemModel.filter.length === 0
 
     canAccept: itemModel.selectedCount > 0
     acceptDestination: app.queuePage()
@@ -64,7 +64,7 @@ Dialog {
         onBusyChanged: {
             if (!busy) {
                 var idx = itemModel.lastIndex();
-                if (idx > 0) listView.positionViewAtIndex(idx, ListView.Beginning)
+                if (idx > 2) listView.positionViewAtIndex(idx - 2, ListView.Beginning)
             }
         }
     }
@@ -79,15 +79,10 @@ Dialog {
         model: itemModel
 
         footer: ShowMoreItem {
-            enabled: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
+            enabled: !itemModel.busy && ((root.featureMode || root.notableMode) && itemModel.canShowMore)
             onClicked: {
-                if (root.featureMode) {
-                    pageStack.push(Qt.resolvedUrl("BcPage.qml"),
-                                   {artistPage: itemModel.notableUrl})
-                } else if (root.notableMode) {
-                    itemModel.requestMoreItems()
-                    itemModel.updateModel()
-                }
+                itemModel.requestMoreItems()
+                itemModel.updateModel()
             }
         }
 
@@ -143,29 +138,47 @@ Dialog {
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
-            highlighted: down || model.selected
-            title.text: model.type === BcModel.Type_Track ? model.name :
-                        model.type === BcModel.Type_Album ? model.album :
-                        model.type === BcModel.Type_Artist ? model.artist : ""
-            subtitle.text: model.type === BcModel.Type_Track ||
-                           model.type === BcModel.Type_Album ? model.artist : ""
-            dimmed: itemModel.filter.length == 0
-            enabled: !itemModel.busy && listView.count > 0
-            defaultIcon.source: model.type === BcModel.Type_Album ?
-                                    "image://theme/icon-m-media-albums?" + primaryColor :
-                                model.type === BcModel.Type_Artist ?
-                                    "image://theme/icon-m-media-artists?" + primaryColor :
-                                "image://theme/icon-m-file-audio?" + primaryColor
-            icon.source: {
-                if (model.type === BcModel.Type_Track && albumMode)
-                    return ""
-                return model.icon
+            highlighted: down || (model && model.selected)
+            title.text: {
+                if (!model) return ""
+                switch (model.type) {
+                case BcModel.Type_Album:
+                    return model.album
+                case BcModel.Type_Artist:
+                    return model.artist
+                }
+                return model.name
             }
-            extra: model.type === BcModel.Type_Album ? qsTr("Album") :
-                   model.type === BcModel.Type_Artist ? qsTr("Artist") : ""
-            extra2: model.genre
-
+            subtitle.text: {
+                if (!model) return ""
+                switch (model.type) {
+                case BcModel.Type_Track:
+                case BcModel.Type_Album:
+                    return model.artist
+                }
+                return ""
+            }
+            dimmed: listView.count > 0
+            enabled: !itemModel.busy && listView.count > 0
+            defaultIcon.source: {
+                if (!model) return ""
+                switch (model.type) {
+                case BcModel.Type_Artist:
+                    return "image://theme/icon-m-media-artists?" + primaryColor
+                case BcModel.Type_Album:
+                    return "image://theme/icon-m-media-albums?" + primaryColor
+                }
+                return "image://theme/icon-m-file-audio?" + primaryColor
+            }
+            attachedIcon.source: {
+                if (!model || icon.source.length === 0 || icon.status !== Image.Ready)
+                    return ""
+                return defaultIcon.source
+            }
+            icon.source: model ? model.icon : ""
+            extra: model ? model.genre : ""
             onClicked: {
+                if (!model) return
                 if (model.type === BcModel.Type_Track) {
                     var selected = model.selected
                     itemModel.setSelected(model.index, !selected);
@@ -180,7 +193,7 @@ Dialog {
         ViewPlaceholder {
             verticalOffset: listView.headerItem.height / 2
             enabled: listView.count === 0 && !itemModel.busy
-            text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
+            text: itemModel.filter.length === 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : root.artistMode ? qsTr("No albums") : qsTr("No items")
         }
     }

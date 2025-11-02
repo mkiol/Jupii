@@ -623,8 +623,8 @@ bool Caster::configValid(const Config &config) const {
 Caster::Caster(Config config, DataReadyHandler dataReadyHandler,
                StateChangedHandler stateChangedHandler,
                AudioSourceNameChangedHandler audioSourceNameChangedHandler)
-    : m_config{std::move(config)}, m_dataReadyHandler{std::move(
-                                       dataReadyHandler)},
+    : m_config{std::move(config)},
+      m_dataReadyHandler{std::move(dataReadyHandler)},
       m_stateChangedHandler{std::move(stateChangedHandler)},
       m_audioSourceNameChangedHandler{
           std::move(audioSourceNameChangedHandler)} {
@@ -795,11 +795,11 @@ std::vector<Caster::AudioSourceProps> Caster::audioSources(uint32_t options) {
     auto props = detectAudioSources(options);
     sources.reserve(props.size());
 
-    std::transform(
-        props.begin(), props.end(), std::back_inserter(sources),
-        [](auto &p) -> AudioSourceProps {
-            return {std::move(p.second.name), std::move(p.second.friendlyName)};
-        });
+    std::transform(props.begin(), props.end(), std::back_inserter(sources),
+                   [](auto &p) -> AudioSourceProps {
+                       return {std::move(p.second.name),
+                               std::move(p.second.friendlyName)};
+                   });
 
     std::sort(sources.begin(), sources.end(), sortByName<AudioSourceProps>);
 
@@ -1495,7 +1495,7 @@ void Caster::initPa() {
 
     pa_context_set_state_callback(m_paCtx, paStateCallback, this);
 
-    while(true) {
+    while (true) {
         auto ret = pa_mainloop_iterate(m_paLoop, 0, nullptr);
         auto state = pa_context_get_state(m_paCtx);
         if (ret < 0 || state == PA_CONTEXT_FAILED ||
@@ -3732,14 +3732,14 @@ bool Caster::readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData) {
     if (!m_audioBuf.hasEnoughData(m_audioInFrameSize)) {
         const auto pushNull = m_paStream == nullptr || nullWhenNoEnoughData;
 
-        if (pushNull) {
-            LOGD("audio push null: "
-                 << (m_audioInFrameSize - m_audioBuf.size()));
-            m_audioBuf.pushNullExactForce(m_audioInFrameSize -
-                                          m_audioBuf.size());
-        } else {
+        if (!pushNull) {
             return false;
         }
+
+        //        LOGD("audio push null: "
+        //             << (m_audioInFrameSize - m_audioBuf.size()));
+        //        m_audioBuf.pushNullExactForce(m_audioInFrameSize -
+        //                                      m_audioBuf.size());
     }
 
     if (av_new_packet(pkt, m_audioInFrameSize) < 0)
@@ -4073,7 +4073,7 @@ void Caster::updateVideoSampleStats(int64_t now) {
     if (m_videoTimeLastFrame > 0) {
         auto lastDur = now - m_videoTimeLastFrame;
         if (lastDur >= m_videoRealFrameDuration / 4)
-            m_videoRealFrameDuration = lastDur; 
+            m_videoRealFrameDuration = lastDur;
     }
     m_videoTimeLastFrame = now;
 }

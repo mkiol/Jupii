@@ -11,6 +11,7 @@
 #include <QList>
 #include <vector>
 
+#include "contentserver.h"
 #include "settings.h"
 #include "soundcloudapi.h"
 
@@ -125,7 +126,9 @@ QList<ListItem *> SoundcloudModel::makeFeaturedItems(bool more) {
                                         item.webUrl,
                                         item.imageUrl,
                                         /*sections=*/result.title,
-                                        SoundcloudModel::Type::Type_Album};
+                                        item.type == SoundcloudApi::Type::Album
+                                            ? SoundcloudModel::Type_Album
+                                            : SoundcloudModel::Type_Playlist};
         }
     }
 
@@ -216,14 +219,17 @@ QList<ListItem *> SoundcloudModel::makeArtistItems() {
             continue;
         }
 
-        items << new SoundcloudItem{album.webUrl.toString(),
-                                    album.title,
-                                    album.artist,
-                                    album.title,
-                                    album.webUrl,
-                                    album.imageUrl,
-                                    /*section=*/{},
-                                    Type_Album};
+        items << new SoundcloudItem{
+            album.webUrl.toString(),
+            album.title,
+            album.artist,
+            album.title,
+            album.webUrl,
+            album.imageUrl,
+            /*section=*/{},
+            album.type == SoundcloudApi::PlaylistType::Album
+                ? SoundcloudModel::Type_Album
+                : SoundcloudModel::Type_Playlist};
     }
 
     for (const auto &track : mLastArtist->tracks) {
@@ -306,4 +312,10 @@ QVariant SoundcloudItem::data(int role) const {
         default:
             return {};
     }
+}
+
+QUrl SoundcloudItem::iconThumb() const {
+    auto url = ContentServer::instance()->thumbUrl(m_icon);
+    if (url.isEmpty()) return m_icon;
+    return url;
 }

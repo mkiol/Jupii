@@ -23,7 +23,8 @@
 class SoundcloudApi : public QObject {
     Q_OBJECT
    public:
-    enum class Type { Unknown = 0, User, Playlist, Track, Selection };
+    enum class Type { Unknown = 0, User, Playlist, Album, Track, Selection };
+    enum class PlaylistType { Unknown = 0, Album };
 
     struct SearchResultItem {
         Type type = Type::Unknown;
@@ -54,6 +55,7 @@ class SoundcloudApi : public QObject {
     };
 
     struct Playlist {
+        PlaylistType type = PlaylistType::Unknown;
         QString title;
         QString artist;
         QUrl imageUrl;
@@ -61,6 +63,7 @@ class SoundcloudApi : public QObject {
     };
 
     struct UserPlaylist {
+        PlaylistType type = PlaylistType::Unknown;
         QString title;
         QString artist;
         QUrl imageUrl;
@@ -116,7 +119,7 @@ class SoundcloudApi : public QObject {
     QJsonDocument downloadJsonData(const QUrl &url) const;
     gumbo::GumboOutput_ptr downloadHtmlData(const QUrl &url) const;
     static QJsonDocument parseJsonData(const QByteArray &data);
-    static Type textToType(const QString &text);
+    static Type textToType(const QString &kind, const QString &setType);
     QUrl makeSearchUrl(const QString &phrase) const;
     QUrl makeUserPlaylistsUrl(const QString &id) const;
     QUrl makePlaylistUrl(const QString &id) const;

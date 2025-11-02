@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,11 +12,30 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QTimer>
+#include <memory>
 
 #include "contentserver.h"
-#include "downloader.h"
 #include "exif.h"
 #include "utils.h"
+
+static const QByteArray userAgent = QByteArrayLiteral(
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/605.1.15 "
+    "(KHTML, like Gecko) Version/12.1.2 Safari/605.1.15");
+
+static void setRequestProps(QNetworkRequest &request) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                         QNetworkRequest::NoLessSafeRedirectPolicy);
+#else
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
+    request.setRawHeader(QByteArrayLiteral("Range"),
+                         QByteArrayLiteral("bytes=0-"));
+    request.setRawHeader(QByteArrayLiteral("Connection"),
+                         QByteArrayLiteral("close"));
+    request.setRawHeader(QByteArrayLiteral("User-Agent"), userAgent);
+}
 
 Thumb::ImageOrientation Thumb::imageOrientation(const QByteArray &data) {
     easyexif::EXIFInfo exif;
@@ -135,13 +154,14 @@ std::optional<QString> Thumb::path(const QUrl &url) {
     return p;
 }
 
-std::optional<QString> Thumb::download(const QUrl &url) {
+std::optional<QString> Thumb::download(const QUrl &url,
+                                       ThumbDownloadQueue &queue) {
     if (url.isEmpty()) return std::nullopt;
     if (auto p = path(url)) return p;
 
-    auto data = Downloader{}.downloadData(url);
-    return save(std::move(data.bytes), url,
-                ContentServer::extFromMime(data.mime));
+    queue.download(url);
+
+    return std::nullopt;
 }
 
 std::optional<QString> Thumb::save(QByteArray &&data, const QUrl &url,
@@ -170,11 +190,101 @@ std::optional<QString> Thumb::save(QByteArray &&data, const QUrl &url,
         ContentServer::albumArtCacheName(url.toString(), ext), data, true);
 }
 
-ThumbIconProvider::ThumbIconProvider()
-    : QQuickImageProvider{QQuickImageProvider::Image} {}
+ThumbDownloader::ThumbDownloader(QObject *parent) : QObject{parent} {
+    connect(this, &ThumbDownloader::downloadRequested, this,
+            &ThumbDownloader::download);
+}
 
-QImage ThumbIconProvider::requestImage(const QString &id, QSize *size,
-                                       const QSize &requestedSize) {
-    auto path = Thumb::download(QUrl{id});
-    return QImage{path.value_or({})};
+void ThumbDownloader::requestDownload(const QUrl &url) {
+    emit downloadRequested(url);
+}
+
+void ThumbDownloader::download(const QUrl &url) {
+    std::lock_guard guard{m_mtx};
+    QNetworkRequest request;
+    request.setUrl(url);
+    setRequestProps(request);
+    ++m_request_counter;
+
+    auto *reply = m_nam.get(request);
+    reply->setProperty("url", url);
+
+    auto *timer = new QTimer{reply};
+    timer->setSingleShot(true);
+    timer->setInterval(TIMEOUT);
+
+    connect(timer, &QTimer::timeout, reply, &QNetworkReply::abort);
+    connect(reply, &QNetworkReply::finished, this,
+            &ThumbDownloader::handleDownloadFinished);
+
+    timer->start();
+}
+
+void ThumbDownloader::handleDownloadFinished() {
+    auto *reply = qobject_cast<QNetworkReply *>(sender());
+    auto url = reply->property("url").toUrl();
+
+    if (reply->error() != QNetworkReply::NoError) {
+        qWarning() << "thumb download error:" << reply->error() << url
+                   << m_request_counter;
+    }
+
+    emit downloaded(std::move(url), ContentServer::mimeFromReply(reply),
+                    reply->readAll());
+
+    reply->deleteLater();
+    --m_request_counter;
+}
+
+void ThumbDownloadQueue::handleDownloaded(QUrl url, QString mime,
+                                          QByteArray bytes) {
+    {
+        std::lock_guard guard{m_mtx};
+        if (m_downloader && !m_downloader->active()) {
+            quit();
+        }
+    }
+
+    emit downloaded(std::move(url), std::move(mime), std::move(bytes));
+}
+
+void ThumbDownloadQueue::run() {
+    {
+        std::lock_guard guard{m_mtx};
+        if (!m_downloader) {
+            m_downloader = std::make_unique<ThumbDownloader>();
+            connect(m_downloader.get(), &ThumbDownloader::downloaded, this,
+                    &ThumbDownloadQueue::handleDownloaded);
+            m_promise->set_value();
+        }
+    }
+    exec();
+    {
+        std::lock_guard guard{m_mtx};
+        m_downloader.reset();
+    }
+}
+
+void ThumbDownloadQueue::download(QUrl url) {
+    {
+        std::unique_lock lock{m_mtx};
+        if (!m_downloader) {
+            std::promise<void> promise;
+            auto future = promise.get_future();
+            m_promise = &promise;
+            start();
+            lock.unlock();
+            future.wait();
+        }
+    }
+
+    {
+        std::lock_guard guard{m_mtx};
+        m_downloader->requestDownload(url);
+    }
+}
+
+ThumbDownloadQueue::~ThumbDownloadQueue() {
+    quit();
+    wait();
 }

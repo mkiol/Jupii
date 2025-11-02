@@ -16,6 +16,7 @@
 #include "logger.hpp"
 #include "playlistparser.h"
 #include "settings.h"
+#include "thumb.h"
 #include "transcoder.h"
 #include "utils.h"
 
@@ -77,7 +78,8 @@ static Caster::VideoOrientation convertVideoOrientation(
 }
 
 ContentServerWorker::ContentServerWorker(QObject *parent)
-    : QObject{parent}, nam{new QNetworkAccessManager{parent}},
+    : QObject{parent},
+      nam{new QNetworkAccessManager{}},
       server{new QHttpServer{parent}} {
     qRegisterMetaType<ContentServerWorker::CacheLimit>("CacheLimit");
     qRegisterMetaType<ContentServerWorker::CacheLimit>(
@@ -103,6 +105,9 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
 
     connect(this, &ContentServerWorker::hlsTimeout, this,
             &ContentServerWorker::hlsTimeoutHandler, Qt::QueuedConnection);
+    connect(&m_thumb_queue, &ThumbDownloadQueue::downloaded, this,
+            &ContentServerWorker::handleThumbRequestDownload,
+            Qt::QueuedConnection);
 
     connect(
         Settings::instance(), &Settings::casterPlaybackVolumeChanged, this,
@@ -233,6 +238,14 @@ ContentServerWorker::Proxy::~Proxy() {
     }
 }
 
+void ContentServerWorker::handleHttpResponseDone() {
+    auto *resp = qobject_cast<QHttpResponse *>(sender());
+    auto id = resp->property("id").toUrl();
+    if (id.isEmpty()) return;
+    qDebug() << "http response completed:" << id;
+    m_http_active_resps.remove(id);
+}
+
 void ContentServerWorker::requestHandler(QHttpRequest *req,
                                          QHttpResponse *resp) {
     qDebug() << ">>> requestHandler";
@@ -251,14 +264,26 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
         return;
     }
 
-    auto id = ContentServer::instance()->idUrlFromUrl(req->url());
+    bool isThumb = false;
+    auto id = ContentServer::instance()->idUrlFromUrl(
+        req->url(), /*isFile=*/nullptr, /*isThumb=*/&isThumb);
     if (!id) {
         qWarning() << "unknown content requested";
         sendEmptyResponse(resp, 404);
         return;
     }
 
-    qDebug() << "id:" << Utils::anonymizedId(*id);
+    qDebug() << "id:" << Utils::anonymizedId(*id) << "thumb=" << isThumb;
+
+    connect(resp, &QHttpResponse::done, this,
+            &ContentServerWorker::handleHttpResponseDone);
+    resp->setProperty("id", *id);
+    m_http_active_resps.insert(*id, resp);
+
+    if (isThumb) {
+        handleThumbRequest(*id, resp);
+        return;
+    }
 
     auto *meta = ContentServer::instance()->getMetaForId(*id, false);
     if (!meta) {
@@ -300,13 +325,89 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
     }
 }
 
+void ContentServerWorker::handleThumbRequestDownload(QUrl url, QString mime,
+                                                     QByteArray bytes) {
+    auto respIt = m_http_active_resps.find(url);
+    if (respIt == m_http_active_resps.end()) {
+        qDebug() << "http resp finished early:" << url;
+        return;
+    }
+
+    auto *resp = respIt.value();
+
+    if (resp->isFinished()) {
+        qWarning() << "http resp already finished:" << url;
+        return;
+    }
+
+    auto path =
+        Thumb::save(std::move(bytes), url, ContentServer::extFromMime(mime));
+
+    if (!path) {
+        qWarning() << "can't save data:" << url;
+        sendEmptyResponse(resp, 404);
+        return;
+    }
+
+    handleThumbRequestFile(url, *path, resp);
+}
+
+void ContentServerWorker::handleThumbRequestFile(const QUrl &id,
+                                                 const QString &path,
+                                                 QHttpResponse *resp) {
+    if (path.isEmpty()) {
+        qWarning() << "path is empty";
+        sendEmptyResponse(resp, 404);
+        return;
+    }
+
+    auto file_mime = ContentServer::getContentMimeByExtension(path);
+    if (file_mime.isEmpty()) {
+        qWarning() << "can't get thumb mime:" << id;
+        sendEmptyResponse(resp, 404);
+        return;
+    }
+
+    QFile file{path};
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "can't open thumb file:" << path;
+        sendEmptyResponse(resp, 404);
+        return;
+    }
+
+    auto data = file.readAll();
+    if (data.isEmpty()) {
+        qWarning() << "thumb data is empty:" << path;
+        sendEmptyResponse(resp, 404);
+        return;
+    }
+
+    resp->writeHead(200);
+    resp->setHeader(QStringLiteral("Content-Type"), file_mime);
+    resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
+    resp->setHeader(QStringLiteral("Content-Length"),
+                    QString::number(data.size()));
+    resp->write(data);
+    resp->end();
+}
+
+void ContentServerWorker::handleThumbRequest(const QUrl &id,
+                                             QHttpResponse *resp) {
+    auto path = Thumb::download(id, m_thumb_queue);
+
+    if (!path) {
+        // thumb is being downloaded
+        return;
+    }
+
+    handleThumbRequestFile(id, *path, resp);
+}
+
 void ContentServerWorker::casterErrorHandler() {
     qWarning() << "error in casting, ending casting";
 
-    foreach (auto &item, casterItems)
-        item.resp->end();
-    foreach (const auto &item, casterItems)
-        emit itemRemoved(item.id);
+    foreach (auto &item, casterItems) item.resp->end();
+    foreach (const auto &item, casterItems) emit itemRemoved(item.id);
 
     casterItems.clear();
     casterTimer.stop();
@@ -1013,10 +1114,8 @@ bool ContentServerWorker::initCaster(ContentServer::CasterType type,
 
     casterTimer.stop();
 
-    foreach (auto &item, casterItems)
-        item.resp->end();
-    foreach (const auto &item, casterItems)
-        emit itemRemoved(item.id);
+    foreach (auto &item, casterItems) item.resp->end();
+    foreach (const auto &item, casterItems) emit itemRemoved(item.id);
 
     casterItems.clear();
 

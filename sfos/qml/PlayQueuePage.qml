@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -250,6 +250,7 @@ Page {
             enabled: !dimmed && listView.count > 0
 
             defaultIcon.source: {
+                if (!model) return ""
                 if (model.itemType === ContentServer.ItemType_Mic)
                     return "image://theme/icon-m-mic?" + primaryColor
                 else if (model.itemType === ContentServer.ItemType_PlaybackCapture)
@@ -272,6 +273,7 @@ Page {
                 }
             }
             attachedIcon.source: {
+                if (!model) return ""
                 switch(model.itemType) {
                 case ContentServer.ItemType_Url:
                     return "image://icons/icon-s-browser?" + primaryColor
@@ -281,12 +283,13 @@ Page {
                 return ""
             }
             attachedIcon2.source: {
-                if (icon.status !== Image.Ready)
+                if (!model || model.toBeActive || icon.source.length === 0 || icon.status !== Image.Ready)
                     return ""
                 return defaultIcon.source
             }
             icon.source: {
-                if (model.itemType === ContentServer.ItemType_Mic ||
+                if (!model ||
+                    model.itemType === ContentServer.ItemType_Mic ||
                     model.itemType === ContentServer.ItemType_PlaybackCapture ||
                     model.itemType === ContentServer.ItemType_ScreenCapture ||
                     model.itemType === ContentServer.ItemType_Cam) {
@@ -294,10 +297,11 @@ Page {
                 }
                 return model.icon
             }
-            icon.visible: !model.toBeActive
-            title.text: model.name
+            iconPack.visible: model && !model.toBeActive
+            title.text: model && model.name
             title.color: primaryColor
             subtitle.text: {
+                if (!model) return ""
                 switch (model.itemType) {
                 case ContentServer.ItemType_Cam:
                     return model.videoSource + " · " + model.videoOrientation + (model.audioSource.length !== 0 ? (" · " + model.audioSource) : "")
@@ -315,6 +319,7 @@ Page {
             highlighted: (root.selectionMode && model.selected) || down || menuOpen
 
             onClicked: {
+                if (!model) return
                 if (root.selectionMode) {
                     var selected = model.selected
                     playlist.setSelected(model.index, !selected)
@@ -334,7 +339,7 @@ Page {
                 enabled: !root.selectionMode
                 MenuItem {
                     text: listItem.isImage ? qsTr("Show") : qsTr("Play")
-                    enabled: model.active || listItem.enabled
+                    enabled: model && (model.active || listItem.enabled)
                     visible: directory.inited && !root.devless &&
                              ((av.transportState !== AVTransport.Playing &&
                               !listItem.isImage) || !model.active)
@@ -349,7 +354,7 @@ Page {
 
                 MenuItem {
                     text: qsTr("Pause")
-                    enabled: model.active || listItem.enabled
+                    enabled: model && (model.active || listItem.enabled)
                     visible: directory.inited && !root.devless &&
                              (av.stopable && model.active && !listItem.isImage)
                     onClicked: {
@@ -359,7 +364,7 @@ Page {
 
                 MenuItem {
                     text: qsTr("Remove")
-                    enabled: model.active || listItem.enabled
+                    enabled: model && (model.active || listItem.enabled)
                     onClicked: {
                         playlist.remove(model.id)
                     }
@@ -367,9 +372,9 @@ Page {
             }
 
             BusyIndicator {
-                anchors.centerIn: icon
+                anchors.centerIn: iconPack
                 color: primaryColor
-                running: model.toBeActive
+                running: model && model.toBeActive
                 visible: running
                 size: BusyIndicatorSize.Medium
                 Label {

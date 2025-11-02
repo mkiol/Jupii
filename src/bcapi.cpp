@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
+﻿/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,8 +21,8 @@
 #include "downloader.h"
 #include "gumbotools.h"
 
-const int BcApi::maxNotable = 15;
-const int BcApi::maxNotableFirstPage = 5;
+const int BcApi::maxNotable = 30;
+const int BcApi::maxNotableFirstPage = 30;
 
 std::vector<double> BcApi::m_notableIds{};
 std::vector<BcApi::SearchResultItem> BcApi::m_notableItems{};
@@ -356,19 +356,17 @@ QUrl BcApi::artUrl(const QString &id) {
     return QUrl{QStringLiteral("https://f4.bcbits.com/img/a%1_2.jpg").arg(id)};
 }
 
-std::optional<BcApi::SearchResultItem> BcApi::notableItem(double id) const {
-    auto data = Downloader{nam}.downloadData(
-        QUrl{"https://bandcamp.com/api/notabletralbum/2/get?id=" +
-             QString::number(id, 'd', 0)});
-    if (data.bytes.isEmpty()) {
-        qWarning() << "no data received";
+std::optional<BcApi::SearchResultItem> BcApi::notableItem(
+    const QByteArray &bytes) const {
+    if (bytes.isEmpty()) {
+        qWarning() << "bytes is empty";
         return std::nullopt;
     }
 
     if (QThread::currentThread()->isInterruptionRequested())
         return std::nullopt;
 
-    auto json = parseJsonData(data.bytes);
+    auto json = parseJsonData(bytes);
     if (json.isNull() || !json.isObject()) {
         qWarning() << "cannot parse json data";
         return std::nullopt;
@@ -390,14 +388,21 @@ BcApi::SearchResultItem BcApi::notableItem(const QJsonObject &obj) {
     return item;
 }
 
+void BcApi::storeNotableIds(const QJsonArray &array) {
+    auto size = array.size();
+    for (int i = 0; i < size; ++i) {
+        if (array.at(i).isArray()) {
+            storeNotableIds(array.at(i).toArray());
+        } else if (array.at(i).isDouble()) {
+            m_notableIds.push_back(array.at(i).toDouble());
+        }
+    }
+}
+
 void BcApi::storeNotableIds(const QJsonObject &obj) {
     auto data = obj.value(QLatin1String{"data"}).toArray();
-
     m_notableIds.clear();
-    m_notableIds.reserve(data.size());
-    for (int i = 0; i < data.size(); ++i) {
-        m_notableIds.push_back(data.at(i).toObject().value("id").toDouble());
-    }
+    storeNotableIds(data);
 }
 
 bool BcApi::prepareNotableIds() const {
@@ -421,11 +426,20 @@ void BcApi::makeMoreNotableItems() {
     auto size = std::min<decltype(maxNotable)>(
         m_notableIds.size(), m_notableItems.size() + maxNotable);
 
+    std::vector<QUrl> urls;
+    urls.reserve(size);
+    for (decltype(size) i = m_notableItems.size(); i < size; ++i) {
+        urls.push_back(
+            QUrl{"https://bandcamp.com/api/notabletralbum/2/get?id=" +
+                 QString::number(m_notableIds[i], 'd', 0)});
+    }
+
+    auto data = Downloader{nam}.downloadData(urls);
+
     m_notableItems.reserve(size);
 
-    for (decltype(size) i = m_notableItems.size(); i < size; ++i) {
-        emit progressChanged(i, size);
-        auto item = notableItem(m_notableIds[i]);
+    for (const auto &d : data) {
+        auto item = notableItem(d.bytes);
         if (!item) break;
         m_notableItems.push_back(item.value());
     }

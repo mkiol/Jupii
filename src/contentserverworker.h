@@ -34,6 +34,7 @@
 #include "caster.hpp"
 #include "contentserver.h"
 #include "singleton.h"
+#include "thumb.h"
 
 class ContentServerWorker : public QObject,
                             public Singleton<ContentServerWorker> {
@@ -86,7 +87,7 @@ class ContentServerWorker : public QObject,
     static void sendResponse(QHttpResponse *resp, int code,
                              const QByteArray &data = {});
     static void sendRedirection(QHttpResponse *resp, const QString &location);
-    QNetworkAccessManager *nam;
+    std::shared_ptr<QNetworkAccessManager> nam;
     QHttpServer *server;
     ContentServerWorker(QObject *parent = nullptr);
     void startProxy(const QUrl &id);
@@ -271,6 +272,8 @@ class ContentServerWorker : public QObject,
     bool displayStatus = true;
     QTimer proxiesCleanupTimer;
     QTimer casterTimer;
+    ThumbDownloadQueue m_thumb_queue;
+    QHash<QUrl, QHttpResponse *> m_http_active_resps;
 
     void streamFile(const QString &path, const QString &mime, QHttpRequest *req,
                     QHttpResponse *resp);
@@ -295,6 +298,10 @@ class ContentServerWorker : public QObject,
                                  QHttpRequest *req, QHttpResponse *resp);
     void handleHeadRequest(const ContentServer::ItemMeta *meta,
                            QHttpRequest *req, QHttpResponse *resp);
+    void handleThumbRequest(const QUrl &id, QHttpResponse *resp);
+    void handleThumbRequestFile(const QUrl &id, const QString &path,
+                                QHttpResponse *resp);
+    void handleThumbRequestDownload(QUrl url, QString mime, QByteArray bytes);
     void makeProxy(const QUrl &id, bool first, CacheLimit cacheLimit,
                    const QByteArray &range = {}, QHttpRequest *req = nullptr,
                    QHttpResponse *resp = nullptr);
@@ -359,6 +366,7 @@ class ContentServerWorker : public QObject,
     void casterTimeoutHandler();
     bool preStartCasterHandler(ContentServer::CasterType type, const QUrl &id);
     void hlsTimeoutHandler();
+    void handleHttpResponseDone();
 };
 
 #endif  // CONTENTSERVERWORKER_H

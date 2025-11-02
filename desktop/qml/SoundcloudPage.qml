@@ -114,29 +114,62 @@ Kirigami.ScrollablePage {
         DoubleListItem {
             id: listItem
             enabled: !itemModel.busy
-            label: model.type === SoundcloudModel.Type_Track ? model.name :
-                   model.type === SoundcloudModel.Type_Album ? model.album :
-                   model.type === SoundcloudModel.Type_Artist ? model.artist : ""
-            subtitle:  model.type === SoundcloudModel.Type_Track ||
-                       model.type === SoundcloudModel.Type_Album ? model.artist : ""
+            label: {
+                if (!model) return ""
+                switch (model.type) {
+                case SoundcloudModel.Type_Album:
+                case SoundcloudModel.Type_Playlist:
+                    return model.album
+                case SoundcloudModel.Type_Artist:
+                    return model.artist
+                }
+                return model.name
+            }
+            subtitle: {
+                if (!model) return ""
+                switch (model.type) {
+                case SoundcloudModel.Type_Track:
+                case SoundcloudModel.Type_Playlist:
+                case SoundcloudModel.Type_Album:
+                    return model.artist
+                }
+                return ""
+            }
             defaultIconSource: {
+                if (!model) return ""
                 switch (model.type) {
                 case SoundcloudModel.Type_Artist:
                     return "view-media-artist"
                 case SoundcloudModel.Type_Album:
                     return "media-album-cover"
+                case SoundcloudModel.Type_Playlist:
+                    return "view-media-playlist"
+                }
+                return "audio-x-generic"
+            }
+            attachedIconName: {
+                if (!model || !showingIcon || iconSource.length === 0)
+                    return ""
+                switch (model.type) {
+                case SoundcloudModel.Type_Artist:
+                    return "view-media-artist"
+                case SoundcloudModel.Type_Album:
+                    return "media-album-cover"
+                case SoundcloudModel.Type_Playlist:
+                    return "view-media-playlist"
                 }
                 return "emblem-music-symbolic"
             }
-            iconSource: model.icon
+            iconSource: model ? model.icon : ""
             iconSize: Kirigami.Units.iconSizes.medium
-            next: model.type !== SoundcloudModel.Type_Track
+            next: model && model.type !== SoundcloudModel.Type_Track
 
             onClicked: {
+                if (!model) return
                 if (model.type === SoundcloudModel.Type_Track) {
                     var selected = model.selected
-                    itemModel.setSelected(model.index, !selected);
-                } else if (model.type === SoundcloudModel.Type_Album) {
+                    itemModel.setSelected(model.index, !selected)
+                } else if (model.type === SoundcloudModel.Type_Album || model.type === SoundcloudModel.Type_Playlist) {
                     pageStack.pop(root)
                     pageStack.push(Qt.resolvedUrl("SoundcloudPage.qml"), {albumPage: model.url})
                 } else if (model.type === SoundcloudModel.Type_Artist) {
@@ -145,21 +178,19 @@ Kirigami.ScrollablePage {
                 }
             }
 
-            extra: model.type === SoundcloudModel.Type_Album ? qsTr("Album") :
-                   model.type === SoundcloudModel.Type_Artist ? qsTr("Artist") : ""
-            extra2: model.genre
+            extra: model.genre
 
             highlighted: {
+                if (!model) return false
                 if (pageStack.currentItem !== root) {
                     var rightPage = app.rightPage(root)
                     if (rightPage && rightPage.objectName === "soundcloud") {
-                        if (model.type === SoundcloudModel.Type_Album)
+                        if (model.type === SoundcloudModel.Type_Album || model.type === SoundcloudModel.Type_Playlist)
                             return rightPage.albumPage === model.url
                         if (model.type === SoundcloudModel.Type_Artist)
                             return rightPage.artistPage === model.url
                     }
                 }
-
                 return model.selected
             }
 
@@ -169,8 +200,9 @@ Kirigami.ScrollablePage {
                     text: qsTr("Toggle selection")
                     visible: !listItem.next
                     onTriggered: {
+                        if (!model) return
                         var selected = model.selected
-                        itemModel.setSelected(model.index, !selected);
+                        itemModel.setSelected(model.index, !selected)
                     }
                 }
             ]

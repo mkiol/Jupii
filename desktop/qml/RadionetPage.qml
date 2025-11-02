@@ -106,6 +106,11 @@ Kirigami.ScrollablePage {
                 }
             }
             defaultIconSource: "audio-x-generic"
+            attachedIconName: {
+                if (!showingIcon || iconSource.length === 0)
+                    return ""
+                return "emblem-music-symbolic"
+            }
             iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
 

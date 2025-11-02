@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -83,13 +83,14 @@ Dialog {
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
-
-            highlighted: down || model.selected
-            title.text: model.title
-            subtitle.text: model.podcastTitle
+            highlighted: down || (model && model.selected)
+            title.text: model ? model.title : ""
+            subtitle.text: model ? model.podcastTitle : ""
+            dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
-            icon.source: model.icon
+            icon.source: model ? model.icon : ""
             defaultIcon.source: {
+                if (!model) return ""
                 switch (model.type) {
                 case AVTransport.T_Image:
                     return "image://theme/icon-m-file-image?" + primaryColor
@@ -97,12 +98,16 @@ Dialog {
                     return "image://theme/icon-m-file-audio?" + primaryColor
                 case AVTransport.T_Video:
                     return "image://theme/icon-m-file-video?" + primaryColor
-                default:
-                    return "image://theme/icon-m-file-other?" + primaryColor
                 }
+                return "image://theme/icon-m-file-other?" + primaryColor
             }
-
+            attachedIcon.source: {
+                if (!model || icon.source == "" || icon.status !== Image.Ready)
+                    return ""
+                return defaultIcon.source
+            }
             onClicked: {
+                if (!model) return
                 var selected = model.selected
                 itemModel.setSelected(model.index, !selected);
             }

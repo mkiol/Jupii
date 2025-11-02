@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "bcapi.h"
+#include "contentserver.h"
 #include "settings.h"
 
 const QUrl BcModel::mNotableUrl{QStringLiteral("jupii://bc-notable")};
@@ -77,7 +78,19 @@ QVariantList BcModel::selectedItems() {
 }
 
 QList<ListItem *> BcModel::makeItems() {
-    if (mAlbumUrl.isEmpty() && mArtistUrl.isEmpty()) return makeSearchItems();
+    if (mAlbumUrl.isEmpty() && mArtistUrl.isEmpty()) {
+        if (getFilter().simplified().isEmpty()) {
+            if (mShowMoreRequested) {
+                mShowMoreRequested = false;
+                return makeNotableItems(true);
+            }
+            return makeNotableItems(false);
+        } else {
+            mLastIndex = 0;
+            return makeSearchItems();
+        }
+    }
+    mLastIndex = 0;
     if (mArtistUrl.isEmpty()) return makeAlbumItems();
     if (mArtistUrl == mNotableUrl) {
         if (mShowMoreRequested) {
@@ -134,8 +147,7 @@ QList<ListItem *> BcModel::makeSearchItems() {
 
     auto phrase = getFilter().simplified();
 
-    auto results = phrase.isEmpty() ? BcApi{}.notableItemsFirstPage()
-                                    : BcApi{}.search(phrase);
+    auto results = BcApi{}.search(phrase);
 
     if (mCanShowMore != BcApi::canMakeMoreNotableItems()) {
         mCanShowMore = BcApi::canMakeMoreNotableItems();
@@ -281,4 +293,10 @@ QVariant BcItem::data(int role) const {
         default:
             return {};
     }
+}
+
+QUrl BcItem::iconThumb() const {
+    auto url = ContentServer::instance()->thumbUrl(m_icon);
+    if (url.isEmpty()) return m_icon;
+    return url;
 }

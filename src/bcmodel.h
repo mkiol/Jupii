@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -42,11 +42,11 @@ class BcModel : public SelectableItemModel {
 
     explicit BcModel(QObject *parent = nullptr);
     Q_INVOKABLE QVariantList selectedItems() override;
-    Q_INVOKABLE inline void requestMoreItems() {
+    Q_INVOKABLE void requestMoreItems() {
         mLastIndex = getCount();
         mShowMoreRequested = true;
     }
-    Q_INVOKABLE inline int lastIndex() const { return mLastIndex; }
+    Q_INVOKABLE int lastIndex() const { return mLastIndex; }
 
     QUrl getAlbumUrl() const;
     void setAlbumUrl(const QUrl &albumUrl);
@@ -81,8 +81,8 @@ class BcModel : public SelectableItemModel {
     QList<ListItem *> makeNotableItems(bool more);
     void setAlbumTitle(const QString &albumTitle);
     void setArtistName(const QString &artistName);
-    inline auto canShowMore() const { return mCanShowMore; }
-    static inline auto notableUrl() { return mNotableUrl; }
+    auto canShowMore() const { return mCanShowMore; }
+    static auto notableUrl() { return mNotableUrl; }
 };
 
 class BcItem : public SelectableItem {
@@ -110,19 +110,17 @@ class BcItem : public SelectableItem {
                     QObject *parent = nullptr);
     QVariant data(int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-    inline QString id() const override { return m_id; }
-    inline auto name() const { return m_name; }
-    inline auto artist() const { return m_artist; }
-    inline auto album() const { return m_album; }
-    inline auto url() const { return m_url; }
-    inline auto origUrl() const { return m_origUrl; }
-    inline auto icon() const { return m_icon; }
-    inline auto iconThumb() const {
-        return QUrl{ICON_PROVIDER_PREFIX + m_icon.toString()};
-    }
-    inline auto duration() const { return m_duration; }
-    inline auto type() const { return m_type; }
-    inline auto genre() const { return m_genre; }
+    QString id() const override { return m_id; }
+    auto name() const { return m_name; }
+    auto artist() const { return m_artist; }
+    auto album() const { return m_album; }
+    auto url() const { return m_url; }
+    auto origUrl() const { return m_origUrl; }
+    auto icon() const { return m_icon; }
+    auto duration() const { return m_duration; }
+    auto type() const { return m_type; }
+    auto genre() const { return m_genre; }
+    QUrl iconThumb() const;
     void refresh();
 
    private:

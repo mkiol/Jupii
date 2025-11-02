@@ -163,8 +163,7 @@ const QHash<QString, QString> ContentServer::m_videoExtMap{
     {"mp4", "video/mp4"},        {"m4v", "video/mp4"},
     {"mpg", "video/mpeg"},       {"mpeg", "video/mpeg"},
     {"m2v", "video/mpeg"},       {"ts", "video/MP2T"},
-    {"tsv", "video/MP2T"}
-};
+    {"tsv", "video/MP2T"}};
 
 const QHash<QString, QString> ContentServer::m_playlistExtMap{
     {"m3u", "audio/x-mpegurl"},
@@ -791,25 +790,47 @@ QString ContentServer::pathFromUrl(const QUrl &url) const {
     return {};
 }
 
-std::optional<QUrl> ContentServer::idUrlFromUrl(const QUrl &url,
-                                                bool *isFile) const {
-    const auto hash = [&] {
-        QString hash;
-        if (QUrlQuery q{url}; q.hasQueryItem(Utils::idKey)) {
-            hash = q.queryItemValue(Utils::idKey);
-        } else {
-            hash = url.path();
-            hash = hash.right(hash.length() - 1);
+std::optional<QUrl> ContentServer::idUrlFromUrl(const QUrl &url, bool *isFile,
+                                                bool *isThumb) const {
+    if (url.isEmpty()) return std::nullopt;
+
+    auto pl = url.path().split('/');
+    if (pl.size() < 2) {
+        qWarning() << "url too short:" << url;
+        return std::nullopt;
+    }
+
+    bool thumb =
+        pl.size() > 2 && pl.at(0).isEmpty() &&
+        pl.at(1).compare(QLatin1String{"thumb"}, Qt::CaseInsensitive) == 0;
+
+    if (isThumb) {
+        *isThumb = thumb;
+    }
+
+    QString hash;
+    if (QUrlQuery q{url}; q.hasQueryItem(Utils::idKey)) {
+        hash = q.queryItemValue(Utils::idKey);
+    } else {
+        if (thumb) {
+            pl.pop_front();
         }
-        if (m_fullHashes.contains(hash)) hash = m_fullHashes.value(hash);
-        return hash;
-    }();
+
+        pl.pop_front();
+        hash = pl.join('/');
+    }
+
+    qDebug() << "hash:" << hash;
+
+    if (m_fullHashes.contains(hash)) hash = m_fullHashes.value(hash);
 
     QUrl id{QString::fromUtf8(decrypt(hash.toUtf8()))};
     if (!id.isValid()) return std::nullopt;
 
-    if (QUrlQuery q{id}; !q.hasQueryItem(Utils::cookieKey) ||
-                         q.queryItemValue(Utils::cookieKey).isEmpty()) {
+    if (QUrlQuery q{id};
+        !thumb && (!q.hasQueryItem(Utils::cookieKey) ||
+                   q.queryItemValue(Utils::cookieKey).isEmpty())) {
+        qWarning() << "cookieKey is missing in url:" << id;
         return std::nullopt;
     }
 
@@ -1675,7 +1696,7 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url) {
         if (QFile f{meta.path}; f.open(QIODevice::ReadOnly)) {
             if (auto thumbPath =
                     Thumb::save(f.readAll(), meta.url,
-                                     m_imgMimeToExtMap.value(meta.mime))) {
+                                m_imgMimeToExtMap.value(meta.mime))) {
                 meta.albumArt = std::move(*thumbPath);
             }
         }
@@ -2692,7 +2713,7 @@ void ContentServer::saveAlbumArt(QNetworkReply &reply, ItemMeta &meta) {
     qDebug() << "saving album art";
 
     auto path = Thumb::save(reply.readAll(), meta.url,
-                                 m_imgMimeToExtMap.value(meta.mime));
+                            m_imgMimeToExtMap.value(meta.mime));
     if (!path) {
         qWarning() << "cannot save album art";
         return;
@@ -3548,6 +3569,14 @@ QUrl ContentServer::artUrl(const QString &artPath) {
     if (artPath.startsWith(QStringLiteral("qrc:"))) return QUrl{artPath};
     if (QFileInfo::exists(artPath)) return QUrl::fromLocalFile(artPath);
     return QUrl{artPath};
+}
+
+QUrl ContentServer::thumbUrl(const QUrl &id) {
+    QUrl url;
+    if (id.isEmpty()) return url;
+    if (!makeUrl(id.toString(), url)) return url;
+    url.setPath("/thumb" + url.path());
+    return url;
 }
 
 void ContentServer::writeRecTags(const QString &path) {

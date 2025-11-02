@@ -55,7 +55,7 @@ class File;
 namespace MP4 {
 class File;
 }
-}
+}  // namespace TagLib
 
 class ContentServerWorker;
 
@@ -318,9 +318,10 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     bool getContentMetaItem(const QString &id, QString &meta,
                             bool includeDummy = true);
     bool getContentMetaItemByDidlId(const QString &didlId, QString &meta);
-    std::optional<QUrl> idUrlFromUrl(const QUrl &url,
-                                     bool *isFile = nullptr) const;
+    std::optional<QUrl> idUrlFromUrl(const QUrl &url, bool *isFile = nullptr,
+                                     bool *isThumb = nullptr) const;
     bool makeUrl(const QString &id, QUrl &url, bool relay = true);
+    QUrl thumbUrl(const QUrl &id);
     ProxyError startProxy(const QUrl &id);
     Q_INVOKABLE void cleanCache();
     Q_INVOKABLE QString cacheSizeString() const;
@@ -459,7 +460,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         bool ytdl = false, bool art = false, bool refresh = false,
         Type type = Type::Type_Unknown);
     QHash<QUrl, ItemMeta>::iterator makeMicItemMeta(const QUrl &url);
-    QHash<QUrl, ItemMeta>::iterator makePlaybackCaptureItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makePlaybackCaptureItemMeta(
+        const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeScreenCaptureItemMeta(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeCamItemMeta(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingTracker(const QUrl &url);

@@ -33,7 +33,13 @@ class SoundcloudModel : public SelectableItemModel {
     Q_PROPERTY(bool canShowMore READ canShowMore NOTIFY canShowMoreChanged)
     Q_PROPERTY(QUrl featuredUrl READ featuredUrl CONSTANT)
    public:
-    enum Type { Type_Unknown = 0, Type_Artist, Type_Album, Type_Track };
+    enum Type {
+        Type_Unknown = 0,
+        Type_Artist,
+        Type_Playlist,
+        Type_Album,
+        Type_Track
+    };
     Q_ENUM(Type)
 
     explicit SoundcloudModel(QObject *parent = nullptr);
@@ -114,12 +120,10 @@ class SoundcloudItem : public SelectableItem {
     inline auto album() const { return m_album; }
     inline auto url() const { return m_url; }
     inline auto icon() const { return m_icon; }
-    inline auto iconThumb() const {
-        return QUrl{ICON_PROVIDER_PREFIX + m_icon.toString()};
-    }
     inline auto section() const { return m_section; }
     inline auto type() const { return m_type; }
     inline auto genre() const { return m_genre; }
+    QUrl iconThumb() const;
     void refresh();
 
    private:

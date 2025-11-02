@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2019-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -103,9 +103,10 @@ Dialog {
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
-            highlighted: down || model.selected
-            title.text: model.title
+            highlighted: down || (model && model.selected)
+            title.text: model ? model.title : ""
             subtitle.text: {
+                if (!model) return ""
                 var date = model.friendlyDate
                 var author = model.author
                 if (author.length > 0 && date.length > 0)
@@ -115,11 +116,18 @@ Dialog {
                 if (author.length > 0)
                     return author
             }
+            dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
-            icon.source: model.icon
+            icon.source: model ? model.icon : ""
             defaultIcon.source: "image://theme/icon-m-file-audio?" + primaryColor
+            attachedIcon.source: {
+                if (!model || icon.source == "" || icon.status !== Image.Ready)
+                    return ""
+                return defaultIcon.source
+            }
 
             onClicked: {
+                if (!model) return
                 var selected = model.selected
                 itemModel.setSelected(model.index, !selected);
             }

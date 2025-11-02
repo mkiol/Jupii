@@ -43,14 +43,14 @@ class YtModel : public SelectableItemModel {
     explicit YtModel(QObject *parent = nullptr);
     Q_INVOKABLE QVariantList selectedItems() override;
 
-    inline auto getAlbumId() const { return mAlbumId; }
+    auto getAlbumId() const { return mAlbumId; }
     void setAlbumId(const QString &albumId);
-    inline auto getArtistId() const { return mArtistId; }
+    auto getArtistId() const { return mArtistId; }
     void setAlbumType(Type albumType);
-    inline auto getAlbumType() const { return mAlbumType; }
+    auto getAlbumType() const { return mAlbumType; }
     void setArtistId(const QString &artistId);
-    inline auto getAlbumTitle() const { return mAlbumTitle; }
-    inline auto getArtistName() const { return mArtistName; }
+    auto getAlbumTitle() const { return mAlbumTitle; }
+    auto getArtistName() const { return mArtistName; }
 
    signals:
     void error();
@@ -76,7 +76,7 @@ class YtModel : public SelectableItemModel {
     QList<ListItem *> makeHomeItems();
     void setAlbumTitle(const QString &albumTitle);
     void setArtistName(const QString &artistName);
-    static inline auto homeId() { return mHomeId; }
+    static auto homeId() { return mHomeId; }
 };
 
 class YtItem : public SelectableItem {
@@ -104,19 +104,17 @@ class YtItem : public SelectableItem {
                     QObject *parent = nullptr);
     QVariant data(int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-    inline QString id() const override { return m_id; }
-    inline auto name() const { return m_name; }
-    inline auto artist() const { return m_artist; }
-    inline auto album() const { return m_album; }
-    inline auto url() const { return m_url; }
-    inline auto origUrl() const { return m_origUrl; }
-    inline auto icon() const { return m_icon; }
-    inline auto iconThumb() const {
-        return QUrl{ICON_PROVIDER_PREFIX + m_icon.toString()};
-    }
-    inline auto section() const { return m_section; }
-    inline auto duration() const { return m_duration; }
-    inline auto type() const { return m_type; }
+    QString id() const override { return m_id; }
+    auto name() const { return m_name; }
+    auto artist() const { return m_artist; }
+    auto album() const { return m_album; }
+    auto url() const { return m_url; }
+    auto origUrl() const { return m_origUrl; }
+    auto icon() const { return m_icon; }
+    auto section() const { return m_section; }
+    auto duration() const { return m_duration; }
+    auto type() const { return m_type; }
+    QUrl iconThumb() const;
     QString durationStr() const;
     void refresh();
 

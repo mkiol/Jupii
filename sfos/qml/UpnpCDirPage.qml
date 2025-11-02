@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -95,9 +95,10 @@ Dialog {
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
-            highlighted: down || model.selected
-            title.text: model.title
+            highlighted: down || (model && model.selected)
+            title.text: model ? model.title : ""
             subtitle.text: {
+                if (!model) return ""
                 var ctype = itemModel.currentType
                 if (model.selectable) {
                     if (model.type === CDirModel.ImageType)
@@ -115,9 +116,11 @@ Dialog {
                 return ""
             }
 
+            dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
 
             onClicked: {
+                if (!model) return
                 if (model.selectable) {
                     var selected = model.selected
                     itemModel.setSelected(model.index, !selected);
@@ -126,8 +129,9 @@ Dialog {
                 }
             }
 
-            icon.source: model.icon
+            icon.source: model ? model.icon : ""
             defaultIcon.source: {
+                if (!model) return ""
                 switch (model.type) {
                 case CDirModel.BackType:
                     return "image://theme/icon-m-back?" + primaryColor
@@ -143,13 +147,12 @@ Dialog {
                     return "image://theme/icon-m-file-video?" + primaryColor
                 case CDirModel.ImageType:
                     return "image://theme/icon-m-file-image?" + primaryColor
-                default:
-                    return "image://theme/icon-m-file-other?" + primaryColor
                 }
+                return "image://theme/icon-m-file-other?" + primaryColor
             }
             attachedIcon.source: {
-                if (icon.status !== Image.Ready || model.type === CDirModel.BackType ||
-                        model.type === CDirModel.DirType || model.type === CDirModel.MusicAlbumType)
+                if (!model || icon.status !== Image.Ready || model.type === CDirModel.BackType ||
+                        model.type === CDirModel.DirType)
                     return ""
                 return defaultIcon.source
             }

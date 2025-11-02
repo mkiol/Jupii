@@ -91,6 +91,11 @@ Kirigami.ScrollablePage {
             label: model.name
             subtitle: model.description
             defaultIconSource: "audio-x-generic"
+            attachedIconName: {
+                if (!showingIcon || iconSource.length === 0)
+                    return ""
+                return "emblem-music-symbolic"
+            }
             iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
 

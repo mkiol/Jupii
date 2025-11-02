@@ -104,12 +104,17 @@ QJsonDocument SoundcloudApi::downloadJsonData(const QUrl &url) const {
     return parseJsonData(data.bytes);
 }
 
-SoundcloudApi::Type SoundcloudApi::textToType(const QString &text) {
-    if (text.size() > 0) {
-        if (text.at(0) == 'u') return SoundcloudApi::Type::User;
-        if (text.at(0) == 't') return SoundcloudApi::Type::Track;
-        if (text.at(0) == 'p') return SoundcloudApi::Type::Playlist;
-        if (text.at(0) == 's') return SoundcloudApi::Type::Selection;
+SoundcloudApi::Type SoundcloudApi::textToType(const QString &kind,
+                                              const QString &setType) {
+    if (kind.size() > 0) {
+        if (kind.at(0) == 'u') return SoundcloudApi::Type::User;
+        if (kind.at(0) == 't') return SoundcloudApi::Type::Track;
+        if (kind.at(0) == 'p') {
+            return !setType.isEmpty() && setType.at(0) == 'a'
+                       ? SoundcloudApi::Type::Album
+                       : SoundcloudApi::Type::Playlist;
+        }
+        if (kind.at(0) == 's') return SoundcloudApi::Type::Selection;
     }
 
     return SoundcloudApi::Type::Unknown;
@@ -222,7 +227,8 @@ SoundcloudApi::Track SoundcloudApi::track(const QUrl &url) {
 
     for (int i = 0; i < items.size(); ++i) {
         auto elm = items.at(i).toObject();
-        auto type = textToType(elm.value(QLatin1String{"kind"}).toString());
+        auto type = textToType(elm.value(QLatin1String{"kind"}).toString(),
+                               elm.value(QLatin1String{"set_type"}).toString());
         if (type != Type::Track) continue;
 
         auto media = elm.value(QLatin1String{"media"})
@@ -361,6 +367,10 @@ SoundcloudApi::Playlist SoundcloudApi::playlist(const QUrl &url) {
     if (QThread::currentThread()->isInterruptionRequested()) return playlist;
 
     auto pobj = json.object();
+    auto type = textToType(pobj.value(QLatin1String{"kind"}).toString(),
+                           pobj.value(QLatin1String{"set_type"}).toString());
+    playlist.type =
+        type == Type::Album ? PlaylistType::Album : PlaylistType::Unknown;
     playlist.title = pobj.value(QLatin1String{"title"}).toString();
     playlist.imageUrl =
         QUrl{pobj.value(QLatin1String{"artwork_url"}).toString()};
@@ -398,7 +408,8 @@ void SoundcloudApi::addTracksFromJson(const QJsonArray &json,
     for (int i = 0; i < json.size(); ++i) {
         auto elm = json.at(i).toObject();
 
-        auto type = textToType(elm.value(QLatin1String{"kind"}).toString());
+        auto type = textToType(elm.value(QLatin1String{"kind"}).toString(),
+                               elm.value(QLatin1String{"set_type"}).toString());
         if (type != Type::Track) continue;
 
         auto id = elm.value(QLatin1String{"id"}).toDouble();
@@ -466,14 +477,17 @@ void SoundcloudApi::user(const QUrl &url, User *user, int count) const {
 
     for (int i = 0; i < items.size(); ++i) {
         auto elm = items.at(i).toObject();
-        auto type = textToType(elm.value(QLatin1String{"type"}).toString());
-        if (type == Type::Playlist) {
+        auto type = textToType(elm.value(QLatin1String{"type"}).toString(),
+                               elm.value(QLatin1String{"set_type"}).toString());
+        if (type == Type::Playlist || type == Type::Album) {
             elm = elm.value(QLatin1String{"playlist"}).toObject();
 
             QUrl webUrl{elm.value(QLatin1String{"permalink_url"}).toString()};
             if (webUrl.isEmpty()) continue;
 
             UserPlaylist playlist;
+            playlist.type = type == Type::Album ? PlaylistType::Album
+                                                : PlaylistType::Unknown;
             playlist.imageUrl =
                 QUrl{elm.value(QLatin1String{"artwork_url"}).toString()};
             playlist.title = elm.value(QLatin1String{"title"}).toString();
@@ -576,7 +590,8 @@ SoundcloudApi::User SoundcloudApi::user(const QUrl &url) {
 
 std::optional<SoundcloudApi::SearchResultItem> SoundcloudApi::searchItem(
     const QJsonObject &obj) {
-    auto type = textToType(obj.value(QLatin1String{"kind"}).toString());
+    auto type = textToType(obj.value(QLatin1String{"kind"}).toString(),
+                           obj.value(QLatin1String{"set_type"}).toString());
     if (type == Type::Unknown) return std::nullopt;
 
     QUrl webUrl{obj.value(QLatin1String{"permalink_url"}).toString()};
@@ -603,7 +618,7 @@ std::optional<SoundcloudApi::SearchResultItem> SoundcloudApi::searchItem(
     } else if (type == Type::User) {
         item.imageUrl = QUrl{obj.value(QLatin1String{"avatar_url"}).toString()};
         item.artist = obj.value(QLatin1String{"username"}).toString();
-    } else if (type == Type::Playlist) {
+    } else if (type == Type::Playlist || type == Type::Album) {
         item.imageUrl =
             QUrl{obj.value(QLatin1String{"artwork_url"}).toString()};
         if (item.imageUrl.isEmpty()) {
@@ -623,7 +638,8 @@ std::optional<SoundcloudApi::SearchResultItem> SoundcloudApi::searchItem(
 
 std::optional<SoundcloudApi::Selection> SoundcloudApi::selectionItem(
     const QJsonObject &obj) {
-    if (textToType(obj.value(QLatin1String{"kind"}).toString()) !=
+    if (textToType(obj.value(QLatin1String{"kind"}).toString(),
+                   obj.value(QLatin1String{"set_type"}).toString()) !=
         Type::Selection) {
         return std::nullopt;
     }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -83,13 +83,18 @@ Page {
         }
 
         delegate: DoubleListItem {
-            title.text: model.title
-            subtitle.text: model.artist + " · " + qsTr("%n track(s)", "", model.count)
+            title.text: model ? model.title : ""
+            subtitle.text: model ? model.artist + " · " + qsTr("%n track(s)", "", model.count) : ""
+            dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
-            icon.source: model.icon
+            icon.source: model ? model.icon : ""
             defaultIcon.source: "image://theme/icon-m-media-albums?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)
-
+            attachedIcon.source: {
+                if (!model || icon.source == "" || icon.status !== Image.Ready)
+                    return ""
+                return defaultIcon.source
+            }
             menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Select tracks")
@@ -100,6 +105,7 @@ Page {
             onClicked: click()
 
             function click() {
+                if (!model) return
                 pageStack.push(Qt.resolvedUrl("TracksPage.qml"), {albumId: model.id})
             }
         }

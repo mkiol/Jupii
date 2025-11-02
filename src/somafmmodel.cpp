@@ -19,6 +19,7 @@
 #include <QThread>
 #include <memory>
 
+#include "contentserver.h"
 #include "downloader.h"
 #include "utils.h"
 
@@ -259,4 +260,10 @@ QVariant SomafmItem::data(int role) const {
         default:
             return {};
     }
+}
+
+QUrl SomafmItem::iconThumb() const {
+    auto url = ContentServer::instance()->thumbUrl(m_icon);
+    if (url.isEmpty()) return m_icon;
+    return url;
 }

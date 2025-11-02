@@ -22,71 +22,66 @@
 #include "taskexecutor.h"
 #include "utils.h"
 
-AVTransport::AVTransport(QObject *parent) :
-    Service(parent),
-    m_seekTimer(parent)
-{
-    connect(this, &AVTransport::transportStateChanged,
-                     this, &AVTransport::transportStateHandler);
-    connect(this, &AVTransport::currentURIChanged,
-                     this, &AVTransport::trackChangedHandler);
-    connect(this, &AVTransport::preControlableChanged,
-                     this, &AVTransport::controlableChangedHandler);
+AVTransport::AVTransport(QObject* parent)
+    : Service(parent), m_seekTimer(parent) {
+    connect(this, &AVTransport::transportStateChanged, this,
+            &AVTransport::transportStateHandler);
+    connect(this, &AVTransport::currentURIChanged, this,
+            &AVTransport::trackChangedHandler);
+    connect(this, &AVTransport::preControlableChanged, this,
+            &AVTransport::controlableChangedHandler);
 
     m_seekTimer.setInterval(500);
     m_seekTimer.setSingleShot(true);
     connect(&m_seekTimer, &QTimer::timeout, this, &AVTransport::seekTimeout);
 }
 
-QString AVTransport::transportStateValue(TransportState state)
-{
+QString AVTransport::transportStateValue(TransportState state) {
     switch (state) {
-    case TransportState::Stopped:
-        return "Stopped";
-    case TransportState::Playing:
-        return "Playing";
-    case TransportState::Transitioning:
-        return "Transitioning";
-    case TransportState::PausedPlayback:
-        return "PausedPlayback";
-    case TransportState::PausedRecording:
-        return "PausedRecording";
-    case TransportState::Recording:
-        return "Recording";
-    case TransportState::NoMediaPresent:
-        return "NoMediaPresent";
-    default:
-        return "Unknown";
+        case TransportState::Stopped:
+            return "Stopped";
+        case TransportState::Playing:
+            return "Playing";
+        case TransportState::Transitioning:
+            return "Transitioning";
+        case TransportState::PausedPlayback:
+            return "PausedPlayback";
+        case TransportState::PausedRecording:
+            return "PausedRecording";
+        case TransportState::Recording:
+            return "Recording";
+        case TransportState::NoMediaPresent:
+            return "NoMediaPresent";
+        default:
+            return "Unknown";
     }
 }
 
-QString AVTransport::transportStatusValue(TransportStatus status)
-{
+QString AVTransport::transportStatusValue(TransportStatus status) {
     switch (status) {
-    case TransportStatus::TPS_Ok:
-        return "Ok";
-    case TransportStatus::TPS_Error:
-        return "Error";
-    default:
-        return "Unknown";
+        case TransportStatus::TPS_Ok:
+            return "Ok";
+        case TransportStatus::TPS_Error:
+            return "Error";
+        default:
+            return "Unknown";
     }
 }
 
-void AVTransport::registerExternalConnections()
-{
-    connect(PlaylistModel::instance(), &PlaylistModel::activeItemChanged,
-            this, &AVTransport::handleMetaChanged, Qt::QueuedConnection);
-    connect(this, &AVTransport::currentURIChanged,
-            this, &AVTransport::handleMetaChanged, Qt::QueuedConnection);
+void AVTransport::registerExternalConnections() {
+    connect(PlaylistModel::instance(), &PlaylistModel::activeItemChanged, this,
+            &AVTransport::handleMetaChanged, Qt::QueuedConnection);
+    connect(this, &AVTransport::currentURIChanged, this,
+            &AVTransport::handleMetaChanged, Qt::QueuedConnection);
 }
 
-QUrl AVTransport::getCurrentId()
-{
-    return ContentServer::instance()->idUrlFromUrl(QUrl{m_currentURI}).value_or(QUrl{});
+QUrl AVTransport::getCurrentId() {
+    return ContentServer::instance()
+        ->idUrlFromUrl(QUrl{m_currentURI})
+        .value_or(QUrl{});
 }
 
-QUrl AVTransport::getCurrentOrigUrl()
-{
+QUrl AVTransport::getCurrentOrigUrl() {
     const auto ai = PlaylistModel::instance()->getActiveItem();
     return ai ? ai->origUrl() : QUrl{getCurrentURL()};
 }
@@ -109,10 +104,11 @@ bool AVTransport::nextUriSupported(const QString& nextUriStr) const {
         case Settings::AvNextUriPolicy::AvNextUriPolicy_AlwaysDisable:
             return false;
     }
+
+    return false;
 }
 
-void AVTransport::changed(const QString& name, const QVariant& _value)
-{
+void AVTransport::changed(const QString& name, const QVariant& _value) {
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
@@ -124,9 +120,14 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
         if (name == "TransportState") {
             if (m_transportState != value) {
                 qDebug() << "TransportState changed:"
-                         << transportStateValue(static_cast<TransportState>(m_oldTransportState)) << "->"
-                         << transportStateValue(static_cast<TransportState>(m_transportState)) << "->"
-                         << transportStateValue(static_cast<TransportState>(value));
+                         << transportStateValue(static_cast<TransportState>(
+                                m_oldTransportState))
+                         << "->"
+                         << transportStateValue(
+                                static_cast<TransportState>(m_transportState))
+                         << "->"
+                         << transportStateValue(
+                                static_cast<TransportState>(value));
                 m_oldTransportState = m_transportState;
                 m_transportState = value;
                 emit transportStateChanged();
@@ -135,8 +136,11 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
         } else if (name == "TransportStatus") {
             if (m_transportStatus != value) {
                 qDebug() << "TransportStatus changed:"
-                         << transportStatusValue(static_cast<TransportStatus>(m_transportStatus)) << "->"
-                         << transportStatusValue(static_cast<TransportStatus>(value));
+                         << transportStatusValue(
+                                static_cast<TransportStatus>(m_transportStatus))
+                         << "->"
+                         << transportStatusValue(
+                                static_cast<TransportStatus>(value));
                 m_transportStatus = value;
                 emit transportStatusChanged();
                 emit preControlableChanged();
@@ -147,13 +151,15 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
                 emit numberOfTracksChanged();
             }
         } else if (name == "CurrentTrack") {
-            qDebug() << "CurrentTrack changed:" << m_currentTrack << "->" << value;
+            qDebug() << "CurrentTrack changed:" << m_currentTrack << "->"
+                     << value;
             if (m_currentTrack != value) {
                 m_currentTrack = value;
                 emit currentTrackChanged();
             }
         } else if (name == "CurrentTrackDuration") {
-            qDebug() << "CurrentTrackDuration changed:" << m_currentTrackDuration << "->" << value;
+            qDebug() << "CurrentTrackDuration changed:"
+                     << m_currentTrackDuration << "->" << value;
             if (m_currentTrackDuration != value) {
                 m_currentTrackDuration = value;
                 emit currentTrackDurationChanged();
@@ -179,7 +185,6 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
 
         if (name == "AVTransportURI" || name == "CurrentTrackURI") {
             if (m_currentURI != value) {
-
                 if (m_blockEmitUriChanged) {
                     qDebug() << "currentURI change blocked";
                     return;
@@ -235,7 +240,7 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
                         qDebug() << "emiting nextURIChanged";
                         emit nextURIChanged();
                         emit transportActionsChanged();
-                        //emit preControlableChanged();
+                        // emit preControlableChanged();
                     }
                 });
             }
@@ -243,20 +248,18 @@ void AVTransport::changed(const QString& name, const QVariant& _value)
     }
 }
 
-UPnPClient::Service* AVTransport::createUpnpService(const UPnPClient::UPnPDeviceDesc &ddesc,
-                                                    const UPnPClient::UPnPServiceDesc &sdesc)
-{
+UPnPClient::Service* AVTransport::createUpnpService(
+    const UPnPClient::UPnPDeviceDesc& ddesc,
+    const UPnPClient::UPnPServiceDesc& sdesc) {
     return new UPnPClient::AVTransport(ddesc, sdesc);
 }
 
-void AVTransport::postInit()
-{
+void AVTransport::postInit() {
     qDebug() << "--> UPDATE postInit";
     update();
 }
 
-void AVTransport::reset()
-{
+void AVTransport::reset() {
     qDebug() << "reset";
 
     m_currentURI.clear();
@@ -266,7 +269,7 @@ void AVTransport::reset()
     m_numberOfTracks = 0;
     m_currentTrack = 0;
     m_currentTrackDuration = 0;
-    m_relativeTimePosition  = 0;
+    m_relativeTimePosition = 0;
     m_absoluteTimePosition = 0;
     m_speed = 1;
     m_currentClass.clear();
@@ -296,21 +299,17 @@ void AVTransport::reset()
     emit nextURISupportedChanged();
 }
 
-
-std::string AVTransport::type() const
-{
+std::string AVTransport::type() const {
     return "urn:schemas-upnp-org:service:AVTransport:1";
 }
 
-void AVTransport::timerEvent()
-{
+void AVTransport::timerEvent() {
     if (!m_seekTimer.isActive()) {
         fakeUpdateRelativeTimePosition();
     }
 }
 
-UPnPClient::AVTransport* AVTransport::s()
-{
+UPnPClient::AVTransport* AVTransport::s() {
     if (!m_ser) {
         qWarning() << "AVTransport service is not inited";
         return nullptr;
@@ -319,8 +318,7 @@ UPnPClient::AVTransport* AVTransport::s()
     return static_cast<UPnPClient::AVTransport*>(m_ser);
 }
 
-void AVTransport::transportStateHandler()
-{
+void AVTransport::transportStateHandler() {
     emit transportActionsChanged();
     emit preControlableChanged();
 
@@ -329,8 +327,7 @@ void AVTransport::transportStateHandler()
         return;
     }
 
-    if (m_transportState == Stopped &&
-        m_oldTransportState == Playing &&
+    if (m_transportState == Stopped && m_oldTransportState == Playing &&
         getCurrentType() != T_Image && !m_stopCalled) {
         qDebug() << "Track has ended";
         emit trackEnded();
@@ -341,16 +338,14 @@ void AVTransport::transportStateHandler()
     asyncUpdate();
 }
 
-void AVTransport::handleMetaChanged()
-{
+void AVTransport::handleMetaChanged() {
     qDebug() << "Meta changed";
     emit currentMetaDataChanged();
     emit currentAlbumArtChanged();
 }
 
-void AVTransport::handleApplicationStateChanged(Qt::ApplicationState state)
-{
-    //qDebug() << "State changed:" << state;
+void AVTransport::handleApplicationStateChanged(Qt::ApplicationState state) {
+    // qDebug() << "State changed:" << state;
     Q_UNUSED(state)
 
     if (!getInited()) {
@@ -361,8 +356,7 @@ void AVTransport::handleApplicationStateChanged(Qt::ApplicationState state)
     asyncUpdate();
 }
 
-void AVTransport::trackChangedHandler()
-{
+void AVTransport::trackChangedHandler() {
     emit transportActionsChanged();
 
     if (!getInited()) {
@@ -373,8 +367,7 @@ void AVTransport::trackChangedHandler()
     asyncUpdate();
 }
 
-void AVTransport::controlableChangedHandler()
-{
+void AVTransport::controlableChangedHandler() {
     qDebug() << "Controlable changed";
 
     if (m_pendingControlableSignal) {
@@ -386,57 +379,36 @@ void AVTransport::controlableChangedHandler()
     m_pendingControlableSignal = true;
 
     if (!startTask([this]() {
-        tsleep(2000);
-        m_pendingControlableSignal = false;
-        qDebug() << "Emit delayed controlable signal";
-        emit controlableChanged();
-    })) {
+            tsleep(2000);
+            m_pendingControlableSignal = false;
+            qDebug() << "Emit delayed controlable signal";
+            emit controlableChanged();
+        })) {
         m_pendingControlableSignal = false;
     }
 }
 
-int AVTransport::getTransportState()
-{
-    return m_transportState;
-}
+int AVTransport::getTransportState() { return m_transportState; }
 
-int AVTransport::getTransportStatus()
-{
-    return m_transportStatus;
-}
+int AVTransport::getTransportStatus() { return m_transportStatus; }
 
-int AVTransport::getPlayMode()
-{
-    return m_playmode;
-}
+int AVTransport::getPlayMode() { return m_playmode; }
 
-int AVTransport::getNumberOfTracks()
-{
-    return m_numberOfTracks;
-}
+int AVTransport::getNumberOfTracks() { return m_numberOfTracks; }
 
-int AVTransport::getCurrentTrack()
-{
-    return m_currentTrack;
-}
+int AVTransport::getCurrentTrack() { return m_currentTrack; }
 
-int AVTransport::getCurrentTrackDuration()
-{
+int AVTransport::getCurrentTrackDuration() {
     return m_currentTrackDuration > 0 ? m_currentTrackDuration : 0;
 }
 
-int AVTransport::getRelativeTimePosition()
-{
+int AVTransport::getRelativeTimePosition() {
     return m_relativeTimePosition > 0 ? m_relativeTimePosition : 0;
 }
 
-int AVTransport::getSpeed()
-{
-    return m_speed;
-}
+int AVTransport::getSpeed() { return m_speed; }
 
-int AVTransport::getAbsoluteTimePosition()
-{
+int AVTransport::getAbsoluteTimePosition() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     if (ai && ai->live()) return 0;
 
@@ -449,178 +421,148 @@ int AVTransport::getAbsoluteTimePosition()
     return m_absoluteTimePosition;
 }
 
-QString AVTransport::getCurrentURI()
-{
-    return m_currentURI;
-}
+QString AVTransport::getCurrentURI() { return m_currentURI; }
 
-QString AVTransport::getNextURI()
-{
-    return m_nextURI;
-}
+QString AVTransport::getNextURI() { return m_nextURI; }
 
-QString AVTransport::getCurrentPath()
-{
+QString AVTransport::getCurrentPath() {
     return ContentServer::instance()->pathFromUrl(QUrl(m_currentURI));
 }
 
-QString AVTransport::getCurrentURL()
-{
+QString AVTransport::getCurrentURL() {
     return ContentServer::instance()->urlFromUrl(QUrl(m_currentURI));
 }
 
-QString AVTransport::getContentType()
-{
+QString AVTransport::getContentType() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     if (!ai) return {};
     return ai->ctype();
 }
 
-bool AVTransport::getCurrentYtdl()
-{
+bool AVTransport::getCurrentYtdl() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     return ai ? ai->ytdl() : false;
 }
 
-QString AVTransport::getNextPath()
-{
+QString AVTransport::getNextPath() {
     return ContentServer::instance()->pathFromUrl(QUrl(m_nextURI));
 }
 
-AVTransport::Type AVTransport::getCurrentType()
-{
-    // Reference: http://upnp.org/specs/av/UPnP-av-ContentDirectory-v1-Service.pdf
+AVTransport::Type AVTransport::getCurrentType() {
+    // Reference:
+    // http://upnp.org/specs/av/UPnP-av-ContentDirectory-v1-Service.pdf
 
     const auto list = m_currentClass.split('.');
 
     if (list.size() > 2) {
         const auto& c = list.at(2);
-        if (c == "audioItem")
-            return T_Audio;
-        if (c == "videoItem")
-            return T_Video;
-        if (c == "imageItem")
-            return T_Image;
+        if (c == "audioItem") return T_Audio;
+        if (c == "videoItem") return T_Video;
+        if (c == "imageItem") return T_Image;
     }
 
     qWarning() << "Unknown meta data class:" << m_currentClass;
     return T_Unknown;
 }
 
-QString AVTransport::getCurrentClass()
-{
-    return m_currentClass;
-}
+QString AVTransport::getCurrentClass() { return m_currentClass; }
 
-QString AVTransport::getCurrentTitle()
-{
+QString AVTransport::getCurrentTitle() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     if (!ai) return m_currentTitle;
     return ai->name();
 }
 
-QString AVTransport::getCurrentAuthor()
-{
+QString AVTransport::getCurrentAuthor() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     if (!ai) return m_currentAuthor;
     return ai->artist();
 }
 
-QString AVTransport::getCurrentDescription()
-{
+QString AVTransport::getCurrentDescription() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     if (!ai) return m_currentDescription;
     return ai->desc();
 }
 
-QUrl AVTransport::getCurrentAlbumArtURI()
-{
+QUrl AVTransport::getCurrentAlbumArtURI() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     if (!ai) return m_currentAlbumArtURI;
     return ai->icon();
 }
 
-QString AVTransport::getCurrentAlbum()
-{
+QString AVTransport::getCurrentAlbum() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     if (!ai) return m_currentAlbum;
     return ai->album();
 }
 
-QString AVTransport::getCurrentRecDate()
-{
+QString AVTransport::getCurrentRecDate() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     if (!ai) return {};
     return ai->friendlyRecDate();
 }
 
-QString AVTransport::getCurrentRecUrl()
-{
+QString AVTransport::getCurrentRecUrl() {
     const auto ai = PlaylistModel::instance()->getActiveItem();
     if (!ai) return {};
     return ai->recUrl();
 }
 
-bool AVTransport::getNextSupported()
-{
+bool AVTransport::getNextSupported() {
     if (ignoreActions()) return !m_nextURI.isEmpty();
     return (m_currentTransportActions & UPnPClient::AVTransport::TPA_Next) &&
-                !m_nextURI.isEmpty();
+           !m_nextURI.isEmpty();
 }
 
-bool AVTransport::getPauseSupported()
-{
+bool AVTransport::getPauseSupported() {
     if (ignoreActions()) return true;
     return m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause;
 }
 
-bool AVTransport::getPlaySupported()
-{
-    if (ignoreActions())
-        return !m_currentURI.isEmpty();
+bool AVTransport::getPlaySupported() {
+    if (ignoreActions()) return !m_currentURI.isEmpty();
     return (m_currentTransportActions & UPnPClient::AVTransport::TPA_Play) &&
-                !m_currentURI.isEmpty();
+           !m_currentURI.isEmpty();
 }
 
-bool AVTransport::getPreviousSupported()
-{
+bool AVTransport::getPreviousSupported() {
     if (ignoreActions()) return true;
     return m_currentTransportActions & UPnPClient::AVTransport::TPA_Previous;
 }
 
-bool AVTransport::getSeekSupported()
-{
+bool AVTransport::getSeekSupported() {
     if (ignoreActions())
         return m_transportState == Playing ? m_currentTrackDuration > 0 : false;
 
     if (m_transportState == Playing)
         return m_currentTrackDuration > 0 &&
-                (m_currentTransportActions & UPnPClient::AVTransport::TPA_Seek);
+               (m_currentTransportActions & UPnPClient::AVTransport::TPA_Seek);
 
     return false;
 }
 
-bool AVTransport::getStopSupported()
-{
+bool AVTransport::getStopSupported() {
     if (ignoreActions()) return true;
     return m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop;
 }
 
-bool AVTransport::getPlayable()
-{
+bool AVTransport::getPlayable() {
 #ifdef QT_DEBUG
-    qDebug() << "getPlayable:"
-             << "transportStatus =" << transportStatusValue(static_cast<TransportStatus>(m_transportStatus))
-             << "transportState =" << transportStateValue(static_cast<TransportState>(m_transportState))
-             << "playSupported =" << getPlaySupported();
+    qDebug()
+        << "getPlayable:"
+        << "transportStatus ="
+        << transportStatusValue(static_cast<TransportStatus>(m_transportStatus))
+        << "transportState ="
+        << transportStateValue(static_cast<TransportState>(m_transportState))
+        << "playSupported =" << getPlaySupported();
 #endif
 
-    bool playable = getInited() && m_transportStatus == TPS_Ok &&
-           getPlaySupported() &&
-           (m_transportState == Stopped ||
-            m_transportState == PausedPlayback ||
-            m_transportState == PausedRecording) &&
-            !getCurrentTitle().isEmpty();
+    bool playable =
+        getInited() && m_transportStatus == TPS_Ok && getPlaySupported() &&
+        (m_transportState == Stopped || m_transportState == PausedPlayback ||
+         m_transportState == PausedRecording) &&
+        !getCurrentTitle().isEmpty();
 
 #ifdef QT_DEBUG
     qDebug() << "playable:" << playable;
@@ -629,21 +571,22 @@ bool AVTransport::getPlayable()
     return playable;
 }
 
-bool AVTransport::getStopable()
-{
+bool AVTransport::getStopable() {
 #ifdef QT_DEBUG
-    qDebug() << "getStopable:"
-             << "transportStatus =" << transportStatusValue(static_cast<TransportStatus>(m_transportStatus))
-             << "transportState =" << transportStateValue(static_cast<TransportState>(m_transportState))
-             << "pauseSupported =" << getPauseSupported()
-             << "playSupported =" << getPlaySupported()
-             << "m_currentURI =" << m_currentURI;
+    qDebug()
+        << "getStopable:"
+        << "transportStatus ="
+        << transportStatusValue(static_cast<TransportStatus>(m_transportStatus))
+        << "transportState ="
+        << transportStateValue(static_cast<TransportState>(m_transportState))
+        << "pauseSupported =" << getPauseSupported()
+        << "playSupported =" << getPlaySupported()
+        << "m_currentURI =" << m_currentURI;
 #endif
 
     bool stopable = getInited() && m_transportStatus == TPS_Ok &&
-            m_transportState == Playing &&
-            !m_currentURI.isEmpty() &&
-            (getPauseSupported() || getStopSupported());
+                    m_transportState == Playing && !m_currentURI.isEmpty() &&
+                    (getPauseSupported() || getStopSupported());
 
 #ifdef QT_DEBUG
     qDebug() << "stopable:" << stopable;
@@ -652,54 +595,49 @@ bool AVTransport::getStopable()
     return stopable;
 }
 
-bool AVTransport::getControlable()
-{
-    return getPlayable() || getStopable();
-}
+bool AVTransport::getControlable() { return getPlayable() || getStopable(); }
 
-bool AVTransport::getNextURISupported()
-{
-    return m_nextURISupported;
-}
+bool AVTransport::getNextURISupported() { return m_nextURISupported; }
 
-void AVTransport::setNextURISupported(bool value)
-{
+void AVTransport::setNextURISupported(bool value) {
     if (m_nextURISupported != value) {
         m_nextURISupported = value;
         emit nextURISupportedChanged();
     }
 }
 
-bool AVTransport::ignoreActions()
-{
+bool AVTransport::ignoreActions() {
     // ignore supported actions when they don't make any sense
     // workaround for some creapy DLNA implementations
     bool ignore = false;
     if (m_transportState == Playing &&
-            m_currentTransportActions & UPnPClient::AVTransport::TPA_Play &&
-            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause) &&
-            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop)) {
+        m_currentTransportActions & UPnPClient::AVTransport::TPA_Play &&
+        !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause) &&
+        !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop)) {
         ignore = true;
     } else if (m_transportState == Stopped &&
-            m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop &&
-            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause) &&
-            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Play)) {
+               m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop &&
+               !(m_currentTransportActions &
+                 UPnPClient::AVTransport::TPA_Pause) &&
+               !(m_currentTransportActions &
+                 UPnPClient::AVTransport::TPA_Play)) {
         ignore = true;
-    } else if ((m_transportState == PausedPlayback || m_transportState == PausedRecording) &&
-            m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause &&
-            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Stop) &&
-            !(m_currentTransportActions & UPnPClient::AVTransport::TPA_Play)) {
+    } else if ((m_transportState == PausedPlayback ||
+                m_transportState == PausedRecording) &&
+               m_currentTransportActions & UPnPClient::AVTransport::TPA_Pause &&
+               !(m_currentTransportActions &
+                 UPnPClient::AVTransport::TPA_Stop) &&
+               !(m_currentTransportActions &
+                 UPnPClient::AVTransport::TPA_Play)) {
         ignore = true;
     }
 
-    if (ignore)
-        qWarning() << "Ignoring supported actions";
+    if (ignore) qWarning() << "Ignoring supported actions";
 
     return ignore;
 }
 
-void AVTransport::setLocalContent(const QString &cid, const QString &nid)
-{
+void AVTransport::setLocalContent(const QString& cid, const QString& nid) {
     qDebug() << "setLocalContent:" << Utils::anonymizedId(cid)
              << Utils::anonymizedId(nid);
 
@@ -714,7 +652,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         return;
     }
 
-    startTask([this, cid, nid](){
+    startTask([this, cid, nid]() {
         auto cs = ContentServer::instance();
 
         bool do_current = !cid.isEmpty();
@@ -736,8 +674,7 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
             do_current = s_cURI != m_currentURI;
             if (!do_current) {
                 qWarning() << "Content URL is the same as currentURI";
-                if (m_transportState != Playing)
-                    do_play = true;
+                if (m_transportState != Playing) do_play = true;
             }
         }
 
@@ -793,7 +730,8 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
         if (do_next) {
             qDebug() << "Calling setNextAVTransportURI with id:"
                      << Utils::anonymizedId(nid);
-            if (!handleError(srv->setNextAVTransportURI(s_nURI.toStdString(), nmeta.toStdString()))) {
+            if (!handleError(srv->setNextAVTransportURI(s_nURI.toStdString(),
+                                                        nmeta.toStdString()))) {
                 qWarning() << "Error response for setNextAVTransportURI()";
                 if (!getInited()) {
                     m_updateMutex.unlock();
@@ -833,7 +771,8 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 
             qDebug() << "Calling setAVTransportURI with id:"
                      << Utils::anonymizedId(cid);
-            if (!handleError(srv->setAVTransportURI(s_cURI.toStdString(),cmeta.toStdString()))) {
+            if (!handleError(srv->setAVTransportURI(s_cURI.toStdString(),
+                                                    cmeta.toStdString()))) {
                 qWarning() << "Error response for setAVTransportURI()";
                 if (!getInited()) {
                     m_updateMutex.unlock();
@@ -847,7 +786,8 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
 
         if (do_play) {
             qDebug() << "Calling setPlayMode";
-            if (!handleError(srv->setPlayMode(UPnPClient::AVTransport::PM_Normal))) {
+            if (!handleError(
+                    srv->setPlayMode(UPnPClient::AVTransport::PM_Normal))) {
                 qWarning() << "Error response for setPlayMode()";
                 if (!getInited()) {
                     m_updateMutex.unlock();
@@ -875,23 +815,21 @@ void AVTransport::setLocalContent(const QString &cid, const QString &nid)
     });
 }
 
-void AVTransport::setSpeed(int value)
-{
+void AVTransport::setSpeed(int value) {
     if (m_speed != value) {
         m_speed = value;
         emit speedChanged();
     }
 }
 
-void AVTransport::play()
-{
+void AVTransport::play() {
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this](){
-        m_updateMutex.lock();    
+    startTask([this]() {
+        m_updateMutex.lock();
 
         qDebug() << "Calling: play";
 
@@ -915,25 +853,25 @@ void AVTransport::play()
         tsleep();
         m_updateMutex.unlock();
 
-        //qDebug() << "--> UPDATE play";
+        // qDebug() << "--> UPDATE play";
         update();
     });
 }
 
-void AVTransport::pause()
-{
+void AVTransport::pause() {
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
     if (m_currentTrackDuration <= 0) {
-        qDebug() << "Possibly live streaming content, so stopping instead pausing";
+        qDebug()
+            << "Possibly live streaming content, so stopping instead pausing";
         stop();
         return;
     }
 
-    startTask([this](){
+    startTask([this]() {
         m_updateMutex.lock();
 
         auto srv = s();
@@ -962,8 +900,7 @@ void AVTransport::pause()
     });
 }
 
-void AVTransport::stop()
-{
+void AVTransport::stop() {
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
@@ -974,7 +911,7 @@ void AVTransport::stop()
     emit relativeTimePositionChanged();
     emit absoluteTimePositionChanged();
 
-    startTask([this](){
+    startTask([this]() {
         m_updateMutex.lock();
 
         auto srv = s();
@@ -1005,14 +942,13 @@ void AVTransport::stop()
     });
 }
 
-void AVTransport::next()
-{
+void AVTransport::next() {
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this](){
+    startTask([this]() {
         m_updateMutex.lock();
 
         auto srv = s();
@@ -1041,14 +977,13 @@ void AVTransport::next()
     });
 }
 
-void AVTransport::previous()
-{
+void AVTransport::previous() {
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this](){
+    startTask([this]() {
         m_updateMutex.lock();
 
         auto srv = s();
@@ -1077,14 +1012,13 @@ void AVTransport::previous()
     });
 }
 
-void AVTransport::setPlayMode(int value)
-{
+void AVTransport::setPlayMode(int value) {
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this, value](){
+    startTask([this, value]() {
         qDebug() << "setPlayMode:" << value;
 
         m_updateMutex.lock();
@@ -1110,26 +1044,25 @@ void AVTransport::setPlayMode(int value)
     });
 }
 
-void AVTransport::seek(int value)
-{
+void AVTransport::seek(int value) {
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    m_futureSeek = value < 0 ? 0 :
-                   value > m_currentTrackDuration ? m_currentTrackDuration : value;
+    m_futureSeek = value < 0                        ? 0
+                   : value > m_currentTrackDuration ? m_currentTrackDuration
+                                                    : value;
     m_seekTimer.start();
 }
 
-void AVTransport::seekTimeout()
-{
+void AVTransport::seekTimeout() {
     if (!getInited()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this](){
+    startTask([this]() {
         qDebug() << "Seek timeout:" << m_futureSeek;
 
         m_updateMutex.lock();
@@ -1159,9 +1092,9 @@ void AVTransport::seekTimeout()
     });
 }
 
-void AVTransport::fakeUpdateRelativeTimePosition()
-{
-    if (m_currentTrackDuration == 0 || m_relativeTimePosition < m_currentTrackDuration) {
+void AVTransport::fakeUpdateRelativeTimePosition() {
+    if (m_currentTrackDuration == 0 ||
+        m_relativeTimePosition < m_currentTrackDuration) {
         if (m_oldTimePosition < m_relativeTimePosition - 5) {
             asyncUpdatePositionInfo();
         } else {
@@ -1173,8 +1106,7 @@ void AVTransport::fakeUpdateRelativeTimePosition()
     }
 }
 
-bool AVTransport::updating()
-{
+bool AVTransport::updating() {
     bool lock = m_updateMutex.tryLock();
     if (lock) {
         m_updateMutex.unlock();
@@ -1183,8 +1115,7 @@ bool AVTransport::updating()
     return true;
 }
 
-void AVTransport::update(int initDelay, int postDelay)
-{
+void AVTransport::update(int initDelay, int postDelay) {
     if (!isInitedOrIniting()) {
         qWarning() << "AVTransport service is not inited";
         return;
@@ -1203,7 +1134,7 @@ void AVTransport::update(int initDelay, int postDelay)
     updateTransportInfo();
     updateMediaInfo();
     updateCurrentTransportActions();
-    //updateTransportSettings();
+    // updateTransportSettings();
 
     tsleep(postDelay);
 
@@ -1237,50 +1168,44 @@ void AVTransport::update(int initDelay, int postDelay)
     m_updateMutex.unlock();
 }
 
-void AVTransport::needTimerCheck()
-{
+void AVTransport::needTimerCheck() {
 #ifdef USE_SFOS
     auto app = static_cast<QGuiApplication*>(QGuiApplication::instance());
 #endif
 
     if (m_transportState == Playing
 #ifdef USE_SFOS
-           && app->applicationState() == Qt::ApplicationActive
+        && app->applicationState() == Qt::ApplicationActive
 #endif
-       ) {
-       emit needTimer(true);
+    ) {
+        emit needTimer(true);
     } else {
-       emit needTimer(false);
+        emit needTimer(false);
     }
 }
 
-void AVTransport::asyncUpdate(int initDelay, int postDelay)
-{
+void AVTransport::asyncUpdate(int initDelay, int postDelay) {
     if (!isInitedOrIniting()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this, initDelay, postDelay](){
-        update(initDelay, postDelay);
-    });
+    startTask([this, initDelay, postDelay]() { update(initDelay, postDelay); });
 }
 
-void AVTransport::asyncUpdatePositionInfo()
-{
+void AVTransport::asyncUpdatePositionInfo() {
     if (!isInitedOrIniting()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this](){
+    startTask([this]() {
         updatePositionInfo();
         updateCurrentTransportActions();
     });
 }
 
-void AVTransport::updatePositionInfo()
-{
+void AVTransport::updatePositionInfo() {
     auto srv = s();
 
     if (!isInitedOrIniting() || !srv) {
@@ -1334,20 +1259,16 @@ void AVTransport::updatePositionInfo()
     }
 }
 
-void AVTransport::asyncUpdateTransportInfo()
-{
+void AVTransport::asyncUpdateTransportInfo() {
     if (!isInitedOrIniting()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this](){
-        updateTransportInfo();
-    });
+    startTask([this]() { updateTransportInfo(); });
 }
 
-void AVTransport::updateTransportInfo()
-{
+void AVTransport::updateTransportInfo() {
     auto srv = s();
 
     if (!isInitedOrIniting() || !srv) {
@@ -1358,12 +1279,20 @@ void AVTransport::updateTransportInfo()
     UPnPClient::AVTransport::TransportInfo ti;
     if (handleError(srv->getTransportInfo(ti))) {
         qDebug() << "TransportState:"
-                 << transportStateValue(static_cast<TransportState>(m_oldTransportState)) << "->"
-                 << transportStateValue(static_cast<TransportState>(m_transportState)) << "->"
-                 << transportStateValue(static_cast<TransportState>(ti.tpstate));
+                 << transportStateValue(
+                        static_cast<TransportState>(m_oldTransportState))
+                 << "->"
+                 << transportStateValue(
+                        static_cast<TransportState>(m_transportState))
+                 << "->"
+                 << transportStateValue(
+                        static_cast<TransportState>(ti.tpstate));
         qDebug() << "TransportStatus:"
-                 << transportStatusValue(static_cast<TransportStatus>(m_transportStatus)) << "->"
-                 << transportStatusValue(static_cast<TransportStatus>(ti.tpstatus));
+                 << transportStatusValue(
+                        static_cast<TransportStatus>(m_transportStatus))
+                 << "->"
+                 << transportStatusValue(
+                        static_cast<TransportStatus>(ti.tpstatus));
 
         if (m_transportState != ti.tpstate) {
             m_oldTransportState = m_transportState;
@@ -1397,17 +1326,20 @@ void AVTransport::updateTransportInfo()
     }
 }
 
-void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta)
-{
+void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject& trackmeta) {
     m_id = QString::fromStdString(trackmeta.m_id);
     m_currentTitle = QString::fromStdString(trackmeta.m_title);
     m_currentClass = QString::fromStdString(trackmeta.getprop("upnp:class"));
-    m_currentAuthor = QString::fromStdString(trackmeta.getprop("upnp:artist")).split(",").first();
-    m_currentDescription  = QString::fromStdString(trackmeta.getprop("upnp:longDescription"));
+    m_currentAuthor = QString::fromStdString(trackmeta.getprop("upnp:artist"))
+                          .split(",")
+                          .first();
+    m_currentDescription =
+        QString::fromStdString(trackmeta.getprop("upnp:longDescription"));
     m_currentAlbum = QString::fromStdString(trackmeta.getprop("upnp:album"));
     emit currentMetaDataChanged();
 
-    auto new_albumArtURI = QUrl(QString::fromStdString(trackmeta.getprop("upnp:albumArtURI")));
+    auto new_albumArtURI =
+        QUrl(QString::fromStdString(trackmeta.getprop("upnp:albumArtURI")));
     if (m_currentAlbumArtURI != new_albumArtURI) {
         m_currentAlbumArtURI = new_albumArtURI;
         emit currentAlbumArtChanged();
@@ -1418,18 +1350,32 @@ void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta)
     qDebug() << "  pid:" << QString::fromStdString(trackmeta.m_pid);
     qDebug() << "  title:" << QString::fromStdString(trackmeta.m_title);
 #ifdef QT_DEBUG
-    qDebug() << "  m_type:" << (trackmeta.m_type == UPnPClient::UPnPDirObject::item ? "Item" :
-                                trackmeta.m_type == UPnPClient::UPnPDirObject::container ? "Container" :
-                                                                                           "Unknown");
-    qDebug() << "  m_iclass:" << (trackmeta.m_iclass == UPnPClient::UPnPDirObject::ITC_audioItem ? "AudioItem" :
-                                  trackmeta.m_iclass == UPnPClient::UPnPDirObject::ITC_audioItem_musicTrack ? "AudioItem MusicTrack" :
-                                  trackmeta.m_iclass == UPnPClient::UPnPDirObject::ITC_audioItem_playlist ? "AudioItem Playlist" :
-                                  trackmeta.m_iclass == UPnPClient::UPnPDirObject::ITC_playlist ? "Playlist" :
-                                  trackmeta.m_iclass == UPnPClient::UPnPDirObject::ITC_videoItem ? "VideoItem" :
-                                  trackmeta.m_iclass == UPnPClient::UPnPDirObject::ITC_unknown ? "Unknown" : "Unknown other");
+    qDebug() << "  m_type:"
+             << (trackmeta.m_type == UPnPClient::UPnPDirObject::item ? "Item"
+                 : trackmeta.m_type == UPnPClient::UPnPDirObject::container
+                     ? "Container"
+                     : "Unknown");
+    qDebug() << "  m_iclass:"
+             << (trackmeta.m_iclass == UPnPClient::UPnPDirObject::ITC_audioItem
+                     ? "AudioItem"
+                 : trackmeta.m_iclass ==
+                         UPnPClient::UPnPDirObject::ITC_audioItem_musicTrack
+                     ? "AudioItem MusicTrack"
+                 : trackmeta.m_iclass ==
+                         UPnPClient::UPnPDirObject::ITC_audioItem_playlist
+                     ? "AudioItem Playlist"
+                 : trackmeta.m_iclass == UPnPClient::UPnPDirObject::ITC_playlist
+                     ? "Playlist"
+                 : trackmeta.m_iclass ==
+                         UPnPClient::UPnPDirObject::ITC_videoItem
+                     ? "VideoItem"
+                 : trackmeta.m_iclass == UPnPClient::UPnPDirObject::ITC_unknown
+                     ? "Unknown"
+                     : "Unknown other");
     qDebug() << "  props:";
     for (auto const& x : trackmeta.m_props) {
-        qDebug() << "   " << QString::fromStdString(x.first) << " : " << QString::fromStdString(x.second);
+        qDebug() << "   " << QString::fromStdString(x.first) << " : "
+                 << QString::fromStdString(x.second);
     }
     qDebug() << "  resources:";
     for (auto const& x : trackmeta.m_resources) {
@@ -1438,20 +1384,16 @@ void AVTransport::updateTrackMeta(const UPnPClient::UPnPDirObject &trackmeta)
 #endif
 }
 
-void AVTransport::asyncUpdateMediaInfo()
-{
+void AVTransport::asyncUpdateMediaInfo() {
     if (!isInitedOrIniting()) {
         qWarning() << "Service is not inited";
         return;
     }
 
-    startTask([this](){
-        updateMediaInfo();
-    });
+    startTask([this]() { updateMediaInfo(); });
 }
 
-void AVTransport::updateMediaInfo()
-{
+void AVTransport::updateMediaInfo() {
     auto srv = s();
 
     if (!isInitedOrIniting() || !srv) {
@@ -1470,8 +1412,10 @@ void AVTransport::updateMediaInfo()
 #ifdef QT_DEBUG
         qDebug() << "  nrtracks:" << mi.nrtracks;
         qDebug() << "  mduration:" << mi.mduration;
-        qDebug() << "  pbstoragemed:" << QString::fromStdString(mi.pbstoragemed);
-        qDebug() << "  rcstoragemed:" << QString::fromStdString(mi.rcstoragemed);
+        qDebug() << "  pbstoragemed:"
+                 << QString::fromStdString(mi.pbstoragemed);
+        qDebug() << "  rcstoragemed:"
+                 << QString::fromStdString(mi.rcstoragemed);
         qDebug() << "  ws:" << QString::fromStdString(mi.ws);
 #endif
         if (m_numberOfTracks != mi.nrtracks) {
@@ -1534,20 +1478,16 @@ void AVTransport::updateMediaInfo()
     }
 }
 
-void AVTransport::asyncUpdateCurrentTransportActions()
-{
+void AVTransport::asyncUpdateCurrentTransportActions() {
     if (!isInitedOrIniting()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this](){
-        updateCurrentTransportActions();
-    });
+    startTask([this]() { updateCurrentTransportActions(); });
 }
 
-void AVTransport::updateCurrentTransportActions()
-{
+void AVTransport::updateCurrentTransportActions() {
     auto srv = s();
 
     if (!isInitedOrIniting() || !srv) {
@@ -1559,9 +1499,11 @@ void AVTransport::updateCurrentTransportActions()
         qDebug() << "CurrentTransportActions:";
         qDebug() << "  actions:" << ac;
         qDebug() << "  Next:" << ((ac & UPnPClient::AVTransport::TPA_Next) > 0);
-        qDebug() << "  Pause:" << ((ac & UPnPClient::AVTransport::TPA_Pause) > 0);
+        qDebug() << "  Pause:"
+                 << ((ac & UPnPClient::AVTransport::TPA_Pause) > 0);
         qDebug() << "  Play:" << ((ac & UPnPClient::AVTransport::TPA_Play) > 0);
-        qDebug() << "  Previous:" << ((ac & UPnPClient::AVTransport::TPA_Previous) > 0);
+        qDebug() << "  Previous:"
+                 << ((ac & UPnPClient::AVTransport::TPA_Previous) > 0);
         qDebug() << "  Seek:" << ((ac & UPnPClient::AVTransport::TPA_Seek) > 0);
         qDebug() << "  Stop:" << ((ac & UPnPClient::AVTransport::TPA_Stop) > 0);
 
@@ -1575,8 +1517,7 @@ void AVTransport::updateCurrentTransportActions()
     }
 }
 
-void AVTransport::updateTransportSettings()
-{
+void AVTransport::updateTransportSettings() {
     auto srv = s();
 
     if (!isInitedOrIniting() || !srv) {
@@ -1589,7 +1530,8 @@ void AVTransport::updateTransportSettings()
 #ifdef QT_DEBUG
         qDebug() << "TransportSettings:";
         qDebug() << "  playmode:" << ts.playmode;
-        qDebug() << "  recqualitymode:" << QString::fromStdString(ts.recqualitymode);
+        qDebug() << "  recqualitymode:"
+                 << QString::fromStdString(ts.recqualitymode);
 #endif
         if (m_playmode != ts.playmode) {
             m_playmode = ts.playmode;
@@ -1600,20 +1542,16 @@ void AVTransport::updateTransportSettings()
     }
 }
 
-void AVTransport::asyncUpdateTransportSettings()
-{
+void AVTransport::asyncUpdateTransportSettings() {
     if (!isInitedOrIniting()) {
         qWarning() << "AVTransport service is not inited";
         return;
     }
 
-    startTask([this](){
-        updateTransportSettings();
-    });
+    startTask([this]() { updateTransportSettings(); });
 }
 
-void AVTransport::blockUriChanged(int time)
-{
+void AVTransport::blockUriChanged(int time) {
     m_blockEmitUriChanged = true;
 
     qDebug() << "URIChanged blocked";

@@ -96,13 +96,14 @@ class BcApi : public QObject {
     std::shared_ptr<QNetworkAccessManager> nam;
 
     std::optional<QJsonDocument> parseNotableBlob() const;
-    std::optional<SearchResultItem> notableItem(double id) const;
+    std::optional<SearchResultItem> notableItem(const QByteArray &bytes) const;
     static SearchResultItem notableItem(const QJsonObject &obj);
     inline static QUrl artUrl(const QString &id);
     static std::pair<QUrl, QByteArray> makeSearchUrl(const QString &phrase);
     static QJsonDocument parseJsonData(const QByteArray &data);
     static Type textToType(const QString &text);
     static void storeNotableIds(const QJsonObject &obj);
+    static void storeNotableIds(const QJsonArray &array);
     bool prepareNotableIds() const;
 };
 

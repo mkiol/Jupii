@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,12 +9,14 @@
 #define DOWNLOADER_H
 
 #include <QByteArray>
+#include <QHash>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
 #include <QUrl>
 #include <memory>
 #include <utility>
+#include <vector>
 
 class Downloader final : public QObject {
     Q_OBJECT
@@ -30,7 +32,11 @@ class Downloader final : public QObject {
     ~Downloader() final;
     Data downloadData(const QUrl &url, const Data &postData = {},
                       int timeout = httpTimeout);
-    bool downloadToFile(const QUrl &url, const QString &outputPath, bool abortWhenSlowDownload);
+    QHash<QUrl, Data> downloadData(const std::vector<QUrl> &urls,
+                                   const QHash<QUrl, Data> &postDataMap = {},
+                                   int timeout = httpTimeout);
+    bool downloadToFile(const QUrl &url, const QString &outputPath,
+                        bool abortWhenSlowDownload);
     void cancel();
     void reset();
     inline auto canceled() const { return mCancelRequested; }

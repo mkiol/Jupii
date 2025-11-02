@@ -114,7 +114,11 @@ Kirigami.ScrollablePage {
             notifications.show(qsTr("Error in getting data"))
         }
         onProgressChanged: {
-            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
+            if (total > 0) {
+                busyIndicator.text = "" + n + "/" + total
+            } else {
+                busyIndicator.text = ""
+            }
         }
     }
 
@@ -132,11 +136,12 @@ Kirigami.ScrollablePage {
             id: listItem
             enabled: !itemModel.busy
             label: {
+                if (!model) return ""
                 switch (model.type) {
-                case YtModel.Type_Album: return model.album;
-                case YtModel.Type_Artist: return model.artist;
-                default: return model.name;
+                case YtModel.Type_Album: return model.album
+                case YtModel.Type_Artist: return model.artist
                 }
+                return model.name
             }
 
             function addDur(text, dur) {
@@ -144,6 +149,7 @@ Kirigami.ScrollablePage {
             }
 
             subtitle: {
+                if (!model) return ""
                 switch (model.type) {
                 case YtModel.Type_Video:
                     return root.artistMode ? addDur(model.album, model.duration) :
@@ -155,6 +161,21 @@ Kirigami.ScrollablePage {
                 return addDur("", model.duration)
             }
             defaultIconSource: {
+                if (!model) return ""
+                switch (model.type) {
+                case YtModel.Type_Artist:
+                    return "view-media-artist"
+                case YtModel.Type_Album:
+                    return "media-album-cover"
+                case YtModel.Type_Playlist:
+                    return "view-media-playlist"
+                }
+                return settings.ytPreferredType === Settings.YtPreferredType_Audio ?
+                                "audio-x-generic" : "video-x-generic"
+            }
+            attachedIconName: {
+                if (!model || !showingIcon || iconSource.length === 0)
+                    return ""
                 switch (model.type) {
                 case YtModel.Type_Artist:
                     return "view-media-artist"
@@ -166,19 +187,15 @@ Kirigami.ScrollablePage {
                 return settings.ytPreferredType === Settings.YtPreferredType_Audio ?
                                 "emblem-music-symbolic" : "emblem-videos-symbolic"
             }
-            attachedIconName: {
-                if (model.type !== YtModel.Type_Video || iconSource.length === 0)
-                    return ""
-                return defaultIconSource
-            }
-            iconSource: model.icon
+            iconSource: model ? model.icon : ""
             iconSize: Kirigami.Units.iconSizes.medium
-            next: model.type !== YtModel.Type_Video
+            next: model && model.type !== YtModel.Type_Video
 
             onClicked: {
+                if (!model) return
                 if (model.type === YtModel.Type_Video) {
                     var selected = model.selected
-                    itemModel.setSelected(model.index, !selected);
+                    itemModel.setSelected(model.index, !selected)
                 } else if (model.type === YtModel.Type_Album || model.type === YtModel.Type_Playlist) {
                     pageStack.pop(root)
                     pageStack.push(Qt.resolvedUrl("YtPage.qml"), {albumPage: model.id, albumType: model.type})
@@ -188,19 +205,8 @@ Kirigami.ScrollablePage {
                 }
             }
 
-            extra: {
-                switch (model.type) {
-                case YtModel.Type_Album:
-                    return qsTr("Album");
-                case YtModel.Type_Playlist:
-                    return qsTr("Playlist");
-                case YtModel.Type_Artist:
-                    return qsTr("Artist");
-                default: return "";
-                }
-            }
-
             highlighted: {
+                if (!model) return false
                 if (pageStack.currentItem !== root) {
                     var rightPage = app.rightPage(root)
                     if (rightPage && rightPage.objectName === "yt") {
@@ -210,7 +216,6 @@ Kirigami.ScrollablePage {
                             return rightPage.artistPage === model.id
                     }
                 }
-
                 return model.selected
             }
 
@@ -220,8 +225,9 @@ Kirigami.ScrollablePage {
                     text: qsTr("Toggle selection")
                     visible: !listItem.next
                     onTriggered: {
+                        if (!model) return
                         var selected = model.selected
-                        itemModel.setSelected(model.index, !selected);
+                        itemModel.setSelected(model.index, !selected)
                     }
                 }
             ]
@@ -251,7 +257,7 @@ Kirigami.ScrollablePage {
             anchors.centerIn: parent
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: itemList.count === 0 && !itemModel.busy
-            text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
+            text: itemModel.filter.length === 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : qsTr("No items")
         }
 

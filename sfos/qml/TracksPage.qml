@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -80,13 +80,15 @@ Dialog {
             property bool isMic: utils.isIdMic(model.url)
             property bool isPulse: utils.isIdPulse(model.id)
 
-            highlighted: down || model.selected
-            title.text: model.title
-            subtitle.text: root.albumId.length !== 0 || root.playlistId.length !== 0 ?
-                               model.artist : model.album
+            highlighted: down || (model && model.selected)
+            title.text: model ? model.title : ""
+            subtitle.text: model ? root.albumId.length !== 0 || root.playlistId.length !== 0 ?
+                               model.artist : model.album : ""
+            dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
-            icon.source: model.icon
+            icon.source: model ? model.icon : ""
             defaultIcon.source: {
+                if (!model) return ""
                 if (isMic)
                     return "image://theme/icon-m-mic?" + primaryColor
                 else if (isPulse)
@@ -99,23 +101,20 @@ Dialog {
                         return "image://theme/icon-m-file-audio?" + primaryColor
                     case AVTransport.T_Video:
                         return "image://theme/icon-m-file-video?" + primaryColor
-                    default:
-                        return "image://theme/icon-m-file-other?" + primaryColor
                     }
+                return "image://theme/icon-m-file-other?" + primaryColor
             }
-
-            attachedIcon.source: model.itemType === ContentServer.ItemType_Url ?
+            attachedIcon.source: model && model.itemType === ContentServer.ItemType_Url ?
                                      ("image://icons/icon-s-browser?" + primaryColor) :
-                                 model.itemType === ContentServer.ItemType_Upnp ?
+                                 model && model.itemType === ContentServer.ItemType_Upnp ?
                                      ("image://icons/icon-s-device?" + primaryColor) : ""
-
             attachedIcon2.source: {
-                if (icon.status !== Image.Ready)
+                if (!model || icon.source == "" || icon.status !== Image.Ready)
                     return ""
                 return defaultIcon.source
             }
-
             onClicked: {
+                if (!model) return
                 var selected = model.selected
                 itemModel.setSelected(model.index, !selected);
             }

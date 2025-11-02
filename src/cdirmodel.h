@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -118,6 +118,7 @@ class CDirItem : public SelectableItem {
     inline QDateTime date() const { return m_date; }
     inline int duration() const { return m_duration; }
     inline CDirModel::Types type() const { return m_type; }
+    QUrl iconThumb() const;
 
    private:
     QString m_id;

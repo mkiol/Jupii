@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,8 +15,8 @@ Kirigami.SwipeListItem {
 
     property alias label: labelItem.text
     property alias subtitle: subtitleItem.text
-    property string iconSource
-    property alias defaultIconSource: iconItem.fallback
+    property alias iconSource: iconItem.source
+    property alias defaultIconSource: iconFallback.source
     property alias attachedIconName: attachedIcon.source
     property alias attachedIcon2Name: attachedIcon2.source
     property alias iconSize: iconPack.size
@@ -27,6 +27,8 @@ Kirigami.SwipeListItem {
     property alias extra2: extra2Label.text
     property real leadingPadding: Kirigami.Units.largeSpacing
     property real trailingPadding: Kirigami.Units.largeSpacing
+    readonly property bool showingIcon: iconSource.toString().length > 0 &&
+                                            (iconItem.status === Kirigami.Icon.Ready && typeof iconSource !== "undefined")
 
     activeTextColor: Kirigami.Theme.activeTextColor
 
@@ -54,28 +56,28 @@ Kirigami.SwipeListItem {
 
                 Kirigami.Icon {
                     id: iconItem
-                    source: root.iconSource.length == 0 ? root.defaultIconSource : root.iconSource
                     anchors.fill: parent
-                    visible: !root.busy && iconItem.status === Kirigami.Icon.Ready && typeof source !== "undefined"
-
-                    Column {
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        width: Kirigami.Units.iconSizes.small
-
-                        AttachedIcon {
-                            id: attachedIcon
-                        }
-
-                        AttachedIcon {
-                            id: attachedIcon2
-                        }
-                    }
+                    visible: !root.busy && root.showingIcon
                 }
                 Kirigami.Icon {
-                    source: iconItem.fallback
+                    id: iconFallback
+
                     anchors.fill: parent
-                    visible: !root.busy && iconItem.status !== Kirigami.Icon.Ready && typeof iconItem.fallback !== "undefined"
+                    visible: !root.busy && !root.showingIcon
+                }
+                Column {
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    width: Kirigami.Units.iconSizes.small
+                    visible: !root.busy
+
+                    AttachedIcon {
+                        id: attachedIcon
+                    }
+
+                    AttachedIcon {
+                        id: attachedIcon2
+                    }
                 }
                 Controls.BusyIndicator {
                     id: busyIndicator

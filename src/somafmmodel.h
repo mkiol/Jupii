@@ -39,14 +39,12 @@ class SomafmItem : public SelectableItem {
                         QUrl icon, QObject *parent = nullptr);
     QVariant data(int role) const override;
     QHash<int, QByteArray> roleNames() const override;
-    inline QString id() const override { return m_id; }
-    inline auto name() const { return m_name; }
-    inline auto description() const { return m_description; }
-    inline auto url() const { return m_url; }
-    inline auto icon() const { return m_icon; }
-    inline auto iconThumb() const {
-        return QUrl{ICON_PROVIDER_PREFIX + m_icon.toString()};
-    }
+    QString id() const override { return m_id; }
+    auto name() const { return m_name; }
+    auto description() const { return m_description; }
+    auto url() const { return m_url; }
+    auto icon() const { return m_icon; }
+    QUrl iconThumb() const;
 
    private:
     QString m_id;
@@ -64,7 +62,7 @@ class SomafmModel : public SelectableItemModel {
     ~SomafmModel() override;
     Q_INVOKABLE QVariantList selectedItems() override;
     Q_INVOKABLE void refresh();
-    inline auto refreshing() const { return m_refreshing; }
+    auto refreshing() const { return m_refreshing; }
 
    signals:
     void error();

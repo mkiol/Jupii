@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -95,7 +95,11 @@ Kirigami.ScrollablePage {
             notifications.show(qsTr("Error in getting data"))
         }
         onProgressChanged: {
-            busyIndicator.text = total == 0 ? "" : "" + n + "/" + total
+            if (total > 0) {
+                busyIndicator.text = "" + n + "/" + total
+            } else {
+                busyIndicator.text = ""
+            }
         }
         onBusyChanged: {
             if (!busy) {
@@ -110,12 +114,36 @@ Kirigami.ScrollablePage {
         DoubleListItem {
             id: listItem
             enabled: !itemModel.busy
-            label: model.type === BcModel.Type_Track ? model.name :
-                   model.type === BcModel.Type_Album ? model.album :
-                   model.type === BcModel.Type_Artist ? model.artist : ""
-            subtitle:  model.type === BcModel.Type_Track ||
-                       model.type === BcModel.Type_Album ? model.artist : ""
+            label: {
+                if (!model) return ""
+                switch (model.type) {
+                case BcModel.Type_Album: return model.album
+                case BcModel.Type_Artist: return model.artist
+                }
+                return model.name
+            }
+            subtitle:  {
+                if (!model) return ""
+                switch (model.type) {
+                case BcModel.Type_Track:
+                case BcModel.Type_Album:
+                    return model.artist
+                }
+                return ""
+            }
             defaultIconSource: {
+                if (!model) return ""
+                switch (model.type) {
+                case BcModel.Type_Artist:
+                    return "view-media-artist"
+                case BcModel.Type_Album:
+                    return "media-album-cover"
+                }
+                return "audio-x-generic"
+            }
+            attachedIconName: {
+                if (!model || !showingIcon || iconSource.length === 0)
+                    return ""
                 switch (model.type) {
                 case BcModel.Type_Artist:
                     return "view-media-artist"
@@ -124,11 +152,12 @@ Kirigami.ScrollablePage {
                 }
                 return "emblem-music-symbolic"
             }
-            iconSource: model.icon
+            iconSource: model ? model.icon : ""
             iconSize: Kirigami.Units.iconSizes.medium
-            next: model.type !== BcModel.Type_Track
+            next: model && model.type !== BcModel.Type_Track
 
             onClicked: {
+                if (!model) return
                 if (model.type === BcModel.Type_Track) {
                     var selected = model.selected
                     itemModel.setSelected(model.index, !selected);
@@ -140,12 +169,10 @@ Kirigami.ScrollablePage {
                     pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: model.url})
                 }
             }
-
-            extra: model.type === BcModel.Type_Album ? qsTr("Album") :
-                   model.type === BcModel.Type_Artist ? qsTr("Artist") : ""
-            extra2: model.genre
+            extra: model ? model.genre : ""
 
             highlighted: {
+                if (!model) return false
                 if (pageStack.currentItem !== root) {
                     var rightPage = app.rightPage(root)
                     if (rightPage && rightPage.objectName === "bc") {
@@ -155,7 +182,6 @@ Kirigami.ScrollablePage {
                             return rightPage.artistPage === model.url
                     }
                 }
-
                 return model.selected
             }
 
@@ -165,8 +191,9 @@ Kirigami.ScrollablePage {
                     text: qsTr("Toggle selection")
                     visible: !listItem.next
                     onTriggered: {
+                        if (!model) return
                         var selected = model.selected
-                        itemModel.setSelected(model.index, !selected);
+                        itemModel.setSelected(model.index, !selected)
                     }
                 }
             ]
@@ -183,15 +210,10 @@ Kirigami.ScrollablePage {
         }
 
         footer: ShowmoreItem {
-            visible: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
+            visible: !itemModel.busy && ((root.featureMode || root.notableMode) && itemModel.canShowMore)
             onClicked: {
-                if (root.featureMode) {
-                    pageStack.push(Qt.resolvedUrl("BcPage.qml"),
-                                   {artistPage: itemModel.notableUrl})
-                } else if (root.notableMode) {
-                    itemModel.requestMoreItems()
-                    itemModel.updateModel()
-                }
+                itemModel.requestMoreItems()
+                itemModel.updateModel()
             }
         }
 
@@ -199,7 +221,7 @@ Kirigami.ScrollablePage {
             anchors.centerIn: parent
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: itemList.count === 0 && !itemModel.busy
-            text: itemModel.filter.length == 0 && !root.albumMode && !root.artistMode ?
+            text: itemModel.filter.length === 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : artistMode ? qsTr("No albums") : qsTr("No items")
         }
     }

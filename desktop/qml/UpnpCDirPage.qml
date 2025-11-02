@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -97,10 +97,11 @@ Kirigami.ScrollablePage {
         id: listItemComponent
         DoubleListItem {
             id: listItem
-            highlighted: model.selected
+            highlighted: model && model.selected
             enabled: !itemModel.busy
-            label: model.title
+            label: model ? model.title : ""
             subtitle: {
+                if (!model) return ""
                 var ctype = itemModel.currentType
                 if (model.selectable) {
                     var dur = model.duration > 1 ? " · " + utils.secToStr(model.duration) : "";
@@ -119,6 +120,7 @@ Kirigami.ScrollablePage {
                 return ""
             }
             defaultIconSource: {
+                if (!model) return ""
                 switch (model.type) {
                 case CDirModel.BackType:
                     return "go-up"
@@ -127,28 +129,38 @@ Kirigami.ScrollablePage {
                 case CDirModel.MusicAlbumType:
                     return "media-album-cover"
                 case CDirModel.ArtistType:
-                    return "amarok_artist"
+                    return "view-media-artist"
                 case CDirModel.AudioType:
                     return "audio-x-generic"
                 case CDirModel.VideoType:
                     return "video-x-generic"
                 case CDirModel.ImageType:
                     return "image-x-generic"
-                default:
-                    return "unknown"
                 }
+                return "unknown"
             }
             attachedIconName: {
-                if (icon.status !== Image.Ready || model.type === CDirModel.BackType ||
-                        model.type === CDirModel.DirType || model.type === CDirModel.MusicAlbumType)
+                if (!model || !showingIcon || model.type === CDirModel.BackType ||
+                        model.type === CDirModel.DirType)
                     return ""
-                return defaultIconSource
+                switch (model.type) {
+                case CDirModel.MusicAlbumType:
+                    return "media-album-cover"
+                case CDirModel.ArtistType:
+                    return "view-media-artist"
+                case CDirModel.VideoType:
+                    return "video-x-generic"
+                case CDirModel.ImageType:
+                    return "image-x-generic"
+                }
+                return "emblem-music-symbolic"
             }
 
-            iconSource: model.icon
+            iconSource: model ? model.icon : ""
             iconSize: Kirigami.Units.iconSizes.medium
 
             onClicked: {
+                if (!model) return
                 if (model.selectable) {
                     var selected = model.selected
                     itemModel.setSelected(model.index, !selected);
@@ -159,10 +171,11 @@ Kirigami.ScrollablePage {
 
             actions: [
                 Kirigami.Action {
-                    visible: model.selectable
+                    visible: model && model.selectable
                     iconName: "checkbox"
                     text: qsTr("Toggle selection")
                     onTriggered: {
+                        if (!model) return
                         var selected = model.selected
                         itemModel.setSelected(model.index, !selected);
                     }
@@ -176,7 +189,7 @@ Kirigami.ScrollablePage {
         model: itemModel
 
         delegate: Kirigami.DelegateRecycler {
-            width: parent.width
+            anchors.left: parent.left; anchors.right: parent.right
             enabled: cdir.inited
             sourceComponent: listItemComponent
         }

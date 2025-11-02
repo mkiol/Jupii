@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,6 +14,7 @@ ListItem {
     property alias title: _title
     property alias subtitle: _subtitle
     property alias icon: _icon
+    property alias iconPack: _iconPack
     property alias defaultIcon: _dicon
     property alias attachedIcon: _aicon
     property alias attachedIcon2: _aicon2
@@ -21,10 +22,10 @@ ListItem {
     property alias extra2: extraLabel2.text
     property bool dimmed: false
 
-    readonly property bool _iconDisabled: _icon.status !== Image.Ready &&
-                                         _dicon.status !== Image.Ready
+    readonly property bool _iconDisabled: _icon.source.length === 0 &&
+                                         _dicon.source.length === 0
 
-    opacity: enabled && _icon.status !== Image.Loading ? 1.0 : dimmed ? 0.7 : 0.0
+    opacity: enabled ? 1.0 : dimmed ? 0.7 : 0.0
     visible: opacity > 0.0
     Behavior on opacity { FadeAnimation {} }
 
@@ -35,38 +36,45 @@ ListItem {
         right: parent.right
     }
 
-    Image {
-        id: _icon
+    Item {
+        id: _iconPack
+
         anchors {
             left: parent.left
             leftMargin: Theme.horizontalPageMargin
             verticalCenter: parent.verticalCenter
         }
-
         height: Theme.iconSizeMedium
         width: Theme.iconSizeMedium
 
-        sourceSize.height: Theme.iconSizeMedium
-        sourceSize.width: Theme.iconSizeMedium
+        Image {
+            id: _icon
+
+            anchors.fill: parent
+            sourceSize.height: Theme.iconSizeMedium
+            sourceSize.width: Theme.iconSizeMedium
+            asynchronous: true
+
+            Column {
+                width: Theme.iconSizeSmall
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+
+                AttachedIcon {
+                    id: _aicon
+                }
+
+                AttachedIcon {
+                    id: _aicon2
+                }
+            }
+        }
 
         Image {
             id: _dicon
+
             anchors.fill: parent
-            visible: icon.status !== Image.Ready
-        }
-
-        Column {
-            width: Theme.iconSizeSmall
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-
-            AttachedIcon {
-                id: _aicon
-            }
-
-            AttachedIcon {
-                id: _aicon2
-            }
+            visible: root.icon.status !== Image.Ready
         }
     }
 
@@ -74,7 +82,7 @@ ListItem {
         width: parent.width
 
         anchors {
-            left: _iconDisabled ? parent.left : _icon.right
+            left: _iconDisabled ? parent.left : _iconPack.right
             right: parent.right
             rightMargin: Theme.horizontalPageMargin +
                          (extraLabel.visible || extraLabel2.visible ? extraCol.width + Theme.paddingMedium : 0)

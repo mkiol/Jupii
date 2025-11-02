@@ -346,14 +346,13 @@ std::optional<YtdlApi::Artist> YtdlApi::artist(const QString& id) {
     a.imageUrl = bestThumbUrl(result.thumbnails);
 
     if (result.albums) {
-        std::
-            transform(
-                result.albums->results.cbegin(), result.albums->results.cend(),
-                std::back_inserter(a.albums), [](const auto& t) {
-                    return ArtistAlbum{QString::fromStdString(t.browse_id),
-                                       QString::fromStdString(t.title),
-                                       bestThumbUrl(t.thumbnails)};
-                });
+        std::transform(
+            result.albums->results.cbegin(), result.albums->results.cend(),
+            std::back_inserter(a.albums), [](const auto& t) {
+                return ArtistAlbum{QString::fromStdString(t.browse_id),
+                                   QString::fromStdString(t.title),
+                                   bestThumbUrl(t.thumbnails)};
+            });
     }
     if (result.songs) {
         std::transform(

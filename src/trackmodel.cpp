@@ -115,15 +115,19 @@ QList<ListItem*> TrackModel::processTrackerReplyForAlbumArtist(
 
     while (cursor.next()) {
         auto type = ContentServer::typeFromMime(cursor.value(7).toString());
-        items.push_back(new TrackItem{/*id=*/cursor.value(0).toString(),
-                                      /*title=*/cursor.value(1).toString(),
-                                      /*artist=*/cursor.value(2).toString(),
-                                      /*album=*/cursor.value(3).toString(),
-                                      /*url=*/QUrl{cursor.value(4).toString()},
-                                      /*icon=*/{},
-                                      /*type=*/type,
-                                      /*number=*/cursor.value(5).toInt(),
-                                      /*length=*/cursor.value(6).toInt()});
+        auto imgFilePath = Tracker::genAlbumArtFile(cursor.value(3).toString(),
+                                                    cursor.value(2).toString());
+        items.push_back(new TrackItem{
+            /*id=*/cursor.value(0).toString(),
+            /*title=*/cursor.value(1).toString(),
+            /*artist=*/cursor.value(2).toString(),
+            /*album=*/cursor.value(3).toString(),
+            /*url=*/QUrl{cursor.value(4).toString()},
+            /*icon=*/
+            QFileInfo::exists(imgFilePath) ? QUrl{imgFilePath} : QUrl{},
+            /*type=*/type,
+            /*number=*/cursor.value(5).toInt(),
+            /*length=*/cursor.value(6).toInt()});
     }
 
     return items;
@@ -407,9 +411,17 @@ TrackItem::TrackItem(const QString& id, const QString& title,
                      const QUrl& url, const QUrl& icon,
                      ContentServer::Type type, int number, int length,
                      ContentServer::ItemType itemType, QObject* parent)
-    : SelectableItem(parent), m_id(id), m_title(title), m_artist(artist),
-      m_album(album), m_url(url), m_icon(icon), m_type(type), m_number(number),
-      m_length(length), m_item_type(itemType) {}
+    : SelectableItem(parent),
+      m_id(id),
+      m_title(title),
+      m_artist(artist),
+      m_album(album),
+      m_url(url),
+      m_icon(icon),
+      m_type(type),
+      m_number(number),
+      m_length(length),
+      m_item_type(itemType) {}
 
 QHash<int, QByteArray> TrackItem::roleNames() const {
     QHash<int, QByteArray> names;

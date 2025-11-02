@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2023-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -47,6 +47,7 @@ class RadionetItem : public SelectableItem {
     inline auto genres() const { return m_genres; }
     inline auto icon() const { return m_icon; }
     inline auto url() const { return m_url; }
+    QUrl iconThumb() const;
 
    private:
     QString m_id;

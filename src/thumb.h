@@ -10,21 +10,26 @@
 
 #include <QByteArray>
 #include <QImage>
-#include <QQuickImageProvider>
+#include <QNetworkAccessManager>
+#include <QPixmap>
 #include <QString>
+#include <QThread>
 #include <QUrl>
+#include <future>
+#include <memory>
+#include <mutex>
 #include <optional>
+#include <queue>
+
+class ThumbDownloadQueue;
 
 class Thumb {
    public:
     static std::optional<QString> path(const QUrl &url);
-    static std::optional<QString> download(const QUrl &url);
+    static std::optional<QString> download(const QUrl &url,
+                                           ThumbDownloadQueue &queue);
     static std::optional<QString> save(QByteArray &&data, const QUrl &url,
                                        QString ext);
-    inline static QUrl makeCache(const QUrl &url) {
-        if (download(url)) return url;
-        return {};
-    }
 
    private:
     enum class ImageOrientation { Unknown, R0, R90, R180, R270 };
@@ -38,11 +43,42 @@ class Thumb {
     static bool convertPixmap(QPixmap &pixmap, ImageOrientation orientation);
 };
 
-class ThumbIconProvider : public QQuickImageProvider {
+class ThumbDownloader : public QObject {
+    Q_OBJECT
    public:
-    ThumbIconProvider();
-    QImage requestImage(const QString &id, QSize *size,
-                        const QSize &requestedSize) override;
+    static const int TIMEOUT = 10000;  // 10s
+    ThumbDownloader(QObject *parent = nullptr);
+    void requestDownload(const QUrl &url);
+    bool active() const { return m_request_counter > 0; }
+   signals:
+    void downloaded(QUrl url, QString mime, QByteArray bytes);
+    void downloadRequested(QUrl url);
+
+   private:
+    QNetworkAccessManager m_nam;
+    unsigned int m_request_counter = 0;
+    std::mutex m_mtx;
+    void download(const QUrl &url);
+    void handleDownloadFinished();
 };
 
-#endif // THUMB_H
+class ThumbDownloadQueue : public QThread {
+    Q_OBJECT
+   public:
+    ThumbDownloadQueue(QObject *parent = nullptr) : QThread{parent} {}
+    ~ThumbDownloadQueue();
+    void download(QUrl url);
+
+   signals:
+    void downloaded(QUrl url, QString mime, QByteArray bytes);
+
+   private:
+    std::unique_ptr<ThumbDownloader> m_downloader;
+    std::mutex m_mtx;
+    std::promise<void> *m_promise;
+    std::queue<QUrl> m_queue;
+    void handleDownloaded(QUrl url, QString mime, QByteArray bytes);
+    void run() override;
+};
+
+#endif  // THUMB_H

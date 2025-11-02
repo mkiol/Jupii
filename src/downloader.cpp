@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,7 @@
 #include <QThread>
 #include <QTime>
 #include <QTimer>
+#include <algorithm>
 
 #include "contentserver.h"
 
@@ -286,6 +287,92 @@ Downloader::Data Downloader::downloadData(const QUrl &url, const Data &postData,
     mReply = nullptr;
 
     return {std::move(mime), std::move(data)};
+}
+
+QHash<QUrl, Downloader::Data> Downloader::downloadData(
+    const std::vector<QUrl> &urls, const QHash<QUrl, Data> &postDataMap,
+    int timeout) {
+    QHash<QUrl, Downloader::Data> result;
+
+    mCancelRequested = false;
+
+    if (urls.empty()) {
+        qWarning() << "urls to download list is empty";
+        return result;
+    }
+
+    auto local_nam{nam};
+    if (!local_nam) {
+        local_nam = std::make_shared<QNetworkAccessManager>();
+    }
+
+    auto unfinishedDownloadsCount = urls.size();
+    QEventLoop loop;
+
+    for (const auto &url : urls) {
+#ifdef QT_DEBUG
+        qDebug() << "download data:" << url;
+#endif
+        QNetworkRequest request;
+        request.setUrl(url);
+        setRequestProps(request);
+
+        auto reply = [&] {
+            auto postDataIt = postDataMap.find(url);
+            if (postDataIt == postDataMap.end()) {  // no post data
+                return local_nam->get(request);
+            } else {
+                request.setHeader(
+                    QNetworkRequest::KnownHeaders::ContentTypeHeader,
+                    postDataIt.value().mime);
+                return local_nam->post(request, postDataIt.value().bytes);
+            }
+        }();
+
+        reply->setProperty("url", url);
+
+        auto timer = new QTimer{reply};
+        timer->setSingleShot(true);
+        timer->setInterval(timeout);
+
+        connect(timer, &QTimer::timeout, this, [&] {
+            auto *timer = qobject_cast<QTimer *>(sender());
+            auto *reply = qobject_cast<QNetworkReply *>(timer->parent());
+            qWarning() << "timeout => aborting:"
+                       << reply->property("url").toUrl();
+            reply->abort();
+        });
+        connect(reply, &QNetworkReply::finished, this, [&] {
+            auto *reply = qobject_cast<QNetworkReply *>(sender());
+            auto url = reply->property("url").toUrl();
+#ifdef QT_DEBUG
+            qDebug() << "download finished:" << url;
+#endif
+            if (reply->error() == QNetworkReply::NoError) {
+                result.insert(url, {ContentServer::mimeFromReply(reply),
+                                    reply->readAll()});
+            } else {
+                qWarning() << "download error:" << url << reply->error();
+            }
+
+            reply->deleteLater();
+
+            --unfinishedDownloadsCount;
+            if (unfinishedDownloadsCount == 0) {
+                loop.quit();
+            }
+        });
+
+        timer->start();
+    }
+
+    loop.exec();
+
+#ifdef QT_DEBUG
+    qDebug() << "all downloads finished";
+#endif
+
+    return result;
 }
 
 void Downloader::cancel() {

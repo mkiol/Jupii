@@ -71,23 +71,28 @@ Page {
         }
 
         delegate: DoubleListItem {
-            title.text: model.name
-            subtitle.text: qsTr("%n track(s)", "", model.count)
+            title.text: model ? model.name : ""
+            subtitle.text: model ? qsTr("%n track(s)", "", model.count) : ""
+            dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
-            icon.source: model.icon
+            icon.source: model ? model.icon : ""
             defaultIcon.source: "image://theme/icon-m-media-artists?" + (highlighted ?
                                     Theme.highlightColor : Theme.primaryColor)
-
+            attachedIcon.source: {
+                if (!model || icon.source == "" || icon.status !== Image.Ready)
+                    return ""
+                return defaultIcon.source
+            }
             menu: ContextMenu {
                 MenuItem {
                     text: qsTr("Select tracks")
                     onClicked: click()
                 }
             }
-
             onClicked: click()
 
             function click() {
+                if (!model) return
                 pageStack.push(Qt.resolvedUrl("TracksPage.qml"), {artistId: model.id})
             }
         }
