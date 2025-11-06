@@ -40,7 +40,7 @@
 #include "trackercursor.h"
 #include "transcoder.h"
 #include "utils.h"
-#ifndef USE_SFOS_HARBOUR
+#ifdef USE_PY
 #include "ytdlapi.h"
 #endif
 
@@ -2136,11 +2136,11 @@ ContentServer::makeItemMetaUsingYtdlApi(
     int counter) {
     qDebug() << "trying to find url with ytdl:" << url;
 
-#ifdef USE_SFOS_HARBOUR
+#ifndef USE_PY
     Q_UNUSED(meta)
     Q_UNUSED(nam)
     Q_UNUSED(counter)
-    qDebug() << "ytdl is disabled in harbour build";
+    qDebug() << "ytdl is disabled";
     return m_metaCache.end();
 #else
     if (QThread::currentThread()->isInterruptionRequested()) {

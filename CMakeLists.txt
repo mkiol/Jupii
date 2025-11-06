@@ -65,6 +65,10 @@ if(WITH_SFOS)
 endif()
 
 if(WITH_SFOS_HARBOUR)
+    set(WITH_PY OFF)
+endif()
+
+if(NOT ${WITH_PY})
     set(BUILD_PYTHON_MODULE OFF)
 endif()
 
@@ -302,12 +306,6 @@ set(jupii_lib_sources
     ${sources_dir}/xc.h
     ${sources_dir}/yamahaxc.cpp
     ${sources_dir}/yamahaxc.h
-    ${sources_dir}/ytdlapi.cpp
-    ${sources_dir}/ytdlapi.h
-    ${sources_dir}/ytmodel.cpp
-    ${sources_dir}/ytmodel.h
-    ${sources_dir}/ytmusic.cpp
-    ${sources_dir}/ytmusic.h
     ${sources_dir}/contentdirectoryservice.cpp
     ${sources_dir}/contentdirectoryservice.h
     ${sources_dir}/connectionmanagerservice.cpp
@@ -332,16 +330,26 @@ set(jupii_lib_sources
     ${sources_dir}/radionetapi.hpp
     ${sources_dir}/mpdtools.cpp
     ${sources_dir}/mpdtools.hpp
-    ${sources_dir}/py_executor.cpp
-    ${sources_dir}/py_executor.hpp
-    ${sources_dir}/py_tools.cpp
-    ${sources_dir}/py_tools.hpp
     ${sources_dir}/module_tools.cpp
     ${sources_dir}/module_tools.hpp
     ${sources_dir}/checksum_tools.cpp
     ${sources_dir}/checksum_tools.hpp
     ${sources_dir}/comp_tools.cpp
     ${sources_dir}/comp_tools.hpp)
+
+if(WITH_PY)
+    list(APPEND jupii_lib_sources
+        ${sources_dir}/ytdlapi.cpp
+        ${sources_dir}/ytdlapi.h
+        ${sources_dir}/ytmodel.cpp
+        ${sources_dir}/ytmodel.h
+        ${sources_dir}/ytmusic.cpp
+        ${sources_dir}/ytmusic.h
+        ${sources_dir}/py_executor.cpp
+        ${sources_dir}/py_executor.hpp
+        ${sources_dir}/py_tools.cpp
+        ${sources_dir}/py_tools.hpp)
+endif()
 
 if(WITH_SFOS)
     list(APPEND jupii_lib_sources
@@ -637,7 +645,7 @@ else()
     list(APPEND includes ${taglib_INCLUDE_DIRS})
 endif()
 
-if(NOT ${WITH_SFOS_HARBOUR})
+if(WITH_PY)
     if(${DEV_USE_PYTHON311} OR ${DEV_USE_PYTHON312})
         if(DEV_USE_PYTHON311)
             pkg_search_module(python REQUIRED python-3.11)

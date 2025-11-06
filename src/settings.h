@@ -266,6 +266,7 @@ class Settings : public QSettings,
     Q_INVOKABLE bool isWayland() const;
     Q_INVOKABLE bool isXcb() const;
     Q_INVOKABLE bool isFlatpak() const;
+    Q_INVOKABLE bool isPy() const;
     Q_INVOKABLE void reset();
     Q_INVOKABLE bool hintEnabled(HintType hint) const;
     Q_INVOKABLE void disableHint(HintType hint);

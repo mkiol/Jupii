@@ -61,13 +61,9 @@ void Settings::initLogger() const {
 Settings::Settings()
     : QSettings{settingsFilepath(), QSettings::NativeFormat},
 #ifdef USE_SFOS
-      hwName {
-    readHwInfo()
-}
+      hwName{readHwInfo()}
 #else
-      hwName {
-    QSysInfo::machineHostName()
-}
+      hwName{QSysInfo::machineHostName()}
 #endif
 {
     initLogger();
@@ -780,6 +776,13 @@ bool Settings::isHarbour() const {
 
 bool Settings::isFlatpak() const {
 #ifdef USE_FLATPAK
+    return true;
+#endif
+    return false;
+}
+
+bool Settings::isPy() const {
+#ifdef USE_PY
     return true;
 #endif
     return false;

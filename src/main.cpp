@@ -66,7 +66,6 @@
 #include "notifications.h"
 #include "playlistfilemodel.h"
 #include "playlistmodel.h"
-#include "py_executor.hpp"
 #include "qtlogger.hpp"
 #include "radionetmodel.hpp"
 #include "recmodel.h"
@@ -82,6 +81,9 @@
 #include "xc.h"
 #ifndef USE_SFOS_HARBOUR
 #include "mpdtools.hpp"
+#endif
+#ifdef USE_PY
+#include "py_executor.hpp"
 #include "ytmodel.h"
 #endif
 #ifdef USE_SFOS
@@ -179,7 +181,7 @@ static void registerTypes() {
     qmlRegisterType<BcModel>(QML_IMPORT("BcModel"), 1, 0, "BcModel");
     qmlRegisterType<SoundcloudModel>(QML_IMPORT("SoundcloudModel"), 1, 0,
                                      "SoundcloudModel");
-#ifndef USE_SFOS_HARBOUR
+#ifdef USE_PY
     qmlRegisterType<YtModel>(QML_IMPORT("YtModel"), 1, 0, "YtModel");
 #endif
     qmlRegisterType<IcecastModel>(QML_IMPORT("IcecastModel"), 1, 0,
@@ -347,7 +349,9 @@ int main(int argc, char** argv) {
     context->setContextProperty(QStringLiteral("conn"), conn);
     context->setContextProperty(QStringLiteral("dbus"), &dbus);
 
+#ifdef USE_PY
     py_executor::instance()->start();
+#endif
 
 #ifdef USE_SFOS
     ResourceHandler rhandler;
@@ -359,7 +363,6 @@ int main(int argc, char** argv) {
     utils->setQmlRootItem(view->rootObject());
     QGuiApplication::exec();
 #else
-    engine->addImageProvider(QLatin1String("thumb"), new ThumbIconProvider{});
     engine->load(QUrl{QStringLiteral("qrc:/qml/main.qml")});
     QGuiApplication::exec();
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -332,8 +332,7 @@ Page {
 
             // Disabling YTMusic because ytdlp is not supported on SFOS (it requires python >= 3.10)
             SimpleListItem {
-                // visible: !settings.isHarbour()
-                visible: false
+                visible: settings.isPy()
                 title.text: "YouTube Music"
                 icon.source: "image://icons/icon-m-youtube"
                 onClicked: {
