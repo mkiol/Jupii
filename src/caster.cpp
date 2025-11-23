@@ -32,6 +32,7 @@
 #include <random>
 #include <sstream>
 #include <string_view>
+#include <utility>
 
 extern "C" {
 #include <libavdevice/avdevice.h>
@@ -1828,18 +1829,20 @@ void Caster::initAvVideoForGst() {
         *videoProps().formats.front().frameSpecs.front().framerates.begin());
 }
 
-static double imageAutoScaleToNumber(Caster::ImageAutoScale scale) {
+static std::pair<double, double> imageAutoScaleToNumber(
+    Caster::ImageAutoScale scale) {
     switch (scale) {
         case Caster::ImageAutoScale::ScaleNone:
             break;
         case Caster::ImageAutoScale::Scale2160:
-            return 2160.0;
+            return {3840.0, 2160.0};
         case Caster::ImageAutoScale::Scale1080:
-            return 1080.0;
+            return {1920.0, 1080.0};
         case Caster::ImageAutoScale::Scale720:
-            return 720.0;
+            return {1280.0, 720.0};
     }
-    return std::numeric_limits<double>::max();
+    return {std::numeric_limits<double>::max(),
+            std::numeric_limits<double>::max()};
 }
 
 Caster::Dim Caster::computeTransDim(Dim dim, VideoTrans trans,
@@ -1857,9 +1860,10 @@ Caster::Dim Caster::computeTransDim(Dim dim, VideoTrans trans,
             case VideoScale::Down75:
                 return 0.25;
             case VideoScale::DownAuto: {
-                return std::min(1.0,
-                                imageAutoScaleToNumber(m_config.imgAutoScale) /
-                                    std::min<double>(dim.width, dim.height));
+                auto as = imageAutoScaleToNumber(m_config.imgAutoScale);
+                return std::min(
+                    1.0, std::min(as.first / std::max(dim.width, dim.height),
+                                  as.second / std::min(dim.width, dim.height)));
             }
         }
         return 1.0;
