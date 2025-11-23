@@ -413,11 +413,12 @@ endif ()
 
 add_library(compiler_flags INTERFACE)
 target_compile_features(compiler_flags INTERFACE cxx_std_17)
+set(warning_flags "-Wall;-Wextra;-Wpedantic;-Wno-attributes;-Werror=switch")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(WITH_SANITIZERS)
         target_compile_options(compiler_flags INTERFACE
-            "-pie;-Wall;-Wextra;-Wpedantic;-O1;-g3;-fsanitize=address,undefined")
+            "${warning_flags};-pie;-O1;-g3;-fsanitize=address,undefined")
         if(WITH_STATIC_SANITIZERS)
             target_link_options(compiler_flags INTERFACE
               "-pie;-static-libasan;-static-libubsan;-fsanitize=address,undefined")
@@ -426,11 +427,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         endif()
     else()
         target_compile_options(compiler_flags INTERFACE
-            "-pie;-Wall;-Wextra;-Wpedantic;-O1;-g3")
+            "${warning_flags};-pie;-O1;-g3")
         target_link_options(compiler_flags INTERFACE "-pie")
     endif()
 else()
-    target_compile_options(compiler_flags INTERFACE "-pie;-Wall;-Wextra;-Wpedantic;-Wno-attributes;-O3;-g")
+    target_compile_options(compiler_flags INTERFACE "${warning_flags};-pie;-O3;-g")
     target_link_options(compiler_flags INTERFACE "-pie;-fno-stack-protector")
 endif()
 
