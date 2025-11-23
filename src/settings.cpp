@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <libupnpp/control/description.hxx>
 #include <limits>
+#include <type_traits>
 
 #include "config.h"
 #include "directory.h"
@@ -131,15 +132,28 @@ bool Settings::getLogToFile() const {
     return value(QStringLiteral("logtofile"), false).toBool();
 }
 
-#define X(name, getter, setter, key, type, dvalue)                       \
-    type Settings::getter() const {                                      \
-        return qvariant_cast<type>(value(QStringLiteral(#key), dvalue)); \
-    }                                                                    \
-    void Settings::setter(const type &value) {                           \
-        if (getter() != value) {                                         \
-            setValue(QStringLiteral(#key), value);                       \
-            emit name##Changed();                                        \
-        }                                                                \
+#define X(name, getter, setter, key, type, dvalue)                             \
+    type Settings::getter() const {                                            \
+        return [&](auto v) {                                                   \
+            if constexpr (std::is_enum_v<decltype(v)>) {                       \
+                return static_cast<type>(                                      \
+                    value(QStringLiteral(#key), static_cast<int>(v)).toInt()); \
+            } else {                                                           \
+                return qvariant_cast<type>(value(QStringLiteral(#key), v));    \
+            }                                                                  \
+        }(dvalue);                                                             \
+    }                                                                          \
+    void Settings::setter(const type &value) {                                 \
+        if (getter() != value) {                                               \
+            [&](auto v) {                                                      \
+                if constexpr (std::is_enum_v<decltype(v)>) {                   \
+                    setValue(QStringLiteral(#key), static_cast<int>(v));       \
+                } else {                                                       \
+                    setValue(QStringLiteral(#key), v);                         \
+                }                                                              \
+                emit name##Changed();                                          \
+            }(value);                                                          \
+        }                                                                      \
     }
 SETTINGS_PROPERTY_TABLE
 #undef X

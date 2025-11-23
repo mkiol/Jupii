@@ -93,7 +93,7 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
 
     connect(this, &ContentServerWorker::casterData, this,
             &ContentServerWorker::casterDataHandler, Qt::QueuedConnection);
-    connect(this, &ContentServerWorker::casterError, this,
+    connect(this, &ContentServerWorker::casterErrorInternal, this,
             &ContentServerWorker::casterErrorHandler, Qt::QueuedConnection);
     connect(this, &ContentServerWorker::casterAudioSourceNameChanged, this,
             &ContentServerWorker::casterAudioSourceNameChangedHandler,
@@ -292,6 +292,8 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
         return;
     }
 
+    qDebug() << "meta: type=" << meta->type;
+
     removeDeadProxies();
 
     if (req->method() == QHttpRequest::HTTP_HEAD) {
@@ -404,14 +406,20 @@ void ContentServerWorker::handleThumbRequest(const QUrl &id,
 }
 
 void ContentServerWorker::casterErrorHandler() {
-    qWarning() << "error in casting, ending casting";
+    if (caster->error()) {
+        qWarning() << "error in casting, ending casting";
+        emit casterError();
+    } else {
+        qDebug() << "eof in casting, ending casting";
+    }
+
+    casterTimer.stop();
+    caster.reset();
 
     foreach (auto &item, casterItems) item.resp->end();
     foreach (const auto &item, casterItems) emit itemRemoved(item.id);
 
     casterItems.clear();
-    casterTimer.stop();
-    caster.reset();
 }
 
 void ContentServerWorker::requestForFileHandler(const QUrl &id,
@@ -441,6 +449,18 @@ void ContentServerWorker::requestForFileHandler(const QUrl &id,
         }
 
         streamFile(meta->audioAvMeta->path, meta->audioAvMeta->mime, req, resp);
+    } else if (meta->type == ContentServer::Type::Type_Image &&
+               type == ContentServer::Type::Type_Video) {
+        if (id.scheme() == QStringLiteral("qrc")) {
+            qWarning() << "unable to cast vide stream from qrc";
+            sendEmptyResponse(resp, 500);
+            return;
+        }
+
+        qDebug() << "image content but video type requested => casting video "
+                    "from image";
+
+        requestForCasterHandler(id, meta, req, resp);
     } else {
         streamFile(meta->path, meta->mime, req, resp);
     }
@@ -805,6 +825,21 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
     Caster::Config config;
     config.streamAuthor = APP_NAME;
 
+    switch (s->getImageScale()) {
+        case Settings::ImageScale::ImageScale_None:
+            config.imgAutoScale = Caster::ImageAutoScale::ScaleNone;
+            break;
+        case Settings::ImageScale::ImageScale_2160:
+            config.imgAutoScale = Caster::ImageAutoScale::Scale2160;
+            break;
+        case Settings::ImageScale::ImageScale_1080:
+            config.imgAutoScale = Caster::ImageAutoScale::Scale1080;
+            break;
+        case Settings::ImageScale::ImageScale_720:
+            config.imgAutoScale = Caster::ImageAutoScale::Scale720;
+            break;
+    }
+
     switch (type) {
         case ContentServer::CasterType::Cam: {
             auto params = ContentServer::parseCasterUrl(meta->url);
@@ -905,6 +940,7 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
             break;
         }
         case ContentServer::CasterType::AudioFile: {
+            // expecting HLS file
             auto files = cacheHlsSegmentsForCaster(meta->url, true);
             if (!files) return std::nullopt;
 
@@ -930,15 +966,56 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
 
             break;
         }
+        case ContentServer::CasterType::VideoFile: {
+            // expecting only local file
+            if (meta->path.isEmpty()) {
+                qWarning() << "meta for caster video file doesn't have path";
+                return std::nullopt;
+            }
+
+            config.videoSource = "file";
+            config.streamFormat =
+                convertStreamFormat(s->getCasterVideoStreamFormat());
+            config.videoEncoder =
+                convertVideoEncoder(s->getCasterVideoEncoder());
+            config.videoOrientation = Caster::VideoOrientation::Auto;
+
+            config.audioSource = "null";
+
+            if (meta->type == ContentServer::Type::Type_Image) {
+                auto flags = Caster::FileSourceFlags::SameFormatForAllFiles |
+                             Caster::FileSourceFlags::Loop;
+                config.fileSourceConfig = Caster::FileSourceConfig{
+                    {meta->path.toStdString()},
+                    flags,
+                    {},
+                    static_cast<uint32_t>(
+                        std::clamp(Settings::instance()->getImageDuration(),
+                                   /*min duration*/ 0,
+                                   /*max duration*/ 480)),
+                    static_cast<uint32_t>(
+                        std::clamp(Settings::instance()->getImageFps(),
+                                   /*min fps*/ 1,
+                                   /*max fps*/ 60))};
+            } else {
+                config.fileSourceConfig =
+                    Caster::FileSourceConfig{{meta->path.toStdString()}, 0, {}};
+            }
+
+            config.options = Caster::OptionsFlags::FileVideoSources |
+                             Caster::OptionsFlags::OnlyNiceVideoFormats;
+            break;
+        }
     }
 
 #ifdef USE_SFOS
-    if (config.videoOrientation == Caster::VideoOrientation::Auto &&
+    if (type != ContentServer::CasterType::VideoFile &&
+        config.videoOrientation == Caster::VideoOrientation::Auto &&
         !config.videoSource.empty())
         config.videoSource += "-rotate";
 #endif
 
-    qDebug() << "s->getCasterDontUsePipeWire():"
+    qDebug() << "do not use pipe-wire options:"
              << s->getCasterDontUsePipeWire();
 
     if (s->getCasterDontUsePipeWire()) {
@@ -972,6 +1049,10 @@ bool ContentServerWorker::castingForType(ContentServer::CasterType type) const {
             if (!caster->config().videoSource.empty()) return false;
             return QString::fromStdString(caster->config().audioSource)
                 .startsWith(QStringLiteral("file"));
+        case ContentServer::CasterType::VideoFile:
+            if (!caster->config().videoSource.empty()) return false;
+            return QString::fromStdString(caster->config().videoSource)
+                .startsWith(QStringLiteral("file"));
     }
 
     return false;
@@ -982,18 +1063,27 @@ void ContentServerWorker::requestForCasterHandler(
     QHttpResponse *resp) {
     qDebug() << "caster request handler:" << id;
 
-    auto type = [type = meta->itemType]() {
-        switch (type) {
+    auto [type,
+          mime] = [meta]() -> std::pair<ContentServer::CasterType, QString> {
+        switch (meta->itemType) {
             case ContentServer::ItemType::ItemType_Cam:
-                return ContentServer::CasterType::Cam;
+                return {ContentServer::CasterType::Cam, meta->mime};
             case ContentServer::ItemType::ItemType_Mic:
-                return ContentServer::CasterType::Mic;
+                return {ContentServer::CasterType::Mic, meta->mime};
             case ContentServer::ItemType::ItemType_PlaybackCapture:
-                return ContentServer::CasterType::Playback;
+                return {ContentServer::CasterType::Playback, meta->mime};
             case ContentServer::ItemType::ItemType_ScreenCapture:
-                return ContentServer::CasterType::Screen;
+                return {ContentServer::CasterType::Screen, meta->mime};
             case ContentServer::ItemType::ItemType_Url:
-                return ContentServer::CasterType::AudioFile;
+                return {ContentServer::CasterType::AudioFile, meta->mime};
+            case ContentServer::ItemType::ItemType_LocalFile:
+                if (meta->type == ContentServer::Type::Type_Image) {
+                    // making video from image
+                    return {ContentServer::CasterType::VideoFile,
+                            ContentServer::casterMime(
+                                ContentServer::CasterType::VideoFile)};
+                }
+                [[fallthrough]];
             default:
                 throw std::runtime_error("item type is not for caster");
         }
@@ -1006,14 +1096,13 @@ void ContentServerWorker::requestForCasterHandler(
 
     qDebug() << "sending 200 response and starting streaming";
 
-    resp->setHeader(QStringLiteral("Content-Type"), meta->mime);
+    resp->setHeader(QStringLiteral("Content-Type"), mime);
     resp->setHeader(QStringLiteral("Connection"), QStringLiteral("close"));
     resp->setHeader(QStringLiteral("transferMode.dlna.org"),
                     QStringLiteral("Streaming"));
-    resp->setHeader(
-        QStringLiteral("contentFeatures.dlna.org"),
-        ContentServer::dlnaContentFeaturesHeader(
-            meta->mime, meta->flagSet(ContentServer::MetaFlag::Seek)));
+    resp->setHeader(QStringLiteral("contentFeatures.dlna.org"),
+                    ContentServer::dlnaContentFeaturesHeader(
+                        mime, meta->flagSet(ContentServer::MetaFlag::Seek)));
     resp->setHeader(QStringLiteral("Accept-Ranges"), QStringLiteral("none"));
     resp->writeHead(200);
 
@@ -1029,6 +1118,7 @@ void ContentServerWorker::requestForCasterHandler(
 
     caster->start();
     casterTimer.start();
+    qDebug() << "caster started:" << id;
 }
 
 void ContentServerWorker::hlsTimeoutHandler() {
@@ -1114,8 +1204,12 @@ bool ContentServerWorker::initCaster(ContentServer::CasterType type,
 
     casterTimer.stop();
 
-    foreach (auto &item, casterItems) item.resp->end();
-    foreach (const auto &item, casterItems) emit itemRemoved(item.id);
+    foreach (auto &item, casterItems) {
+        item.resp->end();
+    }
+    foreach (const auto &item, casterItems) {
+        emit itemRemoved(item.id);
+    }
 
     casterItems.clear();
 
@@ -1129,6 +1223,7 @@ bool ContentServerWorker::initCaster(ContentServer::CasterType type,
             case ContentServer::CasterType::Cam:
             case ContentServer::CasterType::Mic:
             case ContentServer::CasterType::AudioFile:
+            case ContentServer::CasterType::VideoFile:
                 caster.emplace(
                     std::move(*config),
                     [this, type](const uint8_t *data, size_t size) {
@@ -1139,8 +1234,9 @@ bool ContentServerWorker::initCaster(ContentServer::CasterType type,
                         return size;
                     },
                     [this](Caster::State state) {
-                        if (state == Caster::State::Terminating)
-                            emit casterError();
+                        if (state == Caster::State::Terminating) {
+                            emit casterErrorInternal();
+                        }
                     });
                 break;
             case ContentServer::CasterType::Screen:
@@ -1155,8 +1251,9 @@ bool ContentServerWorker::initCaster(ContentServer::CasterType type,
                         return size;
                     },
                     [this](Caster::State state) {
-                        if (state == Caster::State::Terminating)
+                        if (state == Caster::State::Terminating) {
                             emit casterError();
+                        }
                     },
                     [this](const auto &name) {
                         emit casterAudioSourceNameChanged(
@@ -2027,7 +2124,7 @@ void ContentServerWorker::casterDataHandler(
     auto i = casterItems.begin();
     while (i != casterItems.end()) {
         if (!i->resp->isHeaderWritten()) {
-            qWarning() << "head not written for cater item";
+            qWarning() << "head not written for caster item";
             i->resp->end();
         }
         if (i->resp->isFinished()) {
@@ -2711,6 +2808,6 @@ void ContentServerWorker::casterTimeoutHandler() {
     qDebug() << "caster timeouted";
     if (caster && caster->state() == Caster::State::Paused) {
         qDebug() << "caster timeouted => error";
-        emit casterError();
+        emit casterErrorInternal();
     }
 }

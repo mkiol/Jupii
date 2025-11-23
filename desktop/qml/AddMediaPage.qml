@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -45,6 +45,7 @@ Kirigami.ScrollablePage {
     FileDialog {
         id: fileDialog
         property bool asAudio: false
+        property bool asVideo: false
         title: qsTr("Choose a file")
         selectMultiple: true
         selectFolder: false
@@ -53,7 +54,8 @@ Kirigami.ScrollablePage {
         onAccepted: {
             playlist.addItemFileUrls(fileDialog.fileUrls,
                                      asAudio ? ContentServer.Type_Music :
-                                               ContentServer.Type_Unknown)
+                                               asVideo ? ContentServer.Type_Video :
+                                                         ContentServer.Type_Unknown)
             pageStack.flickBack()
         }
     }
@@ -61,6 +63,7 @@ Kirigami.ScrollablePage {
     FileDialog {
         id: folderDialog
         property bool asAudio: false
+        property bool asVideo: false
         title: qsTr("Choose a folder")
         selectMultiple: false
         selectFolder: true
@@ -69,7 +72,7 @@ Kirigami.ScrollablePage {
         onAccepted: {
             playlist.addItemFileUrls(folderDialog.fileUrls,
                                      asAudio ? ContentServer.Type_Music :
-                                               ContentServer.Type_Unknown)
+                                               asVideo ? ContentServer.Type_Video : ContentServer.Type_Unknown)
             pageStack.flickBack()
         }
     }
@@ -151,6 +154,7 @@ Kirigami.ScrollablePage {
             highlighted: fileDialog.visible
             onClicked: {
                 fileDialog.asAudio = false
+                fileDialog.asVideo = false
                 fileDialog.open()
             }
         }
@@ -162,6 +166,7 @@ Kirigami.ScrollablePage {
             highlighted: folderDialog.visible
             onClicked: {
                 folderDialog.asAudio = false
+                fileDialog.asVideo = false
                 folderDialog.open()
             }
 
@@ -178,8 +183,33 @@ Kirigami.ScrollablePage {
             highlighted: fileDialog.visible
             onClicked: {
                 fileDialog.asAudio = true
+                fileDialog.asVideo = false
                 fileDialog.open()
             }
+
+            Controls.ToolTip.visible: hovered
+            Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+            Controls.ToolTip.text: qsTr("Add audio extracted from a video file.")
+            hoverEnabled: true
+        }
+
+        Kirigami.BasicListItem {
+            Layout.fillWidth: true
+            label: qsTr("Image as video")
+            icon: "folder-open"
+            highlighted: fileDialog.visible
+            onClicked: {
+                folderDialog.asAudio = false
+                fileDialog.asVideo = true
+                fileDialog.open()
+            }
+
+            Controls.ToolTip.visible: hovered
+            Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+            Controls.ToolTip.text: qsTr("Add an image as a video.") + " " +
+                                   qsTr("The image will be converted into a low frame rate video stream.") + " " +
+                                   qsTr("Use %1 option to set how long the image will displayed.").arg("<i>" + qsTr("Image display time") + "</i>")
+            hoverEnabled: true
         }
 
         BasicListItemWithArrow {
@@ -190,6 +220,11 @@ Kirigami.ScrollablePage {
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("RecPage.qml"))
             }
+
+            Controls.ToolTip.visible: hovered
+            Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+            Controls.ToolTip.text: qsTr("Add audio previously recorded using the record button.")
+            hoverEnabled: true
         }
 
         Kirigami.ListSectionHeader {
@@ -340,6 +375,7 @@ Kirigami.ScrollablePage {
         }
 
         BasicListItemWithArrow {
+            visible: settings.isPy()
             Layout.fillWidth: true
             label: "YouTube Music"
             icon: "qrc:/images/youtube.svg"

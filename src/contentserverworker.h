@@ -112,6 +112,7 @@ class ContentServerWorker : public QObject,
                         QHttpResponse *resp);
     void casterData(ContentServer::CasterType type, const QByteArray &data);
     void casterError();
+    void casterErrorInternal();
     void preStartCaster(ContentServer::CasterType type, const QUrl &url);
     void hlsTimeout();
 

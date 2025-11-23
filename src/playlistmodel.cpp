@@ -1224,16 +1224,25 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
     }
 
     if (type == ContentServer::Type::Type_Unknown) {
-        if (meta->flagSet(ContentServer::MetaFlag::YtDl)) {  // add type to url
-                                                             // for ytdl content
+        // add type to url if needed
+        bool imageAsVideo =
+            meta->type == ContentServer::Type::Type_Image &&
+            meta->itemType == ContentServer::ItemType_LocalFile &&
+            Settings::instance()->getImageAsVideo();
+        bool addTypeToUrl =
+            meta->flagSet(ContentServer::MetaFlag::YtDl) || imageAsVideo;
+
+        if (addTypeToUrl) {
             QUrlQuery q{finalId};
             if (q.hasQueryItem(Utils::typeKey))
                 q.removeQueryItem(Utils::typeKey);
             q.addQueryItem(Utils::typeKey,
-                           QString::number(static_cast<int>(meta->type)));
+                           QString::number(static_cast<int>(
+                               imageAsVideo ? ContentServer::Type::Type_Video
+                                            : meta->type)));
             finalId.setQuery(q);
         }
-        type = meta->type;
+        type = imageAsVideo ? ContentServer::Type::Type_Video : meta->type;
     }
 
     if (name.isEmpty()) {

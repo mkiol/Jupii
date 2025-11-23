@@ -85,7 +85,10 @@ QDebug operator<<(QDebug dbg, ContentServer::CasterType type) {
             dbg << "screen";
             break;
         case ContentServer::CasterType::AudioFile:
-            dbg << "file";
+            dbg << "audio-file";
+            break;
+        case ContentServer::CasterType::VideoFile:
+            dbg << "video-file";
             break;
     }
     return dbg;
@@ -501,6 +504,8 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
 
     bool audioType = static_cast<Type>(t) ==
                      Type::Type_Music;  // extract audio stream from video
+    bool videoType =
+        static_cast<Type>(t) == Type::Type_Video;  // show image as video
 
     if (audioType && item->flagSet(MetaFlag::Local)) {
         if (!item->audioAvMeta || !QFile::exists(item->audioAvMeta->path)) {
@@ -522,7 +527,8 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
         case Type::Type_Image:
             m << "<upnp:albumArtURI>" << url.toString()
               << "</upnp:albumArtURI>";
-            m << "<upnp:class>" << imageItemClass << "</upnp:class>";
+            m << "<upnp:class>" << (videoType ? videoItemClass : imageItemClass)
+              << "</upnp:class>";
             break;
         case Type::Type_Music:
             m << "<upnp:class>" << audioItemClass << "</upnp:class>";
@@ -540,10 +546,8 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
             }
             break;
         case Type::Type_Video:
-            if (audioType)
-                m << "<upnp:class>" << audioItemClass << "</upnp:class>";
-            else
-                m << "<upnp:class>" << videoItemClass << "</upnp:class>";
+            m << "<upnp:class>" << (audioType ? audioItemClass : videoItemClass)
+              << "</upnp:class>";
             break;
         case Type::Type_Playlist:
             m << "<upnp:class>" << playlistItemClass << "</upnp:class>";
@@ -583,6 +587,15 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
         m << "protocolInfo=\"http-get:*:" << item->audioAvMeta->mime << ":"
           << dlnaContentFeaturesHeader(item->audioAvMeta->mime, true, true)
           << "\" ";
+    } else if (videoType) {
+        auto cmime = casterMime(CasterType::VideoFile);
+        if (item->size > 0)
+            m << "size=\"" << QString::number(item->size) << "\" ";
+        m << "protocolInfo=\"http-get:*:" << cmime << ":"
+          << dlnaContentFeaturesHeader(cmime, item->flagSet(MetaFlag::Seek),
+                                       true)
+          << "\" ";
+        duration = Settings::instance()->getImageDuration();
     } else {
         if (item->size > 0)
             m << "size=\"" << QString::number(item->size) << "\" ";
@@ -1692,7 +1705,7 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url) {
 
     if (meta.type == Type::Type_Image) {
         meta.setFlags(MetaFlag::Seek, false);
-        meta.duration = 30;
+        meta.duration = 0;
         if (QFile f{meta.path}; f.open(QIODevice::ReadOnly)) {
             if (auto thumbPath =
                     Thumb::save(f.readAll(), meta.url,
@@ -1850,6 +1863,7 @@ QString ContentServer::casterMime(CasterType type) {
                                        /*video=*/false);
         case CasterType::Screen:
         case CasterType::Cam:
+        case CasterType::VideoFile:
             return mimeForCasterFormat(s->getCasterVideoStreamFormat(),
                                        /*video=*/true);
     }

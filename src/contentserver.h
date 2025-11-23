@@ -147,7 +147,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     };
     enum class ProxyError { NoError, Canceled, Error };
 
-    enum class CasterType { Mic, Cam, Playback, Screen, AudioFile };
+    enum class CasterType { Mic, Cam, Playback, Screen, AudioFile, VideoFile };
     friend QDebug operator<<(QDebug dbg, CasterType type);
 
     struct ItemMeta {

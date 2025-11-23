@@ -92,6 +92,22 @@ Page {
         }
     }
 
+    Component {
+        id: imageAsVideoPickerDialog
+        MultiImagePickerDialog {
+            allowedOrientations: Orientation.All
+            onDone: {
+                if (result === DialogResult.Accepted) {
+                    var paths = [];
+                    for (var i = 0; i < selectedContent.count; ++i)
+                        paths.push(selectedContent.get(i).filePath)
+                    playlist.addItemPaths(paths, ContentServer.Type_Video)
+                    app.popToQueue()
+                }
+            }
+        }
+    }
+
     SilicaFlickable {
         id: flick
         anchors.fill: parent
@@ -173,6 +189,15 @@ Page {
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.push(imagePickerDialog)
+                }
+            }
+
+            SimpleListItem {
+                title.text: qsTr("Image as video")
+                icon.source: "image://theme/icon-m-file-image?" + (highlighted ?
+                             Theme.highlightColor : Theme.primaryColor)
+                onClicked: {
+                    pageStack.push(imageAsVideoPickerDialog)
                 }
             }
 

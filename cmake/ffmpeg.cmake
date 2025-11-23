@@ -111,6 +111,8 @@ set(ffmpeg_opts
     --enable-decoder=mp3float
     --enable-decoder=mp3on4
     --enable-decoder=mp3on4float
+    --enable-decoder=mjpeg
+    --enable-decoder=png
     --enable-decoder=flac
     --enable-muxer=mp4
     --enable-muxer=mpegts
@@ -127,6 +129,7 @@ set(ffmpeg_opts
     --enable-demuxer=flac
     --enable-demuxer=wav
     --enable-demuxer=mpegvideo
+    --enable-demuxer=image2
     --enable-parser=h264
     --enable-parser=aac
     --enable-parser=aac_latm
@@ -135,7 +138,8 @@ set(ffmpeg_opts
     --enable-bsf=dump_extradata
     --enable-bsf=extract_extradata
     --enable-libx264
-    --enable-libmp3lame)
+    --enable-libmp3lame
+    --enable-zlib)
 
 if(${WITH_V4L2} OR ${WITH_V4L2M2M})
     list(APPEND ffmpeg_opts

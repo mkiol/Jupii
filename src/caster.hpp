@@ -1,4 +1,4 @@
-/* Copyright (C) 2022-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,14 +26,11 @@ extern "C" {
 #include <libavutil/time.h>
 }
 
-#include <algorithm>
 #include <array>
-#include <chrono>
 #include <condition_variable>
 #include <cstdint>
 #include <functional>
 #include <iostream>
-#include <memory>
 #include <mutex>
 #include <optional>
 #include <queue>
@@ -72,11 +69,12 @@ class Caster {
         AllPaAudioSources =
             PaMicAudioSources | PaMonitorAudioSources | PaPlaybackAudioSources,
         FileAudioSources = 1 << 23,
+        FileVideoSources = 1 << 24,
+        DontUsePipeWire = 1 << 25,
         AllVideoSources = V4l2VideoSources | DroidCamVideoSources |
                           DroidCamRawVideoSources | X11CaptureVideoSources |
-                          LipstickCaptureVideoSources,
+                          LipstickCaptureVideoSources | FileVideoSources,
         AllAudioSources = AllPaAudioSources | FileAudioSources,
-        DontUsePipeWire = 1 << 24,
     };
     friend std::ostream &operator<<(std::ostream &os, OptionsFlags flags);
 
@@ -126,13 +124,16 @@ class Caster {
             return (width + height) > (dim.width + dim.height);
         }
         inline bool thin() const {
-            return (width > height ? width / height : height / width) > 16 / 9;
+            return height > 0 && width > 0 &&
+                   ((width > height ? width / height : height / width) >
+                    16 / 9);
         }
         inline bool fat() const { return !thin(); }
         inline VideoOrientation orientation() const {
             return width < height ? VideoOrientation::Portrait
                                   : VideoOrientation::Landscape;
         }
+        inline bool valid() const { return width > 0 && height > 0; }
     };
     friend std::ostream &operator<<(std::ostream &os, Dim dim);
 
@@ -142,6 +143,9 @@ class Caster {
     };
     friend std::ostream &operator<<(std::ostream &os, FileSourceFlags flags);
 
+    enum class ImageAutoScale { ScaleNone, Scale2160, Scale1080, Scale720 };
+    friend std::ostream &operator<<(std::ostream &os, ImageAutoScale scale);
+
     struct FileSourceConfig {
         using FileStreamingDoneHandler = std::function<void(
             const std::string &fileDone, size_t remainingFiles)>;
@@ -149,6 +153,8 @@ class Caster {
         std::vector<std::string> files;
         uint32_t flags = 0;
         FileStreamingDoneHandler fileStreamingDoneHandler;
+        uint32_t imgDurationSec = 30;
+        uint32_t imgFps = 5;
 
         friend std::ostream &operator<<(std::ostream &os,
                                         const FileSourceConfig &config);
@@ -164,6 +170,7 @@ class Caster {
         std::string streamTitle{"Cast session"};
         VideoEncoder videoEncoder = VideoEncoder::Auto;
         std::optional<FileSourceConfig> fileSourceConfig;
+        ImageAutoScale imgAutoScale = ImageAutoScale::Scale1080;
         uint32_t options =
             OptionsFlags::AllVideoSources | OptionsFlags::AllAudioSources;
         friend std::ostream &operator<<(std::ostream &os, const Config &config);
@@ -220,16 +227,17 @@ class Caster {
         DroidCamRaw,
         X11Capture,
         LipstickCapture,
+        File,
         Test
     };
     friend std::ostream &operator<<(std::ostream &os, VideoSourceType type);
 
-    enum class AudioSourceType { Unknown, Mic, Monitor, Playback, File };
+    enum class AudioSourceType { Unknown, Mic, Monitor, Playback, File, Null };
     friend std::ostream &operator<<(std::ostream &os, AudioSourceType type);
 
     enum class AudioEncoder { Aac, Mp3Lame };
 
-    enum class DataSource { Buf, Demuxer };
+    enum class DataSource { Buf, BufWithNull, Demuxer, Null };
 
     enum class VideoTrans {
         Off,
@@ -255,7 +263,7 @@ class Caster {
     enum class AudioTrans { Off, Volume };
     friend std::ostream &operator<<(std::ostream &os, AudioTrans trans);
 
-    enum class VideoScale { Off, Down25, Down50, Down75 };
+    enum class VideoScale { Off, Down25, Down50, Down75, DownAuto };
     friend std::ostream &operator<<(std::ostream &os, VideoScale scale);
 
     struct FrameSpec {
@@ -394,6 +402,7 @@ class Caster {
     AVFrame *m_audioFrameAfterFilter = nullptr;
     AVFrame *m_videoFrameIn = nullptr;
     AVFrame *m_videoFrameAfterFilter = nullptr;
+    AVPacket *m_imgPkt = nullptr;
     pa_mainloop *m_paLoop = nullptr;
     pa_stream *m_paStream = nullptr;
     pa_context *m_paCtx = nullptr;
@@ -406,13 +415,17 @@ class Caster {
     int64_t m_nextVideoPts = 0;
     int64_t m_nextAudioPts = 0;
     int64_t m_videoTimeLastFrame = 0;       // micro s
+    int64_t m_videoStreamTimeLastFrame = 0;  // micro s
     int64_t m_audioTimeLastFrame = 0;       // micro s
     int64_t m_videoFrameDuration = 0;       // micro s
     int64_t m_videoRealFrameDuration = 0;   // micro s
+    int64_t m_videoTimeImage = 0;           // micro s
+    uint32_t m_imgDurationSec = 30;
     bool m_muxedFlushed = false;
     bool m_videoFlushed = false;
     bool m_audioFlushed = false;
     bool m_paDataReceived = false;
+    bool m_videoInputIsImage = false;
     Dim m_inDim;
     VideoTrans m_videoTrans = VideoTrans::Off;
     AudioTrans m_audioTrans = AudioTrans::Off;
@@ -429,6 +442,8 @@ class Caster {
     std::queue<std::string> m_files;
     std::string m_currentFile;
     bool m_audioVolumeUpdated = false;
+    AudioSourceType m_audioSourceType = AudioSourceType::Unknown;
+    VideoSourceType m_videoSourceType = VideoSourceType::Unknown;
 #ifdef USE_V4L2
     std::vector<V4l2H264EncoderProps> m_v4l2Encoders;
 #endif
@@ -481,6 +496,7 @@ class Caster {
     void initAvAudioRawDecoderFromProps();
     void initAvAudioRawDecoderFromInputStream();
     bool initAvAudioInputFormatFromFile();
+    bool initAvVideoInputFormatFromFile();
     void initAvAudioEncoder();
     void initAvVideoForGst();
     void initAvVideoEncoder();
@@ -505,6 +521,7 @@ class Caster {
     void initAvOutputFormat();
     void reInitAvOutputFormat();
     bool reInitAvAudioInput();
+    bool reInitAvVideoInput();
     void reInitAvAudioDecoder();
     void initVideoTrans();
     void initAudioTrans();
@@ -528,6 +545,7 @@ class Caster {
     void startAudioSourceThread();
     bool muxVideo(AVPacket *pkt);
     bool muxAudio(AVPacket *pkt);
+    bool isInputImage() const;
     void clean();
     void cleanAv();
     void cleanAvOutputFormat();
@@ -549,22 +567,27 @@ class Caster {
     bool audioBoosted() const;
     void detectSources(uint32_t options);
     static VideoPropsMap detectVideoSources(uint32_t options);
+    static VideoPropsMap detectVideoFileSources();
     static AudioPropsMap detectPaSources(uint32_t options);
     static AudioPropsMap detectAudioFileSources();
+    static AudioPropsMap detectAudioNullSources();
     static AudioPropsMap detectAudioSources(uint32_t options);
     void initAvAudioDurations();
     bool readVideoFrameFromBuf(AVPacket *pkt);
     void readNullFrame(AVPacket *pkt);
-    void readVideoFrameFromDemuxer(AVPacket *pkt);
-    bool readAudioFrame(AVPacket *pkt, DataSource source,
-                        bool nullWhenNoEnoughData = false);
+    bool readVideoFrameFromDemuxer(AVPacket *pkt);
+    bool readAudioFrame(AVPacket *pkt, DataSource source);
     bool readAudioFrameFromDemuxer(AVPacket *pkt);
     bool readAudioPktFromDemuxer(AVPacket *pkt);
     bool readAudioFrameFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData);
+    bool readAudioFrameFromNull(AVPacket *pkt);
     bool readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData);
+    void readAudioPktFromNull(AVPacket *pkt);
+    void readAudioPktFromNoise(AVPacket *pkt);
     bool encodeVideoFrame(AVPacket *pkt);
     bool encodeAudioFrame(AVPacket *pkt);
     void updateAudioVolumeFilter();
+    VideoOrientation extractExifOrientationFromDecoder();
     bool filterVideoFrame(VideoTrans trans, AVFrame *frameIn,
                           AVFrame *frameOut);
     bool filterAudioFrame(AudioTrans trans, AVFrame *frameIn,
@@ -600,7 +623,7 @@ class Caster {
     static VideoPropsMap detectTestVideoSources();
     void rawVideoDataReadyHandler(const uint8_t *data, size_t size);
     void compressedVideoDataReadyHandler(const uint8_t *data, size_t size);
-    static Dim computeTransDim(Dim dim, VideoTrans trans, VideoScale scale);
+    Dim computeTransDim(Dim dim, VideoTrans trans, VideoScale scale) const;
     static uint32_t hash(std::string_view str);
     static bool nicePixfmt(AVPixelFormat fmt);
     static AVPixelFormat toNicePixfmt(AVPixelFormat fmt,

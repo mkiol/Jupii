@@ -26,14 +26,19 @@
 #include "singleton.h"
 #include "taskexecutor.h"
 
-#define SETTINGS_PROPERTY_TABLE                                               \
-    X(port, getPort, setPort, port, int, 9092)                                \
-    X(volStep, getVolStep, setVolStep, volstep, int, 5)                       \
-    X(lastDir, getLastDir, setLastDir, lastdir, QString, "")                  \
-    X(showAllDevices, getShowAllDevices, setShowAllDevices, showalldevices,   \
-      bool, false)                                                            \
-    X(showPlaylistItemIcon, getShowPlaylistItemIcon, setShowPlaylistItemIcon, \
-      show_playlist_item_icon, bool, true)
+// clang-format off
+//    property-name         getter                   setter                   setting key              type     default-value   
+#define SETTINGS_PROPERTY_TABLE                                                                                                 \
+    X(port,                 getPort,                 setPort,                 port,                    int,     9092          ) \
+    X(volStep,              getVolStep,              setVolStep,              volstep,                 int,     5             ) \
+    X(lastDir,              getLastDir,              setLastDir,              lastdir,                 QString, ""            ) \
+    X(showAllDevices,       getShowAllDevices,       setShowAllDevices,       showalldevices,          bool,    false         ) \
+    X(showPlaylistItemIcon, getShowPlaylistItemIcon, setShowPlaylistItemIcon, show_playlist_item_icon, bool,    true          ) \
+    X(imageAsVideo,         getImageAsVideo,         setImageAsVideo,         image_as_video,          bool,    false         ) \
+    X(imageDuration,        getImageDuration,        setImageDuration,        image_duration,          int,     30            ) \
+    X(imageFps,             getImageFps,             setImageFps,             image_fps,               int,     2             ) \
+    X(imageScale,           getImageScale,           setImageScale,           image_scale,             Settings::ImageScale, Settings::ImageScale::ImageScale_1080)
+// clang-format on
 
 class Settings : public QSettings,
                  public TaskExecutor,
@@ -201,6 +206,14 @@ class Settings : public QSettings,
         AvNextUriPolicy_AlwaysDisable = 3
     };
     Q_ENUM(AvNextUriPolicy)
+
+    enum class ImageScale {
+        ImageScale_None = 0,
+        ImageScale_2160 = 1,
+        ImageScale_1080 = 2,
+        ImageScale_720 = 3
+    };
+    Q_ENUM(ImageScale)
 
 #ifdef USE_SFOS
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";

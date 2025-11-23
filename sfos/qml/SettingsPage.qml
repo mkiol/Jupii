@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -88,11 +88,43 @@ Page {
                 }
 
                 ExpandingSection {
-                    title: qsTr("Formats")
+                    title: qsTr("Image as video")
+
+                    content.sourceComponent: Column {
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.imageAsVideo
+                            text: qsTr("Always convert images into video")
+                            description: qsTr("When enabled, image elements are always converted into a video stream with a low frame rate.")
+                            onClicked: {
+                                settings.imageAsVideo = !settings.imageAsVideo
+                            }
+                        }
+
+                        Slider {
+                            opacity: enabled ? 1.0 : Theme.opacityLow
+                            width: parent.width
+                            minimumValue: 0
+                            maximumValue: 120
+                            stepSize: 1
+                            handleVisible: true
+                            value: settings.imageDuration
+                            valueText: value
+                            label: qsTr("Image display time")
+
+                            onValueChanged: {
+                                settings.imageDuration = value
+                            }
+                        }
+                    }
+                }
+
+                ExpandingSection {
+                    title: qsTr("Multimedia")
 
                     content.sourceComponent: Column {
                         ComboBox {
-                            label: qsTr("Live video")
+                            label: qsTr("Real-time video format")
                             currentIndex: {
                                 switch (settings.casterVideoStreamFormat) {
                                 case Settings.CasterStreamFormat_MpegTs: return 0;
@@ -113,11 +145,12 @@ Page {
                                 default: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4;
                                 }
                             }
-                            description: qsTr("Change if you observe problems with video playback in Camera or Screen capture.")
+                            description: qsTr("Format used for real-time streaming.") + " " +
+                                         qsTr("Change if you observe problems with video playback in Camera or Screen capture.")
                         }
 
                         ComboBox {
-                            label: qsTr("Live audio")
+                            label: qsTr("Real-time audio format")
                             currentIndex: {
                                 switch (settings.casterAudioStreamFormat) {
                                 case Settings.CasterStreamFormat_Mp3: return 0;
@@ -142,7 +175,8 @@ Page {
                                 }
                             }
 
-                            description: qsTr("Change if you observe problems with audio playback in Microphone or Audio capture.")
+                            description: qsTr("Format used for real-time streaming.") + " " +
+                                         qsTr("Change if you observe problems with audio playback in Microphone or Audio capture.")
                         }
                     }
                 }
@@ -388,6 +422,51 @@ Page {
                                 }
                             }
                         }*/
+
+                        Slider {
+                            opacity: enabled ? 1.0 : Theme.opacityLow
+                            width: parent.width
+                            minimumValue: 1
+                            maximumValue: 60
+                            stepSize: 1
+                            handleVisible: true
+                            value: settings.imageFps
+                            valueText: value
+                            label: qsTr("Image FPS")
+
+                            onValueChanged: {
+                                settings.imageFps = value
+                            }
+                        }
+
+                        ComboBox {
+                            label: qsTr("Maximum image size")
+                            currentIndex: {
+                                switch (settings.imageScale) {
+                                case Settings.ImageScale_None: return 0;
+                                case Settings.ImageScale_2160: return 1;
+                                case Settings.ImageScale_1080: return 2;
+                                case Settings.ImageScale_720: return 3;
+                                }
+                                return 2;
+                            }
+                            menu: ContextMenu {
+                                MenuItem { text:  qsTr("Unlimited") }
+                                MenuItem { text: "UHD" }
+                                MenuItem { text: "FHD" }
+                                MenuItem { text: "HD" }
+                            }
+                            onCurrentIndexChanged: {
+                                switch (currentIndex) {
+                                case 0: settings.imageScale = Settings.ImageScale_None; break;
+                                case 1: settings.imageScale = Settings.ImageScale_2160; break;
+                                case 2: settings.imageScale = Settings.ImageScale_1080; break;
+                                case 3: settings.imageScale = Settings.ImageScale_720; break;
+                                default: settings.imageScale = Settings.ImageScale_1080;
+                                }
+                            }
+                            description: qsTr("The maximum image size when converting an image to video format.")
+                        }
 
                         TextField {
                             anchors {
