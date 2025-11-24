@@ -17,6 +17,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 class BcApi : public QObject {
@@ -70,6 +71,8 @@ class BcApi : public QObject {
         std::vector<ArtistAlbum> albums;
     };
 
+    using ArtistVariant = std::variant<std::monostate, Artist, Album, Track>;
+
     BcApi(std::shared_ptr<QNetworkAccessManager> nam = {},
           QObject *parent = nullptr);
     std::vector<SearchResultItem> search(const QString &query) const;
@@ -81,13 +84,14 @@ class BcApi : public QObject {
     std::vector<SearchResultItem> notableItemsFirstPage();
     Track track(const QUrl &url) const;
     Album album(const QUrl &url) const;
-    Artist artist(const QUrl &url) const;
+    ArtistVariant artist(const QUrl &url) const;
     static bool validUrl(const QUrl &url);
 
    signals:
     void progressChanged(int n, int total);
 
    private:
+    enum class UrlType { Unknown, Artist, Album, Track };
     static const int maxNotable;
     static const int maxNotableFirstPage;
     static std::vector<SearchResultItem> m_notableItems;
@@ -105,6 +109,9 @@ class BcApi : public QObject {
     static void storeNotableIds(const QJsonObject &obj);
     static void storeNotableIds(const QJsonArray &array);
     bool prepareNotableIds() const;
+    static UrlType guessUrlType(const QUrl &url);
+    Track trackFromBytes(const QUrl &url, const QByteArray &bytes) const;
+    Album albumFromBytes(const QUrl &url, const QByteArray &bytes) const;
 };
 
 #endif  // BCAPI_H

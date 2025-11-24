@@ -9,6 +9,7 @@
 
 #include <QDebug>
 #include <QList>
+#include <variant>
 #include <vector>
 
 #include "bcapi.h"
@@ -181,12 +182,30 @@ QList<ListItem *> BcModel::makeSearchItems() {
     return items;
 }
 
+QList<ListItem *> BcModel::makeTrackItemsFromBcTrack(BcApi::Track &&track) {
+    return QList<ListItem *>{} << new BcItem{track.webUrl.toString(),
+                                             track.title,
+                                             track.artist,
+                                             track.album,
+                                             track.webUrl,
+                                             {},
+                                             track.imageUrl,
+                                             track.duration,
+                                             BcModel::Type::Type_Track};
+}
+
 QList<ListItem *> BcModel::makeAlbumItems() {
     QList<ListItem *> items;
 
     auto album = BcApi{}.album(mAlbumUrl);
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
+
+    return makeAlbumItemsFromBcAlbum(std::move(album));
+}
+
+QList<ListItem *> BcModel::makeAlbumItemsFromBcAlbum(BcApi::Album &&album) {
+    QList<ListItem *> items;
 
     setAlbumTitle(album.title);
     setArtistName(album.artist);
@@ -212,25 +231,36 @@ QList<ListItem *> BcModel::makeAlbumItems() {
 QList<ListItem *> BcModel::makeArtistItems() {
     QList<ListItem *> items;
 
-    auto artist = BcApi{}.artist(mArtistUrl);
+    auto artistVariant = BcApi{}.artist(mArtistUrl);
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
 
-    setArtistName(artist.name);
-    setAlbumTitle({});
-
-    items.reserve(static_cast<int>(artist.albums.size()));
-    for (const auto &album : artist.albums) {
-        items << new BcItem{album.webUrl.toString(),
-                            album.title,
-                            artist.name,
-                            album.title,
-                            album.webUrl,
-                            {},
-                            album.imageUrl,
-                            0,
-                            Type_Album};
-    }
+    std::visit(
+        [&](auto &&arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, BcApi::Artist>) {
+                auto &artist = arg;
+                setArtistName(artist.name);
+                setAlbumTitle({});
+                items.reserve(static_cast<int>(artist.albums.size()));
+                for (const auto &album : artist.albums) {
+                    items << new BcItem{album.webUrl.toString(),
+                                        album.title,
+                                        artist.name,
+                                        album.title,
+                                        album.webUrl,
+                                        {},
+                                        album.imageUrl,
+                                        0,
+                                        Type_Album};
+                }
+            } else if constexpr (std::is_same_v<T, BcApi::Album>) {
+                items = makeAlbumItemsFromBcAlbum(std::move(arg));
+            } else if constexpr (std::is_same_v<T, BcApi::Track>) {
+                items = makeTrackItemsFromBcTrack(std::move(arg));
+            }
+        },
+        artistVariant);
 
     return items;
 }

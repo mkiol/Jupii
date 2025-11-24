@@ -182,9 +182,11 @@ bool Downloader::downloadToFile(const QUrl &url, const QString &outputPath,
 
 Downloader::Data Downloader::downloadData(const QUrl &url, const Data &postData,
                                           int timeout) {
+    Data result;
+
     if (busy()) {
         qWarning() << "downloaded is busy";
-        return {};
+        return result;
     }
 
 #ifdef QT_DEBUG
@@ -283,10 +285,14 @@ Downloader::Data Downloader::downloadData(const QUrl &url, const Data &postData,
     mProgress.first = mProgress.second;
     emit progressChanged();
 
+    result.mime = std::move(mime);
+    result.bytes = std::move(data);
+    result.finalUrl = mReply->url();
+
     mReply->deleteLater();
     mReply = nullptr;
 
-    return {std::move(mime), std::move(data)};
+    return result;
 }
 
 QHash<QUrl, Downloader::Data> Downloader::downloadData(
@@ -350,7 +356,7 @@ QHash<QUrl, Downloader::Data> Downloader::downloadData(
 #endif
             if (reply->error() == QNetworkReply::NoError) {
                 result.insert(url, {ContentServer::mimeFromReply(reply),
-                                    reply->readAll()});
+                                    reply->readAll(), reply->url()});
             } else {
                 qWarning() << "download error:" << url << reply->error();
             }

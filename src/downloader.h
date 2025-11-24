@@ -26,6 +26,7 @@ class Downloader final : public QObject {
     struct Data {
         QString mime;
         QByteArray bytes;
+        QUrl finalUrl;
     };
     Downloader(std::shared_ptr<QNetworkAccessManager> nam = {},
                QObject *parent = nullptr);

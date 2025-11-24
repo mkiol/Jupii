@@ -62,7 +62,14 @@ BcApi::Track BcApi::track(const QUrl &url) const {
 
     if (QThread::currentThread()->isInterruptionRequested()) return track;
 
-    auto output = gumbo::parseHtmlData(data.bytes);
+    return trackFromBytes(url, data.bytes);
+}
+
+BcApi::Track BcApi::trackFromBytes(const QUrl &url,
+                                   const QByteArray &bytes) const {
+    Track track;
+
+    auto output = gumbo::parseHtmlData(bytes);
     if (!output) {
         qWarning() << "cannot parse html data";
         return track;
@@ -130,7 +137,14 @@ BcApi::Album BcApi::album(const QUrl &url) const {
 
     if (QThread::currentThread()->isInterruptionRequested()) return album;
 
-    auto output = gumbo::parseHtmlData(data.bytes);
+    return albumFromBytes(url, data.bytes);
+}
+
+BcApi::Album BcApi::albumFromBytes(const QUrl &url,
+                                   const QByteArray &bytes) const {
+    Album album;
+
+    auto output = gumbo::parseHtmlData(bytes);
     if (!output) {
         qWarning() << "cannot parse html data";
         return album;
@@ -194,9 +208,7 @@ BcApi::Album BcApi::album(const QUrl &url) const {
     return album;
 }
 
-BcApi::Artist BcApi::artist(const QUrl &url) const {
-    Artist artist;
-
+BcApi::ArtistVariant BcApi::artist(const QUrl &url) const {
     QUrl newUrl{url};
     if (newUrl.path().isEmpty()) {
         newUrl.setPath(QStringLiteral("/music"));
@@ -205,16 +217,31 @@ BcApi::Artist BcApi::artist(const QUrl &url) const {
     auto data = Downloader{nam}.downloadData(newUrl);
     if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
-        return artist;
+        return {};
     }
 
-    if (QThread::currentThread()->isInterruptionRequested()) return artist;
+    if (QThread::currentThread()->isInterruptionRequested()) {
+        return {};
+    }
+
+    qDebug() << "final url:" << data.finalUrl;
+    switch (guessUrlType(data.finalUrl)) {
+        case UrlType::Album:
+            return albumFromBytes(data.finalUrl, data.bytes);
+        case UrlType::Track:
+            return trackFromBytes(data.finalUrl, data.bytes);
+        case UrlType::Artist:
+        case UrlType::Unknown:
+            break;
+    }
 
     auto output = gumbo::parseHtmlData(data.bytes);
     if (!output) {
         qWarning() << "cannot parse html data";
-        return artist;
+        return {};
     }
+
+    Artist artist;
 
     auto *head = gumbo::search_for_tag_one(output->root, GUMBO_TAG_HEAD);
     artist.name = QString::fromUtf8(gumbo::attr_data(
@@ -268,15 +295,13 @@ std::vector<BcApi::SearchResultItem> BcApi::search(const QString &query) const {
 
     auto [url, postData] = makeSearchUrl(query);
     auto data = Downloader{nam}.downloadData(
-        url, {"application/json", std::move(postData)});
+        url, {"application/json", std::move(postData), {}});
     if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
         return items;
     }
 
     if (QThread::currentThread()->isInterruptionRequested()) return items;
-
-    qDebug() << data.bytes;
 
     auto json = parseJsonData(data.bytes);
     if (json.isNull() || !json.isObject()) {
@@ -503,4 +528,20 @@ std::vector<BcApi::SearchResultItem> BcApi::notableItemsFirstPage() {
     std::copy_n(m_notableItems.cbegin(), size, items.begin());
 
     return items;
+}
+
+BcApi::UrlType BcApi::guessUrlType(const QUrl &url) {
+    auto path = url.path();
+    if (path.contains(QStringLiteral("/album/"), Qt::CaseInsensitive))
+        return UrlType::Album;
+    if (path.contains(QStringLiteral("/track/"), Qt::CaseInsensitive))
+        return UrlType::Track;
+    if (path.isEmpty() || path == "/" ||
+        path.contains(QStringLiteral("/music/"), Qt::CaseInsensitive) ||
+        path.contains(QStringLiteral("/merch/"), Qt::CaseInsensitive) ||
+        path.contains(QStringLiteral("/community/"), Qt::CaseInsensitive) ||
+        path.contains(QStringLiteral("/concerts/"), Qt::CaseInsensitive)) {
+        return UrlType::Artist;
+    }
+    return UrlType::Unknown;
 }

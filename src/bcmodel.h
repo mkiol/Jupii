@@ -16,6 +16,7 @@
 #include <QVariant>
 #include <QVariantList>
 
+#include "bcapi.h"
 #include "itemmodel.h"
 #include "listmodel.h"
 
@@ -76,7 +77,9 @@ class BcModel : public SelectableItemModel {
 
     QList<ListItem *> makeItems() override;
     QList<ListItem *> makeSearchItems();
+    QList<ListItem *> makeTrackItemsFromBcTrack(BcApi::Track &&track);
     QList<ListItem *> makeAlbumItems();
+    QList<ListItem *> makeAlbumItemsFromBcAlbum(BcApi::Album &&album);
     QList<ListItem *> makeArtistItems();
     QList<ListItem *> makeNotableItems(bool more);
     void setAlbumTitle(const QString &albumTitle);
