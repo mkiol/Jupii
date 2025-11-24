@@ -413,7 +413,7 @@ endif ()
 
 add_library(compiler_flags INTERFACE)
 target_compile_features(compiler_flags INTERFACE cxx_std_17)
-set(warning_flags "-Wall;-Wextra;-Wpedantic;-Wno-attributes;-Werror=switch")
+set(warning_flags "-Wall;-Wextra;-Wpedantic;-Wno-attributes;-Werror=switch;-Werror=implicit-fallthrough")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(WITH_SANITIZERS)

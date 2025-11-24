@@ -4242,6 +4242,7 @@ bool Caster::readAudioFrame(AVPacket *pkt, DataSource source) {
         switch (source) {
             case DataSource::Demuxer:
                 if (!readAudioPktFromDemuxer(pkt)) continue;
+                break;
             case DataSource::Buf:
                 if (!readAudioPktFromBuf(pkt, false)) return false;
                 break;
