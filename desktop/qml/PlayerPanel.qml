@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -212,6 +212,7 @@ Rectangle {
                     }
 
                     Kirigami.Icon {
+                        id: iconDefault
                         anchors.fill: parent
                         source: {
                             if (itemType === ContentServer.ItemType_Mic)
@@ -222,6 +223,8 @@ Rectangle {
                                 return "computer"
                             else if (itemType === ContentServer.ItemType_Cam)
                                 return "camera-web"
+                            else if (itemType === ContentServer.ItemType_Slides)
+                                return "edit-group-symbolic"
                             switch (av.currentType) {
                             case AVTransport.T_Image:
                                 return "emblem-photos-symbolic"
@@ -245,6 +248,7 @@ Rectangle {
                                 switch (itemType) {
                                 case ContentServer.ItemType_Url: return "folder-remote"
                                 case ContentServer.ItemType_Upnp: return "network-server"
+                                case ContentServer.ItemType_Slides: return "edit-group-symbolic"
                                 }
                                 return ""
                             }
@@ -252,7 +256,10 @@ Rectangle {
 
                         AttachedIcon {
                             source: {
-                                if (icon.status !== Image.Ready) return ""
+                                if (icon.status !== Image.Ready &&
+                                        iconDefault.status !== Image.Ready) {
+                                    return ""
+                                }
                                 switch (av.currentType) {
                                 case AVTransport.T_Image:
                                     return "emblem-photos-symbolic"

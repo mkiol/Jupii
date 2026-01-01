@@ -13,6 +13,15 @@ set(ffnvc_checksum "62b30ab37e4e9be0d0c5b37b8fee4b094e38e570984d56e1135a6b6c2c16
 set(x264_source_url "https://code.videolan.org/videolan/x264.git")
 set(x264_tag "31e19f92f00c7003fa115047ce50978bc98c3a0d")
 
+set(freetype_source_url "https://download-mirror.savannah.gnu.org/releases/freetype/freetype-2.14.1.tar.xz")
+set(freetype_checksum "32427e8c471ac095853212a37aef816c60b42052d4d9e48230bab3bdf2936ccc")
+
+set(harfbuzz_source_url "https://github.com/harfbuzz/harfbuzz/releases/download/12.3.0/harfbuzz-12.3.0.tar.xz")
+set(harfbuzz_checksum "8660ebd3c27d9407fc8433b5d172bafba5f0317cb0bb4339f28e5370c93d42b7")
+
+set(fontconfig_source_url "https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.15.0.tar.xz")
+set(fontconfig_checksum "63a0658d0e06e0fa886106452b58ef04f21f58202ea02a94c39de0d3335d7c0e")
+
 ExternalProject_Add(nasm
     SOURCE_DIR ${external_dir}/nasm
     BINARY_DIR ${PROJECT_BINARY_DIR}/external/nasm
@@ -52,9 +61,72 @@ ExternalProject_Add(x264
     CONFIGURE_COMMAND PATH=$ENV{PATH}:${external_bin_dir}
         PKG_CONFIG_PATH=${external_lib_dir}/pkgconfig
         <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --enable-pic --enable-static --disable-cli
-    BUILD_COMMAND PATH=$ENV{PATH}:${external_bin_dir}n ${MAKE}
+    BUILD_COMMAND PATH=$ENV{PATH}:${external_bin_dir} ${MAKE}
     BUILD_ALWAYS False
     INSTALL_COMMAND PATH=$ENV{PATH}:${external_bin_dir} make DESTDIR=/ install)
+
+if(${meson_bin} MATCHES "-NOTFOUND$")
+   message(FATAL_ERROR "meson not found but it is required to build harfbuzz")
+endif()
+
+ExternalProject_Add(harfbuzz
+    SOURCE_DIR ${external_dir}/harfbuzz
+    BINARY_DIR ${PROJECT_BINARY_DIR}/external/harfbuzz
+    INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+    URL ${harfbuzz_source_url}
+    URL_HASH SHA256=${harfbuzz_checksum}
+    CONFIGURE_COMMAND PKG_CONFIG_PATH="${external_lib_dir}/pkgconfig"
+        ${meson_bin} setup --prefix=<INSTALL_DIR> --buildtype=release --libdir=lib
+        -Dglib=disabled
+        -Dgobject=disabled
+        -Dcairo=disabled
+        -Dchafa=disabled
+        -Dicu=disabled
+        -Dfreetype=enabled
+        -Dtests=disabled
+        -Dintrospection=disabled
+        -Ddocs=disabled
+        -Dutilities=disabled
+        -Ddefault_library=static
+        <BINARY_DIR> <SOURCE_DIR>
+    BUILD_COMMAND ninja -C <BINARY_DIR>
+    BUILD_ALWAYS False
+    INSTALL_COMMAND ninja -C <BINARY_DIR> install
+)
+
+ExternalProject_Add(fontconfig
+    SOURCE_DIR ${external_dir}/fontconfig
+    BINARY_DIR ${PROJECT_BINARY_DIR}/external/fontconfig
+    INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+    URL ${fontconfig_source_url}
+    URL_HASH SHA256=${fontconfig_checksum}
+    CONFIGURE_COMMAND PKG_CONFIG_PATH="${external_lib_dir}/pkgconfig"
+        ${meson_bin} setup --prefix=<INSTALL_DIR> --buildtype=release --libdir=lib
+        -Dnls=disabled
+        -Dtools=disabled
+        -Dcache-build=disabled
+        -Dtests=disabled
+        -Ddoc=disabled
+        -Ddefault_library=static
+        <BINARY_DIR> <SOURCE_DIR>
+    BUILD_COMMAND ninja -C <BINARY_DIR>
+    BUILD_ALWAYS False
+    INSTALL_COMMAND ninja -C <BINARY_DIR> install
+)
+
+ExternalProject_Add(freetype
+    SOURCE_DIR ${external_dir}/freetype
+    BINARY_DIR ${PROJECT_BINARY_DIR}/external/freetype
+    INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+    URL ${freetype_source_url}
+    URL_HASH SHA256=${freetype_checksum}
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DCMAKE_INSTALL_LIBDIR=lib
+        -DCMAKE_INSTALL_INCLUDEDIR=include -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        -DFT_DISABLE_ZLIB=ON -DFT_DISABLE_BZIP2=ON
+        -DFT_DISABLE_PNG=ON -DFT_DISABLE_BROTLI=ON
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    BUILD_ALWAYS False
+)
 
 set(ffmpeg_opts
     --disable-autodetect
@@ -73,7 +145,10 @@ set(ffmpeg_opts
     --enable-filter=transpose
     --enable-filter=color
     --enable-filter=overlay
+    --enable-filter=drawbox
+    --enable-filter=drawtext
     --enable-filter=pad
+    --enable-filter=crop
     --enable-filter=volume
     --enable-filter=amix
     --enable-filter=dynaudnorm
@@ -139,7 +214,10 @@ set(ffmpeg_opts
     --enable-bsf=extract_extradata
     --enable-libx264
     --enable-libmp3lame
-    --enable-zlib)
+    --enable-zlib
+    --enable-libfreetype
+    --enable-libharfbuzz
+    --enable-libfontconfig)
 
 if(${WITH_V4L2} OR ${WITH_V4L2M2M})
     list(APPEND ffmpeg_opts
@@ -165,8 +243,8 @@ if(WITH_X11_SCREEN_CAPTURE)
         --enable-libxcb)
 endif()
 
-set(ffmpeg_extra_ldflags -L${external_lib_dir})
-set(ffmpeg_extra_libs "-lm")
+set(ffmpeg_extra_ldflags "-L${external_lib_dir}")
+set(ffmpeg_extra_libs "-lm -lstdc++")
 
 ExternalProject_Add(ffmpeg
     SOURCE_DIR ${external_dir}/ffmpeg
@@ -189,11 +267,15 @@ ExternalProject_Add(ffmpeg
         PATH=$ENV{PATH}:${external_bin_dir} make DESTDIR=/ install
 )
 
+ExternalProject_Add_StepDependencies(freetype configure harfbuzz)
 ExternalProject_Add_StepDependencies(lame configure nasm)
 ExternalProject_Add_StepDependencies(x264 configure nasm)
 ExternalProject_Add_StepDependencies(ffmpeg configure nasm)
 ExternalProject_Add_StepDependencies(ffmpeg configure lame)
 ExternalProject_Add_StepDependencies(ffmpeg configure x264)
+ExternalProject_Add_StepDependencies(ffmpeg configure freetype)
+ExternalProject_Add_StepDependencies(ffmpeg configure harfbuzz)
+ExternalProject_Add_StepDependencies(ffmpeg configure fontconfig)
 
 if(WITH_NVENC)
     ExternalProject_Add(ffnvc
@@ -218,6 +300,9 @@ list(APPEND deps_libs
     ${external_lib_dir}/libswscale.a
     ${external_lib_dir}/libavutil.a
     ${external_lib_dir}/libmp3lame.a
-    ${external_lib_dir}/libx264.a)
-list(APPEND deps ffmpeg lame x264)
-
+    ${external_lib_dir}/libx264.a
+    ${external_lib_dir}/libharfbuzz.a
+    ${external_lib_dir}/libharfbuzz-subset.a
+    ${external_lib_dir}/libfreetype.a
+    ${external_lib_dir}/libfontconfig.a)
+list(APPEND deps ffmpeg lame x264 freetype harfbuzz fontconfig)

@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -416,8 +416,8 @@ QString Utils::friendlyDate(const QDateTime &date) {
         else if (date.date() == cdate.addDays(-1))
             date_s = tr("Yesterday");
 
-        auto time_f = QLocale::system().timeFormat(QLocale::ShortFormat);
-        if (date_s.isEmpty()) return date.toString("d MMM yy, " + time_f);
+        auto time_f = QLocale::system().timeFormat(QLocale::NarrowFormat);
+        if (date_s.isEmpty()) return date.toString("d MMM yyyy, " + time_f);
         return date_s + ", " + date.toString(time_f);
     }
 
@@ -782,4 +782,17 @@ QString Utils::humanFriendlySizeString(int64_t size) {
     if (size < 1073741824)
         return QStringLiteral("%1 MB").arg(qFloor(size / 1048576));
     return QStringLiteral("%1 GB").arg(size / 1073741824);
+}
+
+QUrl Utils::slidesUrl(const QString &playlistPath) {
+    if (playlistPath.isEmpty()) {
+        return {};
+    }
+
+    QUrl url{"jupii://slides"};
+    QUrlQuery query;
+    query.addQueryItem(QStringLiteral("playlist"), playlistPath);
+    url.setQuery(query);
+
+    return url;
 }

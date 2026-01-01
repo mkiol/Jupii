@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,10 +18,8 @@
 #include <csignal>
 #include <cstdint>
 #include <cstdlib>
-#include <iostream>
 #include <libupnpp/control/description.hxx>
 #include <libupnpp/control/discovery.hxx>
-#include <variant>
 
 #ifdef USE_SFOS
 #ifdef QT_QML_DEBUG
@@ -72,9 +70,9 @@
 #include "renderingcontrol.h"
 #include "services.h"
 #include "settings.h"
+#include "slidesmodel.hpp"
 #include "somafmmodel.h"
 #include "soundcloudmodel.h"
-#include "thumb.h"
 #include "trackmodel.h"
 #include "tuneinmodel.h"
 #include "utils.h"
@@ -190,6 +188,8 @@ static void registerTypes() {
                                          0, "GpodderEpisodeModel");
     qmlRegisterType<DirModel>(QML_IMPORT("DirModel"), 1, 0, "DirModel");
     qmlRegisterType<RecModel>(QML_IMPORT("RecModel"), 1, 0, "RecModel");
+    qmlRegisterType<SlidesModel>(QML_IMPORT("SlidesModel"), 1, 0,
+                                 "SlidesModel");
     qmlRegisterType<CDirModel>(QML_IMPORT("CDirModel"), 1, 0, "CDirModel");
     qmlRegisterType<TuneinModel>(QML_IMPORT("TuneinModel"), 1, 0,
                                  "TuneinModel");

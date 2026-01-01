@@ -81,7 +81,7 @@ Dialog {
         model: itemModel
 
         footer: ShowMoreItem {
-            enabled: !itemModel.busy && root.featureMode
+            enabled: !itemModel.busy && itemModel.filter.length === 0 && root.featureMode
             onClicked: {
                 if (root.featureMode) {
                     pageStack.push(Qt.resolvedUrl("YtPage.qml"),

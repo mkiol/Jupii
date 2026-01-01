@@ -13,6 +13,8 @@ import harbour.jupii.Settings 1.0
 Page {
     id: root
 
+    property bool showAdvanced: false
+
     allowedOrientations: Orientation.All
 
     SilicaFlickable {
@@ -36,9 +38,23 @@ Page {
                 text: qsTr("Restart is required for the changes to take effect.")
             }
 
+            ComboBox {
+                label: qsTr("Show")
+                currentIndex: 0
+
+                menu: ContextMenu {
+                    MenuItem { text: qsTr("Basic options") }
+                    MenuItem { text: qsTr("All options") }
+                }
+
+                onCurrentIndexChanged: {
+                    root.showAdvanced = (currentIndex === 1)
+                }
+            }
+
             ExpandingSectionGroup {
                 ExpandingSection {
-                    title: qsTr("Sharing")
+                    title: "UPnP"
 
                     content.sourceComponent: Column {
                         TextSwitch {
@@ -50,6 +66,213 @@ Page {
                             onClicked: {
                                 settings.contentDirSupported = !settings.contentDirSupported
                             }
+                        }
+
+                        ComboBox {
+                            visible: root.showAdvanced
+                            label: qsTr("Gapless mode (%1)").arg("setNextURI")
+                            currentIndex: {
+                                switch (settings.avNextUriPolicy) {
+                                case Settings.AvNextUriPolicy_Auto:
+                                    return 0;
+                                case Settings.AvNextUriPolicy_DisableOnlyIfNotSupported:
+                                    return 1;
+                                case Settings.AvNextUriPolicy_NeverDisable:
+                                    return 2;
+                                case Settings.AvNextUriPolicy_AlwaysDisable:
+                                    return 3;
+                                }
+                                return 0;
+                            }
+
+                            menu: ContextMenu {
+                                MenuItem { text: qsTr("Auto") }
+                                MenuItem { text: qsTr("Disable only if not supported") }
+                                MenuItem { text: qsTr("Always enabled") }
+                                MenuItem { text: qsTr("Always disabled") }
+                            }
+
+                            onCurrentIndexChanged: {
+                                switch (currentIndex) {
+                                case 0:
+                                    settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto;
+                                    break;
+                                case 1:
+                                    settings.avNextUriPolicy = Settings.AvNextUriPolicy_DisableOnlyIfNotSupported;
+                                    break;
+                                case 2:
+                                    settings.avNextUriPolicy = Settings.AvNextUriPolicy_NeverDisable;
+                                    break;
+                                case 3:
+                                    settings.avNextUriPolicy = Settings.AvNextUriPolicy_AlwaysDisable;
+                                    break;
+                                default:
+                                    settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                ExpandingSection {
+                    title: qsTr("Slideshow")
+
+                    content.sourceComponent: Column {
+                        // TextSwitch {
+                        //     automaticCheck: false
+                        //     checked: settings.imageAsVideo
+                        //     text: qsTr("Always convert images into video")
+                        //     description: qsTr("When enabled, image elements are always converted into a video stream with a low frame rate.")
+                        //     onClicked: {
+                        //         settings.imageAsVideo = !settings.imageAsVideo
+                        //     }
+                        // }
+
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.slidesShowCountInd
+                            text: qsTr("Show slide numbers")
+                            onClicked: {
+                                settings.slidesShowCountInd = !settings.slidesShowCountInd
+                            }
+                        }
+
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.slidesShowProgrInd
+                            text: qsTr("Show progress bar")
+                            onClicked: {
+                                settings.slidesShowProgrInd = !settings.slidesShowProgrInd
+                            }
+                        }
+
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.slidesShowDateInd
+                            text: qsTr("Show date & time")
+                            onClicked: {
+                                settings.slidesShowDateInd = !settings.slidesShowDateInd
+                            }
+                        }
+
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.slidesShowCameraInd
+                            text: qsTr("Show camera model")
+                            onClicked: {
+                                settings.slidesShowCameraInd = !settings.slidesShowCameraInd
+                            }
+                        }
+
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.imagePaused
+                            text: qsTr("Pause slideshow")
+                            description: qsTr("When enabled, the current image is displayed indefinitely.")
+                            onClicked: {
+                                settings.imagePaused = !settings.imagePaused
+                            }
+                        }
+
+                        SliderWithDescription {
+                            width: parent.width
+                            minimumValue: 1
+                            maximumValue: 120
+                            value: settings.imageDuration
+                            label: qsTr("Image display time (seconds)")
+                            description: qsTr("Change to adjust how long the image is displayed.")
+                            onValueChanged: {
+                                settings.imageDuration = value
+                            }
+                        }
+
+                        TextSwitch {
+                            automaticCheck: false
+                            checked: settings.slidesLoop
+                            text: qsTr("Repeat slideshow")
+                            description: qsTr("When enabled, slideshow will be restarted after the last image.")
+                            onClicked: {
+                                settings.slidesLoop = !settings.slidesLoop
+                            }
+                        }
+
+                        ComboBox {
+                            label: qsTr("Image rotation")
+                            currentIndex: {
+                                switch(settings.imageRotate) {
+                                case Settings.ImageRotate_None:
+                                    return 0
+                                case Settings.ImageRotate_Rot90:
+                                    return 1
+                                case Settings.ImageRotate_Rot180:
+                                    return 2
+                                case Settings.ImageRotate_Rot270:
+                                    return 3
+                                }
+                                return 0;
+                            }
+
+                            menu: ContextMenu {
+                                MenuItem { text: qsTr("None") }
+                                MenuItem { text: "90°" }
+                                MenuItem { text: "180°" }
+                                MenuItem { text: "270°" }
+                            }
+
+                            onCurrentIndexChanged: {
+                                switch (currentIndex) {
+                                case 0: settings.imageRotate = Settings.ImageRotate_None; break;
+                                case 1: settings.imageRotate = Settings.ImageRotate_Rot90; break;
+                                case 2: settings.imageRotate = Settings.ImageRotate_Rot180; break;
+                                case 3: settings.imageRotate = Settings.ImageRotate_Rot270; break;
+                                default: settings.imageScale = Settings.ImageScale_None; break
+                                }
+                            }
+                            description: qsTr("Specify the angle of rotation of the image.")
+                        }
+
+                        SliderWithDescription {
+                            visible: root.showAdvanced
+                            width: parent.width
+                            minimumValue: 1
+                            maximumValue: 60
+                            value: settings.imageFps
+                            label: qsTr("Image FPS")
+                            description: qsTr("The frame rate of a video stream used when converting an image to video format.")
+
+                            onValueChanged: {
+                                settings.imageFps = value
+                            }
+                        }
+
+                        ComboBox {
+                            visible: root.showAdvanced
+                            label: qsTr("Maximum image size")
+                            currentIndex: {
+                                switch (settings.imageScale) {
+                                case Settings.ImageScale_None: return 0;
+                                case Settings.ImageScale_2160: return 1;
+                                case Settings.ImageScale_1080: return 2;
+                                case Settings.ImageScale_720: return 3;
+                                }
+                                return 2;
+                            }
+                            menu: ContextMenu {
+                                MenuItem { text:  qsTr("Unlimited") }
+                                MenuItem { text: "UHD" }
+                                MenuItem { text: "FHD" }
+                                MenuItem { text: "HD" }
+                            }
+                            onCurrentIndexChanged: {
+                                switch (currentIndex) {
+                                case 0: settings.imageScale = Settings.ImageScale_None; break;
+                                case 1: settings.imageScale = Settings.ImageScale_2160; break;
+                                case 2: settings.imageScale = Settings.ImageScale_1080; break;
+                                case 3: settings.imageScale = Settings.ImageScale_720; break;
+                                default: settings.imageScale = Settings.ImageScale_1080;
+                                }
+                            }
+                            description: qsTr("The maximum image size when converting an image to video format.")
                         }
                     }
                 }
@@ -88,38 +311,6 @@ Page {
                 }
 
                 ExpandingSection {
-                    title: qsTr("Image as video")
-
-                    content.sourceComponent: Column {
-                        TextSwitch {
-                            automaticCheck: false
-                            checked: settings.imageAsVideo
-                            text: qsTr("Always convert images into video")
-                            description: qsTr("When enabled, image elements are always converted into a video stream with a low frame rate.")
-                            onClicked: {
-                                settings.imageAsVideo = !settings.imageAsVideo
-                            }
-                        }
-
-                        Slider {
-                            opacity: enabled ? 1.0 : Theme.opacityLow
-                            width: parent.width
-                            minimumValue: 0
-                            maximumValue: 120
-                            stepSize: 1
-                            handleVisible: true
-                            value: settings.imageDuration
-                            valueText: value
-                            label: qsTr("Image display time")
-
-                            onValueChanged: {
-                                settings.imageDuration = value
-                            }
-                        }
-                    }
-                }
-
-                ExpandingSection {
                     title: qsTr("Multimedia")
 
                     content.sourceComponent: Column {
@@ -146,7 +337,7 @@ Page {
                                 }
                             }
                             description: qsTr("Format used for real-time streaming.") + " " +
-                                         qsTr("Change if you observe problems with video playback in Camera or Screen capture.")
+                                         qsTr("Change if you observe problems with video playback in Camera, Screen capture or Slideshow.")
                         }
 
                         ComboBox {
@@ -178,8 +369,84 @@ Page {
                             description: qsTr("Format used for real-time streaming.") + " " +
                                          qsTr("Change if you observe problems with audio playback in Microphone or Audio capture.")
                         }
+
+                        TextSwitch {
+                            visible: root.showAdvanced
+                            automaticCheck: false
+                            checked: !settings.allowNotIsomMp4
+                            text: qsTr("Block fragmented MP4 audio streams")
+                            description: qsTr("Some UPnP devices don't support audio stream in fragmented MP4 format. " +
+                                              "This kind of stream might even hang a device. " +
+                                              "To overcome this problem, Jupii tries to re-transcode stream to standard MP4. " +
+                                              "When re-transcoding fails and this option is enabled, item will not be played at all.")
+                            onClicked: {
+                                settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
+                            }
+                        }
+
+                        // ComboBox {
+                        //     visible: root.showAdvanced
+                        //     label: qsTr("Video encoder")
+                        //     currentIndex: {
+                        //         switch (settings.casterVideoEncoder) {
+                        //         case Settings.CasterVideoEncoder_Auto: return 0;
+                        //         case Settings.CasterVideoEncoder_X264: return 1;
+                        //         case Settings.CasterVideoEncoder_Nvenc: return 2;
+                        //         case Settings.CasterVideoEncoder_V4l2: return 3;
+                        //         }
+                        //         return 0;
+                        //     }
+
+                        //     menu: ContextMenu {
+                        //         MenuItem { text: qsTr("Auto") }
+                        //         MenuItem { text: "x264" }
+                        //         MenuItem { text: "nvenc" }
+                        //         MenuItem { text: "V4L2" }
+                        //     }
+
+                        //     onCurrentIndexChanged: {
+                        //         switch (currentIndex) {
+                        //         case 0: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto; break;
+                        //         case 1: settings.casterVideoEncoder = Settings.CasterVideoEncoder_X264; break;
+                        //         case 2: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Nvenc; break;
+                        //         case 3: settings.casterVideoEncoder = Settings.CasterVideoEncoder_V4l2; break;
+                        //         default: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
+                        //         }
+                        //     }
+                        // }
+
+                        Slider {
+                            opacity: enabled ? 1.0 : Theme.opacityLow
+                            width: parent.width
+                            minimumValue: -50
+                            maximumValue: 50
+                            stepSize: 1
+                            handleVisible: true
+                            value: settings.casterMicVolume
+                            valueText: value
+                            label: qsTr("Microphone volume boost")
+                            onValueChanged: {
+                                settings.casterMicVolume = value
+                            }
+                        }
+
+                        Slider {
+                            opacity: enabled ? 1.0 : Theme.opacityLow
+                            width: parent.width
+                            minimumValue: -50
+                            maximumValue: 50
+                            stepSize: 1
+                            handleVisible: true
+                            value: settings.casterPlaybackVolume
+                            valueText: value
+                            label: qsTr("Audio capture volume boost")
+                            onValueChanged: {
+                                settings.casterPlaybackVolume = value
+                            }
+                        }
                     }
                 }
+
                 ExpandingSection {
                     title: qsTr("Recorder")
 
@@ -335,11 +602,24 @@ Page {
                 }
 
                 ExpandingSection {
-                    title: qsTr("Advanced")
+                    title: qsTr("Other options")
                     content.sourceComponent: Column {
+                        TextField {
+                            visible: root.showAdvanced
+                            anchors {
+                                left: parent.left; right: parent.right
+                            }
+                            label: qsTr("Frontier Silicon PIN")
+                            text: settings.fsapiPin
+                            inputMethodHints: Qt.ImhDigitsOnly
+                            placeholderText: qsTr("Enter Frontier Silicon PIN")
+                            onTextChanged: {
+                                settings.fsapiPin = text
+                            }
+                        }
 
                         ComboBox {
-                            visible: settings.isDebug()
+                            visible: settings.isDebug() && root.showAdvanced
                             label: qsTr("Preferred network interface")
                             currentIndex: utils.prefNetworkInfIndex()
                             menu: ContextMenu {
@@ -355,19 +635,7 @@ Page {
                         }
 
                         TextSwitch {
-                            automaticCheck: false
-                            checked: !settings.allowNotIsomMp4
-                            text: qsTr("Block fragmented MP4 audio streams")
-                            description: qsTr("Some UPnP devices don't support audio stream in fragmented MP4 format. " +
-                                              "This kind of stream might even hang a device. " +
-                                              "To overcome this problem, Jupii tries to re-transcode stream to standard MP4. " +
-                                              "When re-transcoding fails and this option is enabled, item will not be played at all.")
-                            onClicked: {
-                                settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
-                            }
-                        }
-
-                        TextSwitch {
+                            visible: root.showAdvanced
                             automaticCheck: false
                             checked: settings.showAllDevices
                             text: qsTr("All devices visible")
@@ -390,94 +658,6 @@ Page {
                                               "together with Jupii and stopped on exit.")
                             onClicked: {
                                 settings.controlMpdService = !settings.controlMpdService
-                            }
-                        }
-
-                        /*ComboBox {
-                            label: qsTr("Video encoder")
-                            currentIndex: {
-                                switch (settings.casterVideoEncoder) {
-                                case Settings.CasterVideoEncoder_Auto: return 0;
-                                case Settings.CasterVideoEncoder_X264: return 1;
-                                case Settings.CasterVideoEncoder_Nvenc: return 2;
-                                case Settings.CasterVideoEncoder_V4l2: return 3;
-                                }
-                                return 0;
-                            }
-
-                            menu: ContextMenu {
-                                MenuItem { text: qsTr("Auto") }
-                                MenuItem { text: "x264" }
-                                MenuItem { text: "nvenc" }
-                                MenuItem { text: "V4L2" }
-                            }
-
-                            onCurrentIndexChanged: {
-                                switch (currentIndex) {
-                                case 0: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto; break;
-                                case 1: settings.casterVideoEncoder = Settings.CasterVideoEncoder_X264; break;
-                                case 2: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Nvenc; break;
-                                case 3: settings.casterVideoEncoder = Settings.CasterVideoEncoder_V4l2; break;
-                                default: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
-                                }
-                            }
-                        }*/
-
-                        Slider {
-                            opacity: enabled ? 1.0 : Theme.opacityLow
-                            width: parent.width
-                            minimumValue: 1
-                            maximumValue: 60
-                            stepSize: 1
-                            handleVisible: true
-                            value: settings.imageFps
-                            valueText: value
-                            label: qsTr("Image FPS")
-
-                            onValueChanged: {
-                                settings.imageFps = value
-                            }
-                        }
-
-                        ComboBox {
-                            label: qsTr("Maximum image size")
-                            currentIndex: {
-                                switch (settings.imageScale) {
-                                case Settings.ImageScale_None: return 0;
-                                case Settings.ImageScale_2160: return 1;
-                                case Settings.ImageScale_1080: return 2;
-                                case Settings.ImageScale_720: return 3;
-                                }
-                                return 2;
-                            }
-                            menu: ContextMenu {
-                                MenuItem { text:  qsTr("Unlimited") }
-                                MenuItem { text: "UHD" }
-                                MenuItem { text: "FHD" }
-                                MenuItem { text: "HD" }
-                            }
-                            onCurrentIndexChanged: {
-                                switch (currentIndex) {
-                                case 0: settings.imageScale = Settings.ImageScale_None; break;
-                                case 1: settings.imageScale = Settings.ImageScale_2160; break;
-                                case 2: settings.imageScale = Settings.ImageScale_1080; break;
-                                case 3: settings.imageScale = Settings.ImageScale_720; break;
-                                default: settings.imageScale = Settings.ImageScale_1080;
-                                }
-                            }
-                            description: qsTr("The maximum image size when converting an image to video format.")
-                        }
-
-                        TextField {
-                            anchors {
-                                left: parent.left; right: parent.right
-                            }
-                            label: qsTr("Frontier Silicon PIN")
-                            text: settings.fsapiPin
-                            inputMethodHints: Qt.ImhDigitsOnly
-                            placeholderText: qsTr("Enter Frontier Silicon PIN")
-                            onTextChanged: {
-                                settings.fsapiPin = text
                             }
                         }
 

@@ -234,6 +234,10 @@ Kirigami.ScrollablePage {
                 case ContentServer.ItemType_Cam:
                 case ContentServer.ItemType_ScreenCapture:
                     return model.videoSource + " · " + model.videoOrientation + (model.audioSource.length !== 0 ? (" · " + model.audioSource) : "")
+                case ContentServer.ItemType_Slides: {
+                    var date = model.recDate
+                    return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
+                }
                 default:
                     return model.artist.length !== 0 ? model.artist : ""
                 }
@@ -247,6 +251,8 @@ Kirigami.ScrollablePage {
                     return "computer"
                 else if (model.itemType === ContentServer.ItemType_Cam)
                     return "camera-web"
+                else if (model.itemType === ContentServer.ItemType_Slides)
+                    return "edit-group-symbolic"
                 else
                     switch (model.type) {
                     case AVTransport.T_Image:
@@ -259,13 +265,21 @@ Kirigami.ScrollablePage {
                         return "unknown"
                     }
             }
-            attachedIconName: model.itemType === ContentServer.ItemType_Url ?
-                                  "folder-remote" :
-                              model.itemType === ContentServer.ItemType_Upnp ?
-                                  "network-server" : ""
+
+            attachedIconName: {
+                switch (model.itemType) {
+                case ContentServer.ItemType_Url: return "folder-remote"
+                case ContentServer.ItemType_Upnp: return "network-server"
+                case ContentServer.ItemType_Slides: return "edit-group-symbolic"
+                }
+                return ""
+            }
+
             attachedIcon2Name: {
                 if (iconSource.length === 0)
                     return ""
+                if (model.itemType === ContentServer.ItemType_Slides)
+                    return "emblem-videos-symbolic"
                 return defaultIconSource
             }
 
@@ -374,11 +388,20 @@ Kirigami.ScrollablePage {
         inited: root.inited
 
         title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
-        subtitle: app.streamTitle.length === 0 ?
-                      (root.itemType !== ContentServer.ItemType_Mic &&
-                       root.itemType !== ContentServer.ItemType_PlaybackCapture &&
-                       root.itemType !== ContentServer.ItemType_ScreenCapture ?
-                           av.currentAuthor : "") : app.streamTitle
+        subtitle: {
+            if (app.streamTitle.length === 0) {
+                if (root.itemType === ContentServer.ItemType_Slides) {
+                    return qsTr("%n image(s)", "", av.currentSize)
+                }
+                if (root.itemType !== ContentServer.ItemType_Mic &&
+                        root.itemType !== ContentServer.ItemType_PlaybackCapture &&
+                        root.itemType !== ContentServer.ItemType_ScreenCapture) {
+                    return av.currentAuthor
+                }
+                return ""
+            }
+            return app.streamTitle
+        }
         itemType: root.itemType
 
         prevEnabled: playlist.prevSupported &&

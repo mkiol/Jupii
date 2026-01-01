@@ -244,7 +244,7 @@ Kirigami.ScrollablePage {
         }
 
         // footer: ShowmoreItem {
-        //     visible: !itemModel.busy && root.featureMode && itemList.count !== 0
+        //     visible: !itemModel.busy && itemModel.filter.length === 0 && root.featureMode && itemList.count !== 0
         //     onClicked: {
         //         if (root.featureMode) {
         //             pageStack.push(Qt.resolvedUrl("YtPage.qml"),

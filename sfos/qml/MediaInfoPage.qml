@@ -1,12 +1,14 @@
-/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import QtQuick 2.0
+import QtQuick 2.6
 import Sailfish.Silica 1.0
+import Sailfish.Pickers 1.0
+import Nemo.Thumbnailer 1.0
 
 import harbour.jupii.AVTransport 1.0
 import harbour.jupii.RenderingControl 1.0
@@ -20,7 +22,7 @@ Page {
 
     property bool imgOk: imagep.status === Image.Ready || imagel.status === Image.Ready
     property int itemType: utils.itemTypeFromUrl(av.currentId)
-    property bool isShout: app.streamTitle.length !== 0
+    property bool isShout: app.streamTitle.length !== 0 && itemType === ContentServer.ItemType_Url
     property var urlInfo: cserver.parseUrl(av.currentId)
 
     onStatusChanged: {
@@ -159,6 +161,8 @@ Page {
                             return qsTr("Microphone")
                         case ContentServer.ItemType_Cam:
                             return qsTr("Camera")
+                        case ContentServer.ItemType_Slides:
+                            return qsTr("Slideshow")
                         default:
                             return ""
                         }
@@ -202,17 +206,32 @@ Page {
                 }
 
                 DetailItem {
-                    label: itemType === ContentServer.ItemType_PlaybackCapture ||
-                           itemType === ContentServer.ItemType_ScreenCapture ?
-                               qsTr("Captured application") : qsTr("Current title")
+                    id: curTitleItem
+                    label: {
+                        if (itemType === ContentServer.ItemType_PlaybackCapture ||
+                                itemType === ContentServer.ItemType_ScreenCapture) {
+                            return qsTr("Captured application")
+                        }
+                        if (itemType === ContentServer.ItemType_Slides) {
+                            return qsTr("Slideshow progress")
+                        }
+                        return qsTr("Current title")
+                    }
                     value: app.streamTitle.length === 0 &&
                            (itemType === ContentServer.ItemType_PlaybackCapture ||
                             itemType === ContentServer.ItemType_ScreenCapture) ?
                                qsTr("None") : app.streamTitle
                     visible: (itemType === ContentServer.ItemType_PlaybackCapture ||
-                             itemType === ContentServer.ItemType_ScreenCapture ||
-                             itemType === ContentServer.ItemType_Url) &&
-                             value.length !== 0 && av.currentType !== AVTransport.T_Image
+                              itemType === ContentServer.ItemType_ScreenCapture ||
+                              itemType === ContentServer.ItemType_Url ||
+                              itemType === ContentServer.ItemType_Slides) &&
+                             text.length !== 0 && av.currentType !== AVTransport.T_Image
+                }
+
+                DetailItem {
+                    label: qsTr("Number of images")
+                    value: av.currentSize
+                    visible: itemType === ContentServer.ItemType_Slides && !curTitleItem.visible
                 }
 
                 DetailItem {
@@ -249,7 +268,7 @@ Page {
                 }
 
                 DetailItem {
-                    label: qsTr("Recording date")
+                    label: itemType === ContentServer.ItemType_Slides ? qsTr("Last edit time") : qsTr("Recording date")
                     value: av.currentRecDate
                     visible: value.length !== 0
                 }
@@ -281,7 +300,7 @@ Page {
                 DetailItem {
                     label: qsTr("Cached")
                     value: cserver.idCached(av.currentId) ? qsTr("Yes") : qsTr("No")
-                    visible: settings.isDebug() && itemType == ContentServer.ItemType_Url
+                    visible: settings.isDebug() && itemType === ContentServer.ItemType_Url
 
                 }
             }
@@ -375,6 +394,214 @@ Page {
                             truncationMode: TruncationMode.Fade
                             text: modelData
                         }
+                    }
+                }
+
+                SectionHeader {
+                    text: qsTr("Slideshow options")
+                    visible: itemType === ContentServer.ItemType_Slides
+                }
+
+                TextSwitch {
+                    visible: itemType === ContentServer.ItemType_Slides
+                    automaticCheck: false
+                    checked: settings.slidesShowCountInd
+                    text: qsTr("Show slide numbers")
+                    onClicked: {
+                        settings.slidesShowCountInd = !settings.slidesShowCountInd
+                    }
+                }
+
+                TextSwitch {
+                    visible: itemType === ContentServer.ItemType_Slides
+                    automaticCheck: false
+                    checked: settings.slidesShowProgrInd
+                    text: qsTr("Show progress bar")
+                    onClicked: {
+                        settings.slidesShowProgrInd = !settings.slidesShowProgrInd
+                    }
+                }
+
+                TextSwitch {
+                    visible: itemType === ContentServer.ItemType_Slides
+                    automaticCheck: false
+                    checked: settings.slidesShowDateInd
+                    text: qsTr("Show date & time")
+                    onClicked: {
+                        settings.slidesShowDateInd = !settings.slidesShowDateInd
+                    }
+                }
+
+                TextSwitch {
+                    visible: itemType === ContentServer.ItemType_Slides
+                    automaticCheck: false
+                    checked: settings.slidesShowCameraInd
+                    text: qsTr("Show camera model")
+                    onClicked: {
+                        settings.slidesShowCameraInd = !settings.slidesShowCameraInd
+                    }
+                }
+
+                SliderWithDescription {
+                    visible: itemType === ContentServer.ItemType_Slides
+                    width: parent.width
+                    minimumValue: 1
+                    maximumValue: 120
+                    value: settings.imageDuration
+                    label: qsTr("Image display time (seconds)")
+                    onValueChanged: {
+                        settings.imageDuration = value
+                    }
+                }
+
+                ComboBox {
+                    visible: itemType === ContentServer.ItemType_Slides
+                    label: qsTr("Image rotation")
+                    currentIndex: {
+                        switch(settings.imageRotate) {
+                        case Settings.ImageRotate_None:
+                            return 0
+                        case Settings.ImageRotate_Rot90:
+                            return 1
+                        case Settings.ImageRotate_Rot180:
+                            return 2
+                        case Settings.ImageRotate_Rot270:
+                            return 3
+                        }
+                        return 0;
+                    }
+
+                    menu: ContextMenu {
+                        MenuItem { text: qsTr("None") }
+                        MenuItem { text: "90°" }
+                        MenuItem { text: "180°" }
+                        MenuItem { text: "270°" }
+                    }
+
+                    onCurrentIndexChanged: {
+                        switch (currentIndex) {
+                        case 0: settings.imageRotate = Settings.ImageRotate_None; break;
+                        case 1: settings.imageRotate = Settings.ImageRotate_Rot90; break;
+                        case 2: settings.imageRotate = Settings.ImageRotate_Rot180; break;
+                        case 3: settings.imageRotate = Settings.ImageRotate_Rot270; break;
+                        default: settings.imageScale = Settings.ImageScale_None; break
+                        }
+                    }
+                }
+
+                TextSwitch {
+                    visible: itemType === ContentServer.ItemType_Slides
+                    automaticCheck: false
+                    checked: settings.slidesLoop
+                    text: qsTr("Repeat slideshow")
+                    onClicked: {
+                        settings.slidesLoop = !settings.slidesLoop
+                    }
+                }
+
+                Row {
+                    visible: imageView.visible
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: Theme.iconSizeExtraLarge
+                    spacing: Theme.paddingLarge
+
+                    IconButton {
+                        width: Theme.iconSizeLarge; height: Theme.iconSizeLarge
+                        icon.source: "image://theme/icon-m-previous"
+                        onClicked: cserver.slidesSwitch(true)
+                    }
+
+                    IconButton {
+                        id: pauseButton
+                        width: Theme.iconSizeLarge; height: Theme.iconSizeLarge
+                        icon.source: settings.imagePaused ? "image://theme/icon-l-play" : "image://theme/icon-l-pause"
+                        onClicked: settings.imagePaused = !settings.imagePaused
+
+                        SequentialAnimation on opacity {
+                            loops: Animation.Infinite
+                            running: settings.imagePaused && av.transportState === AVTransport.Playing
+                            onRunningChanged: {
+                                if (!running) {
+                                    pauseButton.opacity = 1.0
+                                }
+                            }
+
+                            PropertyAnimation { to: 0; duration: 500 }
+                            PropertyAnimation { to: 1; duration: 500 }
+                        }
+                    }
+
+                    IconButton {
+                        width: Theme.iconSizeLarge; height: Theme.iconSizeLarge
+                        icon.source: "image://theme/icon-m-next"
+                        onClicked: cserver.slidesSwitch(false)
+                    }
+                }
+
+                ListView {
+                    id: imageView
+                    visible: itemType === ContentServer.ItemType_Slides &&
+                             app.streamFiles.length > 0 &&
+                             av.transportState === AVTransport.Playing
+                    property real itemSize: Theme.itemSizeHuge
+                    width: parent.width
+                    height: itemSize
+                    model: app.streamFiles
+                    clip: true
+                    orientation: ListView.Horizontal
+                    delegate: Image {
+                        width: imageView.itemSize
+                        height: imageView.itemSize
+                        sourceSize { width: width; height: height }
+                        source: "image://nemoThumbnail/" + modelData
+                        asynchronous: true
+                        fillMode: Image.PreserveAspectCrop
+                        Rectangle {
+                            visible: index === app.streamIdx
+                            color: "transparent"
+                            border.color: "#a0ffffff"
+                            border.width: Theme.paddingMedium
+                            anchors.fill: parent
+                        }
+                        Rectangle {
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            color: "#a0ffffff"
+                            height: indexLabel.height + Theme.paddingSmall
+                            width: indexLabel.width + Theme.paddingSmall
+                            Text {
+                                id: indexLabel
+                                anchors.centerIn: parent
+                                font.pixelSize: Theme.fontSizeSmall
+                                text: index + 1
+                                color: "black"
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: cserver.slidesSwitchToIdx(index)
+                        }
+                    }
+
+                    Connections {
+                        target: cserver
+                        onStreamFilesChanged: {
+                            if (!slidesFollowSwitch.checked) return
+                            imageView.currentIndex = app.streamIdx
+                        }
+                    }
+                }
+
+                TextSwitch {
+                    id: slidesFollowSwitch
+                    visible: imageView.visible
+                    automaticCheck: true
+                    checked: true
+                    text: qsTr("Follow current image")
+                    onClicked: {
+                        if (!checked) return
+                        imageView.currentIndex = app.streamIdx
                     }
                 }
             }

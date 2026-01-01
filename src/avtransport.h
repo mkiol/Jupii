@@ -8,66 +8,93 @@
 #ifndef AVTRANSPORT_H
 #define AVTRANSPORT_H
 
+#include <QMetaMethod>
+#include <QMutex>
 #include <QString>
 #include <QTimer>
-#include <QMutex>
-#include <QMetaMethod>
 #include <QUrl>
+#include <cstdint>
 
-#include "libupnpp/control/avtransport.hxx"
-#include "libupnpp/control/service.hxx"
-#include "libupnpp/control/cdircontent.hxx"
-
-#include "service.h"
 #include "contentserver.h"
+#include "libupnpp/control/avtransport.hxx"
+#include "libupnpp/control/cdircontent.hxx"
+#include "libupnpp/control/service.hxx"
+#include "service.h"
 
-class AVTransport : public Service
-{
+class AVTransport : public Service {
     Q_OBJECT
-    Q_PROPERTY (QString currentURI READ getCurrentURI NOTIFY currentURIChanged)
-    Q_PROPERTY (QUrl currentId READ getCurrentId NOTIFY currentURIChanged)
-    Q_PROPERTY (QString currentPath READ getCurrentPath NOTIFY currentURIChanged)
-    Q_PROPERTY (QString currentURL READ getCurrentURL NOTIFY currentURIChanged)
-    Q_PROPERTY (QString nextURI READ getNextURI NOTIFY nextURIChanged)
-    Q_PROPERTY (QString nextPath READ getNextPath NOTIFY nextURIChanged)
-    Q_PROPERTY (bool nextURISupported READ getNextURISupported NOTIFY nextURISupportedChanged)
+    Q_PROPERTY(QString currentURI READ getCurrentURI NOTIFY currentURIChanged)
+    Q_PROPERTY(QUrl currentId READ getCurrentId NOTIFY currentURIChanged)
+    Q_PROPERTY(QString currentPath READ getCurrentPath NOTIFY currentURIChanged)
+    Q_PROPERTY(QString currentURL READ getCurrentURL NOTIFY currentURIChanged)
+    Q_PROPERTY(QString nextURI READ getNextURI NOTIFY nextURIChanged)
+    Q_PROPERTY(QString nextPath READ getNextPath NOTIFY nextURIChanged)
+    Q_PROPERTY(bool nextURISupported READ getNextURISupported NOTIFY
+                   nextURISupportedChanged)
 
-    Q_PROPERTY (int transportState READ getTransportState NOTIFY transportStateChanged)
-    Q_PROPERTY (int transportStatus READ getTransportStatus NOTIFY transportStatusChanged)
-    Q_PROPERTY (int playMode READ getPlayMode NOTIFY playModeChanged)
-    Q_PROPERTY (int numberOfTracks READ getNumberOfTracks NOTIFY numberOfTracksChanged)
-    Q_PROPERTY (int currentTrack READ getCurrentTrack NOTIFY currentTrackChanged)
-    Q_PROPERTY (int currentTrackDuration READ getCurrentTrackDuration NOTIFY currentTrackDurationChanged)
-    Q_PROPERTY (int relativeTimePosition READ getRelativeTimePosition NOTIFY relativeTimePositionChanged)
-    Q_PROPERTY (int absoluteTimePosition READ getAbsoluteTimePosition NOTIFY absoluteTimePositionChanged)
-    Q_PROPERTY (int speed READ getSpeed WRITE setSpeed NOTIFY speedChanged)
+    Q_PROPERTY(
+        int transportState READ getTransportState NOTIFY transportStateChanged)
+    Q_PROPERTY(int transportStatus READ getTransportStatus NOTIFY
+                   transportStatusChanged)
+    Q_PROPERTY(int playMode READ getPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY(
+        int numberOfTracks READ getNumberOfTracks NOTIFY numberOfTracksChanged)
+    Q_PROPERTY(int currentTrack READ getCurrentTrack NOTIFY currentTrackChanged)
+    Q_PROPERTY(int currentTrackDuration READ getCurrentTrackDuration NOTIFY
+                   currentTrackDurationChanged)
+    Q_PROPERTY(int relativeTimePosition READ getRelativeTimePosition NOTIFY
+                   relativeTimePositionChanged)
+    Q_PROPERTY(int absoluteTimePosition READ getAbsoluteTimePosition NOTIFY
+                   absoluteTimePositionChanged)
+    Q_PROPERTY(int speed READ getSpeed WRITE setSpeed NOTIFY speedChanged)
 
-    Q_PROPERTY (Type currentType READ getCurrentType NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QString currentClass READ getCurrentClass NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QString currentTitle READ getCurrentTitle NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QString currentAuthor READ getCurrentAuthor NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QString currentDescription READ getCurrentDescription NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QUrl currentAlbumArtURI READ getCurrentAlbumArtURI NOTIFY currentAlbumArtChanged)
-    Q_PROPERTY (QString currentAlbum READ getCurrentAlbum NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QString currentRecDate READ getCurrentRecDate NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QString currentRecUrl READ getCurrentRecUrl NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QUrl currentOrigURL READ getCurrentOrigUrl NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (QString currentContentType READ getContentType NOTIFY currentMetaDataChanged)
-    Q_PROPERTY (bool currentYtdl READ getCurrentYtdl NOTIFY currentMetaDataChanged)
+    Q_PROPERTY(
+        Type currentType READ getCurrentType NOTIFY currentMetaDataChanged)
+    Q_PROPERTY(
+        QString currentClass READ getCurrentClass NOTIFY currentMetaDataChanged)
+    Q_PROPERTY(
+        QString currentTitle READ getCurrentTitle NOTIFY currentMetaDataChanged)
+    Q_PROPERTY(QString currentAuthor READ getCurrentAuthor NOTIFY
+                   currentMetaDataChanged)
+    Q_PROPERTY(QString currentDescription READ getCurrentDescription NOTIFY
+                   currentMetaDataChanged)
+    Q_PROPERTY(QUrl currentAlbumArtURI READ getCurrentAlbumArtURI NOTIFY
+                   currentAlbumArtChanged)
+    Q_PROPERTY(
+        QString currentAlbum READ getCurrentAlbum NOTIFY currentMetaDataChanged)
+    Q_PROPERTY(QString currentRecDate READ getCurrentRecDate NOTIFY
+                   currentMetaDataChanged)
+    Q_PROPERTY(QString currentRecUrl READ getCurrentRecUrl NOTIFY
+                   currentMetaDataChanged)
+    Q_PROPERTY(QUrl currentOrigURL READ getCurrentOrigUrl NOTIFY
+                   currentMetaDataChanged)
+    Q_PROPERTY(QString currentContentType READ getContentType NOTIFY
+                   currentMetaDataChanged)
+    Q_PROPERTY(
+        bool currentYtdl READ getCurrentYtdl NOTIFY currentMetaDataChanged)
+    Q_PROPERTY(
+        int currentSize READ getCurrentSize NOTIFY currentMetaDataChanged)
 
-    Q_PROPERTY (bool nextSupported READ getNextSupported NOTIFY transportActionsChanged)
-    Q_PROPERTY (bool pauseSupported READ getPauseSupported NOTIFY transportActionsChanged)
-    Q_PROPERTY (bool playSupported READ getPlaySupported NOTIFY transportActionsChanged)
-    Q_PROPERTY (bool previousSupported READ getPreviousSupported NOTIFY transportActionsChanged)
-    Q_PROPERTY (bool seekSupported READ getSeekSupported NOTIFY transportActionsChanged)
-    Q_PROPERTY (bool stopSupported READ getStopSupported NOTIFY transportActionsChanged)
-    //Q_PROPERTY (bool playModeSupported READ getStopSupported NOTIFY transportActionsChanged)
+    Q_PROPERTY(
+        bool nextSupported READ getNextSupported NOTIFY transportActionsChanged)
+    Q_PROPERTY(bool pauseSupported READ getPauseSupported NOTIFY
+                   transportActionsChanged)
+    Q_PROPERTY(
+        bool playSupported READ getPlaySupported NOTIFY transportActionsChanged)
+    Q_PROPERTY(bool previousSupported READ getPreviousSupported NOTIFY
+                   transportActionsChanged)
+    Q_PROPERTY(
+        bool seekSupported READ getSeekSupported NOTIFY transportActionsChanged)
+    Q_PROPERTY(
+        bool stopSupported READ getStopSupported NOTIFY transportActionsChanged)
+    // Q_PROPERTY (bool playModeSupported READ getStopSupported NOTIFY
+    // transportActionsChanged)
 
-    Q_PROPERTY (bool playable READ getPlayable NOTIFY controlableChanged)
-    Q_PROPERTY (bool stopable READ getStopable NOTIFY controlableChanged)
-    Q_PROPERTY (bool controlable READ getControlable NOTIFY controlableChanged)
+    Q_PROPERTY(bool playable READ getPlayable NOTIFY controlableChanged)
+    Q_PROPERTY(bool stopable READ getStopable NOTIFY controlableChanged)
+    Q_PROPERTY(bool controlable READ getControlable NOTIFY controlableChanged)
 
-public:
+   public:
     enum TransportState {
         Unknown,
         Stopped,
@@ -80,11 +107,7 @@ public:
     };
     Q_ENUM(TransportState)
 
-    enum TransportStatus {
-        TPS_Unknown,
-        TPS_Ok,
-        TPS_Error
-    };
+    enum TransportStatus { TPS_Unknown, TPS_Ok, TPS_Error };
     Q_ENUM(TransportStatus)
 
     enum PlayMode {
@@ -98,12 +121,7 @@ public:
     };
     Q_ENUM(PlayMode)
 
-    enum Type {
-        T_Unknown = 0,
-        T_Image = 1,
-        T_Audio = 2,
-        T_Video = 4
-    };
+    enum Type { T_Unknown = 0, T_Image = 1, T_Audio = 2, T_Video = 4 };
     Q_ENUM(Type)
 
     static QString transportStateValue(TransportState state);
@@ -158,10 +176,11 @@ public:
     bool getStopable();
     bool getControlable();
     bool getCurrentYtdl();
+    int getCurrentSize() const;
     void setSpeed(int value);
     bool updating();
 
-signals:
+   signals:
     void transportStateChanged();
     void transportStatusChanged();
     void playModeChanged();
@@ -182,7 +201,7 @@ signals:
     void nextURISupportedChanged();
     void trackEnded();
 
-private slots:
+   private slots:
     void timerEvent();
     void transportStateHandler();
     void trackChangedHandler();
@@ -190,7 +209,7 @@ private slots:
     void handleApplicationStateChanged(Qt::ApplicationState state);
     void handleMetaChanged();
 
-private:
+   private:
     int m_transportState = Unknown;
     int m_oldTransportState = Unknown;
     int m_transportStatus = TPS_Unknown;
@@ -228,12 +247,13 @@ private:
     QMutex m_updateMutex;
 
     void changed(const QString &name, const QVariant &value);
-    UPnPClient::Service* createUpnpService(const UPnPClient::UPnPDeviceDesc &ddesc,
-                                           const UPnPClient::UPnPServiceDesc &sdesc);
+    UPnPClient::Service *createUpnpService(
+        const UPnPClient::UPnPDeviceDesc &ddesc,
+        const UPnPClient::UPnPServiceDesc &sdesc);
     void postInit();
     void reset();
 
-    UPnPClient::AVTransport* s();
+    UPnPClient::AVTransport *s();
     void fakeUpdateRelativeTimePosition();
     void updateTransportInfo();
     void updateTransportSettings();
@@ -256,4 +276,4 @@ private:
     bool nextUriSupported(const QString &nextUriStr) const;
 };
 
-#endif // AVTRANSPORT_H
+#endif  // AVTRANSPORT_H

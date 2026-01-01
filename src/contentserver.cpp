@@ -7,6 +7,8 @@
 
 #include "contentserver.h"
 
+#include <qglobal.h>
+
 #include <QBuffer>
 #include <QDebug>
 #include <QDir>
@@ -595,7 +597,10 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
           << dlnaContentFeaturesHeader(cmime, item->flagSet(MetaFlag::Seek),
                                        true)
           << "\" ";
-        duration = Settings::instance()->getImageDuration();
+
+        duration = Settings::instance()->getImagePaused()
+                       ? 0
+                       : Settings::instance()->getImageDuration();
     } else {
         if (item->size > 0)
             m << "size=\"" << QString::number(item->size) << "\" ";
@@ -843,7 +848,7 @@ std::optional<QUrl> ContentServer::idUrlFromUrl(const QUrl &url, bool *isFile,
     if (QUrlQuery q{id};
         !thumb && (!q.hasQueryItem(Utils::cookieKey) ||
                    q.queryItemValue(Utils::cookieKey).isEmpty())) {
-        qWarning() << "cookieKey is missing in url:" << id;
+        // qWarning() << "cookieKey is missing in url:" << id;
         return std::nullopt;
     }
 
@@ -1678,6 +1683,7 @@ ContentServer::ItemType ContentServer::itemTypeFromUrl(const QUrl &url) {
             return ItemType_PlaybackCapture;
         if (url.host() == QStringLiteral("mic")) return ItemType_Mic;
         if (url.host() == QStringLiteral("cam")) return ItemType_Cam;
+        if (url.host() == QStringLiteral("slides")) return ItemType_Slides;
     } else if (url.scheme() == QStringLiteral("http") ||
                url.scheme() == QStringLiteral("https")) {
         return ItemType_Url;
@@ -2025,6 +2031,46 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeCamItemMeta(
     meta.setFlags(MetaFlag::Local);
     meta.setFlags(MetaFlag::Live);
     meta.setFlags(MetaFlag::Seek, false);
+
+    return m_metaCache.insert(meta.url, meta);
+}
+
+QHash<QUrl, ContentServer::ItemMeta>::iterator
+ContentServer::makeSlidesItemMeta(const QUrl &url) {
+    ItemMeta meta;
+
+    auto params = ContentServer::parseCasterUrl(url);
+
+    if (!params.playlistFile) {
+        qWarning() << "playlist query missing in slides url";
+        return m_metaCache.end();
+    }
+
+    meta.path = params.playlistFile.value();
+
+    auto playlist = PlaylistParser::parsePlaylistFile(meta.path);
+    if (!playlist) {
+        qWarning() << "failed to parse slides playlist";
+        return m_metaCache.end();
+    }
+
+    meta.title = playlist->title.isEmpty() ? tr("Slideshow")
+                                           : std::move(playlist->title);
+    meta.url = makeCasterUrl(url, std::move(params));
+    meta.mime = casterMime(CasterType::VideoFile);
+    meta.type = Type::Type_Video;
+    meta.size = playlist->items.size();
+    meta.recDate = QFileInfo{meta.path}.lastModified();
+    meta.itemType = ItemType_Slides;
+    meta.setFlags(MetaFlag::Valid);
+    meta.setFlags(MetaFlag::Local);
+    meta.setFlags(MetaFlag::Live);
+    meta.setFlags(MetaFlag::Seek, false);
+    if (auto thumbPath = Thumb::path(meta.url)) {
+        meta.albumArt = std::move(*thumbPath);
+    } else if (auto thumbPath = Thumb::makeSlidesThumb(meta.url)) {
+        meta.albumArt = std::move(*thumbPath);
+    }
 
     return m_metaCache.insert(meta.url, meta);
 }
@@ -2859,6 +2905,9 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeItemMeta(
     } else if (itemType == ItemType_Cam) {
         qDebug() << "cam url detected";
         it = makeCamItemMeta(url);
+    } else if (itemType == ItemType_Slides) {
+        qDebug() << "slides url detected";
+        it = makeSlidesItemMeta(url);
     } else if (itemType == ItemType_Upnp) {
         qDebug() << "upnp url detected";
         it = makeUpnpItemMeta(url);
@@ -2884,6 +2933,8 @@ void ContentServer::run() {
             &ContentServer::shoutcastMetadataHandler);
     connect(worker, &ContentServerWorker::playbackCaptureNameUpdated, this,
             &ContentServer::pulseStreamNameHandler);
+    connect(worker, &ContentServerWorker::casterFileStreamStarted, this,
+            &ContentServer::casterFileStreamStartedHandler);
     connect(worker, &ContentServerWorker::itemAdded, this,
             &ContentServer::itemAddedHandler);
     connect(worker, &ContentServerWorker::itemRemoved, this,
@@ -2903,6 +2954,12 @@ void ContentServer::run() {
             &ContentServerWorker::setDisplayStatus);
     connect(this, &ContentServer::startProxyRequested, worker,
             &ContentServerWorker::startProxy);
+    connect(this, &ContentServer::requestSlidesSetFiles, worker,
+            &ContentServerWorker::setSlidesFiles);
+    connect(this, &ContentServer::requestSlidesSwitch, worker,
+            &ContentServerWorker::slidesSwitch);
+    connect(this, &ContentServer::requestSlidesSwitchToIdx, worker,
+            &ContentServerWorker::slidesSwitchToIdx);
     QThread::exec();
 }
 
@@ -3232,6 +3289,16 @@ QStringList ContentServer::streamTitleHistory(const QUrl &id) const {
     return {};
 }
 
+QStringList ContentServer::streamFiles(const QUrl &id) const {
+    if (m_streams.contains(id)) return m_streams.value(id).files;
+    return {};
+}
+
+int ContentServer::streamIdx(const QUrl &id) const {
+    if (m_streams.contains(id)) return m_streams.value(id).idx;
+    return {};
+}
+
 bool ContentServer::isStreamToRecord(const QUrl &id) const {
     if (id.isEmpty()) return false;
     return m_streamToRecord.contains(id);
@@ -3359,6 +3426,18 @@ void ContentServer::streamRecordedHandler(const QString &title,
     emit streamRecorded(title, path);
 }
 
+void ContentServer::setSlidesFiles(const QStringList &paths) {
+    emit requestSlidesSetFiles(paths);
+}
+
+void ContentServer::slidesSwitch(bool backward) {
+    emit requestSlidesSwitch(backward);
+}
+
+void ContentServer::slidesSwitchToIdx(int idx) {
+    emit requestSlidesSwitchToIdx(idx);
+}
+
 void ContentServer::itemAddedHandler(const QUrl &id) {
     qDebug() << "new item for id:" << Utils::anonymizedUrl(id);
     auto &stream = m_streams[id];
@@ -3385,6 +3464,34 @@ void ContentServer::pulseStreamNameHandler(const QUrl &id,
     stream.id = id;
     stream.title = name;
     emit streamTitleChanged(id, name);
+}
+
+void ContentServer::casterFileStreamStartedHandler(const QUrl &id, int idx,
+                                                   const QStringList &files) {
+    bool changed = false;
+
+    auto &stream = m_streams[id];
+    stream.id = id;
+    if (stream.count != files.size()) {
+        stream.count = files.size();
+        changed = true;
+    }
+    if (stream.idx != idx) {
+        stream.idx = idx;
+        changed = true;
+    }
+    if (changed) {
+        stream.title =
+            tr("Image %1 of %2").arg(stream.idx + 1).arg(stream.count);
+        emit streamTitleChanged(id, stream.title);
+    }
+    if (files != stream.files) {
+        stream.files = files;
+        changed = true;
+    }
+    if (changed) {
+        emit streamFilesChanged(id, stream.idx, stream.files);
+    }
 }
 
 QString ContentServer::streamTitleFromShoutcastMetadata(
@@ -3739,14 +3846,20 @@ ContentServer::CasterUrlParams ContentServer::parseCasterUrl(const QUrl &url) {
             params.audioSource->clear();
     }
 
-    if (q.hasQueryItem(QStringLiteral("video-orientation")))
+    if (q.hasQueryItem(QStringLiteral("video-orientation"))) {
         params.videoOrientation =
             q.queryItemValue(QStringLiteral("video-orientation"));
+    }
 
-    if (q.hasQueryItem(QStringLiteral("audio-source-muted")))
+    if (q.hasQueryItem(QStringLiteral("audio-source-muted"))) {
         params.audioSourceMuted =
             q.queryItemValue(QStringLiteral("audio-source-muted")) ==
             QStringLiteral("yes");
+    }
+
+    if (q.hasQueryItem(QStringLiteral("playlist"))) {
+        params.playlistFile = q.queryItemValue(QStringLiteral("playlist"));
+    }
 
     return params;
 }
@@ -3772,6 +3885,11 @@ QUrl ContentServer::makeCasterUrl(QUrl url, CasterUrlParams &&params) {
         q.addQueryItem(QStringLiteral("audio-source-muted"),
                        *params.audioSourceMuted ? QStringLiteral("yes")
                                                 : QStringLiteral("no"));
+
+    q.removeQueryItem(QStringLiteral("playlist"));
+    if (params.playlistFile) {
+        q.addQueryItem(QStringLiteral("playlist"), *params.playlistFile);
+    }
 
     url.setQuery(q);
 

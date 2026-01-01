@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -63,7 +63,9 @@ class PlaylistWorker : public QThread {
     PlaylistWorker(Urls &&urls, ContentServer::Type type,
                    QObject *parent = nullptr)
         : QThread{parent},
-          urls(std::forward<Urls>(urls)), type{type}, urlIsId{false} {}
+          urls(std::forward<Urls>(urls)),
+          type{type},
+          urlIsId{false} {}
     explicit PlaylistWorker(QList<QUrl> &&ids, QObject *parent = nullptr)
         : QThread{parent}, ids(std::move(ids)), urlIsId{true} {}
     inline QString origId(ListItem *item) {
@@ -80,7 +82,7 @@ class PlaylistWorker : public QThread {
     QList<QUrl> ids;
     QHash<ListItem *, QUrl> itemToOrigId;
     ContentServer::Type type = ContentServer::Type::Type_Unknown;
-    static void processPlaylist(const QUrl &url, QList<UrlItem> &urls);
+    static void processPlaylist(const UrlItem &url, QList<UrlItem> &urls);
     bool urlIsId;
     void run() override;
 };

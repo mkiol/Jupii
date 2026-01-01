@@ -13,6 +13,8 @@
 #include <QThread>
 #include <QTime>
 #include <QUrl>
+#include <algorithm>
+#include <limits>
 
 #include "connectivitydetector.h"
 #include "contentserver.h"
@@ -442,6 +444,13 @@ QString AVTransport::getContentType() {
 bool AVTransport::getCurrentYtdl() {
     const auto* ai = PlaylistModel::instance()->getActiveItem();
     return ai ? ai->ytdl() : false;
+}
+
+int AVTransport::getCurrentSize() const {
+    const auto* ai = PlaylistModel::instance()->getActiveItem();
+    return ai ? std::clamp<decltype(ai->size())>(
+                    ai->size(), 0, std::numeric_limits<int>::max())
+              : 0;
 }
 
 QString AVTransport::getNextPath() {

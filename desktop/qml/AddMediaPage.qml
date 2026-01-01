@@ -18,8 +18,6 @@ Kirigami.ScrollablePage {
 
     property var rightPage: app.rightPage(root)
     property bool openUrlDialog: false
-    property alias url: urlDialog.url
-    property alias name: urlDialog.name
 
     leftPadding: 0
     rightPadding: 0
@@ -32,7 +30,7 @@ Kirigami.ScrollablePage {
 
     Component.onCompleted: {
         if (openUrlDialog) {
-            urlDialog.open()
+            app.openPopupFile(Qt.resolvedUrl("UrlDialog.qml"))
             openUrlDialog = false
         }
     }
@@ -73,66 +71,6 @@ Kirigami.ScrollablePage {
             playlist.addItemFileUrls(folderDialog.fileUrls,
                                      asAudio ? ContentServer.Type_Music :
                                                asVideo ? ContentServer.Type_Video : ContentServer.Type_Unknown)
-            pageStack.flickBack()
-        }
-    }
-
-    UrlDialog {
-        id: urlDialog
-        parent: pageStack.columnView
-        anchors.centerIn: parent
-        width: parent.width - 8 * Kirigami.Units.largeSpacing
-        onAccepted: {
-            if (ok) {
-                playlist.addItemUrlSkipUrlDialog(url, asAudio ? ContentServer.Type_Music :
-                                                   ContentServer.Type_Unknown, name)
-            }
-            url = ""
-            name = ""
-            pageStack.flickBack()
-        }
-    }
-
-    CamDialog {
-        id: camDialog
-        parent: pageStack.columnView
-        anchors.centerIn: parent
-        width: parent.width - 8 * Kirigami.Units.largeSpacing
-        onAccepted: {
-            playlist.addItemUrl("jupii://cam")
-            pageStack.flickBack()
-        }
-    }
-
-    MicDialog {
-        id: micDialog
-        parent: pageStack.columnView
-        anchors.centerIn: parent
-        width: parent.width - 8 * Kirigami.Units.largeSpacing
-        onAccepted: {
-            playlist.addItemUrl("jupii://mic")
-            pageStack.flickBack()
-        }
-    }
-
-    ScreenDialog {
-        id: screenDialog
-        parent: pageStack.columnView
-        anchors.centerIn: parent
-        width: parent.width - 8 * Kirigami.Units.largeSpacing
-        onAccepted: {
-            playlist.addItemUrl("jupii://screen")
-            pageStack.flickBack()
-        }
-    }
-
-    PlaybackDialog {
-        id: playbackDialog
-        parent: pageStack.columnView
-        anchors.centerIn: parent
-        width: parent.width - 8 * Kirigami.Units.largeSpacing
-        onAccepted: {
-            playlist.addItemUrl("jupii://playback")
             pageStack.flickBack()
         }
     }
@@ -193,22 +131,37 @@ Kirigami.ScrollablePage {
             hoverEnabled: true
         }
 
+        // Kirigami.BasicListItem {
+        //     Layout.fillWidth: true
+        //     label: qsTr("Image as video")
+        //     icon: "folder-open"
+        //     highlighted: fileDialog.visible
+        //     onClicked: {
+        //         folderDialog.asAudio = false
+        //         fileDialog.asVideo = true
+        //         fileDialog.open()
+        //     }
+
+        //     Controls.ToolTip.visible: hovered
+        //     Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+        //     Controls.ToolTip.text: qsTr("Add an image as a video.") + " " +
+        //                            qsTr("The image will be converted into a low frame rate video stream.") + " " +
+        //                            qsTr("Use %1 option to set how long the image will displayed.").arg("<i>" + qsTr("Image display time") + "</i>")
+        //     hoverEnabled: true
+        // }
+
         Kirigami.BasicListItem {
             Layout.fillWidth: true
-            label: qsTr("Image as video")
-            icon: "folder-open"
-            highlighted: fileDialog.visible
+            label: qsTr("Slideshow")
+            icon: "edit-group-symbolic"
+            highlighted: rightPage ? rightPage.objectName === "slides" : false
             onClicked: {
-                folderDialog.asAudio = false
-                fileDialog.asVideo = true
-                fileDialog.open()
+                pageStack.push(Qt.resolvedUrl("SlidesPage.qml"))
             }
 
             Controls.ToolTip.visible: hovered
             Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-            Controls.ToolTip.text: qsTr("Add an image as a video.") + " " +
-                                   qsTr("The image will be converted into a low frame rate video stream.") + " " +
-                                   qsTr("Use %1 option to set how long the image will displayed.").arg("<i>" + qsTr("Image display time") + "</i>")
+            Controls.ToolTip.text: qsTr("Add a slideshow created from images.")
             hoverEnabled: true
         }
 
@@ -237,7 +190,7 @@ Kirigami.ScrollablePage {
             Layout.fillWidth: true
             label: qsTr("URL")
             icon: "folder-remote"
-            onClicked: urlDialog.open()
+            onClicked: app.openPopupFile(Qt.resolvedUrl("UrlDialog.qml"))
         }
 
         BasicListItemWithArrow {
@@ -261,7 +214,7 @@ Kirigami.ScrollablePage {
             visible: !settings.casterDontUsePipeWire || !settings.casterHasPipeWire()
             label: qsTr("Audio capture")
             icon: "player-volume"
-            onClicked: playbackDialog.open()
+            onClicked: app.openPopupFile(Qt.resolvedUrl("PlaybackDialog.qml"))
         }
 
         Kirigami.BasicListItem {
@@ -269,7 +222,7 @@ Kirigami.ScrollablePage {
             visible: settings.isXcb()
             label: qsTr("Screen capture")
             icon: "computer"
-            onClicked: screenDialog.open()
+            onClicked: app.openPopupFile(Qt.resolvedUrl("ScreenDialog.qml"))
         }
 
         Kirigami.BasicListItem {
@@ -277,14 +230,14 @@ Kirigami.ScrollablePage {
             visible: !settings.casterDontUsePipeWire || !settings.casterHasPipeWire()
             label: qsTr("Microphone")
             icon: "audio-input-microphone"
-            onClicked: micDialog.open()
+            onClicked: app.openPopupFile(Qt.resolvedUrl("MicDialog.qml"))
         }
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
             label: qsTr("Camera")
             icon: "camera-web"
-            onClicked: camDialog.open()
+            onClicked: app.openPopupFile(Qt.resolvedUrl("CamDialog.qml"))
         }
 
         Kirigami.ListSectionHeader {

@@ -140,6 +140,7 @@ class Utils : public QObject, public Singleton<Utils> {
     static QString deviceIconFilePath(const QString &id);
     static bool createPlaylistDir();
     static QString humanFriendlySizeString(int64_t size);
+    static QUrl slidesUrl(const QString &playlistPath);
 
    private:
     QHash<QThread *, bool> seedDone;

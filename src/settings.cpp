@@ -310,14 +310,13 @@ void Settings::setRecDir(const QString &value) {
 
 QString Settings::getRecDir() {
     auto defDir =
-        QStandardPaths::writableLocation(QStandardPaths::MusicLocation) +
-        "/JupiiRecordings";
+        QDir{QStandardPaths::writableLocation(QStandardPaths::MusicLocation)}
+            .absoluteFilePath(QStringLiteral("JupiiRecordings"));
     auto recDir = value("recdir", defDir).toString();
 
     QDir d{recDir};
 
     if (recDir.isEmpty() || !d.exists()) {
-        qWarning() << "recording dir doesn't exist:" << recDir;
         d.mkpath(defDir);
         setValue("recdir", defDir);
         emit recDirChanged();
@@ -325,6 +324,31 @@ QString Settings::getRecDir() {
     }
 
     return recDir;
+}
+
+void Settings::setSlidesDir(const QString &value) {
+    if (getRecDir() != value) {
+        setValue("slidesdir", QDir(value).exists() ? value : "");
+        emit recDirChanged();
+    }
+}
+
+QString Settings::getSlidesDir() {
+    auto defDir =
+        QDir{QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)}
+            .absoluteFilePath(QStringLiteral("slides"));
+    auto slidesDir = value("slidesdir", defDir).toString();
+
+    QDir d{slidesDir};
+
+    if (slidesDir.isEmpty() || !d.exists()) {
+        d.mkpath(defDir);
+        setValue("slidesdir", defDir);
+        emit slidesDirChanged();
+        return defDir;
+    }
+
+    return slidesDir;
 }
 
 void Settings::setPrefNetInf(const QString &value) {

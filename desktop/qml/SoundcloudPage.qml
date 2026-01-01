@@ -219,7 +219,7 @@ Kirigami.ScrollablePage {
         }
 
         footer: ShowmoreItem {
-            // visible: !itemModel.busy && (root.featureMode || (root.notableMode && itemModel.canShowMore))
+            // visible: !itemModel.busy && itemModel.filter.length === 0 && (root.featureMode || (root.notableMode && itemModel.canShowMore))
             visible: false
             onClicked: {
                 if (root.featureMode) {

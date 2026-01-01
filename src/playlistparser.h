@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,6 +14,8 @@
 #include <optional>
 #include <variant>
 #include <vector>
+
+#include "playlistmodel.h"
 
 namespace PlaylistParser {
 static const auto m3utag_extm3u = "#EXTM3U";
@@ -78,7 +80,12 @@ std::optional<Playlist> parseM3u(const QByteArray &data,
                                  const QString &context = {});
 std::optional<Playlist> parseXspf(const QByteArray &data,
                                   const QString &context = {});
+std::optional<Playlist> parsePlaylistFile(const QString &path);
 void resolveM3u(QByteArray &data, const QString &context);
+bool slidesItem(const PlaylistItem &item);
+bool slidesPlaylist(const Playlist &playlist);
+void toSlidesPlaylist(Playlist &playlist);
+bool saveAsXspf(const Playlist &playlist, const QString &filePath);
 }  // namespace PlaylistParser
 
 #endif  // PLAYLISTPARSER_H

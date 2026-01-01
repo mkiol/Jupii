@@ -335,7 +335,9 @@ set(jupii_lib_sources
     ${sources_dir}/checksum_tools.cpp
     ${sources_dir}/checksum_tools.hpp
     ${sources_dir}/comp_tools.cpp
-    ${sources_dir}/comp_tools.hpp)
+    ${sources_dir}/comp_tools.hpp
+    ${sources_dir}/slidesmodel.cpp
+    ${sources_dir}/slidesmodel.hpp)
 
 if(WITH_PY)
     list(APPEND jupii_lib_sources
@@ -477,6 +479,9 @@ set(deps_dirs "")
 
 include(FindPkgConfig)
 include(ExternalProject)
+
+unset(meson_bin CACHE)
+find_program(meson_bin meson)
 
 add_subdirectory(${external_dir}/qhttpserver)
 list(APPEND deps_libs qhttpserver)

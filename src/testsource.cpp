@@ -63,6 +63,11 @@ std::vector<uint8_t> TestSource::generateImage(uint32_t width,
 }
 
 void TestSource::start() {
+    if (m_thread.joinable()) {
+        // already started
+        return;
+    }
+
     m_thread = std::thread([this] {
         LOGD("test source thread started");
         const auto sleepDur = std::chrono::microseconds{

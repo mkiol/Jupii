@@ -36,9 +36,16 @@
     X(showPlaylistItemIcon, getShowPlaylistItemIcon, setShowPlaylistItemIcon, show_playlist_item_icon, bool,    true          ) \
     X(imageAsVideo,         getImageAsVideo,         setImageAsVideo,         image_as_video,          bool,    false         ) \
     X(imageDuration,        getImageDuration,        setImageDuration,        image_duration,          int,     30            ) \
+    X(imagePaused,          getImagePaused,          setImagePaused,          image_paused,            bool,    false         ) \
     X(imageFps,             getImageFps,             setImageFps,             image_fps,               int,     2             ) \
-    X(imageScale,           getImageScale,           setImageScale,           image_scale,             Settings::ImageScale, Settings::ImageScale::ImageScale_1080)
-// clang-format on
+    X(imageScale,           getImageScale,           setImageScale,           image_scale,             Settings::ImageScale, Settings::ImageScale::ImageScale_1080) \
+    X(imageRotate,          getImageRotate,          setImageRotate,          image_rotate,            Settings::ImageRotate, Settings::ImageRotate::ImageRotate_None) \
+    X(slidesLoop,           getSlidesLoop,           setSlidesLoop,           slides_loop,             bool,    false         ) \
+    X(slidesShowCountInd,   getSlidesShowCountInd,   setSlidesShowCountInd,   slides_show_count_ind,   bool,    true          ) \
+    X(slidesShowProgrInd,   getSlidesShowProgrInd,   setSlidesShowProgrInd,   slides_show_progr_ind,   bool,    true          ) \
+    X(slidesShowDateInd,    getSlidesShowDateInd,    setSlidesShowDateInd,    slides_show_date_ind,    bool,    true         ) \
+    X(slidesShowCameraInd,  getSlidesShowCameraInd,  setSlidesShowCameraInd,  slides_show_camera_ind,  bool,    false         ) \
+    // clang-format on
 
 class Settings : public QSettings,
                  public TaskExecutor,
@@ -215,6 +222,14 @@ class Settings : public QSettings,
     };
     Q_ENUM(ImageScale)
 
+    enum class ImageRotate {
+        ImageRotate_None = 0,
+        ImageRotate_Rot90 = 1,
+        ImageRotate_Rot180 = 2,
+        ImageRotate_Rot270 = 3
+    };
+    Q_ENUM(ImageRotate)
+
 #ifdef USE_SFOS
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
 #endif
@@ -260,6 +275,8 @@ class Settings : public QSettings,
     static bool writeDeviceXML(const QString &id, QString &url);
     QString getRecDir();
     void setRecDir(const QString &value);
+    QString getSlidesDir();
+    void setSlidesDir(const QString &value);
     QStringList getLastPlaylist() const;
     void setLastPlaylist(const QStringList &value);
     QByteArray getKey();
@@ -393,6 +410,7 @@ class Settings : public QSettings,
     void favDevicesChanged();
     void favDeviceChanged(const QString &id);
     void recDirChanged();
+    void slidesDirChanged();
     void lastPlaylistChanged();
     void forwardTimeChanged();
     void imageSupportedChanged();

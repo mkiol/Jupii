@@ -116,7 +116,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         ItemType_ScreenCapture,
         ItemType_Mic,
         ItemType_Upnp,
-        ItemType_Cam
+        ItemType_Cam,
+        ItemType_Slides
     };
     Q_ENUM(ItemType)
 
@@ -313,8 +314,13 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     Q_INVOKABLE QString streamTitle(const QUrl &id) const;
     Q_INVOKABLE QStringList streamTitleHistory(const QUrl &id) const;
     Q_INVOKABLE void setStreamToRecord(const QUrl &id, bool value);
+    Q_INVOKABLE QStringList streamFiles(const QUrl &id) const;
+    Q_INVOKABLE int streamIdx(const QUrl &id) const;
     Q_INVOKABLE bool isStreamToRecord(const QUrl &id) const;
     Q_INVOKABLE bool isStreamRecordable(const QUrl &id) const;
+    Q_INVOKABLE void setSlidesFiles(const QStringList &paths);
+    Q_INVOKABLE void slidesSwitch(bool backward);
+    Q_INVOKABLE void slidesSwitchToIdx(int idx);
     bool getContentMetaItem(const QString &id, QString &meta,
                             bool includeDummy = true);
     bool getContentMetaItemByDidlId(const QString &didlId, QString &meta);
@@ -341,6 +347,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     void streamRecordError(const QString &title);
     void streamRecorded(const QString &title, const QString &filename);
     void streamTitleChanged(const QUrl &id, const QString &title);
+    void streamFilesChanged(const QUrl &id, int idx, const QStringList &files);
     void requestStreamToRecord(const QUrl &id, bool value);
     void streamToRecordChanged(const QUrl &id, bool value);
     void streamRecordableChanged(const QUrl &id, bool value);
@@ -353,6 +360,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     void cachingChanged();
     void cacheProgressChanged();
     void casterError();
+    void requestSlidesSetFiles(const QStringList &paths);
+    void requestSlidesSwitch(bool backward);
+    void requestSlidesSwitchToIdx(int idx);
 
    public slots:
     void displayStatusChangeHandler(const QString &state);
@@ -378,6 +388,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         QUrl id;
         QString title;             // current title
         QStringList titleHistory;  // current and previous titles
+        QStringList files;
+        int idx = 0;
         int count = 0;
     };
 
@@ -433,6 +445,9 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
                                         const QString &tmpFile);
     void shoutcastMetadataHandler(const QUrl &id, const QByteArray &metadata);
     void pulseStreamNameHandler(const QUrl &id, const QString &name);
+    void casterFileStreamStartedHandler(const QUrl &id, int idx,
+                                        const QStringList &files);
+    void casterCapabilitiesHandler(const QUrl &id, unsigned int capaFlags);
     void itemAddedHandler(const QUrl &id);
     void itemRemovedHandler(const QUrl &id);
     void cleanTmpRec();
@@ -464,6 +479,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeScreenCaptureItemMeta(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeCamItemMeta(const QUrl &url);
+    QHash<QUrl, ItemMeta>::iterator makeSlidesItemMeta(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingTracker(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingTaglib(const QUrl &url);
     QHash<QUrl, ItemMeta>::iterator makeItemMetaUsingHTTPRequest(
@@ -531,6 +547,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         std::optional<QString> audioSource;
         std::optional<QString> videoOrientation;
         std::optional<bool> audioSourceMuted;
+        std::optional<QString> playlistFile;
     };
     static CasterUrlParams parseCasterUrl(const QUrl &url);
     static QUrl makeCasterUrl(QUrl url, CasterUrlParams &&params);

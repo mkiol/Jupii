@@ -12,11 +12,15 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QPainter>
 #include <QTimer>
+#include <QUrlQuery>
+#include <array>
 #include <memory>
 
 #include "contentserver.h"
 #include "exif.h"
+#include "playlistparser.h"
 #include "utils.h"
 
 static const QByteArray userAgent = QByteArrayLiteral(
@@ -154,14 +158,141 @@ std::optional<QString> Thumb::path(const QUrl &url) {
     return p;
 }
 
+std::optional<QString> Thumb::makeSlidesThumb(const QUrl &slidesUrl) {
+    QUrlQuery q{slidesUrl};
+    if (!q.hasQueryItem(QStringLiteral("playlist"))) {
+        // invalid slides url
+        return std::nullopt;
+    }
+
+    auto playlist = PlaylistParser::parsePlaylistFile(
+        q.queryItemValue(QStringLiteral("playlist")));
+    if (!playlist) {
+        // failed to parse playlist
+        return std::nullopt;
+    }
+
+    if (!PlaylistParser::slidesPlaylist(playlist.value())) {
+        // not slides playlist
+        return std::nullopt;
+    }
+
+    if (playlist->items.empty()) {
+        return std::nullopt;
+    }
+
+    std::array<std::optional<QPixmap>, 4> pixmaps;
+    const int size = maxPixelSize / 2;
+    for (auto i : {0, 1, 2, 3}) {
+        pixmaps[i] = convertFileToPixmap(
+            playlist->items.at(i % playlist->items.size()).url.toLocalFile());
+        if (!pixmaps[i]) {
+            return std::nullopt;
+        }
+        *pixmaps[i] = pixmaps[i]->scaled(
+            size, size, Qt::AspectRatioMode::IgnoreAspectRatio,
+            Qt::TransformationMode::SmoothTransformation);
+    }
+
+    QByteArray data;
+    QPixmap result{maxPixelSize, maxPixelSize};
+    QPainter painter{&result};
+    painter.drawPixmap(QPoint{0, 0}, pixmaps[0].value());
+    painter.drawPixmap(QPoint{size, 0}, pixmaps[1].value());
+    painter.drawPixmap(QPoint{0, size}, pixmaps[2].value());
+    painter.drawPixmap(QPoint{size, size}, pixmaps[3].value());
+    painter.end();
+
+    QBuffer b{&data};
+    b.open(QIODevice::WriteOnly);
+    if (!result.save(&b, "jpg")) {
+        qWarning() << "cannot save slides pixmap";
+        return std::nullopt;
+    }
+
+    return Utils::writeToCacheFile(
+        ContentServer::albumArtCacheName(slidesUrl.toString(), "jpg"), data,
+        true);
+}
+
 std::optional<QString> Thumb::download(const QUrl &url,
                                        ThumbDownloadQueue &queue) {
-    if (url.isEmpty()) return std::nullopt;
-    if (auto p = path(url)) return p;
+    if (url.isEmpty()) {
+        return std::nullopt;
+    }
 
-    queue.download(url);
+    if (auto p = path(url)) {
+        return p;
+    }
 
-    return std::nullopt;
+    switch (ContentServer::itemTypeFromUrl(url)) {
+        case ContentServer::ItemType::ItemType_Url:
+            // need to download
+            queue.download(url);
+            return std::nullopt;
+        case ContentServer::ItemType::ItemType_LocalFile:
+        case ContentServer::ItemType::ItemType_QrcFile:
+            // local file
+            return save(url.toLocalFile(), url);
+        case ContentServer::ItemType::ItemType_Slides: {
+            auto path = makeSlidesThumb(url);
+            if (path) return path;
+            break;
+        }
+        case ContentServer::ItemType::ItemType_Unknown:
+        case ContentServer::ItemType::ItemType_PlaybackCapture:
+        case ContentServer::ItemType::ItemType_ScreenCapture:
+        case ContentServer::ItemType::ItemType_Mic:
+        case ContentServer::ItemType::ItemType_Upnp:
+        case ContentServer::ItemType::ItemType_Cam:
+            break;
+    }
+
+    return QString{};
+}
+
+std::optional<QString> Thumb::save(QString &&path, const QUrl &url) {
+    QFile file{path};
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "failed to open file:" << path;
+        return std::nullopt;
+    }
+
+    return save(file.readAll(), url, QFileInfo{path}.suffix());
+}
+
+std::optional<QPixmap> Thumb::convertFileToPixmap(const QString &path) {
+    QFile file{path};
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "failed to open file:" << path;
+        return std::nullopt;
+    }
+
+    auto data = file.readAll();
+
+    if (data.isEmpty()) {
+        qWarning() << "thumb data is empty";
+        return std::nullopt;
+    }
+
+    auto ext = QFileInfo{path}.suffix();
+    if (ext != QStringLiteral("jpg") && ext != QStringLiteral("png")) {
+        qDebug() << "converting thumb format";
+        if (!convertToJpeg(ext.toLatin1(), data)) {
+            return std::nullopt;
+        }
+        ext = QStringLiteral("jpg");
+    }
+
+    QPixmap pixmap;
+    if (!pixmap.loadFromData(data, ext.toLatin1())) {
+        qWarning() << "cannot load thumb";
+        return std::nullopt;
+    }
+
+    convertPixmap(pixmap, imageOrientation(data));
+
+    return pixmap;
 }
 
 std::optional<QString> Thumb::save(QByteArray &&data, const QUrl &url,

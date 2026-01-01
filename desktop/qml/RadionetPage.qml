@@ -142,7 +142,7 @@ Kirigami.ScrollablePage {
         }
 
         footer: ShowmoreItem {
-            visible: !itemModel.busy && itemModel.canShowMore
+            visible: !itemModel.busy && itemModel.canShowMore && itemModel.filter.length === 0
             onClicked: {
                 itemModel.requestMoreItems()
                 itemModel.updateModel()
@@ -153,7 +153,7 @@ Kirigami.ScrollablePage {
             anchors.centerIn: parent
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: itemList.count === 0 && !itemModel.busy && !itemModel.refreshing
-            text: itemModel.filter.length == 0 ?
+            text: itemModel.filter.length === 0 ?
                       qsTr("Type the words to search") : qsTr("No stations")
         }
     }

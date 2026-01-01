@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,13 +7,20 @@
 
 #include "playlistparser.h"
 
+#include <qfileinfo.h>
+#include <qnamespace.h>
+
 #include <QDebug>
+#include <QDir>
 #include <QDomDocument>
+#include <QFile>
+#include <QFileInfo>
 #include <QRegExp>
 #include <QTextStream>
 #include <map>
-#include <string_view>
+#include <optional>
 
+#include "playlistmodel.h"
 #include "utils.h"
 
 namespace PlaylistParser {
@@ -249,6 +256,14 @@ std::optional<Playlist> parseXspf(const QByteArray &data,
 
     Playlist playlist;
 
+    auto titles = doc.elementsByTagName(QStringLiteral("title"));
+    for (int i = 0; i < titles.size(); ++i) {
+        if (titles.at(i).parentNode() == doc.documentElement()) {
+            playlist.title = titles.at(i).toElement().text();
+            break;
+        }
+    }
+
     auto tracks = doc.elementsByTagName(QStringLiteral("track"));
 
     playlist.items.reserve(tracks.size());
@@ -380,4 +395,90 @@ void resolveM3u(QByteArray &data, const QString &context) {
             data.replace(line.toUtf8(), url.toString().toUtf8());
     }
 }
+
+std::optional<Playlist> parsePlaylistFile(const QString &path) {
+    QFile file{path};
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "failed to open playlist file:" << file.fileName();
+        return std::nullopt;
+    }
+
+    QFileInfo fi{file};
+
+    auto ext = fi.suffix();
+    if (ext.compare(QLatin1String{"pls"}, Qt::CaseInsensitive) == 0) {
+        return parsePls(file.readAll(), fi.dir().absolutePath());
+    }
+    if (ext.compare(QLatin1String{"m3u"}, Qt::CaseInsensitive) == 0) {
+        return parseM3u(file.readAll(), fi.dir().absolutePath());
+    }
+    if (ext.compare(QLatin1String{"xspf"}, Qt::CaseInsensitive) == 0) {
+        return parseXspf(file.readAll(), fi.dir().absolutePath());
+    }
+
+    return std::nullopt;
+}
+
+bool slidesItem(const Item &item) {
+    if (!item.url.isLocalFile()) return false;
+    QFileInfo fileInfo{item.url.toLocalFile()};
+    auto ext = fileInfo.suffix();
+    if (ext.compare(QLatin1String{"jpg"}, Qt::CaseInsensitive) != 0 &&
+        ext.compare(QLatin1String{"jpeg"}, Qt::CaseInsensitive) != 0 &&
+        ext.compare(QLatin1String{"png"}, Qt::CaseInsensitive) != 0) {
+        return false;
+    }
+    return true;
+}
+
+bool slidesPlaylist(const Playlist &playlist) {
+    return std::all_of(playlist.items.cbegin(), playlist.items.cend(),
+                       [](const Item &item) { return slidesItem(item); });
+}
+
+void toSlidesPlaylist(Playlist &playlist) {
+    std::vector<Item> items;
+    std::copy_if(std::make_move_iterator(playlist.items.begin()),
+                 std::make_move_iterator(playlist.items.end()),
+                 std::back_inserter(items),
+                 [](const auto &item) { return slidesItem(item); });
+    playlist.items = std::move(items);
+}
+
+bool saveAsXspf(const Playlist &playlist, const QString &filePath) {
+    QFile file{filePath};
+    if (!file.open(QFile::WriteOnly | QFile::Truncate)) {
+        qWarning() << "failed to open file for writing:" << filePath;
+        return false;
+    }
+
+    QTextStream out{&file};
+    out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        << "<playlist version=\"1\" xmlns=\"http://xspf.org/ns/0/\">\n";
+
+    if (!playlist.title.isEmpty()) {
+        out << "  <title>" << playlist.title << "</title>\n";
+    }
+
+    if (!playlist.items.empty()) {
+        out << "  <trackList>\n";
+        for (const auto &item : playlist.items) {
+            out << "    <track>\n";
+            if (!item.url.isEmpty()) {
+                out << "      <location>" << item.url.toString()
+                    << "</location>\n";
+            }
+            if (!item.title.isEmpty()) {
+                out << "      <title>" << item.title << "</title>\n";
+            }
+            out << "    </track>\n";
+        }
+        out << "  </trackList>\n";
+    }
+
+    out << "</playlist>\n";
+
+    return true;
+}
+
 }  // namespace PlaylistParser

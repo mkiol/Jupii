@@ -259,6 +259,8 @@ Page {
                     return "image://theme/icon-m-display?" + primaryColor
                 else if (model.itemType === ContentServer.ItemType_Cam)
                     return "image://theme/icon-m-browser-camera?" + primaryColor
+                else if (model.itemType === ContentServer.ItemType_Slides)
+                    return "image://theme/icon-m-levels?" + primaryColor
                 else {
                     switch (model.type) {
                     case AVTransport.T_Image:
@@ -285,6 +287,8 @@ Page {
             attachedIcon2.source: {
                 if (!model || model.toBeActive || icon.source.length === 0 || icon.status !== Image.Ready)
                     return ""
+                if (model.itemType === ContentServer.ItemType_Slides)
+                    return "image://theme/icon-m-file-video?" + primaryColor
                 return defaultIcon.source
             }
             icon.source: {
@@ -311,6 +315,10 @@ Page {
                     return model.audioSource.length !== 0 ? model.audioSourceMuted ? qsTr("Audio capture (audio source muted)") : qsTr("Audio capture") : ""
                 case ContentServer.ItemType_Mic:
                     return ""
+                case ContentServer.ItemType_Slides: {
+                    var date = model.recDate
+                    return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
+                }
                 default:
                     return model.artist.length !== 0 ? model.artist : ""
                 }
@@ -463,13 +471,20 @@ Page {
               av.controlable && root.status === PageStatus.Active && !root.selectionMode
 
         title: av.currentTitle.length === 0 ? qsTr("Unknown") : av.currentTitle
-        subtitle: app.streamTitle.length === 0 ?
-                      (root.itemType !== ContentServer.ItemType_Mic &&
-                       root.itemType !== ContentServer.ItemType_PlaybackCapture &&
-                       root.itemType !== ContentServer.ItemType_ScreenCapture &&
-                       root.itemType !== ContentServer.ItemType_Cam ?
-                           av.currentAuthor : "") : app.streamTitle
-
+        subtitle: {
+            if (app.streamTitle.length === 0) {
+                if (root.itemType === ContentServer.ItemType_Slides) {
+                    return qsTr("%n image(s)", "", av.currentSize)
+                }
+                if (root.itemType !== ContentServer.ItemType_Mic &&
+                        root.itemType !== ContentServer.ItemType_PlaybackCapture &&
+                        root.itemType !== ContentServer.ItemType_ScreenCapture) {
+                    return av.currentAuthor
+                }
+                return ""
+            }
+            return app.streamTitle
+        }
         itemType: root.itemType
 
         prevEnabled: playlist.prevSupported &&

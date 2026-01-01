@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -67,11 +67,15 @@ ApplicationWindow {
     property var streamTitleHistory: []
     property bool streamRecordable: false
     property bool streamToRecord: false
+    property var streamFiles: []
+    property int streamIdx: 0
     function updateStreamInfo() {
         streamTitle = cserver.streamTitle(av.currentId)
         streamTitleHistory = cserver.streamTitleHistory(av.currentId)
         streamRecordable = cserver.isStreamRecordable(av.currentId)
         streamToRecord = cserver.isStreamToRecord(av.currentId)
+        streamFiles = cserver.streamFiles(av.currentId)
+        streamIdx = cserver.streamIdx(av.currentId)
     }
 
     Connections {
@@ -108,6 +112,7 @@ ApplicationWindow {
         onStreamTitleChanged: updateStreamInfo()
         onStreamRecordableChanged: updateStreamInfo()
         onStreamToRecordChanged: updateStreamInfo()
+        onStreamFilesChanged: updateStreamInfo()
         onStreamRecorded: {
             notifications.show(qsTr("Track \"%1\" saved").arg(title))
         }

@@ -7,9 +7,6 @@ set(upnpp_checksum "fc7e253b63b21f5638c73f5940c67111ffc93e018e8c7acc4f51333d7861
 set(mhd_source_url "https://ftpmirror.gnu.org/libmicrohttpd/libmicrohttpd-0.9.77.tar.gz")
 set(mhd_checksum "9e7023a151120060d2806a6ea4c13ca9933ece4eacfc5c9464d20edddb76b0a0")
 
-unset(meson_bin CACHE)
-find_program(meson_bin meson)
-
 if(${meson_bin} MATCHES "-NOTFOUND$")
    message(FATAL_ERROR "meson not found but it is required to build npupnp")
 endif()

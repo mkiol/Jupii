@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2024 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -43,8 +43,8 @@ void PlaylistWorker::cancel() {
 
 PlaylistWorker::~PlaylistWorker() { cancel(); }
 
-void PlaylistWorker::processPlaylist(const QUrl &url, QList<UrlItem> &urls) {
-    auto path = url.toLocalFile();
+void PlaylistWorker::processPlaylist(const UrlItem &url, QList<UrlItem> &urls) {
+    auto path = url.url.toLocalFile();
 
     qDebug() << "file is a playlist:" << path;
 
@@ -85,6 +85,14 @@ void PlaylistWorker::processPlaylist(const QUrl &url, QList<UrlItem> &urls) {
         return;
     }
 
+    //    if (PlaylistParser::slidesPlaylist(playlist.value())) {
+    //        // slides playlist
+    //        auto newUrl = url;
+    //        newUrl.url = Utils::slidesUrl(path);
+    //        urls.push_back(std::move(newUrl));
+    //        return;
+    //    }
+
     std::transform(playlist->items.begin(), playlist->items.end(),
                    std::back_inserter(urls), [](auto &pi) {
                        UrlItem ui;
@@ -104,10 +112,11 @@ void PlaylistWorker::run() {
                 ContentServer::getContentTypeByExtension(url.url.path()) ==
                     ContentServer::Type::Type_Playlist;
 
-            if (playlist)
-                processPlaylist(url.url, nurls);
-            else
+            if (playlist) {
+                processPlaylist(url, nurls);
+            } else {
                 nurls.push_back(url);
+            }
         }
 
         urls = nurls;
@@ -1863,6 +1872,8 @@ PlaylistItem *PlaylistModel::itemFromId(const QString &id) const {
     return item;
 }
 
+#include <contentserverworker.h>
+
 void PlaylistModel::setContent(const QString &id1, const QString &id2) {
     auto cachableItem = [this](const QString &id) -> PlaylistItem * {
         auto *item = itemFromId(id);
@@ -1914,9 +1925,10 @@ void PlaylistModel::setContent(const QString &id1, const QString &id2) {
 
     // pre-starting caster
     //    if (auto *item = itemFromId(id1);
-    //        item && item->itemType() == ContentServer::ItemType_Cam) {
+    //        item && item->itemType() == ContentServer::ItemType_LocalFile &&
+    //        item->type() == ContentServer::Type::Type_Video) {
     //        ContentServerWorker::instance()->requestToPreStartCaster(
-    //            ContentServer::CasterType::Cam, id1);
+    //            ContentServer::CasterType::VideoFile, id1);
     //    }
 
     Services::instance()->avTransport->setLocalContent(id1, id2);
@@ -2056,6 +2068,7 @@ void PlaylistModel::casterErrorHandler() {
     foreach (const auto item, m_list) {
         auto *pi = qobject_cast<PlaylistItem *>(item);
         if (pi->itemType() == ContentServer::ItemType_Cam ||
+            pi->itemType() == ContentServer::ItemType_Slides ||
             pi->itemType() == ContentServer::ItemType_Mic ||
             pi->itemType() == ContentServer::ItemType_PlaybackCapture ||
             pi->itemType() == ContentServer::ItemType_ScreenCapture) {
@@ -2134,13 +2147,30 @@ PlaylistItem::PlaylistItem(
     ContentServer::ItemType itemType, const QString &devId,
     const QString &videoSource, const QString &audioSource,
     const QString &videoOrientation, bool audioSourceMuted, QObject *parent)
-    : SelectableItem(parent), m_id(id), m_name(name), m_url(url),
-      m_origUrl(origUrl), m_type(type), m_ctype(ctype), m_artist(artist),
-      m_album(album), m_date(date), m_cookie(Utils::cookieFromId(id)),
-      m_duration(duration), m_size(size), m_icon(icon), m_play(play),
-      m_ytdl(ytdl), m_live(live), m_desc(desc), m_recDate(recDate),
-      m_recUrl(recUrl), m_item_type(itemType), m_devid(devId),
-      m_videoSource(videoSource), m_audioSource(audioSource),
+    : SelectableItem(parent),
+      m_id(id),
+      m_name(name),
+      m_url(url),
+      m_origUrl(origUrl),
+      m_type(type),
+      m_ctype(ctype),
+      m_artist(artist),
+      m_album(album),
+      m_date(date),
+      m_cookie(Utils::cookieFromId(id)),
+      m_duration(duration),
+      m_size(size),
+      m_icon(icon),
+      m_play(play),
+      m_ytdl(ytdl),
+      m_live(live),
+      m_desc(desc),
+      m_recDate(recDate),
+      m_recUrl(recUrl),
+      m_item_type(itemType),
+      m_devid(devId),
+      m_videoSource(videoSource),
+      m_audioSource(audioSource),
       m_videoOrientation(videoOrientation),
       m_audioSourceMuted(audioSourceMuted) {}
 

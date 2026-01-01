@@ -214,6 +214,10 @@ void LipstickRecorderSource::repaintIfNeeded(std::chrono::microseconds maxDur) {
 
 void LipstickRecorderSource::start() {
     if (m_terminating) return;
+    if (m_wlThread.joinable()) {
+        // already started
+        return;
+    }
 
     LOGD("starting lipstick-recorder");
 

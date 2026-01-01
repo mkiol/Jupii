@@ -73,6 +73,9 @@
         <file>qml/RichLabel.qml</file>
         <file>qml/SectionLabel.qml</file>
         <file>qml/ChangelogPage.qml</file>
+        <file>qml/SlidesPage.qml</file>
+        <file>qml/CreateSlidesDialog.qml</file>
+        <file>qml/PopupDialog.qml</file>
         <file alias="app_icon.svg">jupii.svg</file>
         <file alias="app_icon.png">jupii.png</file>
     </qresource>

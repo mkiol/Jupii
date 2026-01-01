@@ -19,7 +19,6 @@
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <queue>
 
 class ThumbDownloadQueue;
 
@@ -30,6 +29,8 @@ class Thumb {
                                            ThumbDownloadQueue &queue);
     static std::optional<QString> save(QByteArray &&data, const QUrl &url,
                                        QString ext);
+    static std::optional<QString> save(QString &&path, const QUrl &url);
+    static std::optional<QString> makeSlidesThumb(const QUrl &slidesUrl);
 
    private:
     enum class ImageOrientation { Unknown, R0, R90, R180, R270 };
@@ -41,6 +42,7 @@ class Thumb {
         const QByteArray &format, QByteArray &data,
         ImageOrientation orientation = ImageOrientation::Unknown);
     static bool convertPixmap(QPixmap &pixmap, ImageOrientation orientation);
+    static std::optional<QPixmap> convertFileToPixmap(const QString &path);
 };
 
 class ThumbDownloader : public QObject {
@@ -76,7 +78,6 @@ class ThumbDownloadQueue : public QThread {
     std::unique_ptr<ThumbDownloader> m_downloader;
     std::mutex m_mtx;
     std::promise<void> *m_promise;
-    std::queue<QUrl> m_queue;
     void handleDownloaded(QUrl url, QString mime, QByteArray bytes);
     void run() override;
 };

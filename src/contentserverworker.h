@@ -1,4 +1,4 @@
-/* Copyright (C) 2021-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -28,6 +28,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -102,6 +103,9 @@ class ContentServerWorker : public QObject,
     void shoutcastMetadataUpdated(const QUrl &id, const QByteArray &metadata);
     void playbackCaptureNameUpdated(const QUrl &id, const QString &name);
     void casterAudioSourceNameChanged(const QString &name);
+    void casterFileStreamStartedInternal(int idx, const QStringList &files);
+    void casterFileStreamStarted(const QUrl &id, int idx,
+                                 const QStringList &files);
     void itemAdded(const QUrl &id);
     void itemRemoved(const QUrl &id);
     void proxyConnected(const QUrl &id);
@@ -110,7 +114,8 @@ class ContentServerWorker : public QObject,
                         ContentServerWorker::CacheLimit cacheLimit,
                         const QByteArray &range, QHttpRequest *req,
                         QHttpResponse *resp);
-    void casterData(ContentServer::CasterType type, const QByteArray &data);
+    void casterData(ContentServer::CasterType type, QHttpResponse *resp,
+                    const QByteArray &data);
     void casterError();
     void casterErrorInternal();
     void preStartCaster(ContentServer::CasterType type, const QUrl &url);
@@ -119,6 +124,9 @@ class ContentServerWorker : public QObject,
    public slots:
     void setStreamToRecord(const QUrl &id, bool value);
     void setDisplayStatus(bool status);
+    void setSlidesFiles(const QStringList &paths);
+    void slidesSwitch(bool backward);
+    void slidesSwitchToIdx(int idx);
 
    private:
     static const int maxCamBufSize = 10000000;
@@ -261,6 +269,7 @@ class ContentServerWorker : public QObject,
         QUrl id;
         QHttpRequest *req = nullptr;
         QHttpResponse *resp = nullptr;
+        size_t ctx = 0;
     };
 
     std::optional<Caster> caster;
@@ -274,7 +283,7 @@ class ContentServerWorker : public QObject,
     QTimer proxiesCleanupTimer;
     QTimer casterTimer;
     ThumbDownloadQueue m_thumb_queue;
-    QHash<QUrl, QHttpResponse *> m_http_active_resps;
+    QHash<QUrl, std::unordered_set<QHttpResponse *>> m_http_active_resps;
 
     void streamFile(const QString &path, const QString &mime, QHttpRequest *req,
                     QHttpResponse *resp);
@@ -297,7 +306,7 @@ class ContentServerWorker : public QObject,
     void requestForCasterHandler(const QUrl &id,
                                  const ContentServer::ItemMeta *meta,
                                  QHttpRequest *req, QHttpResponse *resp);
-    void handleHeadRequest(const ContentServer::ItemMeta *meta,
+    void handleHeadRequest(const QUrl &id, const ContentServer::ItemMeta *meta,
                            QHttpRequest *req, QHttpResponse *resp);
     void handleThumbRequest(const QUrl &id, QHttpResponse *resp);
     void handleThumbRequestFile(const QUrl &id, const QString &path,
@@ -309,8 +318,9 @@ class ContentServerWorker : public QObject,
     QByteArray processShoutcastMetadata(Proxy &proxy, QNetworkReply *reply,
                                         QByteArray data);
     void casterAudioSourceNameChangedHandler(const QString &name);
-    void casterDataHandler(ContentServer::CasterType type,
+    void casterDataHandler(ContentServer::CasterType type, QHttpResponse *resp,
                            const QByteArray &data);
+    void casterFileStreamStartedHandler(int idx, const QStringList &files);
     static void removePoints(std::vector<std::pair<int, int>> rpoints,
                              QByteArray &data);
     void initRecFile(Proxy &proxy, Proxy::Source &source);
@@ -368,6 +378,8 @@ class ContentServerWorker : public QObject,
     bool preStartCasterHandler(ContentServer::CasterType type, const QUrl &id);
     void hlsTimeoutHandler();
     void handleHttpResponseDone();
+    static std::pair<ContentServer::CasterType, QString>
+    casterTypeAndMimeFromMeta(const ContentServer::ItemMeta *meta);
 };
 
 #endif  // CONTENTSERVERWORKER_H

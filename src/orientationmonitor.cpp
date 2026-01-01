@@ -117,6 +117,10 @@ void OrientationMonitor::wlRegister(Globals *globals) {
 
 void OrientationMonitor::start() {
     if (m_terminating) return;
+    if (m_wlThread.joinable()) {
+        // already started
+        return;
+    }
 
     LOGD("starting orientation-monitor");
 

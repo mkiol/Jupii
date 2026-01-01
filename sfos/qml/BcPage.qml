@@ -79,7 +79,7 @@ Dialog {
         model: itemModel
 
         footer: ShowMoreItem {
-            enabled: !itemModel.busy && ((root.featureMode || root.notableMode) && itemModel.canShowMore)
+            enabled: !itemModel.busy && itemModel.filter.length === 0 && ((root.featureMode || root.notableMode) && itemModel.canShowMore)
             onClicked: {
                 itemModel.requestMoreItems()
                 itemModel.updateModel()

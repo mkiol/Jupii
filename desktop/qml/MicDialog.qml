@@ -1,4 +1,4 @@
-/* Copyright (C) 2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2023-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,7 +13,7 @@ import QtQuick.Dialogs 1.1
 
 import org.mkiol.jupii.Settings 1.0
 
-Controls.Dialog {
+PopupDialog {
     id: root
 
     modal: true
@@ -21,6 +21,7 @@ Controls.Dialog {
     standardButtons: settings.casterMics.length === 0 ? Controls.Dialog.Cancel :
                         Controls.Dialog.Ok | Controls.Dialog.Cancel
     title: qsTr("Add microphone")
+    columnWidth: app.width * 0.9
 
     onOpenedChanged: {
         if (open) {
@@ -28,44 +29,44 @@ Controls.Dialog {
         }
     }
 
-    ColumnLayout {
-        width: parent.width
-        spacing: Kirigami.Units.largeSpacing
+    onAccepted: {
+        playlist.addItemUrl("jupii://mic")
+        pageStack.flickBack()
+    }
 
-        Kirigami.FormLayout {
+    Kirigami.FormLayout {
+        Layout.fillWidth: true
+
+        Kirigami.InlineMessage {
             Layout.fillWidth: true
+            type: Kirigami.MessageType.Information
+            visible: settings.casterMics.length === 0
+            text: qsTr("Could not find any microphone connected.")
+        }
 
-            Kirigami.InlineMessage {
-                Layout.fillWidth: true
-                type: Kirigami.MessageType.Information
-                visible: settings.casterMics.length === 0
-                text: qsTr("Could not find any microphone connected.")
+        Item {
+            Kirigami.FormData.isSection: true
+        }
+
+        Controls.ComboBox {
+            enabled: settings.casterMics.length !== 0
+
+            Kirigami.FormData.label: qsTr("Audio source")
+            currentIndex: settings.casterMicIdx
+
+            model: settings.casterMics
+
+            onCurrentIndexChanged: {
+                settings.casterMicIdx = currentIndex
             }
+        }
 
-            Item {
-                Kirigami.FormData.isSection: true
-            }
+        CasterSourceVolume {
+            enabled: settings.casterMics.length !== 0
 
-            Controls.ComboBox {
-                enabled: settings.casterMics.length !== 0
-
-                Kirigami.FormData.label: qsTr("Audio source")
-                currentIndex: settings.casterMicIdx
-
-                model: settings.casterMics
-
-                onCurrentIndexChanged: {
-                    settings.casterMicIdx = currentIndex
-                }
-            }
-
-            CasterSourceVolume {
-                enabled: settings.casterMics.length !== 0
-
-                Kirigami.FormData.label: qsTr("Volume boost")
-                volume: settings.casterMicVolume
-                onVolumeChanged: settings.casterMicVolume = volume
-            }
+            Kirigami.FormData.label: qsTr("Volume boost")
+            volume: settings.casterMicVolume
+            onVolumeChanged: settings.casterMicVolume = volume
         }
     }
 }

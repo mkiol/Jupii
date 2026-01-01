@@ -40,6 +40,10 @@ DroidCamSource::properties() {
 
 void DroidCamSource::start() {
     if (m_terminating) return;
+    if (m_gstThread.joinable()) {
+        // already started
+        return;
+    }
 
     LOGD("starting droidcam source");
 

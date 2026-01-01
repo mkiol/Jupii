@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,21 +8,21 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.2 as Controls
 import QtQuick.Layouts 1.2
-import org.kde.kirigami 2.14 as Kirigami
+import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Dialogs 1.1
 
-import org.mkiol.jupii.RecModel 1.0
+import org.mkiol.jupii.SlidesModel 1.0
 
 Kirigami.ScrollablePage {
     id: root
-    objectName: "rec"
+    objectName: "slides"
 
     leftPadding: 0
     rightPadding: 0
     bottomPadding: 0
     topPadding: 0
 
-    title: qsTr("Recordings")
+    title: qsTr("Slideshows")
 
     supportsRefreshing: false
     Component.onCompleted: {
@@ -31,7 +31,7 @@ Kirigami.ScrollablePage {
 
     actions {
         main: Kirigami.Action {
-            text: itemModel.selectedCount > 0 ? qsTr("Add %n selected", "", itemModel.selectedCount) : qsTr("Add selected")
+            text: qsTr("Add selected")
             enabled: itemModel.selectedCount > 0 && !itemModel.busy
             iconName: "list-add"
             onTriggered: {
@@ -70,7 +70,7 @@ Kirigami.ScrollablePage {
         id: deleteDialog
         title: qsTr("Delete selected")
         icon: StandardIcon.Question
-        text: qsTr("Delete %n recording(s)?", "", itemModel.selectedCount)
+        text: qsTr("Delete %n slideshow(s)?", "", itemModel.selectedCount)
         standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
             itemModel.deleteSelected()
@@ -97,9 +97,8 @@ Kirigami.ScrollablePage {
                 Layout.rightMargin: Kirigami.Units.smallSpacing
                 currentIndex: itemModel.queryType
                 model: [
-                    qsTr("Recording time"),
-                    qsTr("Title"),
-                    qsTr("Author")
+                    qsTr("Last edit time"),
+                    qsTr("Name"),
                 ]
                 onCurrentIndexChanged: {
                     itemModel.queryType = currentIndex
@@ -108,7 +107,20 @@ Kirigami.ScrollablePage {
         }
     }
 
-    RecModel {
+    footer: Controls.Button {
+        action: Kirigami.Action {
+            id: createAction
+            text: qsTr("Create a new slideshow")
+            enabled: !itemModel.busy
+            iconName: "special-effects-symbolic"
+            onTriggered: {
+                itemModel.setAllSelected(false)
+                app.openPopupFile(Qt.resolvedUrl("CreateSlidesDialog.qml"), {"model": itemModel})
+            }
+        }
+    }
+
+    SlidesModel {
         id: itemModel
     }
 
@@ -120,17 +132,12 @@ Kirigami.ScrollablePage {
             enabled: !itemModel.busy
             label: model.title
             subtitle: {
+                if (!model) return ""
                 var date = model.friendlyDate
-                var author = model.author
-                if (author.length > 0 && date.length > 0)
-                    return author + " · " + date
-                if (date.length > 0)
-                    return date
-                if (author.length > 0)
-                    return author
+                return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
             }
-            defaultIconSource: "audio-x-generic"
-            attachedIconName: "emblem-music-symbolic"
+            defaultIconSource: "edit-group-symbolic"
+            attachedIconName: "emblem-videos-symbolic"
             iconSource: model.icon
             iconSize: Kirigami.Units.iconSizes.medium
 
@@ -146,6 +153,23 @@ Kirigami.ScrollablePage {
                     onTriggered: {
                         var selected = model.selected
                         itemModel.setSelected(model.index, !selected);
+                    }
+                },
+                Kirigami.Action {
+                    text: qsTr("Edit")
+                    iconName: "edit-entry-symbolic"
+                    onTriggered: {
+                        itemModel.setAllSelected(false)
+                        app.openPopupFile(Qt.resolvedUrl("CreateSlidesDialog.qml"), 
+                            {"model": itemModel, "slidesId": model.id})
+                    }
+                },
+                Kirigami.Action {
+                    text: qsTr("Delete")
+                    iconName: "edit-delete-symbolic"
+                    onTriggered: {
+                        itemModel.setAllSelected(false)
+                        itemModel.deleteItem(model.id)
                     }
                 }
             ]
@@ -165,7 +189,8 @@ Kirigami.ScrollablePage {
             anchors.centerIn: parent
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: itemList.count === 0 && !itemModel.busy
-            text: qsTr("No recordings")
+            text: qsTr("No slideshows")
+            helpfulAction: createAction
         }
     }
 

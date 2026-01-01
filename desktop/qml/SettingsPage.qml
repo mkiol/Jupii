@@ -26,10 +26,7 @@ Kirigami.ScrollablePage {
             Controls.ComboBox {
                 Layout.fillWidth: true
                 currentIndex: 0
-                model: [
-                    qsTr("Basic options"),
-                    qsTr("All options")
-                ]
+                model: [qsTr("Basic options"), qsTr("All options")]
                 onCurrentIndexChanged: {
                     root.showAdvanced = (currentIndex === 1)
                 }
@@ -61,7 +58,7 @@ Kirigami.ScrollablePage {
                 checked: !settings.qtStyleAuto
                 text: qsTr("Use custom graphical style")
                 onToggled: {
-                    settings.qtStyleAuto = !checked
+                    settings.qtStyleAuto = !checked;
                 }
 
                 hoverEnabled: true
@@ -76,8 +73,7 @@ Kirigami.ScrollablePage {
 
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.text: qsTr("Application graphical interface style.") + " " +
-                                       qsTr("Change if you observe problems with incorrect colors under a dark theme.")
+                Controls.ToolTip.text: qsTr("Application graphical interface style.") + " " + qsTr("Change if you observe problems with incorrect colors under a dark theme.")
                 hoverEnabled: true
             }
 
@@ -90,13 +86,12 @@ Kirigami.ScrollablePage {
                 checked: settings.contentDirSupported
                 text: qsTr("Share play queue items via UPnP Media Server")
                 onToggled: {
-                    settings.contentDirSupported = !settings.contentDirSupported
+                    settings.contentDirSupported = !settings.contentDirSupported;
                 }
 
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.text: qsTr("When enabled, items in play queue are accessible " +
-                                            "for other UPnP devices in your local network.")
+                Controls.ToolTip.text: qsTr("When enabled, items in play queue are accessible " + "for other UPnP devices in your local network.")
                 hoverEnabled: true
             }
 
@@ -105,62 +100,134 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.label: qsTr("Gapless mode (%1)").arg("setNextURI")
                 currentIndex: {
                     switch (settings.avNextUriPolicy) {
-                    case Settings.AvNextUriPolicy_Auto: return 0;
-                    case Settings.AvNextUriPolicy_DisableOnlyIfNotSupported: return 1;
-                    case Settings.AvNextUriPolicy_NeverDisable: return 2;
-                    case Settings.AvNextUriPolicy_AlwaysDisable: return 3;
+                    case Settings.AvNextUriPolicy_Auto:
+                        return 0;
+                    case Settings.AvNextUriPolicy_DisableOnlyIfNotSupported:
+                        return 1;
+                    case Settings.AvNextUriPolicy_NeverDisable:
+                        return 2;
+                    case Settings.AvNextUriPolicy_AlwaysDisable:
+                        return 3;
                     }
                     return 0;
                 }
 
-                model: [
-                    qsTr("Auto"),
-                    qsTr("Disable only if not supported"),
-                    qsTr("Always enabled"),
-                    qsTr("Always disabled")
-                ]
+                model: [qsTr("Auto"), qsTr("Disable only if not supported"), qsTr("Always enabled"), qsTr("Always disabled")]
 
                 onCurrentIndexChanged: {
                     switch (currentIndex) {
-                    case 0: settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto; break;
-                    case 1: settings.avNextUriPolicy = Settings.AvNextUriPolicy_DisableOnlyIfNotSupported; break;
-                    case 2: settings.avNextUriPolicy = Settings.AvNextUriPolicy_NeverDisable; break;
-                    case 3: settings.avNextUriPolicy = Settings.AvNextUriPolicy_AlwaysDisable; break;
-                    default: settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto;
+                    case 0:
+                        settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto;
+                        break;
+                    case 1:
+                        settings.avNextUriPolicy = Settings.AvNextUriPolicy_DisableOnlyIfNotSupported;
+                        break;
+                    case 2:
+                        settings.avNextUriPolicy = Settings.AvNextUriPolicy_NeverDisable;
+                        break;
+                    case 3:
+                        settings.avNextUriPolicy = Settings.AvNextUriPolicy_AlwaysDisable;
+                        break;
+                    default:
+                        settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto;
                     }
                 }
             }
 
             Kirigami.Separator {
-                Kirigami.FormData.label: qsTr("Image as video")
+                Kirigami.FormData.label: qsTr("Slideshow")
                 Kirigami.FormData.isSection: true
             }
 
+            // Controls.Switch {
+            //     checked: settings.imageAsVideo
+            //     text: qsTr("Always convert images into video")
+            //     onToggled: {
+            //         settings.imageAsVideo = !settings.imageAsVideo
+            //     }
+
+            //     Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+            //     Controls.ToolTip.visible: hovered
+            //     Controls.ToolTip.text: qsTr("When enabled, image elements are always converted into a video stream with a low frame rate.")
+            //     hoverEnabled: true
+            // }
+
             Controls.Switch {
-                checked: settings.imageAsVideo
-                text: qsTr("Always convert images into video")
+                checked: settings.slidesShowCountInd
+                text: qsTr("Show slide numbers")
                 onToggled: {
-                    settings.imageAsVideo = !settings.imageAsVideo
+                    settings.slidesShowCountInd = !settings.slidesShowCountInd;
                 }
 
                 Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("When enabled, image elements are always converted into a video stream with a low frame rate.")
+                Controls.ToolTip.text: qsTr("When enabled, the current slide number and total count will appear on the screen.")
+                hoverEnabled: true
+            }
+
+            Controls.Switch {
+                checked: settings.slidesShowProgrInd
+                text: qsTr("Show progress bar")
+                onToggled: {
+                    settings.slidesShowProgrInd = !settings.slidesShowProgrInd;
+                }
+
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: qsTr("When enabled, a visual indicator will show your position within the slideshow.")
+                hoverEnabled: true
+            }
+
+            Controls.Switch {
+                checked: settings.slidesShowDateInd
+                text: qsTr("Show date & time")
+                onToggled: {
+                    settings.slidesShowDateInd = !settings.slidesShowDateInd;
+                }
+
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: qsTr("When enabled, the date and time will appear in the screen.")
+                hoverEnabled: true
+            }
+
+            Controls.Switch {
+                checked: settings.slidesShowCameraInd
+                text: qsTr("Show camera model")
+                onToggled: {
+                    settings.slidesShowCameraInd = !settings.slidesShowCameraInd;
+                }
+
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: qsTr("When enabled, the camera model will appear in the screen.")
+                hoverEnabled: true
+            }
+
+            Controls.Switch {
+                checked: settings.imagePaused
+                text: qsTr("Pause slideshow")
+                onToggled: {
+                    settings.imagePaused = !settings.imagePaused;
+                }
+
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: qsTr("When enabled, the current slide image is displayed indefinitely.")
                 hoverEnabled: true
             }
 
             RowLayout {
-                Kirigami.FormData.label: qsTr("Image display time")
-                property string description: qsTr("How long the image is displayed.") + " " +
-                                             qsTr("This is the duration of a video stream when converting an image to video format.")
+                Kirigami.FormData.label: qsTr("Image display time (seconds)")
+                property string description: qsTr("Change to adjust how long the image is displayed.")
                 Controls.Slider {
-                    from: 0
+                    from: 1
                     to: 120
                     stepSize: 1
                     snapMode: Controls.Slider.SnapAlways
                     value: settings.imageDuration
                     onValueChanged: {
-                        settings.imageDuration = value
+                        settings.imageDuration = value;
                     }
 
                     Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
@@ -173,7 +240,7 @@ Kirigami.ScrollablePage {
                     to: 120
                     value: settings.imageDuration
                     onValueChanged: {
-                        settings.imageDuration = value
+                        settings.imageDuration = value;
                     }
 
                     Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
@@ -181,6 +248,63 @@ Kirigami.ScrollablePage {
                     Controls.ToolTip.text: parent.description
                     hoverEnabled: true
                 }
+            }
+
+            Controls.Switch {
+                checked: settings.slidesLoop
+                text: qsTr("Repeat slideshow")
+                onToggled: {
+                    settings.slidesLoop = !settings.slidesLoop;
+                }
+
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: qsTr("When enabled, slideshow will be restarted after the last image.")
+                hoverEnabled: true
+            }
+
+            Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Image rotation")
+                currentIndex: {
+                    switch (settings.imageRotate) {
+                    case Settings.ImageRotate_None:
+                        return 0;
+                    case Settings.ImageRotate_Rot90:
+                        return 1;
+                    case Settings.ImageRotate_Rot180:
+                        return 2;
+                    case Settings.ImageRotate_Rot270:
+                        return 3;
+                    }
+                    return 0;
+                }
+
+                model: [qsTr("None"), "90°", "180°", "270°"]
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0:
+                        settings.imageRotate = Settings.ImageRotate_None;
+                        break;
+                    case 1:
+                        settings.imageRotate = Settings.ImageRotate_Rot90;
+                        break;
+                    case 2:
+                        settings.imageRotate = Settings.ImageRotate_Rot180;
+                        break;
+                    case 3:
+                        settings.imageRotate = Settings.ImageRotate_Rot270;
+                        break;
+                    default:
+                        settings.imageScale = Settings.ImageScale_None;
+                        break;
+                    }
+                }
+
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: qsTr("Specify the angle of rotation of the image.")
+                hoverEnabled: true
             }
 
             RowLayout {
@@ -194,7 +318,7 @@ Kirigami.ScrollablePage {
                     snapMode: Controls.Slider.SnapAlways
                     value: settings.imageFps
                     onValueChanged: {
-                        settings.imageFps = value
+                        settings.imageFps = value;
                     }
 
                     Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
@@ -207,7 +331,7 @@ Kirigami.ScrollablePage {
                     to: 60
                     value: settings.imageFps
                     onValueChanged: {
-                        settings.imageFps = value
+                        settings.imageFps = value;
                     }
 
                     Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
@@ -222,28 +346,36 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.label: qsTr("Maximum image size")
                 currentIndex: {
                     switch (settings.imageScale) {
-                    case Settings.ImageScale_None: return 0;
-                    case Settings.ImageScale_2160: return 1;
-                    case Settings.ImageScale_1080: return 2;
-                    case Settings.ImageScale_720: return 3;
+                    case Settings.ImageScale_None:
+                        return 0;
+                    case Settings.ImageScale_2160:
+                        return 1;
+                    case Settings.ImageScale_1080:
+                        return 2;
+                    case Settings.ImageScale_720:
+                        return 3;
                     }
                     return 2;
                 }
 
-                model: [
-                    qsTr("Unlimited"),
-                    "UHD",
-                    "FHD",
-                    "HD"
-                ]
+                model: [qsTr("Unlimited"), "UHD", "FHD", "HD"]
 
                 onCurrentIndexChanged: {
                     switch (currentIndex) {
-                    case 0: settings.imageScale = Settings.ImageScale_None; break;
-                    case 1: settings.imageScale = Settings.ImageScale_2160; break;
-                    case 2: settings.imageScale = Settings.ImageScale_1080; break;
-                    case 3: settings.imageScale = Settings.ImageScale_720; break;
-                    default: settings.imageScale = Settings.ImageScale_1080;
+                    case 0:
+                        settings.imageScale = Settings.ImageScale_None;
+                        break;
+                    case 1:
+                        settings.imageScale = Settings.ImageScale_2160;
+                        break;
+                    case 2:
+                        settings.imageScale = Settings.ImageScale_1080;
+                        break;
+                    case 3:
+                        settings.imageScale = Settings.ImageScale_720;
+                        break;
+                    default:
+                        settings.imageScale = Settings.ImageScale_1080;
                     }
                 }
 
@@ -284,29 +416,33 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.label: qsTr("Real-time video format")
                 currentIndex: {
                     switch (settings.casterVideoStreamFormat) {
-                    case Settings.CasterStreamFormat_MpegTs: return 0;
-                    case Settings.CasterStreamFormat_Mp4: return 1;
+                    case Settings.CasterStreamFormat_MpegTs:
+                        return 0;
+                    case Settings.CasterStreamFormat_Mp4:
+                        return 1;
                     }
                     return 0;
                 }
 
-                model: [
-                    "MPEG-TS",
-                    "MP4",
-                ]
+                model: ["MPEG-TS", "MP4",]
 
                 onCurrentIndexChanged: {
                     switch (currentIndex) {
-                    case 0: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs; break;
-                    case 1: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4; break;
-                    default: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs;
+                    case 0:
+                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs;
+                        break;
+                    case 1:
+                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4;
+                        break;
+                    default:
+                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs;
                     }
                 }
 
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
                 Controls.ToolTip.text: qsTr("Format used for real-time streaming.") + " " +
-                                       qsTr("Change if you observe problems with video playback in Camera or Screen capture.")
+                                       qsTr("Change if you observe problems with video playback in Camera, Screen capture or Slideshow.")
                 hoverEnabled: true
             }
 
@@ -314,25 +450,31 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.label: qsTr("Real-time audio format")
                 currentIndex: {
                     switch (settings.casterAudioStreamFormat) {
-                    case Settings.CasterStreamFormat_Mp3: return 0;
-                    case Settings.CasterStreamFormat_Mp4: return 1;
-                    case Settings.CasterStreamFormat_MpegTs: return 2;
+                    case Settings.CasterStreamFormat_Mp3:
+                        return 0;
+                    case Settings.CasterStreamFormat_Mp4:
+                        return 1;
+                    case Settings.CasterStreamFormat_MpegTs:
+                        return 2;
                     }
                     return 0;
                 }
 
-                model: [
-                    "MP3",
-                    "MP4",
-                    "MPEG-TS"
-                ]
+                model: ["MP3", "MP4", "MPEG-TS"]
 
                 onCurrentIndexChanged: {
                     switch (currentIndex) {
-                    case 0: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3; break;
-                    case 1: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp4; break;
-                    case 2: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_MpegTs; break;
-                    default: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3;
+                    case 0:
+                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3;
+                        break;
+                    case 1:
+                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp4;
+                        break;
+                    case 2:
+                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_MpegTs;
+                        break;
+                    default:
+                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3;
                     }
                 }
 
@@ -348,15 +490,12 @@ Kirigami.ScrollablePage {
                 checked: !settings.allowNotIsomMp4
                 text: qsTr("Block fragmented MP4 audio streams")
                 onToggled: {
-                    settings.allowNotIsomMp4 = !settings.allowNotIsomMp4
+                    settings.allowNotIsomMp4 = !settings.allowNotIsomMp4;
                 }
 
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.text: qsTr("Some UPnP devices don't support audio stream in fragmented MP4 format. " +
-                                            "This kind of stream might even hang a device. " +
-                                            "To overcome this problem, Jupii tries to re-transcode stream to standard MP4. " +
-                                            "When re-transcoding fails and this option is enabled, item will not be played at all.")
+                Controls.ToolTip.text: qsTr("Some UPnP devices don't support audio stream in fragmented MP4 format. " + "This kind of stream might even hang a device. " + "To overcome this problem, Jupii tries to re-transcode stream to standard MP4. " + "When re-transcoding fails and this option is enabled, item will not be played at all.")
                 hoverEnabled: true
             }
 
@@ -365,28 +504,36 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.label: qsTr("Video encoder")
                 currentIndex: {
                     switch (settings.casterVideoEncoder) {
-                    case Settings.CasterVideoEncoder_Auto: return 0;
-                    case Settings.CasterVideoEncoder_X264: return 1;
-                    case Settings.CasterVideoEncoder_Nvenc: return 2;
-                    case Settings.CasterVideoEncoder_V4l2: return 3;
+                    case Settings.CasterVideoEncoder_Auto:
+                        return 0;
+                    case Settings.CasterVideoEncoder_X264:
+                        return 1;
+                    case Settings.CasterVideoEncoder_Nvenc:
+                        return 2;
+                    case Settings.CasterVideoEncoder_V4l2:
+                        return 3;
                     }
                     return 0;
                 }
 
-                model: [
-                    qsTr("Auto"),
-                    "x264",
-                    "nvenc",
-                    "V4L2"
-                ]
+                model: [qsTr("Auto"), "x264", "nvenc", "V4L2"]
 
                 onCurrentIndexChanged: {
                     switch (currentIndex) {
-                    case 0: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto; break;
-                    case 1: settings.casterVideoEncoder = Settings.CasterVideoEncoder_X264; break;
-                    case 2: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Nvenc; break;
-                    case 3: settings.casterVideoEncoder = Settings.CasterVideoEncoder_V4l2; break;
-                    default: settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
+                    case 0:
+                        settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
+                        break;
+                    case 1:
+                        settings.casterVideoEncoder = Settings.CasterVideoEncoder_X264;
+                        break;
+                    case 2:
+                        settings.casterVideoEncoder = Settings.CasterVideoEncoder_Nvenc;
+                        break;
+                    case 3:
+                        settings.casterVideoEncoder = Settings.CasterVideoEncoder_V4l2;
+                        break;
+                    default:
+                        settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
                     }
                 }
             }
@@ -396,14 +543,24 @@ Kirigami.ScrollablePage {
                 checked: !settings.casterDontUsePipeWire
                 text: qsTr("Use PipeWire to capture audio")
                 onToggled: {
-                    settings.casterDontUsePipeWire = !settings.casterDontUsePipeWire
+                    settings.casterDontUsePipeWire = !settings.casterDontUsePipeWire;
                 }
 
                 Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("Due to issues, audio playback capture and microphone are " +
-                                            "disabled by default when using PipeWire. You can use this option " +
-                                            "to enable them.")
+                Controls.ToolTip.text: qsTr("Due to issues, audio playback capture and microphone are " + "disabled by default when using PipeWire. You can use this option " + "to enable them.")
+            }
+
+            CasterSourceVolume {
+                Kirigami.FormData.label: qsTr("Microphone volume boost")
+                volume: settings.casterMicVolume
+                onVolumeChanged: settings.casterMicVolume = volume
+            }
+
+            CasterSourceVolume {
+                Kirigami.FormData.label: qsTr("Audio capture volume boost")
+                volume: settings.casterPlaybackVolume
+                onVolumeChanged: settings.casterPlaybackVolume = volume
             }
 
             Kirigami.Separator {
@@ -447,29 +604,25 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.label: qsTr("Cache remote content")
                 currentIndex: {
                     if (settings.cacheType === Settings.Cache_Auto)
-                        return 0
+                        return 0;
                     if (settings.cacheType === Settings.Cache_Always)
-                        return 1
+                        return 1;
                     if (settings.cacheType === Settings.Cache_Never)
-                        return 2
-                    return 0
+                        return 2;
+                    return 0;
                 }
 
-                model: [
-                    qsTr("Auto"),
-                    qsTr("Always"),
-                    qsTr("Never")
-                ]
+                model: [qsTr("Auto"), qsTr("Always"), qsTr("Never")]
 
                 onCurrentIndexChanged: {
                     if (currentIndex == 0)
-                        settings.cacheType = Settings.Cache_Auto
+                        settings.cacheType = Settings.Cache_Auto;
                     else if (currentIndex == 1)
-                        settings.cacheType = Settings.Cache_Always
+                        settings.cacheType = Settings.Cache_Always;
                     else if (currentIndex == 2)
-                        settings.cacheType = Settings.Cache_Never
+                        settings.cacheType = Settings.Cache_Never;
                     else
-                        settings.cacheType = Settings.Cache_Auto
+                        settings.cacheType = Settings.Cache_Auto;
                 }
             }
 
@@ -477,29 +630,25 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.label: qsTr("Cache cleaning")
                 currentIndex: {
                     if (settings.cacheCleaningType === Settings.CacheCleaning_Auto)
-                        return 0
+                        return 0;
                     if (settings.cacheCleaningType === Settings.CacheCleaning_Always)
-                        return 1
+                        return 1;
                     if (settings.cacheCleaningType === Settings.CacheCleaning_Never)
-                        return 2
-                    return 0
+                        return 2;
+                    return 0;
                 }
 
-                model: [
-                    qsTr("Auto"),
-                    qsTr("Always"),
-                    qsTr("Never")
-                ]
+                model: [qsTr("Auto"), qsTr("Always"), qsTr("Never")]
 
                 onCurrentIndexChanged: {
                     if (currentIndex == 0)
-                        settings.cacheCleaningType = Settings.CacheCleaning_Auto
+                        settings.cacheCleaningType = Settings.CacheCleaning_Auto;
                     else if (currentIndex == 1)
-                        settings.cacheCleaningType = Settings.CacheCleaning_Always
+                        settings.cacheCleaningType = Settings.CacheCleaning_Always;
                     else if (currentIndex == 2)
-                        settings.cacheCleaningType = Settings.CacheCleaning_Never
+                        settings.cacheCleaningType = Settings.CacheCleaning_Never;
                     else
-                        settings.cacheCleaningType = Settings.CacheCleaning_Auto
+                        settings.cacheCleaningType = Settings.CacheCleaning_Auto;
                 }
             }
 
@@ -531,7 +680,7 @@ Kirigami.ScrollablePage {
                 text: settings.fsapiPin
                 placeholderText: qsTr("Enter Frontier Silicon PIN")
                 onEditingFinished: {
-                    settings.fsapiPin = text
+                    settings.fsapiPin = text;
                 }
             }
 
@@ -541,14 +690,14 @@ Kirigami.ScrollablePage {
                 currentIndex: utils.prefNetworkInfIndex()
                 model: utils.networkInfs()
                 onCurrentIndexChanged: {
-                    utils.setPrefNetworkInfIndex(currentIndex)
+                    utils.setPrefNetworkInfIndex(currentIndex);
                 }
 
                 Connections {
                     target: settings
                     onPrefNetInfChanged: {
-                        parent.model = utils.networkInfs()
-                        parent.currentIndex = utils.prefNetworkInfIndex()
+                        parent.model = utils.networkInfs();
+                        parent.currentIndex = utils.prefNetworkInfIndex();
                     }
                 }
             }
@@ -558,17 +707,12 @@ Kirigami.ScrollablePage {
                 checked: settings.showAllDevices
                 text: qsTr("All devices visible")
                 onToggled: {
-                    settings.showAllDevices = !settings.showAllDevices
+                    settings.showAllDevices = !settings.showAllDevices;
                 }
 
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.text: qsTr("All types of UPnP devices are detected " +
-                                            "and shown, including unsupported devices like " +
-                                            "home routers. For unsupported devices only " +
-                                            "basic description information is available. " +
-                                            "This option might be useful for auditing UPnP devices " +
-                                            "in your local network.")
+                Controls.ToolTip.text: qsTr("All types of UPnP devices are detected " + "and shown, including unsupported devices like " + "home routers. For unsupported devices only " + "basic description information is available. " + "This option might be useful for auditing UPnP devices " + "in your local network.")
                 hoverEnabled: true
             }
 
@@ -583,9 +727,7 @@ Kirigami.ScrollablePage {
 
                     Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
                     Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: qsTr("Python libraries directory (%1).").arg("<i>PYTHONPATH</i>") + " " +
-                                           qsTr("Leave blank to use the default value.") + " " +
-                                           qsTr("This option may be useful if you use %1 module to manage Python libraries.").arg("<i>venv</i>")
+                    Controls.ToolTip.text: qsTr("Python libraries directory (%1).").arg("<i>PYTHONPATH</i>") + " " + qsTr("Leave blank to use the default value.") + " " + qsTr("This option may be useful if you use %1 module to manage Python libraries.").arg("<i>venv</i>")
                 }
 
                 Controls.Button {
@@ -613,21 +755,19 @@ Kirigami.ScrollablePage {
                 checked: settings.logToFile
                 text: qsTr("Enable logging")
                 onToggled: {
-                    settings.logToFile = !settings.logToFile
+                    settings.logToFile = !settings.logToFile;
                 }
 
                 Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("Needed for troubleshooting purposes. " +
-                                            "The log data is stored in %1 file.")
-                .arg(settings.getCacheDir() + "/jupii.log")
+                Controls.ToolTip.text: qsTr("Needed for troubleshooting purposes. " + "The log data is stored in %1 file.").arg(settings.getCacheDir() + "/jupii.log")
             }
 
             Controls.Button {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Reset settings")
                 onClicked: {
-                    resetDialog.open()
+                    resetDialog.open();
                 }
             }
         }
@@ -642,7 +782,9 @@ Kirigami.ScrollablePage {
         selectExisting: true
         folder: utils.pathToUrl(_settings.recDir)
         onAccepted: {
-            recDirDialog.fileUrls.forEach(function(url) {_settings.recDir = utils.urlToPath(url)})
+            recDirDialog.fileUrls.forEach(function (url) {
+                _settings.recDir = utils.urlToPath(url);
+            });
         }
     }
 
@@ -656,4 +798,3 @@ Kirigami.ScrollablePage {
         onAccepted: settings.reset()
     }
 }
-
