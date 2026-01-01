@@ -6,11 +6,11 @@ modules:
   buildsystem: simple
   build-commands:
   - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-    --prefix=${FLATPAK_DEST} "yt_dlp==2025.10.28.232931.dev0" --no-build-isolation
+    --prefix=${FLATPAK_DEST} "yt_dlp==2025.12.8" --no-build-isolation
   sources:
   - type: file
-    url: https://files.pythonhosted.org/packages/eb/f4/489d36742561af097988a99822f99aacf958f66b8441961cc42447bd1be0/yt_dlp-2025.10.28.232931.dev0-py3-none-any.whl
-    sha256: 6dcbb0501ccd5f555aa852f3fc2e9b08a5ac381a0ca527efbe6783380176256c
+    url: https://files.pythonhosted.org/packages/6e/2f/98c3596ad923f8efd32c90dca62e241e8ad9efcebf20831173c357042ba0/yt_dlp-2025.12.8-py3-none-any.whl
+    sha256: 36e2584342e409cfbfa0b5e61448a1c5189e345cf4564294456ee509e7d3e065
 - name: python3-ytmusicapi
   buildsystem: simple
   build-commands:
