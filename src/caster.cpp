@@ -1,4 +1,4 @@
-/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
+﻿/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -155,6 +155,15 @@ static void dataToHexStr(std::ostream &os, const uint8_t *data, int size) {
     return os;
 }
 
+[[maybe_unused]] static std::ostream &operator<<(std::ostream &os,
+                                                 const AVFrame *pkt) {
+    os << "pts=" << pkt->pts << ", duration=" << pkt->duration
+       << ", tb=" << pkt->time_base << ", width=" << pkt->width
+       << ", height=" << pkt->height
+       << ", pixfmt=" << static_cast<AVPixelFormat>(pkt->format);
+    return os;
+}
+
 // static void logAvDevices() {
 //     const AVInputFormat *d = nullptr;
 //     while (true) {
@@ -286,6 +295,9 @@ std::ostream &operator<<(std::ostream &os, Caster::StreamFormat streamFormat) {
         case Caster::StreamFormat::Mp3:
             os << "mp3";
             break;
+        case Caster::StreamFormat::Avi:
+            os << "avi";
+            break;
         default:
             os << "unknown";
     }
@@ -321,6 +333,9 @@ std::ostream &operator<<(std::ostream &os, Caster::VideoEncoder encoder) {
             break;
         case Caster::VideoEncoder::V4l2:
             os << "v4l2";
+            break;
+        case Caster::VideoEncoder::Mjpeg:
+            os << "mjpeg";
             break;
         default:
             os << "unknown";
@@ -614,23 +629,26 @@ std::ostream &operator<<(std::ostream &os, Caster::FileSourceFlags flags) {
 
 std::ostream &operator<<(std::ostream &os,
                          const Caster::FileSourceConfig &config) {
-    os << "files=";
-    if (!config.files.empty()) {
-        os << "[";
-        for (const auto &f : config.files) os << f << ",";
-        os << "]";
-    } else {
-        os << "empty";
-    }
+    os << "files=" << config.files.size();
+    //    if (!config.files.empty()) {
+    //        os << "[";
+    //        for (const auto &f : config.files) os << f << ",";
+    //        os << "]";
+    //    } else {
+    //        os << "empty";
+    //    }
     os << ", flags=[" << config.flags << "]";
     os << ", img-duration-sec=" << config.imgDurationSec;
-    os << ", img-fps=" << config.imgFps;
     return os;
 }
 
 std::ostream &operator<<(std::ostream &os, const Caster::PerfConfig &config) {
-    os << "pa-iter-cleep=" << config.paIterSleep;
-    os << ", audio-mux-iter-sleep=" << config.audioMuxIterSleep;
+    os << "pa-iter-cleep=" << config.paIterSleep
+       << ", audio-mux-iter-sleep=" << config.audioMuxIterSleep
+       << ", video-mjpeg-qmin=" << config.videoMjpegQmin
+       << ", video-x264-crf=" << config.videoX264Crf
+       << ", lipstick-recorder-fps=" << config.lipstickRecorderFps
+       << ", img-fps=" << config.imgFps;
     return os;
 }
 
@@ -688,14 +706,16 @@ bool Caster::configValid(const Config &config) const {
     if (config.videoEncoder != VideoEncoder::Auto &&
         config.videoEncoder != VideoEncoder::Nvenc &&
         config.videoEncoder != VideoEncoder::V4l2 &&
-        config.videoEncoder != VideoEncoder::X264) {
+        config.videoEncoder != VideoEncoder::X264 &&
+        config.videoEncoder != VideoEncoder::Mjpeg) {
         LOGW("video-encoder is invalid");
         return false;
     }
 
     if (config.streamFormat != StreamFormat::Mp4 &&
         config.streamFormat != StreamFormat::MpegTs &&
-        config.streamFormat != StreamFormat::Mp3) {
+        config.streamFormat != StreamFormat::Mp3 &&
+        config.streamFormat != StreamFormat::Avi) {
         LOGW("stream-format is invalid");
         return false;
     }
@@ -796,7 +816,7 @@ void Caster::initAudioSource() {
 void Caster::initVideoSource() {
     initVideoTrans();
 
-    const auto &props = videoProps();
+    auto &props = videoProps();
 
     m_videoSourceType = props.type;
 
@@ -815,6 +835,12 @@ void Caster::initVideoSource() {
             return;
         case VideoSourceType::LipstickCapture:
 #ifdef USE_LIPSTICK_RECORDER
+            // update framerate to requested value
+            for (auto &f : props.formats) {
+                for (auto &fs : f.frameSpecs) {
+                    fs.framerates = {m_config.perfConfig.lipstickRecorderFps};
+                }
+            }
             m_lipstickRecorder.emplace(
                 [this](const uint8_t *data, size_t size) {
                     rawVideoDataReadyHandler(data, size);
@@ -822,7 +848,8 @@ void Caster::initVideoSource() {
                 [this] {
                     LOGE("error in lipstick-recorder");
                     reportError();
-                });
+                },
+                m_config.perfConfig.lipstickRecorderFps);
             return;
 #endif
         case VideoSourceType::DroidCamRaw:
@@ -1337,6 +1364,7 @@ void Caster::stop(size_t ctx) {
         return;
     }
 
+    cleanAvOutputFormat(&(*outCtxIt));
     *outCtxIt = {};
 }
 
@@ -2003,7 +2031,7 @@ Caster::Dim Caster::computeTransDim(Dim dim, VideoTrans trans,
         case VideoTrans::Frame169VflipRot180:
         case VideoTrans::Frame169VflipRot270: {
             outDim.height = static_cast<uint32_t>(
-                std::ceil(std::max<double>(dim.width, dim.height) * factor));
+                std::ceil(std::min<double>(dim.width, dim.height) * factor));
             outDim.width =
                 static_cast<uint32_t>(std::ceil((16.0 / 9.0) * outDim.height));
             outDim.width += 2;
@@ -2011,8 +2039,8 @@ Caster::Dim Caster::computeTransDim(Dim dim, VideoTrans trans,
         }
     }
 
-    outDim.height -= outDim.height % 2;
-    outDim.width -= outDim.width % 2;
+    outDim.height -= outDim.height % 4;
+    outDim.width -= outDim.width % 4;
 
     LOGD("dim change: " << dim << " => " << outDim << " (factor=" << factor
                         << ", thin=" << dim.thin() << ")");
@@ -2291,7 +2319,7 @@ void Caster::initAvVideoFilters() {
         case VideoTrans::TransCclock:
         case VideoTrans::TransCclockFlip:
             initAvVideoFilter(props.sensorDirection, VideoTrans::Scale,
-                              "scale=h={1}:w={0}");
+                              "scale=h={1}:w={0}:interl=-1");
             initAvVideoFilter(props.sensorDirection, VideoTrans::Vflip,
                               "scale=h={1}:w={0},vflip");
             initAvVideoFilter(props.sensorDirection, VideoTrans::Hflip,
@@ -2521,19 +2549,29 @@ AVSampleFormat Caster::bestAudioSampleFormat(
     return bestFmt;
 }
 
-bool Caster::nicePixfmt(AVPixelFormat fmt) {
-    return std::find(nicePixfmts.cbegin(), nicePixfmts.cend(), fmt) !=
-           nicePixfmts.cend();
+bool Caster::nicePixfmt(AVPixelFormat fmt, VideoEncoder type) {
+    switch (type) {
+        case VideoEncoder::Auto:
+        case VideoEncoder::X264:
+        case VideoEncoder::Nvenc:
+        case VideoEncoder::V4l2:
+            return std::find(nicePixfmtsMpeg.cbegin(), nicePixfmtsMpeg.cend(),
+                             fmt) != nicePixfmtsMpeg.cend();
+        case VideoEncoder::Mjpeg:
+            return std::find(nicePixfmtsMjpeg.cbegin(), nicePixfmtsMjpeg.cend(),
+                             fmt) != nicePixfmtsMjpeg.cend();
+    }
+    LOGF("invalid encoder type");
 }
 
-AVPixelFormat Caster::toNicePixfmt(AVPixelFormat fmt,
+AVPixelFormat Caster::toNicePixfmt(AVPixelFormat fmt, VideoEncoder type,
                                    const AVPixelFormat *supportedFmts) {
-    if (nicePixfmt(fmt)) return fmt;
+    if (nicePixfmt(fmt, type)) return fmt;
 
     auto newFmt = fmt;
 
     for (int i = 0;; ++i) {
-        if (nicePixfmt(supportedFmts[i])) {
+        if (nicePixfmt(supportedFmts[i], type)) {
             newFmt = supportedFmts[i];
             break;
         }
@@ -2552,22 +2590,24 @@ AVPixelFormat Caster::toNicePixfmt(AVPixelFormat fmt,
 std::pair<std::reference_wrapper<const Caster::VideoFormatExt>, AVPixelFormat>
 Caster::bestVideoFormat(const AVCodec *encoder,
                         const VideoSourceInternalProps &props,
-                        bool useNiceFormats) {
+                        VideoEncoder type, bool useNiceFormats) {
     if (encoder->pix_fmts == nullptr)
         throw std::runtime_error("encoder does not support any pixfmts");
 
     LOGD("pixfmts supported by encoder: " << encoder->pix_fmts);
 
-    if (auto it = std::find_if(
-            props.formats.cbegin(), props.formats.cend(),
-            [encoder, useNiceFormats](const auto &sf) {
-                for (int i = 0;; ++i) {
-                    if (encoder->pix_fmts[i] == AV_PIX_FMT_NONE) return false;
-                    if (useNiceFormats && !nicePixfmt(encoder->pix_fmts[i]))
-                        return false;
-                    return encoder->pix_fmts[i] == sf.pixfmt;
-                }
-            });
+    if (auto it =
+            std::find_if(props.formats.cbegin(), props.formats.cend(),
+                         [encoder, useNiceFormats, type](const auto &sf) {
+                             for (int i = 0;; ++i) {
+                                 if (encoder->pix_fmts[i] == AV_PIX_FMT_NONE)
+                                     return false;
+                                 if (useNiceFormats &&
+                                     !nicePixfmt(encoder->pix_fmts[i], type))
+                                     return false;
+                                 return encoder->pix_fmts[i] == sf.pixfmt;
+                             }
+                         });
         it != props.formats.cend()) {
         LOGD("pixfmt exact match: " << it->pixfmt);
 
@@ -2578,7 +2618,8 @@ Caster::bestVideoFormat(const AVCodec *encoder,
         encoder->pix_fmts, props.formats.front().pixfmt, 0, nullptr);
 
     if (useNiceFormats) {
-        return {props.formats.front(), toNicePixfmt(fmt, encoder->pix_fmts)};
+        return {props.formats.front(),
+                toNicePixfmt(fmt, type, encoder->pix_fmts)};
     }
     return {props.formats.front(), fmt};
 }
@@ -2586,27 +2627,48 @@ Caster::bestVideoFormat(const AVCodec *encoder,
 static std::string tempPathForX264() {
     char path[] = "/tmp/libx264-XXXXXX";
     auto fd = mkstemp(path);
-    if (fd == -1) throw std::runtime_error("mkstemp error");
+    if (fd == -1) {
+        LOGF("mkstemp error");
+    }
     close(fd);
     return path;
 }
 
-void Caster::setVideoEncoderOpts(VideoEncoder encoder, AVDictionary **opts) {
+void Caster::setVideoEncoderOpts(VideoEncoder encoder, AVCodecContext *ctx,
+                                 AVDictionary **opts) const {
     switch (encoder) {
+        case VideoEncoder::X264:
+            av_dict_set(opts, "preset", "ultrafast", 0);
+            av_dict_set(opts, "tune", "zerolatency", 0);
+            av_dict_set_int(
+                opts, "crf",
+                std::clamp(m_config.perfConfig.videoX264Crf, 1U, 31U), 0);
+            av_dict_set(opts, "passlogfile", tempPathForX264().c_str(), 0);
+            return;
         case VideoEncoder::Nvenc:
             av_dict_set(opts, "preset", "p1", 0);
             av_dict_set(opts, "tune", "ull", 0);
             av_dict_set(opts, "zerolatency", "1", 0);
             av_dict_set(opts, "rc", "constqp", 0);
+            return;
+        case VideoEncoder::V4l2:
+            // no options
+            return;
+        case VideoEncoder::Mjpeg:
+            av_dict_set(opts, "huffman", "optimal", 0);
+            LOGT("encoder initial quality settings: qmin="
+                 << ctx->qmin << ", qmax=" << ctx->qmax
+                 << ", global-quality=" << ctx->global_quality);
+            ctx->flags |= AV_CODEC_FLAG_QSCALE;
+            ctx->qmin = std::clamp(m_config.perfConfig.videoMjpegQmin, 1U, 31U);
+            ctx->qmax = 31;
+            return;
+        case VideoEncoder::Auto:
+            // invalid
             break;
-        case VideoEncoder::X264:
-            av_dict_set(opts, "preset", "ultrafast", 0);
-            av_dict_set(opts, "tune", "zerolatency", 0);
-            av_dict_set(opts, "passlogfile", tempPathForX264().c_str(), 0);
-            break;
-        default:
-            LOGW("failed to set video encoder options");
     }
+
+    LOGF("failed to set video encoder options");
 }
 
 std::string Caster::videoEncoderAvName(VideoEncoder encoder) {
@@ -2617,11 +2679,13 @@ std::string Caster::videoEncoderAvName(VideoEncoder encoder) {
             return "h264_nvenc";
         case VideoEncoder::V4l2:
             return "h264_v4l2m2m";
+        case VideoEncoder::Mjpeg:
+            return "mjpeg";
         case VideoEncoder::Auto:
             break;
     }
 
-    throw std::runtime_error("invalid video encoder");
+    LOGF("invalid video encoder");
 }
 
 std::string Caster::audioEncoderAvName(AudioEncoder encoder) {
@@ -2632,7 +2696,7 @@ std::string Caster::audioEncoderAvName(AudioEncoder encoder) {
             return "libmp3lame";
     }
 
-    throw std::runtime_error("invalid audio encoder");
+    LOGF("invalid audio encoder");
 }
 
 std::string Caster::videoFormatAvName(VideoSourceType type) {
@@ -2651,7 +2715,7 @@ std::string Caster::videoFormatAvName(VideoSourceType type) {
             break;
     }
 
-    throw std::runtime_error("invalid video source");
+    LOGF("invalid video source");
 }
 
 std::string Caster::streamFormatAvName(StreamFormat format) {
@@ -2662,9 +2726,11 @@ std::string Caster::streamFormatAvName(StreamFormat format) {
             return "mpegts";
         case StreamFormat::Mp3:
             return "mp3";
+        case StreamFormat::Avi:
+            return "avi";
     }
 
-    throw std::runtime_error("invalid stream format");
+    LOGF("invalid stream format");
 }
 
 void Caster::initAvVideoRawDecoder() {
@@ -2706,24 +2772,26 @@ void Caster::initAvVideoEncoder(VideoEncoder type) {
     if (!encoder) throw std::runtime_error(fmt::format("no {} encoder", enc));
 
     m_outVideoCtx = avcodec_alloc_context3(encoder);
-    if (m_outVideoCtx == nullptr)
-        throw std::runtime_error("avcodec_alloc_context3 for video error");
+    if (m_outVideoCtx == nullptr) {
+        LOGF("avcodec_alloc_context3 for video error");
+    }
 
     const auto &props = videoProps();
 
     const auto &bestFormat = [&]() {
 #ifdef USE_V4L2
         if (type == VideoEncoder::V4l2)
-            return bestVideoFormatForV4l2Encoder(props);
+            return bestVideoFormatForV4l2Encoder(props, type);
 #endif
         return bestVideoFormat(
-            encoder, props,
+            encoder, props, type,
             m_config.options & OptionsFlags::OnlyNiceVideoFormats);
     }();
 
     m_outVideoCtx->pix_fmt = bestFormat.second;
-    if (m_outVideoCtx->pix_fmt == AV_PIX_FMT_NONE)
-        throw std::runtime_error("failed to find pixfmt for video encoder");
+    if (m_outVideoCtx->pix_fmt == AV_PIX_FMT_NONE) {
+        LOGF("failed to find pixfmt for video encoder");
+    }
 
     const auto &fs = bestFormat.first.get().frameSpecs.front();
 
@@ -2731,6 +2799,7 @@ void Caster::initAvVideoEncoder(VideoEncoder type) {
 
     m_outVideoCtx->time_base = AVRational{1, m_videoFramerate};
     m_outVideoCtx->flags = AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS;
+    m_outVideoCtx->flags &= ~AV_CODEC_FLAG_RECON_FRAME;
 
     m_inDim = fs.dim;
     if (!m_inDim.valid()) {
@@ -2742,17 +2811,21 @@ void Caster::initAvVideoEncoder(VideoEncoder type) {
     auto outDim = computeTransDim(m_inDim, m_videoTrans, props.scale);
     m_outVideoCtx->width = static_cast<int>(outDim.width);
     m_outVideoCtx->height = static_cast<int>(outDim.height);
+    m_outVideoCtx->color_range =
+        type == VideoEncoder::Mjpeg ? AVCOL_RANGE_JPEG : AVCOL_RANGE_MPEG;
 
     AVDictionary *opts = nullptr;
 
-    setVideoEncoderOpts(type, &opts);
+    setVideoEncoderOpts(type, m_outVideoCtx, &opts);
 
     if (avcodec_open2(m_outVideoCtx, nullptr, &opts) < 0) {
         av_dict_free(&opts);
-        throw std::runtime_error("avcodec_open2 for out video error");
+        LOGF("avcodec_open2 for out video error");
     }
 
     cleanAvOpts(&opts);
+
+    m_nextVideoInFramePts = 0;
 
     LOGD("video encoder: tb=" << m_outVideoCtx->time_base
                               << ", pixfmt=" << m_outVideoCtx->pix_fmt
@@ -2765,6 +2838,11 @@ void Caster::initAvVideoEncoder(VideoEncoder type) {
 
 void Caster::initAvVideoEncoder() {
     if (m_config.videoEncoder == VideoEncoder::Auto) {
+        if (m_config.streamFormat == StreamFormat::Avi) {
+            initAvVideoEncoder(VideoEncoder::Mjpeg);
+            return;
+        }
+
         try {
             initAvVideoEncoder(VideoEncoder::V4l2);
         } catch (const std::runtime_error &e) {
@@ -3004,10 +3082,7 @@ void Caster::fixPropsForFileVideoSource(VideoSourceInternalProps &props) const {
 
     if (props.formats.empty()) {
         FrameSpec fs;
-        fs.framerates.insert(
-            m_config.fileSourceConfig
-                ? std::clamp(m_config.fileSourceConfig->imgFps, 1U, 60U)
-                : 5U);
+        fs.framerates.insert(std::clamp(m_config.perfConfig.imgFps, 1U, 60U));
         fs.dim.width = stream->codecpar->width;
         fs.dim.height = stream->codecpar->height;
         props.formats.push_back(
@@ -3018,9 +3093,7 @@ void Caster::fixPropsForFileVideoSource(VideoSourceInternalProps &props) const {
         auto &formatExt = props.formats.front();
         if (!formatExt.frameSpecs.empty()) {
             formatExt.frameSpecs.front().framerates.insert(
-                m_config.fileSourceConfig
-                    ? std::clamp(m_config.fileSourceConfig->imgFps, 1U, 60U)
-                    : 5U);
+                std::clamp(m_config.perfConfig.imgFps, 1U, 60U));
         }
         formatExt.pixfmt = static_cast<AVPixelFormat>(stream->codecpar->format);
     }
@@ -3078,6 +3151,7 @@ void Caster::initAv() {
                     initAvVideoInputRawFormat();
                     findAvVideoInputStreamIdx();
                     initAvVideoRawDecoderFromInputStream();
+                    initAvVideoFilters();
                     return;
                 case VideoSourceType::LipstickCapture:
                 case VideoSourceType::Test:
@@ -3154,6 +3228,12 @@ void Caster::initAvAudioFifo() {
 void Caster::initAvVideoBsf(OutCtx *outCtx) {
     if (m_videoBsfExtractExtraCtx) {
         // already inited
+        return;
+    }
+
+    if (outCtx->videoStream->codecpar->codec_id !=
+        AVCodecID::AV_CODEC_ID_H264) {
+        // nothing to do
         return;
     }
 
@@ -3388,28 +3468,37 @@ void Caster::initAvOutputFormat(OutCtx *outCtx) {
 
     AVDictionary *opts = nullptr;
 
-    if (m_config.streamFormat == StreamFormat::MpegTs) {
-        av_dict_set(&opts, "mpegts_m2ts_mode", "-1", 0);
-        av_dict_set(&outFormatCtx->metadata, "service_provider",
-                    m_config.streamAuthor.c_str(), 0);
-        av_dict_set(&outFormatCtx->metadata, "service_name",
-                    m_config.streamTitle.c_str(), 0);
-    } else if (m_config.streamFormat == StreamFormat::Mp4) {
-        av_dict_set(&opts, "movflags", "frag_custom+empty_moov+delay_moov", 0);
-        av_dict_set(&outFormatCtx->metadata, "author",
-                    m_config.streamAuthor.c_str(), 0);
-        av_dict_set(&outFormatCtx->metadata, "title",
-                    m_config.streamTitle.c_str(), 0);
+    switch (m_config.streamFormat) {
+        case StreamFormat::MpegTs:
+            av_dict_set(&opts, "mpegts_m2ts_mode", "-1", 0);
+            av_dict_set(&outFormatCtx->metadata, "service_provider",
+                        m_config.streamAuthor.c_str(), 0);
+            av_dict_set(&outFormatCtx->metadata, "service_name",
+                        m_config.streamTitle.c_str(), 0);
+            break;
+        case StreamFormat::Mp4:
+            av_dict_set(&opts, "movflags", "frag_custom+empty_moov+delay_moov",
+                        0);
+            av_dict_set(&outFormatCtx->metadata, "author",
+                        m_config.streamAuthor.c_str(), 0);
+            av_dict_set(&outFormatCtx->metadata, "title",
+                        m_config.streamTitle.c_str(), 0);
 
-        if (videoEnabled())
-            setVideoStreamRotation(outCtx, m_config.videoOrientation);
-    } else if (m_config.streamFormat == StreamFormat::Mp3) {
-        av_dict_set(&outCtx->audioStream->metadata, "artist",
-                    m_config.streamAuthor.c_str(), 0);
-        av_dict_set(&outCtx->audioStream->metadata, "title",
-                    m_config.streamTitle.c_str(), 0);
-    } else {
-        throw std::runtime_error("invalid stream format for video");
+            if (videoEnabled())
+                setVideoStreamRotation(outCtx, m_config.videoOrientation);
+            break;
+        case StreamFormat::Mp3:
+            av_dict_set(&outCtx->audioStream->metadata, "artist",
+                        m_config.streamAuthor.c_str(), 0);
+            av_dict_set(&outCtx->audioStream->metadata, "title",
+                        m_config.streamTitle.c_str(), 0);
+            break;
+        case StreamFormat::Avi:
+            av_dict_set(&outFormatCtx->metadata, "author",
+                        m_config.streamAuthor.c_str(), 0);
+            av_dict_set(&outFormatCtx->metadata, "title",
+                        m_config.streamTitle.c_str(), 0);
+            break;
     }
 
     outFormatCtx->flags |= AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS |
@@ -3677,7 +3766,7 @@ void Caster::paStreamRequestCallbackStatic(pa_stream *stream, size_t nbytes,
 void Caster::paStreamRequestCallback(pa_stream *stream, size_t nbytes) {
     std::lock_guard lock{m_audioMtx};
 
-    LOGD("pa audio sample: " << nbytes << ", buf=" << m_audioBuf.size());
+    LOGT("pa audio sample: " << nbytes << ", buf=" << m_audioBuf.size());
 
     const void *data;
     if (pa_stream_peek(stream, &data, &nbytes) != 0) {
@@ -3697,6 +3786,8 @@ void Caster::paStreamRequestCallback(pa_stream *stream, size_t nbytes) {
             m_paDataReceived = true;
             LOGD("first pa data received");
         }
+
+        LOGT("pa audio after push: buf=" << m_audioBuf.size());
     }
 
     pa_stream_drop(stream);
@@ -3803,10 +3894,6 @@ void Caster::startVideoOnlyMuxing() {
         }
 
         av_packet_free(&video_pkt);
-        //        if (m_imgPkt) {
-        //            av_packet_free(&m_imgPkt);
-        //        }
-
         cleanOutCtxs();
         m_videoBuf.clear();
 
@@ -3860,10 +3947,6 @@ void Caster::startVideoAudioMuxing() {
 
         av_packet_free(&video_pkt);
         av_packet_free(&audio_pkt);
-        //        if (m_imgPkt) {
-        //            av_packet_free(&m_imgPkt);
-        //        }
-
         cleanOutCtxs();
         m_audioBuf.clear();
         m_videoBuf.clear();
@@ -4373,6 +4456,8 @@ Caster::ExifData Caster::extractExifFromDecoder() {
 }
 
 bool Caster::encodeVideoFrame(AVPacket *pkt) {
+    LOGT("video pkt to decoder: " << pkt);
+
     if (auto ret = avcodec_send_packet(m_inVideoCtx, pkt);
         ret != 0 && ret != AVERROR(EAGAIN)) {
         av_packet_unref(pkt);
@@ -4394,9 +4479,15 @@ bool Caster::encodeVideoFrame(AVPacket *pkt) {
             "video avcodec_receive_frame error ({})", strForAvError(ret)));
     }
 
+    LOGT("video frame from decoder: " << m_videoFrameIn);
+
     m_videoFrameIn->format = m_inVideoCtx->pix_fmt;
     m_videoFrameIn->width = m_inVideoCtx->width;
     m_videoFrameIn->height = m_inVideoCtx->height;
+    m_videoFrameIn->time_base = m_inVideoCtx->time_base;
+    m_videoFrameIn->pts = m_nextVideoInFramePts;
+    m_videoFrameIn->duration = 1;
+    m_nextVideoInFramePts += m_videoFrameIn->duration;
 
     auto *frameOut = filterVideoIfNeeded(m_videoFrameIn);
     if (frameOut == nullptr) return false;
@@ -4460,6 +4551,11 @@ void Caster::extractVideoExtradataFromRawDemuxer() {
         return;
     }
 
+    if (!m_videoBsfExtractExtraCtx) {
+        // bsf not inited
+        return;
+    }
+
     auto *pkt = av_packet_alloc();
 
     readVideoFrameFromDemuxer(pkt);
@@ -4473,6 +4569,11 @@ void Caster::extractVideoExtradataFromRawDemuxer() {
 void Caster::extractVideoExtradataFromRawBuf() {
     if (!m_pktSideData.empty()) {
         // already extracted
+        return;
+    }
+
+    if (!m_videoBsfExtractExtraCtx) {
+        // bsf not inited
         return;
     }
 
@@ -4548,7 +4649,7 @@ bool Caster::muxVideo(AVPacket *pkt) {
 
         if (diff < (m_config.perfConfig.videoMaxFastFrames *
                     m_videoFrameDuration * -1)) {
-            LOGT("streaming is to fast: diff="
+            LOGD("streaming is to fast: diff="
                  << diff << ", ref=" << m_videoFrameDuration
                  << ", max-fast-frames="
                  << m_config.perfConfig.videoMaxFastFrames);
@@ -4633,7 +4734,7 @@ bool Caster::muxVideo(AVPacket *pkt) {
             if (!encodeVideoFrame(pkt)) return false;
             break;
         default:
-            throw std::runtime_error("unknown video source type");
+            LOGF("unknown video source type");
     }
 
     if (!avPktOk(pkt)) {
@@ -4782,7 +4883,7 @@ void Caster::reInitAvAudioDecoder() {
 bool Caster::readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData) {
     std::lock_guard lock{m_audioMtx};
 
-    LOGD("audio read from buf: has-enough-data="
+    LOGT("audio read from buf: has-enough-data="
          << m_audioBuf.hasEnoughData(m_audioInFrameSize) << ", push-null="
          << nullWhenNoEnoughData << ", frame-size=" << m_audioInFrameSize
          << ", buff-size=" << m_audioBuf.size() << ", diff-size="
@@ -4793,7 +4894,7 @@ bool Caster::readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData) {
         if (!pushNull) {
             return false;
         }
-        LOGD("audio push null: " << (m_audioInFrameSize - m_audioBuf.size()));
+        LOGT("audio push null: " << (m_audioInFrameSize - m_audioBuf.size()));
         m_audioBuf.pushNullExactForce(m_audioInFrameSize - m_audioBuf.size());
     }
 
@@ -4805,7 +4906,7 @@ bool Caster::readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData) {
         throw std::runtime_error("failed to pull from buf");
     }
 
-    LOGD("audio read from buff successful");
+    LOGT("audio read from buff successful");
 
     return true;
 }
@@ -5182,16 +5283,11 @@ void Caster::updateVideoSampleStats(int64_t now) {
         if ((m_videoSourceFlags & SourceFlags::VideoAdjustVideoFrameDuration) >
             0) {
             auto lastDur = now - m_videoTimeLastFrame;
-            //        if (lastDur >= m_videoRealFrameDuration / 4) {
-            //            LOGD("adjusting video real frame duration: "
-            //                 << m_videoRealFrameDuration << " => " <<
-            //                 lastDur);
-            //            m_videoRealFrameDuration = lastDur;
-            //        }
             if (lastDur != m_videoFrameDuration) {
                 LOGD("adjusting video real frame duration: "
                      << m_videoRealFrameDuration << " => " << lastDur
-                     << ", ref=" << m_videoFrameDuration);
+                     << ", ref=" << m_videoFrameDuration
+                     << ", codec=" << m_outVideoCtx->codec_id);
                 m_videoRealFrameDuration = lastDur;
             }
         }
@@ -5567,6 +5663,8 @@ Caster::VideoPropsMap Caster::detectX11VideoSources() {
         props.name = fmt::format("screen-{}", i + 1);
         props.friendlyName = fmt::format("Screen {} capture", i + 1);
         props.dev = fmt::format("{}.{}", DisplayString(dpy), i);
+        props.sourceFlags = SourceFlags::VideoAdjustVideoFrameDuration;
+        props.scale = VideoScale::DownAuto;
 
         FrameSpec fs{Dim{static_cast<uint32_t>(XDisplayWidth(dpy, i)),
                          static_cast<uint32_t>(XDisplayHeight(dpy, i))},
@@ -6022,7 +6120,8 @@ void Caster::detectV4l2Encoders() {
 }
 
 std::pair<std::reference_wrapper<const Caster::VideoFormatExt>, AVPixelFormat>
-Caster::bestVideoFormatForV4l2Encoder(const VideoSourceInternalProps &props) {
+Caster::bestVideoFormatForV4l2Encoder(const VideoSourceInternalProps &props,
+                                      VideoEncoder type) {
     if (m_v4l2Encoders.empty()) throw std::runtime_error("no v4l2 encoder");
 
     if (auto it = std::find_if(
@@ -6030,17 +6129,19 @@ Caster::bestVideoFormatForV4l2Encoder(const VideoSourceInternalProps &props) {
             [&](const auto &sf) {
                 return std::any_of(
                     m_v4l2Encoders.cbegin(), m_v4l2Encoders.cend(),
-                    [&sf, useNiceFormats = m_config.options &
-                                           OptionsFlags::OnlyNiceVideoFormats](
-                        const auto &e) {
-                        return std::any_of(
-                            e.formats.cbegin(), e.formats.cend(),
-                            [&](const auto &ef) {
-                                if (sf.codecId != ef.codecId) return false;
-                                if (useNiceFormats && !nicePixfmt(ef.pixfmt))
-                                    return false;
-                                return sf.pixfmt == ef.pixfmt;
-                            });
+                    [&sf, type,
+                     useNiceFormats =
+                         m_config.options &
+                         OptionsFlags::OnlyNiceVideoFormats](const auto &e) {
+                        return std::any_of(e.formats.cbegin(), e.formats.cend(),
+                                           [&](const auto &ef) {
+                                               if (sf.codecId != ef.codecId)
+                                                   return false;
+                                               if (useNiceFormats &&
+                                                   !nicePixfmt(ef.pixfmt, type))
+                                                   return false;
+                                               return sf.pixfmt == ef.pixfmt;
+                                           });
                     });
             });
         it != props.formats.cend()) {
@@ -6050,9 +6151,10 @@ Caster::bestVideoFormatForV4l2Encoder(const VideoSourceInternalProps &props) {
     }
 
     if (m_config.options & OptionsFlags::OnlyNiceVideoFormats) {
-        auto fmt = [this] {
+        auto fmt = [this, type] {
             for (const auto &f : m_v4l2Encoders.front().formats)
-                if (f.codecId == AV_CODEC_ID_RAWVIDEO && nicePixfmt(f.pixfmt))
+                if (f.codecId == AV_CODEC_ID_RAWVIDEO &&
+                    nicePixfmt(f.pixfmt, type))
                     return f.pixfmt;
             throw std::runtime_error(
                 "encoder does not support any nice formats");

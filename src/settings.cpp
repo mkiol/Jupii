@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -132,7 +132,7 @@ bool Settings::getLogToFile() const {
     return value(QStringLiteral("logtofile"), false).toBool();
 }
 
-#define X(name, getter, setter, key, type, dvalue)                             \
+#define X(name, getter, setter, key, type, dvalue, restart)                    \
     type Settings::getter() const {                                            \
         return [&](auto v) {                                                   \
             if constexpr (std::is_enum_v<decltype(v)>) {                       \
@@ -152,6 +152,7 @@ bool Settings::getLogToFile() const {
                     setValue(QStringLiteral(#key), v);                         \
                 }                                                              \
                 emit name##Changed();                                          \
+                if (restart) setRestartRequired(true);                         \
             }(value);                                                          \
         }                                                                      \
     }
@@ -834,150 +835,6 @@ bool Settings::isXcb() const {
     return QGuiApplication::platformName() == "xcb";
 }
 
-int Settings::getCasterMicVolume() const {
-    return value(QStringLiteral("caster_mic_volume"), 0).toInt();
-}
-
-void Settings::setCasterMicVolume(int value) {
-    if (value != getCasterMicVolume()) {
-        setValue(QStringLiteral("caster_mic_volume"), value);
-        emit casterMicVolumeChanged();
-    }
-}
-
-int Settings::getCasterPlaybackVolume() const {
-    return value(QStringLiteral("caster_playback_volume"), 0).toInt();
-}
-
-void Settings::setCasterPlaybackVolume(int value) {
-    if (value != getCasterPlaybackVolume()) {
-        setValue(QStringLiteral("caster_playback_volume"), value);
-        emit casterPlaybackVolumeChanged();
-    }
-}
-
-bool Settings::getCasterPlaybackMuted() const {
-    return value(QStringLiteral("caster_playback_muted"), false).toBool();
-}
-
-void Settings::setCasterPlaybackMuted(bool value) {
-    if (value != getCasterPlaybackMuted()) {
-        setValue(QStringLiteral("caster_playback_muted"), value);
-        emit casterPlaybackMutedChanged();
-    }
-}
-
-bool Settings::getCasterScreenRotate() const {
-    return value(QStringLiteral("caster_screen_rotate"), false).toBool();
-}
-
-void Settings::setCasterScreenRotate(bool value) {
-    if (value != getCasterScreenRotate()) {
-        setValue(QStringLiteral("caster_screen_rotate"), value);
-        emit casterScreenRotateChanged();
-    }
-}
-
-bool Settings::getCasterDontUsePipeWire() const {
-    // mic audio source on pipewire is buggy, so by default it is disabled
-    return value(QStringLiteral("caster_dont_use_pipewire"), true).toBool();
-}
-
-void Settings::setCasterDontUsePipeWire(bool value) {
-    if (value != getCasterDontUsePipeWire()) {
-        setValue(QStringLiteral("caster_dont_use_pipewire"), value);
-        emit casterDontUsePipeWireChanged();
-        setRestartRequired(true);
-    }
-}
-
-bool Settings::casterHasPipeWire() const { return m_hasPipeWire; }
-
-bool Settings::getCasterScreenAudio() const {
-    return value(QStringLiteral("caster_screen_audio"), false).toBool();
-}
-
-void Settings::setCasterScreenAudio(bool value) {
-    if (value != getCasterScreenAudio()) {
-        setValue(QStringLiteral("caster_screen_audio"), value);
-        emit casterScreenAudioChanged();
-    }
-}
-
-bool Settings::getCasterCamAudio() const {
-    return value(QStringLiteral("caster_cam_audio"), false).toBool();
-}
-
-void Settings::setCasterCamAudio(bool value) {
-    if (value != getCasterCamAudio()) {
-        setValue(QStringLiteral("caster_cam_audio"), value);
-        emit casterCamAudioChanged();
-    }
-}
-
-Settings::CasterVideoOrientation Settings::getCasterVideoOrientation() const {
-    return static_cast<CasterVideoOrientation>(
-        value(QStringLiteral("caster_video_orientation"),
-              static_cast<int>(
-                  CasterVideoOrientation::CasterVideoOrientation_Auto))
-            .toInt());
-}
-
-void Settings::setCasterVideoOrientation(CasterVideoOrientation value) {
-    if (value != getCasterVideoOrientation()) {
-        setValue(QStringLiteral("caster_video_orientation"),
-                 static_cast<int>(value));
-        emit casterVideoOrientationChanged();
-    }
-}
-
-Settings::CasterVideoEncoder Settings::getCasterVideoEncoder() const {
-    return static_cast<CasterVideoEncoder>(
-        value(QStringLiteral("caster_video_encoder"),
-              static_cast<int>(CasterVideoEncoder::CasterVideoEncoder_Auto))
-            .toInt());
-}
-
-void Settings::setCasterVideoEncoder(CasterVideoEncoder value) {
-    if (value != getCasterVideoEncoder()) {
-        setValue(QStringLiteral("caster_video_encoder"),
-                 static_cast<int>(value));
-        emit casterVideoEncoderChanged();
-    }
-}
-
-Settings::CasterStreamFormat Settings::getCasterVideoStreamFormat() const {
-    return static_cast<CasterStreamFormat>(
-        value(QStringLiteral("caster_video_stream_format"),
-              static_cast<int>(CasterStreamFormat::CasterStreamFormat_MpegTs))
-            .toInt());
-}
-
-void Settings::setCasterVideoStreamFormat(CasterStreamFormat value) {
-    if (value != getCasterVideoStreamFormat()) {
-        setValue(QStringLiteral("caster_video_stream_format"),
-                 static_cast<int>(value));
-        emit casterVideoStreamFormatChanged();
-        setRestartRequired(true);
-    }
-}
-
-Settings::CasterStreamFormat Settings::getCasterAudioStreamFormat() const {
-    return static_cast<CasterStreamFormat>(
-        value(QStringLiteral("caster_audio_stream_format"),
-              static_cast<int>(CasterStreamFormat::CasterStreamFormat_Mp3))
-            .toInt());
-}
-
-void Settings::setCasterAudioStreamFormat(CasterStreamFormat value) {
-    if (value != getCasterAudioStreamFormat()) {
-        setValue(QStringLiteral("caster_audio_stream_format"),
-                 static_cast<int>(value));
-        emit casterAudioStreamFormatChanged();
-        setRestartRequired(true);
-    }
-}
-
 QString Settings::getCasterMic() const {
     auto v = value(QStringLiteral("caster_mic"), QString{}).toString();
     if (v.isEmpty() || !m_mics.contains(v))
@@ -1067,19 +924,15 @@ void Settings::discoverCasterSources() {
     m_playbacks_fn.clear();
 
     try {
-        m_hasPipeWire = Caster::hasPipeWire();
-
         uint32_t videoFlags = Caster::OptionsFlags::V4l2VideoSources |
                               Caster::OptionsFlags::X11CaptureVideoSources |
                               Caster::OptionsFlags::DroidCamRawVideoSources |
                               Caster::OptionsFlags::LipstickCaptureVideoSources;
         uint32_t audioFlags = Caster::OptionsFlags::AllAudioSources;
-
-        if (getCasterDontUsePipeWire()) {
-            videoFlags |= Caster::OptionsFlags::DontUsePipeWire;
-            audioFlags |= Caster::OptionsFlags::DontUsePipeWire;
-        }
-
+#ifdef USE_DESKTOP
+        // playback capture is broken in pipe-wire
+        audioFlags &= ~Caster::OptionsFlags::PaPlaybackAudioSources;
+#endif
         m_videoSources = Caster::videoSources(videoFlags);
         m_audioSources = Caster::audioSources(audioFlags);
     } catch (const std::runtime_error &err) {

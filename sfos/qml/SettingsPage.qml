@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -244,36 +244,6 @@ Page {
                                 settings.imageFps = value
                             }
                         }
-
-                        ComboBox {
-                            visible: root.showAdvanced
-                            label: qsTr("Maximum image size")
-                            currentIndex: {
-                                switch (settings.imageScale) {
-                                case Settings.ImageScale_None: return 0;
-                                case Settings.ImageScale_2160: return 1;
-                                case Settings.ImageScale_1080: return 2;
-                                case Settings.ImageScale_720: return 3;
-                                }
-                                return 2;
-                            }
-                            menu: ContextMenu {
-                                MenuItem { text:  qsTr("Unlimited") }
-                                MenuItem { text: "UHD" }
-                                MenuItem { text: "FHD" }
-                                MenuItem { text: "HD" }
-                            }
-                            onCurrentIndexChanged: {
-                                switch (currentIndex) {
-                                case 0: settings.imageScale = Settings.ImageScale_None; break;
-                                case 1: settings.imageScale = Settings.ImageScale_2160; break;
-                                case 2: settings.imageScale = Settings.ImageScale_1080; break;
-                                case 3: settings.imageScale = Settings.ImageScale_720; break;
-                                default: settings.imageScale = Settings.ImageScale_1080;
-                                }
-                            }
-                            description: qsTr("The maximum image size when converting an image to video format.")
-                        }
                     }
                 }
 
@@ -318,56 +288,179 @@ Page {
                             label: qsTr("Real-time video format")
                             currentIndex: {
                                 switch (settings.casterVideoStreamFormat) {
-                                case Settings.CasterStreamFormat_MpegTs: return 0;
-                                case Settings.CasterStreamFormat_Mp4: return 1;
+                                case Settings.CasterStreamFormat_MpegTs:
+                                    return 0
+                                case Settings.CasterStreamFormat_Mp4:
+                                    return 1
+                                case Settings.CasterStreamFormat_Avi:
+                                    return 2
                                 }
-                                return 0;
+                                return 0
                             }
 
                             menu: ContextMenu {
-                                MenuItem { text: "MPEG-TS" }
-                                MenuItem { text: "MP4" }
+                                MenuItem { text: "H.264/MPEG-TS" }
+                                MenuItem { text: "H.264/MP4" }
+                                MenuItem { text: "MJPEG/AVI" }
                             }
 
                             onCurrentIndexChanged: {
                                 switch (currentIndex) {
-                                case 0: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs; break;
-                                case 1: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4; break;
-                                default: settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4;
+                                case 0:
+                                    settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs
+                                    break
+                                case 1:
+                                    settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4
+                                    break
+                                case 2:
+                                    settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Avi
+                                    break
+                                default:
+                                    settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs
                                 }
                             }
                             description: qsTr("Format used for real-time streaming.") + " " +
-                                         qsTr("Change if you observe problems with video playback in Camera, Screen capture or Slideshow.")
+                                         qsTr("Change if you observe problems with video playback in Camera or Screen capture.")
+                        }
+
+                        ComboBox {
+                            label: qsTr("Slideshow video format")
+                            currentIndex: {
+                                switch (settings.casterVideoStreamFormatSlides) {
+                                case Settings.CasterStreamFormat_MpegTs:
+                                    return 0
+                                case Settings.CasterStreamFormat_Mp4:
+                                    return 1
+                                case Settings.CasterStreamFormat_Avi:
+                                    return 2
+                                }
+                                return 2
+                            }
+
+                            menu: ContextMenu {
+                                MenuItem { text: "H.264/MPEG-TS" }
+                                MenuItem { text: "H.264/MP4" }
+                                MenuItem { text: "MJPEG/AVI" }
+                            }
+
+                            onCurrentIndexChanged: {
+                                switch (currentIndex) {
+                                case 0:
+                                    settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_MpegTs
+                                    break
+                                case 1:
+                                    settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_Mp4
+                                    break
+                                case 2:
+                                    settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_Avi
+                                    break
+                                default:
+                                    settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_Avi
+                                }
+                            }
+                            description: qsTr("Format used for real-time streaming.") + " " +
+                                         qsTr("Change if you observe problems with video playback in Slideshow.")
                         }
 
                         ComboBox {
                             label: qsTr("Real-time audio format")
                             currentIndex: {
                                 switch (settings.casterAudioStreamFormat) {
-                                case Settings.CasterStreamFormat_Mp3: return 0;
-                                case Settings.CasterStreamFormat_Mp4: return 1;
-                                case Settings.CasterStreamFormat_MpegTs: return 2;
+                                case Settings.CasterStreamFormat_Mp3:
+                                    return 0
+                                case Settings.CasterStreamFormat_Mp4:
+                                    return 1
+                                case Settings.CasterStreamFormat_MpegTs:
+                                    return 2
+                                case Settings.CasterStreamFormat_Avi:
+                                    return 3
                                 }
-                                return 0;
+                                return 0
                             }
 
                             menu: ContextMenu {
                                 MenuItem { text: "MP3" }
-                                MenuItem { text: "MP4" }
-                                MenuItem { text: "MPEG-TS" }
+                                MenuItem { text: "H.264/MPEG-TS" }
+                                MenuItem { text: "H.264/MP4" }
+                                MenuItem { text: "MJPEG/AVI" }
                             }
 
                             onCurrentIndexChanged: {
                                 switch (currentIndex) {
-                                case 0: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3; break;
-                                case 1: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp4; break;
-                                case 2: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_MpegTs; break;
-                                default: settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3;
+                                case 0:
+                                    settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3
+                                    break
+                                case 1:
+                                    settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp4
+                                    break
+                                case 2:
+                                    settings.casterAudioStreamFormat = Settings.CasterStreamFormat_MpegTs
+                                    break
+                                case 3:
+                                    settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_Avi
+                                    break
+                                default:
+                                    settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3
                                 }
                             }
 
                             description: qsTr("Format used for real-time streaming.") + " " +
                                          qsTr("Change if you observe problems with audio playback in Microphone or Audio capture.")
+                        }
+
+                        ComboBox {
+                            visible: root.showAdvanced
+                            label: qsTr("Maximum image size")
+                            currentIndex: {
+                                switch (settings.imageScale) {
+                                case Settings.ImageScale_None: return 0;
+                                case Settings.ImageScale_2160: return 1;
+                                case Settings.ImageScale_1080: return 2;
+                                case Settings.ImageScale_720: return 3;
+                                }
+                                return 2;
+                            }
+                            menu: ContextMenu {
+                                MenuItem { text:  qsTr("Unlimited") }
+                                MenuItem { text: "UHD" }
+                                MenuItem { text: "FHD" }
+                                MenuItem { text: "HD" }
+                            }
+                            onCurrentIndexChanged: {
+                                switch (currentIndex) {
+                                case 0: settings.imageScale = Settings.ImageScale_None; break;
+                                case 1: settings.imageScale = Settings.ImageScale_2160; break;
+                                case 2: settings.imageScale = Settings.ImageScale_1080; break;
+                                case 3: settings.imageScale = Settings.ImageScale_720; break;
+                                default: settings.imageScale = Settings.ImageScale_1080;
+                                }
+                            }
+                        }
+
+                        SliderWithDescription {
+                            visible: root.showAdvanced
+                            width: parent.width
+                            minimumValue: 0
+                            maximumValue: 100
+                            stepSize: 1
+                            value: settings.mjpegQuality
+                            label: qsTr("MJPEG quality")
+                            onValueChanged: {
+                                settings.mjpegQuality = value
+                            }
+                        }
+
+                        SliderWithDescription {
+                            visible: root.showAdvanced
+                            width: parent.width
+                            minimumValue: 0
+                            maximumValue: 100
+                            stepSize: 1
+                            value: settings.x264Quality
+                            label: qsTr("H264 quality")
+                            onValueChanged: {
+                                settings.x264Quality = value
+                            }
                         }
 
                         TextSwitch {
@@ -444,6 +537,21 @@ Page {
                                 settings.casterPlaybackVolume = value
                             }
                         }
+
+                        SliderWithDescription {
+                            visible: root.showAdvanced
+                            width: parent.width
+                            minimumValue: 1
+                            maximumValue: 60
+                            value: settings.lipstickFps
+                            label: qsTr("Screen capture FPS")
+                            description: qsTr("The frame rate of a video stream in Screen capture.")
+
+                            onValueChanged: {
+                                settings.lipstickFps = value
+                            }
+                        }
+
                     }
                 }
 

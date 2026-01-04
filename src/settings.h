@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -27,24 +27,38 @@
 #include "taskexecutor.h"
 
 // clang-format off
-//    property-name         getter                   setter                   setting key              type     default-value   
-#define SETTINGS_PROPERTY_TABLE                                                                                                 \
-    X(port,                 getPort,                 setPort,                 port,                    int,     9092          ) \
-    X(volStep,              getVolStep,              setVolStep,              volstep,                 int,     5             ) \
-    X(lastDir,              getLastDir,              setLastDir,              lastdir,                 QString, ""            ) \
-    X(showAllDevices,       getShowAllDevices,       setShowAllDevices,       showalldevices,          bool,    false         ) \
-    X(showPlaylistItemIcon, getShowPlaylistItemIcon, setShowPlaylistItemIcon, show_playlist_item_icon, bool,    true          ) \
-    X(imageAsVideo,         getImageAsVideo,         setImageAsVideo,         image_as_video,          bool,    false         ) \
-    X(imageDuration,        getImageDuration,        setImageDuration,        image_duration,          int,     30            ) \
-    X(imagePaused,          getImagePaused,          setImagePaused,          image_paused,            bool,    false         ) \
-    X(imageFps,             getImageFps,             setImageFps,             image_fps,               int,     2             ) \
-    X(imageScale,           getImageScale,           setImageScale,           image_scale,             Settings::ImageScale, Settings::ImageScale::ImageScale_1080) \
-    X(imageRotate,          getImageRotate,          setImageRotate,          image_rotate,            Settings::ImageRotate, Settings::ImageRotate::ImageRotate_None) \
-    X(slidesLoop,           getSlidesLoop,           setSlidesLoop,           slides_loop,             bool,    false         ) \
-    X(slidesShowCountInd,   getSlidesShowCountInd,   setSlidesShowCountInd,   slides_show_count_ind,   bool,    true          ) \
-    X(slidesShowProgrInd,   getSlidesShowProgrInd,   setSlidesShowProgrInd,   slides_show_progr_ind,   bool,    true          ) \
-    X(slidesShowDateInd,    getSlidesShowDateInd,    setSlidesShowDateInd,    slides_show_date_ind,    bool,    true         ) \
-    X(slidesShowCameraInd,  getSlidesShowCameraInd,  setSlidesShowCameraInd,  slides_show_camera_ind,  bool,    false         ) \
+//    property-name                   getter                            setter                            setting-key                        type     default-value   restart-required
+#define SETTINGS_PROPERTY_TABLE                                                                                                                                                       \
+    X(port,                           getPort,                          setPort,                          port,                              int,     9092,           false         ) \
+    X(volStep,                        getVolStep,                       setVolStep,                       volstep,                           int,     5,              false         ) \
+    X(lastDir,                        getLastDir,                       setLastDir,                       lastdir,                           QString, "",             false         ) \
+    X(showAllDevices,                 getShowAllDevices,                setShowAllDevices,                showalldevices,                    bool,    false,          false         ) \
+    X(showPlaylistItemIcon,           getShowPlaylistItemIcon,          setShowPlaylistItemIcon,          show_playlist_item_icon,           bool,    true,           false         ) \
+    X(imageAsVideo,                   getImageAsVideo,                  setImageAsVideo,                  image_as_video,                    bool,    false,          false         ) \
+    X(imageDuration,                  getImageDuration,                 setImageDuration,                 image_duration,                    int,     30,             false         ) \
+    X(imagePaused,                    getImagePaused,                   setImagePaused,                   image_paused,                      bool,    false,          false         ) \
+    X(imageFps,                       getImageFps,                      setImageFps,                      image_fps,                         int,     2,              false         ) \
+    X(imageScale,                     getImageScale,                    setImageScale,                    image_scale,                       Settings::ImageScale, Settings::ImageScale::ImageScale_1080, false) \
+    X(imageRotate,                    getImageRotate,                   setImageRotate,                   image_rotate,                      Settings::ImageRotate, Settings::ImageRotate::ImageRotate_None, false) \
+    X(slidesLoop,                     getSlidesLoop,                    setSlidesLoop,                    slides_loop,                       bool,    false,          false         ) \
+    X(slidesShowCountInd,             getSlidesShowCountInd,            setSlidesShowCountInd,            slides_show_count_ind,             bool,    true,           false         ) \
+    X(slidesShowProgrInd,             getSlidesShowProgrInd,            setSlidesShowProgrInd,            slides_show_progr_ind,             bool,    true,           false         ) \
+    X(slidesShowDateInd,              getSlidesShowDateInd,             setSlidesShowDateInd,             slides_show_date_ind,              bool,    true,           false         ) \
+    X(slidesShowCameraInd,            getSlidesShowCameraInd,           setSlidesShowCameraInd,           slides_show_camera_ind,            bool,    false,          false         ) \
+    X(casterMicVolume,                getCasterMicVolume,               setCasterMicVolume,               caster_mic_volume,                 int,     0,              false         ) \
+    X(casterPlaybackVolume,           getCasterPlaybackVolume,          setCasterPlaybackVolume,          caster_playback_volume,            int,     0,              false         ) \
+    X(casterPlaybackMuted,            getCasterPlaybackMuted,           setCasterPlaybackMuted,           caster_playback_muted,             bool,    false,          false         ) \
+    X(casterScreenRotate,             getCasterScreenRotate,            setCasterScreenRotate,            caster_screen_rotate,              bool,    false,          false         ) \
+    X(casterScreenAudio,              getCasterScreenAudio,             setCasterScreenAudio,             caster_screen_audio,               bool,    false,          false         ) \
+    X(casterCamAudio,                 getCasterCamAudio,                setCasterCamAudio,                caster_cam_audio,                  bool,    false,          false         ) \
+    X(casterVideoOrientation,         getCasterVideoOrientation,        setCasterVideoOrientation,        caster_video_orientation,          Settings::CasterVideoOrientation, Settings::CasterVideoOrientation::CasterVideoOrientation_Auto, false) \
+    X(casterVideoEncoder,             getCasterVideoEncoder,            setCasterVideoEncoder,            caster_video_encoder,              Settings::CasterVideoEncoder, Settings::CasterVideoEncoder::CasterVideoEncoder_Auto, false) \
+    X(casterVideoStreamFormat,        getCasterVideoStreamFormat,       setCasterVideoStreamFormat,       caster_video_stream_format,        Settings::CasterStreamFormat, Settings::CasterStreamFormat::CasterStreamFormat_MpegTs, true) \
+    X(casterVideoStreamFormatSlides,  getCasterVideoStreamFormatSlides, setCasterVideoStreamFormatSlides, caster_video_stream_format_slides, Settings::CasterStreamFormat, Settings::CasterStreamFormat::CasterStreamFormat_Avi, true) \
+    X(casterAudioStreamFormat,        getCasterAudioStreamFormat,       setCasterAudioStreamFormat,       caster_audio_stream_format,        Settings::CasterStreamFormat, Settings::CasterStreamFormat::CasterStreamFormat_Mp3, true) \
+    X(lipstickFps,                    getLipstickFps,                   setLipstickFps,                   lisptick_fps,                      int,     20,              false         ) \
+    X(mjpegQuality,                   getMjpegQuality,                  setMjpegQuality,                  mjpeg_quality,                     int,     95,              false         ) \
+    X(x264Quality,                    getX264Quality,                   setX264Quality,                    x264_quality,                     int,     60,              false         ) \
     // clang-format on
 
 class Settings : public QSettings,
@@ -52,7 +66,7 @@ class Settings : public QSettings,
                  public Singleton<Settings> {
     Q_OBJECT
 
-#define X(name, getter, setter, key, type, dvalue) \
+#define X(name, getter, setter, key, type, dvalue, restart) \
     Q_PROPERTY(type name READ getter WRITE setter NOTIFY name##Changed)
     SETTINGS_PROPERTY_TABLE
 #undef X
@@ -118,29 +132,6 @@ class Settings : public QSettings,
                    setAvNextUriPolicy NOTIFY avNextUriPolicyChanged)
 
     // caster
-    Q_PROPERTY(int casterMicVolume READ getCasterMicVolume WRITE
-                   setCasterMicVolume NOTIFY casterMicVolumeChanged)
-    Q_PROPERTY(int casterPlaybackVolume READ getCasterPlaybackVolume WRITE
-                   setCasterPlaybackVolume NOTIFY casterPlaybackVolumeChanged)
-    Q_PROPERTY(bool casterPlaybackMuted READ getCasterPlaybackMuted WRITE
-                   setCasterPlaybackMuted NOTIFY casterPlaybackMutedChanged)
-    Q_PROPERTY(bool casterScreenRotate READ getCasterScreenRotate WRITE
-                   setCasterScreenRotate NOTIFY casterScreenRotateChanged)
-    Q_PROPERTY(bool casterScreenAudio READ getCasterScreenAudio WRITE
-                   setCasterScreenAudio NOTIFY casterScreenAudioChanged)
-    Q_PROPERTY(bool casterCamAudio READ getCasterCamAudio WRITE
-                   setCasterCamAudio NOTIFY casterCamAudioChanged)
-    Q_PROPERTY(CasterVideoOrientation casterVideoOrientation READ
-                   getCasterVideoOrientation WRITE setCasterVideoOrientation
-                       NOTIFY casterVideoOrientationChanged)
-    Q_PROPERTY(CasterVideoEncoder casterVideoEncoder READ getCasterVideoEncoder
-                   WRITE setCasterVideoEncoder NOTIFY casterVideoEncoderChanged)
-    Q_PROPERTY(CasterStreamFormat casterVideoStreamFormat READ
-                   getCasterVideoStreamFormat WRITE setCasterVideoStreamFormat
-                       NOTIFY casterVideoStreamFormatChanged)
-    Q_PROPERTY(CasterStreamFormat casterAudioStreamFormat READ
-                   getCasterAudioStreamFormat WRITE setCasterAudioStreamFormat
-                       NOTIFY casterAudioStreamFormatChanged)
     Q_PROPERTY(QStringList casterScreens READ getCasterScreens NOTIFY
                    casterSourcesChanged)
     Q_PROPERTY(
@@ -157,14 +148,13 @@ class Settings : public QSettings,
                    NOTIFY casterMicChanged)
     Q_PROPERTY(int casterPlaybackIdx READ getCasterPlaybackIdx WRITE
                    setCasterPlaybackIdx NOTIFY casterPlaybackChanged)
-    Q_PROPERTY(bool casterDontUsePipeWire READ getCasterDontUsePipeWire WRITE
-                   setCasterDontUsePipeWire NOTIFY casterDontUsePipeWireChanged)
 
    public:
     enum class CasterStreamFormat {
         CasterStreamFormat_Mp4 = 0,
         CasterStreamFormat_MpegTs = 1,
-        CasterStreamFormat_Mp3 = 2
+        CasterStreamFormat_Mp3 = 2,
+        CasterStreamFormat_Avi = 3
     };
     Q_ENUM(CasterStreamFormat)
 
@@ -181,7 +171,8 @@ class Settings : public QSettings,
         CasterVideoEncoder_Auto = 0,
         CasterVideoEncoder_X264 = 1,
         CasterVideoEncoder_Nvenc = 2,
-        CasterVideoEncoder_V4l2 = 3
+        CasterVideoEncoder_V4l2 = 3,
+        CasterVideoEncoder_Mjpeg = 4,
     };
     Q_ENUM(CasterVideoEncoder)
 
@@ -234,8 +225,8 @@ class Settings : public QSettings,
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
 #endif
     Settings();
-#define X(name, getter, setter, key, type, dvalue) \
-    type getter() const;                           \
+#define X(name, getter, setter, key, type, dvalue, restart) \
+    type getter() const;                                    \
     void setter(const type &value);
     SETTINGS_PROPERTY_TABLE
 #undef X
@@ -359,26 +350,6 @@ class Settings : public QSettings,
     QStringList getCasterScreens() const;
     QStringList getCasterMics() const;
     QStringList getCasterPlaybacks() const;
-    int getCasterMicVolume() const;
-    void setCasterMicVolume(int value);
-    int getCasterPlaybackVolume() const;
-    void setCasterPlaybackVolume(int value);
-    bool getCasterPlaybackMuted() const;
-    void setCasterPlaybackMuted(bool value);
-    bool getCasterScreenRotate() const;
-    void setCasterScreenRotate(bool value);
-    bool getCasterScreenAudio() const;
-    void setCasterScreenAudio(bool value);
-    bool getCasterCamAudio() const;
-    void setCasterCamAudio(bool value);
-    CasterVideoOrientation getCasterVideoOrientation() const;
-    void setCasterVideoOrientation(CasterVideoOrientation value);
-    CasterVideoEncoder getCasterVideoEncoder() const;
-    void setCasterVideoEncoder(CasterVideoEncoder value);
-    CasterStreamFormat getCasterVideoStreamFormat() const;
-    void setCasterVideoStreamFormat(CasterStreamFormat value);
-    CasterStreamFormat getCasterAudioStreamFormat() const;
-    void setCasterAudioStreamFormat(CasterStreamFormat value);
     int getCasterCamIdx() const;
     void setCasterCamIdx(int value);
     int getCasterMicIdx() const;
@@ -399,12 +370,10 @@ class Settings : public QSettings,
     QString casterAudioSourceFriendlyName(const QString &name) const;
     bool casterVideoSourceExists(const QString &name) const;
     bool casterAudioSourceExists(const QString &name) const;
-    void setCasterDontUsePipeWire(bool value);
-    bool getCasterDontUsePipeWire() const;
-    Q_INVOKABLE bool casterHasPipeWire() const;
 
    signals:
-#define X(name, getter, setter, key, type, dvalue) void name##Changed();
+#define X(name, getter, setter, key, type, dvalue, restart) \
+    void name##Changed();
     SETTINGS_PROPERTY_TABLE
 #undef X
     void favDevicesChanged();
@@ -441,23 +410,11 @@ class Settings : public QSettings,
     void avNextUriPolicyChanged();
 
     // caster
-
-    void casterMicVolumeChanged();
-    void casterPlaybackVolumeChanged();
-    void casterScreenRotateChanged();
-    void casterPlaybackMutedChanged();
-    void casterScreenAudioChanged();
-    void casterCamAudioChanged();
-    void casterVideoOrientationChanged();
-    void casterVideoEncoderChanged();
-    void casterVideoStreamFormatChanged();
-    void casterAudioStreamFormatChanged();
     void casterSourcesChanged();
     void casterMicChanged();
     void casterScreenChanged();
     void casterCamChanged();
     void casterPlaybackChanged();
-    void casterDontUsePipeWireChanged();
 
     void restartRequiredChanged();
 
@@ -474,7 +431,6 @@ class Settings : public QSettings,
     int m_colorScheme = 0;
     bool m_sandboxed = false;
     bool m_restartRequired;
-    bool m_hasPipeWire = false;
     std::vector<Caster::VideoSourceProps> m_videoSources;
     std::vector<Caster::AudioSourceProps> m_audioSources;
     QStringList m_cams_fn;

@@ -1,4 +1,4 @@
-/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2022-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -116,7 +116,7 @@ class Caster {
     friend std::ostream &operator<<(std::ostream &os,
                                     VideoOrientation videoOrientation);
 
-    enum class StreamFormat { Mp4, MpegTs, Mp3 };
+    enum class StreamFormat { Mp4, MpegTs, Mp3, Avi };
     friend std::ostream &operator<<(std::ostream &os,
                                     StreamFormat streamFormat);
 
@@ -124,7 +124,7 @@ class Caster {
     friend std::ostream &operator<<(std::ostream &os,
                                     SensorDirection direction);
 
-    enum class VideoEncoder { Auto, X264, Nvenc, V4l2 };
+    enum class VideoEncoder { Auto, X264, Nvenc, V4l2, Mjpeg };
     friend std::ostream &operator<<(std::ostream &os, VideoEncoder encoder);
 
     using DataReadyHandler = std::function<size_t(const uint8_t *, size_t)>;
@@ -165,6 +165,12 @@ class Caster {
         double paIterSleep = 0.5;  // sleep after pulse-audio loop iteration
         double audioMuxIterSleep = 1.0;  // sleep after audio mux iteration
         uint32_t videoMaxFastFrames = 5;
+        uint32_t videoMjpegQmin =
+            8;  // quality of mjpeg, from 1 to 31 (1 is best quality)
+        uint32_t videoX264Crf =
+            18;  // quality of x264, from 1 to 51 (1 is best quality)
+        uint32_t lipstickRecorderFps = 20;
+        uint32_t imgFps = 5;
         friend std::ostream &operator<<(std::ostream &os,
                                         const PerfConfig &config);
     };
@@ -183,7 +189,6 @@ class Caster {
         FileStreamingStartedHandler fileStreamingStartedHandler;
         FileDateTimeTranslateHandler fileDateTimeTranslateHandler;
         uint32_t imgDurationSec = 30;
-        uint32_t imgFps = 5;
 
         friend std::ostream &operator<<(std::ostream &os,
                                         const FileSourceConfig &config);
@@ -445,7 +450,11 @@ class Caster {
     static const int m_maxIters = 100;
 
     /* pix fmts supported by most players */
-    static constexpr const std::array nicePixfmts = {AV_PIX_FMT_YUV420P};
+    static constexpr const std::array nicePixfmtsMpeg = {AV_PIX_FMT_YUV420P};
+    // static constexpr const std::array nicePixfmtsMjpeg =
+    // {AV_PIX_FMT_YUV420P};
+    static constexpr const std::array nicePixfmtsMjpeg = {AV_PIX_FMT_YUVJ422P,
+                                                          AV_PIX_FMT_YUVJ420P};
 
     Config m_config;
     std::array<OutCtx, 3> m_outCtxs;
@@ -523,6 +532,7 @@ class Caster {
     std::atomic<uint32_t> m_requestedImgDurationSec = 0;
     int64_t m_nextVideoPts = 0;
     int64_t m_nextAudioPts = 0;
+    int64_t m_nextVideoInFramePts = 0;
     std::atomic<int64_t> m_videoPtsDurationOffset = 0;
     std::underlying_type_t<SourceFlags> m_videoSourceFlags = 0;
     VideoOrientation m_videoOrigOrientation = VideoOrientation::Auto;
@@ -689,16 +699,19 @@ class Caster {
     inline const auto &videoProps() const {
         return m_videoProps.at(m_config.videoSource);
     }
+    inline auto &videoProps() { return m_videoProps.at(m_config.videoSource); }
     inline const auto &audioProps() const {
         return m_audioProps.at(m_config.audioSource);
     }
     static std::pair<std::reference_wrapper<const VideoFormatExt>,
                      AVPixelFormat>
     bestVideoFormat(const AVCodec *encoder,
-                    const VideoSourceInternalProps &props, bool useNiceFormats);
+                    const VideoSourceInternalProps &props, VideoEncoder type,
+                    bool useNiceFormats);
     static AVSampleFormat bestAudioSampleFormat(
         const AVCodec *encoder, AVSampleFormat decoderSampleFmt);
-    static void setVideoEncoderOpts(VideoEncoder encoder, AVDictionary **opts);
+    void setVideoEncoderOpts(VideoEncoder encoder, AVCodecContext *ctx,
+                             AVDictionary **opts) const;
     static void setAudioEncoderOpts(AudioEncoder encoder, AVDictionary **opts);
     static std::string videoEncoderAvName(VideoEncoder encoder);
     static std::string audioEncoderAvName(AudioEncoder encoder);
@@ -714,8 +727,8 @@ class Caster {
     void compressedVideoDataReadyHandler(const uint8_t *data, size_t size);
     Dim computeTransDim(Dim dim, VideoTrans trans, VideoScale scale) const;
     static uint32_t hash(std::string_view str);
-    static bool nicePixfmt(AVPixelFormat fmt);
-    static AVPixelFormat toNicePixfmt(AVPixelFormat fmt,
+    static bool nicePixfmt(AVPixelFormat fmt, VideoEncoder type);
+    static AVPixelFormat toNicePixfmt(AVPixelFormat fmt, VideoEncoder type,
                                       const AVPixelFormat *supportedFmts);
     static bool avPktOk(const AVPacket *pkt);
     void extractVideoExtradataFromCompressedDemuxer();
@@ -744,7 +757,8 @@ class Caster {
     static std::vector<FrameSpec> detectV4l2FrameSpecs(int fd,
                                                        uint32_t pixelformat);
     std::pair<std::reference_wrapper<const VideoFormatExt>, AVPixelFormat>
-    bestVideoFormatForV4l2Encoder(const VideoSourceInternalProps &cam);
+    bestVideoFormatForV4l2Encoder(const VideoSourceInternalProps &cam,
+                                  VideoEncoder type);
 #endif
 #ifdef USE_LIPSTICK_RECORDER
     static VideoPropsMap detectLipstickRecorderVideoSources();

@@ -39,15 +39,17 @@ std::ostream &operator<<(std::ostream &os,
 }
 
 LipstickRecorderSource::LipstickRecorderSource(
-    DataReadyHandler dataReadyHandler, ErrorHandler errorHandler)
+    DataReadyHandler dataReadyHandler, ErrorHandler errorHandler,
+    uint32_t framerate)
     : m_dataReadyHandler{std::move(dataReadyHandler)},
       m_errorHandler{std::move(errorHandler)} {
-    LOGD("creating lipstick-recorder");
+    LOGD("creating lipstick-recorder: framerate=" << framerate);
 
     if (!checkCredentials())
         throw std::runtime_error("no permission to use lipstick-recorder");
 
     m_globals.source = this;
+    m_globals.props.framerate = framerate;
 
     wlRegister(&m_globals);
 
@@ -229,11 +231,11 @@ void LipstickRecorderSource::start() {
     wl_display_flush(m_globals.display);
 
     m_wlThread = std::thread([this] {
-        LOGD("wl thread started");
-
         const auto sleepDur = std::chrono::microseconds{
             static_cast<int>(1000000.0 / m_globals.props.framerate)};
         const auto repaintDur = sleepDur * 5;
+
+        LOGD("wl thread started: framerate=" << m_globals.props.framerate);
 
         while (!m_terminating) {
             if (wl_display_roundtrip(m_globals.display) == -1) break;

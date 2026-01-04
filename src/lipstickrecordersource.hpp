@@ -35,12 +35,13 @@ class LipstickRecorderSource {
         uint32_t width = 0;
         uint32_t height = 0;
         uint32_t stride = 0;
-        uint32_t framerate = 5;
+        uint32_t framerate = 20;
         AVPixelFormat pixfmt = AV_PIX_FMT_NONE;
     };
 
     explicit LipstickRecorderSource(DataReadyHandler dataReadyHandler,
-                                    ErrorHandler errorHandler);
+                                    ErrorHandler errorHandler,
+                                    uint32_t framerate = 30);
     ~LipstickRecorderSource();
     void start();
     static bool supported() noexcept;

@@ -211,7 +211,6 @@ Kirigami.ScrollablePage {
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
-            visible: !settings.casterDontUsePipeWire || !settings.casterHasPipeWire()
             label: qsTr("Audio capture")
             icon: "player-volume"
             onClicked: app.openPopupFile(Qt.resolvedUrl("PlaybackDialog.qml"))
@@ -227,7 +226,6 @@ Kirigami.ScrollablePage {
 
         Kirigami.BasicListItem {
             Layout.fillWidth: true
-            visible: !settings.casterDontUsePipeWire || !settings.casterHasPipeWire()
             label: qsTr("Microphone")
             icon: "audio-input-microphone"
             onClicked: app.openPopupFile(Qt.resolvedUrl("MicDialog.qml"))

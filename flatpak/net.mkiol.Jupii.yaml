@@ -142,6 +142,7 @@ modules:
       - --enable-encoder=aac
       - --enable-encoder=h264_v4l2m2m
       - --enable-encoder=libmp3lame
+      - --enable-encoder=mjpeg
       - --enable-encoder=h264_nvenc
       - --enable-decoder=h264
       - --enable-decoder=rawvideo
@@ -179,6 +180,8 @@ modules:
       - --enable-muxer=mpegts
       - --enable-muxer=mp3
       - --enable-muxer=flac
+      - --enable-muxer=matroska
+      - --enable-muxer=avi
       - --enable-demuxer=mpegts
       - --enable-demuxer=h264
       - --enable-demuxer=rawvideo

@@ -129,7 +129,7 @@ const QHash<QString, QString> ContentServer::m_musicExtMap{
     {"wav", "audio/vnd.wav"},    {"ape", "audio/x-monkeys-audio"},
     {"ogg", "audio/ogg"},        {"oga", "audio/ogg"},
     {"wma", "audio/x-ms-wma"},   {"tsa", "audio/MP2T"},
-    {"aiff", "audio/x-aiff"}};
+    {"aiff", "audio/x-aiff"},    {"avi", "audio/avi"}};
 
 const QHash<QString, QString> ContentServer::m_musicMimeToExtMap{
     {"audio/mpeg", "mp3"},
@@ -168,7 +168,7 @@ const QHash<QString, QString> ContentServer::m_videoExtMap{
     {"mp4", "video/mp4"},        {"m4v", "video/mp4"},
     {"mpg", "video/mpeg"},       {"mpeg", "video/mpeg"},
     {"m2v", "video/mpeg"},       {"ts", "video/MP2T"},
-    {"tsv", "video/MP2T"}};
+    {"tsv", "video/MP2T"},       {"avi", "video/avi"}};
 
 const QHash<QString, QString> ContentServer::m_playlistExtMap{
     {"m3u", "audio/x-mpegurl"},
@@ -283,6 +283,8 @@ QString ContentServer::dlnaOrgPnFlags(const QString &mime) {
         return QStringLiteral("DLNA.ORG_PN=LPCM");
     if (mime.contains(QStringLiteral("video/x-matroska"), Qt::CaseInsensitive))
         return QStringLiteral("DLNA.ORG_PN=MKV");
+    //    if (mime.contains(QStringLiteral("video/avi"), Qt::CaseInsensitive))
+    //        return QStringLiteral("DLNA.ORG_PN=MJPEG_LRG");
     return {};
 }
 
@@ -315,8 +317,8 @@ ContentServer::Type ContentServer::getContentTypeByExtension(
     if (!ext) return Type::Type_Unknown;
 
     if (m_imgExtMap.contains(*ext)) return Type::Type_Image;
-    if (m_musicExtMap.contains(*ext)) return Type::Type_Music;
     if (m_videoExtMap.contains(*ext)) return Type::Type_Video;
+    if (m_musicExtMap.contains(*ext)) return Type::Type_Music;
     if (m_playlistExtMap.contains(*ext)) return Type::Type_Playlist;
     return Type::Type_Unknown;
 }
@@ -423,8 +425,8 @@ QString ContentServer::getContentMimeByExtension(const QString &path) {
     auto ext = extFromPath(path);
     if (ext) {
         if (m_imgExtMap.contains(*ext)) return m_imgExtMap.value(*ext);
-        if (m_musicExtMap.contains(*ext)) return m_musicExtMap.value(*ext);
         if (m_videoExtMap.contains(*ext)) return m_videoExtMap.value(*ext);
+        if (m_musicExtMap.contains(*ext)) return m_musicExtMap.value(*ext);
         if (m_playlistExtMap.contains(*ext))
             return m_playlistExtMap.value(*ext);
     }
@@ -1853,6 +1855,9 @@ QString ContentServer::mimeForCasterFormat(Settings::CasterStreamFormat format,
                          : m_musicExtMap.value(QStringLiteral("tsa"));
         case Settings::CasterStreamFormat::CasterStreamFormat_Mp3:
             return m_musicExtMap.value(QStringLiteral("mp3"));
+        case Settings::CasterStreamFormat::CasterStreamFormat_Avi:
+            return video ? m_videoExtMap.value(QStringLiteral("avi"))
+                         : m_musicExtMap.value(QStringLiteral("avi"));
     }
 
     throw std::runtime_error("unknown format");
@@ -1869,8 +1874,10 @@ QString ContentServer::casterMime(CasterType type) {
                                        /*video=*/false);
         case CasterType::Screen:
         case CasterType::Cam:
-        case CasterType::VideoFile:
             return mimeForCasterFormat(s->getCasterVideoStreamFormat(),
+                                       /*video=*/true);
+        case CasterType::VideoFile:
+            return mimeForCasterFormat(s->getCasterVideoStreamFormatSlides(),
                                        /*video=*/true);
     }
 

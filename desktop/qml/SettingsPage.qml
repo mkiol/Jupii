@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -341,6 +341,156 @@ Kirigami.ScrollablePage {
                 }
             }
 
+            // RowLayout {
+            //     Kirigami.FormData.label: qsTr("Volume level step")
+            //     Controls.Slider {
+            //         from: 1
+            //         to: 10
+            //         stepSize: 1
+            //         snapMode: Controls.Slider.SnapAlways
+            //         value: settings.volStep
+            //         onValueChanged: {
+            //             settings.volStep = value
+            //         }
+            //     }
+            //     Controls.SpinBox {
+            //         from: 1
+            //         to: 10
+            //         value: settings.volStep
+            //         onValueChanged: {
+            //             settings.volStep = value
+            //         }
+            //     }
+            // }
+
+            Kirigami.Separator {
+                Kirigami.FormData.label: qsTr("Multimedia")
+                Kirigami.FormData.isSection: true
+            }
+
+            Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Real-time video format")
+                currentIndex: {
+                    switch (settings.casterVideoStreamFormat) {
+                    case Settings.CasterStreamFormat_MpegTs:
+                        return 0
+                    case Settings.CasterStreamFormat_Mp4:
+                        return 1
+                    case Settings.CasterStreamFormat_Avi:
+                        return 2
+                    }
+                    return 0
+                }
+
+                model: ["H.264/MPEG-TS", "H.264/MP4", "MJPEG/AVI"]
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0:
+                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs
+                        break
+                    case 1:
+                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4
+                        break
+                    case 2:
+                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Avi
+                        break
+                    default:
+                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs
+                    }
+                }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("Format used for real-time streaming.") + " " +
+                                       qsTr("Change if you observe problems with video playback in Camera or Screen capture.")
+                hoverEnabled: true
+            }
+
+            Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Slideshow video format")
+                currentIndex: {
+                    switch (settings.casterVideoStreamFormatSlides) {
+                    case Settings.CasterStreamFormat_MpegTs:
+                        return 0
+                    case Settings.CasterStreamFormat_Mp4:
+                        return 1
+                    case Settings.CasterStreamFormat_Avi:
+                        return 2
+                    }
+                    return 2
+                }
+
+                model: ["H.264/MPEG-TS", "H.264/MP4", "MJPEG/AVI"]
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0:
+                        settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_MpegTs
+                        break
+                    case 1:
+                        settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_Mp4
+                        break
+                    case 2:
+                        settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_Avi
+                        break
+                    default:
+                        settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_Avi
+                    }
+                }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("Format used for real-time streaming.") + " " +
+                                       qsTr("Change if you observe problems with video playback in Slideshow.")
+                hoverEnabled: true
+            }
+
+
+            Controls.ComboBox {
+                Kirigami.FormData.label: qsTr("Real-time audio format")
+                currentIndex: {
+                    switch (settings.casterAudioStreamFormat) {
+                    case Settings.CasterStreamFormat_Mp3:
+                        return 0
+                    case Settings.CasterStreamFormat_Mp4:
+                        return 1
+                    case Settings.CasterStreamFormat_MpegTs:
+                        return 2
+                    case Settings.CasterStreamFormat_Avi:
+                        return 3
+                    }
+                    return 0
+                }
+
+                model: ["MP3", "AAC/MP4", "AAC/MPEG-TS", "AAC/AVI"]
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0:
+                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3
+                        break
+                    case 1:
+                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp4
+                        break
+                    case 2:
+                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_MpegTs
+                        break
+                    case 3:
+                        settings.casterVideoStreamFormatSlides = Settings.CasterStreamFormat_Avi
+                        break
+                    default:
+                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3
+                    }
+                }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("Format used for real-time streaming.") + " " +
+                                       qsTr("Change if you observe problems with audio playback in Microphone or Audio capture.")
+                hoverEnabled: true
+            }
+
             Controls.ComboBox {
                 visible: root.showAdvanced
                 Kirigami.FormData.label: qsTr("Maximum image size")
@@ -378,111 +528,52 @@ Kirigami.ScrollablePage {
                         settings.imageScale = Settings.ImageScale_1080;
                     }
                 }
-
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("The maximum image size when converting an image to video format.")
-                hoverEnabled: true
             }
 
-            // RowLayout {
-            //     Kirigami.FormData.label: qsTr("Volume level step")
-            //     Controls.Slider {
-            //         from: 1
-            //         to: 10
-            //         stepSize: 1
-            //         snapMode: Controls.Slider.SnapAlways
-            //         value: settings.volStep
-            //         onValueChanged: {
-            //             settings.volStep = value
-            //         }
-            //     }
-            //     Controls.SpinBox {
-            //         from: 1
-            //         to: 10
-            //         value: settings.volStep
-            //         onValueChanged: {
-            //             settings.volStep = value
-            //         }
-            //     }
-            // }
-
-            Kirigami.Separator {
-                Kirigami.FormData.label: qsTr("Multimedia")
-                Kirigami.FormData.isSection: true
+            RowLayout {
+                visible: root.showAdvanced
+                Kirigami.FormData.label: qsTr("MJPEG quality")
+                Controls.Slider {
+                    from: 0
+                    to: 100
+                    stepSize: 1
+                    snapMode: Controls.Slider.SnapAlways
+                    value: settings.mjpegQuality
+                    onValueChanged: {
+                        settings.mjpegQuality = value;
+                    }
+                }
+                Controls.SpinBox {
+                    from: 0
+                    to: 100
+                    value: settings.mjpegQuality
+                    onValueChanged: {
+                        settings.mjpegQuality = value;
+                    }
+                }
             }
 
-            Controls.ComboBox {
-                Kirigami.FormData.label: qsTr("Real-time video format")
-                currentIndex: {
-                    switch (settings.casterVideoStreamFormat) {
-                    case Settings.CasterStreamFormat_MpegTs:
-                        return 0;
-                    case Settings.CasterStreamFormat_Mp4:
-                        return 1;
-                    }
-                    return 0;
-                }
-
-                model: ["MPEG-TS", "MP4",]
-
-                onCurrentIndexChanged: {
-                    switch (currentIndex) {
-                    case 0:
-                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs;
-                        break;
-                    case 1:
-                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_Mp4;
-                        break;
-                    default:
-                        settings.casterVideoStreamFormat = Settings.CasterStreamFormat_MpegTs;
+            RowLayout {
+                visible: root.showAdvanced
+                Kirigami.FormData.label: qsTr("H264 quality")
+                Controls.Slider {
+                    from: 0
+                    to: 100
+                    stepSize: 1
+                    snapMode: Controls.Slider.SnapAlways
+                    value: settings.x264Quality
+                    onValueChanged: {
+                        settings.x264Quality = value;
                     }
                 }
-
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.text: qsTr("Format used for real-time streaming.") + " " +
-                                       qsTr("Change if you observe problems with video playback in Camera, Screen capture or Slideshow.")
-                hoverEnabled: true
-            }
-
-            Controls.ComboBox {
-                Kirigami.FormData.label: qsTr("Real-time audio format")
-                currentIndex: {
-                    switch (settings.casterAudioStreamFormat) {
-                    case Settings.CasterStreamFormat_Mp3:
-                        return 0;
-                    case Settings.CasterStreamFormat_Mp4:
-                        return 1;
-                    case Settings.CasterStreamFormat_MpegTs:
-                        return 2;
-                    }
-                    return 0;
-                }
-
-                model: ["MP3", "MP4", "MPEG-TS"]
-
-                onCurrentIndexChanged: {
-                    switch (currentIndex) {
-                    case 0:
-                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3;
-                        break;
-                    case 1:
-                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp4;
-                        break;
-                    case 2:
-                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_MpegTs;
-                        break;
-                    default:
-                        settings.casterAudioStreamFormat = Settings.CasterStreamFormat_Mp3;
+                Controls.SpinBox {
+                    from: 0
+                    to: 100
+                    value: settings.x264Quality
+                    onValueChanged: {
+                        settings.x264Quality = value;
                     }
                 }
-
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.text: qsTr("Format used for real-time streaming.") + " " +
-                                       qsTr("Change if you observe problems with audio playback in Microphone or Audio capture.")
-                hoverEnabled: true
             }
 
             Controls.Switch {
@@ -536,19 +627,6 @@ Kirigami.ScrollablePage {
                         settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
                     }
                 }
-            }
-
-            Controls.Switch {
-                visible: root.showAdvanced
-                checked: !settings.casterDontUsePipeWire
-                text: qsTr("Use PipeWire to capture audio")
-                onToggled: {
-                    settings.casterDontUsePipeWire = !settings.casterDontUsePipeWire;
-                }
-
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("Due to issues, audio playback capture and microphone are " + "disabled by default when using PipeWire. You can use this option " + "to enable them.")
             }
 
             CasterSourceVolume {

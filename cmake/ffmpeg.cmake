@@ -157,6 +157,7 @@ set(ffmpeg_opts
     --enable-encoder=libx264
     --enable-encoder=aac
     --enable-encoder=libmp3lame
+    --enable-encoder=mjpeg
     --enable-decoder=h264
     --enable-decoder=rawvideo
     --enable-decoder=pcm_u8
@@ -193,6 +194,8 @@ set(ffmpeg_opts
     --enable-muxer=mpegts
     --enable-muxer=mp3
     --enable-muxer=flac
+    --enable-muxer=matroska
+    --enable-muxer=avi
     --enable-demuxer=mpegts
     --enable-demuxer=h264
     --enable-demuxer=rawvideo

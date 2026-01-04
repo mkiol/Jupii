@@ -15,6 +15,7 @@
 #include <QStandardPaths>
 #include <QUrlQuery>
 
+#include "caster.hpp"
 #include "config.h"
 #include "logger.hpp"
 #include "playlistparser.h"
@@ -44,6 +45,8 @@ static Caster::VideoEncoder convertVideoEncoder(
             return Caster::VideoEncoder::V4l2;
         case Settings::CasterVideoEncoder::CasterVideoEncoder_X264:
             return Caster::VideoEncoder::X264;
+        case Settings::CasterVideoEncoder::CasterVideoEncoder_Mjpeg:
+            return Caster::VideoEncoder::Mjpeg;
     }
     return Caster::VideoEncoder::Auto;
 }
@@ -57,6 +60,8 @@ static Caster::StreamFormat convertStreamFormat(
             return Caster::StreamFormat::MpegTs;
         case Settings::CasterStreamFormat::CasterStreamFormat_Mp3:
             return Caster::StreamFormat::Mp3;
+        case Settings::CasterStreamFormat::CasterStreamFormat_Avi:
+            return Caster::StreamFormat::Avi;
     }
     return Caster::StreamFormat::Mp4;
 }
@@ -1121,7 +1126,7 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
 
             config.videoSource = "file-fixed-size";
             config.streamFormat =
-                convertStreamFormat(s->getCasterVideoStreamFormat());
+                convertStreamFormat(s->getCasterVideoStreamFormatSlides());
             config.videoEncoder =
                 convertVideoEncoder(s->getCasterVideoEncoder());
             config.videoOrientation = convertImageRotate(s->getImageRotate());
@@ -1144,10 +1149,7 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
                                   Settings::instance()->getImageDuration(),
                                   /*min duration*/ 0,
                                   /*max duration*/ 480)),
-                    static_cast<uint32_t>(
-                        std::clamp(Settings::instance()->getImageFps(),
-                                   /*min fps*/ 1,
-                                   /*max fps*/ 60))};
+                };
             } else if (meta->itemType ==
                        ContentServer::ItemType::ItemType_Slides) {
                 auto playlist = PlaylistParser::parsePlaylistFile(meta->path);
@@ -1205,11 +1207,7 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
                             : std::clamp(
                                   Settings::instance()->getImageDuration(),
                                   /*min duration*/ 0,
-                                  /*max duration*/ 480)),
-                    static_cast<uint32_t>(
-                        std::clamp(Settings::instance()->getImageFps(),
-                                   /*min fps*/ 1,
-                                   /*max fps*/ 60))};
+                                  /*max duration*/ 480))};
             } else {
                 config.fileSourceConfig = Caster::FileSourceConfig{
                     {meta->path.toStdString()}, 0, {}, {}, {}};
@@ -1241,16 +1239,29 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
 #ifdef USE_SFOS
     if (type != ContentServer::CasterType::VideoFile &&
         config.videoOrientation == Caster::VideoOrientation::Auto &&
-        !config.videoSource.empty())
+        !config.videoSource.empty()) {
         config.videoSource += "-rotate";
+    }
 #endif
 
-    qDebug() << "do not use pipe-wire options:"
-             << s->getCasterDontUsePipeWire();
-
-    if (s->getCasterDontUsePipeWire()) {
-        config.options |= Caster::OptionsFlags::DontUsePipeWire;
-    }
+    config.perfConfig.lipstickRecorderFps =
+        static_cast<uint32_t>(std::clamp(Settings::instance()->getLipstickFps(),
+                                         /*min fps*/ 1,
+                                         /*max fps*/ 60));
+    config.perfConfig.imgFps =
+        static_cast<uint32_t>(std::clamp(Settings::instance()->getImageFps(),
+                                         /*min fps*/ 1,
+                                         /*max fps*/ 60));
+    config.perfConfig.videoMjpegQmin = static_cast<uint32_t>(std::clamp(
+        31 - static_cast<int>(
+                 (Settings::instance()->getMjpegQuality() / 100.0 * 30.0)),
+        /*min qmin*/ 1,
+        /*max qmin*/ 31));
+    config.perfConfig.videoX264Crf = static_cast<uint32_t>(std::clamp(
+        51 - static_cast<int>(
+                 (Settings::instance()->getX264Quality() / 100.0 * 50.0)),
+        /*min crf*/ 1,
+        /*max crf*/ 51));
 
     return config;
 }
@@ -1608,11 +1619,13 @@ void ContentServerWorker::responseForCasterDone() {
     if (casterItems.isEmpty() && caster) {
         qDebug() << "no clients for caster connected, so ending casting";
 
-        if (casterTimer.isActive()) {
-            caster->stopAll();
-        } else {
-            caster.reset();
-        }
+        //        if (casterTimer.isActive()) {
+        //            caster->stopAll();
+        //        } else {
+        //            caster.reset();
+        //        }
+
+        caster.reset();
     }
 }
 
