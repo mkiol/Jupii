@@ -168,7 +168,6 @@ Page {
                             automaticCheck: false
                             checked: settings.imagePaused
                             text: qsTr("Pause slideshow")
-                            description: qsTr("When enabled, the current image is displayed indefinitely.")
                             onClicked: {
                                 settings.imagePaused = !settings.imagePaused
                             }
@@ -285,7 +284,7 @@ Page {
 
                     content.sourceComponent: Column {
                         ComboBox {
-                            label: qsTr("Real-time video format")
+                            label: qsTr("Video format")
                             currentIndex: {
                                 switch (settings.casterVideoStreamFormat) {
                                 case Settings.CasterStreamFormat_MpegTs:
@@ -363,7 +362,7 @@ Page {
                         }
 
                         ComboBox {
-                            label: qsTr("Real-time audio format")
+                            label: qsTr("Audio format")
                             currentIndex: {
                                 switch (settings.casterAudioStreamFormat) {
                                 case Settings.CasterStreamFormat_Mp3:
@@ -457,7 +456,7 @@ Page {
                             maximumValue: 100
                             stepSize: 1
                             value: settings.x264Quality
-                            label: qsTr("H264 quality")
+                            label: qsTr("H.264 quality")
                             onValueChanged: {
                                 settings.x264Quality = value
                             }

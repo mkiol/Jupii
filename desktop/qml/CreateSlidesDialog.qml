@@ -1,4 +1,4 @@
-/* Copyright (C) 2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2025-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -163,7 +163,7 @@ PopupDialog {
     Controls.TextField {
         id: nameTextField
         Layout.fillWidth: true
-        Kirigami.FormData.label: qsTr("Slideshow name")
-        placeholderText: qsTr("Enter slideshow name (optional)")
+        Kirigami.FormData.label: qsTr("Title")
+        placeholderText: qsTr("Enter slideshow title (optional)")
     }
 }

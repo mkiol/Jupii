@@ -1,4 +1,4 @@
-/* Copyright (C) 2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2025-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -93,7 +93,7 @@ Dialog {
                 enabled: listView.count > 0
                 text: qsTr("Sort by: %1")
                         .arg(itemModel.queryType === 0 ? qsTr("Last edit time") :
-                        qsTr("Name"));
+                        qsTr("Title"));
                 onClicked: {
                     var m = itemModel.queryType + 1
                     if (m >= 2)

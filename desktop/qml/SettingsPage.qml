@@ -154,15 +154,10 @@ Kirigami.ScrollablePage {
 
             Controls.Switch {
                 checked: settings.slidesShowCountInd
-                text: qsTr("Show slide numbers")
+                text: qsTr("Show slide number")
                 onToggled: {
                     settings.slidesShowCountInd = !settings.slidesShowCountInd;
                 }
-
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("When enabled, the current slide number and total count will appear on the screen.")
-                hoverEnabled: true
             }
 
             Controls.Switch {
@@ -171,11 +166,6 @@ Kirigami.ScrollablePage {
                 onToggled: {
                     settings.slidesShowProgrInd = !settings.slidesShowProgrInd;
                 }
-
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("When enabled, a visual indicator will show your position within the slideshow.")
-                hoverEnabled: true
             }
 
             Controls.Switch {
@@ -184,11 +174,6 @@ Kirigami.ScrollablePage {
                 onToggled: {
                     settings.slidesShowDateInd = !settings.slidesShowDateInd;
                 }
-
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("When enabled, the date and time will appear in the screen.")
-                hoverEnabled: true
             }
 
             Controls.Switch {
@@ -197,11 +182,6 @@ Kirigami.ScrollablePage {
                 onToggled: {
                     settings.slidesShowCameraInd = !settings.slidesShowCameraInd;
                 }
-
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("When enabled, the camera model will appear in the screen.")
-                hoverEnabled: true
             }
 
             Controls.Switch {
@@ -210,11 +190,6 @@ Kirigami.ScrollablePage {
                 onToggled: {
                     settings.imagePaused = !settings.imagePaused;
                 }
-
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: qsTr("When enabled, the current slide image is displayed indefinitely.")
-                hoverEnabled: true
             }
 
             RowLayout {
@@ -369,7 +344,7 @@ Kirigami.ScrollablePage {
             }
 
             Controls.ComboBox {
-                Kirigami.FormData.label: qsTr("Real-time video format")
+                Kirigami.FormData.label: qsTr("Video format")
                 currentIndex: {
                     switch (settings.casterVideoStreamFormat) {
                     case Settings.CasterStreamFormat_MpegTs:
@@ -448,7 +423,7 @@ Kirigami.ScrollablePage {
 
 
             Controls.ComboBox {
-                Kirigami.FormData.label: qsTr("Real-time audio format")
+                Kirigami.FormData.label: qsTr("Audio format")
                 currentIndex: {
                     switch (settings.casterAudioStreamFormat) {
                     case Settings.CasterStreamFormat_Mp3:
@@ -555,7 +530,7 @@ Kirigami.ScrollablePage {
 
             RowLayout {
                 visible: root.showAdvanced
-                Kirigami.FormData.label: qsTr("H264 quality")
+                Kirigami.FormData.label: qsTr("H.264 quality")
                 Controls.Slider {
                     from: 0
                     to: 100

@@ -1,4 +1,4 @@
-/* Copyright (C) 2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2025-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -86,8 +86,8 @@ Dialog {
             TextField {
                 id: nameTextField
                 width: parent.width
-                placeholderText: qsTr("Enter slideshow name (optional)")
-                label: qsTr("Slideshow name")
+                placeholderText: qsTr("Enter slideshow title (optional)")
+                label: qsTr("Title")
                 wrapMode: TextInput.WrapAnywhere
                 EnterKey.iconSource: root.canAccept ? "image://theme/icon-m-enter-accept" :
                                                       "image://theme/icon-m-enter-next"
