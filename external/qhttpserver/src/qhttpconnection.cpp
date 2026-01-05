@@ -24,6 +24,7 @@
 
 #include <QTcpSocket>
 #include <QHostAddress>
+#include <signal.h>
 
 #include "http_parser.h"
 #include "qhttprequest.h"
@@ -110,12 +111,14 @@ void QHttpConnection::parseRequest()
 
 void QHttpConnection::write(const QByteArray &data)
 {
+    signal(SIGPIPE, SIG_IGN);
     m_socket->write(data);
     m_transmitLen += data.size();
 }
 
 void QHttpConnection::flush()
 {
+    signal(SIGPIPE, SIG_IGN);
     m_socket->flush();
 }
 
