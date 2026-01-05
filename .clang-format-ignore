@@ -1,2 +1,3 @@
 # ignore ytmusic
 src/ytmusic.*
+external/*
