@@ -105,8 +105,6 @@ ContentServerWorker::ContentServerWorker(QObject *parent)
       nam{new QNetworkAccessManager{}},
       server{new QHttpServer{parent}} {
     qRegisterMetaType<ContentServerWorker::CacheLimit>("CacheLimit");
-    qRegisterMetaType<ContentServerWorker::CacheLimit>(
-        "ContentServerWorker::CacheLimit");
 
     connect(server, &QHttpServer::newRequest, this,
             &ContentServerWorker::requestHandler);
@@ -538,7 +536,7 @@ void ContentServerWorker::handleThumbRequest(const QUrl &id,
 void ContentServerWorker::casterErrorHandler() {
     if (caster->error()) {
         qWarning() << "error in casting, ending casting";
-        emit casterError();
+        emit casterError(ContentServer::CasterError::Unknown);
     } else {
         qDebug() << "eof in casting, ending casting";
     }
@@ -582,7 +580,7 @@ void ContentServerWorker::requestForFileHandler(const QUrl &id,
     } else if (meta->type == ContentServer::Type::Type_Image &&
                type == ContentServer::Type::Type_Video) {
         if (id.scheme() == QStringLiteral("qrc")) {
-            qWarning() << "unable to cast vide stream from qrc";
+            qWarning() << "unable to cast video stream from qrc";
             sendEmptyResponse(resp, 500);
             return;
         }
@@ -1118,12 +1116,6 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
             break;
         }
         case ContentServer::CasterType::VideoFile: {
-            // expecting only local file
-            if (meta->path.isEmpty()) {
-                qWarning() << "meta for caster video file doesn't have path";
-                return std::nullopt;
-            }
-
             config.videoSource = "file-fixed-size";
             config.streamFormat =
                 convertStreamFormat(s->getCasterVideoStreamFormatSlides());
@@ -1134,6 +1126,11 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
             config.audioSource = "null";
 
             if (meta->type == ContentServer::Type::Type_Image) {
+                if (meta->path.isEmpty()) {
+                    qWarning()
+                        << "meta for caster video file doesn't have path";
+                    return std::nullopt;
+                }
                 auto flags = Caster::FileSourceFlags::SameFormatForAllFiles |
                              Caster::FileSourceFlags::Loop;
                 config.fileSourceConfig = Caster::FileSourceConfig{
@@ -1152,24 +1149,51 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
                 };
             } else if (meta->itemType ==
                        ContentServer::ItemType::ItemType_Slides) {
-                auto playlist = PlaylistParser::parsePlaylistFile(meta->path);
-                if (!playlist) {
-                    qWarning() << "slice playlist invalid";
-                    return std::nullopt;
-                }
-                PlaylistParser::toSlidesPlaylist(*playlist);
-                if (playlist->items.empty()) {
-                    qWarning() << "empty slice playlist";
-                    return std::nullopt;
-                }
-                if (!playlist->title.isEmpty()) {
-                    config.streamTitle = playlist->title.toStdString();
-                }
                 std::vector<std::string> paths;
-                std::transform(playlist->items.cbegin(), playlist->items.cend(),
-                               std::back_inserter(paths), [](const auto &item) {
-                                   return item.url.toLocalFile().toStdString();
-                               });
+
+                if (meta->path.isEmpty()) {
+                    if (meta->flagSet(
+                            ContentServer::MetaFlag::SlidesTimeToday)) {
+                        paths = Utils::imagePathForSlidesTime(
+                            Utils::SlidesTime::Today);
+                    } else if (meta->flagSet(ContentServer::MetaFlag::
+                                                 SlidesTimeLast7Days)) {
+                        paths = Utils::imagePathForSlidesTime(
+                            Utils::SlidesTime::Last7Days);
+                    } else if (meta->flagSet(ContentServer::MetaFlag::
+                                                 SlidesTimeLast30Days)) {
+                        paths = Utils::imagePathForSlidesTime(
+                            Utils::SlidesTime::Last30Days);
+                    } else {
+                        qWarning() << "no slides time flag in meta";
+                        return std::nullopt;
+                    }
+                } else {
+                    auto playlist =
+                        PlaylistParser::parsePlaylistFile(meta->path);
+                    if (!playlist) {
+                        qWarning() << "slice playlist invalid";
+                        return std::nullopt;
+                    }
+                    PlaylistParser::toSlidesPlaylist(*playlist);
+                    if (playlist->items.empty()) {
+                        qWarning() << "empty slice playlist";
+                        return std::nullopt;
+                    }
+                    if (!playlist->title.isEmpty()) {
+                        config.streamTitle = playlist->title.toStdString();
+                    }
+                    std::transform(
+                        playlist->items.cbegin(), playlist->items.cend(),
+                        std::back_inserter(paths), [](const auto &item) {
+                            return item.url.toLocalFile().toStdString();
+                        });
+                }
+
+                if (paths.empty()) {
+                    qWarning() << "no image paths for slides";
+                    return std::nullopt;
+                }
 
                 config.fileSourceConfig = Caster::FileSourceConfig{
                     std::move(paths),
@@ -1478,7 +1502,14 @@ bool ContentServerWorker::initCaster(ContentServer::CasterType type,
 
     try {
         auto config = configForCaster(type, meta);
-        if (!config) return false;
+        if (!config) {
+            if (meta->itemType == ContentServer::ItemType::ItemType_Slides) {
+                emit casterError(ContentServer::CasterError::NoFiles);
+            } else {
+                emit casterError(ContentServer::CasterError::Unknown);
+            }
+            return false;
+        }
 
         switch (type) {
             case ContentServer::CasterType::Cam:

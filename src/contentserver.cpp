@@ -102,7 +102,7 @@ inline static std::optional<QString> extFromPath(const QString &path) {
     return std::make_optional(l.last().toLower());
 }
 
-const QString ContentServer::queryTemplate = QStringLiteral(
+const QString ContentServer::queryTrackerMusicTemplate = QStringLiteral(
     "SELECT ?item "
     "nie:mimeType(?item) "
     "nie:title(?item) "
@@ -228,6 +228,7 @@ const char *const ContentServer::recMp4TagPrefix = "----:org.mkiol.jupii:";
 
 ContentServer::ContentServer(QObject *parent) : QThread{parent} {
     avdevice_register_all();
+
     // starting worker
     start(QThread::NormalPriority);
     /*
@@ -1000,7 +1001,7 @@ ContentServer::makeItemMetaUsingTracker(const QUrl &url) {
     }
 
     auto *tracker = Tracker::instance();
-    auto query = queryTemplate.arg(
+    auto query = queryTrackerMusicTemplate.arg(
         fileUrl, tracker->tracker3() ? "nmm:artist" : "nmm:performer");
 
     if (!tracker->query(query, false)) {
@@ -2004,7 +2005,7 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeCamItemMeta(
 
     const auto *s = Settings::instance();
 
-    auto params = ContentServer::parseCasterUrl(url);
+    auto params = parseCasterUrl(url);
 
     if (!params.videoSource) params.videoSource = s->getCasterCam();
 
@@ -2046,38 +2047,55 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator
 ContentServer::makeSlidesItemMeta(const QUrl &url) {
     ItemMeta meta;
 
-    auto params = ContentServer::parseCasterUrl(url);
+    auto params = parseCasterUrl(url);
 
-    if (!params.playlistFile) {
-        qWarning() << "playlist query missing in slides url";
+    if (params.playlistFile) {
+        meta.path = params.playlistFile.value();
+
+        auto playlist = PlaylistParser::parsePlaylistFile(meta.path);
+        if (!playlist) {
+            qWarning() << "failed to parse slides playlist";
+            return m_metaCache.end();
+        }
+
+        meta.title = playlist->title.isEmpty() ? tr("Slideshow")
+                                               : std::move(playlist->title);
+        meta.size = playlist->items.size();
+        meta.recDate = QFileInfo{meta.path}.lastModified();
+        meta.url = makeCasterUrl(url, std::move(params));
+
+        if (auto thumbPath = Thumb::path(meta.url)) {
+            meta.albumArt = std::move(*thumbPath);
+        } else if (auto thumbPath = Thumb::makeSlidesThumb(meta.url)) {
+            meta.albumArt = std::move(*thumbPath);
+        }
+    } else if (params.slidesTime) {
+        meta.title = Utils::slidesTimeName(params.slidesTime.value());
+        meta.url = makeCasterUrl(url, std::move(params));
+
+        switch (params.slidesTime.value()) {
+            case Utils::SlidesTime::Today:
+                meta.setFlags(MetaFlag::SlidesTimeToday);
+                break;
+            case Utils::SlidesTime::Last7Days:
+                meta.setFlags(MetaFlag::SlidesTimeLast7Days);
+                break;
+            case Utils::SlidesTime::Last30Days:
+                meta.setFlags(MetaFlag::SlidesTimeLast30Days);
+                break;
+        }
+    } else {
+        qWarning() << "playlist and time query missing in slides url";
         return m_metaCache.end();
     }
 
-    meta.path = params.playlistFile.value();
-
-    auto playlist = PlaylistParser::parsePlaylistFile(meta.path);
-    if (!playlist) {
-        qWarning() << "failed to parse slides playlist";
-        return m_metaCache.end();
-    }
-
-    meta.title = playlist->title.isEmpty() ? tr("Slideshow")
-                                           : std::move(playlist->title);
-    meta.url = makeCasterUrl(url, std::move(params));
     meta.mime = casterMime(CasterType::VideoFile);
     meta.type = Type::Type_Video;
-    meta.size = playlist->items.size();
-    meta.recDate = QFileInfo{meta.path}.lastModified();
     meta.itemType = ItemType_Slides;
     meta.setFlags(MetaFlag::Valid);
     meta.setFlags(MetaFlag::Local);
     meta.setFlags(MetaFlag::Live);
     meta.setFlags(MetaFlag::Seek, false);
-    if (auto thumbPath = Thumb::path(meta.url)) {
-        meta.albumArt = std::move(*thumbPath);
-    } else if (auto thumbPath = Thumb::makeSlidesThumb(meta.url)) {
-        meta.albumArt = std::move(*thumbPath);
-    }
 
     return m_metaCache.insert(meta.url, meta);
 }
@@ -2948,7 +2966,8 @@ void ContentServer::run() {
             &ContentServer::itemRemovedHandler);
     connect(
         worker, &ContentServerWorker::casterError, this,
-        [this] { emit casterError(); }, Qt::QueuedConnection);
+        [this](CasterError casterErr) { emit casterError(casterErr); },
+        Qt::QueuedConnection);
     connect(this, &ContentServer::requestStreamToRecord, worker,
             &ContentServerWorker::setStreamToRecord);
     connect(worker, &ContentServerWorker::streamToRecordChanged, this,
@@ -3479,8 +3498,8 @@ void ContentServer::casterFileStreamStartedHandler(const QUrl &id, int idx,
 
     auto &stream = m_streams[id];
     stream.id = id;
-    if (stream.count != files.size()) {
-        stream.count = files.size();
+    if (stream.size != files.size()) {
+        stream.size = files.size();
         changed = true;
     }
     if (stream.idx != idx) {
@@ -3489,7 +3508,7 @@ void ContentServer::casterFileStreamStartedHandler(const QUrl &id, int idx,
     }
     if (changed) {
         stream.title =
-            tr("Image %1 of %2").arg(stream.idx + 1).arg(stream.count);
+            tr("Image %1 of %2").arg(stream.idx + 1).arg(stream.size);
         emit streamTitleChanged(id, stream.title);
     }
     if (files != stream.files) {
@@ -3864,8 +3883,13 @@ ContentServer::CasterUrlParams ContentServer::parseCasterUrl(const QUrl &url) {
             QStringLiteral("yes");
     }
 
+    // slides
     if (q.hasQueryItem(QStringLiteral("playlist"))) {
         params.playlistFile = q.queryItemValue(QStringLiteral("playlist"));
+    }
+    if (q.hasQueryItem(QStringLiteral("time"))) {
+        params.slidesTime =
+            Utils::strToSlidesTime(q.queryItemValue(QStringLiteral("time")));
     }
 
     return params;
@@ -3896,6 +3920,12 @@ QUrl ContentServer::makeCasterUrl(QUrl url, CasterUrlParams &&params) {
     q.removeQueryItem(QStringLiteral("playlist"));
     if (params.playlistFile) {
         q.addQueryItem(QStringLiteral("playlist"), *params.playlistFile);
+    }
+
+    q.removeQueryItem(QStringLiteral("time"));
+    if (params.slidesTime) {
+        q.addQueryItem(QStringLiteral("time"),
+                       Utils::slidesTimeStr(params.slidesTime.value()));
     }
 
     url.setQuery(q);

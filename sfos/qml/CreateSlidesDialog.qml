@@ -18,7 +18,7 @@ Dialog {
 
     property var model
     property string slidesId: ""
-    property alias name: nameTextField.text
+    property string name: ""
 
     property var _urls: []
     readonly property bool _creatingNew: slidesId.length === 0
@@ -54,40 +54,21 @@ Dialog {
         }
     }
 
-    SilicaFlickable {
-        id: flick
+    ImageGridView {
+        id: imageView
         anchors.fill: parent
-        contentHeight: column.height
 
-        Column {
-            id: column
-
-            width: root.width
-            spacing: Theme.paddingLarge
-
+        header: Column {
+            width: imageView.width
             PageHeader {
-                title: root._creatingNew ? qsTr("Create a new slideshow") : qsTr("Save slideshow")
+                title: root._creatingNew ? qsTr("Create slideshow") : qsTr("Save slideshow")
             }
-
-            PullDownMenu {
-                MenuItem {
-                    text: root._urls.length > 0 ? qsTr("Add more images") : qsTr("Add images")
-                    onClicked: pageStack.push(imagePickerDialog)
-                }
-                MenuItem {
-                    visible: root._urls.length > 0
-                    text: qsTr("Remove all")
-                    onClicked: {
-                        root._urls = []
-                    }
-                }
-            }
-
             TextField {
                 id: nameTextField
                 width: parent.width
                 placeholderText: qsTr("Enter slideshow title (optional)")
                 label: qsTr("Title")
+                text: root.name
                 wrapMode: TextInput.WrapAnywhere
                 EnterKey.iconSource: root.canAccept ? "image://theme/icon-m-enter-accept" :
                                                       "image://theme/icon-m-enter-next"
@@ -95,9 +76,8 @@ Dialog {
                     if (root.canAccept)
                         root.accept();
                     else
-                        urlField.forceActiveFocus()
+                        root.forceActiveFocus()
                 }
-
                 rightItem: IconButton {
                     onClicked: nameTextField.text = ""
                     width: icon.width
@@ -107,87 +87,64 @@ Dialog {
                     Behavior on opacity { FadeAnimation {} }
                 }
             }
+        }
 
-            ImageGridView {
-                id: imageView
+        model: root._urls
 
-                property real itemSize: width / columnCount
-                width: root.width
-                cellSize: itemSize
-                height: Math.max(itemSize, itemSize * Math.ceil(imageView.count / 4))
-                columnCount: 4
-                model: root._urls
-                clip: true
-                delegate: GridItem {
-                    menu: Component {
-                        ContextMenu {
-                            MenuItem {
-                                text: qsTr("Remove")
-                                onClicked: {
-                                    root._urls.splice(index, 1)
-                                    root._urls = root._urls // needed to refresh list view
-                                }
-                            }
-                            MenuItem {
-                                text: qsTr("Move back")
-                                enabled: index > 0
-                                onClicked: {
-                                    if (index < 1) return
-                                    root._urls.splice(index - 1, 0, root._urls.splice(index, 1)[0]);
-                                    root._urls = root._urls // needed to refresh list view
-                                }
-                            }
-                            MenuItem {
-                                text: qsTr("Move forward")
-                                enabled: index < (root._urls.length - 1)
-                                onClicked: {
-                                    if (index >= (root._urls.length - 1)) return
-                                    root._urls.splice(index + 1, 0, root._urls.splice(index, 1)[0]);
-                                    root._urls = root._urls // needed to refresh list view
-                                }
-                            }
+        PullDownMenu {
+            MenuItem {
+                text: root._urls.length > 0 ? qsTr("Add more images") : qsTr("Add images")
+                onClicked: pageStack.push(imagePickerDialog)
+            }
+            MenuItem {
+                visible: root._urls.length > 0
+                text: qsTr("Remove all")
+                onClicked: {
+                    root._urls = []
+                }
+            }
+        }
+
+        ViewPlaceholder {
+            text: qsTr("There are no images in this slideshow")
+            hintText: qsTr("Pull down to add images")
+            enabled: imageView.count === 0
+        }
+
+        delegate: ThumbnailImage {
+            source: modelData
+            size: imageView.cellWidth
+            menu: Component {
+                ContextMenu {
+                    MenuItem {
+                        text: qsTr("Remove")
+                        onClicked: {
+                            root._urls.splice(index, 1)
+                            root._urls = root._urls // needed to refresh list view
                         }
                     }
-
-                    Image {
-                        width: imageView.itemSize
-                        height: imageView.itemSize
-                        sourceSize { width: width; height: height }
-                        source: "image://nemoThumbnail/" + modelData
-                        asynchronous: true
-                        fillMode: Image.PreserveAspectCrop
-                        //z: -1
+                    MenuItem {
+                        text: qsTr("Move back")
+                        enabled: index > 0
+                        onClicked: {
+                            if (index < 1) return
+                            root._urls.splice(index - 1, 0, root._urls.splice(index, 1)[0]);
+                            root._urls = root._urls // needed to refresh list view
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("Move forward")
+                        enabled: index < (root._urls.length - 1)
+                        onClicked: {
+                            if (index >= (root._urls.length - 1)) return
+                            root._urls.splice(index + 1, 0, root._urls.splice(index, 1)[0]);
+                            root._urls = root._urls // needed to refresh list view
+                        }
                     }
                 }
-            }
-
-            InfoLabel {
-                visible: imageView.count === 0
-                text: qsTr("There are no images in this slideshow.")
-            }
-
-            Text {
-                visible: imageView.count === 0
-                x: Theme.horizontalPageMargin
-                width: parent.width - 2*x
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.Wrap
-                font {
-                    pixelSize: Theme.fontSizeLarge
-                    family: Theme.fontFamilyHeading
-                }
-                color: Theme.highlightColor
-                opacity: Theme.opacityLow
-                text: qsTr("Pull down to add images.")
             }
         }
     }
-
-//    ViewPlaceholder {
-//        enabled: imageView.count === 0
-//        text: qsTr("There are no images in this slideshow.")
-//        hintText: qsTr("Pull down to add images.")
-//    }
 
     focus: true
     Keys.onVolumeUpPressed: {

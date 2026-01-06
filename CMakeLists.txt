@@ -1,4 +1,4 @@
-# Copyright (C) 2023-2025 Michal Kosciesza <michal@mkiol.net>
+# Copyright (C) 2023-2026 Michal Kosciesza <michal@mkiol.net>
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,7 +19,7 @@ option(WITH_X11_SCREEN_CAPTURE "enable X11 screen capture video source" ON)
 option(WITH_DROIDCAM "enable gstreamer droidcam video source" ON)
 option(WITH_SFOS_SCREEN_CAPTURE "enable sfos screen capture" ON)
 option(WITH_SFOS_HARBOUR "enable sfos build for harbour" OFF)
-option(WITH_PY "enable python libraries" ON)
+option(WITH_PY "enable python libraries" ${WITH_DESKTOP})
 
 option(WITH_TRACE_LOGS "enable trace logging" OFF)
 option(WITH_SANITIZERS "enable asan and ubsan in debug build" ON)

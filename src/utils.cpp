@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,6 +11,8 @@
 
 #include <QAbstractSocket>
 #include <QClipboard>
+#include <QDate>
+#include <QDateTime>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -35,6 +37,8 @@
 #include "gpoddermodel.h"
 #include "iconprovider.h"
 #include "settings.h"
+#include "tracker.h"
+#include "trackercursor.h"
 
 const QString Utils::typeKey = QStringLiteral("jupii_type");
 const QString Utils::cookieKey = QStringLiteral("jupii_cookie");
@@ -113,18 +117,18 @@ bool Utils::wlanNetworkInf(const QNetworkInterface &interface) {
 }
 
 QStringList Utils::networkInfs(bool onlyUp) {
-    lastNetIfs.clear();
-    lastNetIfs.append(tr("Auto"));
+    m_lastNetIfs.clear();
+    m_lastNetIfs.append(tr("Auto"));
     for (auto &interface : QNetworkInterface::allInterfaces()) {
         if (interface.isValid()) {
             if (((!onlyUp ||
                   interface.flags().testFlag(QNetworkInterface::IsRunning)) &&
                  (ethNetworkInf(interface) || wlanNetworkInf(interface))) ||
                 localNetworkInf(interface))
-                lastNetIfs.append(interface.name());
+                m_lastNetIfs.append(interface.name());
         }
     }
-    return lastNetIfs;
+    return m_lastNetIfs;
 }
 
 int Utils::prefNetworkInfIndex() {
@@ -133,17 +137,17 @@ int Utils::prefNetworkInfIndex() {
         return 0;
     }
 
-    if (lastNetIfs.isEmpty()) {
+    if (m_lastNetIfs.isEmpty()) {
         networkInfs();
     }
 
-    int idx = lastNetIfs.indexOf(pref_ifname, 1);
+    int idx = m_lastNetIfs.indexOf(pref_ifname, 1);
 
     return idx > -1 ? idx : 0;
 }
 
 void Utils::setPrefNetworkInfIndex(int idx) const {
-    if (lastNetIfs.size() <= idx) {
+    if (m_lastNetIfs.size() <= idx) {
         qWarning() << "Invalid networtk interface index";
         return;
     }
@@ -151,7 +155,7 @@ void Utils::setPrefNetworkInfIndex(int idx) const {
     if (idx == 0) {
         Settings::instance()->setPrefNetInf({});
     } else {
-        Settings::instance()->setPrefNetInf(lastNetIfs.at(idx));
+        Settings::instance()->setPrefNetInf(m_lastNetIfs.at(idx));
     }
 }
 
@@ -706,19 +710,25 @@ QUrl Utils::bestUrlFromId(const QUrl &id) {
 }
 
 QString Utils::randString(int len) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
     auto *t = QThread::currentThread();
-    if (!seedDone.contains(t)) {
+    if (!m_seedDone.contains(t)) {
         // Seed init, needed for key generation
         qsrand(QTime::currentTime().msec());
-        seedDone[t] = true;
+        m_seedDone[t] = true;
     }
+#endif
 
-    const QString pc(
+    static const auto pc = QStringLiteral(
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
 
     QString rs;
     for (int i = 0; i < len; ++i) {
-        rs.append(pc.at(qrand() % pc.length()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+        rs.push_back(pc.at(m_randGen.bounded(pc.length() - 1)));
+#else
+        rs.push_back(pc.at(qrand() % pc.length()));
+#endif
     }
 
     return rs;
@@ -766,11 +776,11 @@ QString Utils::escapeName(const QString &filename) {
 }
 
 #ifdef USE_SFOS
-void Utils::setQmlRootItem(QQuickItem *rootItem) { qmlRootItem = rootItem; }
+void Utils::setQmlRootItem(QQuickItem *rootItem) { m_qmlRootItem = rootItem; }
 
 void Utils::activateWindow() {
-    if (qmlRootItem) {
-        QMetaObject::invokeMethod(qmlRootItem, "activate");
+    if (m_qmlRootItem) {
+        QMetaObject::invokeMethod(m_qmlRootItem, "activate");
     }
 }
 #endif
@@ -784,15 +794,118 @@ QString Utils::humanFriendlySizeString(int64_t size) {
     return QStringLiteral("%1 GB").arg(size / 1073741824);
 }
 
-QUrl Utils::slidesUrl(const QString &playlistPath) {
-    if (playlistPath.isEmpty()) {
-        return {};
-    }
+QUrl Utils::slidesUrl(const std::variant<QString, SlidesTime> &var) {
+    QUrlQuery query;
+
+    std::visit(
+        [&](auto &&arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, QString>) {
+                query.addQueryItem(QStringLiteral("playlist"), arg);
+            } else if constexpr (std::is_same_v<T, SlidesTime>) {
+                query.addQueryItem(QStringLiteral("time"), slidesTimeStr(arg));
+            }
+        },
+        var);
 
     QUrl url{"jupii://slides"};
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("playlist"), playlistPath);
     url.setQuery(query);
 
     return url;
+}
+
+QString Utils::slidesTimeStr(SlidesTime time) {
+    switch (time) {
+        case SlidesTime::Today:
+            return QStringLiteral("today");
+        case SlidesTime::Last7Days:
+            return QStringLiteral("last7days");
+        case SlidesTime::Last30Days:
+            return QStringLiteral("last30days");
+    }
+
+    qWarning() << "invalid slides time";
+    return {};
+}
+
+QString Utils::slidesTimeName(SlidesTime time) {
+    switch (time) {
+        case SlidesTime::Today:
+            return tr("Today's images");
+        case SlidesTime::Last7Days:
+            return tr("Images from last 7 days");
+        case SlidesTime::Last30Days:
+            return tr("Images from last 30 days");
+    }
+
+    qWarning() << "invalid slides time";
+    return {};
+}
+
+std::optional<Utils::SlidesTime> Utils::strToSlidesTime(const QString &str) {
+    if (str.compare(QLatin1String{"today"}, Qt::CaseInsensitive) == 0) {
+        return SlidesTime::Today;
+    }
+    if (str.compare(QLatin1String{"last7days"}, Qt::CaseInsensitive) == 0) {
+        return SlidesTime::Last7Days;
+    }
+    if (str.compare(QLatin1String{"last30days"}, Qt::CaseInsensitive) == 0) {
+        return SlidesTime::Last30Days;
+    }
+
+    qWarning() << "invalid slides time str";
+    return std::nullopt;
+}
+
+std::vector<std::string> Utils::imagePathForSlidesTime(SlidesTime time) {
+    std::vector<std::string> paths;
+
+    auto timeArg = [time] {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        auto now = QDate::currentDate().startOfDay();
+#else
+        auto now = QDateTime{QDate::currentDate()};
+#endif
+        switch (time) {
+            case SlidesTime::Today:
+                return now.toUTC().toString(Qt::ISODate);
+            case SlidesTime::Last7Days:
+                return now.addDays(-7).toUTC().toString(Qt::ISODate);
+            case SlidesTime::Last30Days:
+                return now.addDays(-30).toUTC().toString(Qt::ISODate);
+        }
+        return now.toUTC().toString(Qt::ISODate);
+    }();
+
+    // get files from tracker and take into account only up to 1000 images
+    // larger than 600x600
+    const static auto tmpl = QStringLiteral(
+        "SELECT nie:url(?file) "
+        "WHERE { ?item a nfo:Image; nie:isStoredAs ?file; nfo:width ?width; "
+        "nfo:height ?height. ?file nfo:fileLastModified ?date. "
+        "FILTER ( ?width > 800 && ?height > 600 && ?date >= "
+        "\"%1\"^^xsd:dateTime ). } GROUP BY ?file ORDER BY DESC( ?date ) LIMIT "
+        "1000");
+
+    auto *tracker = Tracker::instance();
+
+    if (!tracker->query(tmpl.arg(timeArg), false)) {
+        qWarning() << "cannot get tracker data for slides";
+        return paths;
+    }
+
+    auto res = tracker->getResult();
+    TrackerCursor cursor(res.first, res.second);
+
+    if (cursor.columnCount() == 0) {
+        qWarning() << "invalid tracker data for slides";
+        return paths;
+    }
+
+    while (cursor.next()) {
+        paths.push_back(
+            QUrl{cursor.value(0).toString()}.toLocalFile().toStdString());
+    }
+
+    return paths;
 }

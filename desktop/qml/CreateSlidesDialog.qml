@@ -25,7 +25,7 @@ PopupDialog {
 
     standardButtons: _urls.length === 0 ? Controls.Dialog.Cancel :
                         Controls.Dialog.Ok | Controls.Dialog.Cancel
-    title: _creatingNew ? qsTr("Create a new slideshow") : qsTr("Edit slideshow")
+    title: _creatingNew ? qsTr("Create slideshow") : qsTr("Edit slideshow")
     columnWidth: app.width * 0.9
 
     onAccepted: {
@@ -106,7 +106,7 @@ PopupDialog {
             anchors.centerIn: parent
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: cardView.count === 0
-            text: qsTr("There are no images in this slideshow.")
+            text: qsTr("There are no images in this slideshow")
         }
 
         delegate: Kirigami.Card {

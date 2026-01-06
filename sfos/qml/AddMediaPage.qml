@@ -110,23 +110,6 @@ Page {
         }
     }
 
-    Component {
-        id: slidesPickerDialog
-        MultiImagePickerDialog {
-            allowedOrientations: Orientation.All
-            onDone: {
-                if (result === DialogResult.Accepted) {
-                    var paths = [];
-                    for (var i = 0; i < selectedContent.count; ++i) {
-                        paths.push(selectedContent.get(i).filePath)
-                    }
-                    playlist.addItemUrl(utils.slidesUrl(paths))
-                    app.popToQueue()
-                }
-            }
-        }
-    }
-
     SilicaFlickable {
         id: flick
         anchors.fill: parent

@@ -4649,7 +4649,7 @@ bool Caster::muxVideo(AVPacket *pkt) {
 
         if (diff < (m_config.perfConfig.videoMaxFastFrames *
                     m_videoFrameDuration * -1)) {
-            LOGD("streaming is to fast: diff="
+            LOGT("streaming is to fast: diff="
                  << diff << ", ref=" << m_videoFrameDuration
                  << ", max-fast-frames="
                  << m_config.perfConfig.videoMaxFastFrames);

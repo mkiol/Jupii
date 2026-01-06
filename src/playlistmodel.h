@@ -116,7 +116,8 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
         E_ItemNotAdded,
         E_AllItemsNotAdded,
         E_ProxyError,
-        E_CasterError
+        E_CasterError,
+        E_CasterError_NoFiles
     };
     Q_ENUM(ErrorType)
 
@@ -312,7 +313,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
                                  const QUrl &icon, const QString &desc,
                                  QString &&app, bool autoPlay);
     PlaylistItem *itemFromId(const QString &id) const;
-    void casterErrorHandler();
+    void casterErrorHandler(ContentServer::CasterError error);
     QStringList selectedItems() const;
 #ifdef USE_SFOS
     void updateBackgroundActivity();

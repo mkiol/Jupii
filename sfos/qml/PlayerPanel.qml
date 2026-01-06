@@ -105,7 +105,9 @@ DockedPanel_ {
                     width: Theme.itemSizeLarge
                     height: Theme.itemSizeLarge
                     anchors.left: parent.left
-                    source: utils.noresIcon("icon-itemart")
+                    source: root.itemType === ContentServer.ItemType_Slides ?
+                        "image://theme/icon-m-levels?" + Theme.primaryColor :
+                                utils.noresIcon("icon-itemart")
                 }
 
                 Image {
@@ -127,6 +129,11 @@ DockedPanel_ {
                                 return "image://icons/icon-s-browser?" + Theme.primaryColor
                             case ContentServer.ItemType_Upnp:
                                 return "image://icons/icon-s-device?" + Theme.primaryColor
+                            case ContentServer.ItemType_Slides:
+                                if (_image.source.toString().length > 0) {
+                                    return "image://theme/icon-m-levels?" + Theme.primaryColor
+                                }
+                                break;
                             }
                             return ""
                         }

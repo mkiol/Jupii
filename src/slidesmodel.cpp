@@ -1,4 +1,4 @@
-/* Copyright (C) 2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2025-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,8 +32,6 @@ QVariantList SlidesModel::selectedItems() {
     foreach (auto item, m_list) {
         auto *i = qobject_cast<SlidesItem *>(item);
         if (i->selected()) {
-            //            list << QVariantMap{{QStringLiteral("url"),
-            //                                 QVariant(QUrl::fromLocalFile(i->path()))}};
             list << QVariantMap{
                 {QStringLiteral("url"), QVariant(i->slidesUrl())}};
         }
@@ -179,23 +177,42 @@ QList<ListItem *> SlidesModel::makeItems() {
             item.title = std::move(playlist->title);
             item.size = playlist->items.size();
             item.slidesUrl = Utils::slidesUrl(item.path);
-            m_items << item;
+
+            m_items.push_back(std::move(item));
         }
     }
 
     QList<ListItem *> items;
     const auto &filter = getFilter();
 
+    if (filter.isEmpty()) {
+        // insert auto items at the top
+        auto todayUrl = Utils::slidesUrl(Utils::SlidesTime::Today);
+        items.push_back(new SlidesItem(
+            todayUrl.toString(), todayUrl, {},
+            Utils::slidesTimeName(Utils::SlidesTime::Today), {}, 0));
+        auto last7Url = Utils::slidesUrl(Utils::SlidesTime::Last7Days);
+        items.push_back(new SlidesItem(
+            last7Url.path(), last7Url, {},
+            Utils::slidesTimeName(Utils::SlidesTime::Last7Days), {}, 0));
+        auto last30Url = Utils::slidesUrl(Utils::SlidesTime::Last30Days);
+        items.push_back(new SlidesItem(
+            last30Url.path(), last30Url, {},
+            Utils::slidesTimeName(Utils::SlidesTime::Last30Days), {}, 0));
+    }
+
     foreach (const auto item, m_items) {
         if (item.title.contains(filter, Qt::CaseInsensitive) ||
             item.path.contains(filter, Qt::CaseInsensitive)) {
-            items << new SlidesItem(item.path, item.slidesUrl, item.path,
-                                    item.title, item.date, item.size);
+            items.push_back(new SlidesItem(item.path, item.slidesUrl, item.path,
+                                           item.title, item.date, item.size));
         }
     }
 
+    auto startIt =
+        filter.isEmpty() ? std::next(items.begin(), 3) : items.begin();
     if (m_queryType == 0) {  // by date
-        std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
+        std::sort(startIt, items.end(), [](ListItem *a, ListItem *b) {
             auto *aa = qobject_cast<SlidesItem *>(a);
             auto *bb = qobject_cast<SlidesItem *>(b);
             if (aa->date().isNull() && !bb->date().isNull()) return false;
@@ -203,7 +220,7 @@ QList<ListItem *> SlidesModel::makeItems() {
             return aa->date() > bb->date();
         });
     } else {  // by title
-        std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
+        std::sort(startIt, items.end(), [](ListItem *a, ListItem *b) {
             auto *aa = qobject_cast<SlidesItem *>(a);
             auto *bb = qobject_cast<SlidesItem *>(b);
             return aa->title().compare(bb->title(), Qt::CaseInsensitive) < 0;
@@ -273,7 +290,6 @@ QVariant SlidesItem::data(int role) const {
 }
 
 QUrl SlidesItem::iconThumb() const {
-    auto url = ContentServer::instance()->thumbUrl(m_slidesUrl);
-    qDebug() << "slides icon:" << url << m_slidesUrl;
-    return url;
+    if (size() == 0) return {};
+    return ContentServer::instance()->thumbUrl(m_slidesUrl);
 }

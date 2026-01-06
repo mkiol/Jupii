@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -172,18 +172,30 @@ Kirigami.ScrollablePage {
         }
 
         onError: {
-            if (code === PlayListModel.E_FileExists)
-                app.showToast(qsTr("Item is already in play queue"))
-            else if (code === PlayListModel.E_ItemNotAdded)
-                app.showToast(qsTr("Item cannot be added"))
-            else if (code === PlayListModel.E_SomeItemsNotAdded)
-                app.showToast(qsTr("Some items cannot be added"))
-            else if (code === PlayListModel.E_AllItemsNotAdded)
-                app.showToast(qsTr("Items cannot be added"))
-            else if (code === PlayListModel.E_ProxyError)
-                app.showToast(qsTr("Unable to play item"))
-            else
-                app.showToast(qsTr("Unknown error"))
+            switch (code) {
+                case PlayListModel.E_FileExists:
+                    app.showToast(qsTr("Item is already in play queue"));
+                    break;
+                case PlayListModel.E_ItemNotAdded:
+                    app.showToast(qsTr("Item cannot be added"));
+                    break;
+                case PlayListModel.E_SomeItemsNotAdded:
+                    app.showToast(qsTr("Some items cannot be added"));
+                    break;
+                case PlayListModel.E_AllItemsNotAdded:
+                    app.showToast(qsTr("Items cannot be added"));
+                    break;
+                case PlayListModel.E_ProxyError:
+                case PlayListModel.E_CasterError:
+                    app.showToast(qsTr("Unable to play item"));
+                    break;
+                case PlayListModel.E_CasterError_NoFiles:
+                    app.showToast(qsTr("No images to play"));
+                    break;
+                default:
+                    app.showToast(qsTr("Unknown error"));
+                    break;
+            }
         }
     }
 
@@ -221,7 +233,7 @@ Kirigami.ScrollablePage {
             id: listItem
 
             property bool isImage: model.type === AVTransport.T_Image
-            property bool playing: model.id == av.currentId &&
+            property bool playing: model.id === av.currentId &&
                                    av.transportState === AVTransport.Playing
             enabled: !root.busy
             label: model.name
@@ -234,10 +246,12 @@ Kirigami.ScrollablePage {
                 case ContentServer.ItemType_Cam:
                 case ContentServer.ItemType_ScreenCapture:
                     return model.videoSource + " · " + model.videoOrientation + (model.audioSource.length !== 0 ? (" · " + model.audioSource) : "")
-                case ContentServer.ItemType_Slides: {
-                    var date = model.recDate
-                    return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
-                }
+                case ContentServer.ItemType_Slides:
+                    if (model.size > 0) {
+                        var date = model.recDate
+                        return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
+                    }
+                    break;
                 default:
                     return model.artist.length !== 0 ? model.artist : ""
                 }
@@ -270,16 +284,20 @@ Kirigami.ScrollablePage {
                 switch (model.itemType) {
                 case ContentServer.ItemType_Url: return "folder-remote"
                 case ContentServer.ItemType_Upnp: return "network-server"
-                case ContentServer.ItemType_Slides: return "edit-group-symbolic"
+                case ContentServer.ItemType_Slides:
+                    if (iconSource.toString().length > 0) {
+                        return "edit-group-symbolic"
+                    }
+                    break;
                 }
                 return ""
             }
 
             attachedIcon2Name: {
-                if (iconSource.length === 0)
-                    return ""
                 if (model.itemType === ContentServer.ItemType_Slides)
                     return "emblem-videos-symbolic"
+                if (iconSource.toString().length === 0)
+                    return ""
                 return defaultIconSource
             }
 
@@ -391,7 +409,7 @@ Kirigami.ScrollablePage {
         subtitle: {
             if (app.streamTitle.length === 0) {
                 if (root.itemType === ContentServer.ItemType_Slides) {
-                    return qsTr("%n image(s)", "", av.currentSize)
+                    return av.currentSize > 0 ? qsTr("%n image(s)", "", av.currentSize) : ""
                 }
                 if (root.itemType !== ContentServer.ItemType_Mic &&
                         root.itemType !== ContentServer.ItemType_PlaybackCapture &&

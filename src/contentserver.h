@@ -32,6 +32,7 @@
 #include "downloader.h"
 #include "settings.h"
 #include "singleton.h"
+#include "utils.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -136,7 +137,10 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         MadeFromCache = 1 << 10,
         NiceAlbumArt = 1 << 11,
         Hls = 1 << 12,
-        Live = 1 << 13
+        Live = 1 << 13,
+        SlidesTimeToday = 1 << 14,
+        SlidesTimeLast7Days = 1 << 15,
+        SlidesTimeLast30Days = 1 << 16
     };
 
     enum class CachingResult {
@@ -150,6 +154,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
 
     enum class CasterType { Mic, Cam, Playback, Screen, AudioFile, VideoFile };
     friend QDebug operator<<(QDebug dbg, CasterType type);
+
+    enum class CasterError { NoFiles, Unknown };
 
     struct ItemMeta {
         QString trackerId;
@@ -359,7 +365,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     void cacheSizeChanged();
     void cachingChanged();
     void cacheProgressChanged();
-    void casterError();
+    void casterError(CasterError error);
     void requestSlidesSetFiles(const QStringList &paths);
     void requestSlidesSwitch(bool backward);
     void requestSlidesSwitchToIdx(int idx);
@@ -390,6 +396,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         QStringList titleHistory;  // current and previous titles
         QStringList files;
         int idx = 0;
+        int size = 0;
         int count = 0;
     };
 
@@ -403,7 +410,7 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
     static const QStringList m_m3u_mimes;
     static const QStringList m_pls_mimes;
     static const QStringList m_xspf_mimes;
-    static const QString queryTemplate;
+    static const QString queryTrackerMusicTemplate;
     static const QString dlnaOrgOpFlagsSeekBytes;
     static const QString dlnaOrgOpFlagsNoSeek;
     static const QString dlnaOrgCiFlags;
@@ -548,8 +555,12 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         std::optional<QString> videoOrientation;
         std::optional<bool> audioSourceMuted;
         std::optional<QString> playlistFile;
+        std::optional<Utils::SlidesTime> slidesTime;
     };
     static CasterUrlParams parseCasterUrl(const QUrl &url);
     static QUrl makeCasterUrl(QUrl url, CasterUrlParams &&params);
 };
+
+Q_DECLARE_METATYPE(ContentServer::CasterError)
+
 #endif  // CONTENTSERVER_H

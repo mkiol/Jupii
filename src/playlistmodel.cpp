@@ -85,14 +85,6 @@ void PlaylistWorker::processPlaylist(const UrlItem &url, QList<UrlItem> &urls) {
         return;
     }
 
-    //    if (PlaylistParser::slidesPlaylist(playlist.value())) {
-    //        // slides playlist
-    //        auto newUrl = url;
-    //        newUrl.url = Utils::slidesUrl(path);
-    //        urls.push_back(std::move(newUrl));
-    //        return;
-    //    }
-
     std::transform(playlist->items.begin(), playlist->items.end(),
                    std::back_inserter(urls), [](auto &pi) {
                        UrlItem ui;
@@ -2062,8 +2054,15 @@ QString PlaylistModel::nextId(const QString &id) const {
     return {};
 }
 
-void PlaylistModel::casterErrorHandler() {
-    emit error(ErrorType::E_CasterError);
+void PlaylistModel::casterErrorHandler(ContentServer::CasterError casterErr) {
+    switch (casterErr) {
+        case ContentServer::CasterError::NoFiles:
+            emit error(ErrorType::E_CasterError_NoFiles);
+            break;
+        case ContentServer::CasterError::Unknown:
+            emit error(ErrorType::E_CasterError);
+            break;
+    }
 
     foreach (const auto item, m_list) {
         auto *pi = qobject_cast<PlaylistItem *>(item);

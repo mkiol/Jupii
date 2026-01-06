@@ -53,29 +53,29 @@ Kirigami.ScrollablePage {
                     else
                         itemModel.setAllSelected(true)
                 }
-            },
-            Kirigami.Action {
-                displayHint: Kirigami.Action.DisplayHint.AlwaysHide
-                text: qsTr("Delete selected")
-                iconName: "delete"
-                enabled: itemModel.selectedCount > 0
-                onTriggered: {
-                    deleteDialog.open()
-                }
             }
+//            Kirigami.Action {
+//                displayHint: Kirigami.Action.DisplayHint.AlwaysHide
+//                text: qsTr("Delete selected")
+//                iconName: "delete"
+//                enabled: itemModel.selectedCount > 0
+//                onTriggered: {
+//                    deleteDialog.open()
+//                }
+//            }
         ]
     }
 
-    MessageDialog {
-        id: deleteDialog
-        title: qsTr("Delete selected")
-        icon: StandardIcon.Question
-        text: qsTr("Delete %n slideshow(s)?", "", itemModel.selectedCount)
-        standardButtons: StandardButton.Ok | StandardButton.Cancel
-        onAccepted: {
-            itemModel.deleteSelected()
-        }
-    }
+//    MessageDialog {
+//        id: deleteDialog
+//        title: qsTr("Delete selected")
+//        icon: StandardIcon.Question
+//        text: qsTr("Delete %n slideshow(s)?", "", itemModel.selectedCount)
+//        standardButtons: StandardButton.Ok | StandardButton.Cancel
+//        onAccepted: {
+//            itemModel.deleteSelected()
+//        }
+//    }
 
     header: Controls.ToolBar {
         RowLayout {
@@ -110,7 +110,7 @@ Kirigami.ScrollablePage {
     footer: Controls.Button {
         action: Kirigami.Action {
             id: createAction
-            text: qsTr("Create a new slideshow")
+            text: qsTr("Create slideshow")
             enabled: !itemModel.busy
             iconName: "special-effects-symbolic"
             onTriggered: {
@@ -132,7 +132,7 @@ Kirigami.ScrollablePage {
             enabled: !itemModel.busy
             label: model.title
             subtitle: {
-                if (!model) return ""
+                if (!model || model.size <= 0) return ""
                 var date = model.friendlyDate
                 return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
             }
@@ -142,6 +142,7 @@ Kirigami.ScrollablePage {
             iconSize: Kirigami.Units.iconSizes.medium
 
             onClicked: {
+                if (!model) return
                 var selected = model.selected
                 itemModel.setSelected(model.index, !selected);
             }
@@ -156,6 +157,7 @@ Kirigami.ScrollablePage {
                     }
                 },
                 Kirigami.Action {
+                    visible: model.size > 0
                     text: qsTr("Edit")
                     iconName: "edit-entry-symbolic"
                     onTriggered: {
@@ -165,6 +167,7 @@ Kirigami.ScrollablePage {
                     }
                 },
                 Kirigami.Action {
+                    visible: model.size > 0
                     text: qsTr("Delete")
                     iconName: "edit-delete-symbolic"
                     onTriggered: {

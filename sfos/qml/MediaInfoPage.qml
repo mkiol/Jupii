@@ -8,6 +8,7 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
 import Sailfish.Pickers 1.0
+import Sailfish.Gallery 1.0
 import Nemo.Thumbnailer 1.0
 
 import harbour.jupii.AVTransport 1.0
@@ -239,7 +240,7 @@ Page {
                               itemType === ContentServer.ItemType_ScreenCapture ||
                               itemType === ContentServer.ItemType_Url ||
                               itemType === ContentServer.ItemType_Slides) &&
-                             text.length !== 0 && av.currentType !== AVTransport.T_Image
+                             value.length !== 0 && av.currentType !== AVTransport.T_Image
                 }
 
                 DetailItem {
@@ -412,8 +413,122 @@ Page {
                 }
 
                 SectionHeader {
+                    text: qsTr("Slideshow control")
+                    visible: itemType === ContentServer.ItemType_Slides
+                }
+
+                Row {
+                    visible: imageView.visible
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: Theme.iconSizeExtraLarge
+                    spacing: Theme.paddingLarge
+
+                    IconButton {
+                        width: Theme.iconSizeLarge; height: Theme.iconSizeLarge
+                        icon.source: "image://theme/icon-m-previous"
+                        onClicked: cserver.slidesSwitch(true)
+                    }
+
+                    IconButton {
+                        id: pauseButton
+                        width: Theme.iconSizeLarge; height: Theme.iconSizeLarge
+                        icon.source: settings.imagePaused ? "image://theme/icon-l-play" : "image://theme/icon-l-pause"
+                        onClicked: settings.imagePaused = !settings.imagePaused
+
+                        SequentialAnimation on opacity {
+                            loops: Animation.Infinite
+                            running: settings.imagePaused && av.transportState === AVTransport.Playing
+                            onRunningChanged: {
+                                if (!running) {
+                                    pauseButton.opacity = 1.0
+                                }
+                            }
+
+                            PropertyAnimation { to: 0; duration: 500 }
+                            PropertyAnimation { to: 1; duration: 500 }
+                        }
+                    }
+
+                    IconButton {
+                        width: Theme.iconSizeLarge; height: Theme.iconSizeLarge
+                        icon.source: "image://theme/icon-m-next"
+                        onClicked: cserver.slidesSwitch(false)
+                    }
+                }
+
+                ListView {
+                    id: imageView
+                    visible: itemType === ContentServer.ItemType_Slides &&
+                             app.streamFiles.length > 0 &&
+                             av.transportState === AVTransport.Playing
+                    property real itemSize: Math.floor(width / Math.floor(width / Theme.itemSizeHuge))
+                    width: parent.width
+                    height: itemSize
+                    model: app.streamFiles
+                    clip: true
+                    orientation: ListView.Horizontal
+                    delegate: ThumbnailImage {
+                        source: modelData
+                        size: imageView.itemSize
+                        onClicked: cserver.slidesSwitchToIdx(index)
+                        Rectangle {
+                            visible: index === app.streamIdx
+                            color: "transparent"
+                            border.color: "#a0ffffff"
+                            border.width: Theme.paddingMedium
+                            anchors.fill: parent
+                        }
+                        Rectangle {
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            color: "#a0ffffff"
+                            height: indexLabel.height + Theme.paddingSmall
+                            width: indexLabel.width + Theme.paddingSmall
+                            Text {
+                                id: indexLabel
+                                anchors.centerIn: parent
+                                font.pixelSize: Theme.fontSizeSmall
+                                text: index + 1
+                                color: "black"
+                            }
+                        }
+
+                    }
+
+                    Connections {
+                        target: cserver
+                        onStreamFilesChanged: {
+                            if (!slidesFollowSwitch.checked) return
+                            imageView.currentIndex = app.streamIdx
+                        }
+                    }
+                }
+
+                TextSwitch {
+                    id: slidesFollowSwitch
+                    visible: imageView.visible
+                    automaticCheck: true
+                    checked: true
+                    text: qsTr("Follow current image")
+                    onClicked: {
+                        if (!checked) return
+                        imageView.currentIndex = app.streamIdx
+                    }
+                }
+
+                SectionHeader {
                     text: qsTr("Slideshow options")
                     visible: itemType === ContentServer.ItemType_Slides
+                }
+
+                TextSwitch {
+                    visible: itemType === ContentServer.ItemType_Slides
+                    automaticCheck: false
+                    checked: settings.slidesLoop
+                    text: qsTr("Repeat slideshow")
+                    onClicked: {
+                        settings.slidesLoop = !settings.slidesLoop
+                    }
                 }
 
                 TextSwitch {
@@ -500,122 +615,6 @@ Page {
                         case 3: settings.imageRotate = Settings.ImageRotate_Rot270; break;
                         default: settings.imageScale = Settings.ImageScale_None; break
                         }
-                    }
-                }
-
-                TextSwitch {
-                    visible: itemType === ContentServer.ItemType_Slides
-                    automaticCheck: false
-                    checked: settings.slidesLoop
-                    text: qsTr("Repeat slideshow")
-                    onClicked: {
-                        settings.slidesLoop = !settings.slidesLoop
-                    }
-                }
-
-                Row {
-                    visible: imageView.visible
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    height: Theme.iconSizeExtraLarge
-                    spacing: Theme.paddingLarge
-
-                    IconButton {
-                        width: Theme.iconSizeLarge; height: Theme.iconSizeLarge
-                        icon.source: "image://theme/icon-m-previous"
-                        onClicked: cserver.slidesSwitch(true)
-                    }
-
-                    IconButton {
-                        id: pauseButton
-                        width: Theme.iconSizeLarge; height: Theme.iconSizeLarge
-                        icon.source: settings.imagePaused ? "image://theme/icon-l-play" : "image://theme/icon-l-pause"
-                        onClicked: settings.imagePaused = !settings.imagePaused
-
-                        SequentialAnimation on opacity {
-                            loops: Animation.Infinite
-                            running: settings.imagePaused && av.transportState === AVTransport.Playing
-                            onRunningChanged: {
-                                if (!running) {
-                                    pauseButton.opacity = 1.0
-                                }
-                            }
-
-                            PropertyAnimation { to: 0; duration: 500 }
-                            PropertyAnimation { to: 1; duration: 500 }
-                        }
-                    }
-
-                    IconButton {
-                        width: Theme.iconSizeLarge; height: Theme.iconSizeLarge
-                        icon.source: "image://theme/icon-m-next"
-                        onClicked: cserver.slidesSwitch(false)
-                    }
-                }
-
-                ListView {
-                    id: imageView
-                    visible: itemType === ContentServer.ItemType_Slides &&
-                             app.streamFiles.length > 0 &&
-                             av.transportState === AVTransport.Playing
-                    property real itemSize: Theme.itemSizeHuge
-                    width: parent.width
-                    height: itemSize
-                    model: app.streamFiles
-                    clip: true
-                    orientation: ListView.Horizontal
-                    delegate: Image {
-                        width: imageView.itemSize
-                        height: imageView.itemSize
-                        sourceSize { width: width; height: height }
-                        source: "image://nemoThumbnail/" + modelData
-                        asynchronous: true
-                        fillMode: Image.PreserveAspectCrop
-                        Rectangle {
-                            visible: index === app.streamIdx
-                            color: "transparent"
-                            border.color: "#a0ffffff"
-                            border.width: Theme.paddingMedium
-                            anchors.fill: parent
-                        }
-                        Rectangle {
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            color: "#a0ffffff"
-                            height: indexLabel.height + Theme.paddingSmall
-                            width: indexLabel.width + Theme.paddingSmall
-                            Text {
-                                id: indexLabel
-                                anchors.centerIn: parent
-                                font.pixelSize: Theme.fontSizeSmall
-                                text: index + 1
-                                color: "black"
-                            }
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: cserver.slidesSwitchToIdx(index)
-                        }
-                    }
-
-                    Connections {
-                        target: cserver
-                        onStreamFilesChanged: {
-                            if (!slidesFollowSwitch.checked) return
-                            imageView.currentIndex = app.streamIdx
-                        }
-                    }
-                }
-
-                TextSwitch {
-                    id: slidesFollowSwitch
-                    visible: imageView.visible
-                    automaticCheck: true
-                    checked: true
-                    text: qsTr("Follow current image")
-                    onClicked: {
-                        if (!checked) return
-                        imageView.currentIndex = app.streamIdx
                     }
                 }
             }

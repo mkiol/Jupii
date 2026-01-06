@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -95,6 +95,19 @@ Page {
         onControlableChanged: updateMediaInfoPage()
     }
 
+    Timer {
+        id: errorTimer
+         property int lastErr: -1
+
+        interval: 2000
+        onTriggered: lastErr = -1
+
+        function setLastErr(code) {
+            lastErr = code
+            start()
+        }
+    }
+
     Connections {
         target: playlist
 
@@ -102,18 +115,33 @@ Page {
         onItemsLoaded: root.showActiveItem()
 
         onError: {
-            if (code === PlayListModel.E_FileExists)
-                notifications.show(qsTr("Item is already in play queue"))
-            else if (code === PlayListModel.E_ItemNotAdded)
-                notifications.show(qsTr("Item cannot be added"))
-            else if (code === PlayListModel.E_SomeItemsNotAdded)
-                notifications.show(qsTr("Some items cannot be added"))
-            else if (code === PlayListModel.E_AllItemsNotAdded)
-                notifications.show(qsTr("Items cannot be added"))
-            else if (code === PlayListModel.E_ProxyError)
-                notifications.show(qsTr("Unable to play item"))
-            else
-                notifications.show(qsTr("Unknown error"))
+            if (code == errorTimer.lastErr) return
+            errorTimer.setLastErr(code)
+
+            switch (code) {
+                case PlayListModel.E_FileExists:
+                    notifications.show(qsTr("Item is already in play queue"));
+                    break;
+                case PlayListModel.E_ItemNotAdded:
+                    notifications.show(qsTr("Item cannot be added"));
+                    break;
+                case PlayListModel.E_SomeItemsNotAdded:
+                    notifications.show(qsTr("Some items cannot be added"));
+                    break;
+                case PlayListModel.E_AllItemsNotAdded:
+                    notifications.show(qsTr("Items cannot be added"));
+                    break;
+                case PlayListModel.E_ProxyError:
+                case PlayListModel.E_CasterError:
+                    notifications.show(qsTr("Unable to play item"));
+                    break;
+                case PlayListModel.E_CasterError_NoFiles:
+                    notifications.show(qsTr("No images to play"));
+                    break;
+                default:
+                    notifications.show(qsTr("Unknown error"));
+                    break;
+            }
         }
 
         onActiveItemChanged: {
@@ -281,14 +309,23 @@ Page {
                     return "image://icons/icon-s-browser?" + primaryColor
                 case ContentServer.ItemType_Upnp:
                     return "image://icons/icon-s-device?" + primaryColor
+                case ContentServer.ItemType_Slides:
+                    if (icon.source.toString().length > 0) {
+                        return "image://theme/icon-m-levels?" + primaryColor
+                    }
+                    break;
                 }
+
                 return ""
             }
             attachedIcon2.source: {
-                if (!model || model.toBeActive || icon.source.length === 0 || icon.status !== Image.Ready)
+                if (!model || model.toBeActive || (icon.source.toString().length > 0 && icon.status !== Image.Ready))
                     return ""
                 if (model.itemType === ContentServer.ItemType_Slides)
                     return "image://theme/icon-m-file-video?" + primaryColor
+                if (icon.source.toString().length === 0) {
+                    return ""
+                }
                 return defaultIcon.source
             }
             icon.source: {
@@ -315,10 +352,12 @@ Page {
                     return model.audioSource.length !== 0 ? model.audioSourceMuted ? qsTr("Audio capture (audio source muted)") : qsTr("Audio capture") : ""
                 case ContentServer.ItemType_Mic:
                     return ""
-                case ContentServer.ItemType_Slides: {
-                    var date = model.recDate
-                    return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
-                }
+                case ContentServer.ItemType_Slides:
+                    if (model.size > 0) {
+                        var date = model.recDate
+                        return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
+                    }
+                    return ""
                 default:
                     return model.artist.length !== 0 ? model.artist : ""
                 }
@@ -474,7 +513,7 @@ Page {
         subtitle: {
             if (app.streamTitle.length === 0) {
                 if (root.itemType === ContentServer.ItemType_Slides) {
-                    return qsTr("%n image(s)", "", av.currentSize)
+                    return av.currentSize > 0 ? qsTr("%n image(s)", "", av.currentSize) : ""
                 }
                 if (root.itemType !== ContentServer.ItemType_Mic &&
                         root.itemType !== ContentServer.ItemType_PlaybackCapture &&

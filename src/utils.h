@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,9 +15,15 @@
 #include <QPair>
 #include <QString>
 #include <QStringList>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator>
+#else
 #include <QThread>
+#endif
 #include <memory>
 #include <optional>
+#include <string>
+#include <variant>
 #ifdef USE_SFOS
 #include <QQuickItem>
 #endif
@@ -27,6 +33,8 @@
 class Utils : public QObject, public Singleton<Utils> {
     Q_OBJECT
    public:
+    enum class SlidesTime { Today, Last7Days, Last30Days };
+
     static const QString typeKey;
     static const QString cookieKey;
     static const QString nameKey;
@@ -140,15 +148,23 @@ class Utils : public QObject, public Singleton<Utils> {
     static QString deviceIconFilePath(const QString &id);
     static bool createPlaylistDir();
     static QString humanFriendlySizeString(int64_t size);
-    static QUrl slidesUrl(const QString &playlistPath);
+    static QUrl slidesUrl(const std::variant<QString, SlidesTime> &var);
+    static QString slidesTimeStr(SlidesTime time);
+    static QString slidesTimeName(SlidesTime time);
+    static std::optional<SlidesTime> strToSlidesTime(const QString &str);
+    static std::vector<std::string> imagePathForSlidesTime(SlidesTime time);
 
    private:
-    QHash<QThread *, bool> seedDone;
-    QStringList lastNetIfs;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+    QRandomGenerator m_randGen;
+#else
+    QHash<QThread *, bool> m_seedDone;
+#endif
+    QStringList m_lastNetIfs;
 #ifdef USE_SFOS
-    qint32 notifId = 0;
+    qint32 m_notifId = 0;
     // Notification notif;
-    QQuickItem *qmlRootItem = nullptr;
+    QQuickItem *m_qmlRootItem = nullptr;
 #endif
 };
 

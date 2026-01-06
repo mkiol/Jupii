@@ -63,16 +63,16 @@ Dialog {
             id: menu
             busy: itemModel.busy
 
-            MenuItem {
-                visible: enabled
-                enabled: listView.count > 0 && itemModel.selectedCount > 0 && !itemModel.busy
-                text: qsTr("Delete selected")
-                onClicked: {
-                    Remorse.popupAction(root,
-                        qsTr("Deleting %n item(s)", "", itemModel.selectedCount),
-                        function(){itemModel.deleteSelected()})
-                }
-            }
+//            MenuItem {
+//                visible: enabled
+//                enabled: listView.count > 0 && itemModel.selectedCount > 0 && !itemModel.busy
+//                text: qsTr("Delete selected")
+//                onClicked: {
+//                    Remorse.popupAction(root,
+//                        qsTr("Deleting %n item(s)", "", itemModel.selectedCount),
+//                        function(){itemModel.deleteSelected()})
+//                }
+//            }
 
             MenuItem {
                 visible: enabled
@@ -103,7 +103,7 @@ Dialog {
             }
 
             MenuItem {
-                text: qsTr("Create a new slideshow")
+                text: qsTr("Create slideshow")
                 enabled: !itemModel.busy
                 onClicked: {
                     itemModel.setAllSelected(false)
@@ -112,13 +112,38 @@ Dialog {
             }
         }
 
+        Component {
+            id: contextMenuCmp
+            ContextMenu {
+                property string modelId
+                MenuItem {
+                    text: qsTr("Edit")
+                    onClicked: {
+                        itemModel.setAllSelected(false)
+                        pageStack.push(Qt.resolvedUrl("CreateSlidesDialog.qml"),
+                            {"model": itemModel, "slidesId": modelId})
+                    }
+                }
+                MenuItem {
+                    text: qsTr("Delete")
+                    onClicked: {
+                        itemModel.setAllSelected(false)
+                        Remorse.popupAction(root,
+                            qsTr("Deleting %n item(s)", "", 1),
+                            function(){itemModel.deleteItem(modelId)})
+                    }
+                }
+            }
+        }
+
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
+            property bool autoItem: model.size > 0
             highlighted: down || (model && model.selected)
             title.text: model ? model.title : ""
             subtitle.text: {
-                if (!model) return ""
+                if (!model || !autoItem) return ""
                 var date = model.friendlyDate
                 return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
             }
@@ -136,31 +161,16 @@ Dialog {
                 itemModel.setSelected(model.index, !selected);
             }
 
-            menu: ContextMenu {
-                MenuItem {
-                    text: qsTr("Edit")
-                    onClicked: {
-                        itemModel.setAllSelected(false)
-                        pageStack.push(Qt.resolvedUrl("CreateSlidesDialog.qml"),
-                            {"model": itemModel, "slidesId": model.id})
-                    }
-                }
-                MenuItem {
-                    text: qsTr("Delete")
-                    onClicked: {
-                        itemModel.setAllSelected(false)
-                        Remorse.popupAction(root,
-                            qsTr("Deleting %n item(s)", "", 1),
-                            function(){itemModel.deleteItem(model.id)})
-                    }
-                }
+            Component.onCompleted: {
+                if (!autoItem) return
+                menu = contextMenuCmp.createObject(this, {modelId: model.id})
             }
         }
 
         ViewPlaceholder {
             enabled: listView.count === 0 && !itemModel.busy
             text: qsTr("No slideshows")
-            hintText: qsTr("Pull down to create a slideshow.")
+            hintText: qsTr("Pull down to create a slideshow")
         }
     }
 
