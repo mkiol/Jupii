@@ -140,7 +140,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         Live = 1 << 13,
         SlidesTimeToday = 1 << 14,
         SlidesTimeLast7Days = 1 << 15,
-        SlidesTimeLast30Days = 1 << 16
+        SlidesTimeLast30Days = 1 << 16,
+        Qrc = 1 << 17
     };
 
     enum class CachingResult {
@@ -187,25 +188,25 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
                   static_cast<int>(MetaFlag::Local) |
                   static_cast<int>(MetaFlag::Seek)};
 
-        inline bool flagSet(MetaFlag flag) const {
+        bool flagSet(MetaFlag flag) const {
             return (this->flags & static_cast<int>(flag)) != 0;
         }
 
-        inline void setFlags(int flags, bool set = true) {
+        void setFlags(int flags, bool set = true) {
             if (set)
                 this->flags |= flags;
             else
                 this->flags &= ~flags;
         }
 
-        inline void setFlags(MetaFlag flag, bool set = true) {
+        void setFlags(MetaFlag flag, bool set = true) {
             if (set)
                 this->flags |= static_cast<int>(flag);
             else
                 this->flags &= ~static_cast<int>(flag);
         }
 
-        inline bool expired() const {
+        bool expired() const {
             if (metaUpdateTime.isNull()) return true;
             if (flagSet(MetaFlag::YtDl)) {  // ytdl meta is expired after 60s
                 return metaUpdateTime.addSecs(60) < QTime::currentTime();
@@ -213,8 +214,15 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
             return metaUpdateTime.addSecs(180) < QTime::currentTime();
         }
 
-        inline bool dummy() const {
+        bool dummy() const {
             return flagSet(MetaFlag::YtDl) ? metaUpdateTime.isNull() : false;
+        }
+
+        QUrl urlFromPath() const {
+            if (flagSet(MetaFlag::Qrc)) {
+                return "qrc" + path;
+            }
+            return QUrl::fromLocalFile(path);
         }
     };
 

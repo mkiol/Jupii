@@ -1306,7 +1306,8 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
                 meta->flagSet(ContentServer::MetaFlag::MadeFromCache)) {
                 ContentServer::instance()->makeItemMetaCopy(ficon, *imgMeta);
             }
-            iconUrl = QUrl::fromLocalFile(imgMeta->path);
+
+            iconUrl = imgMeta->urlFromPath();
         }
     }
 

@@ -1917,9 +1917,7 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeMicItemMeta(
     meta.type = Type::Type_Music;
     meta.size = 0;
     meta.itemType = ItemType_Mic;
-#if defined(USE_SFOS) || defined(USE_DESKTOP)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-mic"));
-#endif
     meta.setFlags(MetaFlag::Valid);
     meta.setFlags(MetaFlag::Local);
     meta.setFlags(MetaFlag::Live);
@@ -1951,9 +1949,7 @@ ContentServer::makePlaybackCaptureItemMeta(const QUrl &url) {
     meta.type = Type::Type_Music;
     meta.size = 0;
     meta.itemType = ItemType_PlaybackCapture;
-#if defined(USE_SFOS) || defined(USE_DESKTOP)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-pulse"));
-#endif
     meta.setFlags(MetaFlag::Valid);
     meta.setFlags(MetaFlag::Local);
     meta.setFlags(MetaFlag::Live);
@@ -1998,9 +1994,7 @@ ContentServer::makeScreenCaptureItemMeta(const QUrl &url) {
     meta.type = Type::Type_Video;
     meta.size = 0;
     meta.itemType = ItemType_ScreenCapture;
-#if defined(USE_SFOS) || defined(USE_DESKTOP)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-screen"));
-#endif
     meta.setFlags(MetaFlag::Valid);
     meta.setFlags(MetaFlag::Local);
     meta.setFlags(MetaFlag::Live);
@@ -2900,6 +2894,9 @@ ContentServer::makeMetaUsingExtension(const QUrl &url) {
     meta.filename = url.fileName();
     meta.itemType = itemTypeFromUrl(url);
     meta.setFlags(MetaFlag::Valid);
+    if (isQrc) {
+        meta.setFlags(MetaFlag::Qrc);
+    }
     meta.setFlags(
         static_cast<int>(MetaFlag::Local) | static_cast<int>(MetaFlag::Seek),
         isFile || isQrc);
