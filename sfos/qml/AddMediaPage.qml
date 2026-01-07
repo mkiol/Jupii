@@ -206,7 +206,7 @@ Page {
 
             SimpleListItem {
                 title.text: qsTr("Slideshow")
-                icon.source: "image://theme/icon-m-levels?" + (highlighted ?
+                icon.source: "image://icons/icon-m-slidesitem?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
                 onClicked: {
                     pageStack.push(Qt.resolvedUrl("SlidesPage.qml"));

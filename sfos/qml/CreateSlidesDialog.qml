@@ -69,6 +69,7 @@ Dialog {
                 placeholderText: qsTr("Enter slideshow title (optional)")
                 label: qsTr("Title")
                 text: root.name
+                onTextChanged: root.name = text
                 wrapMode: TextInput.WrapAnywhere
                 EnterKey.iconSource: root.canAccept ? "image://theme/icon-m-enter-accept" :
                                                       "image://theme/icon-m-enter-next"

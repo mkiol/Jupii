@@ -56,7 +56,21 @@ Page {
             }
 
             fillMode: Image.PreserveAspectCrop
-            source: av.currentAlbumArtURI
+            source: {
+                switch(itemType) {
+                case ContentServer.ItemType_LocalFile:
+                case ContentServer.ItemType_Url:
+                case ContentServer.ItemType_Upnp:
+                    return av.currentAlbumArtURI
+                case ContentServer.ItemType_ScreenCapture:
+                case ContentServer.ItemType_PlaybackCapture:
+                case ContentServer.ItemType_Mic:
+                case ContentServer.ItemType_Cam:
+                case ContentServer.ItemType_Slides:
+                    break;
+                }
+                return ""
+            }
         }
 
         OpacityRampEffect {
@@ -120,11 +134,11 @@ Page {
                         case ContentServer.ItemType_LocalFile:
                         case ContentServer.ItemType_Url:
                         case ContentServer.ItemType_Upnp:
+                            return av.currentAlbumArtURI
                         case ContentServer.ItemType_ScreenCapture:
                         case ContentServer.ItemType_PlaybackCapture:
                         case ContentServer.ItemType_Mic:
                         case ContentServer.ItemType_Cam:
-                            return av.currentAlbumArtURI
                         case ContentServer.ItemType_Slides:
                             break;
                         }

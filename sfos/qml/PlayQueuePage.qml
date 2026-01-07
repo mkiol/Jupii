@@ -288,7 +288,7 @@ Page {
                 else if (model.itemType === ContentServer.ItemType_Cam)
                     return "image://theme/icon-m-browser-camera?" + primaryColor
                 else if (model.itemType === ContentServer.ItemType_Slides)
-                    return "image://theme/icon-m-levels?" + primaryColor
+                    return "image://icons/icon-m-slidesitem?" + primaryColor
                 else {
                     switch (model.type) {
                     case AVTransport.T_Image:
@@ -311,18 +311,32 @@ Page {
                     return "image://icons/icon-s-device?" + primaryColor
                 case ContentServer.ItemType_Slides:
                     if (icon.source.toString().length > 0) {
-                        return "image://theme/icon-m-levels?" + primaryColor
+                        return "image://icons/icon-s-slidesitem?" + primaryColor
                     }
-                    break;
+                    break
                 }
-
                 return ""
             }
             attachedIcon2.source: {
-                if (!model || model.toBeActive || (icon.source.toString().length > 0 && icon.status !== Image.Ready))
+                if (!model || model.toBeActive || (icon.source.toString().length > 0 && icon.status !== Image.Ready)) {
                     return ""
-                if (model.itemType === ContentServer.ItemType_Slides)
-                    return "image://theme/icon-m-file-video?" + primaryColor
+                }
+                if (model.itemType === ContentServer.ItemType_Mic ||
+                        model.itemType === ContentServer.ItemType_PlaybackCapture ||
+                        model.itemType === ContentServer.ItemType_ScreenCapture ||
+                        model.itemType === ContentServer.ItemType_Cam ||
+                        model.itemType === ContentServer.ItemType_Slides) {
+                    switch (model.type) {
+                    case AVTransport.T_Image:
+                        return "image://theme/icon-m-file-image?" + primaryColor
+                    case AVTransport.T_Audio:
+                        return "image://theme/icon-m-file-audio?" + primaryColor
+                    case AVTransport.T_Video:
+                        return "image://theme/icon-m-file-video?" + primaryColor
+                    default:
+                        return "image://theme/icon-m-file-other?" + primaryColor
+                    }
+                }
                 if (icon.source.toString().length === 0) {
                     return ""
                 }
@@ -333,7 +347,8 @@ Page {
                     model.itemType === ContentServer.ItemType_Mic ||
                     model.itemType === ContentServer.ItemType_PlaybackCapture ||
                     model.itemType === ContentServer.ItemType_ScreenCapture ||
-                    model.itemType === ContentServer.ItemType_Cam) {
+                    model.itemType === ContentServer.ItemType_Cam ||
+                    (model.itemType === ContentServer.ItemType_Slides && model.size === 0)) {
                     return ""
                 }
                 return model.icon
@@ -354,8 +369,7 @@ Page {
                     return ""
                 case ContentServer.ItemType_Slides:
                     if (model.size > 0) {
-                        var date = model.recDate
-                        return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
+                        return qsTr("%n image(s)", "", model.size)
                     }
                     return ""
                 default:

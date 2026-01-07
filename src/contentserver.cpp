@@ -553,6 +553,18 @@ bool ContentServer::getContentMetaItem(const QString &id, const QUrl &url,
         case Type::Type_Video:
             m << "<upnp:class>" << (audioType ? audioItemClass : videoItemClass)
               << "</upnp:class>";
+            if (!icon.isEmpty() || !item->albumArt.isEmpty()) {
+                auto artUrl = QFileInfo::exists(item->albumArt)
+                                  ? QUrl::fromLocalFile(item->albumArt)
+                                  : QUrl{item->albumArt};
+                if (makeUrl(Utils::idFromUrl(icon.isEmpty() ? artUrl : icon,
+                                             artCookie),
+                            artUrl))
+                    m << "<upnp:albumArtURI>" << artUrl.toString()
+                      << "</upnp:albumArtURI>";
+                else
+                    qWarning() << "Cannot make Url form art path";
+            }
             break;
         case Type::Type_Playlist:
             m << "<upnp:class>" << playlistItemClass << "</upnp:class>";
@@ -2032,9 +2044,7 @@ QHash<QUrl, ContentServer::ItemMeta>::iterator ContentServer::makeCamItemMeta(
     meta.type = Type::Type_Video;
     meta.size = 0;
     meta.itemType = ItemType_Cam;
-#if defined(USE_SFOS) || defined(USE_DESKTOP)
     meta.albumArt = IconProvider::pathToNoResId(QStringLiteral("icon-cam"));
-#endif
     meta.setFlags(MetaFlag::Valid);
     meta.setFlags(MetaFlag::Local);
     meta.setFlags(MetaFlag::Live);
@@ -2072,7 +2082,8 @@ ContentServer::makeSlidesItemMeta(const QUrl &url) {
     } else if (params.slidesTime) {
         meta.title = Utils::slidesTimeName(params.slidesTime.value());
         meta.url = makeCasterUrl(url, std::move(params));
-
+        meta.albumArt =
+            IconProvider::pathToNoResId(QStringLiteral("icon-slides"));
         switch (params.slidesTime.value()) {
             case Utils::SlidesTime::Today:
                 meta.setFlags(MetaFlag::SlidesTimeToday);

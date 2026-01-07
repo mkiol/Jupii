@@ -150,7 +150,7 @@ Dialog {
             dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
             icon.source: model ? model.icon : ""
-            defaultIcon.source: "image://theme/icon-m-levels?" + primaryColor
+            defaultIcon.source: "image://icons/icon-m-slidesitem?" + primaryColor
             attachedIcon.source: {
                 return "image://theme/icon-m-file-video?" + primaryColor
             }

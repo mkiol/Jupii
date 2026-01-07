@@ -132,6 +132,20 @@ Kirigami.ScrollablePage {
         itemList.positionViewAtEnd();
     }
 
+
+    Timer {
+        id: errorTimer
+         property int lastErr: -1
+
+        interval: 2000
+        onTriggered: lastErr = -1
+
+        function setLastErr(code) {
+            lastErr = code
+            start()
+        }
+    }
+
     Connections {
         target: playlist
 
@@ -172,6 +186,9 @@ Kirigami.ScrollablePage {
         }
 
         onError: {
+            if (code == errorTimer.lastErr) return
+            errorTimer.setLastErr(code)
+
             switch (code) {
                 case PlayListModel.E_FileExists:
                     app.showToast(qsTr("Item is already in play queue"));
@@ -248,8 +265,7 @@ Kirigami.ScrollablePage {
                     return model.videoSource + " · " + model.videoOrientation + (model.audioSource.length !== 0 ? (" · " + model.audioSource) : "")
                 case ContentServer.ItemType_Slides:
                     if (model.size > 0) {
-                        var date = model.recDate
-                        return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
+                        return qsTr("%n image(s)", "", model.size)
                     }
                     break;
                 default:
@@ -294,10 +310,26 @@ Kirigami.ScrollablePage {
             }
 
             attachedIcon2Name: {
-                if (model.itemType === ContentServer.ItemType_Slides)
-                    return "emblem-videos-symbolic"
-                if (iconSource.toString().length === 0)
+                if (model.itemType === ContentServer.ItemType_Mic ||
+                        model.itemType === ContentServer.ItemType_PlaybackCapture ||
+                        model.itemType === ContentServer.ItemType_ScreenCapture ||
+                        model.itemType === ContentServer.ItemType_Cam ||
+                        model.itemType === ContentServer.ItemType_Slides) {
+                    switch (model.type) {
+                    case AVTransport.T_Image:
+                        return "emblem-photos-symbolic"
+                    case AVTransport.T_Audio:
+                        return "emblem-music-symbolic"
+                    case AVTransport.T_Video:
+                        return "emblem-videos-symbolic"
+                    default:
+                        return "unknown"
+                    }
+                }
+                if (iconSource.toString().length === 0 || !showingIcon) {
                     return ""
+                }
+
                 return defaultIconSource
             }
 
@@ -305,7 +337,8 @@ Kirigami.ScrollablePage {
                 if (model.itemType === ContentServer.ItemType_Mic ||
                         model.itemType === ContentServer.ItemType_PlaybackCapture ||
                         model.itemType === ContentServer.ItemType_ScreenCapture ||
-                        model.itemType === ContentServer.ItemType_Cam) {
+                        model.itemType === ContentServer.ItemType_Cam ||
+                        (model.itemType === ContentServer.ItemType_Slides && model.size === 0)) {
                     return ""
                 }
                 return model.icon
