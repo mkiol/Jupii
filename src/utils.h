@@ -15,9 +15,7 @@
 #include <QPair>
 #include <QString>
 #include <QStringList>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-#include <QRandomGenerator>
-#else
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 #include <QThread>
 #endif
 #include <memory>
@@ -155,9 +153,7 @@ class Utils : public QObject, public Singleton<Utils> {
     static std::vector<std::string> imagePathForSlidesTime(SlidesTime time);
 
    private:
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-    QRandomGenerator m_randGen;
-#else
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
     QHash<QThread *, bool> m_seedDone;
 #endif
     QStringList m_lastNetIfs;

@@ -28,6 +28,9 @@
 #include <QTime>
 #include <QUrlQuery>
 #include <QtGlobal>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator>
+#endif
 #ifdef USE_SFOS
 #include <QMetaObject>
 #endif
@@ -725,7 +728,8 @@ QString Utils::randString(int len) {
     QString rs;
     for (int i = 0; i < len; ++i) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-        rs.push_back(pc.at(m_randGen.bounded(pc.length() - 1)));
+        rs.push_back(
+            pc.at(QRandomGenerator::global()->bounded(pc.length() - 1)));
 #else
         rs.push_back(pc.at(qrand() % pc.length()));
 #endif
