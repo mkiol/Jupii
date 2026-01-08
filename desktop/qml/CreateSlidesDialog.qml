@@ -80,17 +80,13 @@ PopupDialog {
             }
             Controls.Button {
                 visible: root._urls.length > 0
-                text: qsTr("Remove all")
+                text: qsTr("Remove all images")
                 action: Kirigami.Action {
                     iconName: "remove-symbolic"
                     onTriggered: {
                         root._urls = []
                     }
                 }
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-                Controls.ToolTip.text: qsTr("Remove all images from the slideshow.")
-                hoverEnabled: true
             }
             function updateHeight() {
                 var h = height
@@ -117,7 +113,6 @@ PopupDialog {
                 Kirigami.Action {
                     text: qsTr("Remove")
                     iconName: "remove-symbolic"
-                    tooltip: qsTr("Remove this image from the slideshow.")
                     displayHint: Kirigami.DisplayHint.KeepVisible
                     onTriggered: {
                         root._urls.splice(index, 1)
@@ -127,7 +122,6 @@ PopupDialog {
                 Kirigami.Action {
                     text: qsTr("Move back")
                     iconName: "go-previous-symbolic"
-                    tooltip: qsTr("Move image back in a silideshow")
                     displayHint: Kirigami.DisplayHint.IconOnly
                     enabled: index > 0
                     onTriggered: {
@@ -139,7 +133,6 @@ PopupDialog {
                 Kirigami.Action {
                     text: qsTr("Move forward")
                     iconName: "go-next-symbolic"
-                    tooltip: qsTr("Move image forward in a silideshow")
                     displayHint: Kirigami.DisplayHint.IconOnly
                     enabled: index < (root._urls.length - 1)
                     onTriggered: {

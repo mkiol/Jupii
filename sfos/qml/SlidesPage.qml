@@ -115,22 +115,24 @@ Dialog {
         Component {
             id: contextMenuCmp
             ContextMenu {
-                property string modelId
+                property string modelId: model.id
                 MenuItem {
                     text: qsTr("Edit")
                     onClicked: {
                         itemModel.setAllSelected(false)
+                        var mid = modelId
                         pageStack.push(Qt.resolvedUrl("CreateSlidesDialog.qml"),
-                            {"model": itemModel, "slidesId": modelId})
+                            {"model": itemModel, "slidesId": mid})
                     }
                 }
                 MenuItem {
                     text: qsTr("Delete")
                     onClicked: {
                         itemModel.setAllSelected(false)
+                        var mid = modelId
                         Remorse.popupAction(root,
                             qsTr("Deleting %n item(s)", "", 1),
-                            function(){itemModel.deleteItem(modelId)})
+                            function(){itemModel.deleteItem(mid)})
                     }
                 }
             }
@@ -139,11 +141,11 @@ Dialog {
         delegate: DoubleListItem {
             property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
-            property bool autoItem: model.size > 0
+            property bool autoItem: model.size === 0
             highlighted: down || (model && model.selected)
             title.text: model ? model.title : ""
             subtitle.text: {
-                if (!model || !autoItem) return ""
+                if (!model || autoItem) return ""
                 var date = model.friendlyDate
                 return qsTr("%n image(s)", "", model.size) + (date.length > 0 ? " · " + date : "")
             }
@@ -162,7 +164,7 @@ Dialog {
             }
 
             Component.onCompleted: {
-                if (!autoItem) return
+                if (autoItem) return
                 menu = contextMenuCmp.createObject(this, {modelId: model.id})
             }
         }

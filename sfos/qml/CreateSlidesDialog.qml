@@ -99,7 +99,7 @@ Dialog {
             }
             MenuItem {
                 visible: root._urls.length > 0
-                text: qsTr("Remove all")
+                text: qsTr("Remove all images")
                 onClicked: {
                     root._urls = []
                 }
