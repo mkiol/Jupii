@@ -262,7 +262,14 @@ void Directory::discover() {
         emit discoveryFavReady();
 
 #ifndef USE_SFOS_HARBOUR
-        if (Settings::instance()->controlMpdService()) mpdtools::start();
+        switch (Settings::instance()->getMpdPolicy()) {
+            case Settings::MpdPolicy::MpdPolicy_Start:
+            case Settings::MpdPolicy::MpdPolicy_StartStop:
+                mpdtools::start();
+                break;
+            case Settings::MpdPolicy::MpdPolicy_None:
+                break;
+        }
 #endif
         // discovery
 

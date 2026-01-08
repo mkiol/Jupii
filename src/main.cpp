@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -94,8 +94,23 @@
 static void exitProgram() {
     qDebug() << "exiting";
 
+#ifndef USE_SFOS_HARBOUR
+    switch (Settings::instance()->getMpdPolicy()) {
+        case Settings::MpdPolicy::MpdPolicy_StartStop:
+            mpdtools::stop();
+            break;
+        case Settings::MpdPolicy::MpdPolicy_None:
+        case Settings::MpdPolicy::MpdPolicy_Start:
+            break;
+    }
+#endif
+
+#ifdef USE_PY
     // workaround for python thread locking
     std::quick_exit(0);
+#else
+    std::exit(0);
+#endif
 }
 
 static void signalHandler(int sig) {
@@ -367,10 +382,6 @@ int main(int argc, char** argv) {
     QGuiApplication::exec();
 #endif
     fcloseall();
-
-#ifndef USE_SFOS_HARBOUR
-    if (settings->controlMpdService()) mpdtools::stop();
-#endif
 
     exitProgram();
 }

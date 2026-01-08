@@ -1113,21 +1113,6 @@ QString Settings::videoOrientationStr(
     return videoOrientationStrStatic(orientation);
 }
 
-bool Settings::controlMpdService() const {
-#ifdef USE_SFOS
-    return value(QStringLiteral("control_mpd_service"), false).toBool();
-#else
-    return false;
-#endif
-}
-
-void Settings::setControlMpdService(bool value) {
-    if (value != controlMpdService()) {
-        setValue(QStringLiteral("control_mpd_service"), value);
-        emit controlMpdServiceChanged();
-    }
-}
-
 QString Settings::pyPath() const {
     return value(QStringLiteral("py_path"), {}).toString();
 }

@@ -757,14 +757,34 @@ Page {
                             }
                         }
 
-                        TextSwitch {
-                            automaticCheck: false
-                            checked: settings.controlMpdService
-                            text: qsTr("Start/stop local MPD and upmpdcli services")
-                            description: qsTr("When MPD and upmpdcli are installed they will be started " +
-                                              "together with Jupii and stopped on exit.")
-                            onClicked: {
-                                settings.controlMpdService = !settings.controlMpdService
+                        ComboBox {
+                            label: qsTr("Policy for local %1 & %2").arg("<i>MPD</i>").arg("<i>upmpdcli</i>")
+
+                            currentIndex: {
+                                if (settings.mpdPolicy === Settings.MpdPolicy_None)
+                                    return 0
+                                if (settings.mpdPolicy === Settings.MpdPolicy_Start)
+                                    return 1
+                                if (settings.mpdPolicy === Settings.MpdPolicy_StartStop)
+                                    return 2
+                                return 0
+                            }
+
+                            menu: ContextMenu {
+                                MenuItem { text: qsTr("Do nothing") }
+                                MenuItem { text: qsTr("Start automatically at startup") }
+                                MenuItem { text: qsTr("Start & stop automatically when exiting") }
+                            }
+
+                            onCurrentIndexChanged: {
+                                if (currentIndex == 0)
+                                    settings.mpdPolicy = Settings.MpdPolicy_None
+                                else if (currentIndex == 1)
+                                    settings.mpdPolicy = Settings.MpdPolicy_Start
+                                else if (currentIndex == 2)
+                                    settings.mpdPolicy = Settings.MpdPolicy_StartStop
+                                else
+                                    settings.mpdPolicy = Settings.MpdPolicy_None
                             }
                         }
 
@@ -800,7 +820,6 @@ Page {
                             }
                         }
 
-                        Spacer {}
                         Spacer {}
                     }
                 }

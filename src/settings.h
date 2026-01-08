@@ -58,7 +58,8 @@
     X(casterAudioStreamFormat,        getCasterAudioStreamFormat,       setCasterAudioStreamFormat,       caster_audio_stream_format,        Settings::CasterStreamFormat, Settings::CasterStreamFormat::CasterStreamFormat_Mp3, true) \
     X(lipstickFps,                    getLipstickFps,                   setLipstickFps,                   lisptick_fps,                      int,     20,              false         ) \
     X(mjpegQuality,                   getMjpegQuality,                  setMjpegQuality,                  mjpeg_quality,                     int,     95,              false         ) \
-    X(x264Quality,                    getX264Quality,                   setX264Quality,                    x264_quality,                     int,     60,              false         ) \
+    X(x264Quality,                    getX264Quality,                   setX264Quality,                   x264_quality,                      int,     60,              false         ) \
+    X(mpdPolicy,                      getMpdPolicy,                     setMpdPolicy,                     mpd_policy,                        Settings::MpdPolicy, Settings::MpdPolicy::MpdPolicy_None, false) \
     // clang-format on
 
 class Settings : public QSettings,
@@ -117,8 +118,6 @@ class Settings : public QSettings,
                    setAllowNotIsomMp4 NOTIFY allowNotIsomMp4Changed)
     Q_PROPERTY(YtPreferredType ytPreferredType READ ytPreferredType WRITE
                    setYtPreferredType NOTIFY ytPreferredTypeChanged)
-    Q_PROPERTY(bool controlMpdService READ controlMpdService WRITE
-                   setControlMpdService NOTIFY controlMpdServiceChanged)
     Q_PROPERTY(QString pyPath READ pyPath WRITE setPyPath NOTIFY pyPathChanged)
     Q_PROPERTY(QString prevAppVer READ prevAppVer WRITE setPrevAppVer NOTIFY
                    prevAppVerChanged)
@@ -220,6 +219,13 @@ class Settings : public QSettings,
         ImageRotate_Rot270 = 3
     };
     Q_ENUM(ImageRotate)
+
+    enum class MpdPolicy {
+        MpdPolicy_None = 0,
+        MpdPolicy_Start = 1,
+        MpdPolicy_StartStop = 2
+    };
+    Q_ENUM(MpdPolicy)
 
 #ifdef USE_SFOS
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";
@@ -327,8 +333,6 @@ class Settings : public QSettings,
         CasterVideoOrientation orientation);
     Q_INVOKABLE QString
     videoOrientationStr(CasterVideoOrientation orientation) const;
-    bool controlMpdService() const;
-    void setControlMpdService(bool value);
     QString pyPath() const;
     void setPyPath(const QString &value);
 #ifdef USE_DESKTOP
@@ -403,7 +407,6 @@ class Settings : public QSettings,
     void cacheCleaningTypeChanged();
     void ytPreferredTypeChanged();
     void allowNotIsomMp4Changed();
-    void controlMpdServiceChanged();
     void pyPathChanged();
     void prevAppVerChanged();
     void qtStyleChanged();
