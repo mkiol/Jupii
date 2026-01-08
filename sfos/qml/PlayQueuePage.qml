@@ -65,13 +65,20 @@ Page {
     }
 
     function isItemVisible(index) {
-         var item = listView.itemAtIndex(index)
-         if (!item) return false
-         var itemY = item.y
-         var itemHeight = item.height
-         var viewTop = listView.contentY
-         var viewBottom = viewTop + listView.height
-         return (itemY + itemHeight >= viewTop) && (itemY <= viewBottom)
+        var items = listView.contentItem.children
+        var item = null
+        for (var i = 0; i < items.length; ++i) {
+            item = items[i];
+            if (item.modelIndex === index) {
+                break
+            }
+        }
+        if (!item) return false
+        var itemY = item.y
+        var itemHeight = item.height
+        var viewTop = listView.contentY
+        var viewBottom = viewTop + listView.height
+        return (itemY + 2*item.height >= viewTop) && (itemY + item.height <= viewBottom)
      }
 
     function showLastItem() {
@@ -130,6 +137,7 @@ Page {
 
         onItemsAdded: root.showLastItem()
         onItemsLoaded: root.showActiveItem()
+        onActiveItemChanged: root.showActiveItem()
 
         onError: {
             if (code == errorTimer.lastErr) return
@@ -159,10 +167,6 @@ Page {
                     notifications.show(qsTr("Unknown error"));
                     break;
             }
-        }
-
-        onActiveItemChanged: {
-            root.showActiveItem()
         }
 
         onProgressValueChanged: {
@@ -284,6 +288,7 @@ Page {
         delegate: DoubleListItem {
             id: listItem
 
+            readonly property int modelIndex: index
             readonly property color primaryColor: highlighted || model.active ?
                                          (enabled ? Theme.highlightColor : Theme.secondaryHighlightColor) :
                                          (enabled ? Theme.primaryColor : Theme.secondaryColor)
