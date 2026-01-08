@@ -51,11 +51,28 @@ Page {
     }
 
     function showActiveItem() {
-        if (playlist.activeItemIndex >= 0)
-            listView.positionViewAtIndex(playlist.activeItemIndex, ListView.Contain)
-        else
-            listView.positionViewAtBeginning()
+        var idx = playlist.activeItemIndex
+        if (idx >= 0) {
+            if (isItemVisible(idx)) return
+            listView.positionViewAtIndex(idx, ListView.Contain)
+            return
+        }
+
+        idx = listView.count - 1
+        if (isItemVisible(idx)) return
+
+        listView.positionViewAtBeginning()
     }
+
+    function isItemVisible(index) {
+         var item = listView.itemAtIndex(index)
+         if (!item) return false
+         var itemY = item.y
+         var itemHeight = item.height
+         var viewTop = listView.contentY
+         var viewBottom = viewTop + listView.height
+         return (itemY + itemHeight >= viewTop) && (itemY <= viewBottom)
+     }
 
     function showLastItem() {
         listView.positionViewAtEnd();
@@ -267,12 +284,12 @@ Page {
         delegate: DoubleListItem {
             id: listItem
 
-            property color primaryColor: highlighted || model.active ?
+            readonly property color primaryColor: highlighted || model.active ?
                                          (enabled ? Theme.highlightColor : Theme.secondaryHighlightColor) :
                                          (enabled ? Theme.primaryColor : Theme.secondaryColor)
-            property color secondaryColor: highlighted || model.active ?
+            readonly property color secondaryColor: highlighted || model.active ?
                                          Theme.secondaryHighlightColor : Theme.secondaryColor
-            property bool isImage: model.type === AVTransport.T_Image
+            readonly property bool isImage: model.type === AVTransport.T_Image
 
             dimmed: playlist.busy || av.busy || rc.busy || playlist.refreshing
             enabled: !dimmed && listView.count > 0
@@ -400,7 +417,7 @@ Page {
                 enabled: !root.selectionMode
                 MenuItem {
                     text: listItem.isImage ? qsTr("Show") : qsTr("Play")
-                    enabled: model && (model.active || listItem.enabled)
+                    enabled: !root.selectionMode && model && (model.active || listItem.enabled)
                     visible: directory.inited && !root.devless &&
                              ((av.transportState !== AVTransport.Playing &&
                               !listItem.isImage) || !model.active)
@@ -415,7 +432,7 @@ Page {
 
                 MenuItem {
                     text: qsTr("Pause")
-                    enabled: model && (model.active || listItem.enabled)
+                    enabled: !root.selectionMode && model && (model.active || listItem.enabled)
                     visible: directory.inited && !root.devless &&
                              (av.stopable && model.active && !listItem.isImage)
                     onClicked: {
@@ -425,9 +442,27 @@ Page {
 
                 MenuItem {
                     text: qsTr("Remove")
-                    enabled: model && (model.active || listItem.enabled)
+                    enabled: !root.selectionMode
                     onClicked: {
                         playlist.remove(model.id)
+                    }
+                }
+
+                MenuItem {
+                    text: qsTr("Move up")
+                    enabled: !root.selectionMode
+                    visible: index > 0
+                    onClicked: {
+                        playlist.moveItemBackByIndex(index)
+                    }
+                }
+
+                MenuItem {
+                    text: qsTr("Move down")
+                    enabled: !root.selectionMode
+                    visible: index < listView.count - 1
+                    onClicked: {
+                        playlist.moveItemForwardByIndex(index)
                     }
                 }
             }

@@ -46,6 +46,8 @@ class ListModel : public QAbstractListModel {
     bool removeRowsNoDeleteItems(int row, int count,
                                  const QModelIndex& parent = QModelIndex());
     void moveRow(int orig, int dest, const QModelIndex& parent = QModelIndex());
+    void moveRowBack(int orig, const QModelIndex& parent = QModelIndex());
+    void moveRowForward(int orig, const QModelIndex& parent = QModelIndex());
     ListItem* takeRow(int row);
     ListItem* readRow(int row);
     ListItem* find(const QString& id) const;

@@ -131,6 +131,8 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     Q_INVOKABLE void removeSelectedItems();
     Q_INVOKABLE bool remove(const QString &id);
     Q_INVOKABLE bool removeIndex(int index);
+    Q_INVOKABLE void moveItemBackByIndex(int index);
+    Q_INVOKABLE void moveItemForwardByIndex(int index);
     Q_INVOKABLE QString activeId() const;
     QString activeCookie() const;
     Q_INVOKABLE QString nextActiveId() const;
@@ -178,6 +180,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     void itemsAdded();
     void itemsLoaded();
     void itemsRefreshed();
+    void itemMoved();
     void error(PlaylistModel::ErrorType code);
     void activeItemChanged();
     void activeItemIndexChanged();

@@ -274,6 +274,8 @@ PlaylistModel::PlaylistModel(QObject *parent)
             &PlaylistModel::onSupportedChanged, Qt::QueuedConnection);
     connect(this, &PlaylistModel::itemsAdded, this,
             &PlaylistModel::onItemsAdded, Qt::QueuedConnection);
+    connect(this, &PlaylistModel::itemMoved, this,
+            &PlaylistModel::onItemsLoaded, Qt::QueuedConnection);
     connect(this, &PlaylistModel::itemsLoaded, this,
             &PlaylistModel::onItemsLoaded, Qt::QueuedConnection);
     connect(this, &PlaylistModel::itemsRemoved, this,
@@ -1576,6 +1578,44 @@ void PlaylistModel::removeSelectedItems() {
 
 bool PlaylistModel::remove(const QString &id) {
     return removeIndex(indexFromId(id));
+}
+
+void PlaylistModel::moveItemBackByIndex(int index) {
+    if (index < 1) {
+        return;
+    }
+
+    moveRowBack(index);
+
+    if (m_activeItemIndex == index) {
+        setActiveItemIndex(m_activeItemIndex - 1);
+        emit itemMoved();
+    } else if (m_activeItemIndex == index - 1) {
+        setActiveItemIndex(m_activeItemIndex + 1);
+        emit itemMoved();
+    }
+
+    // saving last play queue
+    save();
+}
+
+void PlaylistModel::moveItemForwardByIndex(int index) {
+    if (index >= m_list.size() - 1) {
+        return;
+    }
+
+    moveRowForward(index);
+
+    if (m_activeItemIndex == index) {
+        setActiveItemIndex(m_activeItemIndex + 1);
+        emit itemMoved();
+    } else if (m_activeItemIndex == index + 1) {
+        setActiveItemIndex(m_activeItemIndex - 1);
+        emit itemMoved();
+    }
+
+    // saving last play queue
+    save();
 }
 
 QString PlaylistModel::nextActiveId() const {

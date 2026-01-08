@@ -122,11 +122,28 @@ Kirigami.ScrollablePage {
     }
 
     function showActiveItem() {
-        if (playlist.activeItemIndex >= 0)
-            itemList.positionViewAtIndex(playlist.activeItemIndex, ListView.Contain)
-        else
-            itemList.positionViewAtBeginning()
+        var idx = playlist.activeItemIndex
+        if (idx >= 0) {
+            if (isItemVisible(idx)) return
+            itemList.positionViewAtIndex(idx, ListView.Contain)
+            return
+        }
+
+        idx = listView.count - 1
+        if (isItemVisible(idx)) return
+
+        itemList.positionViewAtBeginning()
     }
+
+    function isItemVisible(index) {
+         var item = itemList.itemAtIndex(index)
+         if (!item) return false
+         var itemY = item.y
+         var itemHeight = item.height
+         var viewTop = itemList.contentY
+         var viewBottom = viewTop + itemList.height
+         return (itemY + itemHeight >= viewTop) && (itemY <= viewBottom)
+     }
 
     function showLastItem() {
         itemList.positionViewAtEnd();
@@ -250,7 +267,7 @@ Kirigami.ScrollablePage {
             id: listItem
 
             property bool isImage: model.type === AVTransport.T_Image
-            property bool playing: model.id === av.currentId &&
+            property bool playing: model.active &&
                                    av.transportState === AVTransport.Playing
             enabled: !root.busy
             label: model.name
@@ -368,6 +385,7 @@ Kirigami.ScrollablePage {
 
             highlighted: model.selected
 
+            alwaysVisibleActions: false
             actions: [
                 Kirigami.Action {
                     iconName: listItem.playing ?
@@ -383,12 +401,29 @@ Kirigami.ScrollablePage {
                     }
                 },
                 Kirigami.Action {
-                    iconName: "delete"
+                    iconName: "delete-symbolic"
                     text: qsTr("Remove")
                     visible: !root.selectionMode
+                    displayHint: Kirigami.DisplayHint.IconOnly | Kirigami.DisplayHint.AlwaysHide
                     onTriggered: {
                         playlist.remove(model.id)
                     }
+                },
+                Kirigami.Action {
+                    text: qsTr("Move up")
+                    iconName: "arrow-up-symbolic"
+                    visible: !root.selectionMode
+                    displayHint: Kirigami.DisplayHint.IconOnly | Kirigami.DisplayHint.AlwaysHide
+                    enabled: index > 0
+                    onTriggered: playlist.moveItemBackByIndex(index)
+                },
+                Kirigami.Action {
+                    text: qsTr("Move down")
+                    iconName: "arrow-down-symbolic"
+                    visible: !root.selectionMode
+                    displayHint: Kirigami.DisplayHint.IconOnly | Kirigami.DisplayHint.AlwaysHide
+                    enabled: index < itemList.count - 1
+                    onTriggered: playlist.moveItemForwardByIndex(index)
                 }
             ]
         }
