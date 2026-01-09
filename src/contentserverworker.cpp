@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2021-2025 Michal Kosciesza <michal@mkiol.net>
+﻿/* Copyright (C) 2021-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1151,18 +1151,21 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
                        ContentServer::ItemType::ItemType_Slides) {
                 std::vector<std::string> paths;
 
-                if (meta->path.isEmpty()) {
+                if (meta->flagSet(
+                        ContentServer::MetaFlag::SlidesImageAsVideo)) {
+                    paths.push_back(meta->path.toStdString());
+                } else if (meta->path.isEmpty()) {
                     if (meta->flagSet(
                             ContentServer::MetaFlag::SlidesTimeToday)) {
-                        paths = Utils::imagePathForSlidesTime(
+                        paths = Utils::imagePathsForSlidesTime(
                             Utils::SlidesTime::Today);
                     } else if (meta->flagSet(ContentServer::MetaFlag::
                                                  SlidesTimeLast7Days)) {
-                        paths = Utils::imagePathForSlidesTime(
+                        paths = Utils::imagePathsForSlidesTime(
                             Utils::SlidesTime::Last7Days);
                     } else if (meta->flagSet(ContentServer::MetaFlag::
                                                  SlidesTimeLast30Days)) {
-                        paths = Utils::imagePathForSlidesTime(
+                        paths = Utils::imagePathsForSlidesTime(
                             Utils::SlidesTime::Last30Days);
                     } else {
                         qWarning() << "no slides time flag in meta";
@@ -1180,9 +1183,6 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
                         qWarning() << "empty slice playlist";
                         return std::nullopt;
                     }
-                    if (!playlist->title.isEmpty()) {
-                        config.streamTitle = playlist->title.toStdString();
-                    }
                     std::transform(
                         playlist->items.cbegin(), playlist->items.cend(),
                         std::back_inserter(paths), [](const auto &item) {
@@ -1194,6 +1194,8 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
                     qWarning() << "no image paths for slides";
                     return std::nullopt;
                 }
+
+                config.streamTitle = meta->title.toStdString();
 
                 config.fileSourceConfig = Caster::FileSourceConfig{
                     std::move(paths),

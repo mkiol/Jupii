@@ -150,7 +150,8 @@ class Utils : public QObject, public Singleton<Utils> {
     static QString slidesTimeStr(SlidesTime time);
     static QString slidesTimeName(SlidesTime time);
     static std::optional<SlidesTime> strToSlidesTime(const QString &str);
-    static std::vector<std::string> imagePathForSlidesTime(SlidesTime time);
+    static std::vector<std::string> imagePathsForSlidesTime(SlidesTime time);
+    static bool imageSupportedInSlides(const QString &path);
 
    private:
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)

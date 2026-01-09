@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2023 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1725,6 +1725,11 @@ ContentServer::makeItemMetaUsingTaglib(const QUrl &url) {
                   static_cast<int>(MetaFlag::Local));
 
     if (meta.type == Type::Type_Image) {
+        if (Settings::instance()->getImageAsVideo()) {
+            qDebug() << "image will be converted to slides";
+            return makeSlidesItemMeta(Utils::slidesUrl(meta.path));
+        }
+
         meta.setFlags(MetaFlag::Seek, false);
         meta.duration = 0;
         if (QFile f{meta.path}; f.open(QIODevice::ReadOnly)) {
@@ -2056,16 +2061,26 @@ ContentServer::makeSlidesItemMeta(const QUrl &url) {
     if (params.playlistFile) {
         meta.path = params.playlistFile.value();
 
-        auto playlist = PlaylistParser::parsePlaylistFile(meta.path);
-        if (!playlist) {
-            qWarning() << "failed to parse slides playlist";
-            return m_metaCache.end();
+        if (Utils::imageSupportedInSlides(meta.path)) {
+            // playlist file is a image => creating slides with single image
+
+            QFileInfo fi{meta.path};
+            meta.title = fi.fileName();
+            meta.size = 1;
+            meta.recDate = fi.lastModified();
+            meta.setFlags(MetaFlag::SlidesImageAsVideo);
+        } else {
+            auto playlist = PlaylistParser::parsePlaylistFile(meta.path);
+            if (!playlist) {
+                qWarning() << "failed to parse slides playlist";
+                return m_metaCache.end();
+            }
+            meta.title = playlist->title.isEmpty() ? tr("Slideshow")
+                                                   : std::move(playlist->title);
+            meta.size = playlist->items.size();
+            meta.recDate = QFileInfo{meta.path}.lastModified();
         }
 
-        meta.title = playlist->title.isEmpty() ? tr("Slideshow")
-                                               : std::move(playlist->title);
-        meta.size = playlist->items.size();
-        meta.recDate = QFileInfo{meta.path}.lastModified();
         meta.url = makeCasterUrl(url, std::move(params));
 
         if (auto thumbPath = Thumb::path(meta.url)) {

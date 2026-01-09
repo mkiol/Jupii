@@ -141,7 +141,8 @@ class ContentServer : public QThread, public Singleton<ContentServer> {
         SlidesTimeToday = 1 << 14,
         SlidesTimeLast7Days = 1 << 15,
         SlidesTimeLast30Days = 1 << 16,
-        Qrc = 1 << 17
+        SlidesImageAsVideo = 1 << 17,
+        Qrc = 1 << 18
     };
 
     enum class CachingResult {

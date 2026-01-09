@@ -861,7 +861,7 @@ std::optional<Utils::SlidesTime> Utils::strToSlidesTime(const QString &str) {
     return std::nullopt;
 }
 
-std::vector<std::string> Utils::imagePathForSlidesTime(SlidesTime time) {
+std::vector<std::string> Utils::imagePathsForSlidesTime(SlidesTime time) {
     std::vector<std::string> paths;
 
     auto timeArg = [time] {
@@ -887,7 +887,7 @@ std::vector<std::string> Utils::imagePathForSlidesTime(SlidesTime time) {
         "SELECT nie:url(?file) "
         "WHERE { ?item a nfo:Image; nie:isStoredAs ?file; nfo:width ?width; "
         "nfo:height ?height. ?file nfo:fileLastModified ?date. "
-        "FILTER ( ?width > 800 && ?height > 600 && ?date >= "
+        "FILTER ( ?width > 600 && ?height > 600 && ?date >= "
         "\"%1\"^^xsd:dateTime ). } GROUP BY ?file ORDER BY DESC( ?date ) LIMIT "
         "1000");
 
@@ -912,4 +912,11 @@ std::vector<std::string> Utils::imagePathForSlidesTime(SlidesTime time) {
     }
 
     return paths;
+}
+
+bool Utils::imageSupportedInSlides(const QString &path) {
+    auto ext = QFileInfo{path}.suffix();
+    return ext.compare(QLatin1String{"png"}, Qt::CaseInsensitive) == 0 ||
+           ext.compare(QLatin1String{"jpg"}, Qt::CaseInsensitive) == 0 ||
+           ext.compare(QLatin1String{"jpeg"}, Qt::CaseInsensitive) == 0;
 }

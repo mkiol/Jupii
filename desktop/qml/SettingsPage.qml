@@ -139,19 +139,6 @@ Kirigami.ScrollablePage {
                 Kirigami.FormData.isSection: true
             }
 
-            // Controls.Switch {
-            //     checked: settings.imageAsVideo
-            //     text: qsTr("Always convert images into video")
-            //     onToggled: {
-            //         settings.imageAsVideo = !settings.imageAsVideo
-            //     }
-
-            //     Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-            //     Controls.ToolTip.visible: hovered
-            //     Controls.ToolTip.text: qsTr("When enabled, image elements are always converted into a video stream with a low frame rate.")
-            //     hoverEnabled: true
-            // }
-
             Controls.Switch {
                 checked: settings.slidesShowCountInd
                 text: qsTr("Show slide number")
@@ -285,7 +272,7 @@ Kirigami.ScrollablePage {
             RowLayout {
                 visible: root.showAdvanced
                 Kirigami.FormData.label: qsTr("Image FPS")
-                property string description: qsTr("The frame rate of a video stream used when converting an image to video format.")
+                property string description: qsTr("The frame rate of a video stream used in a slideshow.")
                 Controls.Slider {
                     from: 1
                     to: 60
@@ -315,6 +302,20 @@ Kirigami.ScrollablePage {
                     hoverEnabled: true
                 }
             }
+
+             Controls.Switch {
+                 visible: root.showAdvanced
+                 checked: settings.imageAsVideo
+                 text: qsTr("Always add images as a slideshow")
+                 onToggled: {
+                     settings.imageAsVideo = !settings.imageAsVideo
+                 }
+
+                 Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                 Controls.ToolTip.visible: hovered
+                 Controls.ToolTip.text: qsTr("When enabled, every image is added as its own one-item slideshow.")
+                 hoverEnabled: true
+             }
 
             // RowLayout {
             //     Kirigami.FormData.label: qsTr("Volume level step")

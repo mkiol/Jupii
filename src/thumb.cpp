@@ -165,8 +165,14 @@ std::optional<QString> Thumb::makeSlidesThumb(const QUrl &slidesUrl) {
         return std::nullopt;
     }
 
-    auto playlist = PlaylistParser::parsePlaylistFile(
-        q.queryItemValue(QStringLiteral("playlist")));
+    auto path = q.queryItemValue(QStringLiteral("playlist"));
+
+    if (Utils::imageSupportedInSlides(path)) {
+        // playlist path points to a single image file
+        return save(path, slidesUrl);
+    }
+
+    auto playlist = PlaylistParser::parsePlaylistFile(path);
     if (!playlist) {
         // failed to parse playlist
         return std::nullopt;
@@ -179,6 +185,11 @@ std::optional<QString> Thumb::makeSlidesThumb(const QUrl &slidesUrl) {
 
     if (playlist->items.empty()) {
         return std::nullopt;
+    }
+
+    if (playlist->items.size() == 1) {
+        // playlist has a single image file
+        return save(playlist->items.front().url.toLocalFile(), slidesUrl);
     }
 
     std::array<std::optional<QPixmap>, 4> pixmaps;
@@ -199,8 +210,8 @@ std::optional<QString> Thumb::makeSlidesThumb(const QUrl &slidesUrl) {
     QPainter painter{&result};
     painter.drawPixmap(QPoint{0, 0}, pixmaps[0].value());
     painter.drawPixmap(QPoint{size, 0}, pixmaps[1].value());
-    painter.drawPixmap(QPoint{0, size}, pixmaps[2].value());
-    painter.drawPixmap(QPoint{size, size}, pixmaps[3].value());
+    painter.drawPixmap(QPoint{size, size}, pixmaps[2].value());
+    painter.drawPixmap(QPoint{0, size}, pixmaps[3].value());
     painter.end();
 
     QBuffer b{&data};
@@ -251,7 +262,7 @@ std::optional<QString> Thumb::download(const QUrl &url,
     return QString{};
 }
 
-std::optional<QString> Thumb::save(QString &&path, const QUrl &url) {
+std::optional<QString> Thumb::save(const QString &path, const QUrl &url) {
     QFile file{path};
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "failed to open file:" << path;

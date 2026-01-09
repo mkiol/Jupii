@@ -237,10 +237,21 @@ Page {
                             maximumValue: 60
                             value: settings.imageFps
                             label: qsTr("Image FPS")
-                            description: qsTr("The frame rate of a video stream used when converting an image to video format.")
+                            description: qsTr("The frame rate of a video stream used in a slideshow.")
 
                             onValueChanged: {
                                 settings.imageFps = value
+                            }
+                        }
+
+                        TextSwitch {
+                            visible: root.showAdvanced
+                            automaticCheck: false
+                            checked: settings.imageAsVideo
+                            text: qsTr("Always add images as a slideshow")
+                            description: qsTr("When enabled, every image is added as its own one-item slideshow.")
+                            onClicked: {
+                                settings.imageAsVideo = !settings.imageAsVideo
                             }
                         }
                     }

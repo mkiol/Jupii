@@ -1228,24 +1228,17 @@ PlaylistItem *PlaylistModel::makeItem(const QUrl &id) {
 
     if (type == ContentServer::Type::Type_Unknown) {
         // add type to url if needed
-        bool imageAsVideo =
-            meta->type == ContentServer::Type::Type_Image &&
-            meta->itemType == ContentServer::ItemType_LocalFile &&
-            Settings::instance()->getImageAsVideo();
-        bool addTypeToUrl =
-            meta->flagSet(ContentServer::MetaFlag::YtDl) || imageAsVideo;
+        bool addTypeToUrl = meta->flagSet(ContentServer::MetaFlag::YtDl);
 
         if (addTypeToUrl) {
             QUrlQuery q{finalId};
             if (q.hasQueryItem(Utils::typeKey))
                 q.removeQueryItem(Utils::typeKey);
             q.addQueryItem(Utils::typeKey,
-                           QString::number(static_cast<int>(
-                               imageAsVideo ? ContentServer::Type::Type_Video
-                                            : meta->type)));
+                           QString::number(static_cast<int>(meta->type)));
             finalId.setQuery(q);
         }
-        type = imageAsVideo ? ContentServer::Type::Type_Video : meta->type;
+        type = meta->type;
     }
 
     if (name.isEmpty()) {

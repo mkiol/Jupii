@@ -29,7 +29,7 @@ class Thumb {
                                            ThumbDownloadQueue &queue);
     static std::optional<QString> save(QByteArray &&data, const QUrl &url,
                                        QString ext);
-    static std::optional<QString> save(QString &&path, const QUrl &url);
+    static std::optional<QString> save(const QString &path, const QUrl &url);
     static std::optional<QString> makeSlidesThumb(const QUrl &slidesUrl);
 
    private:
