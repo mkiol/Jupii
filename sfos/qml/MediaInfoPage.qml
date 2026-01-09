@@ -56,21 +56,22 @@ Page {
             }
 
             fillMode: Image.PreserveAspectCrop
-            source: {
-                switch(itemType) {
-                case ContentServer.ItemType_LocalFile:
-                case ContentServer.ItemType_Url:
-                case ContentServer.ItemType_Upnp:
-                    return av.currentAlbumArtURI
-                case ContentServer.ItemType_ScreenCapture:
-                case ContentServer.ItemType_PlaybackCapture:
-                case ContentServer.ItemType_Mic:
-                case ContentServer.ItemType_Cam:
-                case ContentServer.ItemType_Slides:
-                    break;
-                }
-                return ""
-            }
+//            source: {
+//                switch(itemType) {
+//                case ContentServer.ItemType_LocalFile:
+//                case ContentServer.ItemType_Url:
+//                case ContentServer.ItemType_Upnp:
+//                    return av.currentAlbumArtURI
+//                case ContentServer.ItemType_ScreenCapture:
+//                case ContentServer.ItemType_PlaybackCapture:
+//                case ContentServer.ItemType_Mic:
+//                case ContentServer.ItemType_Cam:
+//                case ContentServer.ItemType_Slides:
+//                    break;
+//                }
+//                return ""
+//            }
+            source: av.currentAlbumArtURI
         }
 
         OpacityRampEffect {
@@ -129,21 +130,22 @@ Page {
                     }
 
                     fillMode: Image.PreserveAspectCrop
-                    source: {
-                        switch(itemType) {
-                        case ContentServer.ItemType_LocalFile:
-                        case ContentServer.ItemType_Url:
-                        case ContentServer.ItemType_Upnp:
-                            return av.currentAlbumArtURI
-                        case ContentServer.ItemType_ScreenCapture:
-                        case ContentServer.ItemType_PlaybackCapture:
-                        case ContentServer.ItemType_Mic:
-                        case ContentServer.ItemType_Cam:
-                        case ContentServer.ItemType_Slides:
-                            break;
-                        }
-                        return ""
-                    }
+//                    source: {
+//                        switch(itemType) {
+//                        case ContentServer.ItemType_LocalFile:
+//                        case ContentServer.ItemType_Url:
+//                        case ContentServer.ItemType_Upnp:
+//                            return av.currentAlbumArtURI
+//                        case ContentServer.ItemType_ScreenCapture:
+//                        case ContentServer.ItemType_PlaybackCapture:
+//                        case ContentServer.ItemType_Mic:
+//                        case ContentServer.ItemType_Cam:
+//                        case ContentServer.ItemType_Slides:
+//                            break;
+//                        }
+//                        return ""
+//                    }
+                    source: av.currentAlbumArtURI
                 }
 
                 OpacityRampEffect {
@@ -428,7 +430,7 @@ Page {
 
                 SectionHeader {
                     text: qsTr("Slideshow control")
-                    visible: itemType === ContentServer.ItemType_Slides
+                    visible: imageView.visible
                 }
 
                 Row {
