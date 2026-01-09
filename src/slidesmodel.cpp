@@ -82,7 +82,8 @@ void SlidesModel::createItem(const QString &id, QString name,
             return it == m_items.cend() ? QString{} : it->path;
         }
         for (int i = 1; i < 1000; ++i) {
-            auto path = m_dir.absoluteFilePath("slides_%1.xspf").arg(i);
+            auto path = m_dir.absoluteFilePath("slides_%1.xspf")
+                            .arg(Utils::instance()->randString());
             if (!QFileInfo::exists(path)) {
                 return path;
             }
@@ -185,6 +186,9 @@ QList<ListItem *> SlidesModel::makeItems() {
     QList<ListItem *> items;
     const auto &filter = getFilter();
 
+    int nbAutoItems = 0;
+
+#ifdef USE_SFOS
     if (filter.isEmpty()) {
         // insert auto items at the top
         auto todayUrl = Utils::slidesUrl(Utils::SlidesTime::Today);
@@ -199,7 +203,9 @@ QList<ListItem *> SlidesModel::makeItems() {
         items.push_back(new SlidesItem(
             last30Url.path(), last30Url, {},
             Utils::slidesTimeName(Utils::SlidesTime::Last30Days), {}, 0));
+        nbAutoItems = 3;
     }
+#endif
 
     foreach (const auto item, m_items) {
         if (item.title.contains(filter, Qt::CaseInsensitive) ||
@@ -209,8 +215,8 @@ QList<ListItem *> SlidesModel::makeItems() {
         }
     }
 
-    auto startIt =
-        filter.isEmpty() ? std::next(items.begin(), 3) : items.begin();
+    auto startIt = filter.isEmpty() ? std::next(items.begin(), nbAutoItems)
+                                    : items.begin();
     if (m_queryType == 0) {  // by date
         std::sort(startIt, items.end(), [](ListItem *a, ListItem *b) {
             auto *aa = qobject_cast<SlidesItem *>(a);
