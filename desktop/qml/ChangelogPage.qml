@@ -1,4 +1,4 @@
-/* Copyright (C) 2024-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2024-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,7 +21,26 @@ Kirigami.ScrollablePage {
         spacing: Kirigami.Units.largeSpacing
 
         SectionLabel {
-            text: qsTr("Version %1").arg("2.15")
+            text: qsTr("Version %1").arg(APP_VERSION)
+        }
+
+        RichLabel {
+            text: "<ul>
+            <li>New feature: Slideshow — lets you combine a series of images into a low-framerate video that plays in real time.
+                You can use the controls to set how long each image is displayed, pause, resume, or revind slideshow to a specific image.
+                Slideshow is an another way to view images, addressing issues found on many TV sets, such as limited or unreliable image-sharing support.</li>
+            <li>FOSDEM: Videos from 2025 and 2026 conferences added.</li>
+            <li>UI: The settings have two views: <i>Basic options</i> and <i>All options</i>.
+                When you select <i>All options</i>, you will have access to many advanced options that allow you to customize streaming parameters and much more.</li>
+            <li>UI: Icons now load asynchronously, which makes the user interface smoother.</li>
+            <li>Fix: Integration with Bandcamp, Youtube and Soundcloud was broken due to API change.</li>
+            <li>Fix: User Interface glitches</li>
+            <li>Flatpak: KDE runtime update to version 5.15-24.08</li>
+            </ul>"
+        }
+
+        SectionLabel {
+            text: qsTr("Version %1").arg("2.15.0")
         }
 
         RichLabel {
