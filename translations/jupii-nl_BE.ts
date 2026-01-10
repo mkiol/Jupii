@@ -154,6 +154,22 @@
         <source>Add all files in the folder and subfolders</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add audio extracted from a video file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add a slideshow created from images.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add audio previously recorded using the record button.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AddUrlDialog</name>
@@ -273,11 +289,11 @@
     </message>
     <message>
         <source>Album</source>
-        <translation type="unfinished">Album</translation>
+        <translation type="obsolete">Album</translation>
     </message>
     <message>
         <source>Artist</source>
-        <translation type="unfinished">Artiest</translation>
+        <translation type="obsolete">Artiest</translation>
     </message>
     <message>
         <source>Add selected</source>
@@ -399,6 +415,14 @@
         <source>Camera</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image %1 of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CopyableLabel</name>
@@ -412,6 +436,65 @@
     <message>
         <source>Unknown</source>
         <translation type="unfinished">Onbekend</translation>
+    </message>
+</context>
+<context>
+    <name>CreateSlidesDialog</name>
+    <message>
+        <source>Create slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter slideshow title (optional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation type="unfinished">Titel</translation>
+    </message>
+    <message>
+        <source>Add more images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove all images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There are no images in this slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to add images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished">Verwijderen</translation>
+    </message>
+    <message>
+        <source>Move back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move forward</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -822,6 +905,90 @@
         <source>Inverted landscape</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slideshow progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last edit time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slideshow control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Follow current image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slideshow options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Repeat slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show progress bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show date &amp; time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show camera model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image display time (seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image rotation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change to adjust how long the image is displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Specify the angle of rotation of the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skip Backward</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skip Forward</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle Repeat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resume slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pause slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show slide number</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MicDialog</name>
@@ -1020,6 +1187,25 @@
     </message>
     <message>
         <source>Save selected items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No images to play</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n image(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Move up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move down</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1499,10 +1685,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Advanced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Reset tips and hints</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1567,26 +1749,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Formats</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Live video</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Live audio</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start/stop local MPD and upmpdcli services</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Choose a directory for recordings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1643,7 +1805,175 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sharing</source>
+        <source>Show</source>
+        <translation type="unfinished">Tonen</translation>
+    </message>
+    <message>
+        <source>Basic options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gapless mode %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable only if not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show progress bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show date &amp; time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show camera model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pause slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image display time (seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change to adjust how long the image is displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Repeat slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When enabled, slideshow will be restarted after the last image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image rotation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Specify the angle of rotation of the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image FPS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The frame rate of a video stream used in a slideshow.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always add images as a slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When enabled, every image is added as its own one-item slideshow.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Multimedia</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Video format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Format used for real-time streaming.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slideshow video format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change if you observe problems with video playback in Slideshow.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum image size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unlimited</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MJPEG quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>H.264 quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Microphone volume boost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio capture volume boost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen capture FPS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The frame rate of a video stream in Screen capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Other options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Policy for local %1 &amp; %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do nothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start automatically at startup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start &amp; stop automatically when exiting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show slide number</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1658,6 +1988,94 @@
     <name>ShowmoreItem</name>
     <message>
         <source>Show more</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SlidesModel</name>
+    <message>
+        <source>Slideshow %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SlidesPage</name>
+    <message>
+        <source>Unselect all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last edit time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation type="unfinished">Titel</translation>
+    </message>
+    <message>
+        <source>Create slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleting %n item(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>%n image(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>No slideshows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pull down to create a slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A slideshow allows you to combine a set of images into a real-time video.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using the controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Slideshows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle selection</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1722,11 +2140,11 @@
     </message>
     <message>
         <source>Album</source>
-        <translation type="unfinished">Album</translation>
+        <translation type="obsolete">Album</translation>
     </message>
     <message>
         <source>Artist</source>
-        <translation type="unfinished">Artiest</translation>
+        <translation type="obsolete">Artiest</translation>
     </message>
     <message>
         <source>Toggle selection</source>
@@ -1975,6 +2393,18 @@
         <source>Auto</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Today&apos;s images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Images from last 7 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Images from last 30 days</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>YtPage</name>
@@ -1992,15 +2422,15 @@
     </message>
     <message>
         <source>Album</source>
-        <translation type="unfinished">Album</translation>
+        <translation type="obsolete">Album</translation>
     </message>
     <message>
         <source>Playlist</source>
-        <translation type="unfinished">Afspeellijst</translation>
+        <translation type="obsolete">Afspeellijst</translation>
     </message>
     <message>
         <source>Artist</source>
-        <translation type="unfinished">Artiest</translation>
+        <translation type="obsolete">Artiest</translation>
     </message>
     <message>
         <source>Type the words to search</source>

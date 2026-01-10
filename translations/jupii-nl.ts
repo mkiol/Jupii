@@ -74,138 +74,159 @@
 <context>
     <name>AddMediaPage</name>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="109"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="31"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="127"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="29"/>
         <source>Add</source>
         <translation>Toevoegen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="113"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="144"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="131"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="85"/>
         <source>Local</source>
         <translation>Lokaal</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="117"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="135"/>
         <source>Music</source>
         <translation>Muziek</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="126"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="144"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="135"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="153"/>
         <source>Artist</source>
         <translation>Artiest</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="144"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="162"/>
         <source>Playlist</source>
         <translation>Afspeellijst</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="153"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="176"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="171"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="119"/>
         <source>Audio from video</source>
         <translation>Audio uit video</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="162"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="180"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="171"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="189"/>
         <source>Image</source>
         <translation>Afbeelding</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="180"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="149"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="208"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="155"/>
+        <source>Slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="217"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="90"/>
         <source>File</source>
         <translation>Bestand</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="189"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="187"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="226"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="170"/>
         <source>Recording</source>
         <translation>Opname</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="198"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="198"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="235"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="186"/>
         <source>Remote</source>
         <translation>Extern</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="202"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="203"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="239"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="191"/>
         <source>URL</source>
         <translation>Url</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="211"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="210"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="248"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="198"/>
         <source>Media Server</source>
         <translation>Mediaserver</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="220"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="221"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="257"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="209"/>
         <source>Capture</source>
         <translation>Opname</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="224"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="226"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="261"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="214"/>
         <source>Audio capture</source>
         <translation>Audio-opname</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="235"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="234"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="271"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="222"/>
         <source>Screen capture</source>
         <translation>Schermopname</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="245"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="241"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="281"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="229"/>
         <source>Microphone</source>
         <translation>Microfoon</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="256"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="248"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="292"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="236"/>
         <source>Camera</source>
         <translation>Camera</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AddMediaPage.qml" line="266"/>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="256"/>
+        <location filename="../sfos/qml/AddMediaPage.qml" line="302"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="244"/>
         <source>Apps &amp; services</source>
         <translation>Apps en diensten</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="48"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="47"/>
         <source>Choose a file</source>
         <translation>Kies een bestand</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="64"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="65"/>
         <source>Choose a folder</source>
         <translation>Kies een map</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="160"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="102"/>
         <source>Folder</source>
         <translation>Map</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/AddMediaPage.qml" line="170"/>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="113"/>
         <source>Add all files in the folder and subfolders</source>
         <translation>Alle bestanden uit de map en onderliggende toevoegen</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="130"/>
+        <source>Add audio extracted from a video file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="164"/>
+        <source>Add a slideshow created from images.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/AddMediaPage.qml" line="179"/>
+        <source>Add audio previously recorded using the record button.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -277,12 +298,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AlbumsPage.qml" line="95"/>
+        <location filename="../sfos/qml/AlbumsPage.qml" line="100"/>
         <source>Select tracks</source>
         <translation>Nummers selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/AlbumsPage.qml" line="109"/>
+        <location filename="../sfos/qml/AlbumsPage.qml" line="115"/>
         <source>No albums</source>
         <translation>Geen albums</translation>
     </message>
@@ -303,12 +324,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../sfos/qml/ArtistPage.qml" line="83"/>
+        <location filename="../sfos/qml/ArtistPage.qml" line="88"/>
         <source>Select tracks</source>
         <translation>Nummers selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/ArtistPage.qml" line="97"/>
+        <location filename="../sfos/qml/ArtistPage.qml" line="102"/>
         <source>No artists</source>
         <translation>Geen artiesten</translation>
     </message>
@@ -316,54 +337,50 @@
 <context>
     <name>BcPage</name>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="113"/>
+        <location filename="../sfos/qml/BcPage.qml" line="108"/>
         <source>Open website</source>
         <translation>Website openen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="121"/>
+        <location filename="../sfos/qml/BcPage.qml" line="116"/>
         <location filename="../desktop/qml/BcPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>Niets selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="121"/>
+        <location filename="../sfos/qml/BcPage.qml" line="116"/>
         <location filename="../desktop/qml/BcPage.qml" line="54"/>
         <source>Select all</source>
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="164"/>
-        <location filename="../desktop/qml/BcPage.qml" line="148"/>
         <source>Album</source>
-        <translation>Album</translation>
+        <translation type="vanished">Album</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="165"/>
-        <location filename="../desktop/qml/BcPage.qml" line="149"/>
         <source>Artist</source>
-        <translation>Artiest</translation>
+        <translation type="vanished">Artiest</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="184"/>
-        <location filename="../desktop/qml/BcPage.qml" line="207"/>
+        <location filename="../sfos/qml/BcPage.qml" line="197"/>
+        <location filename="../desktop/qml/BcPage.qml" line="225"/>
         <source>Type the words to search</source>
         <translation>Voer een zoekopdracht in</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="184"/>
-        <location filename="../desktop/qml/BcPage.qml" line="207"/>
+        <location filename="../sfos/qml/BcPage.qml" line="197"/>
+        <location filename="../desktop/qml/BcPage.qml" line="225"/>
         <source>No items</source>
         <translation>Geen items</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="184"/>
-        <location filename="../desktop/qml/BcPage.qml" line="207"/>
+        <location filename="../sfos/qml/BcPage.qml" line="197"/>
+        <location filename="../desktop/qml/BcPage.qml" line="225"/>
         <source>No albums</source>
         <translation>Geen albums</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/BcPage.qml" line="101"/>
+        <location filename="../sfos/qml/BcPage.qml" line="96"/>
         <location filename="../desktop/qml/BcPage.qml" line="33"/>
         <source>New and Notable</source>
         <translation>Nieuw en uitgelicht</translation>
@@ -388,7 +405,7 @@
         <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/BcPage.qml" line="169"/>
+        <location filename="../desktop/qml/BcPage.qml" line="191"/>
         <source>Toggle selection</source>
         <translation>Selectie aan/uit</translation>
     </message>
@@ -397,7 +414,7 @@
     <name>CamDialog</name>
     <message>
         <location filename="../sfos/qml/CamDialog.qml" line="41"/>
-        <location filename="../desktop/qml/CamDialog.qml" line="23"/>
+        <location filename="../desktop/qml/CamDialog.qml" line="21"/>
         <source>Add camera</source>
         <translation>Camera toevoegen</translation>
     </message>
@@ -479,7 +496,9 @@
     </message>
     <message>
         <location filename="../sfos/qml/ChangelogPage.qml" line="32"/>
+        <location filename="../sfos/qml/ChangelogPage.qml" line="56"/>
         <location filename="../desktop/qml/ChangelogPage.qml" line="24"/>
+        <location filename="../desktop/qml/ChangelogPage.qml" line="43"/>
         <source>Version %1</source>
         <translation>Versie %1</translation>
     </message>
@@ -487,29 +506,39 @@
 <context>
     <name>ContentServer</name>
     <message>
-        <location filename="../src/contentserver.cpp" line="718"/>
+        <location filename="../src/contentserver.cpp" line="750"/>
         <source>Unknown</source>
         <translation>Onbekend</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1852"/>
+        <location filename="../src/contentserver.cpp" line="1919"/>
         <source>Microphone</source>
         <translation>Microfoon</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1886"/>
+        <location filename="../src/contentserver.cpp" line="1951"/>
         <source>Audio capture</source>
         <translation>Audio-opname</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1933"/>
+        <location filename="../src/contentserver.cpp" line="1996"/>
         <source>Screen capture</source>
         <translation>Schermopname</translation>
     </message>
     <message>
-        <location filename="../src/contentserver.cpp" line="1979"/>
+        <location filename="../src/contentserver.cpp" line="2040"/>
         <source>Camera</source>
         <translation>Camera</translation>
+    </message>
+    <message>
+        <location filename="../src/contentserver.cpp" line="2078"/>
+        <source>Slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/contentserver.cpp" line="3534"/>
+        <source>Image %1 of %2</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -526,6 +555,89 @@
         <location filename="../sfos/qml/CoverPage.qml" line="18"/>
         <source>Unknown</source>
         <translation>Onbekend</translation>
+    </message>
+</context>
+<context>
+    <name>CreateSlidesDialog</name>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="64"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="28"/>
+        <source>Create slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="64"/>
+        <source>Save slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="69"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="160"/>
+        <source>Enter slideshow title (optional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="70"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="159"/>
+        <source>Title</source>
+        <translation type="unfinished">Titel</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="97"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="75"/>
+        <source>Add more images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="97"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="75"/>
+        <source>Add images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="102"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="83"/>
+        <source>Remove all images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="110"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="105"/>
+        <source>There are no images in this slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="111"/>
+        <source>Pull down to add images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="121"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="114"/>
+        <source>Remove</source>
+        <translation type="unfinished">Verwijderen</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="128"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="123"/>
+        <source>Move back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/CreateSlidesDialog.qml" line="137"/>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="134"/>
+        <source>Move forward</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="28"/>
+        <source>Edit slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/CreateSlidesDialog.qml" line="45"/>
+        <source>Choose a file</source>
+        <translation type="unfinished">Kies een bestand</translation>
     </message>
 </context>
 <context>
@@ -729,7 +841,7 @@
     <message>
         <location filename="../sfos/qml/FosdemPage.qml" line="72"/>
         <location filename="../desktop/qml/FosdemPage.qml" line="45"/>
-        <location filename="../desktop/qml/FosdemPage.qml" line="134"/>
+        <location filename="../desktop/qml/FosdemPage.qml" line="139"/>
         <source>Refresh</source>
         <translation>Vernieuwen</translation>
     </message>
@@ -747,7 +859,7 @@
     </message>
     <message>
         <location filename="../sfos/qml/FosdemPage.qml" line="109"/>
-        <location filename="../desktop/qml/FosdemPage.qml" line="131"/>
+        <location filename="../desktop/qml/FosdemPage.qml" line="136"/>
         <source>No items</source>
         <translation>Geen items</translation>
     </message>
@@ -765,7 +877,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/FosdemPage.qml" line="108"/>
+        <location filename="../desktop/qml/FosdemPage.qml" line="113"/>
         <source>Toggle selection</source>
         <translation>Selectie aan/uit</translation>
     </message>
@@ -773,7 +885,7 @@
 <context>
     <name>FosdemYearsPage</name>
     <message>
-        <location filename="../sfos/qml/FosdemYearsPage.qml" line="98"/>
+        <location filename="../sfos/qml/FosdemYearsPage.qml" line="106"/>
         <location filename="../desktop/qml/FosdemYearsPage.qml" line="22"/>
         <source>FOSDEM Conferences</source>
         <translation>FOSDEM-conferenties</translation>
@@ -792,7 +904,7 @@
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/GpodderEpisodesPage.qml" line="113"/>
+        <location filename="../sfos/qml/GpodderEpisodesPage.qml" line="118"/>
         <source>No episodes</source>
         <translation>Geen afleveringen</translation>
     </message>
@@ -801,7 +913,7 @@
     <name>IcecastPage</name>
     <message>
         <location filename="../sfos/qml/IcecastPage.qml" line="49"/>
-        <location filename="../desktop/qml/IcecastPage.qml" line="89"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="88"/>
         <source>Error in getting data</source>
         <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
@@ -813,7 +925,7 @@
     <message>
         <location filename="../sfos/qml/IcecastPage.qml" line="79"/>
         <location filename="../desktop/qml/IcecastPage.qml" line="46"/>
-        <location filename="../desktop/qml/IcecastPage.qml" line="150"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="156"/>
         <source>Refresh</source>
         <translation>Vernieuwen</translation>
     </message>
@@ -830,8 +942,8 @@
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/IcecastPage.qml" line="127"/>
-        <location filename="../desktop/qml/IcecastPage.qml" line="147"/>
+        <location filename="../sfos/qml/IcecastPage.qml" line="129"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="153"/>
         <source>No stations</source>
         <translation>Geen radiozenders</translation>
     </message>
@@ -849,7 +961,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/IcecastPage.qml" line="124"/>
+        <location filename="../desktop/qml/IcecastPage.qml" line="129"/>
         <source>Toggle selection</source>
         <translation>Selectie aan/uit</translation>
     </message>
@@ -857,202 +969,286 @@
 <context>
     <name>MediaInfoPage</name>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="82"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="100"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="47"/>
         <source>Copy path</source>
         <translation>Locatie kopiëren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="83"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="101"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="48"/>
         <source>Copy URL</source>
         <translation>Url kopiëren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="145"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="85"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="178"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="100"/>
         <source>Item type</source>
         <translation>Itemtype</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="149"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="96"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="182"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="111"/>
         <source>Local file</source>
         <translation>Lokaal bestand</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="155"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="102"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="188"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="117"/>
         <source>Screen Capture</source>
         <translation>Schermopname</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="157"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="104"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="190"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="119"/>
         <source>Audio Capture</source>
         <translation>Audio-opname</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="159"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="106"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="192"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="121"/>
         <source>Microphone</source>
         <translation>Microfoon</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="161"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="108"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="194"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="123"/>
         <source>Camera</source>
         <translation>Camera</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="170"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="118"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="196"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="125"/>
+        <source>Slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="205"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="135"/>
         <source>Video source</source>
         <translation>Videobron</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="187"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="154"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="222"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="171"/>
         <source>Video orientation</source>
         <translation>Video-oriëntatie</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="195"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="178"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="230"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="195"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="195"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="178"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="230"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="195"/>
         <source>Station name</source>
         <translation>Naam van radiozender</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="207"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="199"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="244"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="217"/>
         <source>Captured application</source>
         <translation>Vastgelegde app</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="211"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="214"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="247"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="220"/>
+        <source>Slideshow progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="254"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="620"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="239"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="605"/>
         <source>None</source>
         <translation>Geen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="271"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="326"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="263"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="245"/>
+        <source>Number of images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="302"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="318"/>
+        <source>Last edit time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="321"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="364"/>
         <source>Live</source>
         <translation>Live</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="282"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="345"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="332"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="383"/>
         <source>Cached</source>
         <translation>In cache</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="272"/>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="283"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="339"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="354"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="432"/>
+        <source>Slideshow control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="528"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="704"/>
+        <source>Follow current image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="536"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="499"/>
+        <source>Slideshow options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="544"/>
+        <source>Repeat slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="554"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="505"/>
+        <source>Show slide number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="564"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="514"/>
+        <source>Show progress bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="574"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="523"/>
+        <source>Show date &amp; time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="584"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="532"/>
+        <source>Show camera model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="596"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="547"/>
+        <source>Image display time (seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="604"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="585"/>
+        <source>Image rotation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="322"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="333"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="377"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="392"/>
         <source>Yes</source>
         <translation>Ja</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="272"/>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="283"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="339"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="354"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="322"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="333"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="377"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="392"/>
         <source>No</source>
         <translation>Nee</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="348"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="426"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="398"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="465"/>
         <source>Tracks history</source>
         <translation>Luistergeschiedenis</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="90"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="108"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="37"/>
         <source>Copy current title</source>
         <translation>Huidige titel kopiëren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="178"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="135"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="213"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="152"/>
         <source>Audio source</source>
         <translation>Audiobron</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="207"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="199"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="249"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="222"/>
         <source>Current title</source>
         <translation>Huidige titel</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="219"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="220"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="269"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="260"/>
         <source>Author</source>
         <translation>Auteur</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="230"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="240"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="280"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="280"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="241"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="260"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="291"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="299"/>
         <source>Duration</source>
         <translation>Duur</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="265"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="311"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="315"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="349"/>
         <source>Content type</source>
         <translation>Inhoudstype</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="252"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="280"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="302"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="318"/>
         <source>Recording date</source>
         <translation>Opnamedatum</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="77"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="95"/>
         <location filename="../desktop/qml/MediaInfoPage.qml" line="29"/>
         <source>Open URL</source>
         <translation>Url openen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="153"/>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="258"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="100"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="295"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="186"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="308"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="115"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="333"/>
         <source>Media Server</source>
         <translation>Mediaserver</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="294"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="408"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="344"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="446"/>
         <source>Description</source>
         <translation>Beschrijving</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="313"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="360"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="363"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="398"/>
         <source>Path</source>
         <translation>Locatie</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="151"/>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="313"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="98"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="360"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="184"/>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="363"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="113"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="398"/>
         <source>URL</source>
         <translation>Url</translation>
     </message>
@@ -1077,33 +1273,68 @@
         <translation>De url is gekopieerd naar het klembord</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="166"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="183"/>
         <source>Auto</source>
         <translation>Automatisch</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="167"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="184"/>
         <source>Portrait</source>
         <translation>Verticaal</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="168"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="185"/>
         <source>Inverted portrait</source>
         <translation>Verticaal (andersom)</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="169"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="186"/>
         <source>Landscape</source>
         <translation>Horizontaal</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="170"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="187"/>
         <source>Inverted landscape</source>
         <translation>Horizontaal (andersom)</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/MediaInfoPage.qml" line="325"/>
-        <location filename="../desktop/qml/MediaInfoPage.qml" line="376"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="552"/>
+        <source>Change to adjust how long the image is displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="623"/>
+        <source>Specify the angle of rotation of the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="654"/>
+        <source>Skip Backward</source>
+        <translation type="unfinished">Vorig nummer</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="662"/>
+        <source>Resume slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="662"/>
+        <source>Pause slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="683"/>
+        <source>Skip Forward</source>
+        <translation type="unfinished">Volgend nummer</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="691"/>
+        <source>Toggle Repeat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/MediaInfoPage.qml" line="375"/>
+        <location filename="../desktop/qml/MediaInfoPage.qml" line="414"/>
         <source>Volume boost</source>
         <translation>Volumeversterking</translation>
     </message>
@@ -1118,19 +1349,19 @@
     </message>
     <message>
         <location filename="../sfos/qml/MicDialog.qml" line="47"/>
-        <location filename="../desktop/qml/MicDialog.qml" line="42"/>
+        <location filename="../desktop/qml/MicDialog.qml" line="44"/>
         <source>Could not find any microphone connected.</source>
         <translation>Er is geen microfoon aangetroffen.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MicDialog.qml" line="53"/>
-        <location filename="../desktop/qml/MicDialog.qml" line="52"/>
+        <location filename="../desktop/qml/MicDialog.qml" line="54"/>
         <source>Audio source</source>
         <translation>Audiobron</translation>
     </message>
     <message>
         <location filename="../sfos/qml/MicDialog.qml" line="72"/>
-        <location filename="../desktop/qml/MicDialog.qml" line="65"/>
+        <location filename="../desktop/qml/MicDialog.qml" line="67"/>
         <source>Volume boost</source>
         <translation>Volumeversterking</translation>
     </message>
@@ -1151,78 +1382,78 @@
 <context>
     <name>PlayQueuePage</name>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="108"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="178"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="173"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="214"/>
         <source>Item cannot be added</source>
         <translation>Het item kan niet worden toegevoegd</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="110"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="180"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="176"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="217"/>
         <source>Some items cannot be added</source>
         <translation>Enkele items kunnen niet worden toegevoegd</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="112"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="182"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="179"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="220"/>
         <source>Items cannot be added</source>
         <translation>De items kunnen niet worden toegevoegd</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="114"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="184"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="183"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="224"/>
         <source>Unable to play item</source>
         <translation>Het item kan niet worden afgespeeld</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="116"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="186"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="189"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="230"/>
         <source>Unknown error</source>
         <translation>Onbekende foutmelding</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="270"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="287"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="61"/>
         <source>Cancel</source>
         <translation>Annuleren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="231"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="361"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="302"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="461"/>
         <source>Preparing item %1 of %2...</source>
         <translation>Bezig met voorbereiden van item %1 van %2…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="232"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="362"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="303"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="462"/>
         <source>Preparing item...</source>
         <translation>Bezig met voorbereiden van item…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="392"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="520"/>
         <source>Pull down to add new items</source>
         <translation>Trek omlaag om items toe te voegen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="336"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="311"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="446"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="394"/>
         <source>Show</source>
         <translation>Tonen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="106"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="176"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="170"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="211"/>
         <source>Item is already in play queue</source>
         <translation>Dit item staat al in de wachtrij</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="143"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="214"/>
         <source>Select items</source>
         <translation>Items selecteren</translation>
     </message>
     <message numerus="yes">
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="144"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="215"/>
         <source>%n selected</source>
         <translation>
             <numerusform>%n geselecteerd</numerusform>
@@ -1230,121 +1461,150 @@
         </translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="147"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="218"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="42"/>
         <source>Play queue</source>
         <translation>Afspeelwachtrij</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="178"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="249"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="108"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="208"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="254"/>
         <source>Remove selected items</source>
         <translation>Selectie wissen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="75"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="100"/>
         <source>Removing items from play queue</source>
         <translation>Bezig met wissen van items…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="168"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="186"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="227"/>
+        <source>No images to play</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="239"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="100"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="192"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="238"/>
         <source>Save selected items</source>
         <translation>Selectie opslaan</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="234"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="364"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="305"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="464"/>
         <source>Adding item %1 of %2...</source>
         <translation>Bezig met toevoegen van item %1 van %2…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="235"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="365"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="306"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="465"/>
         <source>Adding item...</source>
         <translation>Bezig met toevoegen van item…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="305"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="409"/>
         <source>Audio source muted</source>
         <translation>Audiobron gedempt</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="411"/>
         <source>Audio capture (audio source muted)</source>
         <translation>Audio-opname (audiobron gedempt)</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="307"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="411"/>
         <source>Audio capture</source>
         <translation>Audio-opname</translation>
     </message>
+    <message numerus="yes">
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="416"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="592"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="285"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="480"/>
+        <source>%n image(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="336"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="311"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="446"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="394"/>
         <source>Play</source>
         <translation>Afspelen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="351"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="311"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="461"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="394"/>
         <source>Pause</source>
         <translation>Pauzeren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="361"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="322"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="471"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="405"/>
         <source>Remove</source>
         <translation>Verwijderen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="391"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="345"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="479"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="413"/>
+        <source>Move up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="488"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="421"/>
+        <source>Move down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="519"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="445"/>
         <source>No items</source>
         <translation>Geen items</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="158"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="229"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="47"/>
         <source>Exit selection mode</source>
         <translation>Selectiemodus afsluiten</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="460"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="376"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="588"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="476"/>
         <source>Unknown</source>
         <translation>Onbekend</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="532"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="666"/>
         <source>Connect to a device to control playback.</source>
         <translation>Maak verbinding met een apparaat om het te bedienen.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="554"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="679"/>
         <source>Tap to access playback &amp; volume controls</source>
         <translation>Druk om de afspeelbediening en volumeregeling te tonen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="572"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="697"/>
         <source>Flick left to see current track details</source>
         <translation>Veeg naar links om informatie over het huidige nummer te bekijken</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="531"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="665"/>
         <source>Not connected</source>
         <translation>Niet verbonden</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="259"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="88"/>
         <source>Unselect all</source>
         <translation>Niets selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="188"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="259"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="88"/>
         <source>Select all</source>
         <translation>Alles selecteren</translation>
@@ -1364,26 +1624,26 @@
         </translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="199"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="270"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="115"/>
         <source>Refresh</source>
         <translation>Vernieuwen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="209"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="280"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="82"/>
         <source>Select</source>
         <translation>Selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="216"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="287"/>
         <location filename="../desktop/qml/PlayQueuePage.qml" line="47"/>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="349"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="449"/>
         <source>Add</source>
         <translation>Toevoegen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/PlayQueuePage.qml" line="533"/>
+        <location filename="../sfos/qml/PlayQueuePage.qml" line="667"/>
         <source>Without connection, all items in play queue are still accessible on other devices in your local network.</source>
         <translation>Zonder internetverbinding zijn alle items in de afspeelwachtrij beschikbaar op andere apparaten in je lokale netwerk.</translation>
     </message>
@@ -1400,12 +1660,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="201"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="247"/>
         <source>Playlist has been saved</source>
         <translation>De afspeellijst is opgeslagen</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayQueuePage.qml" line="210"/>
+        <location filename="../desktop/qml/PlayQueuePage.qml" line="256"/>
         <source>Remove selected items from play queue?</source>
         <translation>Weet je zeker dat je de selectie wilt verwijderen uit de wachtrij?</translation>
     </message>
@@ -1421,7 +1681,7 @@
     <name>PlaybackDialog</name>
     <message>
         <location filename="../sfos/qml/PlaybackDialog.qml" line="41"/>
-        <location filename="../desktop/qml/PlaybackDialog.qml" line="23"/>
+        <location filename="../desktop/qml/PlaybackDialog.qml" line="21"/>
         <source>Add audio capture</source>
         <translation>Audio-opname toevoegen</translation>
     </message>
@@ -1481,38 +1741,38 @@
         <translation>Verbergen</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="331"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="338"/>
         <source>Skip Backward</source>
         <translation>Vorig nummer</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="341"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="348"/>
         <source>Seek Backward</source>
         <translation>Terugspoelen</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="351"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="358"/>
         <source>Seek Forward</source>
         <translation>Vooruitspoelen</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="361"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="368"/>
         <source>Skip Forward</source>
         <translation>Volgend nummer</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="373"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="380"/>
         <source>Toggle Record</source>
         <translation>Opname aan/uit</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="387"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="394"/>
         <source>Toggle Repeat One</source>
         <translation>Eenmalig herhalen aan/uit</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="426"/>
-        <location filename="../desktop/qml/PlayerPanel.qml" line="464"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="433"/>
+        <location filename="../desktop/qml/PlayerPanel.qml" line="471"/>
         <source>Toggle Mute</source>
         <translation>Dempen aan/uit</translation>
     </message>
@@ -1520,7 +1780,7 @@
 <context>
     <name>PlaylistModel</name>
     <message>
-        <location filename="../src/playlistmodel.cpp" line="625"/>
+        <location filename="../src/playlistmodel.cpp" line="630"/>
         <source>Playlist</source>
         <translation>Afspeellijst</translation>
     </message>
@@ -1581,14 +1841,14 @@
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/RadionetPage.qml" line="133"/>
-        <location filename="../desktop/qml/RadionetPage.qml" line="153"/>
+        <location filename="../sfos/qml/RadionetPage.qml" line="139"/>
+        <location filename="../desktop/qml/RadionetPage.qml" line="157"/>
         <source>Type the words to search</source>
         <translation>Voer een zoekopdracht in</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/RadionetPage.qml" line="133"/>
-        <location filename="../desktop/qml/RadionetPage.qml" line="153"/>
+        <location filename="../sfos/qml/RadionetPage.qml" line="139"/>
+        <location filename="../desktop/qml/RadionetPage.qml" line="157"/>
         <source>No stations</source>
         <translation>Geen radiozenders</translation>
     </message>
@@ -1606,7 +1866,7 @@
         <translation>Selectie toevoegen</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/RadionetPage.qml" line="121"/>
+        <location filename="../desktop/qml/RadionetPage.qml" line="125"/>
         <source>Toggle selection</source>
         <translation>Selectie aan/uit</translation>
     </message>
@@ -1631,7 +1891,7 @@
     </message>
     <message numerus="yes">
         <location filename="../sfos/qml/RecPage.qml" line="72"/>
-        <location filename="../sfos/qml/RecPage.qml" line="132"/>
+        <location filename="../sfos/qml/RecPage.qml" line="140"/>
         <source>Deleting %n item(s)</source>
         <translation>
             <numerusform>Bezig met verwijderen van %n item…</numerusform>
@@ -1674,13 +1934,13 @@
         <translation>Auteur</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/RecPage.qml" line="129"/>
+        <location filename="../sfos/qml/RecPage.qml" line="137"/>
         <source>Delete</source>
         <translation>Verwijderen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/RecPage.qml" line="141"/>
-        <location filename="../desktop/qml/RecPage.qml" line="167"/>
+        <location filename="../sfos/qml/RecPage.qml" line="149"/>
+        <location filename="../desktop/qml/RecPage.qml" line="168"/>
         <source>No recordings</source>
         <translation>Geen opnames</translation>
     </message>
@@ -1716,7 +1976,7 @@
         <translation>Sorteren op:</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/RecPage.qml" line="144"/>
+        <location filename="../desktop/qml/RecPage.qml" line="145"/>
         <source>Toggle selection</source>
         <translation>Selectie aan/uit</translation>
     </message>
@@ -1761,7 +2021,7 @@
     <name>ScreenDialog</name>
     <message>
         <location filename="../sfos/qml/ScreenDialog.qml" line="41"/>
-        <location filename="../desktop/qml/ScreenDialog.qml" line="23"/>
+        <location filename="../desktop/qml/ScreenDialog.qml" line="21"/>
         <source>Add screen capture</source>
         <translation>Schermopname toevoegen</translation>
     </message>
@@ -1867,57 +2127,57 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../src/settings.cpp" line="1020"/>
+        <location filename="../src/settings.cpp" line="905"/>
         <source>Built-in microphone</source>
         <translation>Ingebouwde microfoon</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1021"/>
+        <location filename="../src/settings.cpp" line="906"/>
         <source>Audio capture</source>
         <translation>Audio-opname</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1022"/>
+        <location filename="../src/settings.cpp" line="907"/>
         <source>Screen</source>
         <translation>Scherm</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1024"/>
+        <location filename="../src/settings.cpp" line="909"/>
         <source>Back camera</source>
         <translation>Camera achterzijde</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1026"/>
+        <location filename="../src/settings.cpp" line="911"/>
         <source>Front camera</source>
         <translation>Camera voorzijde</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1204"/>
+        <location filename="../src/settings.cpp" line="1097"/>
         <source>Auto</source>
         <translation>Automatisch</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1206"/>
+        <location filename="../src/settings.cpp" line="1099"/>
         <source>Portrait</source>
         <translation>Verticaal</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1208"/>
+        <location filename="../src/settings.cpp" line="1101"/>
         <source>Inverted portrait</source>
         <translation>Verticaal (andersom)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1210"/>
+        <location filename="../src/settings.cpp" line="1103"/>
         <source>Landscape</source>
         <translation>Horizontaal</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1212"/>
+        <location filename="../src/settings.cpp" line="1105"/>
         <source>Inverted landscape</source>
         <translation>Horizontaal (andersom)</translation>
     </message>
     <message>
-        <location filename="../src/settings.cpp" line="1287"/>
+        <location filename="../src/settings.cpp" line="1179"/>
         <source>Don&apos;t force any style</source>
         <translation>Geen stijl afdwingen</translation>
     </message>
@@ -1925,320 +2185,565 @@
 <context>
     <name>SettingsPage</name>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="30"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="19"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="32"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="21"/>
         <source>Settings</source>
         <translation>Instellingen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="65"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="258"/>
         <source>Volume control with hardware keys</source>
         <translation>Volumeregeling middels hardwarematige knoppen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="81"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="274"/>
         <source>Volume level step</source>
         <translation>Volumestap</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="47"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="94"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="63"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="87"/>
         <source>Share play queue items via UPnP Media Server</source>
         <translation>Wachtrij-items delen via upnp-mediaserver</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="36"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="39"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="53"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="38"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="46"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="850"/>
         <source>Restart is required for the changes to take effect.</source>
         <translation>Herstart om de wijzigingen toe te passen.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="48"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="101"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="64"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="94"/>
         <source>When enabled, items in play queue are accessible for other UPnP devices in your local network.</source>
         <translation>Schakel in om items in de afspeelwachtrij beschikbaar te maken op andere apparaten in je lokale netwerk.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="91"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="129"/>
         <source>Formats</source>
-        <translation>Formaten</translation>
+        <translation type="vanished">Formaten</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="95"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="134"/>
         <source>Live video</source>
-        <translation>Live-video</translation>
+        <translation type="vanished">Live-video</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="120"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="162"/>
         <source>Live audio</source>
-        <translation>Live-audio</translation>
+        <translation type="vanished">Live-audio</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="167"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="198"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="576"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="626"/>
         <source>Directory for recordings</source>
         <translation>Opnamemap</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="180"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="219"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="589"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="647"/>
         <source>Change</source>
         <translation>Wijzigen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="189"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="214"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="444"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="598"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="642"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="794"/>
         <source>Set default</source>
         <translation>Instellen als standaard</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="200"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="225"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="609"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="653"/>
         <source>Caching</source>
         <translation>Cache</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="216"/>
-        <location filename="../sfos/qml/SettingsPage.qml" line="247"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="242"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="272"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="364"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="89"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="625"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="656"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="115"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="586"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="669"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="695"/>
         <source>Auto</source>
         <translation>Automatisch</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="234"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="260"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="643"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="684"/>
         <source>Cache cleaning</source>
         <translation>Cache-opruiming</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="278"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="290"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="687"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="710"/>
         <source>Cache size</source>
         <translation>Cache-omvang</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="295"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="300"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="704"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="720"/>
         <source>Delete cache</source>
         <translation>Cache wissen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="354"/>
         <source>Start/stop local MPD and upmpdcli services</source>
-        <translation>Lokale MPD- en upmpdcli-diensten stoppen</translation>
+        <translation type="vanished">Lokale MPD- en upmpdcli-diensten stoppen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="355"/>
         <source>When MPD and upmpdcli are installed they will be started together with Jupii and stopped on exit.</source>
-        <translation>Als MPD en upmpdcli geïnstalleerd zijn, dan worden ze tegelijk met Jupii gestart gestopt.</translation>
+        <translation type="vanished">Als MPD en upmpdcli geïnstalleerd zijn, dan worden ze tegelijk met Jupii gestart gestopt.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="421"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="808"/>
         <source>Reset tips and hints</source>
         <translation>Tips en hulpballonnen herstellen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="423"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="810"/>
         <source>Resetting tips and hints</source>
         <translation>Bezig met herstellen…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="309"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="311"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="731"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="743"/>
         <source>Preferred network interface</source>
         <translation>Netwerkadapter</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="217"/>
-        <location filename="../sfos/qml/SettingsPage.qml" line="248"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="243"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="273"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="626"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="657"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="669"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="695"/>
         <source>Always</source>
         <translation>Altijd</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="218"/>
-        <location filename="../sfos/qml/SettingsPage.qml" line="249"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="244"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="274"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="627"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="658"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="669"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="695"/>
         <source>Never</source>
         <translation>Nooit</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="340"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="408"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="713"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="726"/>
+        <source>Other options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="750"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="769"/>
         <source>All types of UPnP devices are detected and shown, including unsupported devices like home routers. For unsupported devices only basic description information is available. This option might be useful for auditing UPnP devices in your local network.</source>
         <translation>Alle soorten upnp-apparaten getoond, inclusief niet-ondersteunde, zoals thuisrouters of mediaservers. Van niet-ondersteunde apparaten kan %1 enkel basisomschrijvingen tonen. Deze optie kan nuttig zijn om upnp-apparaten op je lokale netwerk te controleren.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="399"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="389"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="723"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="735"/>
         <source>Enter Frontier Silicon PIN</source>
         <translation>Voer de pincode van Frontier Silicon in</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="433"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="820"/>
         <source>Resetting settings</source>
         <translation>Bezig met herstellen…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="339"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="401"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="749"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="762"/>
         <source>All devices visible</source>
         <translation>Alle apparaten tonen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="58"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="42"/>
+        <source>Show</source>
+        <translation type="unfinished">Tonen</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="46"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="29"/>
+        <source>Basic options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="47"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="29"/>
+        <source>All options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="73"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="100"/>
+        <source>Gapless mode %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="90"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="115"/>
+        <source>Disable only if not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="91"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="115"/>
+        <source>Always enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="92"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="115"/>
+        <source>Always disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="118"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="138"/>
+        <source>Slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="133"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="152"/>
+        <source>Show progress bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="142"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="160"/>
+        <source>Show date &amp; time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="151"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="168"/>
+        <source>Show camera model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="160"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="176"/>
+        <source>Pause slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="171"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="183"/>
+        <source>Image display time (seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="172"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="184"/>
+        <source>Change to adjust how long the image is displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="181"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="217"/>
+        <source>Repeat slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="182"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="224"/>
+        <source>When enabled, slideshow will be restarted after the last image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="189"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="229"/>
+        <source>Image rotation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="205"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="244"/>
+        <source>None</source>
+        <translation type="unfinished">Geen</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="220"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="268"/>
+        <source>Specify the angle of rotation of the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="229"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="274"/>
+        <source>Image FPS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="230"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="275"/>
+        <source>The frame rate of a video stream used in a slideshow.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="241"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="309"/>
+        <source>Always add images as a slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="242"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="316"/>
+        <source>When enabled, every image is added as its own one-item slideshow.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="251"/>
         <source>Hardware keys</source>
         <translation>Fysieke toetsen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="116"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="158"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="284"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="343"/>
+        <source>Multimedia</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="288"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="348"/>
+        <source>Video format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="322"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="361"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="407"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="381"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="420"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="465"/>
+        <source>Format used for real-time streaming.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="323"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="382"/>
         <source>Change if you observe problems with video playback in Camera or Screen capture.</source>
         <translation>Wijzig als je problemen met het afspelen van video&apos;s in de camera of schermopname ervaart.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="145"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="189"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="327"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="387"/>
+        <source>Slideshow video format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="362"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="421"/>
+        <source>Change if you observe problems with video playback in Slideshow.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="366"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="427"/>
+        <source>Audio format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="408"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="466"/>
         <source>Change if you observe problems with audio playback in Microphone or Audio capture.</source>
         <translation>Wijzig als je problemen met het afspelen van audio in de microfoon of audio-opname ervaart.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="150"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="193"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="413"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="472"/>
+        <source>Maximum image size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="424"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="487"/>
+        <source>Unlimited</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="447"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="511"/>
+        <source>MJPEG quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="460"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="534"/>
+        <source>H.264 quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="520"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="609"/>
+        <source>Microphone volume boost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="535"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="615"/>
+        <source>Audio capture volume boost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="547"/>
+        <source>Screen capture FPS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="548"/>
+        <source>The frame rate of a video stream in Screen capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="559"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="621"/>
         <source>Recorder</source>
         <translation>Opname</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="204"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="230"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="613"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="658"/>
         <source>Cache remote content</source>
         <translation>Externe inhoud opslaan in cache</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="326"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="333"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="470"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="558"/>
         <source>Block fragmented MP4 audio streams</source>
         <translation>Gefragmenteerde mp4-audiostreams blokkeren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="327"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="340"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="471"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="565"/>
         <source>Some UPnP devices don&apos;t support audio stream in fragmented MP4 format. This kind of stream might even hang a device. To overcome this problem, Jupii tries to re-transcode stream to standard MP4. When re-transcoding fails and this option is enabled, item will not be played at all.</source>
         <translation>Sommige UPnP-apparaten hebben geen ondersteuning voor audiostreams met mp4. Hierdoor kan een apparaat vastlopen. Jupii probeert daarom de stream te converteren naar mp4. Als dat mislukt en deze optie is ingeschakeld, dan wordt het item in kwestie niet afgespeeld.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="409"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="471"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="762"/>
+        <source>Policy for local %1 &amp; %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="775"/>
+        <source>Do nothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="776"/>
+        <source>Start automatically at startup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="777"/>
+        <source>Start &amp; stop automatically when exiting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SettingsPage.qml" line="796"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="817"/>
         <source>Needed for troubleshooting purposes. The log data is stored in %1 file.</source>
         <translation>Benodigd voor foutopsporingsdoeleinden. Alles wordt vastgelegd in %1.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="408"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="464"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="795"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="810"/>
         <source>Enable logging</source>
         <translation>Logboek aanleggen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="431"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="36"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="482"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="818"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="822"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="847"/>
         <source>Reset settings</source>
         <translation>Bezig met herstellen…</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="304"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="306"/>
         <source>Advanced</source>
-        <translation>Geavanceerd</translation>
+        <translation type="vanished">Geavanceerd</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="396"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="386"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="720"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="732"/>
         <source>Frontier Silicon PIN</source>
         <translation>Frontier Silicon-pincode</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="24"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="833"/>
         <source>Choose a directory for recordings</source>
         <translation>Kies een opnamemap</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="38"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="849"/>
         <source>Reset all settings to defaults?</source>
         <translation>Wil je alle standaardwaarden herstellen?</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="60"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="53"/>
         <source>User Interface</source>
         <translation>Vormgeving</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="66"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="59"/>
         <source>Use custom graphical style</source>
         <translation>Aangepaste grafische stijl gebruiken</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="76"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="69"/>
         <source>Graphical style</source>
         <translation>Grafische stijl</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="83"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="76"/>
         <source>Application graphical interface style.</source>
         <translation>De grafische vormgeving van het programma.</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="84"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="76"/>
         <source>Change if you observe problems with incorrect colors under a dark theme.</source>
         <translation>Pas aan als je problemen ervaart met kleuren van donkere thema&apos;s.</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SettingsPage.qml" line="41"/>
-        <location filename="../desktop/qml/SettingsPage.qml" line="88"/>
         <source>Sharing</source>
-        <translation>Delen</translation>
+        <translation type="vanished">Delen</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="422"/>
+        <location filename="../sfos/qml/SettingsPage.qml" line="124"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="144"/>
+        <source>Show slide number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/SettingsPage.qml" line="775"/>
         <source>Location of Python libraries</source>
         <translation>Locatie van Python-bibliotheken</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="432"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="784"/>
         <source>Python libraries directory (%1).</source>
         <translation>De map met Python-bibliotheken (%1).</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="433"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="784"/>
         <source>Leave blank to use the default value.</source>
         <translation>Laat leeg om de standaardwaarde te gebruiken.</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="434"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="784"/>
         <source>This option may be useful if you use %1 module to manage Python libraries.</source>
         <translation>Deze optie kan nuttig zijn als je gebruikmaakt van de %1-module om Python-bibliotheken te beheren.</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="449"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="799"/>
         <source>Save</source>
         <translation>Opslaan</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="454"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="804"/>
         <source>Save changes</source>
         <translation>Wijzigingen opslaan</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SettingsPage.qml" line="352"/>
+        <location filename="../desktop/qml/SettingsPage.qml" line="571"/>
         <source>Video encoder</source>
         <translation>Video-encodering</translation>
     </message>
@@ -2260,6 +2765,122 @@
     </message>
 </context>
 <context>
+    <name>SlidesModel</name>
+    <message>
+        <location filename="../src/slidesmodel.cpp" line="101"/>
+        <source>Slideshow %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SlidesPage</name>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="85"/>
+        <location filename="../desktop/qml/SlidesPage.qml" line="45"/>
+        <source>Unselect all</source>
+        <translation type="unfinished">Niets selecteren</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="86"/>
+        <location filename="../desktop/qml/SlidesPage.qml" line="45"/>
+        <source>Select all</source>
+        <translation type="unfinished">Alles selecteren</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="98"/>
+        <source>Sort by: %1</source>
+        <translation type="unfinished">Sorteren op %1</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="99"/>
+        <location filename="../desktop/qml/SlidesPage.qml" line="100"/>
+        <source>Last edit time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="100"/>
+        <location filename="../desktop/qml/SlidesPage.qml" line="101"/>
+        <source>Title</source>
+        <translation type="unfinished">Titel</translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="110"/>
+        <location filename="../desktop/qml/SlidesPage.qml" line="113"/>
+        <source>Create slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="124"/>
+        <location filename="../desktop/qml/SlidesPage.qml" line="161"/>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="133"/>
+        <location filename="../desktop/qml/SlidesPage.qml" line="171"/>
+        <source>Delete</source>
+        <translation type="unfinished">Verwijderen</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../sfos/qml/SlidesPage.qml" line="138"/>
+        <source>Deleting %n item(s)</source>
+        <translation type="unfinished">
+            <numerusform>Bezig met verwijderen van %n item…</numerusform>
+            <numerusform>Bezig met verwijderen van %n items…</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../sfos/qml/SlidesPage.qml" line="154"/>
+        <location filename="../desktop/qml/SlidesPage.qml" line="137"/>
+        <source>%n image(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="178"/>
+        <location filename="../desktop/qml/SlidesPage.qml" line="195"/>
+        <source>No slideshows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="179"/>
+        <source>Pull down to create a slideshow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="195"/>
+        <source>A slideshow allows you to combine a set of images into a real-time video.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sfos/qml/SlidesPage.qml" line="196"/>
+        <source>Using the controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/SlidesPage.qml" line="25"/>
+        <source>Slideshows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/SlidesPage.qml" line="34"/>
+        <source>Add selected</source>
+        <translation type="unfinished">Selectie toevoegen</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/SlidesPage.qml" line="93"/>
+        <source>Sort by:</source>
+        <translation type="unfinished">Sorteren op:</translation>
+    </message>
+    <message>
+        <location filename="../desktop/qml/SlidesPage.qml" line="153"/>
+        <source>Toggle selection</source>
+        <translation type="unfinished">Selectie aan/uit</translation>
+    </message>
+</context>
+<context>
     <name>SomafmPage</name>
     <message>
         <location filename="../sfos/qml/SomafmPage.qml" line="42"/>
@@ -2270,7 +2891,7 @@
     <message>
         <location filename="../sfos/qml/SomafmPage.qml" line="74"/>
         <location filename="../desktop/qml/SomafmPage.qml" line="44"/>
-        <location filename="../desktop/qml/SomafmPage.qml" line="136"/>
+        <location filename="../desktop/qml/SomafmPage.qml" line="147"/>
         <source>Refresh</source>
         <translation>Vernieuwen</translation>
     </message>
@@ -2287,8 +2908,8 @@
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SomafmPage.qml" line="111"/>
-        <location filename="../desktop/qml/SomafmPage.qml" line="133"/>
+        <location filename="../sfos/qml/SomafmPage.qml" line="117"/>
+        <location filename="../desktop/qml/SomafmPage.qml" line="144"/>
         <source>No channels</source>
         <translation>Geen kanalen</translation>
     </message>
@@ -2306,7 +2927,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SomafmPage.qml" line="110"/>
+        <location filename="../desktop/qml/SomafmPage.qml" line="120"/>
         <source>Toggle selection</source>
         <translation>Selectie aan/uit</translation>
     </message>
@@ -2314,7 +2935,7 @@
 <context>
     <name>SoundcloudPage</name>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="98"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="99"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="33"/>
         <source>Trending tracks</source>
         <translation>Populaire nummers</translation>
@@ -2334,53 +2955,49 @@
     </message>
     <message>
         <location filename="../sfos/qml/SoundcloudPage.qml" line="59"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="95"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="94"/>
         <source>Error in getting data</source>
         <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="110"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="111"/>
         <source>Open website</source>
         <translation>Website openen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="117"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="118"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="54"/>
         <source>Unselect all</source>
         <translation>Niets selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="117"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="118"/>
         <location filename="../desktop/qml/SoundcloudPage.qml" line="54"/>
         <source>Select all</source>
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="160"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="145"/>
         <source>Album</source>
-        <translation>Album</translation>
+        <translation type="vanished">Album</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="161"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="146"/>
         <source>Artist</source>
-        <translation>Artiest</translation>
+        <translation type="vanished">Artiest</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="166"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="200"/>
         <source>Toggle selection</source>
         <translation>Selectie aan/uit</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="180"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="204"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="217"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="240"/>
         <source>Type the words to search</source>
         <translation>Voer een zoekopdracht in</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/SoundcloudPage.qml" line="180"/>
-        <location filename="../desktop/qml/SoundcloudPage.qml" line="204"/>
+        <location filename="../sfos/qml/SoundcloudPage.qml" line="217"/>
+        <location filename="../desktop/qml/SoundcloudPage.qml" line="240"/>
         <source>No items</source>
         <translation>Geen items</translation>
     </message>
@@ -2388,17 +3005,17 @@
 <context>
     <name>TrackModel</name>
     <message>
-        <location filename="../src/trackmodel.cpp" line="147"/>
+        <location filename="../src/trackmodel.cpp" line="151"/>
         <source>Microphone</source>
         <translation>Microfoon</translation>
     </message>
     <message>
-        <location filename="../src/trackmodel.cpp" line="149"/>
+        <location filename="../src/trackmodel.cpp" line="153"/>
         <source>Audio capture</source>
         <translation>Audio-opname</translation>
     </message>
     <message>
-        <location filename="../src/trackmodel.cpp" line="151"/>
+        <location filename="../src/trackmodel.cpp" line="155"/>
         <source>Screen capture</source>
         <translation>Schermopname</translation>
     </message>
@@ -2416,7 +3033,7 @@
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/TracksPage.qml" line="126"/>
+        <location filename="../sfos/qml/TracksPage.qml" line="125"/>
         <source>No tracks</source>
         <translation>Geen nummers</translation>
     </message>
@@ -2425,7 +3042,7 @@
     <name>TuneinPage</name>
     <message>
         <location filename="../sfos/qml/TuneinPage.qml" line="48"/>
-        <location filename="../desktop/qml/TuneinPage.qml" line="82"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="81"/>
         <source>Error in getting data</source>
         <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
@@ -2447,14 +3064,14 @@
         <translation>Alles selecteren</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/TuneinPage.qml" line="111"/>
-        <location filename="../desktop/qml/TuneinPage.qml" line="130"/>
+        <location filename="../sfos/qml/TuneinPage.qml" line="117"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="134"/>
         <source>No stations</source>
         <translation>Geen radiozenders</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/TuneinPage.qml" line="111"/>
-        <location filename="../desktop/qml/TuneinPage.qml" line="130"/>
+        <location filename="../sfos/qml/TuneinPage.qml" line="117"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="134"/>
         <source>Type the words to search</source>
         <translation>Voer een zoekopdracht in</translation>
     </message>
@@ -2472,7 +3089,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../desktop/qml/TuneinPage.qml" line="106"/>
+        <location filename="../desktop/qml/TuneinPage.qml" line="110"/>
         <source>Toggle selection</source>
         <translation>Selectie aan/uit</translation>
     </message>
@@ -2560,8 +3177,8 @@
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/UpnpCDirPage.qml" line="160"/>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="188"/>
+        <location filename="../sfos/qml/UpnpCDirPage.qml" line="163"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="201"/>
         <source>No items</source>
         <translation>Geen items</translation>
     </message>
@@ -2612,7 +3229,7 @@
         <translation>Sorteren op:</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UpnpCDirPage.qml" line="164"/>
+        <location filename="../desktop/qml/UpnpCDirPage.qml" line="176"/>
         <source>Toggle selection</source>
         <translation>Selectie aan/uit</translation>
     </message>
@@ -2620,37 +3237,37 @@
 <context>
     <name>UrlDialog</name>
     <message>
-        <location filename="../desktop/qml/UrlDialog.qml" line="25"/>
+        <location filename="../desktop/qml/UrlDialog.qml" line="23"/>
         <source>Add URL</source>
         <translation>Url toevoegen</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UrlDialog.qml" line="53"/>
+        <location filename="../desktop/qml/UrlDialog.qml" line="51"/>
         <source>When the URL does not point directly to an audio, video or image file, the media content is discovered using %1.</source>
         <translation>Als een url niet direct naar een audio-, video- of afbeeldingsbestand verwijst, dan kan de mediainhoud met behulp van %1 worden vastgesteld.</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UrlDialog.qml" line="59"/>
+        <location filename="../desktop/qml/UrlDialog.qml" line="57"/>
         <source>URL</source>
         <translation>Url</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UrlDialog.qml" line="61"/>
+        <location filename="../desktop/qml/UrlDialog.qml" line="59"/>
         <source>Enter URL</source>
         <translation>Voer een url in</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UrlDialog.qml" line="73"/>
+        <location filename="../desktop/qml/UrlDialog.qml" line="71"/>
         <source>Name</source>
         <translation>Naam</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UrlDialog.qml" line="74"/>
+        <location filename="../desktop/qml/UrlDialog.qml" line="72"/>
         <source>Enter Name (optional)</source>
         <translation>Voer een naam in (optioneel)</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/UrlDialog.qml" line="86"/>
+        <location filename="../desktop/qml/UrlDialog.qml" line="84"/>
         <source>Add only audio stream</source>
         <translation>Audiostream toevoegen</translation>
     </message>
@@ -2658,26 +3275,41 @@
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../src/utils.cpp" line="117"/>
+        <location filename="../src/utils.cpp" line="124"/>
         <source>Auto</source>
         <translation>Automatisch</translation>
     </message>
     <message>
-        <location filename="../src/utils.cpp" line="415"/>
+        <location filename="../src/utils.cpp" line="422"/>
         <source>Today</source>
         <translation>Vandaag</translation>
     </message>
     <message>
-        <location filename="../src/utils.cpp" line="417"/>
+        <location filename="../src/utils.cpp" line="424"/>
         <source>Yesterday</source>
         <translation>Gisteren</translation>
+    </message>
+    <message>
+        <location filename="../src/utils.cpp" line="838"/>
+        <source>Today&apos;s images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils.cpp" line="840"/>
+        <source>Images from last 7 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils.cpp" line="842"/>
+        <source>Images from last 30 days</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>YtPage</name>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="67"/>
-        <location filename="../desktop/qml/YtPage.qml" line="115"/>
+        <location filename="../desktop/qml/YtPage.qml" line="114"/>
         <source>Error in getting data</source>
         <translation>De gegevens kunnen niet worden opgehaald</translation>
     </message>
@@ -2695,50 +3327,44 @@
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="122"/>
+        <location filename="../desktop/qml/YtPage.qml" line="98"/>
         <location filename="../desktop/qml/YtPage.qml" line="99"/>
-        <location filename="../desktop/qml/YtPage.qml" line="100"/>
         <source>Type: %1</source>
         <translation>Type: %1</translation>
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="124"/>
-        <location filename="../desktop/qml/YtPage.qml" line="100"/>
+        <location filename="../desktop/qml/YtPage.qml" line="99"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
         <location filename="../sfos/qml/YtPage.qml" line="124"/>
-        <location filename="../desktop/qml/YtPage.qml" line="99"/>
+        <location filename="../desktop/qml/YtPage.qml" line="98"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/YtPage.qml" line="189"/>
-        <location filename="../desktop/qml/YtPage.qml" line="199"/>
         <source>Album</source>
-        <translation>Album</translation>
+        <translation type="vanished">Album</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/YtPage.qml" line="191"/>
-        <location filename="../desktop/qml/YtPage.qml" line="201"/>
         <source>Playlist</source>
-        <translation>Afspeellijst</translation>
+        <translation type="vanished">Afspeellijst</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/YtPage.qml" line="193"/>
-        <location filename="../desktop/qml/YtPage.qml" line="203"/>
         <source>Artist</source>
-        <translation>Artiest</translation>
+        <translation type="vanished">Artiest</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/YtPage.qml" line="227"/>
-        <location filename="../desktop/qml/YtPage.qml" line="260"/>
+        <location filename="../sfos/qml/YtPage.qml" line="216"/>
+        <location filename="../desktop/qml/YtPage.qml" line="261"/>
         <source>Type the words to search</source>
         <translation>Voer een zoekopdracht in</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/YtPage.qml" line="227"/>
-        <location filename="../desktop/qml/YtPage.qml" line="260"/>
+        <location filename="../sfos/qml/YtPage.qml" line="216"/>
+        <location filename="../desktop/qml/YtPage.qml" line="261"/>
         <source>No items</source>
         <translation>Geen items</translation>
     </message>
@@ -2769,89 +3395,89 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../sfos/qml/main.qml" line="83"/>
-        <location filename="../desktop/qml/main.qml" line="211"/>
+        <location filename="../sfos/qml/main.qml" line="87"/>
+        <location filename="../desktop/qml/main.qml" line="229"/>
         <source>Connected to %1</source>
         <translation>Verbonden met %1</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/main.qml" line="91"/>
-        <location filename="../desktop/qml/main.qml" line="220"/>
+        <location filename="../sfos/qml/main.qml" line="95"/>
+        <location filename="../desktop/qml/main.qml" line="238"/>
         <source>Cannot connect to device</source>
         <translation>Er kan geen verbinding worden gemaakt met het apparaat</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/main.qml" line="95"/>
-        <location filename="../desktop/qml/main.qml" line="224"/>
+        <location filename="../sfos/qml/main.qml" line="99"/>
+        <location filename="../desktop/qml/main.qml" line="242"/>
         <source>Device responded with an error</source>
         <translation>Het apparaat gaf een foutmelding</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/main.qml" line="99"/>
-        <location filename="../desktop/qml/main.qml" line="228"/>
+        <location filename="../sfos/qml/main.qml" line="103"/>
+        <location filename="../desktop/qml/main.qml" line="246"/>
         <source>Cannot play the file</source>
         <translation>Het bestand kan niet worden afgespeeld</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/main.qml" line="112"/>
-        <location filename="../desktop/qml/main.qml" line="241"/>
+        <location filename="../sfos/qml/main.qml" line="117"/>
+        <location filename="../desktop/qml/main.qml" line="260"/>
         <source>Track &quot;%1&quot; saved</source>
         <translation>‘%1’ is opgeslagen</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/main.qml" line="121"/>
-        <location filename="../desktop/qml/main.qml" line="253"/>
+        <location filename="../sfos/qml/main.qml" line="126"/>
+        <location filename="../desktop/qml/main.qml" line="272"/>
         <source>Cannot connect to a local network</source>
         <translation>Er kan geen verbinding worden gemaakt met het lokale netwerk</translation>
     </message>
     <message>
-        <location filename="../sfos/qml/main.qml" line="124"/>
-        <location filename="../desktop/qml/main.qml" line="256"/>
+        <location filename="../sfos/qml/main.qml" line="129"/>
+        <location filename="../desktop/qml/main.qml" line="275"/>
         <source>An internal error occurred</source>
         <translation>Er is een interne fout opgetreden</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="40"/>
+        <location filename="../desktop/qml/main.qml" line="54"/>
         <source>Play queue</source>
         <translation>Afspeelwachtrij</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="47"/>
+        <location filename="../desktop/qml/main.qml" line="61"/>
         <source>Devices (connected to %1)</source>
         <translation>Apparaten (verbonden met %1)</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="48"/>
+        <location filename="../desktop/qml/main.qml" line="62"/>
         <source>Devices</source>
         <translation>Apparaten</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="57"/>
+        <location filename="../desktop/qml/main.qml" line="71"/>
         <source>Add</source>
         <translation>Toevoegen</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="67"/>
+        <location filename="../desktop/qml/main.qml" line="81"/>
         <source>Track info</source>
         <translation>Nummerinformatie</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="76"/>
+        <location filename="../desktop/qml/main.qml" line="90"/>
         <source>Settings</source>
         <translation>Instellingen</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="84"/>
+        <location filename="../desktop/qml/main.qml" line="98"/>
         <source>About %1</source>
         <translation>Over %1</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="91"/>
+        <location filename="../desktop/qml/main.qml" line="105"/>
         <source>Quit</source>
         <translation>Afsluiten</translation>
     </message>
     <message>
-        <location filename="../desktop/qml/main.qml" line="136"/>
+        <location filename="../desktop/qml/main.qml" line="154"/>
         <source>Restart is required for the changes to take effect.</source>
         <translation>Herstart om de wijzigingen toe te passen.</translation>
     </message>
