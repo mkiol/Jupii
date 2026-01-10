@@ -888,7 +888,7 @@ std::vector<std::string> Utils::imagePathsForSlidesTime(SlidesTime time) {
         "WHERE { ?item a nfo:Image; nie:isStoredAs ?file; nfo:width ?width; "
         "nfo:height ?height. ?file nfo:fileLastModified ?date. "
         "FILTER ( ?width > 600 && ?height > 600 && ?date >= "
-        "\"%1\"^^xsd:dateTime ). } GROUP BY ?file ORDER BY DESC( ?date ) LIMIT "
+        "\"%1\"^^xsd:dateTime ). } GROUP BY ?file ORDER BY ASC( ?date ) LIMIT "
         "1000");
 
     auto *tracker = Tracker::instance();
