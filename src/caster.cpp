@@ -5284,7 +5284,7 @@ void Caster::updateVideoSampleStats(int64_t now) {
             0) {
             auto lastDur = now - m_videoTimeLastFrame;
             if (lastDur != m_videoFrameDuration) {
-                LOGD("adjusting video real frame duration: "
+                LOGT("adjusting video real frame duration: "
                      << m_videoRealFrameDuration << " => " << lastDur
                      << ", ref=" << m_videoFrameDuration
                      << ", codec=" << m_outVideoCtx->codec_id);
