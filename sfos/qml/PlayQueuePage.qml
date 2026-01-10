@@ -83,6 +83,7 @@ Page {
 
     function showLastItem() {
         listView.positionViewAtEnd();
+        listView.scrollToBottom();
     }
 
     function updateMediaInfoPage() {
@@ -132,12 +133,33 @@ Page {
         }
     }
 
+    Timer {
+        id: showItemTimer
+        property int pendingAction: 0
+
+        interval: 1000
+        onTriggered: {
+            var action = pendingAction
+            pendingAction = 0
+            if (action === 1) {
+                root.showActiveItem()
+            } else if (action === 2) {
+                root.showLastItem()
+            }
+        }
+
+        function setPrendingAction(action) {
+            pendingAction = action
+            start()
+        }
+    }
+
     Connections {
         target: playlist
 
-        onItemsAdded: root.showLastItem()
-        onItemsLoaded: root.showActiveItem()
-        onActiveItemChanged: root.showActiveItem()
+        onItemsAdded: showItemTimer.setPrendingAction(2)
+        onItemsLoaded: showItemTimer.setPrendingAction(1)
+        onActiveItemChanged: showItemTimer.setPrendingAction(1)
 
         onError: {
             if (code == errorTimer.lastErr) return
@@ -594,10 +616,10 @@ Page {
 
         playMode: playlist.playMode
 
-        onRunningChanged: {
-            if (open && !running)
-                root.showActiveItem()
-        }
+//        onRunningChanged: {
+//            if (open && !running)
+//                root.showActiveItem()
+//        }
 
         onNextClicked: playlist.next()
         onPrevClicked: playlist.prev()
@@ -636,24 +658,14 @@ Page {
 
     // Not connected to UPnP device info
 
-    InteractionHintLabel_ {
-        id: connectedHintLabel
-        anchors.bottom: parent.bottom
-        opacity: enabled ? 1.0 : 0.0
-        Behavior on opacity { FadeAnimation {} }
+    HintTip {
+        id: connectedHint
+        hintType: Settings.Hint_NotConnectedTip
+        active: devless
         text: qsTr("Not connected")
         subtext: qsTr("Connect to a device to control playback.")
                  + (settings.contentDirSupported ? " " + qsTr("Without connection, all items in play queue are still accessible on other devices in your local network.") : "")
-        enabled: settings.hintEnabled(Settings.Hint_NotConnectedTip)
-                 && devless && !menu.active
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                settings.disableHint(Settings.Hint_NotConnectedTip)
-                parent.enabled = false
-            }
-        }
     }
 
     // Expand Player panel
@@ -666,7 +678,7 @@ Page {
         Behavior on opacity { FadeAnimation {} }
         text: qsTr("Tap to access playback & volume controls")
         enabled: settings.hintEnabled(Settings.Hint_ExpandPlayerPanelTip) &&
-                 !connectedHintLabel.enabled && !ppanel.full && av.controlable && !menu.active
+                 !connectedHint.enabled && !ppanel.full && av.controlable && !menu.active
         onEnabledChanged: enabled ? expandHint.start() : expandHint.stop()
     }
     TapInteractionHint {
@@ -684,7 +696,7 @@ Page {
         Behavior on opacity { FadeAnimation {} }
         text: qsTr("Flick left to see current track details")
         enabled: settings.hintEnabled(Settings.Hint_MediaInfoSwipeLeft) &&
-                 !connectedHintLabel.enabled && !expandHintLabel.enabled &&
+                 !connectedHint.enabled && !expandHintLabel.enabled &&
                  !ppanel.full && pageStack.currentPage === root &&
                  forwardNavigation && !menu.active
         onEnabledChanged: enabled ? mediaInfoHint.start() : mediaInfoHint.stop()

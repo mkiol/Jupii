@@ -502,7 +502,7 @@ Kirigami.ScrollablePage {
         Controls.Switch {
             visible: itemType === ContentServer.ItemType_Slides
             checked: settings.slidesShowCountInd
-            text: qsTr("Show slide numbers")
+            text: qsTr("Show slide number")
             onToggled: {
                 settings.slidesShowCountInd = !settings.slidesShowCountInd;
             }
@@ -659,7 +659,7 @@ Kirigami.ScrollablePage {
                         id: pauseButton
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                         icon.name: settings.imagePaused ? "media-playback-start" : "media-playback-pause"
-                        text: settings.imagePaused ? qsTr("Resume Slideshow") : qsTr("Pause Slideshow")
+                        text: settings.imagePaused ? qsTr("Resume slideshow") : qsTr("Pause slideshow")
                         onClicked: settings.imagePaused = !settings.imagePaused
 
                         SequentialAnimation on opacity {

@@ -70,7 +70,7 @@ Page {
 
                         ComboBox {
                             visible: root.showAdvanced
-                            label: qsTr("Gapless mode (%1)").arg("setNextURI")
+                            label: qsTr("Gapless mode %1").arg("(<i>setNextURI</i>)")
                             currentIndex: {
                                 switch (settings.avNextUriPolicy) {
                                 case Settings.AvNextUriPolicy_Auto:
@@ -118,20 +118,10 @@ Page {
                     title: qsTr("Slideshow")
 
                     content.sourceComponent: Column {
-                        // TextSwitch {
-                        //     automaticCheck: false
-                        //     checked: settings.imageAsVideo
-                        //     text: qsTr("Always convert images into video")
-                        //     description: qsTr("When enabled, image elements are always converted into a video stream with a low frame rate.")
-                        //     onClicked: {
-                        //         settings.imageAsVideo = !settings.imageAsVideo
-                        //     }
-                        // }
-
                         TextSwitch {
                             automaticCheck: false
                             checked: settings.slidesShowCountInd
-                            text: qsTr("Show slide numbers")
+                            text: qsTr("Show slide number")
                             onClicked: {
                                 settings.slidesShowCountInd = !settings.slidesShowCountInd
                             }

@@ -551,7 +551,7 @@ Page {
                     visible: itemType === ContentServer.ItemType_Slides
                     automaticCheck: false
                     checked: settings.slidesShowCountInd
-                    text: qsTr("Show slide numbers")
+                    text: qsTr("Show slide number")
                     onClicked: {
                         settings.slidesShowCountInd = !settings.slidesShowCountInd
                     }

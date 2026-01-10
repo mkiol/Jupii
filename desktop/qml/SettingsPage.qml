@@ -97,7 +97,7 @@ Kirigami.ScrollablePage {
 
             Controls.ComboBox {
                 visible: root.showAdvanced
-                Kirigami.FormData.label: qsTr("Gapless mode (%1)").arg("setNextURI")
+                Kirigami.FormData.label: qsTr("Gapless mode %1").arg("(<i>setNextURI</i>)")
                 currentIndex: {
                     switch (settings.avNextUriPolicy) {
                     case Settings.AvNextUriPolicy_Auto:
