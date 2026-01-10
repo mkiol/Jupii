@@ -89,8 +89,8 @@ Kirigami.ScrollablePage {
         Controls.Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: qsTr("Project website") + (": <a href=\"%1\">%2</a>")
-                  .arg(APP_WEBPAGE).arg(APP_WEBPAGE)
+            text: qsTr("Project website") + (": <a href=\"%1\">%2</a> / <a href=\"%3\">%4</a>")
+                  .arg(APP_WEBPAGE).arg(APP_WEBPAGE).arg(APP_WEBPAGE_ADDITIONAL).arg(APP_WEBPAGE_ADDITIONAL)
             onLinkActivated: Qt.openUrlExternally(link)
         }
 
