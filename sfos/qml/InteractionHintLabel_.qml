@@ -43,8 +43,8 @@ Rectangle {
     property alias subtextFontSize: sublabel.font.pixelSize
     property color backgroundColor: Theme.rgba(palette.highlightDimmerColor, 0.9)
 
-    height: parent.height / 2
-    width: parent.width
+    height: parent ? parent.height / 2 : undefined
+    width: parent ? parent.width : undefined
     gradient: Gradient {
         GradientStop { position: invert ? 0.8 : 0.0; color: "transparent" }
         GradientStop { position: invert ? 0.3 : 0.6; color: backgroundColor }

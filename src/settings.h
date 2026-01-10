@@ -179,7 +179,8 @@ class Settings : public QSettings,
         Hint_DeviceSwipeLeft = 1 << 0,
         Hint_NotConnectedTip = 1 << 1,
         Hint_ExpandPlayerPanelTip = 1 << 2,
-        Hint_MediaInfoSwipeLeft = 1 << 3
+        Hint_MediaInfoSwipeLeft = 1 << 3,
+        Hint_SlidesTip = 1 << 4,
     };
     Q_ENUM(HintType)
 

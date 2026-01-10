@@ -9,6 +9,7 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 import harbour.jupii.SlidesModel 1.0
+import harbour.jupii.Settings 1.0
 
 Dialog {
     id: root
@@ -28,7 +29,10 @@ Dialog {
 
     // Hack to update model after all transitions
     property bool _completed: false
-    Component.onCompleted: _completed = true
+    Component.onCompleted: {
+        _completed = true
+
+    }
     onStatusChanged: {
         if (status === PageStatus.Active && _completed) {
             _completed = false
@@ -184,6 +188,12 @@ Dialog {
 
     VerticalScrollDecorator {
         flickable: listView
+    }
+
+    HintTip {
+        hintType: Settings.Hint_SlidesTip
+        text: qsTr("A slideshow allows you to combine a set of images into a real-time video.") + " " +
+              qsTr("Using the controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.")
     }
 
     focus: true
