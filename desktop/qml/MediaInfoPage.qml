@@ -436,11 +436,11 @@ Kirigami.ScrollablePage {
 
         Kirigami.Separator {
             Layout.fillWidth: true
-            visible: descLabel.visible || titlesRepeater.visible
+            visible: descLabel.visible
         }
 
         Kirigami.Heading {
-            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             level: 1
             visible: descLabel.visible
             text: qsTr("Description")
@@ -456,6 +456,11 @@ Kirigami.ScrollablePage {
                      text.length !== 0
             wrapMode: Text.WordWrap
             text: av.currentDescription
+        }
+
+        Kirigami.Separator {
+            Layout.fillWidth: true
+            visible: titlesRepeater.visible
         }
 
         Kirigami.Heading {
@@ -489,6 +494,11 @@ Kirigami.ScrollablePage {
                     }
                 }
             }
+        }
+
+        Kirigami.Separator {
+            Layout.fillWidth: true
+            visible: itemType === ContentServer.ItemType_Slides
         }
 
         Kirigami.Heading {
@@ -631,8 +641,8 @@ Kirigami.ScrollablePage {
                      av.transportState === AVTransport.Playing
             Layout.fillWidth: true
             Layout.preferredHeight: slidesPanel.height + topPadding
-            leftPadding: 0
-            rightPadding: 0
+            leftPadding: 1
+            rightPadding: 1
             bottomPadding: 0
 
             ColumnLayout {
@@ -717,6 +727,9 @@ Kirigami.ScrollablePage {
                     model: app.streamFiles
                     clip: true
                     orientation: ListView.Horizontal
+                    Controls.ScrollBar.horizontal: Controls.ScrollBar {
+                        policy: Controls.ScrollBar.AlwaysOn
+                    }
                     delegate: Image {
                         width: imageView.itemSize
                         height: imageView.itemSize

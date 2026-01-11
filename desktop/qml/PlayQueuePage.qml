@@ -49,10 +49,16 @@ Kirigami.ScrollablePage {
             iconName: root.selectionMode ? "dialog-cancel" : "list-add"
             enabled: !root.busy
             onTriggered: {
-                if (root.selectionMode)
+                if (root.selectionMode) {
                     root.selectionMode = false
-                else
+                    return
+                }
+                var checked = app.addMediaPageAction.checked
+                if (checked) {
+                    app.removePagesAfterPlayQueue()
+                } else {
                     app.addMediaPageAction.trigger()
+                }
             }
         }
 
@@ -75,8 +81,15 @@ Kirigami.ScrollablePage {
                 checked: app.trackInfoAction.checked
                 iconName: "documentinfo"
                 enabled: av.controlable && !root.selectionMode
-                visible: !root.selectionMode
-                onTriggered: app.trackInfoAction.trigger()
+                visible: enabled
+                onTriggered: {
+                    var checked = app.trackInfoAction.checked
+                    if (checked) {
+                        app.removePagesAfterPlayQueue()
+                    } else {
+                        app.trackInfoAction.trigger()
+                    }
+                }
             },
             Kirigami.Action {
                 text: qsTr("Select")

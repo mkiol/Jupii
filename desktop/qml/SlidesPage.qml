@@ -108,6 +108,7 @@ Kirigami.ScrollablePage {
     }
 
     footer: Controls.Button {
+        visible: itemList.count > 0
         action: Kirigami.Action {
             id: createAction
             text: qsTr("Create slideshow")

@@ -66,7 +66,7 @@ PopupDialog {
         clip: true
         orientation: ListView.Horizontal
         Controls.ScrollBar.horizontal: Controls.ScrollBar {
-            policy: Controls.ScrollBar.AlwaysOn
+            policy: Controls.ScrollBar.AsNeeded
         }
         spacing: Kirigami.Units.mediumSpacing
 

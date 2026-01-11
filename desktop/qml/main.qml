@@ -180,8 +180,10 @@ Kirigami.ApplicationWindow {
 
     function removePagesAfterPlayQueue() {
         var page = mainPagePool.pageForUrl(Qt.resolvedUrl("PlayQueuePage.qml"))
-        if (page !== undefined && pageStack.columnView.containsItem(page))
-            pageStack.pop(page)
+        if (page !== undefined && pageStack.columnView.containsItem(page)) {
+            //pageStack.pop(page)
+            homeAction.trigger()
+        }
     }
 
     function removePagesAfterAddMedia() {
