@@ -192,8 +192,8 @@ Dialog {
 
     HintTip {
         hintType: Settings.Hint_SlidesTip
-        text: qsTr("A slideshow allows you to combine a set of images into a real-time video.") + " " +
-              qsTr("Using the controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.")
+        text: qsTr("A slideshow allows you to combine a set of images into a video that plays in real time.") + " " +
+              qsTr("Using controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.")
     }
 
     focus: true

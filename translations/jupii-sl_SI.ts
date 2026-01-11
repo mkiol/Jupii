@@ -2889,12 +2889,12 @@
     </message>
     <message>
         <location filename="../sfos/qml/SlidesPage.qml" line="195"/>
-        <source>A slideshow allows you to combine a set of images into a real-time video.</source>
+        <source>A slideshow allows you to combine a set of images into a video that plays in real time.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../sfos/qml/SlidesPage.qml" line="196"/>
-        <source>Using the controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.</source>
+        <source>Using controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

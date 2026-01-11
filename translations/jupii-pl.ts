@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="pl" sourcelanguage="en_US">
+<TS version="2.1" language="pl_PL" sourcelanguage="en_US">
 <context>
     <name>AboutPage</name>
     <message>
@@ -3057,13 +3057,21 @@
     </message>
     <message>
         <location filename="../sfos/qml/SlidesPage.qml" line="195"/>
-        <source>A slideshow allows you to combine a set of images into a real-time video.</source>
-        <translation>Pokaz slajdów pozwala połączyć obrazy w wideo.</translation>
+        <source>A slideshow allows you to combine a set of images into a video that plays in real time.</source>
+        <translation>Pokaz slajdów pozwala połączyć wiele obrazów w jeden film.</translation>
     </message>
     <message>
         <location filename="../sfos/qml/SlidesPage.qml" line="196"/>
+        <source>Using controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.</source>
+        <translation>Za pomocą elementów sterujących można interaktywnie ustawić czas wyświetlania każdego obrazu, wstrzymać, wznowić lub przewinąć pokaz slajdów do określonego zdjęcia.</translation>
+    </message>
+    <message>
+        <source>A slideshow allows you to combine a set of images into a real-time video.</source>
+        <translation type="vanished">Pokaz slajdów pozwala połączyć obrazy w wideo.</translation>
+    </message>
+    <message>
         <source>Using the controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.</source>
-        <translation>Za pomocą elementów sterujących można interaktywnie ustawić czas wyświetlania każdego obrazu, wstrzymać, wznowić lub przewinąć do określonego obrazu.</translation>
+        <translation type="vanished">Za pomocą elementów sterujących można interaktywnie ustawić czas wyświetlania każdego obrazu, wstrzymać, wznowić lub przewinąć do określonego obrazu.</translation>
     </message>
     <message>
         <location filename="../desktop/qml/SlidesPage.qml" line="25"/>

@@ -2055,14 +2055,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A slideshow allows you to combine a set of images into a real-time video.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Using the controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Slideshows</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2076,6 +2068,14 @@
     </message>
     <message>
         <source>Toggle selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A slideshow allows you to combine a set of images into a video that plays in real time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using controls, you can interactively set the display time for each image, pause, resume, or rewind to a specific image.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

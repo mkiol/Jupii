@@ -27,7 +27,7 @@ Kirigami.ScrollablePage {
         RichLabel {
             text: "<ul>
             <li>New feature: Slideshow — lets you combine a series of images into a low-framerate video that plays in real time.
-                You can use the controls to set how long each image is displayed, pause, resume, or revind slideshow to a specific image.
+                You can use controls to set how long each image is displayed, pause, resume, or rewind slideshow to a specific image.
                 Slideshow is an another way to view images, addressing issues found on many TV sets, such as limited or unreliable image-sharing support.</li>
             <li>FOSDEM: Videos from 2025 and 2026 conferences added.</li>
             <li>UI: The settings have two views: <i>Basic options</i> and <i>All options</i>.

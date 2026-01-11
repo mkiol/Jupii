@@ -35,10 +35,10 @@ Page {
             LogItem {
                 title: "<ul>
                 <li>New feature: Slideshow — lets you combine a series of images into a low-framerate video that plays in real time.
-                    You can use the controls to set how long each image is displayed, pause, resume, or revind slideshow to a specific image.
+                    You can use controls to set how long each image is displayed, pause, resume, or rewind slideshow to a specific image.
                     Slideshow is an another way to view images, addressing issues found on many TV sets, such as limited or unreliable image-sharing support.
                     In the <i>Add</i> menu, the <i>Slideshow</i> option allows you to add automatically created slideshows
-                    from Today's images</i> or </i>Images from last 7 days</i> to the playback queue.
+                    from <i>Today's images</i> or <i>Images from last 7 days</i> to the playback queue.
                     You can also create your own slideshow by selecting individual images.</li>
                 <li>FOSDEM: Videos from 2025 and 2026 conferences added.</li>
                 <li>UI: Icons now load asynchronously, which makes the user interface smoother.</li>
