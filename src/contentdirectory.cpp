@@ -12,56 +12,52 @@
 #include <QThread>
 #include <algorithm>
 
-ContentDirectory::ContentDirectory(QObject *parent) : Service(parent)
-{
-}
+ContentDirectory::ContentDirectory(QObject *parent) : Service(parent) {}
 
-void ContentDirectory::changed(const QString &name, const QVariant &value)
-{
+void ContentDirectory::changed(const QString &name, const QVariant &value) {
     Q_UNUSED(name)
     Q_UNUSED(value)
 }
 
-UPnPClient::Service* ContentDirectory::createUpnpService(const UPnPClient::UPnPDeviceDesc &ddesc,
-                                                         const UPnPClient::UPnPServiceDesc &sdesc)
-{
+UPnPClient::Service *ContentDirectory::createUpnpService(
+    const UPnPClient::UPnPDeviceDesc &ddesc,
+    const UPnPClient::UPnPServiceDesc &sdesc) {
     return new UPnPClient::ContentDirectory(ddesc, sdesc);
 }
 
-void ContentDirectory::postInit()
-{
-}
+void ContentDirectory::postInit() {}
 
-void ContentDirectory::reset()
-{
-}
+void ContentDirectory::reset() {}
 
-std::string ContentDirectory::type() const
-{
+std::string ContentDirectory::type() const {
     return "urn:schemas-upnp-org:service:ContentDirectory:1";
 }
 
-UPnPClient::ContentDirectory* ContentDirectory::s()
-{
+UPnPClient::ContentDirectory *ContentDirectory::s() {
     if (m_ser == nullptr) {
         qWarning() << "content-directory is not inited!";
-        //emit error(E_NotInited);
+        // emit error(E_NotInited);
         return nullptr;
     }
 
-    return static_cast<UPnPClient::ContentDirectory*>(m_ser);
+    return static_cast<UPnPClient::ContentDirectory *>(m_ser);
 }
 
-bool ContentDirectory::readItems(const QString &id, UPnPClient::UPnPDirContent &content)
-{
-    auto srv = s();
+bool ContentDirectory::readItems(const QString &id,
+                                 UPnPClient::UPnPDirContent &content) {
+    int ret = 0;
+    {
+        QMutexLocker lock{&m_mtx};
+        auto srv = s();
+        if (!getInited() || !srv) {
+            qWarning() << "content-directory service is not inited";
+            return false;
+        }
 
-    if (!getInited() || !srv) {
-        qWarning() << "content-directory service is not inited";
-        return false;
+        ret = srv->readDir(id.toStdString(), content);
     }
 
-    if (!handleError(srv->readDir(id.toStdString(), content))) {
+    if (!handleError(ret)) {
         return false;
     }
 
@@ -80,14 +76,19 @@ bool ContentDirectory::readItems(const QString &id, UPnPClient::UPnPDirContent &
 
 bool ContentDirectory::readItem(const QString &id, const QString &pid,
                                 UPnPClient::UPnPDirContent &content) {
-    auto srv = s();
+    int ret = 0;
+    {
+        QMutexLocker lock{&m_mtx};
+        auto srv = s();
+        if (!getInited() || !srv) {
+            qWarning() << "content-directory service is not inited";
+            return false;
+        }
 
-    if (!getInited() || !srv) {
-        qWarning() << "content-directory service is not inited";
-        return false;
+        ret = srv->getMetadata(id.toStdString(), content);
     }
 
-    if (!handleError(srv->getMetadata(id.toStdString(), content))) return false;
+    if (!handleError(ret)) return false;
 
 #ifdef QT_DEBUG
     qDebug() << "id:" << id;

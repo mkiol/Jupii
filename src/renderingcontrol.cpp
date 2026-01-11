@@ -5,34 +5,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QDebug>
-#include <QThread>
-#include <QGuiApplication>
-
 #include "renderingcontrol.h"
 
+#include <QDebug>
+#include <QGuiApplication>
+#include <QThread>
+
 #include "devicemodel.h"
-#include "utils.h"
-#include "settings.h"
 #include "notifications.h"
+#include "settings.h"
+#include "utils.h"
 
-
-RenderingControl::RenderingControl(QObject *parent) : Service(parent),
-    m_volumeTimer(parent)
-{
+RenderingControl::RenderingControl(QObject *parent)
+    : Service(parent), m_volumeTimer(parent) {
     m_volumeTimer.setInterval(500);
     m_volumeTimer.setSingleShot(true);
-    QObject::connect(&m_volumeTimer, &QTimer::timeout, this, &RenderingControl::volumeTimeout);
+    QObject::connect(&m_volumeTimer, &QTimer::timeout, this,
+                     &RenderingControl::volumeTimeout);
 
 #ifdef USE_SFOS
     m_volumeUpTimer.setInterval(500);
     m_volumeUpTimer.setSingleShot(true);
-    QObject::connect(&m_volumeUpTimer, &QTimer::timeout, this, &RenderingControl::volumeUpTimeout);
+    QObject::connect(&m_volumeUpTimer, &QTimer::timeout, this,
+                     &RenderingControl::volumeUpTimeout);
 #endif
 }
 
-void RenderingControl::changed(const QString &name, const QVariant &_value)
-{
+void RenderingControl::changed(const QString &name, const QVariant &_value) {
     if (!isInitedOrIniting()) {
         qWarning() << "RenderingControl service is not inited";
         return;
@@ -55,19 +54,15 @@ void RenderingControl::changed(const QString &name, const QVariant &_value)
     }
 }
 
-UPnPClient::Service* RenderingControl::createUpnpService(const UPnPClient::UPnPDeviceDesc &ddesc,
-                                                         const UPnPClient::UPnPServiceDesc &sdesc)
-{
+UPnPClient::Service *RenderingControl::createUpnpService(
+    const UPnPClient::UPnPDeviceDesc &ddesc,
+    const UPnPClient::UPnPServiceDesc &sdesc) {
     return new UPnPClient::RenderingControl(ddesc, sdesc);
 }
 
-void RenderingControl::postInit()
-{
-    update();
-}
+void RenderingControl::postInit() { update(); }
 
-void RenderingControl::reset()
-{
+void RenderingControl::reset() {
     m_volume = 0;
     m_futureVolume = 0;
     m_mute = false;
@@ -75,9 +70,8 @@ void RenderingControl::reset()
     emit muteChanged();
 }
 
-void RenderingControl::update()
-{
-    auto app = static_cast<QGuiApplication*>(QGuiApplication::instance());
+void RenderingControl::update() {
+    auto app = static_cast<QGuiApplication *>(QGuiApplication::instance());
 
     if (app->applicationState() == Qt::ApplicationActive) {
         updateVolume();
@@ -85,63 +79,58 @@ void RenderingControl::update()
     }
 }
 
-void RenderingControl::asyncUpdate()
-{
+void RenderingControl::asyncUpdate() {
     if (!isInitedOrIniting()) {
         qWarning() << "RenderingControl service is not inited";
         return;
     }
 
-    startTask([this](){
-        update();
-    });
+    startTask([this]() { update(); });
 }
 
-std::string RenderingControl::type() const
-{
+std::string RenderingControl::type() const {
     return "urn:schemas-upnp-org:service:RenderingControl:1";
 }
 
-UPnPClient::RenderingControl* RenderingControl::s()
-{
+UPnPClient::RenderingControl *RenderingControl::s() {
     if (m_ser == nullptr) {
         qWarning() << "RenderingConrol is not inited!";
-        //emit error(E_NotInited);
+        // emit error(E_NotInited);
         return nullptr;
     }
 
-    return static_cast<UPnPClient::RenderingControl*>(m_ser);
+    return static_cast<UPnPClient::RenderingControl *>(m_ser);
 }
 
+int RenderingControl::getVolume() { return m_volume; }
 
-int RenderingControl::getVolume()
-{
-    return m_volume;
-}
-
-void RenderingControl::setVolume(int value)
-{
+void RenderingControl::setVolume(int value) {
     m_futureVolume = value;
     m_volumeTimer.start();
 }
 
-void RenderingControl::volumeTimeout()
-{
+void RenderingControl::volumeTimeout() {
     if (!getInited()) {
         qWarning() << "RenderingControl service is not inited";
         return;
     }
 
     if (m_volume != m_futureVolume) {
-        startTask([this](){
-            auto srv = s();
+        startTask([this]() {
+            int ret = 0;
+            {
+                QMutexLocker lock{&m_mtx};
+                auto srv = s();
 
-            if (!getInited() || !srv) {
-                qWarning() << "RenderingControl service is not inited";
-                return;
+                if (!getInited() || !srv) {
+                    qWarning() << "RenderingControl service is not inited";
+                    return;
+                }
+
+                ret = srv->setVolume(m_futureVolume);
             }
 
-            if (handleError(srv->setVolume(m_futureVolume))) {
+            if (handleError(ret)) {
                 m_volume = m_futureVolume;
 
                 tsleep();
@@ -155,23 +144,25 @@ void RenderingControl::volumeTimeout()
     }
 }
 
-bool RenderingControl::getMute()
-{
-    return m_mute;
-}
+bool RenderingControl::getMute() { return m_mute; }
 
-void RenderingControl::setMute(bool value)
-{
+void RenderingControl::setMute(bool value) {
     if (m_mute != value) {
-        startTask([this, value](){
-            auto srv = s();
+        startTask([this, value]() {
+            int ret = 0;
+            {
+                QMutexLocker lock{&m_mtx};
+                auto srv = s();
 
-            if (!getInited() || !srv) {
-                qWarning() << "RenderingControl service is not inited";
-                return;
+                if (!getInited() || !srv) {
+                    qWarning() << "RenderingControl service is not inited";
+                    return;
+                }
+
+                ret = srv->setMute(value);
             }
 
-            if (handleError(srv->setMute(value))) {
+            if (handleError(ret)) {
                 m_mute = value;
                 emit muteChanged();
             }
@@ -179,38 +170,37 @@ void RenderingControl::setMute(bool value)
     }
 }
 
-void RenderingControl::handleApplicationStateChanged(Qt::ApplicationState)
-{
+void RenderingControl::handleApplicationStateChanged(Qt::ApplicationState) {
     update();
 }
 
-void RenderingControl::asyncUpdateVolume()
-{
+void RenderingControl::asyncUpdateVolume() {
     if (!isInitedOrIniting()) {
         qWarning() << "RenderingControl service is not inited";
         return;
     }
 
-    startTask([this](){
-        updateVolume();
-    });
+    startTask([this]() { updateVolume(); });
 }
 
-void RenderingControl::updateVolume()
-{
-    auto srv = s();
+void RenderingControl::updateVolume() {
+    int ret = 0;
+    {
+        QMutexLocker lock{&m_mtx};
+        auto srv = s();
 
-    if (!isInitedOrIniting() || !srv) {
-        qWarning() << "RenderingControl service is not inited";
-        return;
+        if (!isInitedOrIniting() || !srv) {
+            qWarning() << "RenderingControl service is not inited";
+            return;
+        }
+
+        ret = srv->getVolume();
     }
 
-    int v = srv->getVolume();
-
-    if (handleError(v)) {
-        //qDebug() << "Volume:" << v;
-        if (m_volume != v) {
-            m_volume = v;
+    if (handleError(ret)) {
+        // qDebug() << "Volume:" << ret;
+        if (m_volume != ret) {
+            m_volume = ret;
             emit volumeChanged();
         }
     } else {
@@ -218,28 +208,29 @@ void RenderingControl::updateVolume()
     }
 }
 
-void RenderingControl::asyncUpdateMute()
-{
+void RenderingControl::asyncUpdateMute() {
     if (!getInited()) {
         qWarning() << "RenderingControl service is not inited";
         return;
     }
 
-    startTask([this](){
-        updateMute();
-    });
+    startTask([this]() { updateMute(); });
 }
 
-void RenderingControl::updateMute()
-{
-    auto srv = s();
+void RenderingControl::updateMute() {
+    bool m = false;
+    {
+        QMutexLocker lock{&m_mtx};
 
-    if (!isInitedOrIniting() || !srv) {
-        qWarning() << "RenderingControl service is not inited";
-        return;
+        auto srv = s();
+
+        if (!isInitedOrIniting() || !srv) {
+            qWarning() << "RenderingControl service is not inited";
+            return;
+        }
+
+        m = srv->getMute();
     }
-
-    bool m = srv->getMute();
 
     if (m_mute != m) {
         m_mute = m;
@@ -248,26 +239,33 @@ void RenderingControl::updateMute()
 }
 
 #ifdef USE_SFOS
-void RenderingControl::showVolNofification() const
-{
-    auto name = getDeviceFriendlyName().isEmpty() ? tr("Remote device") : getDeviceFriendlyName();
-    Notifications::instance()->show(tr("Volume level of %1 is %2").arg(name).arg(m_volume), {}, m_volume > 0 ?
-                            "icon-system-volume" : "icon-system-volume-mute");
+void RenderingControl::showVolNofification() const {
+    auto name = getDeviceFriendlyName().isEmpty() ? tr("Remote device")
+                                                  : getDeviceFriendlyName();
+    Notifications::instance()->show(
+        tr("Volume level of %1 is %2").arg(name).arg(m_volume), {},
+        m_volume > 0 ? "icon-system-volume" : "icon-system-volume-mute");
 }
 
-void RenderingControl::volumeUpTimeout()
-{
+void RenderingControl::volumeUpTimeout() {
     if (m_volUpMutex.tryLock()) {
-        startTask([this](){
-            auto srv = s();
+        startTask([this]() {
+            int ret = 0;
+            {
+                QMutexLocker lock{&m_mtx};
 
-            if (!getInited() || !srv) {
-                qWarning() << "RenderingControl service is not inited";
-                m_volUpMutex.unlock();
-                return;
+                auto srv = s();
+
+                if (!getInited() || !srv) {
+                    qWarning() << "RenderingControl service is not inited";
+                    m_volUpMutex.unlock();
+                    return;
+                }
+
+                ret = srv->setVolume(m_futureVolume);
             }
 
-            if (handleError(srv->setVolume(m_futureVolume))) {
+            if (handleError(ret)) {
                 m_volume = m_futureVolume;
                 emit volumeChanged();
                 showVolNofification();
@@ -279,29 +277,27 @@ void RenderingControl::volumeUpTimeout()
     }
 }
 
-void RenderingControl::volUpPressed()
-{
+void RenderingControl::volUpPressed() {
     qDebug() << "Volume up pressed";
 
     if (m_volUpMutex.tryLock()) {
         m_volUpMutex.unlock();
         auto step = Settings::instance()->getVolStep();
         auto vol = step + (m_futureVolume > 0 ? m_futureVolume : getVolume());
-        vol -= vol%step;
+        vol -= vol % step;
         m_futureVolume = vol > 100 ? 100 : vol;
         m_volumeUpTimer.start();
     }
 }
 
-void RenderingControl::volDownPressed()
-{
+void RenderingControl::volDownPressed() {
     qDebug() << "Volume down pressed";
 
     if (m_volUpMutex.tryLock()) {
         m_volUpMutex.unlock();
         auto step = Settings::instance()->getVolStep();
         auto vol = (m_futureVolume > 0 ? m_futureVolume : getVolume()) - step;
-        vol += vol%step;
+        vol += vol % step;
         m_futureVolume = vol < 0 ? 0 : vol;
         m_volumeUpTimer.start();
     }

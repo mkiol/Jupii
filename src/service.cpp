@@ -5,44 +5,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QDebug>
-#include <QThreadPool>
-#include <QGuiApplication>
-
 #include "service.h"
-#include "directory.h"
+
+#include <QDebug>
+#include <QGuiApplication>
+#include <QMutexLocker>
+#include <QThreadPool>
+
 #include "devicemodel.h"
+#include "directory.h"
+#include "libupnpp/control/description.hxx"
 #include "taskexecutor.h"
 #include "utils.h"
 
-#include "libupnpp/control/description.hxx"
-
-
-Service::Service(QObject *parent) :
-    QObject(parent),
-    TaskExecutor(parent, 5),
-    m_timer(parent)
-{
+Service::Service(QObject *parent)
+    : QObject(parent), TaskExecutor(parent, 5), m_timer(parent) {
     QObject::connect(&m_timer, &QTimer::timeout, this, &Service::timerEvent);
     QObject::connect(this, &Service::needTimer, this, &Service::timer);
 
 #ifdef USE_SFOS
-    auto app = static_cast<QGuiApplication*>(QGuiApplication::instance());
-    QObject::connect(app, &QGuiApplication::applicationStateChanged,
-                     this, &Service::handleApplicationStateChanged);
+    auto app = static_cast<QGuiApplication *>(QGuiApplication::instance());
+    QObject::connect(app, &QGuiApplication::applicationStateChanged, this,
+                     &Service::handleApplicationStateChanged);
 #endif
 
     auto dir = Directory::instance();
     connect(dir, &Directory::initedChanged, this, &Service::deInit);
 }
 
-Service::~Service()
-{
-    if (m_ser) {
-        m_ser->installReporter(nullptr);
-        delete m_ser;
-        m_ser = nullptr;
-        qDebug() << "Service deleted";
+Service::~Service() {
+    {
+        QMutexLocker lock{&m_mtx};
+        if (m_ser) {
+            m_ser->installReporter(nullptr);
+            delete m_ser;
+            m_ser = nullptr;
+            qDebug() << "Service deleted";
+        }
     }
 
     setInited(false);
@@ -50,109 +49,111 @@ Service::~Service()
     waitForDone();
 }
 
-void Service::changed(const char *nm, const char *value)
-{
+void Service::changed(const char *nm, const char *value) {
     qDebug() << "changed char*:" << nm << value;
     changed(QString(nm), QVariant::fromValue(QString(value)));
 }
 
-void Service::changed(const char *nm, int value)
-{
+void Service::changed(const char *nm, int value) {
     qDebug() << "changed int:" << nm << value;
     changed(QString(nm), QVariant::fromValue(value));
 }
 
-bool Service::getInited()
-{
-    return m_inited;
-}
+bool Service::getInited() { return m_inited; }
 
-bool Service::isInitedOrIniting()
-{
-    return m_inited || m_initing;
-}
+bool Service::isInitedOrIniting() { return m_inited || m_initing; }
 
-bool Service::getBusy()
-{
-    return m_busy;
-}
+bool Service::getBusy() { return m_busy; }
 
-void Service::setBusy(bool value)
-{
+void Service::setBusy(bool value) {
     if (m_busy != value) {
         m_busy = value;
         emit busyChanged();
     }
 }
 
-void Service::setInited(bool value)
-{
-    if (m_ser) {
-        if (m_inited != value) {
-            m_inited = value;
-            emit initedChanged();
+void Service::setInited(bool value) {
+    bool doEmit = false;
+
+    {
+        QMutexLocker lock{&m_mtx};
+        if (m_ser) {
+            if (m_inited != value) {
+                m_inited = value;
+                doEmit = true;
+            }
+        } else {
+            if (m_inited != false) {
+                m_inited = false;
+                doEmit = true;
+            }
         }
-    } else {
-        if (m_inited != false) {
-            m_inited = false;
-            emit initedChanged();
-        }
+    }
+
+    if (doEmit) {
+        emit initedChanged();
     }
 }
 
-QString Service::getDeviceId() const
-{
-    auto id = m_ser && m_inited ? QString::fromStdString(m_ser->getDeviceId()) : QString();
-    //qDebug() << "device id:" << id;
+QString Service::getDeviceId() const {
+    QMutexLocker lock{&m_mtx};
+    auto id = m_ser && m_inited ? QString::fromStdString(m_ser->getDeviceId())
+                                : QString();
+    // qDebug() << "device id:" << id;
     return id;
 }
 
-QString Service::getDeviceIconPath() const
-{
+QString Service::getDeviceIconPath() const {
     return Utils::deviceIconFilePath(getDeviceId());
 }
 
 QUrl Service::getDeviceUrl() const {
+    QMutexLocker lock{&m_mtx};
     if (m_ser && m_inited)
         return QUrl{QString::fromStdString(m_ser->getActionURL())};
     return {};
 }
 
-QString Service::getDeviceFriendlyName() const
-{
-    auto name = m_ser && m_inited ? QString::fromStdString(m_ser->getFriendlyName()) : QString();
+QString Service::getDeviceFriendlyName() const {
+    QMutexLocker lock{&m_mtx};
+    auto name = m_ser && m_inited
+                    ? QString::fromStdString(m_ser->getFriendlyName())
+                    : QString();
     return name;
 }
 
 QString Service::getDeviceModel() const {
+    QMutexLocker lock{&m_mtx};
     auto name = m_ser && m_inited
                     ? QString::fromStdString(m_ser->getModelName())
                     : QString();
     return name;
 }
 
-void Service::handleApplicationStateChanged(Qt::ApplicationState state)
-{
+void Service::handleApplicationStateChanged(Qt::ApplicationState state) {
     qDebug() << "State changed:" << state;
 }
 
-void Service::deInit()
-{
+void Service::deInit() {
     qDebug() << "Deiniting";
 
     setInited(false);
     m_initing = false;
     timer(false);
     reset();
-    if (m_ser) {
-        delete m_ser;
-        m_ser = nullptr;
+
+    {
+        QMutexLocker lock{&m_mtx};
+        if (m_ser) {
+            delete m_ser;
+            m_ser = nullptr;
+        }
     }
+
     setBusy(false);
 }
 
-bool Service::init(const QString &deviceId)
-{
+bool Service::init(const QString &deviceId) {
     qDebug() << "Initing";
 
     if (deviceId.isEmpty()) {
@@ -169,7 +170,7 @@ bool Service::init(const QString &deviceId)
     }
 
     UPnPClient::UPnPServiceDesc sdesc;
-    for (auto& _sdesc : ddesc.services) {
+    for (auto &_sdesc : ddesc.services) {
         if (_sdesc.serviceType == type()) {
             sdesc = _sdesc;
             break;
@@ -182,10 +183,14 @@ bool Service::init(const QString &deviceId)
         return false;
     }
 
-    if (m_inited && m_ser) {
-        if (m_ser->getDeviceId() == ddesc.UDN && m_ser->getServiceType() == sdesc.serviceType) {
-            qDebug() << "Same service, init not needed";
-            return true;
+    {
+        QMutexLocker lock{&m_mtx};
+        if (m_inited && m_ser) {
+            if (m_ser->getDeviceId() == ddesc.UDN &&
+                m_ser->getServiceType() == sdesc.serviceType) {
+                qDebug() << "Same service, init not needed";
+                return true;
+            }
         }
     }
 
@@ -200,31 +205,45 @@ bool Service::init(const QString &deviceId)
         qDebug() << "Initing started";
         m_initing = true;
 
-        if (m_ser) {
-            delete m_ser;
-            m_ser = nullptr;
+        {
+            QMutexLocker lock{&m_mtx};
+
+            if (m_ser) {
+                delete m_ser;
+                m_ser = nullptr;
+            }
+
+            m_ser = createUpnpService(ddesc, sdesc);
+
+            if (!m_ser) {
+                qWarning() << "Unable to connect to UPnP service";
+                m_initing = false;
+            }
         }
-
-        m_ser = createUpnpService(ddesc, sdesc);
-
-        if (!m_ser) {
-            qWarning() << "Unable to connect to UPnP service";
-            m_initing = false;
+        if (!m_initing) {
             emit error(E_NotInited);
         }
 
         postInit();
 
-        if (m_initing) {
-            m_ser->installReporter(this);
-            setInited(true);
-            m_initing = false;
-        } else {
-            qWarning() << "Cannot init service";
-            if (m_ser) {
-                delete m_ser;
-                m_ser = nullptr;
+        bool successfulInit = false;
+        {
+            QMutexLocker lock{&m_mtx};
+
+            if (m_initing && m_ser) {
+                m_ser->installReporter(this);
+                successfulInit = true;
+                m_initing = false;
+            } else {
+                qWarning() << "Cannot init service";
+                if (m_ser) {
+                    delete m_ser;
+                    m_ser = nullptr;
+                }
             }
+        }
+        if (successfulInit) {
+            setInited(true);
         }
 
         setBusy(false);
@@ -233,24 +252,15 @@ bool Service::init(const QString &deviceId)
     return true;
 }
 
-void Service::reset()
-{
-}
+void Service::reset() {}
 
-void Service::postInit()
-{
-}
+void Service::postInit() {}
 
-void Service::postDeInit()
-{
-}
+void Service::postDeInit() {}
 
-void Service::timerEvent()
-{
-}
+void Service::timerEvent() {}
 
-void Service::timer(bool start)
-{
+void Service::timer(bool start) {
     /*qDebug() << "Timer request";
     qDebug() << "  isActive:" << m_timer.isActive();
     qDebug() << "  reqest start:" << start;*/
@@ -266,29 +276,29 @@ void Service::timer(bool start)
     }
 }
 
-bool Service::handleError(int ret)
-{
-    //qDebug() << "handleError:" << ret;
+bool Service::handleError(int ret) {
+    // qDebug() << "handleError:" << ret;
 
     if (ret < 0) {
         qWarning() << "Upnp request error:" << ret;
 
         switch (ret) {
-        case -200:
-        case -201:
-        case -202:
-        case -203:
-        case -204:
-        case -205:
-        case -206:
-        case -207:
-        case -208:
-        case -113: // libnpupnp on *any curl error* generates UPNP_E_BAD_RESPONSE :(
-            emit error(E_LostConnection);
-            deInit();
-            break;
-        default:
-            emit error(E_ServerError);
+            case -200:
+            case -201:
+            case -202:
+            case -203:
+            case -204:
+            case -205:
+            case -206:
+            case -207:
+            case -208:
+            case -113:  // libnpupnp on *any curl error* generates
+                        // UPNP_E_BAD_RESPONSE :(
+                emit error(E_LostConnection);
+                deInit();
+                break;
+            default:
+                emit error(E_ServerError);
         }
 
         return false;
