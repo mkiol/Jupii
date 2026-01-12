@@ -58,11 +58,12 @@
   <url type="bugtracker">https://github.com/mkiol/Jupii/issues</url>
   <url type="translate">https://app.transifex.com/mkiol/jupii</url>
   <url type="donation">https://github.com/mkiol/Jupii#how-to-support</url>
+  <url type="vcs-browser">https://github.com/mkiol/Jupii</url>
   <update_contact>jupii_AT_mkiol.net</update_contact>
   <launchable type="desktop-id">@info_app_icon_id@.desktop</launchable>
   <content_rating type="oars-1.1" />
   <releases>
-    <release version="2.16.0" date="2026-01-11">
+    <release version="2.16.0" date="2026-01-12">
       <description>
       <ul>
       <li>New feature: Slideshow — lets you combine a series of images into a low-framerate video that plays in real time.
@@ -72,9 +73,10 @@
       <li>UI: Icons now load asynchronously, which makes the user interface smoother.</li>
       <li>UI: The settings have two views: 'Basic options' and 'All options'.
           When you select 'All options', you will have access to many advanced options that allow you to customize streaming parameters and much more.</li>
+      <li>UI: Option to move items up/down in the queue.</li>
       <li>Fix: Integration with Bandcamp, Youtube and Soundcloud was broken due to API change.</li>
       <li>Fix: User Interface glitches</li>
-      <li>Flatpak: KDE runtime update to version 5.15-24.08</li>
+      <li>Flatpak: KDE runtime update to version 5.15-25.08</li>
       </ul>
       </description>
     </release>

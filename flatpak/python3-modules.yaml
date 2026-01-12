@@ -1,4 +1,4 @@
-# Generated with flatpak-pip-generator --yaml --output python3-modules yt_dlp==2025.10.28.232931.dev0 ytmusicapi==1.11.1
+# Generated with flatpak-pip-generator --yaml --output python3-modules yt_dlp==2025.12.8 ytmusicapi==1.11.1
 build-commands: []
 buildsystem: simple
 modules:

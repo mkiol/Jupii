@@ -44,6 +44,7 @@ Page {
                 <li>UI: Icons now load asynchronously, which makes the user interface smoother.</li>
                 <li>UI: The settings have two views: <i>Basic options</i> and <i>All options</i>.
                     When you select <i>All options</i>, you will have access to many advanced options that allow you to customize streaming parameters and much more.</li>
+                <li>UI: Option to move items up/down in the queue.</li>
                 <li>Youtube: Support for Youtube has been disabled for now.
                     Libraries providing integration (ytmusicapi, yt-dlp) require a higher version of Python than the one currently available in SFOS.
                     Youtube support will be re-enabled after updating SFOS to next version.</li>

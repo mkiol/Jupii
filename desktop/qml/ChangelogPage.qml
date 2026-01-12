@@ -33,9 +33,10 @@ Kirigami.ScrollablePage {
             <li>UI: The settings have two views: <i>Basic options</i> and <i>All options</i>.
                 When you select <i>All options</i>, you will have access to many advanced options that allow you to customize streaming parameters and much more.</li>
             <li>UI: Icons now load asynchronously, which makes the user interface smoother.</li>
+            <li>UI: Option to move items up/down in the queue.</li>
             <li>Fix: Integration with Bandcamp, Youtube and Soundcloud was broken due to API change.</li>
             <li>Fix: User Interface glitches</li>
-            <li>Flatpak: KDE runtime update to version 5.15-24.08</li>
+            <li>Flatpak: KDE runtime update to version 5.15-25.08</li>
             </ul>"
         }
 
