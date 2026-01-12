@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2022 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,6 +20,7 @@ ListItem {
                                          _dicon.status !== Image.Ready
 
     contentHeight: Theme.itemSizeMedium
+    opacity: enabled ? 1.0 : Theme.opacityLow
 
     anchors {
         left: parent.left

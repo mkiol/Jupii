@@ -66,6 +66,8 @@ endif()
 
 if(WITH_SFOS_HARBOUR)
     set(WITH_PY OFF)
+    set(WITH_DROIDCAM OFF)
+    set(WITH_SFOS_SCREEN_CAPTURE OFF)
 endif()
 
 if(NOT ${WITH_PY})

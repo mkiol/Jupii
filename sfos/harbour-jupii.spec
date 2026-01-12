@@ -1,7 +1,7 @@
 Name:       harbour-jupii
 
 # >> macros
-%define harbour %(if [[ "%{_builddir}" == *harbour ]]; then echo 1; else echo 0; fi)
+%define harbour 0
 # << macros
 
 %{!?qtc_qmake:%define qtc_qmake %qmake}

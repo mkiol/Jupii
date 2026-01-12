@@ -551,7 +551,6 @@ Page {
                                 settings.lipstickFps = value
                             }
                         }
-
                     }
                 }
 
@@ -759,6 +758,7 @@ Page {
                         }
 
                         ComboBox {
+                            visible: !setting.isHarbour()
                             label: qsTr("Policy for local %1 & %2").arg("<i>MPD</i>").arg("<i>upmpdcli</i>")
 
                             currentIndex: {

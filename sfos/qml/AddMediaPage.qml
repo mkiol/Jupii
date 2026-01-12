@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -268,6 +268,7 @@ Page {
             }
 
             SimpleListItem {
+                enabled: !settings.isHarbour()
                 title.text: qsTr("Screen capture")
                 icon.source: "image://theme/icon-m-display?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
@@ -289,6 +290,7 @@ Page {
 
 
             SimpleListItem {
+                enabled: !settings.isHarbour()
                 title.text: qsTr("Camera")
                 icon.source: "image://theme/icon-m-browser-camera?" + (highlighted ?
                              Theme.highlightColor : Theme.primaryColor)
@@ -320,6 +322,7 @@ Page {
 
             SimpleListItem {
                 visible: utils.isGpodderAvailable()
+                enabled: !settings.isHarbour()
                 title.text: "gPodder"
                 icon.source: "image://icons/icon-m-gpodder"
                 onClicked: {
@@ -369,7 +372,7 @@ Page {
 
             // Disabling YTMusic because ytdlp is not supported on SFOS (it requires python >= 3.10)
             SimpleListItem {
-                visible: settings.isPy()
+                enabled: settings.isPy()
                 title.text: "YouTube Music"
                 icon.source: "image://icons/icon-m-youtube"
                 onClicked: {
