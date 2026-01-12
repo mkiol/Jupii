@@ -53,7 +53,7 @@ Rectangle {
     visible: open || !inited
     height: visible ? column.height : 0
 
-    color: root.inited ? Kirigami.Theme.buttonBackgroundColor : "transparent"
+    color: root.inited ? Kirigami.Theme.backgroundColor : "transparent"
 
     onOpenChanged: {
         if (open)

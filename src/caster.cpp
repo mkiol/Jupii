@@ -643,7 +643,7 @@ std::ostream &operator<<(std::ostream &os,
 }
 
 std::ostream &operator<<(std::ostream &os, const Caster::PerfConfig &config) {
-    os << "pa-iter-cleep=" << config.paIterSleep
+    os << "pa-iter-sleep=" << config.paIterSleep
        << ", audio-mux-iter-sleep=" << config.audioMuxIterSleep
        << ", video-mjpeg-qmin=" << config.videoMjpegQmin
        << ", video-x264-crf=" << config.videoX264Crf
@@ -4464,7 +4464,7 @@ bool Caster::encodeVideoFrame(AVPacket *pkt) {
         if (ret == AVERROR_EOF) {
             m_terminationReason = TerminationReason::Eof;
         }
-        LOGE("avcodec_send_packet for video error: " << strForAvError(ret));
+        LOGD("avcodec_send_packet for video error: " << strForAvError(ret));
         return false;
     }
 

@@ -142,7 +142,7 @@ Kirigami.ScrollablePage {
             return
         }
 
-        idx = listView.count - 1
+        idx = itemList.count - 1
         if (isItemVisible(idx)) return
 
         itemList.positionViewAtBeginning()
