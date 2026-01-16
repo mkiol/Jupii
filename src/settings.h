@@ -60,6 +60,7 @@
     X(mjpegQuality,                   getMjpegQuality,                  setMjpegQuality,                  mjpeg_quality,                     int,     95,              false         ) \
     X(x264Quality,                    getX264Quality,                   setX264Quality,                   x264_quality,                      int,     60,              false         ) \
     X(mpdPolicy,                      getMpdPolicy,                     setMpdPolicy,                     mpd_policy,                        Settings::MpdPolicy, Settings::MpdPolicy::MpdPolicy_None, false) \
+    X(videoScaleAlgo,                 getVideoScaleAlgo,                setVideoScaleAlgo,                video_scale_algo,                  Settings::VideoScaleAlgo, Settings::VideoScaleAlgo::VideoScaleAlgo_FastBilinear, false) \
     // clang-format on
 
 class Settings : public QSettings,
@@ -227,6 +228,15 @@ class Settings : public QSettings,
         MpdPolicy_StartStop = 2
     };
     Q_ENUM(MpdPolicy)
+
+    enum class VideoScaleAlgo {
+        VideoScaleAlgo_FastBilinear = 0,
+        VideoScaleAlgo_Bilinear = 1,
+        VideoScaleAlgo_Bicubic = 2,
+        VideoScaleAlgo_Neighbor = 3,
+        VideoScaleAlgo_Lanczos = 4,
+    };
+    Q_ENUM(VideoScaleAlgo)
 
 #ifdef USE_SFOS
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";

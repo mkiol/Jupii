@@ -1289,6 +1289,24 @@ std::optional<Caster::Config> ContentServerWorker::configForCaster(
         /*min crf*/ 1,
         /*max crf*/ 51));
 
+    switch (s->getVideoScaleAlgo()) {
+        case Settings::VideoScaleAlgo::VideoScaleAlgo_FastBilinear:
+            config.perfConfig.videoScaleAlgo = "fast_bilinear";
+            break;
+        case Settings::VideoScaleAlgo::VideoScaleAlgo_Bilinear:
+            config.perfConfig.videoScaleAlgo = "bilinear";
+            break;
+        case Settings::VideoScaleAlgo::VideoScaleAlgo_Bicubic:
+            config.perfConfig.videoScaleAlgo = "bicubic";
+            break;
+        case Settings::VideoScaleAlgo::VideoScaleAlgo_Neighbor:
+            config.perfConfig.videoScaleAlgo = "neighbor";
+            break;
+        case Settings::VideoScaleAlgo::VideoScaleAlgo_Lanczos:
+            config.perfConfig.videoScaleAlgo = "lanczos";
+            break;
+    }
+
     return config;
 }
 

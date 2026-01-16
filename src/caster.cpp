@@ -650,7 +650,8 @@ std::ostream &operator<<(std::ostream &os, const Caster::PerfConfig &config) {
        << ", video-mjpeg-qmin=" << config.videoMjpegQmin
        << ", video-x264-crf=" << config.videoX264Crf
        << ", lipstick-recorder-fps=" << config.lipstickRecorderFps
-       << ", img-fps=" << config.imgFps;
+       << ", img-fps=" << config.imgFps
+       << ", video-scale-algo=" << config.videoScaleAlgo;
     return os;
 }
 
@@ -2120,88 +2121,101 @@ void Caster::initAvVideoFiltersForIndicatorsIfNeeded() {
 
 void Caster::initAvVideoFiltersFrame169(SensorDirection direction) {
     if (m_inDim.thin()) {
-        initAvVideoFilter(direction, VideoTrans::Frame169,
-                          "transpose=dir={2},scale=h=-1:w={0},crop=h=min(ih\\,{"
-                          "1}),pad=width={0}:height="
-                          "{1}"
-                          ":x=-1:y=-1:color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169Rot90,
-                          "scale=h={1}:w=-1,vflip,hflip,crop=w=min(iw\\,{0}),"
-                          "pad=width={0}:height={1}:x=-1:y=-1:"
-                          "color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169Rot180,
-                          "transpose=dir={3},scale=h=-1:w={0},crop=h=min(ih\\,{"
-                          "1}),pad=width={0}:"
-                          "height={1}"
-                          ":x=-1:y=-1:color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169Rot270,
-                          "scale=h={1}:w=-1,crop=w=min(iw\\,{0}),pad=width={0}:"
-                          "height={1}:x=-1:y=-2:color="
-                          "black");
-    } else {
         initAvVideoFilter(
             direction, VideoTrans::Frame169,
-            "transpose=dir={2},scale=h={1}:w=-1,crop=w=min(iw\\,{0}),pad="
-            "width={0}:height="
+            "transpose=dir={2},scale=h=-1:w={0}:flags={4},crop=h=min(ih\\,{"
+            "1}),pad=width={0}:height="
             "{1}"
             ":x=-1:y=-1:color=black");
         initAvVideoFilter(
             direction, VideoTrans::Frame169Rot90,
-            "scale=h={1}:w=-1,vflip,hflip,crop=w=min(iw\\,{0}),pad=width={"
-            "0}:height={1}:x=-1:y=-1:"
+            "scale=h={1}:w=-1:flags={4},vflip,hflip,crop=w=min(iw\\,{0}),"
+            "pad=width={0}:height={1}:x=-1:y=-1:"
             "color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169Rot180,
-                          "transpose=dir={3},scale=h={1}:w=-1,crop=w=min(iw\\,{"
-                          "0}),pad=width={0}:"
-                          "height={1}"
-                          ":x=-1:y=-1:color=black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169Rot180,
+            "transpose=dir={3},scale=h=-1:w={0}:flags={4},crop=h=min(ih\\,{"
+            "1}),pad=width={0}:"
+            "height={1}"
+            ":x=-1:y=-1:color=black");
         initAvVideoFilter(
             direction, VideoTrans::Frame169Rot270,
-            "scale=h={1}:w=-1,crop=w=min(iw\\,{0}),pad=width={0}:height={1}"
-            ":x=-1:y=-2:color="
+            "scale=h={1}:w=-1:flags={4},crop=w=min(iw\\,{0}),pad=width={0}:"
+            "height={1}:x=-1:y=-2:color="
             "black");
+    } else {
+        initAvVideoFilter(direction, VideoTrans::Frame169,
+                          "transpose=dir={2},scale=h={1}:w=-1:flags={4},crop=w="
+                          "min(iw\\,{0}),pad="
+                          "width={0}:height="
+                          "{1}"
+                          ":x=-1:y=-1:color=black");
+        initAvVideoFilter(direction, VideoTrans::Frame169Rot90,
+                          "scale=h={1}:w=-1:flags={4},vflip,hflip,crop=w=min("
+                          "iw\\,{0}),pad=width={"
+                          "0}:height={1}:x=-1:y=-1:"
+                          "color=black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169Rot180,
+            "transpose=dir={3},scale=h={1}:w=-1:flags={4},crop=w=min(iw\\,{"
+            "0}),pad=width={0}:"
+            "height={1}"
+            ":x=-1:y=-1:color=black");
+        initAvVideoFilter(direction, VideoTrans::Frame169Rot270,
+                          "scale=h={1}:w=-1:flags={4},crop=w=min(iw\\,{0}),pad="
+                          "width={0}:height={1}"
+                          ":x=-1:y=-2:color="
+                          "black");
     }
 }
 
 void Caster::initAvVideoFiltersFrame169Vflip(SensorDirection direction) {
     if (m_inDim.thin()) {
-        initAvVideoFilter(direction, VideoTrans::Frame169Vflip,
-                          "transpose=dir={2}_flip,scale=h=-1:w={0},crop=h=min("
-                          "ih\\,{1}),pad=width={0}:height="
-                          "{1}"
-                          ":x=-1:y=-1:color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169VflipRot90,
-                          "scale=h={1}:w=-1,hflip,crop=w=min(iw\\,{0}),pad="
-                          "width={0}:height={1}:x=-1:y=-1:"
-                          "color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169VflipRot180,
-                          "transpose=dir={3}_flip,scale=h=-1:w={0},crop=h=min("
-                          "ih\\,{1}),pad=width={0}:"
-                          "height={1}"
-                          ":x=-1:y=-1:color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169VflipRot270,
-                          "scale=h={1}:w=-1,vflip,crop=w=min(iw\\,{0}),pad="
-                          "width={0}:height={1}:x=-1:y=-2:color="
-                          "black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169Vflip,
+            "transpose=dir={2}_flip,scale=h=-1:w={0}:flags={4},crop=h=min("
+            "ih\\,{1}),pad=width={0}:height="
+            "{1}"
+            ":x=-1:y=-1:color=black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169VflipRot90,
+            "scale=h={1}:w=-1:flags={4},hflip,crop=w=min(iw\\,{0}),pad="
+            "width={0}:height={1}:x=-1:y=-1:"
+            "color=black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169VflipRot180,
+            "transpose=dir={3}_flip,scale=h=-1:w={0}:flags={4},crop=h=min("
+            "ih\\,{1}),pad=width={0}:"
+            "height={1}"
+            ":x=-1:y=-1:color=black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169VflipRot270,
+            "scale=h={1}:w=-1:flags={4},vflip,crop=w=min(iw\\,{0}),pad="
+            "width={0}:height={1}:x=-1:y=-2:color="
+            "black");
     } else {
-        initAvVideoFilter(direction, VideoTrans::Frame169Vflip,
-                          "transpose=dir={2}_flip,scale=h={1}:w=-1,crop=w=min("
-                          "iw\\,{0}),pad=width={0}:height="
-                          "{1}"
-                          ":x=-1:y=-1:color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169VflipRot90,
-                          "scale=h={1}:w=-1,hflip,crop=w=min(iw\\,{0}),pad="
-                          "width={0}:height={1}:x=-1:y=-1:"
-                          "color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169VflipRot180,
-                          "transpose=dir={3}_flip,scale=h={1}:w=-1,crop=w=min("
-                          "iw\\,{0}),pad=width={0}:"
-                          "height={1}"
-                          ":x=-1:y=-1:color=black");
-        initAvVideoFilter(direction, VideoTrans::Frame169VflipRot270,
-                          "scale=h={1}:w=-1,vflip,crop=w=min(iw\\,{0}),pad="
-                          "width={0}:height={1}:x=-1:y=-2:color="
-                          "black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169Vflip,
+            "transpose=dir={2}_flip,scale=h={1}:w=-1:flags={4},crop=w=min("
+            "iw\\,{0}),pad=width={0}:height="
+            "{1}"
+            ":x=-1:y=-1:color=black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169VflipRot90,
+            "scale=h={1}:w=-1:flags={4},hflip,crop=w=min(iw\\,{0}),pad="
+            "width={0}:height={1}:x=-1:y=-1:"
+            "color=black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169VflipRot180,
+            "transpose=dir={3}_flip,scale=h={1}:w=-1:flags={4},crop=w=min("
+            "iw\\,{0}),pad=width={0}:"
+            "height={1}"
+            ":x=-1:y=-1:color=black");
+        initAvVideoFilter(
+            direction, VideoTrans::Frame169VflipRot270,
+            "scale=h={1}:w=-1:flags={4},vflip,crop=w=min(iw\\,{0}),pad="
+            "width={0}:height={1}:x=-1:y=-2:color="
+            "black");
     }
 }
 
@@ -2346,22 +2360,23 @@ void Caster::initAvVideoFilters() {
         case VideoTrans::TransCclock:
         case VideoTrans::TransCclockFlip:
             initAvVideoFilter(props.sensorDirection, VideoTrans::Scale,
-                              "scale=h={1}:w={0}:interl=-1");
+                              "scale=h={1}:w={0}:interl=-1:flags={4}");
             initAvVideoFilter(props.sensorDirection, VideoTrans::Vflip,
-                              "scale=h={1}:w={0},vflip");
+                              "scale=h={1}:w={0}:flags={4},vflip");
             initAvVideoFilter(props.sensorDirection, VideoTrans::Hflip,
-                              "scale=h={1}:w={0},hflip");
+                              "scale=h={1}:w={0}:flags={4},hflip");
             initAvVideoFilter(props.sensorDirection, VideoTrans::VflipHflip,
-                              "scale=h={1}:w={0},vflip,hflip");
+                              "scale=h={1}:w={0}:flags={4},vflip,hflip");
             initAvVideoFilter(props.sensorDirection, VideoTrans::TransClock,
-                              "scale=h={0}:w={1},transpose=dir={2}");
+                              "scale=h={0}:w={1}:flags={4},transpose=dir={2}");
             initAvVideoFilter(props.sensorDirection, VideoTrans::TransCclock,
-                              "scale=h={0}:w={1},transpose=dir={3}");
-            initAvVideoFilter(props.sensorDirection, VideoTrans::TransClockFlip,
-                              "scale=h={0}:w={1},transpose=dir={2}_flip");
-            initAvVideoFilter(props.sensorDirection,
-                              VideoTrans::TransCclockFlip,
-                              "scale=h={0}:w={1},transpose=dir={3}_flip");
+                              "scale=h={0}:w={1}:flags={4},transpose=dir={3}");
+            initAvVideoFilter(
+                props.sensorDirection, VideoTrans::TransClockFlip,
+                "scale=h={0}:w={1}:flags={4},transpose=dir={2}_flip");
+            initAvVideoFilter(
+                props.sensorDirection, VideoTrans::TransCclockFlip,
+                "scale=h={0}:w={1}:flags={4},transpose=dir={3}_flip");
             break;
         case VideoTrans::Frame169:
         case VideoTrans::Frame169Rot90:
@@ -2401,7 +2416,8 @@ void Caster::initAvVideoFilter(SensorDirection direction, VideoTrans trans,
         m_videoFilterCtxMap[trans],
         fmt::format(fmt, m_outVideoCtx->width, m_outVideoCtx->height,
                     direction == SensorDirection::Front ? "cclock" : "clock",
-                    direction == SensorDirection::Front ? "clock" : "cclock")
+                    direction == SensorDirection::Front ? "clock" : "cclock",
+                    m_config.perfConfig.videoScaleAlgo)
             .c_str(),
         true);
 }

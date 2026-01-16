@@ -508,6 +508,56 @@ Page {
                         //     }
                         // }
 
+                        ComboBox {
+                            visible: root.showAdvanced
+                            label: qsTr("Video scaling algorithm")
+                            currentIndex: {
+                                switch (settings.videoScaleAlgo) {
+                                case Settings.VideoScaleAlgo_FastBilinear:
+                                    return 0
+                                case Settings.VideoScaleAlgo_Bilinear:
+                                    return 1
+                                case Settings.VideoScaleAlgo_Bicubic:
+                                    return 2
+                                case Settings.VideoScaleAlgo_Neighbor:
+                                    return 3
+                                case Settings.VideoScaleAlgo_Lanczos:
+                                    return 4
+                                }
+                                return 0;
+                            }
+
+                            menu: ContextMenu {
+                                MenuItem { text: "Fast Bilinear" }
+                                MenuItem { text: "Bilinear" }
+                                MenuItem { text: "Bicubic" }
+                                MenuItem { text: "Neighbor" }
+                                MenuItem { text: "Lanczos" }
+                            }
+
+                            onCurrentIndexChanged: {
+                                switch (currentIndex) {
+                                case 0:
+                                    settings.videoScaleAlgo = Settings.VideoScaleAlgo_FastBilinear;
+                                    break
+                                case 1:
+                                    settings.videoScaleAlgo = Settings.VideoScaleAlgo_Bilinear;
+                                    break
+                                case 2:
+                                    settings.videoScaleAlgo = Settings.VideoScaleAlgo_Bicubic;
+                                    break
+                                case 3:
+                                    settings.videoScaleAlgo = Settings.VideoScaleAlgo_Neighbor;
+                                    break
+                                case 4:
+                                    settings.videoScaleAlgo = Settings.VideoScaleAlgo_Lanczos;
+                                    break
+                                default:
+                                    settings.videoScaleAlgo = Settings.VideoScaleAlgo_FastBilinear;
+                                }
+                            }
+                        }
+
                         Slider {
                             opacity: enabled ? 1.0 : Theme.opacityLow
                             width: parent.width

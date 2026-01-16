@@ -171,6 +171,14 @@ class Caster {
             18;  // quality of x264, from 1 to 51 (1 is best quality)
         uint32_t lipstickRecorderFps = 20;
         uint32_t imgFps = 5;
+
+        // scale algos perf for ref frame (lower is better):
+        // neighbor:         28297
+        // fast_bilinear:    30297
+        // bilinear:         52054
+        // bicubic:          80732
+        // lanczos:         135192
+        std::string videoScaleAlgo = "fast_bilinear";
         friend std::ostream &operator<<(std::ostream &os,
                                         const PerfConfig &config);
     };

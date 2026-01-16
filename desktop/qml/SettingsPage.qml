@@ -572,15 +572,15 @@ Kirigami.ScrollablePage {
                 currentIndex: {
                     switch (settings.casterVideoEncoder) {
                     case Settings.CasterVideoEncoder_Auto:
-                        return 0;
+                        return 0
                     case Settings.CasterVideoEncoder_X264:
-                        return 1;
+                        return 1
                     case Settings.CasterVideoEncoder_Nvenc:
-                        return 2;
+                        return 2
                     case Settings.CasterVideoEncoder_V4l2:
-                        return 3;
+                        return 3
                     }
-                    return 0;
+                    return 0
                 }
 
                 model: [qsTr("Auto"), "x264", "nvenc", "V4L2"]
@@ -589,18 +589,62 @@ Kirigami.ScrollablePage {
                     switch (currentIndex) {
                     case 0:
                         settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
-                        break;
+                        break
                     case 1:
                         settings.casterVideoEncoder = Settings.CasterVideoEncoder_X264;
-                        break;
+                        break
                     case 2:
                         settings.casterVideoEncoder = Settings.CasterVideoEncoder_Nvenc;
-                        break;
+                        break
                     case 3:
                         settings.casterVideoEncoder = Settings.CasterVideoEncoder_V4l2;
-                        break;
+                        break
                     default:
                         settings.casterVideoEncoder = Settings.CasterVideoEncoder_Auto;
+                    }
+                }
+            }
+
+            Controls.ComboBox {
+                visible: root.showAdvanced
+                Kirigami.FormData.label: qsTr("Video scaling algorithm")
+                currentIndex: {
+                    switch (settings.videoScaleAlgo) {
+                    case Settings.VideoScaleAlgo_FastBilinear:
+                        return 0
+                    case Settings.VideoScaleAlgo_Bilinear:
+                        return 1
+                    case Settings.VideoScaleAlgo_Bicubic:
+                        return 2
+                    case Settings.VideoScaleAlgo_Neighbor:
+                        return 3
+                    case Settings.VideoScaleAlgo_Lanczos:
+                        return 4
+                    }
+                    return 0
+                }
+
+                model: ["Fast Bilinear", "Bilinear", "Bicubic", "Neighbor", "Lanczos"]
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0:
+                        settings.videoScaleAlgo = Settings.VideoScaleAlgo_FastBilinear;
+                        break
+                    case 1:
+                        settings.videoScaleAlgo = Settings.VideoScaleAlgo_Bilinear;
+                        break
+                    case 2:
+                        settings.videoScaleAlgo = Settings.VideoScaleAlgo_Bicubic;
+                        break
+                    case 3:
+                        settings.videoScaleAlgo = Settings.VideoScaleAlgo_Neighbor;
+                        break
+                    case 4:
+                        settings.videoScaleAlgo = Settings.VideoScaleAlgo_Lanczos;
+                        break
+                    default:
+                        settings.videoScaleAlgo = Settings.VideoScaleAlgo_FastBilinear;
                     }
                 }
             }
