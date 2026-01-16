@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2022-2025 Michal Kosciesza <michal@mkiol.net>
+﻿/* Copyright (C) 2022-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -230,6 +230,8 @@ std::ostream &operator<<(std::ostream &os, Caster::CapabilityFlags flags) {
         os << "adjustable-image-duration";
     if (flags & Caster::CapabilityFlags::AdjustableLoopFile)
         os << "adjustable-loop-file";
+    if (flags & Caster::CapabilityFlags::AdjustableIndicators)
+        os << "adjustable-indicatiors";
 
     return os;
 }
@@ -1475,6 +1477,14 @@ void Caster::cleanAvVideoFilters() {
         if (p.second.graph != nullptr) avfilter_graph_free(&p.second.graph);
     }
     m_videoFilterCtxMap.clear();
+
+    // additional video filter graph
+    if (m_videoFilterCtx.in != nullptr)
+        avfilter_inout_free(&m_videoFilterCtx.in);
+    if (m_videoFilterCtx.out != nullptr)
+        avfilter_inout_free(&m_videoFilterCtx.out);
+    if (m_videoFilterCtx.graph != nullptr)
+        avfilter_graph_free(&m_videoFilterCtx.graph);
 }
 
 void Caster::cleanAvAudioFilters() {
@@ -1490,16 +1500,22 @@ void Caster::cleanAv() {
     cleanAvVideoFilters();
     cleanAvAudioFilters();
 
-    if (m_videoFrameIn != nullptr) av_frame_free(&m_videoFrameIn);
-    if (m_videoFrameAfterFilter != nullptr)
+    if (m_videoFrameIn != nullptr) {
+        av_frame_free(&m_videoFrameIn);
+    }
+    if (m_videoFrameAfterFilter != nullptr) {
         av_frame_free(&m_videoFrameAfterFilter);
+    }
+    if (m_videoFrameForAdditionalFilter != nullptr) {
+        av_frame_free(&m_videoFrameForAdditionalFilter);
+    }
+    m_videoMuxFlags &= ~VideoMuxFlags::ImageFrameBuffered;
 
-    if (m_audioFrameIn != nullptr) av_frame_free(&m_audioFrameIn);
-    if (m_audioFrameAfterFilter != nullptr)
+    if (m_audioFrameIn != nullptr) {
+        av_frame_free(&m_audioFrameIn);
+    }
+    if (m_audioFrameAfterFilter != nullptr) {
         av_frame_free(&m_audioFrameAfterFilter);
-
-    if (m_imgPkt != nullptr) {
-        av_packet_free(&m_imgPkt);
     }
 
     cleanOutCtxs();
@@ -1929,8 +1945,9 @@ void Caster::initAvAudioEncoder() {
         throw std::runtime_error("avcodec_open2 for out audio error");
     }
 
-    LOGD("audio encoder: frame size=" << m_outAudioCtx->frame_size
-                                      << ", tb=" << m_outAudioCtx->time_base);
+    LOGD("audio encoder: frame size="
+         << m_outAudioCtx->frame_size << ", tb=" << m_outAudioCtx->time_base
+         << ", active-thread-type=" << m_outAudioCtx->active_thread_type);
 
     cleanAvOpts(&opts);
 }
@@ -2048,94 +2065,101 @@ Caster::Dim Caster::computeTransDim(Dim dim, VideoTrans trans,
     return outDim;
 }
 
-void Caster::initAvVideoFiltersFrame169(SensorDirection direction) {
-    std::string additionalFilters;
-    m_videoShowProgressIndicator = false;
-    m_videoShowTextIndicator = false;
+void Caster::initAvVideoFiltersForIndicatorsIfNeeded() {
+    m_videoMuxFlags &=
+        ~(VideoMuxFlags::ProgressIndicator | VideoMuxFlags::TextIndicator);
+
+    if ((videoProps().capaFlags & CapabilityFlags::AdjustableIndicators) == 0) {
+        LOGD("skip video filter init for indicators");
+        return;
+    }
 
     const bool showIndicators =
         m_outVideoCtx->width >= 100 && m_outVideoCtx->height >= 100;
 
+    if (!showIndicators) {
+        LOGW("image too small for indicators");
+        return;
+    }
+
+    std::string arg;
+
     // progress indicator
-    if ((m_optionsFlags & OptionsFlags::ShowVideoProgressIndicator) > 0 &&
-        showIndicators) {
-        int psize = m_outVideoCtx->height * 0.01;
-        if (psize > 1) {
-            // draw white progress line at the bottom of the frame
-            additionalFilters += fmt::format(
-                ",drawbox=x=0:y={0}:w={1}:h={2}:color=white@0.6:t=fill",
-                m_outVideoCtx->height - psize, 0, psize);
-            m_videoShowProgressIndicator = true;
-        }
+    int psize = m_outVideoCtx->height * 0.01;
+    if (psize > 1) {
+        // draw white progress line at the bottom of the frame
+        arg +=
+            fmt::format("drawbox=x=0:y={0}:w={1}:h={2}:color=white@0.6:t=fill",
+                        m_outVideoCtx->height - psize, 0, psize);
+        m_videoMuxFlags |= VideoMuxFlags::ProgressIndicator;
+    } else {
+        LOGW("image height too small for progress indicator");
     }
 
     // text indicator
-    if (((m_optionsFlags & OptionsFlags::ShowVideoCountIndicator) > 0 ||
-         (m_optionsFlags & OptionsFlags::ShowVideoExifDateIndicator) > 0 ||
-         (m_optionsFlags & OptionsFlags::ShowVideoExifModelIndicator) > 0) &&
-        showIndicators) {
-        int fsize = m_outVideoCtx->width * 0.02;
-        int psize = m_outVideoCtx->height * 0.01;
 
-        if (fsize > 5) {
-            additionalFilters += fmt::format(
-                ",drawtext=box=1:boxcolor=white@0.6:fontcolor=black@0.6:"
-                "boxborderw={}:fontsize={}:"
-                "text='':x={}:y=({}-text_h)",
-                psize, fsize, psize, m_outVideoCtx->height - (2 * psize));
-            m_videoShowTextIndicator = true;
+    int fsize = m_outVideoCtx->width * 0.02;
+    if (fsize > 5) {
+        if (!arg.empty()) {
+            arg.push_back(',');
         }
+        arg += fmt::format(
+            "drawtext=box=1:boxcolor=white@0.6:fontcolor=black@0.6:"
+            "boxborderw={}:fontsize={}:"
+            "text='':x={}:y=({}-text_h)",
+            psize, fsize, psize, m_outVideoCtx->height - (2 * psize));
+        m_videoMuxFlags |= VideoMuxFlags::TextIndicator;
+    } else {
+        LOGW("image width too small for text indicator");
     }
 
+    if (!arg.empty()) {
+        initAvVideoFilter(m_videoFilterCtx, arg.c_str(), false);
+    }
+}
+
+void Caster::initAvVideoFiltersFrame169(SensorDirection direction) {
     if (m_inDim.thin()) {
         initAvVideoFilter(direction, VideoTrans::Frame169,
                           "transpose=dir={2},scale=h=-1:w={0},crop=h=min(ih\\,{"
                           "1}),pad=width={0}:height="
                           "{1}"
-                          ":x=-1:y=-1:color=black" +
-                              additionalFilters);
+                          ":x=-1:y=-1:color=black");
         initAvVideoFilter(direction, VideoTrans::Frame169Rot90,
                           "scale=h={1}:w=-1,vflip,hflip,crop=w=min(iw\\,{0}),"
                           "pad=width={0}:height={1}:x=-1:y=-1:"
-                          "color=black" +
-                              additionalFilters);
+                          "color=black");
         initAvVideoFilter(direction, VideoTrans::Frame169Rot180,
                           "transpose=dir={3},scale=h=-1:w={0},crop=h=min(ih\\,{"
                           "1}),pad=width={0}:"
                           "height={1}"
-                          ":x=-1:y=-1:color=black" +
-                              additionalFilters);
+                          ":x=-1:y=-1:color=black");
         initAvVideoFilter(direction, VideoTrans::Frame169Rot270,
                           "scale=h={1}:w=-1,crop=w=min(iw\\,{0}),pad=width={0}:"
                           "height={1}:x=-1:y=-2:color="
-                          "black" +
-                              additionalFilters);
+                          "black");
     } else {
         initAvVideoFilter(
             direction, VideoTrans::Frame169,
             "transpose=dir={2},scale=h={1}:w=-1,crop=w=min(iw\\,{0}),pad="
             "width={0}:height="
             "{1}"
-            ":x=-1:y=-1:color=black" +
-                additionalFilters);
+            ":x=-1:y=-1:color=black");
         initAvVideoFilter(
             direction, VideoTrans::Frame169Rot90,
             "scale=h={1}:w=-1,vflip,hflip,crop=w=min(iw\\,{0}),pad=width={"
             "0}:height={1}:x=-1:y=-1:"
-            "color=black" +
-                additionalFilters);
+            "color=black");
         initAvVideoFilter(direction, VideoTrans::Frame169Rot180,
                           "transpose=dir={3},scale=h={1}:w=-1,crop=w=min(iw\\,{"
                           "0}),pad=width={0}:"
                           "height={1}"
-                          ":x=-1:y=-1:color=black" +
-                              additionalFilters);
+                          ":x=-1:y=-1:color=black");
         initAvVideoFilter(
             direction, VideoTrans::Frame169Rot270,
             "scale=h={1}:w=-1,crop=w=min(iw\\,{0}),pad=width={0}:height={1}"
             ":x=-1:y=-2:color="
-            "black" +
-                additionalFilters);
+            "black");
     }
 }
 
@@ -2307,6 +2331,9 @@ void Caster::initAvVideoFilters() {
         return;
     }
 
+    if (m_videoFrameAfterFilter != nullptr) {
+        av_frame_free(&m_videoFrameAfterFilter);
+    }
     m_videoFrameAfterFilter = av_frame_alloc();
 
     switch (m_videoTrans) {
@@ -2352,11 +2379,12 @@ void Caster::initAvVideoFilters() {
                 default:
                     initAvVideoFiltersFrame169(props.sensorDirection);
             }
+            initAvVideoFiltersForIndicatorsIfNeeded();
             setlocale(LC_NUMERIC, old_locale);
             break;
         }
         default:
-            throw std::runtime_error("unsuported video trans");
+            LOGF("unsuported video trans");
     }
 }
 
@@ -2374,7 +2402,8 @@ void Caster::initAvVideoFilter(SensorDirection direction, VideoTrans trans,
         fmt::format(fmt, m_outVideoCtx->width, m_outVideoCtx->height,
                     direction == SensorDirection::Front ? "cclock" : "clock",
                     direction == SensorDirection::Front ? "clock" : "cclock")
-            .c_str());
+            .c_str(),
+        true);
 }
 
 void Caster::initAvAudioFilter(FilterCtx &ctx, const char *arg) {
@@ -2469,8 +2498,8 @@ void Caster::initAvAudioFilter(FilterCtx &ctx, const char *arg) {
     LOGD("audio av filter successfully inited");
 }
 
-void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg) {
-    LOGD("initing video av filter: " << arg);
+void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg, bool srcIn) {
+    LOGD("initing video av filter: arg=" << arg << ", src-in=" << srcIn);
 
     ctx.in = avfilter_inout_alloc();
     ctx.out = avfilter_inout_alloc();
@@ -2482,10 +2511,11 @@ void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg) {
     if (buffersrc == nullptr) throw std::runtime_error("no buffer filter");
 
     std::array<char, 512> srcArgs{};
+    auto *srCtx = srcIn ? m_inVideoCtx : m_outVideoCtx;
     snprintf(srcArgs.data(), srcArgs.size(),
-             "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d", m_inVideoCtx->width,
-             m_inVideoCtx->height, m_inVideoCtx->pix_fmt,
-             m_inVideoCtx->time_base.num, m_inVideoCtx->time_base.den);
+             "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d", srCtx->width,
+             srCtx->height, srCtx->pix_fmt, srCtx->time_base.num,
+             srCtx->time_base.den);
     LOGD("filter bufsrc: " << srcArgs.data());
 
     if (avfilter_graph_create_filter(&ctx.srcCtx, buffersrc, "in",
@@ -2827,11 +2857,11 @@ void Caster::initAvVideoEncoder(VideoEncoder type) {
 
     m_nextVideoInFramePts = 0;
 
-    LOGD("video encoder: tb=" << m_outVideoCtx->time_base
-                              << ", pixfmt=" << m_outVideoCtx->pix_fmt
-                              << ", width=" << m_outVideoCtx->width
-                              << ", height=" << m_outVideoCtx->height
-                              << ", framerate=" << m_videoFramerate);
+    LOGD("video encoder: tb="
+         << m_outVideoCtx->time_base << ", pixfmt=" << m_outVideoCtx->pix_fmt
+         << ", width=" << m_outVideoCtx->width << ", height="
+         << m_outVideoCtx->height << ", framerate=" << m_videoFramerate
+         << ", active-thread-type=" << m_outVideoCtx->active_thread_type);
 
     LOGD("encoder successfuly inited");
 }
@@ -3861,20 +3891,26 @@ void Caster::startVideoOnlyMuxing() {
     m_nextVideoPts = 0;
     m_videoTimeLastFrame = 0;
     m_videoTimeImage = 0;
-    m_videoFlushed = false;
     m_videoRealFrameDuration =
         rescaleToUsec(1, AVRational{1, m_videoFramerate});
-    m_videoInputIsImage = isInputImage();
     m_videoSourceFlags = videoProps().sourceFlags;
     m_requestedVideoOrientation = m_config.videoOrientation;
     if (m_config.fileSourceConfig) {
         m_requestedImgDurationSec = m_config.fileSourceConfig->imgDurationSec;
+    }
+    m_videoMuxFlags &= ~(VideoMuxFlags::ImageFrameBuffered |
+                         VideoMuxFlags::Flushed | VideoMuxFlags::ImageInput);
+    if (isInputImage()) {
+        m_videoMuxFlags |= VideoMuxFlags::ImageInput;
     }
 
     m_avMuxingThread = std::thread([this]() {
         LOGD("starting video muxing thread");
 
         auto *video_pkt = av_packet_alloc();
+        if (m_videoMuxFlags & VideoMuxFlags::ImageInput) {
+            m_videoFrameForAdditionalFilter = av_frame_alloc();
+        }
 
         try {
             while (!terminating()) {
@@ -3908,15 +3944,18 @@ void Caster::startVideoAudioMuxing() {
     m_nextAudioPts = 0;
     m_videoTimeLastFrame = 0;
     m_videoTimeImage = 0;
-    m_videoFlushed = false;
     m_videoRealFrameDuration =
         rescaleToUsec(1, AVRational{1, m_videoFramerate});
-    m_videoInputIsImage = isInputImage();
     m_videoSourceFlags = videoProps().sourceFlags;
     m_requestedVideoOrientation = m_config.videoOrientation;
     m_audioTimeLastFrame = 0;
     if (m_config.fileSourceConfig) {
         m_requestedImgDurationSec = m_config.fileSourceConfig->imgDurationSec;
+    }
+    m_videoMuxFlags &= ~(VideoMuxFlags::ImageFrameBuffered |
+                         VideoMuxFlags::Flushed | VideoMuxFlags::ImageInput);
+    if (isInputImage()) {
+        m_videoMuxFlags |= VideoMuxFlags::ImageInput;
     }
 
     m_avMuxingThread = std::thread([this]() {
@@ -3924,6 +3963,9 @@ void Caster::startVideoAudioMuxing() {
 
         auto *video_pkt = av_packet_alloc();
         auto *audio_pkt = av_packet_alloc();
+        if (m_videoMuxFlags & VideoMuxFlags::ImageInput) {
+            m_videoFrameForAdditionalFilter = av_frame_alloc();
+        }
 
         try {
             while (!terminating()) {
@@ -4121,41 +4163,13 @@ bool Caster::readVideoFrameFromDemuxer(AVPacket *pkt) {
     return true;
 }
 
-bool Caster::filterVideoFrame(VideoTrans trans, AVFrame *frameIn,
-                              AVFrame *frameOut) {
-    LOGT("filter video frame with trans: " << trans);
+bool Caster::filterVideoFrameForIndicators(AVFrame *frameIn,
+                                           AVFrame *frameOut) {
+    LOGT("filter video frame for indicatiors: start");
 
-    auto &ctx = m_videoFilterCtxMap.at(trans);
+    auto &ctx = m_videoFilterCtx;
 
-    if (m_videoShowProgressIndicator) {
-        // update progress indicator
-        auto width = static_cast<int>(
-            m_outVideoCtx->width *
-            std::clamp(m_requestedImgDurationSec > 0
-                           ? (static_cast<double>(m_nextVideoPts -
-                                                  m_videoPtsDurationOffset) /
-                              (1000000 * m_requestedImgDurationSec))
-                           : 0.0,
-                       0.0, 1.0));
-
-        std::array<char, 512> res{};
-        if (auto ret = avfilter_graph_send_command(
-                ctx.graph, "drawbox", "enable", width == 0 ? "0" : "1",
-                res.data(), res.size(), 0);
-            ret < 0) {
-            LOGF("drawbox enable avfilter_graph_send_command error: "
-                 << strForAvError(ret));
-        }
-        if (auto ret = avfilter_graph_send_command(
-                ctx.graph, "drawbox", "width", fmt::format("{}", width).c_str(),
-                res.data(), res.size(), 0);
-            ret < 0) {
-            LOGF("drawbox avfilter_graph_send_command error: "
-                 << strForAvError(ret));
-        }
-    }
-
-    if (m_videoShowTextIndicator) {
+    if (m_videoMuxFlags & VideoMuxFlags::ProgressIndicator) {
         std::array<char, 512> res{};
         std::string text;
         text.reserve(50);
@@ -4194,8 +4208,40 @@ bool Caster::filterVideoFrame(VideoTrans trans, AVFrame *frameIn,
         }
     }
 
-    if (auto ret = av_buffersrc_add_frame_flags(ctx.srcCtx, frameIn,
-                                                AV_BUFFERSRC_FLAG_PUSH);
+    if (m_videoMuxFlags & VideoMuxFlags::TextIndicator) {
+        // update progress indicator
+        auto width =
+            (m_optionsFlags & OptionsFlags::ShowVideoProgressIndicator)
+                ? static_cast<int>(
+                      m_outVideoCtx->width *
+                      std::clamp(
+                          m_requestedImgDurationSec > 0
+                              ? (static_cast<double>(m_nextVideoPts -
+                                                     m_videoPtsDurationOffset) /
+                                 (1000000 * m_requestedImgDurationSec))
+                              : 0.0,
+                          0.0, 1.0))
+                : 0;
+        std::array<char, 512> res{};
+        if (auto ret = avfilter_graph_send_command(
+                ctx.graph, "drawbox", "enable", width == 0 ? "0" : "1",
+                res.data(), res.size(), 0);
+            ret < 0) {
+            LOGF("drawbox enable avfilter_graph_send_command error: "
+                 << strForAvError(ret));
+        }
+        if (auto ret = avfilter_graph_send_command(
+                ctx.graph, "drawbox", "width", fmt::format("{}", width).c_str(),
+                res.data(), res.size(), 0);
+            ret < 0) {
+            LOGF("drawbox avfilter_graph_send_command error: "
+                 << strForAvError(ret));
+        }
+    }
+
+    if (auto ret = av_buffersrc_add_frame_flags(
+            ctx.srcCtx, frameIn,
+            AV_BUFFERSRC_FLAG_PUSH | AV_BUFFERSRC_FLAG_KEEP_REF);
         ret < 0) {
         LOGF(
             "video av_buffersrc_add_frame_flags error: " << strForAvError(ret));
@@ -4205,6 +4251,50 @@ bool Caster::filterVideoFrame(VideoTrans trans, AVFrame *frameIn,
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return false;
     if (ret < 0) {
         LOGF("video av_buffersink_get_frame error: " << strForAvError(ret));
+    }
+
+    LOGT("filter video frame for indicatiors: end");
+
+    return true;
+}
+
+bool Caster::filterVideoFrame(VideoTrans trans, AVFrame *frameIn,
+                              AVFrame *frameOut) {
+    if ((m_videoMuxFlags & VideoMuxFlags::ImageFrameBuffered) == 0) {
+        bool buffFrame = (m_videoMuxFlags & VideoMuxFlags::ImageInput);
+
+        LOGT("filter video frame: trans=" << trans
+                                          << ", buff-frame=" << buffFrame);
+
+        auto &ctx = m_videoFilterCtxMap.at(trans);
+
+        if (auto ret = av_buffersrc_add_frame_flags(ctx.srcCtx, frameIn,
+                                                    AV_BUFFERSRC_FLAG_PUSH);
+            ret < 0) {
+            LOGF("video av_buffersrc_add_frame_flags error: "
+                 << strForAvError(ret));
+        }
+
+        auto *transGraphFrameOut =
+            buffFrame ? m_videoFrameForAdditionalFilter : frameOut;
+
+        auto ret = av_buffersink_get_frame(ctx.sinkCtx, transGraphFrameOut);
+        if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return false;
+        if (ret < 0) {
+            LOGF("video av_buffersink_get_frame error: " << strForAvError(ret));
+        }
+
+        LOGT("filter video frame: end");
+
+        if (buffFrame) {
+            m_videoMuxFlags |= VideoMuxFlags::ImageFrameBuffered;
+        }
+    }
+
+    if (m_videoFilterCtx.graph &&
+        (m_videoMuxFlags & VideoMuxFlags::ImageFrameBuffered)) {
+        return filterVideoFrameForIndicators(m_videoFrameForAdditionalFilter,
+                                             frameOut);
     }
 
     return true;
@@ -4456,47 +4546,53 @@ Caster::ExifData Caster::extractExifFromDecoder() {
 }
 
 bool Caster::encodeVideoFrame(AVPacket *pkt) {
-    LOGT("video pkt to decoder: " << pkt);
+    LOGT("encode video frame: pkt="
+         << pkt << ", has-img-frame="
+         << ((m_videoMuxFlags & VideoMuxFlags::ImageFrameBuffered) > 0));
 
-    if (auto ret = avcodec_send_packet(m_inVideoCtx, pkt);
-        ret != 0 && ret != AVERROR(EAGAIN)) {
+    bool frameBuffered = m_videoMuxFlags & VideoMuxFlags::ImageFrameBuffered;
+
+    if (!frameBuffered) {
+        if (auto ret = avcodec_send_packet(m_inVideoCtx, pkt);
+            ret != 0 && ret != AVERROR(EAGAIN)) {
+            av_packet_unref(pkt);
+            if (ret == AVERROR_EOF) {
+                m_terminationReason = TerminationReason::Eof;
+            }
+            LOGD("avcodec_send_packet for video error: " << strForAvError(ret));
+            return false;
+        }
+
         av_packet_unref(pkt);
-        if (ret == AVERROR_EOF) {
-            m_terminationReason = TerminationReason::Eof;
+
+        if (auto ret = avcodec_receive_frame(m_inVideoCtx, m_videoFrameIn);
+            ret != 0) {
+            if (ret == AVERROR_EOF) {
+                m_terminationReason = TerminationReason::Eof;
+            }
+            LOGF("video avcodec_receive_frame error: " << strForAvError(ret));
         }
-        LOGD("avcodec_send_packet for video error: " << strForAvError(ret));
-        return false;
+
+        LOGT("video frame from decoder: " << m_videoFrameIn);
+
+        m_videoFrameIn->format = m_inVideoCtx->pix_fmt;
+        m_videoFrameIn->width = m_inVideoCtx->width;
+        m_videoFrameIn->height = m_inVideoCtx->height;
+        m_videoFrameIn->time_base = m_inVideoCtx->time_base;
+        m_videoFrameIn->pts = m_nextVideoInFramePts;
+        m_videoFrameIn->duration = 1;
     }
-
-    av_packet_unref(pkt);
-
-    if (auto ret = avcodec_receive_frame(m_inVideoCtx, m_videoFrameIn);
-        ret != 0) {
-        if (ret == AVERROR_EOF) {
-            m_terminationReason = TerminationReason::Eof;
-        }
-        throw std::runtime_error(fmt::format(
-            "video avcodec_receive_frame error ({})", strForAvError(ret)));
-    }
-
-    LOGT("video frame from decoder: " << m_videoFrameIn);
-
-    m_videoFrameIn->format = m_inVideoCtx->pix_fmt;
-    m_videoFrameIn->width = m_inVideoCtx->width;
-    m_videoFrameIn->height = m_inVideoCtx->height;
-    m_videoFrameIn->time_base = m_inVideoCtx->time_base;
-    m_videoFrameIn->pts = m_nextVideoInFramePts;
-    m_videoFrameIn->duration = 1;
-    m_nextVideoInFramePts += m_videoFrameIn->duration;
 
     auto *frameOut = filterVideoIfNeeded(m_videoFrameIn);
     if (frameOut == nullptr) return false;
 
+    frameOut->pts = m_nextVideoInFramePts;
+    frameOut->duration = 1;
+    m_nextVideoInFramePts += frameOut->duration;
+
     if (auto ret = avcodec_send_frame(m_outVideoCtx, frameOut);
         ret != 0 && ret != AVERROR(EAGAIN)) {
-        av_frame_unref(frameOut);
-        throw std::runtime_error(fmt::format(
-            "video avcodec_send_frame error ({})", strForAvError(ret)));
+        LOGF("video avcodec_send_frame error: " << strForAvError(ret));
     }
 
     av_frame_unref(frameOut);
@@ -4506,10 +4602,10 @@ bool Caster::encodeVideoFrame(AVPacket *pkt) {
             LOGD("video pkt not ready");
             return false;
         }
-
-        throw std::runtime_error(fmt::format(
-            "video avcodec_receive_packet error ({})", strForAvError(ret)));
+        LOGF("video avcodec_receive_packet error: " << strForAvError(ret));
     }
+
+    LOGT("video pkt from encoder: " << pkt);
 
     return true;
 }
@@ -4669,49 +4765,35 @@ bool Caster::muxVideo(AVPacket *pkt) {
         case VideoSourceType::V4l2:
         case VideoSourceType::X11Capture:
         case VideoSourceType::File:
-            if (m_videoInputIsImage) {
+            if (m_videoMuxFlags & VideoMuxFlags::ImageInput) {
                 // if input is an image, decode only once and clone pkt
                 UserRequestType userRequestType = m_userRequestType;
                 if ((userRequestType == UserRequestType::SwitchToNextFile ||
                      userRequestType == UserRequestType::SwitchToPrevFile ||
                      userRequestType == UserRequestType::SwitchToFileIdx) &&
-                    m_imgPkt != nullptr) {
-                    av_packet_free(&m_imgPkt);
+                    m_videoMuxFlags & VideoMuxFlags::ImageFrameBuffered) {
+                    av_frame_unref(m_videoFrameForAdditionalFilter);
+                    m_videoMuxFlags &= ~VideoMuxFlags::ImageFrameBuffered;
                 }
-                if (m_imgPkt == nullptr) {
+                if (m_videoMuxFlags & VideoMuxFlags::ImageFrameBuffered) {
+                    if (m_requestedImgDurationSec > 0 &&
+                        m_nextVideoPts - m_videoPtsDurationOffset >
+                            (1000000 * m_requestedImgDurationSec)) {
+                        LOGD("eof for img");
+                        av_frame_unref(m_videoFrameForAdditionalFilter);
+                        m_videoMuxFlags &= ~VideoMuxFlags::ImageFrameBuffered;
+                        return false;
+                    }
+                } else {
                     LOGT("decode img pkt");
                     try {
                         if (!readVideoFrameFromDemuxer(pkt)) return false;
-                        m_imgPkt = av_packet_clone(pkt);
                         m_videoTimeImage = now;
-                        if (!m_imgPkt) {
-                            LOGF("failed to clone img pkt");
-                        }
                     } catch (const source_eof_error &err) {
                         LOGD("source eof");
                         // null pkt to flush
                         pkt->size = 0;
                         pkt->data = nullptr;
-                    }
-                } else {
-                    // if decoded img pkt exists, just copy data
-                    LOGT("copy img pkt");
-                    pkt->pts = m_imgPkt->pts;
-                    pkt->dts = m_imgPkt->dts;
-                    pkt->duration = m_imgPkt->duration;
-                    pkt->stream_index = m_imgPkt->stream_index;
-                    pkt->flags = m_imgPkt->flags;
-                    pkt->pos = m_imgPkt->pos;
-
-                    if (m_requestedImgDurationSec > 0 &&
-                        m_nextVideoPts - m_videoPtsDurationOffset >
-                            (1000000 * m_requestedImgDurationSec)) {
-                        LOGD("eof for img");
-                        av_packet_free(&m_imgPkt);
-                        return false;
-                    } else {
-                        pkt->size = m_imgPkt->size;
-                        pkt->data = m_imgPkt->data;
                     }
                 }
                 if (!encodeVideoFrame(pkt)) return false;
@@ -4775,7 +4857,7 @@ bool Caster::muxVideo(AVPacket *pkt) {
             if (!outCtx.videoFlushed) {
                 LOGD("first av video data: ctx=" << outCtx.avFormatCtx);
                 outCtx.videoFlushed = true;
-                m_videoFlushed = true;
+                m_videoMuxFlags |= VideoMuxFlags::Flushed;
             }
         }
     }
@@ -4846,9 +4928,12 @@ void Caster::reInitAvVideoDecoder() {
     if (m_videoFrameAfterFilter != nullptr) {
         av_frame_free(&m_videoFrameAfterFilter);
     }
-    if (m_imgPkt != nullptr) {
-        av_packet_free(&m_imgPkt);
+    if (m_videoFrameForAdditionalFilter != nullptr &&
+        (m_videoMuxFlags & VideoMuxFlags::ImageFrameBuffered)) {
+        av_frame_unref(m_videoFrameForAdditionalFilter);
     }
+    m_videoMuxFlags &= ~VideoMuxFlags::ImageFrameBuffered;
+
     cleanAvVideoFilters();
     initAvVideoRawDecoderFromInputStream();
 
@@ -5155,7 +5240,8 @@ bool Caster::muxAudio(AVPacket *pkt) {
             if (!readAudioFrameFromNull(pkt)) break;
         } else {
             if (!readAudioFrameFromBuf(
-                    pkt, delay > maxAudioDelay && m_videoFlushed)) {
+                    pkt, delay > maxAudioDelay &&
+                             (m_videoMuxFlags & VideoMuxFlags::Flushed))) {
                 break;
             }
         }
@@ -5342,6 +5428,12 @@ void Caster::setLoopFile(bool enabled) {
 }
 
 void Caster::setShowVideoProgressIndicator(bool enabled) {
+    if ((capabilities() & CapabilityFlags::AdjustableIndicators) == 0) {
+        LOGW(
+            "source doesn't support:" << CapabilityFlags::AdjustableIndicators);
+        return;
+    }
+
     if (enabled) {
         m_optionsFlags |= OptionsFlags::ShowVideoProgressIndicator;
     } else {
@@ -5350,6 +5442,12 @@ void Caster::setShowVideoProgressIndicator(bool enabled) {
 }
 
 void Caster::setShowVideoCountIndicator(bool enabled) {
+    if ((capabilities() & CapabilityFlags::AdjustableIndicators) == 0) {
+        LOGW(
+            "source doesn't support:" << CapabilityFlags::AdjustableIndicators);
+        return;
+    }
+
     if (enabled) {
         m_optionsFlags |= OptionsFlags::ShowVideoCountIndicator;
     } else {
@@ -5358,6 +5456,12 @@ void Caster::setShowVideoCountIndicator(bool enabled) {
 }
 
 void Caster::setShowVideoExifDateIndicator(bool enabled) {
+    if ((capabilities() & CapabilityFlags::AdjustableIndicators) == 0) {
+        LOGW(
+            "source doesn't support:" << CapabilityFlags::AdjustableIndicators);
+        return;
+    }
+
     if (enabled) {
         m_optionsFlags |= OptionsFlags::ShowVideoExifDateIndicator;
     } else {
@@ -5366,6 +5470,12 @@ void Caster::setShowVideoExifDateIndicator(bool enabled) {
 }
 
 void Caster::setShowVideoExifModelIndicator(bool enabled) {
+    if ((capabilities() & CapabilityFlags::AdjustableIndicators) == 0) {
+        LOGW(
+            "source doesn't support:" << CapabilityFlags::AdjustableIndicators);
+        return;
+    }
+
     if (enabled) {
         m_optionsFlags |= OptionsFlags::ShowVideoExifModelIndicator;
     } else {
@@ -5463,7 +5573,8 @@ Caster::VideoPropsMap Caster::detectVideoFileSources() {
         props.scale = VideoScale::DownAuto;
         props.capaFlags = CapabilityFlags::AdjustableVideoOrientation |
                           CapabilityFlags::AdjustableImageDuration |
-                          CapabilityFlags::AdjustableLoopFile;
+                          CapabilityFlags::AdjustableLoopFile |
+                          CapabilityFlags::AdjustableIndicators;
         props.sourceFlags = SourceFlags::VideoThrottleFastStream;
 
         LOGD("video file source found: " << props);
@@ -5481,7 +5592,8 @@ Caster::VideoPropsMap Caster::detectVideoFileSources() {
         props.scale = VideoScale::DownAuto;
         props.capaFlags = CapabilityFlags::AdjustableVideoOrientation |
                           CapabilityFlags::AdjustableImageDuration |
-                          CapabilityFlags::AdjustableLoopFile;
+                          CapabilityFlags::AdjustableLoopFile |
+                          CapabilityFlags::AdjustableIndicators;
         props.sourceFlags = SourceFlags::VideoThrottleFastStream;
         FrameSpec fs;
         fs.framerates.insert(5U);

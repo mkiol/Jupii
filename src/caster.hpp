@@ -84,12 +84,12 @@ class Caster {
     };
     friend std::ostream &operator<<(std::ostream &os, OptionsFlags flags);
 
-    // must be the same as ContentServer::StreamCapabilityFlag
     enum CapabilityFlags : uint32_t {
         AdjustableAudioVolume = 1 << 1,
         AdjustableVideoOrientation = 1 << 2,
         AdjustableImageDuration = 1 << 3,
         AdjustableLoopFile = 1 << 4,
+        AdjustableIndicators = 1 << 5
     };
     friend std::ostream &operator<<(std::ostream &os, CapabilityFlags flags);
 
@@ -438,6 +438,14 @@ class Caster {
         std::string model;
     };
 
+    enum VideoMuxFlags : uint32_t {
+        ImageInput = 1 << 1,
+        TextIndicator = 1 << 2,
+        ProgressIndicator = 1 << 3,
+        ImageFrameBuffered = 1 << 4,
+        Flushed = 1 << 5
+    };
+
     struct source_eof_error : public std::runtime_error {
         using std::runtime_error::runtime_error;
     };
@@ -482,11 +490,12 @@ class Caster {
     std::vector<uint8_t> m_pktSideData;
     std::unordered_map<VideoTrans, FilterCtx> m_videoFilterCtxMap;
     std::unordered_map<AudioTrans, FilterCtx> m_audioFilterCtxMap;
+    FilterCtx m_videoFilterCtx;
     AVFrame *m_audioFrameIn = nullptr;
     AVFrame *m_audioFrameAfterFilter = nullptr;
     AVFrame *m_videoFrameIn = nullptr;
     AVFrame *m_videoFrameAfterFilter = nullptr;
-    AVPacket *m_imgPkt = nullptr;
+    AVFrame *m_videoFrameForAdditionalFilter = nullptr;
     pa_mainloop *m_paLoop = nullptr;
     pa_stream *m_paStream = nullptr;
     pa_context *m_paCtx = nullptr;
@@ -502,11 +511,8 @@ class Caster {
     int64_t m_videoFrameDuration = 0;        // micro s
     int64_t m_videoRealFrameDuration = 0;    // micro s
     int64_t m_videoTimeImage = 0;            // micro s
-    bool m_videoFlushed = false;
     bool m_paDataReceived = false;
-    bool m_videoInputIsImage = false;
-    bool m_videoShowProgressIndicator = false;
-    bool m_videoShowTextIndicator = false;
+    uint32_t m_videoMuxFlags = 0;
     Dim m_inDim;
     VideoTrans m_videoTrans = VideoTrans::Off;
     AudioTrans m_audioTrans = AudioTrans::Off;
@@ -603,11 +609,12 @@ class Caster {
     void initAvVideoRawDecoderFromInputStream();
     void initAvAudioFilters();
     void initAvVideoFilters();
+    void initAvVideoFiltersForIndicatorsIfNeeded();
     void initAvVideoFiltersFrame169(SensorDirection direction);
     void initAvVideoFiltersFrame169Vflip(SensorDirection direction);
     void initAvVideoFilter(SensorDirection direction, VideoTrans trans,
                            const std::string &fmt);
-    void initAvVideoFilter(FilterCtx &ctx, const char *arg);
+    void initAvVideoFilter(FilterCtx &ctx, const char *arg, bool srcIn);
     void initAvAudioFilter(FilterCtx &ctx, const char *arg);
     void initAvVideoOutStreamFromEncoder(OutCtx *outCtx);
     void initAvVideoOutStreamFromInputFormat(OutCtx *outCtx);
@@ -689,6 +696,7 @@ class Caster {
     ExifData extractExifFromDecoder();
     bool filterVideoFrame(VideoTrans trans, AVFrame *frameIn,
                           AVFrame *frameOut);
+    bool filterVideoFrameForIndicators(AVFrame *frameIn, AVFrame *frameOut);
     bool filterAudioFrame(AudioTrans trans, AVFrame *frameIn,
                           AVFrame *frameOut);
     AVFrame *filterVideoIfNeeded(AVFrame *frameIn);
