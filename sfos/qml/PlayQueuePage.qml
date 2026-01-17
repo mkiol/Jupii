@@ -408,7 +408,7 @@ Page {
                 case ContentServer.ItemType_PlaybackCapture:
                     return model.audioSource.length !== 0 && model.audioSourceMuted ? qsTr("Audio source muted") : ""
                 case ContentServer.ItemType_ScreenCapture:
-                    return model.audioSource.length !== 0 ? model.audioSourceMuted ? qsTr("Audio capture (audio source muted)") : qsTr("Audio capture") : ""
+                    return model.videoOrientation + (model.audioSource.length !== 0 ? (" · " + (model.audioSourceMuted ? qsTr("Audio capture (audio source muted)") : qsTr("Audio capture"))) : "")
                 case ContentServer.ItemType_Mic:
                     return ""
                 case ContentServer.ItemType_Slides:
