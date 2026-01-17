@@ -53,6 +53,36 @@ PopupDialog {
                 root._urls.push(fileDialog.fileUrls[i]);
             }
             root._urls = root._urls // needed to refresh list view
+            cardView.positionViewAtEnd()
+        }
+    }
+
+    GridLayout {
+        columns: addMoreButton.implicitWidth + removeAllButton.implicitWidth + columnSpacing > app.width ? 1 : 3
+        columnSpacing: Kirigami.Units.mediumSpacing
+        Controls.Button {
+            id: addMoreButton
+            text: root._urls.length > 0 ? qsTr("Add more images") : qsTr("Add images")
+            action: Kirigami.Action {
+                iconName: "list-add"
+                onTriggered: fileDialog.open()
+            }
+        }
+        Controls.Button {
+            id: removeAllButton
+            visible: root._urls.length > 0
+            text: qsTr("Remove all images")
+            action: Kirigami.Action {
+                iconName: "remove-symbolic"
+                onTriggered: {
+                    root._urls = []
+                }
+            }
+        }
+        Kirigami.PlaceholderMessage {
+            width: parent.width - (Kirigami.Units.largeSpacing * 4)
+            visible: cardView.count === 0
+            text: qsTr("There are no images in this slideshow")
         }
     }
 
@@ -69,40 +99,10 @@ PopupDialog {
             policy: Controls.ScrollBar.AsNeeded
         }
         spacing: Kirigami.Units.mediumSpacing
-
-        header: ColumnLayout {
-            Controls.Button {
-                text: root._urls.length > 0 ? qsTr("Add more images") : qsTr("Add images")
-                action: Kirigami.Action {
-                    iconName: "list-add"
-                    onTriggered: fileDialog.open()
-                }
+        onCountChanged: {
+            if (count === 0) {
+                maxHeight = 0
             }
-            Controls.Button {
-                visible: root._urls.length > 0
-                text: qsTr("Remove all images")
-                action: Kirigami.Action {
-                    iconName: "remove-symbolic"
-                    onTriggered: {
-                        root._urls = []
-                    }
-                }
-            }
-            function updateHeight() {
-                var h = height
-                if (cardView.maxHeight < h) {
-                    cardView.maxHeight = h
-                }
-            }
-            Component.onCompleted: updateHeight()
-            onHeightChanged: updateHeight()
-        }
-
-        Kirigami.PlaceholderMessage {
-            anchors.centerIn: parent
-            width: parent.width - (Kirigami.Units.largeSpacing * 4)
-            visible: cardView.count === 0
-            text: qsTr("There are no images in this slideshow")
         }
 
         delegate: Kirigami.Card {
