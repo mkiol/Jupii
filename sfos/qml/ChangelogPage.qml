@@ -48,6 +48,7 @@ Page {
                 <li>Youtube: Support for Youtube has been disabled for now.
                     Libraries providing integration (ytmusicapi, yt-dlp) require a higher version of Python than the one currently available in SFOS.
                     Youtube support will be re-enabled after updating SFOS to next version.</li>
+                <li>Screen capture: Performance has been improved, offering greater stability and higher framerate.
                 <li>Fix: Integration with Bandcamp and Soundcloud was broken due to API change.</li>
                 <li>Fix: User Interface glitches</li>
                 </ul>"

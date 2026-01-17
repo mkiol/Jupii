@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -75,10 +75,11 @@ Dialog {
         }
 
         delegate: DoubleListItem {
-            property color primaryColor: highlighted ?
+            readonly property color primaryColor: highlighted ?
                                          Theme.highlightColor : Theme.primaryColor
             property bool isMic: utils.isIdMic(model.url)
             property bool isPulse: utils.isIdPulse(model.id)
+            readonly property int itemType: utils.itemTypeFromUrl(model.url)
 
             highlighted: down || (model && model.selected)
             title.text: model ? model.title : ""
@@ -86,14 +87,30 @@ Dialog {
                                model.artist : model.album : ""
             dimmed: listView.count > 0
             enabled: !itemModel.busy && listView.count > 0
-            icon.source: model ? model.icon : ""
+            icon.source: {
+                if (!model ||
+                    itemType === ContentServer.ItemType_Mic ||
+                    itemType === ContentServer.ItemType_PlaybackCapture ||
+                    itemType === ContentServer.ItemType_ScreenCapture ||
+                    itemType === ContentServer.ItemType_Cam ||
+                    itemType === ContentServer.ItemType_Slides) {
+                    return ""
+                }
+                return model.icon
+            }
             defaultIcon.source: {
                 if (!model) return ""
-                if (isMic)
+                if (itemType === ContentServer.ItemType_Mic)
                     return "image://theme/icon-m-mic?" + primaryColor
-                else if (isPulse)
+                else if (model.itemType === ContentServer.ItemType_PlaybackCapture)
                     return "image://theme/icon-m-speaker?" + primaryColor
-                else
+                else if (model.itemType === ContentServer.ItemType_ScreenCapture)
+                    return "image://theme/icon-m-display?" + primaryColor
+                else if (model.itemType === ContentServer.ItemType_Cam)
+                    return "image://theme/icon-m-browser-camera?" + primaryColor
+                else if (model.itemType === ContentServer.ItemType_Slides)
+                    return "image://icons/icon-m-slidesitem?" + primaryColor
+                else {
                     switch (model.type) {
                     case AVTransport.T_Image:
                         return "image://theme/icon-m-file-image?" + primaryColor
@@ -101,16 +118,44 @@ Dialog {
                         return "image://theme/icon-m-file-audio?" + primaryColor
                     case AVTransport.T_Video:
                         return "image://theme/icon-m-file-video?" + primaryColor
+                    default:
+                        return "image://theme/icon-m-file-other?" + primaryColor
                     }
-                return "image://theme/icon-m-file-other?" + primaryColor
+                }
             }
-            attachedIcon.source: model && model.itemType === ContentServer.ItemType_Url ?
-                                     ("image://icons/icon-s-browser?" + primaryColor) :
-                                 model && model.itemType === ContentServer.ItemType_Upnp ?
-                                     ("image://icons/icon-s-device?" + primaryColor) : ""
+            attachedIcon.source: {
+                if (!model) return ""
+                switch(itemType) {
+                case ContentServer.ItemType_Url:
+                    return "image://icons/icon-s-browser?" + primaryColor
+                case ContentServer.ItemType_Upnp:
+                    return "image://icons/icon-s-device?" + primaryColor
+                }
+                return ""
+            }
             attachedIcon2.source: {
-                if (!model || icon.source == "" || icon.status !== Image.Ready)
+                if (!model || (icon.source.toString().length > 0 && icon.status !== Image.Ready)) {
                     return ""
+                }
+                if (itemType === ContentServer.ItemType_Mic ||
+                        itemType === ContentServer.ItemType_PlaybackCapture ||
+                        itemType === ContentServer.ItemType_ScreenCapture ||
+                        itemType === ContentServer.ItemType_Cam ||
+                        itemType === ContentServer.ItemType_Slides) {
+                    switch (model.type) {
+                    case AVTransport.T_Image:
+                        return "image://theme/icon-m-file-image?" + primaryColor
+                    case AVTransport.T_Audio:
+                        return "image://theme/icon-m-file-audio?" + primaryColor
+                    case AVTransport.T_Video:
+                        return "image://theme/icon-m-file-video?" + primaryColor
+                    default:
+                        return "image://theme/icon-m-file-other?" + primaryColor
+                    }
+                }
+                if (icon.source.toString().length === 0) {
+                    return ""
+                }
                 return defaultIcon.source
             }
             onClicked: {

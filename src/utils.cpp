@@ -920,3 +920,19 @@ bool Utils::imageSupportedInSlides(const QString &path) {
            ext.compare(QLatin1String{"jpg"}, Qt::CaseInsensitive) == 0 ||
            ext.compare(QLatin1String{"jpeg"}, Qt::CaseInsensitive) == 0;
 }
+
+Utils::SlidesUrlParams Utils::parseSlidesUrl(const QUrl &url) {
+    SlidesUrlParams params;
+
+    QUrlQuery q{url};
+
+    if (q.hasQueryItem(QStringLiteral("playlist"))) {
+        params.playlistFile = q.queryItemValue(QStringLiteral("playlist"));
+    }
+    if (q.hasQueryItem(QStringLiteral("time"))) {
+        params.slidesTime =
+            Utils::strToSlidesTime(q.queryItemValue(QStringLiteral("time")));
+    }
+
+    return params;
+}

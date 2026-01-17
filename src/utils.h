@@ -152,6 +152,11 @@ class Utils : public QObject, public Singleton<Utils> {
     static std::optional<SlidesTime> strToSlidesTime(const QString &str);
     static std::vector<std::string> imagePathsForSlidesTime(SlidesTime time);
     static bool imageSupportedInSlides(const QString &path);
+    struct SlidesUrlParams {
+        std::optional<QString> playlistFile;
+        std::optional<Utils::SlidesTime> slidesTime;
+    };
+    static SlidesUrlParams parseSlidesUrl(const QUrl &url);
 
    private:
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)

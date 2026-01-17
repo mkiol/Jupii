@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2021 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2018-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -146,13 +146,47 @@ TrackModel::TrackData TrackModel::makeTrackDataFromId(const QUrl& id) const {
                        : static_cast<ContentServer::Type>(t);
 
     if (name.isEmpty()) {
-        auto itemType = ContentServer::itemTypeFromUrl(id);
-        if (itemType == ContentServer::ItemType_Mic)
-            data.title = tr("Microphone");
-        else if (itemType == ContentServer::ItemType_PlaybackCapture)
-            data.title = tr("Audio capture");
-        else if (itemType == ContentServer::ItemType_ScreenCapture)
-            data.title = tr("Screen capture");
+        switch (ContentServer::itemTypeFromUrl(id)) {
+            case ContentServer::ItemType_Unknown:
+            case ContentServer::ItemType_LocalFile:
+            case ContentServer::ItemType_QrcFile:
+            case ContentServer::ItemType_Url:
+            case ContentServer::ItemType_Upnp:
+                break;
+            case ContentServer::ItemType_PlaybackCapture:
+                data.title = tr("Audio capture");
+                data.type = ContentServer::Type::Type_Music;
+                break;
+            case ContentServer::ItemType_ScreenCapture:
+                data.title = tr("Screen capture");
+                data.type = ContentServer::Type::Type_Video;
+                break;
+            case ContentServer::ItemType_Mic:
+                data.title = tr("Microphone");
+                data.type = ContentServer::Type::Type_Music;
+                break;
+            case ContentServer::ItemType_Cam:
+                data.title = tr("Camera");
+                data.type = ContentServer::Type::Type_Video;
+                break;
+            case ContentServer::ItemType_Slides:
+                auto params = Utils::parseSlidesUrl(id);
+                if (params.slidesTime) {
+                    data.title = Utils::slidesTimeName(*params.slidesTime);
+                } else if (params.playlistFile) {
+                    auto pl =
+                        PlaylistParser::parsePlaylistFile(*params.playlistFile);
+                    if (pl) {
+                        data.title = std::move(pl->title);
+                    }
+                }
+                if (data.title.isEmpty()) {
+                    data.title = tr("Slideshow");
+                }
+
+                data.type = ContentServer::Type::Type_Video;
+                break;
+        }
     } else {
         data.title = name;
     }
