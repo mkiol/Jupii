@@ -5386,11 +5386,13 @@ void Caster::updateVideoSampleStats(int64_t now) {
             0) {
             auto lastDur = now - m_videoTimeLastFrame;
             if (lastDur != m_videoFrameDuration) {
+                auto adjustedLastDur = std::max(m_videoFrameDuration, lastDur);
                 LOGT("adjusting video real frame duration: "
-                     << m_videoRealFrameDuration << " => " << lastDur
+                     << m_videoRealFrameDuration << " => " << adjustedLastDur
+                     << " (" << lastDur << ")"
                      << ", ref=" << m_videoFrameDuration
                      << ", codec=" << m_outVideoCtx->codec_id);
-                m_videoRealFrameDuration = lastDur;
+                m_videoRealFrameDuration = adjustedLastDur;
             }
         }
         m_videoStreamTimeLastFrame += m_videoRealFrameDuration;
