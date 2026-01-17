@@ -2302,7 +2302,7 @@ Caster::VideoTrans Caster::orientationToTrans(
         }
     }
 
-    return props.trans;
+    return trans;
 }
 
 void Caster::initAvAudioFilters() {
@@ -2686,6 +2686,8 @@ void Caster::setVideoEncoderOpts(VideoEncoder encoder, AVCodecContext *ctx,
         case VideoEncoder::X264:
             av_dict_set(opts, "preset", "ultrafast", 0);
             av_dict_set(opts, "tune", "zerolatency", 0);
+            av_dict_set(opts, "bframes", "0", 0);
+            av_dict_set(opts, "b_adapt", "0", 0);
             av_dict_set_int(
                 opts, "crf",
                 std::clamp(m_config.perfConfig.videoX264Crf, 1U, 31U), 0);
@@ -2696,6 +2698,8 @@ void Caster::setVideoEncoderOpts(VideoEncoder encoder, AVCodecContext *ctx,
             av_dict_set(opts, "tune", "ull", 0);
             av_dict_set(opts, "zerolatency", "1", 0);
             av_dict_set(opts, "rc", "constqp", 0);
+            av_dict_set(opts, "bf", "0", 0);
+            av_dict_set(opts, "b_ref_mode", "disabled", 0);
             return;
         case VideoEncoder::V4l2:
             // no options
