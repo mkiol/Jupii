@@ -47,11 +47,11 @@
   <screenshots>
     <screenshot type="default">
       <caption>Jupii main window</caption>
-      <image>https://raw.githubusercontent.com/mkiol/Jupii/master/desktop/screenshots/jupii-screenshot-light.png</image>
+      <image>https://raw.githubusercontent.com/mkiol/Jupii/a3a8037d10198c6412a5ce127e511cf1a5d8688c/desktop/screenshots/jupii-screenshot-light.png</image>
     </screenshot>
     <screenshot>
       <caption>Jupii main window (Dark theme)</caption>
-      <image>https://raw.githubusercontent.com/mkiol/Jupii/master/desktop/screenshots/jupii-screenshot-dark.png</image>
+      <image>https://raw.githubusercontent.com/mkiol/Jupii/a3a8037d10198c6412a5ce127e511cf1a5d8688c/desktop/screenshots/jupii-screenshot-dark.png</image>
     </screenshot>
   </screenshots>
   <url type="homepage">https://github.com/mkiol/Jupii</url>
@@ -63,7 +63,7 @@
   <launchable type="desktop-id">@info_app_icon_id@.desktop</launchable>
   <content_rating type="oars-1.1" />
   <releases>
-    <release version="2.16.0" date="2026-01-12">
+    <release version="2.16.0" date="2026-01-17">
       <description>
       <ul>
       <li>New feature: Slideshow — lets you combine a series of images into a low-framerate video that plays in real time.

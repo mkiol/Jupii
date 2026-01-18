@@ -272,7 +272,13 @@ class ContentServerWorker : public QObject,
         size_t ctx = 0;
     };
 
-    std::optional<Caster> caster;
+    struct CasterCtx {
+        QUrl url;
+        std::unique_ptr<Caster> caster;
+        CasterCtx(QUrl url, std::unique_ptr<Caster> &&caster)
+            : url{std::move(url)}, caster{std::move(caster)} {}
+    };
+    std::optional<CasterCtx> m_casterCtx;
 
     int m_hlsLastSeq = -1;
     QUrl m_hlsUrl;
