@@ -26,6 +26,16 @@ Kirigami.ScrollablePage {
 
         RichLabel {
             text: "<ul>
+            <li>Fix: Currently playing item is not highlighted in the play queue for some Media Servers</li>
+            </ul>"
+        }
+
+        SectionLabel {
+            text: qsTr("Version %1").arg("2.16.0")
+        }
+
+        RichLabel {
+            text: "<ul>
             <li>New feature: Slideshow — lets you combine a series of images into a low-framerate video that plays in real time.
                 You can use controls to set how long each image is displayed, pause, resume, or rewind slideshow to a specific image.
                 Slideshow is an another way to view images, addressing issues found on many TV sets, such as limited or unreliable image-sharing support.</li>

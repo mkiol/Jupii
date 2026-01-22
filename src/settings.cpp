@@ -36,6 +36,22 @@
 #include "module_tools.hpp"
 #include "utils.h"
 
+QDebug &operator<<(QDebug &dbg, Settings::RelayPolicy policy) {
+    switch (policy) {
+        case Settings::RelayPolicy::RelayPolicy_Auto:
+            dbg << "auto";
+            break;
+        case Settings::RelayPolicy::RelayPolicy_AlwaysRelay:
+            dbg << "always-relay";
+            break;
+        case Settings::RelayPolicy::RelayPolicy_DontRelayUpnp:
+            dbg << "dont-relay-upnp";
+            break;
+    }
+
+    return dbg;
+}
+
 QString Settings::settingsFilepath() {
     QDir confDir{
         QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)};
@@ -362,8 +378,7 @@ void Settings::setPrefNetInf(const QString &value) {
 
 QString Settings::getPrefNetInf() const {
 #ifdef USE_SFOS
-    if (isDebug()) return value("prefnetinf", "").toString();
-    return {};
+    return value("prefnetinf", "").toString();
 #else
     return value("prefnetinf", "").toString();
 #endif

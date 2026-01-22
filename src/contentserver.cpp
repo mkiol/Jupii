@@ -701,13 +701,26 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
     }
 
     if (item->itemType == ItemType_Upnp) {
-        qDebug() << "item is upnp and relaying is disabled";
+        auto relayPolicy = Settings::instance()->getRelayPolicy();
+
+        qDebug() << "item is upnp and relaying policy is" << relayPolicy;
+
         if (item->didl.isEmpty()) {
             qWarning() << "didl is empty";
             return false;
         }
+
         url = item->url;
-        if (!makeUrl(id, url, false)) {  // do not relay for upnp
+        if (!makeUrl(id, url, /*relay=*/[relayPolicy] {
+                switch (relayPolicy) {
+                    case Settings::RelayPolicy::RelayPolicy_Auto:
+                    case Settings::RelayPolicy::RelayPolicy_AlwaysRelay:
+                        return true;
+                    case Settings::RelayPolicy::RelayPolicy_DontRelayUpnp:
+                        return false;
+                }
+                return true;
+            }())) {
             qWarning() << "cannot make url from id";
             return false;
         }

@@ -111,6 +111,44 @@ Page {
                                 }
                             }
                         }
+
+                        ComboBox {
+                            visible: root.showAdvanced
+                            label: qsTr("Relay policy")
+                            currentIndex: {
+                                switch (settings.relayPolicy) {
+                                case Settings.RelayPolicy_Auto:
+                                    return 0
+                                case Settings.RelayPolicy_AlwaysRelay:
+                                    return 1
+                                case Settings.RelayPolicy_DontRelayUpnp:
+                                    return 2
+                                }
+                                return 0
+                            }
+
+                            menu: ContextMenu {
+                                MenuItem { text: qsTr("Auto") }
+                                MenuItem { text: qsTr("Always relay") }
+                                MenuItem { text: qsTr("Don't relay from Media Server") }
+                            }
+
+                            onCurrentIndexChanged: {
+                                switch (currentIndex) {
+                                case 0:
+                                    settings.relayPolicy = Settings.RelayPolicy_Auto;
+                                    break
+                                case 1:
+                                    settings.relayPolicy = Settings.RelayPolicy_AlwaysRelay;
+                                    break
+                                case 2:
+                                    settings.relayPolicy = Settings.RelayPolicy_DontRelayUpnp;
+                                    break
+                                default:
+                                    settings.relayPolicy = Settings.RelayPolicy_Auto;
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -776,7 +814,7 @@ Page {
                         }
 
                         ComboBox {
-                            visible: settings.isDebug() && root.showAdvanced
+                            visible: root.showAdvanced
                             label: qsTr("Preferred network interface")
                             currentIndex: utils.prefNetworkInfIndex()
                             menu: ContextMenu {
@@ -808,7 +846,7 @@ Page {
                         }
 
                         ComboBox {
-                            visible: !setting.isHarbour()
+                            visible: !settings.isHarbour()
                             label: qsTr("Policy for local %1 & %2").arg("<i>MPD</i>").arg("<i>upmpdcli</i>")
 
                             currentIndex: {

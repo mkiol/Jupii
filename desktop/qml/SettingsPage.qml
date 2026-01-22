@@ -101,15 +101,15 @@ Kirigami.ScrollablePage {
                 currentIndex: {
                     switch (settings.avNextUriPolicy) {
                     case Settings.AvNextUriPolicy_Auto:
-                        return 0;
+                        return 0
                     case Settings.AvNextUriPolicy_DisableOnlyIfNotSupported:
-                        return 1;
+                        return 1
                     case Settings.AvNextUriPolicy_NeverDisable:
-                        return 2;
+                        return 2
                     case Settings.AvNextUriPolicy_AlwaysDisable:
-                        return 3;
+                        return 3
                     }
-                    return 0;
+                    return 0
                 }
 
                 model: [qsTr("Auto"), qsTr("Disable only if not supported"), qsTr("Always enabled"), qsTr("Always disabled")]
@@ -118,20 +118,59 @@ Kirigami.ScrollablePage {
                     switch (currentIndex) {
                     case 0:
                         settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto;
-                        break;
+                        break
                     case 1:
                         settings.avNextUriPolicy = Settings.AvNextUriPolicy_DisableOnlyIfNotSupported;
-                        break;
+                        break
                     case 2:
                         settings.avNextUriPolicy = Settings.AvNextUriPolicy_NeverDisable;
-                        break;
+                        break
                     case 3:
                         settings.avNextUriPolicy = Settings.AvNextUriPolicy_AlwaysDisable;
-                        break;
+                        break
                     default:
                         settings.avNextUriPolicy = Settings.AvNextUriPolicy_Auto;
                     }
                 }
+            }
+
+            Controls.ComboBox {
+                visible: root.showAdvanced
+                Kirigami.FormData.label: qsTr("Relay policy")
+                currentIndex: {
+                    switch (settings.relayPolicy) {
+                    case Settings.RelayPolicy_Auto:
+                        return 0
+                    case Settings.RelayPolicy_AlwaysRelay:
+                        return 1
+                    case Settings.RelayPolicy_DontRelayUpnp:
+                        return 2
+                    }
+                    return 0
+                }
+
+                model: [qsTr("Auto"), qsTr("Always relay"), qsTr("Don't relay from Media Server")]
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0:
+                        settings.relayPolicy = Settings.RelayPolicy_Auto;
+                        break
+                    case 1:
+                        settings.relayPolicy = Settings.RelayPolicy_AlwaysRelay;
+                        break
+                    case 2:
+                        settings.relayPolicy = Settings.RelayPolicy_DontRelayUpnp;
+                        break
+                    default:
+                        settings.relayPolicy = Settings.RelayPolicy_Auto;
+                    }
+                }
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+                Controls.ToolTip.text: qsTr("Determines whether multimedia are routed through Jupii.")
+                hoverEnabled: true
             }
 
             Kirigami.Separator {
