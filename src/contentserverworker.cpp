@@ -441,6 +441,7 @@ void ContentServerWorker::requestHandler(QHttpRequest *req,
         case ContentServer::ItemType::ItemType_PlaybackCapture:
             requestForCasterHandler(*id, meta, req, resp);
             break;
+        case ContentServer::ItemType::ItemType_Upnp:
         case ContentServer::ItemType::ItemType_Url:
             if (!meta->path.isEmpty() &&
                 !meta->flagSet(ContentServer::MetaFlag::MadeFromCache)) {
@@ -647,7 +648,17 @@ QNetworkReply *ContentServerWorker::makeRequest(const QUrl &id,
 #else
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 #endif
-    request.setUrl(Utils::urlFromId(id));
+    if (id.scheme() == QStringLiteral("jupii") &&
+        id.host() == QStringLiteral("upnp")) {
+        auto *meta = ContentServer::instance()->getMetaForId(id, false);
+        if (meta) {
+            request.setUrl(meta->url);
+        }
+    }
+
+    if (request.url().isEmpty()) {
+        request.setUrl(Utils::urlFromId(id));
+    }
     request.setRawHeader(QByteArrayLiteral("Icy-MetaData"),
                          QByteArrayLiteral("1"));
     request.setRawHeader(QByteArrayLiteral("Connection"),

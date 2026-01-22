@@ -713,9 +713,9 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
         url = item->url;
         if (!makeUrl(id, url, /*relay=*/[relayPolicy] {
                 switch (relayPolicy) {
-                    case Settings::RelayPolicy::RelayPolicy_Auto:
                     case Settings::RelayPolicy::RelayPolicy_AlwaysRelay:
                         return true;
+                    case Settings::RelayPolicy::RelayPolicy_Auto:
                     case Settings::RelayPolicy::RelayPolicy_DontRelayUpnp:
                         return false;
                 }
@@ -728,7 +728,7 @@ bool ContentServer::getContentUrl(const QString &id, QUrl &url, QString &meta,
 
         // no need to generate new DIDL, copying DIDL received from Media Server
         meta = item->didl;
-        meta.replace(QStringLiteral("%URL%"), url.toString());
+        meta.replace(item->url.toString(), url.toString());
         return true;
     }
 
