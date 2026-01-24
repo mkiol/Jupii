@@ -1,0 +1,155 @@
+name: Jupii COPR Build System (Stable & Next)
+
+on:
+  push:
+    branches:
+      - master # يشغل نسخة Next تلقائياً عند دفع كود جديد
+    tags:
+      - '*'    # يشغل نسخة Stable تلقائياً عند إضافة Tag جديد
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Choose build type'
+        required: true
+        default: 'next'
+        type: choice
+        options:
+          - stable
+          - next
+
+jobs:
+  # --- وظيفة بناء نسخة NEXT ---
+  build-next:
+    name: Build Jupii Next
+    # تعمل لو تم تشغيل الماكرو يدوياً واختير next، أو لو تم الـ push على الماستر
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'next') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    env:
+      COPR_LOGIN: ${{ secrets.COPR_LOGIN }}
+      COPR_USER: ${{ secrets.COPR_USER }}
+      COPR_TOKEN: ${{ secrets.COPR_TOKEN }}
+    steps:
+      - name: Install dependencies
+        run: dnf install -y git rpm-build rpmdevtools python3-pip python3-requests python3-requests-gssapi copr-cli curl jq
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Sync and Check for New Commits
+        id: check_sync
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git remote add upstream https://github.com/mkiol/Jupii.git || true
+          git fetch upstream master
+          MY_HASH=$(git rev-parse HEAD)
+          UPSTREAM_HASH=$(git rev-parse upstream/master)
+          if [ "$MY_HASH" = "$UPSTREAM_HASH" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "updated=false" >> $GITHUB_OUTPUT
+          else
+            git merge upstream/master -m "Sync with upstream" || true
+            echo "updated=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepare and Build SRPM
+        if: steps.check_sync.outputs.updated == 'true'
+        run: |
+          rpmdev-setuptree
+          git archive --format=tar.gz --prefix=Jupii/ -o ~/rpmbuild/SOURCES/Jupii.tar.gz HEAD
+          CURRENT_DATE=$(date +'%Y%m%d')
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          sed -i "s/%BUILD_DATE%/$CURRENT_DATE/g" jupii-next.spec
+          sed -i "s/%COMMIT_HASH%/$COMMIT_HASH/g" jupii-next.spec
+          cp jupii-next.spec ~/rpmbuild/SPECS/
+          rpmbuild -bs ~/rpmbuild/SPECS/jupii-next.spec
+
+      - name: Submit to Copr
+        if: steps.check_sync.outputs.updated == 'true'
+        run: |
+          mkdir -p ~/.config
+          echo "[copr-cli]" > ~/.config/copr
+          echo "login = $COPR_LOGIN" >> ~/.config/copr
+          echo "username = $COPR_USER" >> ~/.config/copr
+          echo "token = $COPR_TOKEN" >> ~/.config/copr
+          echo "copr_url = https://copr.fedorainfracloud.org" >> ~/.config/copr
+          copr-cli build $COPR_USER/jupii ~/rpmbuild/SRPMS/*.src.rpm
+
+      - name: Push Changes to My Fork
+        if: steps.check_sync.outputs.updated == 'true' && github.event_name != 'workflow_dispatch'
+        run: git push origin master
+
+  # --- وظيفة بناء نسخة STABLE ---
+  build-stable:
+    name: Build Jupii Stable
+    # تعمل لو تم تشغيل الماكرو يدوياً واختير stable، أو لو تم رفع Tag جديد
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'stable') ||
+      (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    env:
+      COPR_LOGIN: ${{ secrets.COPR_LOGIN }}
+      COPR_USER: ${{ secrets.COPR_USER }}
+      COPR_TOKEN: ${{ secrets.COPR_TOKEN }}
+    steps:
+      - name: Install dependencies
+        run: dnf install -y git rpm-build rpmdevtools python3-pip python3-requests python3-requests-gssapi copr-cli curl jq
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          
+      - name: Check for New Tag
+        id: check_tag
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git remote add upstream https://github.com/mkiol/Jupii || true
+          git fetch upstream --tags
+          LATEST_UPSTREAM_TAG=$(git describe --tags $(git rev-list --tags --max-count=1 --remotes=upstream))          
+          LATEST_MY_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) || echo "none")
+          
+          if [ "$LATEST_UPSTREAM_TAG" = "$LATEST_MY_TAG" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "updated=false" >> $GITHUB_OUTPUT
+          else
+            git checkout $LATEST_UPSTREAM_TAG
+            git checkout master -- jupii.spec
+            echo "LATEST_TAG=$LATEST_UPSTREAM_TAG" >> $GITHUB_ENV
+            echo "updated=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and Submit to Copr
+        if: steps.check_tag.outputs.updated == 'true'
+        run: |
+          rpmdev-setuptree
+          VERSION_CLEAN=$(echo ${{ env.LATEST_TAG }} | sed 's/^v//' | tr '-' '.')
+          sed -i "s/^Version:.*/Version: $VERSION_CLEAN/" jupii.spec
+          sed -i "s/^Release:.*/Release: 1%{?dist}/" jupii.spec
+          git archive --format=tar.gz --prefix=Jupii/ -o ~/rpmbuild/SOURCES/Jupii.tar.gz HEAD
+          cp jupii.spec ~/rpmbuild/SPECS/
+          rpmbuild -bs ~/rpmbuild/SPECS/jupii.spec
+          mkdir -p ~/.config
+          echo "[copr-cli]" > ~/.config/copr
+          echo "login = $COPR_LOGIN" >> ~/.config/copr
+          echo "username = $COPR_USER" >> ~/.config/copr
+          echo "token = $COPR_TOKEN" >> ~/.config/copr
+          echo "copr_url = https://copr.fedorainfracloud.org" >> ~/.config/copr
+          copr-cli build $COPR_USER/jupii ~/rpmbuild/SRPMS/*.src.rpm
+
+      - name: Sync Tag to My Repo
+        if: steps.check_tag.outputs.updated == 'true' && github.event_name != 'workflow_dispatch'
+        run: |
+          git tag ${{ env.LATEST_TAG }} || true
+          git push origin ${{ env.LATEST_TAG }}
