@@ -3,9 +3,9 @@ name: Jupii COPR Build System (Stable & Next)
 on:
   push:
     branches:
-      - master # يشغل نسخة Next تلقائياً عند دفع كود جديد
+      - master 
     tags:
-      - '*'    # يشغل نسخة Stable تلقائياً عند إضافة Tag جديد
+      - '*'    
   workflow_dispatch:
     inputs:
       build_type:
@@ -18,10 +18,8 @@ on:
           - next
 
 jobs:
-  # --- وظيفة بناء نسخة NEXT ---
   build-next:
     name: Build Jupii Next
-    # تعمل لو تم تشغيل الماكرو يدوياً واختير next، أو لو تم الـ push على الماستر
     if: |
       (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'next') ||
       (github.event_name == 'push' && github.ref == 'refs/heads/master')
@@ -86,10 +84,8 @@ jobs:
         if: steps.check_sync.outputs.updated == 'true' && github.event_name != 'workflow_dispatch'
         run: git push origin master
 
-  # --- وظيفة بناء نسخة STABLE ---
   build-stable:
     name: Build Jupii Stable
-    # تعمل لو تم تشغيل الماكرو يدوياً واختير stable، أو لو تم رفع Tag جديد
     if: |
       (github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'stable') ||
       (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
