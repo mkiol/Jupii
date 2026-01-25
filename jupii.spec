@@ -53,7 +53,6 @@ Requires:	libupnpp
 Requires:	lame
 Requires:	libcurl
 Requires:	expat
-Requires:	ffmpeg
 Requires:	fmt
 Requires:	gumbo-parser
 Requires:	taglib
@@ -62,6 +61,13 @@ Requires:	xz
 Requires:	xz-libs
 Requires:	xz-lzma-compat
 Requires:	libarchive
+Requires:   python3-ytmusicapi
+%if 0%{?fedora}
+Requires: ffmpeg
+Conflicts: ffmpeg-free
+%else
+Requires: ffmpeg
+%endif
 
 %description
 Jupii is a graphical application that allows playing audio, video, and image
