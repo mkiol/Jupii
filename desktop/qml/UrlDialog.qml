@@ -11,6 +11,8 @@ import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.14 as Kirigami
 import QtQuick.Dialogs 1.1
 
+import org.mkiol.jupii.ContentServer 1.0
+
 PopupDialog {
     id: root
 
