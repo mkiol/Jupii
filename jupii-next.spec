@@ -61,6 +61,7 @@ Requires:	xz
 Requires:	xz-libs
 Requires:	xz-lzma-compat
 Requires:	libarchive
+Requires:   yt-dlp
 Requires:   python3-ytmusicapi
 %if 0%{?fedora}
 Requires: ffmpeg
