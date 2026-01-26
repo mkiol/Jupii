@@ -149,6 +149,7 @@ install -Dm0644 build/jupii.desktop %{buildroot}%{_datadir}/applications/jupii-n
 sed -i 's/^Icon=jupii/Icon=jupii-next/' %{buildroot}%{_datadir}/applications/jupii-next.desktop
 sed -i 's/^Exec=jupii/Exec=jupii-next/' %{buildroot}%{_datadir}/applications/jupii-next.desktop
 sed -i 's/^Name=Jupii/Name=Jupii Next/' %{buildroot}%{_datadir}/applications/jupii-next.desktop
+sed -i 's/^StartupWMClass=net.mkiol.jupii/StartupWMClass=jupii/' %{buildroot}%{_datadir}/applications/jupii-next.desktop
 sed -i 's/^Keywords=Jupii;jupii;/Keywords=Jupii;jupii;Jupii-Next;jupii-next;/' %{buildroot}%{_datadir}/applications/jupii-next.desktop
 install -Dm0644 build/jupii.metainfo.xml %{buildroot}%{_datadir}/metainfo/jupii-next.metainfo.xml
 install -Dm0644 desktop/icons/16x16/jupii.png %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/jupii-next.png
