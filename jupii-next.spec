@@ -48,11 +48,6 @@ files on UPnP/DLNA compatible devices over a local network.
 
 %prep
 %autosetup -n Jupii
-dnf group install @c-development
-dnf group install @buildsys-build
-dnf group install @d-development
-dnf group install @development-tools
-dnf group install @development-libs
 
 %build
 mkdir -p build
