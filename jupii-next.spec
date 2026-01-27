@@ -6,18 +6,10 @@ License:        MPL-2.0
 URL:            https://github.com/mkiol/Jupii
 Source0:        Jupii.tar.gz
 
-%define debug_package %{nil}
-
-BuildRequires:	dnf-plugins-core
-BuildRequires:	rpmfusion-free-release
-BuildRequires:	rpmfusion-nonfree-release
 BuildRequires:	gcc
 BuildRequires:	gcc-c++
 BuildRequires:	cmake
-BuildRequires:	libnpupnp
 BuildRequires:	lame-devel
-BuildRequires:	libupnpp
-BuildRequires:	pybind11-devel
 BuildRequires:	libcurl-devel
 BuildRequires:	expat-devel
 BuildRequires:	qt5-qtbase-devel
@@ -31,43 +23,23 @@ BuildRequires:	kf5-kconfig-devel
 BuildRequires:	kf5-ki18n-devel
 BuildRequires:	kf5-kiconthemes-devel
 BuildRequires:	qt5-qtquickcontrols2-devel
-BuildRequires:	libarchive-devel
-BuildRequires:	xz-devel
-BuildRequires:	ffmpeg-devel
-BuildRequires:	gumbo-parser-devel
-BuildRequires:	fmt-devel
-BuildRequires:	taglib-devel
 BuildRequires:	python3-devel
-BuildRequires:	catch2-devel
 BuildRequires:	chrpath
 Requires:	qt5-qtbase
 Requires:	qt5-qtdeclarative
 Requires:	qt5-qtmultimedia
 Requires:	kf5-kirigami2
 Requires:	qt5-qtquickcontrols2
-Requires:	dnf-plugins-core
-Requires:	rpmfusion-free-release
-Requires:	rpmfusion-nonfree-release
-Requires:	libnpupnp
-Requires:	libupnpp
 Requires:	lame
 Requires:	libcurl
 Requires:	expat
-Requires:	fmt
-Requires:	gumbo-parser
-Requires:	taglib
 Requires:	python3-pybind11
 Requires:	xz
 Requires:	xz-libs
 Requires:	xz-lzma-compat
 Requires:	libarchive
+Requires:   yt-dlp
 Requires:   python3-ytmusicapi
-%if 0%{?fedora}
-Requires: ffmpeg
-Conflicts: ffmpeg-free
-%else
-Requires: ffmpeg
-%endif
 
 %description
 Jupii is a graphical application that allows playing audio, video, and image
@@ -75,24 +47,8 @@ files on UPnP/DLNA compatible devices over a local network.
 
 %prep
 %autosetup -n Jupii
-%if 0%{?fedora} >= 44
-    for file in src/logger.cpp src/caster.cpp; do
-        sed -i '2i #include <string_view>' $file
-        sed -i 's/fmt::format(fmt,/fmt::format(fmt::runtime(fmt),/g' $file
-    done
-    sed -i '/void Caster::setVideoStreamRotation/,/^}/c\
-    void Caster::setVideoStreamRotation(OutCtx*, VideoOrientation)\n\
-    {\n\
-        // Disabled for FFmpeg 8 compatibility\n\
-        return;\n\
-    }\n' src/caster.cpp
-%endif
 
 %build
-%if 0%{?fedora} >= 44
-    export CXXFLAGS="%{optflags} -Wno-error=deprecated-declarations -Wno-error=invalid-constexpr"
-    export CFLAGS="%{optflags} -Wno-error=deprecated-declarations -Wno-error=invalid-constexpr"
-%endif
 mkdir -p build
 cd build
 cmake .. \
@@ -105,18 +61,15 @@ cmake .. \
   -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE \
   -DCMAKE_SKIP_RPATH=ON \
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=OFF \
-  -DWITH_TRACE_LOGS=OFF \
-  -DWITH_SANITIZERS=OFF \
-  -DWITH_STATIC_SANITIZERS=OFF \
-  -DBUILD_FFMPEG=OFF \
-  -DBUILD_FMT=OFF \
-  -DBUILD_GUMBO=OFF \
-  -DBUILD_UPNPP=OFF \
-  -DBUILD_TAGLIB=OFF \
-  -DBUILD_PYBIND11=OFF \
-  -DBUILD_LIBARCHIVE=OFF \
-  -DBUILD_XZ=OFF \
-  -DBUILD_CATCH2=OFF
+  -DBUILD_FFMPEG=ON \
+  -DBUILD_FMT=ON \
+  -DBUILD_GUMBO=ON \
+  -DBUILD_UPNPP=ON \
+  -DBUILD_TAGLIB=ON \
+  -DBUILD_PYBIND11=ON \
+  -DBUILD_LIBARCHIVE=ON \
+  -DBUILD_XZ=ON \
+  -DBUILD_CATCH2=ON
 make %{?_smp_mflags}
 
 %install
@@ -162,7 +115,6 @@ install -Dm0644 desktop/icons/172x172/jupii.png %{buildroot}%{_datadir}/icons/hi
 install -Dm0644 desktop/icons/256x256/jupii.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/jupii-next.png
 install -Dm0644 desktop/icons/512x512/jupii.png %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/jupii-next.png
 install -Dm0644 desktop/jupii.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/jupii-next.svg
-
 
 %post
 if [ -x /usr/bin/gtk-update-icon-cache ]; then
