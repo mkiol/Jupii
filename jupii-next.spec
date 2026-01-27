@@ -6,8 +6,6 @@ License:        MPL-2.0
 URL:            https://github.com/mkiol/Jupii
 Source0:        Jupii.tar.gz
 
-%define debug_package %{nil}
-
 BuildRequires:	gcc
 BuildRequires:	gcc-c++
 BuildRequires:	cmake
@@ -25,7 +23,6 @@ BuildRequires:	kf5-kconfig-devel
 BuildRequires:	kf5-ki18n-devel
 BuildRequires:	kf5-kiconthemes-devel
 BuildRequires:	qt5-qtquickcontrols2-devel
-
 BuildRequires:	python3-devel
 BuildRequires:	chrpath
 Requires:	qt5-qtbase
@@ -33,8 +30,6 @@ Requires:	qt5-qtdeclarative
 Requires:	qt5-qtmultimedia
 Requires:	kf5-kirigami2
 Requires:	qt5-qtquickcontrols2
-
-
 Requires:	lame
 Requires:	libcurl
 Requires:	expat
@@ -120,7 +115,6 @@ install -Dm0644 desktop/icons/172x172/jupii.png %{buildroot}%{_datadir}/icons/hi
 install -Dm0644 desktop/icons/256x256/jupii.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/jupii-next.png
 install -Dm0644 desktop/icons/512x512/jupii.png %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/jupii-next.png
 install -Dm0644 desktop/jupii.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/jupii-next.svg
-
 
 %post
 if [ -x /usr/bin/gtk-update-icon-cache ]; then
