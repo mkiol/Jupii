@@ -8,6 +8,12 @@ Source0:        Jupii.tar.gz
 
 BuildRequires:	gcc
 BuildRequires:	gcc-c++
+BuildRequires:  @development-tools
+BuildRequires:  @d-development
+BuildRequires:  @c-development
+BuildRequires:  @development-libs
+
+BuildRequires:	git
 BuildRequires:	cmake
 BuildRequires:	lame-devel
 BuildRequires:	libcurl-devel
@@ -47,6 +53,7 @@ files on UPnP/DLNA compatible devices over a local network.
 
 %prep
 %autosetup -n Jupii
+sudo dnf groupinstall "Development Tools"
 
 %build
 mkdir -p build
@@ -136,4 +143,3 @@ fi
 
 %changelog
 %autochangelog
-
