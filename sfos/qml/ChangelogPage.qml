@@ -34,6 +34,7 @@ Page {
 
             LogItem {
                 title: "<ul>
+                <li>Bandcamp: Support for Bandcamp Radio shows</li>
                 <li>Fix: Currently playing item is not highlighted in the play queue for some Media Servers</li>
                 </ul>"
             }

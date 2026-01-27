@@ -414,7 +414,7 @@ QString Utils::recDateFromId(const QUrl &id) {
     return {};
 }
 
-QString Utils::friendlyDate(const QDateTime &date) {
+QString Utils::friendlyDate(const QDateTime &date, bool skipTime) {
     if (date.isValid()) {
         QString date_s;
         auto cdate = QDate::currentDate();
@@ -422,6 +422,11 @@ QString Utils::friendlyDate(const QDateTime &date) {
             date_s = tr("Today");
         else if (date.date() == cdate.addDays(-1))
             date_s = tr("Yesterday");
+
+        if (skipTime) {
+            if (date_s.isEmpty()) return date.toString("d MMM yyyy");
+            return date_s;
+        }
 
         auto time_f = QLocale::system().timeFormat(QLocale::NarrowFormat);
         if (date_s.isEmpty()) return date.toString("d MMM yyyy, " + time_f);

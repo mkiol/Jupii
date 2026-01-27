@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,6 +30,7 @@ class BcModel : public SelectableItemModel {
     Q_PROPERTY(QString artistName READ getArtistName NOTIFY artistNameChanged)
     Q_PROPERTY(bool canShowMore READ canShowMore NOTIFY canShowMoreChanged)
     Q_PROPERTY(QUrl notableUrl READ notableUrl CONSTANT)
+    Q_PROPERTY(QUrl radioUrl READ radioUrl CONSTANT)
    public:
     enum Type {
         Type_Unknown = 0,
@@ -38,6 +39,7 @@ class BcModel : public SelectableItemModel {
         Type_Track,
         Type_Label,
         Type_Fan,
+        Type_Show,
     };
     Q_ENUM(Type)
 
@@ -66,7 +68,9 @@ class BcModel : public SelectableItemModel {
     void canShowMoreChanged();
 
    private:
+    enum class FeatureType { All, Notable, Radio };
     static const QUrl mNotableUrl;
+    static const QUrl mRadioUrl;
     QUrl mAlbumUrl;
     QString mAlbumTitle;
     QUrl mArtistUrl;
@@ -78,14 +82,17 @@ class BcModel : public SelectableItemModel {
     QList<ListItem *> makeItems() override;
     QList<ListItem *> makeSearchItems();
     QList<ListItem *> makeTrackItemsFromBcTrack(BcApi::Track &&track);
+    QList<ListItem *> makeTrackItemsFromBcShowTracks(
+        BcApi::ShowTracks &&showTracks);
     QList<ListItem *> makeAlbumItems();
     QList<ListItem *> makeAlbumItemsFromBcAlbum(BcApi::Album &&album);
     QList<ListItem *> makeArtistItems();
-    QList<ListItem *> makeNotableItems(bool more);
+    QList<ListItem *> makeFeatureItems(FeatureType type, bool more);
     void setAlbumTitle(const QString &albumTitle);
     void setArtistName(const QString &artistName);
     auto canShowMore() const { return mCanShowMore; }
     static auto notableUrl() { return mNotableUrl; }
+    static auto radioUrl() { return mRadioUrl; }
 };
 
 class BcItem : public SelectableItem {
@@ -101,6 +108,8 @@ class BcItem : public SelectableItem {
         IconRole,
         TypeRole,
         GenreRole,
+        DescriptionRole,
+        SectionRole,
         SelectedRole
     };
 
@@ -109,6 +118,7 @@ class BcItem : public SelectableItem {
     explicit BcItem(const QString &id, const QString &name,
                     const QString &artist, const QString &album,
                     const QUrl &url, const QUrl &origUrl, const QUrl &icon,
+                    const QString &description, const QString &section,
                     int duration, BcModel::Type type, const QString &genre = {},
                     QObject *parent = nullptr);
     QVariant data(int role) const override;
@@ -120,6 +130,8 @@ class BcItem : public SelectableItem {
     auto url() const { return m_url; }
     auto origUrl() const { return m_origUrl; }
     auto icon() const { return m_icon; }
+    auto description() const { return m_description; }
+    auto section() const { return m_section; }
     auto duration() const { return m_duration; }
     auto type() const { return m_type; }
     auto genre() const { return m_genre; }
@@ -134,6 +146,8 @@ class BcItem : public SelectableItem {
     QUrl m_url;
     QUrl m_origUrl;
     QUrl m_icon;
+    QString m_description;
+    QString m_section;
     int m_duration = 0;
     BcModel::Type m_type = BcModel::Type::Type_Unknown;
     QString m_genre;

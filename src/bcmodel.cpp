@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,7 @@
 #include "settings.h"
 
 const QUrl BcModel::mNotableUrl{QStringLiteral("jupii://bc-notable")};
+const QUrl BcModel::mRadioUrl{QStringLiteral("jupii://bc-radio")};
 
 BcModel::BcModel(QObject *parent) : SelectableItemModel(new BcItem, parent) {}
 
@@ -83,60 +84,82 @@ QList<ListItem *> BcModel::makeItems() {
         if (getFilter().simplified().isEmpty()) {
             if (mShowMoreRequested) {
                 mShowMoreRequested = false;
-                return makeNotableItems(true);
+                return makeFeatureItems(FeatureType::All, true);
             }
-            return makeNotableItems(false);
+            return makeFeatureItems(FeatureType::All, false);
         } else {
             mLastIndex = 0;
             return makeSearchItems();
         }
     }
     mLastIndex = 0;
-    if (mArtistUrl.isEmpty()) return makeAlbumItems();
+    if (mArtistUrl.isEmpty()) {
+        return makeAlbumItems();
+    }
     if (mArtistUrl == mNotableUrl) {
         if (mShowMoreRequested) {
             mShowMoreRequested = false;
-            return makeNotableItems(true);
+            return makeFeatureItems(FeatureType::Notable, true);
         }
-        return makeNotableItems(false);
+        return makeFeatureItems(FeatureType::Notable, false);
+    }
+    if (mArtistUrl == mRadioUrl) {
+        return makeFeatureItems(FeatureType::Radio, false);
     }
     return makeArtistItems();
 }
 
-QList<ListItem *> BcModel::makeNotableItems(bool more) {
+QList<ListItem *> BcModel::makeFeatureItems(FeatureType type, bool more) {
     QList<ListItem *> items;
 
     BcApi api;
     connect(&api, &BcApi::progressChanged, this,
             [this](int n, int total) { emit progressChanged(n, total); });
 
-    if (more) api.makeMoreNotableItems();
-
-    auto results = api.notableItems();
-
-    if (mCanShowMore != BcApi::canMakeMoreNotableItems()) {
-        mCanShowMore = BcApi::canMakeMoreNotableItems();
-        emit canShowMoreChanged();
+    if (type == FeatureType::All || type == FeatureType::Radio) {
+        auto results = type == FeatureType::All
+                           ? api.latestShows(BcApi::ShowType::Radio)
+                           : api.shows(BcApi::ShowType::Radio);
+        if (QThread::currentThread()->isInterruptionRequested()) return items;
+        items.reserve(static_cast<int>(results.size()));
+        for (const auto &result : results) {
+            items.push_back(
+                new BcItem{result.webUrl.toString(), std::move(result.title),
+                           /*artist=*/{},
+                           /*album=*/{}, result.webUrl,
+                           /*origUrl=*/{}, result.imageUrl,
+                           /*description=*/result.description,
+                           /*section=*/tr("Bandcamp Radio"), 0, Type::Type_Show,
+                           /*genre=*/{}});
+        }
     }
 
-    if (QThread::currentThread()->isInterruptionRequested()) return items;
+    if (type == FeatureType::All || type == FeatureType::Notable) {
+        if (more) api.makeMoreNotableItems();
+
+        auto results = api.notableItems();
+
+        if (mCanShowMore != BcApi::canMakeMoreNotableItems()) {
+            mCanShowMore = BcApi::canMakeMoreNotableItems();
+            emit canShowMoreChanged();
+        }
+
+        if (QThread::currentThread()->isInterruptionRequested()) return items;
+
+        items.reserve(static_cast<int>(results.size()));
+        for (const auto &result : results) {
+            items.push_back(new BcItem{
+                result.webUrl.toString(), result.title, result.artist,
+                result.album, result.webUrl,
+                /*origUrl=*/{}, result.imageUrl,
+                /*description=*/{},
+                /*section=*/tr("New and Notable"), 0,
+                static_cast<BcModel::Type>(result.type), result.genre});
+        }
+    }
 
     setArtistName({});
     setAlbumTitle({});
-
-    items.reserve(static_cast<int>(results.size()));
-    for (const auto &result : results) {
-        items << new BcItem{result.webUrl.toString(),
-                            result.title,
-                            result.artist,
-                            result.album,
-                            result.webUrl,
-                            {},
-                            result.imageUrl,
-                            0,
-                            static_cast<BcModel::Type>(result.type),
-                            result.genre};
-    }
 
     emit progressChanged(0, 0);
 
@@ -159,16 +182,13 @@ QList<ListItem *> BcModel::makeSearchItems() {
 
     items.reserve(static_cast<int>(results.size()));
     for (const auto &result : results) {
-        items << new BcItem{result.webUrl.toString(),
-                            result.title,
-                            result.artist,
-                            result.album,
-                            result.webUrl,
-                            {},
-                            result.imageUrl,
-                            0,
-                            static_cast<BcModel::Type>(result.type),
-                            result.genre};
+        items.push_back(new BcItem{result.webUrl.toString(), result.title,
+                                   result.artist, result.album, result.webUrl,
+                                   /*origUrl=*/{}, result.imageUrl,
+                                   /*description=*/{},
+                                   /*section=*/tr("Search results"), 0,
+                                   static_cast<BcModel::Type>(result.type),
+                                   result.genre});
     }
 
     if (!phrase.isEmpty()) {
@@ -190,8 +210,44 @@ QList<ListItem *> BcModel::makeTrackItemsFromBcTrack(BcApi::Track &&track) {
                                              track.webUrl,
                                              {},
                                              track.imageUrl,
+                                             /*description=*/{},
+                                             /*section=*/{},
                                              track.duration,
                                              BcModel::Type::Type_Track};
+}
+
+QList<ListItem *> BcModel::makeTrackItemsFromBcShowTracks(
+    BcApi::ShowTracks &&showTracks) {
+    setAlbumTitle(showTracks.title);
+    setArtistName({});
+
+    QList<ListItem *> items;
+
+    items.reserve(showTracks.featuredTracks.size() + 1);
+    items.push_back(new BcItem{QString::number(showTracks.id),
+                               std::move(showTracks.title),
+                               /*artist=*/{},
+                               /*album*/ {},
+                               /*url=*/showTracks.webUrl,
+                               /*origUrl=*/{}, showTracks.imageUrl,
+                               /*description=*/{},
+                               /*section=*/tr("Radio track"),
+                               showTracks.duration, BcModel::Type::Type_Track});
+    for (auto &track : showTracks.featuredTracks) {
+        items.push_back(new BcItem{track.webUrl.toString(),
+                                   track.title,
+                                   track.artist,
+                                   track.album,
+                                   track.webUrl,
+                                   {},
+                                   track.imageUrl,
+                                   /*description=*/{},
+                                   /*section=*/tr("Featured tracks"),
+                                   track.duration,
+                                   BcModel::Type::Type_Track});
+    }
+
+    return items;
 }
 
 QList<ListItem *> BcModel::makeAlbumItems() {
@@ -214,15 +270,13 @@ QList<ListItem *> BcModel::makeAlbumItemsFromBcAlbum(BcApi::Album &&album) {
 
     items.reserve(static_cast<int>(album.tracks.size()));
     for (const auto &track : album.tracks) {
-        items << new BcItem{track.webUrl.toString(),
-                            track.title,
-                            album.artist,
-                            album.title,
-                            track.streamUrl,
-                            track.webUrl,  // origUrl
-                            isShowIcon ? album.imageUrl : QUrl{},
-                            track.duration,
-                            Type_Track};
+        items.push_back(new BcItem{track.webUrl.toString(), track.title,
+                                   album.artist, album.title, track.streamUrl,
+                                   track.webUrl,  // origUrl
+                                   isShowIcon ? album.imageUrl : QUrl{},
+                                   /*description=*/{},
+                                   /*section=*/{}, track.duration,
+                                   Type::Type_Track});
     }
 
     return items;
@@ -244,20 +298,19 @@ QList<ListItem *> BcModel::makeArtistItems() {
                 setAlbumTitle({});
                 items.reserve(static_cast<int>(artist.albums.size()));
                 for (const auto &album : artist.albums) {
-                    items << new BcItem{album.webUrl.toString(),
-                                        album.title,
-                                        artist.name,
-                                        album.title,
-                                        album.webUrl,
-                                        {},
-                                        album.imageUrl,
-                                        0,
-                                        Type_Album};
+                    items.push_back(
+                        new BcItem{album.webUrl.toString(), album.title,
+                                   artist.name, album.title, album.webUrl,
+                                   /*origUrl=*/{}, album.imageUrl,
+                                   /*description=*/{},
+                                   /*section=*/{}, 0, Type::Type_Album});
                 }
             } else if constexpr (std::is_same_v<T, BcApi::Album>) {
                 items = makeAlbumItemsFromBcAlbum(std::move(arg));
             } else if constexpr (std::is_same_v<T, BcApi::Track>) {
                 items = makeTrackItemsFromBcTrack(std::move(arg));
+            } else if constexpr (std::is_same_v<T, BcApi::ShowTracks>) {
+                items = makeTrackItemsFromBcShowTracks(std::move(arg));
             }
         },
         artistVariant);
@@ -267,7 +320,8 @@ QList<ListItem *> BcModel::makeArtistItems() {
 
 BcItem::BcItem(const QString &id, const QString &name, const QString &artist,
                const QString &album, const QUrl &url, const QUrl &origUrl,
-               const QUrl &icon, int duration, BcModel::Type type,
+               const QUrl &icon, const QString &description,
+               const QString &section, int duration, BcModel::Type type,
                const QString &genre, QObject *parent)
     : SelectableItem(parent),
       m_id(id),
@@ -277,10 +331,12 @@ BcItem::BcItem(const QString &id, const QString &name, const QString &artist,
       m_url(url),
       m_origUrl(origUrl),
       m_icon(icon),
+      m_description(description),
+      m_section(section),
       m_duration(duration),
       m_type(type),
       m_genre(genre) {
-    m_selectable = type == BcModel::Type_Track;
+    m_selectable = type == BcModel::Type::Type_Track;
 }
 
 QHash<int, QByteArray> BcItem::roleNames() const {
@@ -294,6 +350,8 @@ QHash<int, QByteArray> BcItem::roleNames() const {
     names[IconRole] = "icon";
     names[TypeRole] = "type";
     names[GenreRole] = "genre";
+    names[DescriptionRole] = "description";
+    names[SectionRole] = "section";
     names[SelectedRole] = "selected";
     return names;
 }
@@ -318,6 +376,10 @@ QVariant BcItem::data(int role) const {
             return type();
         case GenreRole:
             return genre();
+        case DescriptionRole:
+            return description();
+        case SectionRole:
+            return section();
         case SelectedRole:
             return selected();
         default:

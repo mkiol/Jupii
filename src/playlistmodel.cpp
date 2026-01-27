@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,12 +24,62 @@
 #endif
 
 #include "avtransport.h"
+#include "bcapi.h"
 #include "directory.h"
 #include "dnscontentdeterminator.h"
 #include "playlistparser.h"
 #include "services.h"
 #include "settings.h"
 #include "utils.h"
+
+QDebug &operator<<(QDebug &dbg, PlaylistModel::UrlType type) {
+    switch (type) {
+        case PlaylistModel::UrlType::BcTrack:
+            dbg << "BcTrack";
+            break;
+        case PlaylistModel::UrlType::SoundcloudTrack:
+            dbg << "SoundcloudTrack";
+            break;
+        case PlaylistModel::UrlType::BcMain:
+            dbg << "BcMain";
+            break;
+        case PlaylistModel::UrlType::BcAlbum:
+            dbg << "BcAlbum";
+            break;
+        case PlaylistModel::UrlType::BcArtist:
+            dbg << "BcArtist";
+            break;
+        case PlaylistModel::UrlType::BcRadioMain:
+            dbg << "BcRadioMain";
+            break;
+        case PlaylistModel::UrlType::BcRadioShow:
+            dbg << "BcRadioShow";
+            break;
+        case PlaylistModel::UrlType::BcRadioShowTrack:
+            dbg << "BcRadioShowTrack";
+            break;
+        case PlaylistModel::UrlType::SoundcloudMain:
+            dbg << "SoundcloudMain";
+            break;
+        case PlaylistModel::UrlType::SoundcloudAlbum:
+            dbg << "SoundcloudAlbum";
+            break;
+        case PlaylistModel::UrlType::SoundcloudArtist:
+            dbg << "SoundcloudArtist";
+            break;
+        case PlaylistModel::UrlType::File:
+            dbg << "File";
+            break;
+        case PlaylistModel::UrlType::Jupii:
+            dbg << "Jupii";
+            break;
+        case PlaylistModel::UrlType::Unknown:
+            dbg << "unknown";
+            break;
+    }
+
+    return dbg;
+}
 
 void PlaylistWorker::cancel() {
     if (isRunning()) {
@@ -849,8 +899,9 @@ PlaylistModel::UrlType PlaylistModel::determineUrlType(QUrl *url) {
     if (url->isLocalFile()) return UrlType::File;
 
     if (url->scheme().compare(QStringLiteral("jupii"), Qt::CaseInsensitive) ==
-        0)
+        0) {
         return UrlType::Jupii;
+    }
 
     auto cleanUrl = [url, &host]() {
         if (host.size() > 2 && host.startsWith(QStringLiteral("m."))) {
@@ -899,37 +950,48 @@ PlaylistModel::UrlType PlaylistModel::determineUrlType(QUrl *url) {
 
     if (host.compare(QStringLiteral("bandcamp.com"), Qt::CaseInsensitive) ==
         0) {
-        cleanUrl();
-        if (path.isEmpty() || path == QStringLiteral("/"))
+        if (path.isEmpty() || path == QStringLiteral("/")) {
+            cleanUrl();
             return UrlType::BcMain;
+        }
     }
 
     if (host.contains(QStringLiteral("bandcamp.com"), Qt::CaseInsensitive) ||
         DnsDeterminator::type(*url) == DnsDeterminator::Type::Bc) {
-        cleanUrl();
-        auto ps = path.split('/');
-        if (path.contains(QStringLiteral("/album/"), Qt::CaseInsensitive))
-            return UrlType::BcAlbum;
-        if (path.contains(QStringLiteral("/track/"), Qt::CaseInsensitive))
-            return UrlType::BcTrack;
+        switch (BcApi::guessUrlType(*url)) {
+            case BcApi::UrlType::Album:
+                cleanUrl();
+                return UrlType::BcAlbum;
+            case BcApi::UrlType::Track:
+                cleanUrl();
+                return UrlType::BcTrack;
+            case BcApi::UrlType::RadioShow:
+                return UrlType::BcRadioShow;
+            case BcApi::UrlType::RadioShowTrack:
+                return UrlType::BcRadioShowTrack;
+            case BcApi::UrlType::RadioMain:
+                cleanUrl();
+                return UrlType::BcRadioMain;
+            case BcApi::UrlType::Artist:
+                cleanUrl();
+                url->setPath({});
+                return UrlType::BcArtist;
+            case BcApi::UrlType::Unknown:
+                cleanUrl();
+                if (host.compare(QStringLiteral("bandcamp.com"),
+                                 Qt::CaseInsensitive) == 0) {
+                    if (path.contains(QStringLiteral("/stream_redirect"),
+                                      Qt::CaseInsensitive)) {
+                        return UrlType::Unknown;
+                    }
 
-        if (path.isEmpty() || path == "/" ||
-            path.contains(QStringLiteral("/music/"), Qt::CaseInsensitive) ||
-            path.contains(QStringLiteral("/merch/"), Qt::CaseInsensitive) ||
-            path.contains(QStringLiteral("/community/"), Qt::CaseInsensitive) ||
-            path.contains(QStringLiteral("/concerts/"), Qt::CaseInsensitive)) {
-            url->setPath({});
-            return UrlType::BcArtist;
+                    *url = QUrl{QStringLiteral("https://bandcamp.com")};
+                    return UrlType::BcMain;
+                }
+
+                url->setPath({});
+                return UrlType::BcArtist;
         }
-
-        if (host.compare(QStringLiteral("bandcamp.com"), Qt::CaseInsensitive) ==
-            0) {
-            *url = QUrl{QStringLiteral("https://bandcamp.com")};
-            return UrlType::BcMain;
-        }
-
-        url->setPath("");
-        return UrlType::BcArtist;
     }
 
     return UrlType::Unknown;
@@ -941,41 +1003,47 @@ void PlaylistModel::addItemUrlWithTypeCheck(
     const QString &desc, QString &&app, bool play) {
     if (app.isEmpty() && origUrl.isEmpty()) {
         auto urlType = determineUrlType(&url);
-        if (urlType == UrlType::BcTrack) {
-            qDebug() << "url type: BcTrack";
-            app = QStringLiteral("bc");
-        } else if (urlType == UrlType::SoundcloudTrack) {
-            qDebug() << "url type: SoundcloudTrack";
-            app = QStringLiteral("soundcloud");
-        } else if (urlType == UrlType::BcMain) {
-            qDebug() << "url type: BcMain";
-            emit bcMainUrlAdded();
-            return;
-        } else if (urlType == UrlType::BcAlbum) {
-            qDebug() << "url type: BcAlbum";
-            emit bcAlbumUrlAdded(url);
-            return;
-        } else if (urlType == UrlType::BcArtist) {
-            qDebug() << "url type: BcArtist";
-            emit bcArtistUrlAdded(url);
-            return;
-        } else if (urlType == UrlType::SoundcloudMain) {
-            qDebug() << "url type: SoundcloudMain";
-            emit soundcloudMainUrlAdded();
-            return;
-        } else if (urlType == UrlType::SoundcloudAlbum) {
-            qDebug() << "url type: SoundcloudAlbum";
-            emit soundcloudAlbumUrlAdded(url);
-            return;
-        } else if (urlType == UrlType::SoundcloudArtist) {
-            qDebug() << "url type: SoundcloudArtist";
-            emit soundcloudArtistUrlAdded(url);
-            return;
-        } else if (doTypeCheck && urlType == UrlType::Unknown &&
-                   type == ContentServer::Type::Type_Unknown) {
-            qDebug() << "unknown type url";
-            emit unknownTypeUrlAdded(url, name);
-            return;
+        qDebug() << "url type:" << urlType << url;
+        switch (urlType) {
+            case UrlType::File:
+            case UrlType::Jupii:
+                break;
+            case UrlType::BcTrack:
+            case UrlType::BcRadioShowTrack:
+                app = QStringLiteral("bc");
+                break;
+            case UrlType::SoundcloudTrack:
+                app = QStringLiteral("soundcloud");
+                break;
+            case UrlType::BcMain:
+                emit bcMainUrlAdded();
+                return;
+            case UrlType::BcRadioMain:
+                emit bcRadioMainUrlAdded();
+                return;
+            case UrlType::BcAlbum:
+                emit bcAlbumUrlAdded(url);
+                return;
+            case UrlType::BcArtist:
+            case UrlType::BcRadioShow:
+                emit bcArtistUrlAdded(url);
+                return;
+            case UrlType::SoundcloudMain:
+                emit soundcloudMainUrlAdded();
+                return;
+            case UrlType::SoundcloudAlbum:
+                emit soundcloudAlbumUrlAdded(url);
+                return;
+            case UrlType::SoundcloudArtist:
+                emit soundcloudArtistUrlAdded(url);
+                return;
+            case UrlType::Unknown:
+                if (doTypeCheck && type == ContentServer::Type::Type_Unknown) {
+                    qWarning() << "unknown type url";
+                    emit unknownTypeUrlAdded(url, name);
+                    return;
+                }
+                break;
         }
     }
 

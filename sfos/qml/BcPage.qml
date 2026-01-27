@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,6 +26,7 @@ Dialog {
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
     readonly property bool notableMode: artistPage && artistPage === itemModel.notableUrl
+    readonly property bool radioMode: artistPage && artistPage === itemModel.radioUrl
     readonly property bool featureMode: root.searchMode && itemModel.filter.length === 0
 
     canAccept: itemModel.selectedCount > 0
@@ -93,7 +94,7 @@ Dialog {
             dialog: root
             view: listView
             recentSearches: root.searchMode && itemModel.filter.length === 0 ? settings.bcSearchHistory : []
-            sectionHeaderText: root.featureMode ? qsTr("New and Notable") : ""
+            sectionHeaderText: ""
             onActiveFocusChanged: listView.currentIndex = -1
             onRemoveSearchHistoryClicked: settings.removeBcSearchHistory(value)
         }
@@ -123,8 +124,15 @@ Dialog {
             }
 
              MenuLabel {
-                 visible: albumMode || (artistMode && !notableMode)
+                 visible: albumMode || (artistMode && !notableMode) || radioMode
                  text: {
+                     if (notableMode) {
+                         return qsTr("New and Notable")
+                     }
+                     if (radioMode) {
+                         return qsTr("Bandcamp Radio")
+                     }
+
                      var label = itemModel.artistName
                      if (itemModel.albumTitle.length !== 0) {
                          if (label.length !== 0) label += " — " + itemModel.albumTitle
@@ -152,6 +160,8 @@ Dialog {
             subtitle.text: {
                 if (!model) return ""
                 switch (model.type) {
+                case BcModel.Type_Show:
+                    return model.description
                 case BcModel.Type_Track:
                 case BcModel.Type_Album:
                     return model.artist
@@ -167,6 +177,8 @@ Dialog {
                     return "image://theme/icon-m-media-artists?" + primaryColor
                 case BcModel.Type_Album:
                     return "image://theme/icon-m-media-albums?" + primaryColor
+                case BcModel.Type_Show:
+                    return "image://theme/icon-m-media-radio?" + primaryColor
                 }
                 return "image://theme/icon-m-file-audio?" + primaryColor
             }
@@ -189,6 +201,19 @@ Dialog {
                 }
             }
         }
+
+        Component {
+            id: sectionHeader
+            SectionHeader {
+                opacity: text.length > 0 ? (itemModel.busy ? Theme.opacityLow : 1.0) : 0.0
+                Behavior on opacity { FadeAnimation {} }
+                text: section
+            }
+        }
+
+        section.property: "section"
+        section.criteria: ViewSection.FullString
+        section.delegate: sectionHeader
 
         ViewPlaceholder {
             verticalOffset: listView.headerItem.height / 2

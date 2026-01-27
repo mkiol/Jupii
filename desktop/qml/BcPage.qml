@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2020-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,7 @@ Kirigami.ScrollablePage {
     readonly property bool artistMode: artistPage && artistPage.toString().length > 0
     readonly property bool searchMode: !albumMode && !artistMode
     readonly property bool notableMode: artistPage && artistPage === itemModel.notableUrl
+    readonly property bool radioMode: artistPage && artistPage === itemModel.radioUrl
     readonly property bool featureMode: !itemModel.busy && root.searchMode && itemModel.filter.length === 0
 
     leftPadding: 0
@@ -29,8 +30,21 @@ Kirigami.ScrollablePage {
     bottomPadding: 0
     topPadding: 0
 
-    title: itemModel.albumTitle.length > 0 ? itemModel.albumTitle :
-           notableMode ? qsTr("New and Notable") : itemModel.artistName.length > 0 ? itemModel.artistName : "Bandcamp"
+    title: {
+        if (itemModel.albumTitle.length > 0) {
+            return itemModel.albumTitle
+        }
+        if (notableMode) {
+            return qsTr("New and Notable")
+        }
+        if (radioMode) {
+            return qsTr("Bandcamp Radio")
+        }
+        if (itemModel.artistName.length > 0) {
+            return itemModel.artistName
+        }
+        return "Bandcamp"
+    }
 
     supportsRefreshing: false
     Component.onCompleted: {
@@ -110,6 +124,14 @@ Kirigami.ScrollablePage {
     }
 
     Component {
+        id: sectionHeader
+        Kirigami.ListSectionHeader {
+            opacity: text.length > 0 ? (itemModel.busy ? 0.8 : 1.0) : 0.0
+            text: section
+        }
+    }
+
+    Component {
         id: listItemComponent
         DoubleListItem {
             id: listItem
@@ -125,6 +147,8 @@ Kirigami.ScrollablePage {
             subtitle:  {
                 if (!model) return ""
                 switch (model.type) {
+                case BcModel.Type_Show:
+                    return model.description
                 case BcModel.Type_Track:
                 case BcModel.Type_Album:
                     return model.artist
@@ -138,6 +162,8 @@ Kirigami.ScrollablePage {
                     return "view-media-artist"
                 case BcModel.Type_Album:
                     return "media-album-cover"
+                case BcModel.Type_Show:
+                    return "audio-radio-symbolic"
                 }
                 return "audio-x-generic"
             }
@@ -149,6 +175,8 @@ Kirigami.ScrollablePage {
                     return "view-media-artist"
                 case BcModel.Type_Album:
                     return "media-album-cover"
+                case BcModel.Type_Show:
+                    return "audio-radio-symbolic"
                 }
                 return "emblem-music-symbolic"
             }
@@ -164,7 +192,7 @@ Kirigami.ScrollablePage {
                 } else if (model.type === BcModel.Type_Album) {
                     pageStack.pop(root)
                     pageStack.push(Qt.resolvedUrl("BcPage.qml"), {albumPage: model.url})
-                } else if (model.type === BcModel.Type_Artist) {
+                } else if (model.type === BcModel.Type_Artist || model.type === BcModel.Type_Show) {
                     pageStack.pop(root)
                     pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: model.url})
                 }
@@ -176,10 +204,12 @@ Kirigami.ScrollablePage {
                 if (pageStack.currentItem !== root) {
                     var rightPage = app.rightPage(root)
                     if (rightPage && rightPage.objectName === "bc") {
-                        if (model.type === BcModel.Type_Album)
+                        if (model.type === BcModel.Type_Album) {
                             return rightPage.albumPage === model.url
-                        if (model.type === BcModel.Type_Artist)
+                        }
+                        if (model.type === BcModel.Type_Artist || model.type === BcModel.Type_Show) {
                             return rightPage.artistPage === model.url
+                        }
                     }
                 }
                 return model.selected
@@ -224,6 +254,10 @@ Kirigami.ScrollablePage {
             text: itemModel.filter.length === 0 && !root.albumMode && !root.artistMode ?
                       qsTr("Type the words to search") : artistMode ? qsTr("No albums") : qsTr("No items")
         }
+
+        section.property: "section"
+        section.criteria: ViewSection.FullString
+        section.delegate: sectionHeader
     }
 
     BusyIndicatorWithLabel {

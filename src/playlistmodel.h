@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2025 Michal Kosciesza <michal@mkiol.net>
+/* Copyright (C) 2017-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -192,6 +192,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
     void progressChanged();
     void refreshableChanged();
     void bcMainUrlAdded();
+    void bcRadioMainUrlAdded();
     void bcAlbumUrlAdded(const QUrl &url);
     void bcArtistUrlAdded(const QUrl &url);
     void soundcloudMainUrlAdded();
@@ -237,6 +238,9 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
         BcTrack,
         BcAlbum,
         BcArtist,
+        BcRadioMain,
+        BcRadioShow,
+        BcRadioShowTrack,
         SoundcloudMain,
         SoundcloudTrack,
         SoundcloudAlbum,
@@ -244,6 +248,7 @@ class PlaylistModel : public ListModel, public Singleton<PlaylistModel> {
         File,
         Jupii
     };
+    friend QDebug &operator<<(QDebug &dbg, UrlType type);
 
     const static int refreshTimer = 30000;  // 30s
 #ifdef USE_SFOS

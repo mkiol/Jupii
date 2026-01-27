@@ -149,6 +149,9 @@ ApplicationWindow {
         onBcMainUrlAdded: {
             if (showQueue(true)) pageStack.push(Qt.resolvedUrl("BcPage.qml"))
         }
+        onBcRadioMainUrlAdded: {
+            if (showQueue(true)) pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: Qt.resolvedUrl("jupii://bc-radio")})
+        }
         onBcAlbumUrlAdded: {
             if (showQueue(true)) pageStack.push(Qt.resolvedUrl("BcPage.qml"), {albumPage: url})
         }

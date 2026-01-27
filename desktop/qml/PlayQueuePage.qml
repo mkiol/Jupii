@@ -186,6 +186,10 @@ Kirigami.ScrollablePage {
             pageStack.pop(root)
             pageStack.push(Qt.resolvedUrl("BcPage.qml"))
         }
+        onBcRadioMainUrlAdded: {
+            pageStack.pop(root)
+            pageStack.push(Qt.resolvedUrl("BcPage.qml"), {artistPage: Qt.resolvedUrl("jupii://bc-radio")})
+        }
         onBcAlbumUrlAdded: {
             pageStack.pop(root)
             pageStack.push(Qt.resolvedUrl("BcPage.qml"), {albumPage: url})

@@ -96,7 +96,6 @@ Dialog {
             dialog: root
             view: listView
             recentSearches: root.searchMode && itemModel.filter.length === 0 ? settings.soundcloudSearchHistory : []
-            sectionHeaderText: root.featureMode ? qsTr("Trending tracks") : ""
             onActiveFocusChanged: listView.currentIndex = -1
             onRemoveSearchHistoryClicked: settings.removeSoundcloudSearchHistory(value)
         }
@@ -199,8 +198,7 @@ Dialog {
         Component {
             id: sectionHeader
             SectionHeader {
-                opacity: text.length > 0 && !itemModel.busy ? 1.0 : 0.0
-                visible: opacity > 0.0
+                opacity: text.length > 0 ? (itemModel.busy ? Theme.opacityLow : 1.0) : 0.0
                 Behavior on opacity { FadeAnimation {} }
                 text: section
             }
@@ -208,7 +206,7 @@ Dialog {
 
         section.property: "section"
         section.criteria: ViewSection.FullString
-        section.delegate: root.notableMode || root.featureMode ? sectionHeader : null
+        section.delegate: sectionHeader
 
         ViewPlaceholder {
             verticalOffset: listView.headerItem.height / 2

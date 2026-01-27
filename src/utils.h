@@ -139,7 +139,7 @@ class Utils : public QObject, public Singleton<Utils> {
     static QString pathToCacheFile(const QString &filename);
     static bool cacheFileExists(const QString &filename);
     static std::optional<QString> cachePathForFile(const QString &filename);
-    static QString friendlyDate(const QDateTime &date);
+    static QString friendlyDate(const QDateTime &date, bool skipTime = false);
     static QString parseArtist(const QString &artist);
     static QDateTime parseDate(const QString &date);
     static QString deviceIconFileName(QString id, const QString &ext);

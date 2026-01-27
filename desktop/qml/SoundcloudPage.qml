@@ -104,7 +104,7 @@ Kirigami.ScrollablePage {
     Component {
         id: sectionHeader
         Kirigami.ListSectionHeader {
-            visible: !itemModel.busy
+            opacity: text.length > 0 ? (itemModel.busy ? 0.8 : 1.0) : 0.0
             text: section
         }
     }
@@ -242,7 +242,7 @@ Kirigami.ScrollablePage {
 
         section.property: "section"
         section.criteria: ViewSection.FullString
-        section.delegate: root.notableMode || root.featureMode ? sectionHeader : null
+        section.delegate: sectionHeader
     }
 
     BusyIndicatorWithLabel {

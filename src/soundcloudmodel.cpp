@@ -156,7 +156,7 @@ QList<ListItem *> SoundcloudModel::makeSearchItems() {
             result.album,
             result.webUrl,
             result.imageUrl,
-            /*section=*/{},
+            /*section=*/tr("Search results"),
             static_cast<SoundcloudModel::Type>(result.type),
             result.genre};
     }

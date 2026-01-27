@@ -12,7 +12,6 @@ Row {
     id: root
 
     property alias title: label1.text
-    property alias description: label2.text
 
     anchors.left: parent.left; anchors.right: parent.right
     anchors.leftMargin: Theme.paddingLarge; anchors.rightMargin: Theme.paddingLarge
@@ -28,21 +27,10 @@ Row {
             width: parent.width
             wrapMode: Text.WordWrap
             color: Theme.highlightColor
-        }
-
-        Label {
-            id: label2
-            width: parent.width
-            wrapMode: Text.WordWrap
-            font.pixelSize: Theme.fontSizeSmall
-            color: Theme.highlightColor
-            linkColor: Theme.primaryColor
             textFormat: Text.StyledText
             onLinkActivated: {
                 Qt.openUrlExternally(link);
             }
         }
-
-        Spacer {}
     }
 }

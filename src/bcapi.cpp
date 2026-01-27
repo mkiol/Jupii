@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2020-2025 Michal Kosciesza <michal@mkiol.net>
+﻿/* Copyright (C) 2020-2026 Michal Kosciesza <michal@mkiol.net>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,19 +13,20 @@
 #include <QJsonObject>
 #include <QJsonParseError>
 #include <QLatin1String>
+#include <QLocale>
 #include <QTextStream>
 #include <QThread>
+#include <QTime>
+#include <QTimeZone>
 #include <QTimer>
 #include <QUrlQuery>
 
 #include "downloader.h"
 #include "gumbotools.h"
 
-const int BcApi::maxNotable = 30;
-const int BcApi::maxNotableFirstPage = 30;
-
 std::vector<double> BcApi::m_notableIds{};
 std::vector<BcApi::SearchResultItem> BcApi::m_notableItems{};
+std::vector<BcApi::Show> BcApi::m_shows{};
 bool BcApi::m_notableItemsDone = false;
 
 BcApi::BcApi(std::shared_ptr<QNetworkAccessManager> nam, QObject *parent)
@@ -54,15 +55,34 @@ BcApi::Type BcApi::textToType(const QString &text) {
 BcApi::Track BcApi::track(const QUrl &url) const {
     Track track;
 
-    auto data = Downloader{nam}.downloadData(url);
-    if (data.bytes.isEmpty()) {
-        qWarning() << "no data received";
-        return track;
+    switch (guessUrlType(url)) {
+        case UrlType::Unknown:
+        case UrlType::Track: {
+            auto data = Downloader{nam}.downloadData(url);
+            if (data.bytes.isEmpty()) {
+                qWarning() << "no data received";
+                return track;
+            }
+
+            if (QThread::currentThread()->isInterruptionRequested()) {
+                return track;
+            }
+
+            return trackFromBytes(url, data.bytes);
+        }
+        case UrlType::RadioShowTrack: {
+            return radioTrack(
+                QUrlQuery{url}.queryItemValue(QStringLiteral("show")).toInt());
+        }
+        case UrlType::RadioShow:
+        case UrlType::Album:
+        case UrlType::RadioMain:
+        case UrlType::Artist:
+            break;
     }
 
-    if (QThread::currentThread()->isInterruptionRequested()) return track;
-
-    return trackFromBytes(url, data.bytes);
+    qWarning() << "invalid bc url type";
+    return track;
 }
 
 BcApi::Track BcApi::trackFromBytes(const QUrl &url,
@@ -208,7 +228,7 @@ BcApi::Album BcApi::albumFromBytes(const QUrl &url,
     return album;
 }
 
-BcApi::ArtistVariant BcApi::artist(const QUrl &url) const {
+BcApi::ArtistVariant BcApi::artist(const QUrl &url) {
     QUrl newUrl{url};
     if (newUrl.path().isEmpty()) {
         newUrl.setPath(QStringLiteral("/music"));
@@ -230,6 +250,20 @@ BcApi::ArtistVariant BcApi::artist(const QUrl &url) const {
             return albumFromBytes(data.finalUrl, data.bytes);
         case UrlType::Track:
             return trackFromBytes(data.finalUrl, data.bytes);
+        case UrlType::RadioShow: {
+            auto showId = QUrlQuery{data.finalUrl}
+                              .queryItemValue(QStringLiteral("show"))
+                              .toInt();
+            if (showId <= 0) {
+                qWarning() << "invalid show id";
+                break;
+            }
+            return radioTracks(showId);
+        }
+        case UrlType::RadioShowTrack:
+            return shows(ShowType::Radio);
+        case UrlType::RadioMain:
+            return shows(ShowType::Radio);
         case UrlType::Artist:
         case UrlType::Unknown:
             break;
@@ -512,6 +546,51 @@ std::optional<QJsonDocument> BcApi::parseNotableBlob() const {
     return json;
 }
 
+QUrl BcApi::makeRadioShowUrl(int showId) {
+    // https://bandcamp.com/radio?show=883
+    return QUrl{QStringLiteral("%1?show=%2").arg(radioUrlStr).arg(showId)};
+}
+
+QUrl BcApi::makeRadioShowTrackUrl(int showId) {
+    // https://bandcamp.com/radio?show=883&jupii_urltype=track
+    auto url = makeRadioShowUrl(showId);
+    QUrlQuery query{url};
+    query.removeAllQueryItems(urlTypeQueryKey);
+    query.addQueryItem(urlTypeQueryKey, trackUrlTypeValue);
+    url.setQuery(query);
+
+    return url;
+}
+
+std::optional<QJsonDocument> BcApi::parseRadioBlob() const {
+    auto data = Downloader{nam}.downloadData(QUrl{radioUrlStr});
+    if (data.bytes.isEmpty()) {
+        qWarning() << "no data received";
+        return std::nullopt;
+    }
+
+    if (QThread::currentThread()->isInterruptionRequested()) {
+        return std::nullopt;
+    }
+
+    auto output = gumbo::parseHtmlData(data.bytes);
+    if (!output) {
+        qWarning() << "cannot parse html data";
+        return std::nullopt;
+    }
+
+    auto blobData = QString::fromUtf8(gumbo::attr_data(
+        gumbo::search_for_id(output->root, "ArchiveApp"), "data-blob"));
+
+    auto json = parseJsonData(blobData.toUtf8());
+    if (json.isNull() || !json.isObject()) {
+        qWarning() << "cannot parse json data";
+        return std::nullopt;
+    }
+
+    return json;
+}
+
 std::vector<BcApi::SearchResultItem> BcApi::notableItemsFirstPage() {
     std::vector<SearchResultItem> items;
 
@@ -536,6 +615,20 @@ BcApi::UrlType BcApi::guessUrlType(const QUrl &url) {
         return UrlType::Album;
     if (path.contains(QStringLiteral("/track/"), Qt::CaseInsensitive))
         return UrlType::Track;
+    if (path.compare(QStringLiteral("/radio"), Qt::CaseInsensitive) == 0) {
+        QUrlQuery query{url};
+        if (query.hasQueryItem(QStringLiteral("show"))) {
+            // if ?jupii_urltype=track exists, url should points to radio stream
+            // track
+            if (query.queryItemValue(urlTypeQueryKey)
+                    .compare(QLatin1String{trackUrlTypeValue},
+                             Qt::CaseInsensitive) == 0) {
+                return UrlType::RadioShowTrack;
+            }
+            return UrlType::RadioShow;
+        }
+        return UrlType::RadioMain;
+    }
     if (path.isEmpty() || path == "/" ||
         path.contains(QStringLiteral("/music/"), Qt::CaseInsensitive) ||
         path.contains(QStringLiteral("/merch/"), Qt::CaseInsensitive) ||
@@ -544,4 +637,204 @@ BcApi::UrlType BcApi::guessUrlType(const QUrl &url) {
         return UrlType::Artist;
     }
     return UrlType::Unknown;
+}
+
+QUrl BcApi::artUrl(long imageId) {
+    return QUrl{QStringLiteral("https://f4.bcbits.com/img/%1_11.jpg")
+                    .arg(imageId, 10, 10, QLatin1Char('0'))};
+}
+
+std::optional<QJsonObject> BcApi::radioShowObj(int showId) const {
+    Downloader::Data postData;
+    postData.bytes = QStringLiteral("{\"id\":%1}").arg(showId).toUtf8();
+    postData.mime = "application/json";
+    auto data = Downloader{nam}.downloadData(
+        QUrl{QStringLiteral("https://bandcamp.com/api/bcradio_api/1/get_show")},
+        postData);
+    if (data.bytes.isEmpty()) {
+        qWarning() << "no data received";
+        return std::nullopt;
+    }
+
+    if (QThread::currentThread()->isInterruptionRequested()) {
+        return std::nullopt;
+    }
+
+    auto json = parseJsonData(data.bytes);
+    if (json.isNull() || !json.isObject()) {
+        qWarning() << "cannot parse json data";
+        return std::nullopt;
+    }
+
+    return json.object();
+}
+
+BcApi::Track BcApi::radioTrack(int showId) const {
+    Track t;
+
+    auto obj = radioShowObj(showId);
+    if (!obj) {
+        return t;
+    }
+
+    auto radioShowAudio =
+        obj->value(QLatin1String{"radioShowAudio"}).toObject();
+
+    t.title = radioShowAudio.value(QLatin1String{"title"}).toString();
+    if (t.title.isEmpty()) {
+        qWarning() << "show title is empty";
+        return t;
+    }
+    t.imageUrl =
+        artUrl(radioShowAudio.value(QLatin1String{"artId"}).toDouble());
+    t.streamUrl =
+        QUrl{radioShowAudio.value(QLatin1String{"streamUrl"}).toString()};
+    t.webUrl = makeRadioShowUrl(showId);
+    t.duration = radioShowAudio.value(QLatin1String{"duration"}).toDouble();
+    t.artist = QStringLiteral("Bandcamp");
+
+    // add date to titile
+    auto date = QLocale::c().toDateTime(
+        radioShowAudio.value(QLatin1String{"date"}).toString().remove(" GMT"),
+        "dd MMM yyyy hh:mm:ss");
+    if (date.isValid()) {
+        t.title += (" · " + date.toString("d MMM yyyy"));
+    }
+
+    return t;
+}
+
+BcApi::ShowTracks BcApi::radioTracks(int showId) const {
+    ShowTracks tracks;
+
+    auto obj = radioShowObj(showId);
+    if (!obj) {
+        return tracks;
+    }
+
+    tracks.id = showId;
+
+    auto radioShowAudio =
+        obj->value(QLatin1String{"radioShowAudio"}).toObject();
+
+    tracks.title = radioShowAudio.value(QLatin1String{"title"}).toString();
+    if (tracks.title.isEmpty()) {
+        qWarning() << "show title is empty";
+        return tracks;
+    }
+    tracks.imageUrl =
+        artUrl(radioShowAudio.value(QLatin1String{"artId"}).toDouble());
+    tracks.date = QLocale::c().toDateTime(
+        radioShowAudio.value(QLatin1String{"date"}).toString().remove(" GMT"),
+        "dd MMM yyyy hh:mm:ss");
+    tracks.webUrl = makeRadioShowTrackUrl(showId);
+
+    // add date to titile
+    if (tracks.date.isValid()) {
+        tracks.title += (" · " + tracks.date.toString("d MMM yyyy"));
+    }
+
+    auto tracklist = obj->value(QLatin1String{"tracklist"}).toArray();
+
+    for (int i = 0; i < tracklist.size(); ++i) {
+        auto tobj = tracklist.at(i).toObject();
+
+        Track item;
+
+        item.webUrl = QUrl{tobj.value(QLatin1String{"url"}).toString()};
+        if (item.webUrl.isEmpty()) {
+            continue;
+        }
+        item.title = tobj.value(QLatin1String{"title"}).toString();
+        if (item.title.isEmpty()) {
+            continue;
+        }
+        item.artist = tobj.value(QLatin1String{"artistName"}).toString();
+        item.album = tobj.value(QLatin1String{"album"})
+                         .toObject()
+                         .value(QLatin1String{"title"})
+                         .toString();
+        item.imageUrl = artUrl(QString::number(
+            tobj.value(QLatin1String{"artId"}).toDouble(), 'd', 0));
+
+        tracks.featuredTracks.push_back(std::move(item));
+    }
+
+    return tracks;
+}
+
+std::vector<BcApi::Show> BcApi::makeShows(ShowType type) const {
+    std::vector<Show> shows;
+
+    if (type != ShowType::Radio) {
+        qWarning() << "only radio shows are supported";
+        return shows;
+    }
+
+    auto json = parseRadioBlob();
+    if (!json) {
+        qWarning() << "failed to parse shows";
+        return shows;
+    }
+
+    auto appData = json->object().value(QLatin1String{"appData"}).toObject();
+    auto showsArray = appData.value(QLatin1String{"shows"}).toArray();
+    shows.reserve(showsArray.size());
+    for (int i = 0; i < showsArray.size(); ++i) {
+        auto ele = showsArray.at(i).toObject();
+        Show show;
+        show.id = ele.value(QLatin1String{"showId"}).toInt();
+        if (show.id <= 0) {
+            continue;
+        }
+        if (!ele.value(QLatin1String{"isPublished"}).toBool()) {
+            continue;
+        }
+        show.title = ele.value(QLatin1String{"title"}).toString();
+        if (show.title.isEmpty()) {
+            continue;
+        }
+        long imageId = ele.value(QLatin1String{"imageId"}).toDouble();
+        if (imageId > 0) {
+            show.imageUrl = artUrl(imageId);
+        }
+        show.description = ele.value(QLatin1String{"shortDesc"}).toString();
+        // "date": "16 Jan 2026 00:00:00 GMT",
+        show.date = QLocale::c().toDateTime(
+            ele.value(QLatin1String{"date"}).toString().remove(" GMT"),
+            "dd MMM yyyy hh:mm:ss");
+        auto url = ele.value(QLatin1String{"url"}).toString();
+        if (!url.isEmpty()) {
+            show.webUrl = QUrl{QStringLiteral("https://bandcamp.com") + url};
+        }
+
+        // add date to titile
+        if (show.date.isValid()) {
+            show.title += (" · " + show.date.toString("d MMM yyyy"));
+        }
+
+        shows.push_back(std::move(show));
+    }
+
+    return shows;
+}
+
+std::vector<BcApi::Show> BcApi::latestShows(ShowType type) {
+    if (m_shows.empty()) {
+        m_shows = makeShows(type);
+    }
+
+    std::vector<BcApi::Show> newShows;
+    std::copy(m_shows.cbegin(), std::next(m_shows.cbegin(), 10),
+              std::back_inserter(newShows));
+
+    return newShows;
+}
+
+std::vector<BcApi::Show> BcApi::shows(ShowType type) {
+    if (m_shows.empty()) {
+        m_shows = makeShows(type);
+    }
+
+    return m_shows;
 }
