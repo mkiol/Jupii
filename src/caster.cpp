@@ -761,7 +761,7 @@ Caster::Caster(Config config, StateChangedHandler stateChangedHandler,
         detectV4l2Encoders();
 #endif
         if (!configValid(m_config)) {
-            throw std::runtime_error("invalid configuration");
+            LOGF("invalid configuration");
         }
 
         m_optionsFlags = m_config.options;
@@ -1090,14 +1090,16 @@ bool Caster::hasPipeWire() {
     LOGD("pa server detection started");
 
     auto *loop = pa_mainloop_new();
-    if (loop == nullptr) throw std::runtime_error("pa_mainloop_new error");
+    if (loop == nullptr) {
+        LOGF("pa_mainloop_new error");
+    }
 
     auto *mla = pa_mainloop_get_api(loop);
 
     auto *ctx = pa_context_new(mla, "caster");
     if (ctx == nullptr) {
         pa_mainloop_free(loop);
-        throw std::runtime_error("pa_context_new error");
+        LOGF("pa_context_new error");
     }
 
     AudioSourceSearchResult result;
@@ -1125,8 +1127,7 @@ bool Caster::hasPipeWire() {
         auto err = pa_context_errno(ctx);
         pa_context_unref(ctx);
         pa_mainloop_free(loop);
-        throw std::runtime_error("pa_context_connect error: "s +
-                                 pa_strerror(err));
+        LOGF("pa_context_connect error: " << pa_strerror(err));
     }
 
     while (true) {
@@ -1142,14 +1143,16 @@ Caster::AudioPropsMap Caster::detectPaSources(uint32_t options) {
     LOGD("pa sources detection started");
 
     auto *loop = pa_mainloop_new();
-    if (loop == nullptr) throw std::runtime_error("pa_mainloop_new error");
+    if (loop == nullptr) {
+        LOGF("pa_mainloop_new error");
+    }
 
     auto *mla = pa_mainloop_get_api(loop);
 
     auto *ctx = pa_context_new(mla, "caster");
     if (ctx == nullptr) {
         pa_mainloop_free(loop);
-        throw std::runtime_error("pa_context_new error");
+        LOGF("pa_context_new error");
     }
 
     AudioSourceSearchResult result;
@@ -1171,8 +1174,7 @@ Caster::AudioPropsMap Caster::detectPaSources(uint32_t options) {
         auto err = pa_context_errno(ctx);
         pa_context_unref(ctx);
         pa_mainloop_free(loop);
-        throw std::runtime_error("pa_context_connect error: "s +
-                                 pa_strerror(err));
+        LOGF("pa_context_connect error: " << pa_strerror(err));
     }
 
     while (true) {
@@ -1731,9 +1733,9 @@ void Caster::paStateCallback(pa_context *ctx, [[maybe_unused]] void *userdata) {
         case PA_CONTEXT_TERMINATED:
             LOGD("pa terminated");
             break;
-        case PA_CONTEXT_FAILED:
-            LOGD("pa failed");
-            throw std::runtime_error("pa failed");
+        case PA_CONTEXT_FAILED: {
+            LOGF("pa failed");
+        }
         default:
             LOGD("pa unknown state");
     }
@@ -1743,16 +1745,20 @@ void Caster::initPa() {
     LOGD("pa init started");
 
     m_paLoop = pa_mainloop_new();
-    if (m_paLoop == nullptr) throw std::runtime_error("pa_mainloop_new error");
+    if (m_paLoop == nullptr) {
+        LOGF("pa_mainloop_new error");
+    }
 
     auto *mla = pa_mainloop_get_api(m_paLoop);
 
     m_paCtx = pa_context_new(mla, m_config.streamAuthor.c_str());
-    if (m_paCtx == nullptr) throw std::runtime_error("pa_context_new error");
+    if (m_paCtx == nullptr) {
+        LOGF("pa_context_new error");
+    }
 
     if (pa_context_connect(m_paCtx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
-        throw std::runtime_error("pa_context_connect error: "s +
-                                 pa_strerror(pa_context_errno(m_paCtx)));
+        LOGF("pa_context_connect error: "
+             << pa_strerror(pa_context_errno(m_paCtx)));
     }
 
     pa_context_set_state_callback(m_paCtx, paStateCallback, this);
@@ -1761,9 +1767,12 @@ void Caster::initPa() {
         auto ret = pa_mainloop_iterate(m_paLoop, 0, nullptr);
         auto state = pa_context_get_state(m_paCtx);
         if (ret < 0 || state == PA_CONTEXT_FAILED ||
-            state == PA_CONTEXT_TERMINATED)
-            throw std::runtime_error("pa error");
-        if (state == PA_CONTEXT_READY) break;
+            state == PA_CONTEXT_TERMINATED) {
+            LOGF("pa error");
+        }
+        if (state == PA_CONTEXT_READY) {
+            break;
+        }
     }
 
     if (audioProps().type == AudioSourceType::Playback) {
@@ -1783,8 +1792,9 @@ void Caster::initPa() {
                 }
             },
             this);
-        if (op == nullptr)
-            throw std::runtime_error("pa_context_subscribe error");
+        if (op == nullptr) {
+            LOGF("pa_context_subscribe error");
+        }
         pa_operation_unref(op);
     }
 
@@ -1798,34 +1808,37 @@ void Caster::initAvAudioRawDecoderFromInputStream() {
 
     const auto *decoder = avcodec_find_decoder(stream->codecpar->codec_id);
     if (decoder == nullptr) {
-        throw std::runtime_error("avcodec_find_decoder for audio error");
+        LOGF("avcodec_find_decoder for audio error");
     }
 
-    if (decoder->sample_fmts == nullptr ||
-        decoder->sample_fmts[0] == AV_SAMPLE_FMT_NONE) {
-        throw std::runtime_error(
-            "audio decoder does not support any sample fmts");
+    const AVSampleFormat *sample_fmts = nullptr;
+    [[maybe_unused]] int sample_fmts_nb = 0;
+    avcodec_get_supported_config(
+        nullptr, decoder, AVCodecConfig::AV_CODEC_CONFIG_SAMPLE_FORMAT, 0,
+        reinterpret_cast<const void **>(&sample_fmts), &sample_fmts_nb);
+
+    if (sample_fmts == nullptr || sample_fmts[0] == AV_SAMPLE_FMT_NONE) {
+        LOGF("audio decoder does not support any sample fmts");
     }
 
     LOGD("sample fmts supported by audio decoder:");
-    for (int i = 0; decoder->sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
-        LOGD("[" << i << "]: " << decoder->sample_fmts[i]);
+    for (int i = 0; sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
+        LOGD("[" << i << "]: " << sample_fmts[i]);
     }
 
     m_inAudioCtx = avcodec_alloc_context3(decoder);
     if (m_inAudioCtx == nullptr) {
-        throw std::runtime_error("avcodec_alloc_context3 for in audio error");
+        LOGF("avcodec_alloc_context3 for in audio error");
     }
 
     if (avcodec_parameters_to_context(m_inAudioCtx, stream->codecpar) < 0) {
-        throw std::runtime_error(
-            "avcodec_parameters_to_context for audio error");
+        LOGF("avcodec_parameters_to_context for audio error");
     }
 
     m_inAudioCtx->time_base = AVRational{1, m_inAudioCtx->sample_rate};
 
     if (avcodec_open2(m_inAudioCtx, nullptr, nullptr) != 0) {
-        throw std::runtime_error("avcodec_open2 for in audio error");
+        LOGF("avcodec_open2 for in audio error");
     }
 
     LOGD("audio decoder: sample fmt="
@@ -1835,7 +1848,7 @@ void Caster::initAvAudioRawDecoderFromInputStream() {
 
     m_audioFrameIn = av_frame_alloc();
     if (m_audioFrameIn == nullptr) {
-        throw std::runtime_error("av_frame_alloc error");
+        LOGF("av_frame_alloc error");
     }
 }
 
@@ -1846,28 +1859,32 @@ void Caster::initAvAudioRawDecoderFromProps() {
 
     const auto *decoder = avcodec_find_decoder(props.codec);
     if (decoder == nullptr) {
-        throw std::runtime_error("avcodec_find_decoder for audio error");
+        LOGF("avcodec_find_decoder for audio error");
     }
 
-    if (decoder->sample_fmts == nullptr ||
-        decoder->sample_fmts[0] == AV_SAMPLE_FMT_NONE) {
-        throw std::runtime_error(
-            "audio decoder does not support any sample fmts");
+    const AVSampleFormat *sample_fmts = nullptr;
+    [[maybe_unused]] int sample_fmts_nb = 0;
+    avcodec_get_supported_config(
+        nullptr, decoder, AVCodecConfig::AV_CODEC_CONFIG_SAMPLE_FORMAT, 0,
+        reinterpret_cast<const void **>(&sample_fmts), &sample_fmts_nb);
+
+    if (sample_fmts == nullptr || sample_fmts[0] == AV_SAMPLE_FMT_NONE) {
+        LOGF("audio decoder does not support any sample fmts");
     }
 
     LOGD("sample fmts supported by audio decoder:");
-    for (int i = 0; decoder->sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
-        LOGD("[" << i << "]: " << decoder->sample_fmts[i]);
+    for (int i = 0; sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
+        LOGD("[" << i << "]: " << sample_fmts[i]);
     }
 
     m_inAudioCtx = avcodec_alloc_context3(decoder);
     if (m_inAudioCtx == nullptr) {
-        throw std::runtime_error("avcodec_alloc_context3 for in audio error");
+        LOGF("avcodec_alloc_context3 for in audio error");
     }
 
     av_channel_layout_default(&m_inAudioCtx->ch_layout, props.channels);
     m_inAudioCtx->sample_rate = static_cast<int>(props.rate);
-    m_inAudioCtx->sample_fmt = decoder->sample_fmts[0];
+    m_inAudioCtx->sample_fmt = sample_fmts[0];
     m_inAudioCtx->time_base = AVRational{1, m_inAudioCtx->sample_rate};
 
     LOGD("audio decoder: sample fmt="
@@ -1876,14 +1893,14 @@ void Caster::initAvAudioRawDecoderFromProps() {
          << m_inAudioCtx->sample_rate << ", tb=" << m_inAudioCtx->time_base);
 
     if (avcodec_open2(m_inAudioCtx, nullptr, nullptr) != 0) {
-        throw std::runtime_error("avcodec_open2 for in audio error");
+        LOGF("avcodec_open2 for in audio error");
     }
 
     LOGD("audio decoder: frame size=" << m_inAudioCtx->frame_size);
 
     m_audioFrameIn = av_frame_alloc();
     if (m_audioFrameIn == nullptr) {
-        throw std::runtime_error("av_frame_alloc error");
+        LOGF("av_frame_alloc error");
     }
 }
 
@@ -1911,13 +1928,12 @@ void Caster::initAvAudioEncoder() {
     const auto *encoder =
         avcodec_find_encoder_by_name(audioEncoderAvName(type).c_str());
     if (!encoder) {
-        throw std::runtime_error("no audio encoder: "s +
-                                 audioEncoderAvName(type));
+        LOGF("no audio encoder: "s + audioEncoderAvName(type));
     }
 
     m_outAudioCtx = avcodec_alloc_context3(encoder);
     if (m_outAudioCtx == nullptr) {
-        throw std::runtime_error("avcodec_alloc_context3 for out audio error");
+        LOGF("avcodec_alloc_context3 for out audio error");
     }
 
     // taking configuration from decoder
@@ -1943,7 +1959,7 @@ void Caster::initAvAudioEncoder() {
 
     if (avcodec_open2(m_outAudioCtx, encoder, &opts) < 0) {
         av_dict_free(&opts);
-        throw std::runtime_error("avcodec_open2 for out audio error");
+        LOGF("avcodec_open2 for out audio error");
     }
 
     LOGD("audio encoder: frame size="
@@ -1959,7 +1975,7 @@ void Caster::initAvVideoForGst() {
     auto *in_buf = static_cast<uint8_t *>(av_malloc(m_videoBufSize));
     if (in_buf == nullptr) {
         av_freep(&in_buf);
-        throw std::runtime_error("unable to allocate in av buf");
+        LOGF("unable to allocate in av buf");
     }
 
     auto *in_ctx = avformat_alloc_context();
@@ -1973,7 +1989,7 @@ void Caster::initAvVideoForGst() {
     if (in_ctx->pb == nullptr) {
         avformat_free_context(in_ctx);
         av_freep(&in_buf);
-        throw std::runtime_error("avio_alloc_context error");
+        LOGF("avio_alloc_context error");
     }
 
     in_ctx->flags |= AVFMT_FLAG_CUSTOM_IO;
@@ -2320,8 +2336,9 @@ void Caster::initAvAudioFilters() {
                 fmt::format("volume=volume={}dB", m_config.audioVolume)
                     .c_str());
             break;
-        default:
-            throw std::runtime_error("unsuported audio trans");
+        default: {
+            LOGF("unsuported audio trans");
+        }
     }
 }
 
@@ -2398,8 +2415,9 @@ void Caster::initAvVideoFilters() {
             setlocale(LC_NUMERIC, old_locale);
             break;
         }
-        default:
+        default: {
             LOGF("unsuported video trans");
+        }
     }
 }
 
@@ -2429,11 +2447,13 @@ void Caster::initAvAudioFilter(FilterCtx &ctx, const char *arg) {
     ctx.out = avfilter_inout_alloc();
     ctx.graph = avfilter_graph_alloc();
     if (ctx.in == nullptr || ctx.out == nullptr || ctx.graph == nullptr) {
-        throw std::runtime_error("failed to allocate av filter");
+        LOGF("failed to allocate av filter");
     }
 
     const auto *buffersrc = avfilter_get_by_name("abuffer");
-    if (buffersrc == nullptr) throw std::runtime_error("no abuffer filter");
+    if (buffersrc == nullptr) {
+        LOGF("no abuffer filter");
+    }
 
     if (m_inAudioCtx->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC) {
         av_channel_layout_default(&m_inAudioCtx->ch_layout,
@@ -2453,25 +2473,24 @@ void Caster::initAvAudioFilter(FilterCtx &ctx, const char *arg) {
 
     if (avfilter_graph_create_filter(&ctx.srcCtx, buffersrc, "in",
                                      srcArgs.data(), nullptr, ctx.graph) < 0) {
-        throw std::runtime_error(
-            "audio src avfilter_graph_create_filter error");
+        LOGF("audio src avfilter_graph_create_filter error");
     }
 
     const auto *buffersink = avfilter_get_by_name("abuffersink");
-    if (buffersink == nullptr)
-        throw std::runtime_error("no abuffersink filter");
+    if (buffersink == nullptr) {
+        LOGF("no abuffersink filter");
+    }
 
     if (avfilter_graph_create_filter(&ctx.sinkCtx, buffersink, "out", nullptr,
                                      nullptr, ctx.graph) < 0) {
-        throw std::runtime_error(
-            "audio sink avfilter_graph_create_filter error");
+        LOGF("audio sink avfilter_graph_create_filter error");
     }
 
     const AVSampleFormat out_sample_fmts[] = {m_outAudioCtx->sample_fmt,
                                               AV_SAMPLE_FMT_NONE};
     if (av_opt_set_int_list(ctx.sinkCtx, "sample_fmts", out_sample_fmts, -1,
                             AV_OPT_SEARCH_CHILDREN) < 0) {
-        throw std::runtime_error("av_opt_set_int_list error");
+        LOGF("av_opt_set_int_list error");
     }
 
     std::array<char, 512> chName{};
@@ -2479,13 +2498,13 @@ void Caster::initAvAudioFilter(FilterCtx &ctx, const char *arg) {
                                chName.size());
     if (av_opt_set(ctx.sinkCtx, "ch_layouts", chName.data(),
                    AV_OPT_SEARCH_CHILDREN) < 0) {
-        throw std::runtime_error("av_opt_set error");
+        LOGF("av_opt_set error");
     }
 
     const int out_sample_rates[] = {m_outAudioCtx->sample_rate, -1};
     if (av_opt_set_int_list(ctx.sinkCtx, "sample_rates", out_sample_rates, -1,
                             AV_OPT_SEARCH_CHILDREN) < 0) {
-        throw std::runtime_error("av_opt_set_int_list error");
+        LOGF("av_opt_set_int_list error");
     }
 
     ctx.out->name = av_strdup("in");
@@ -2499,11 +2518,13 @@ void Caster::initAvAudioFilter(FilterCtx &ctx, const char *arg) {
     ctx.in->next = nullptr;
 
     if (avfilter_graph_parse_ptr(ctx.graph, arg, &ctx.in, &ctx.out, nullptr) <
-        0)
-        throw std::runtime_error("audio avfilter_graph_parse_ptr error");
+        0) {
+        LOGF("audio avfilter_graph_parse_ptr error");
+    }
 
-    if (avfilter_graph_config(ctx.graph, nullptr) < 0)
-        throw std::runtime_error("audio avfilter_graph_config error");
+    if (avfilter_graph_config(ctx.graph, nullptr) < 0) {
+        LOGF("audio avfilter_graph_config error");
+    }
 
     auto outlink = ctx.sinkCtx->inputs[0];
     LOGD("filtering output: sample rate="
@@ -2520,11 +2541,14 @@ void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg, bool srcIn) {
     ctx.in = avfilter_inout_alloc();
     ctx.out = avfilter_inout_alloc();
     ctx.graph = avfilter_graph_alloc();
-    if (ctx.in == nullptr || ctx.out == nullptr || ctx.graph == nullptr)
-        throw std::runtime_error("failed to allocate av filter");
+    if (ctx.in == nullptr || ctx.out == nullptr || ctx.graph == nullptr) {
+        LOGF("failed to allocate av filter");
+    }
 
     const auto *buffersrc = avfilter_get_by_name("buffer");
-    if (buffersrc == nullptr) throw std::runtime_error("no buffer filter");
+    if (buffersrc == nullptr) {
+        LOGF("no buffer filter");
+    }
 
     std::array<char, 512> srcArgs{};
     auto *srCtx = srcIn ? m_inVideoCtx : m_outVideoCtx;
@@ -2536,23 +2560,23 @@ void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg, bool srcIn) {
 
     if (avfilter_graph_create_filter(&ctx.srcCtx, buffersrc, "in",
                                      srcArgs.data(), nullptr, ctx.graph) < 0) {
-        throw std::runtime_error(
-            "video src avfilter_graph_create_filter error");
+        LOGF("video src avfilter_graph_create_filter error");
     }
 
     const auto *buffersink = avfilter_get_by_name("buffersink");
-    if (buffersink == nullptr) throw std::runtime_error("no buffersink filter");
+    if (buffersink == nullptr) {
+        LOGF("no buffersink filter");
+    }
 
     if (avfilter_graph_create_filter(&ctx.sinkCtx, buffersink, "out", nullptr,
                                      nullptr, ctx.graph) < 0) {
-        throw std::runtime_error(
-            "video sink avfilter_graph_create_filter error");
+        LOGF("video sink avfilter_graph_create_filter error");
     }
 
     AVPixelFormat pix_fmts[] = {m_outVideoCtx->pix_fmt, AV_PIX_FMT_NONE};
     if (av_opt_set_int_list(ctx.sinkCtx, "pix_fmts", pix_fmts, AV_PIX_FMT_NONE,
                             AV_OPT_SEARCH_CHILDREN) < 0) {
-        throw std::runtime_error("av_opt_set_int_list error");
+        LOGF("av_opt_set_int_list error");
     }
 
     ctx.out->name = av_strdup("in");
@@ -2566,26 +2590,38 @@ void Caster::initAvVideoFilter(FilterCtx &ctx, const char *arg, bool srcIn) {
     ctx.in->next = nullptr;
 
     if (avfilter_graph_parse_ptr(ctx.graph, arg, &ctx.in, &ctx.out, nullptr) <
-        0)
-        throw std::runtime_error("video avfilter_graph_parse_ptr error");
+        0) {
+        LOGF("video avfilter_graph_parse_ptr error");
+    }
 
-    if (avfilter_graph_config(ctx.graph, nullptr) < 0)
-        throw std::runtime_error("video avfilter_graph_config error");
+    if (avfilter_graph_config(ctx.graph, nullptr) < 0) {
+        LOGF("video avfilter_graph_config error");
+    }
 
     LOGD("video av filter successfully inited");
 }
 
 AVSampleFormat Caster::bestAudioSampleFormat(
     const AVCodec *encoder, AVSampleFormat preferredSampleFmt) {
-    if (encoder->sample_fmts == nullptr) {
-        throw std::runtime_error(
-            "audio encoder does not support any sample fmts");
+    const AVSampleFormat *sample_fmts = nullptr;
+    [[maybe_unused]] int sample_fmts_nb = 0;
+    avcodec_get_supported_config(
+        nullptr, encoder, AVCodecConfig::AV_CODEC_CONFIG_SAMPLE_FORMAT, 0,
+        reinterpret_cast<const void **>(&sample_fmts), &sample_fmts_nb);
+
+    if (sample_fmts == nullptr || sample_fmts[0] == AV_SAMPLE_FMT_NONE) {
+        LOGF("audio encoder does not support any sample fmts");
+    }
+
+    LOGD("sample fmts supported by audio encoder:");
+    for (int i = 0; sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
+        LOGD("[" << i << "]: " << sample_fmts[i]);
     }
 
     AVSampleFormat bestFmt = AV_SAMPLE_FMT_NONE;
 
-    for (int i = 0; encoder->sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
-        bestFmt = encoder->sample_fmts[i];
+    for (int i = 0; sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
+        bestFmt = sample_fmts[i];
         if (bestFmt == preferredSampleFmt) {
             LOGD("sample fmt exact match");
             break;
@@ -2624,8 +2660,9 @@ AVPixelFormat Caster::toNicePixfmt(AVPixelFormat fmt, VideoEncoder type,
         if (supportedFmts[i] == AV_PIX_FMT_NONE) break;
     }
 
-    if (fmt == newFmt)
-        throw std::runtime_error("encoder does not support any nice formats");
+    if (fmt == newFmt) {
+        LOGF("encoder does not support any nice formats");
+    }
 
     LOGD("changing encoder pixel format to nice one: " << fmt << " => "
                                                        << newFmt);
@@ -2637,23 +2674,29 @@ std::pair<std::reference_wrapper<const Caster::VideoFormatExt>, AVPixelFormat>
 Caster::bestVideoFormat(const AVCodec *encoder,
                         const VideoSourceInternalProps &props,
                         VideoEncoder type, bool useNiceFormats) {
-    if (encoder->pix_fmts == nullptr)
-        throw std::runtime_error("encoder does not support any pixfmts");
+    const AVPixelFormat *pix_fmts = nullptr;
+    [[maybe_unused]] int pix_fmts_nb = 0;
+    avcodec_get_supported_config(
+        nullptr, encoder, AVCodecConfig::AV_CODEC_CONFIG_PIX_FORMAT, 0,
+        reinterpret_cast<const void **>(&pix_fmts), &pix_fmts_nb);
 
-    LOGD("pixfmts supported by encoder: " << encoder->pix_fmts);
+    if (pix_fmts == nullptr || pix_fmts[0] == AV_PIX_FMT_NONE) {
+        LOGF("video encoder does not support any pix fmts");
+    }
 
-    if (auto it =
-            std::find_if(props.formats.cbegin(), props.formats.cend(),
-                         [encoder, useNiceFormats, type](const auto &sf) {
-                             for (int i = 0;; ++i) {
-                                 if (encoder->pix_fmts[i] == AV_PIX_FMT_NONE)
-                                     return false;
-                                 if (useNiceFormats &&
-                                     !nicePixfmt(encoder->pix_fmts[i], type))
-                                     return false;
-                                 return encoder->pix_fmts[i] == sf.pixfmt;
-                             }
-                         });
+    LOGD("pixfmts supported by encoder: " << pix_fmts);
+
+    if (auto it = std::find_if(props.formats.cbegin(), props.formats.cend(),
+                               [&](const auto &sf) {
+                                   for (int i = 0;; ++i) {
+                                       if (pix_fmts[i] == AV_PIX_FMT_NONE)
+                                           return false;
+                                       if (useNiceFormats &&
+                                           !nicePixfmt(pix_fmts[i], type))
+                                           return false;
+                                       return pix_fmts[i] == sf.pixfmt;
+                                   }
+                               });
         it != props.formats.cend()) {
         LOGD("pixfmt exact match: " << it->pixfmt);
 
@@ -2661,11 +2704,10 @@ Caster::bestVideoFormat(const AVCodec *encoder,
     }
 
     auto fmt = avcodec_find_best_pix_fmt_of_list(
-        encoder->pix_fmts, props.formats.front().pixfmt, 0, nullptr);
+        pix_fmts, props.formats.front().pixfmt, 0, nullptr);
 
     if (useNiceFormats) {
-        return {props.formats.front(),
-                toNicePixfmt(fmt, type, encoder->pix_fmts)};
+        return {props.formats.front(), toNicePixfmt(fmt, type, pix_fmts)};
     }
     return {props.formats.front(), fmt};
 }
@@ -2785,12 +2827,14 @@ std::string Caster::streamFormatAvName(StreamFormat format) {
 
 void Caster::initAvVideoRawDecoder() {
     const auto *decoder = avcodec_find_decoder(AV_CODEC_ID_RAWVIDEO);
-    if (decoder == nullptr)
-        throw std::runtime_error("avcodec_find_decoder for video error");
+    if (decoder == nullptr) {
+        LOGF("avcodec_find_decoder for video error");
+    }
 
     m_inVideoCtx = avcodec_alloc_context3(decoder);
-    if (m_inVideoCtx == nullptr)
-        throw std::runtime_error("avcodec_alloc_context3 for video error");
+    if (m_inVideoCtx == nullptr) {
+        LOGF("avcodec_alloc_context3 for video error");
+    }
 
     m_inVideoCtx->pix_fmt = m_inPixfmt;
     m_inVideoCtx->width = static_cast<int>(m_inDim.width);
@@ -2801,7 +2845,7 @@ void Caster::initAvVideoRawDecoder() {
         m_inVideoCtx->pix_fmt, m_inVideoCtx->width, m_inVideoCtx->height, 32);
 
     if (avcodec_open2(m_inVideoCtx, nullptr, nullptr) != 0) {
-        throw std::runtime_error("avcodec_open2 for in video error");
+        LOGF("avcodec_open2 for in video error");
     }
 
     LOGD("video decoder: tb=" << m_inVideoCtx->time_base
@@ -2819,7 +2863,9 @@ void Caster::initAvVideoEncoder(VideoEncoder type) {
     LOGD("initing video encoder: " << enc);
 
     const auto *encoder = avcodec_find_encoder_by_name(enc.c_str());
-    if (!encoder) throw std::runtime_error(fmt::format("no {} encoder", enc));
+    if (!encoder) {
+        LOGF(fmt::format("no {} encoder", enc));
+    }
 
     m_outVideoCtx = avcodec_alloc_context3(encoder);
     if (m_outVideoCtx == nullptr) {
@@ -3037,7 +3083,7 @@ bool Caster::initAvInputFormatFromFile(bool forVideo) {
 
     if (avformat_open_input(&in_ctx, m_files.front().c_str(), nullptr,
                             nullptr) < 0) {
-        throw std::runtime_error("avformat_open_input error");
+        LOGF("avformat_open_input error");
     }
 
     m_currentFile = m_files.front();
@@ -3082,8 +3128,9 @@ void Caster::initAvVideoInputRawFormat() {
 
     const auto *in_video_format =
         av_find_input_format(videoFormatAvName(props.type).c_str());
-    if (in_video_format == nullptr)
-        throw std::runtime_error("av_find_input_format for video error");
+    if (in_video_format == nullptr) {
+        LOGF("av_find_input_format for video error");
+    }
 
     AVDictionary *opts = nullptr;
 
@@ -3098,7 +3145,7 @@ void Caster::initAvVideoInputRawFormat() {
     if (avformat_open_input(&in_cxt, props.dev.c_str(), in_video_format,
                             &opts) < 0) {
         av_dict_free(&opts);
-        throw std::runtime_error("avformat_open_input for video error");
+        LOGF("avformat_open_input for video error");
     }
 
     cleanAvOpts(&opts);
@@ -3110,7 +3157,7 @@ void Caster::allocAvOutputFormat(OutCtx *outCtx) {
     if (avformat_alloc_output_context2(
             &outCtx->avFormatCtx, nullptr,
             streamFormatAvName(m_config.streamFormat).c_str(), nullptr) < 0) {
-        throw std::runtime_error("avformat_alloc_output_context2 error");
+        LOGF("avformat_alloc_output_context2 error");
     }
 
     LOGD("allocate out ctx: ctx=" << outCtx->avFormatCtx);
@@ -3163,7 +3210,7 @@ void Caster::initAv() {
                     return;
                 case AudioSourceType::File:
                     if (!initAvAudioInputFormatFromFile()) {
-                        throw std::runtime_error("no file to cast");
+                        LOGF("no file to cast");
                     }
                     findAvAudioInputStreamIdx();
                     initAvAudioRawDecoderFromInputStream();
@@ -3171,7 +3218,7 @@ void Caster::initAv() {
                 case AudioSourceType::Unknown:
                     break;
             }
-            throw std::runtime_error("unknown audio source type");
+            LOGF("unknown audio source type");
         }();
 
         initAvAudioEncoder();
@@ -3212,7 +3259,7 @@ void Caster::initAv() {
                     return;
                 case VideoSourceType::File: {
                     if (!initAvVideoInputFormatFromFile()) {
-                        throw std::runtime_error("no file to cast");
+                        LOGF("no file to cast");
                     }
                     findAvVideoInputStreamIdx();
                     initAvVideoRawDecoderFromInputStream();
@@ -3229,7 +3276,7 @@ void Caster::initAv() {
                 case VideoSourceType::Unknown:
                     break;
             }
-            throw std::runtime_error("unknown video source type");
+            LOGF("unknown video source type");
         }();
 
         m_videoRealFrameDuration =
@@ -3257,21 +3304,21 @@ void Caster::initAvVideoInputCompressedFormat() {
     if (auto ret = avformat_open_input(&m_inVideoFormatCtx, "", nullptr, &opts);
         ret != 0) {
         av_dict_free(&opts);
-        throw std::runtime_error("avformat_open_input for video error: " +
-                                 strForAvError(ret));
+        LOGF("avformat_open_input for video error: " + strForAvError(ret));
     }
 
     cleanAvOpts(&opts);
 
-    if (avformat_find_stream_info(m_inVideoFormatCtx, nullptr) < 0)
-        throw std::runtime_error("avformat_find_stream_info for video error");
+    if (avformat_find_stream_info(m_inVideoFormatCtx, nullptr) < 0) {
+        LOGF("avformat_find_stream_info for video error");
+    }
 }
 
 void Caster::initAvAudioFifo() {
     m_audioFifo = av_audio_fifo_alloc(m_inAudioCtx->sample_fmt,
                                       m_inAudioCtx->ch_layout.nb_channels, 1);
     if (m_audioFifo == nullptr) {
-        throw std::runtime_error("av_audio_fifo_alloc error");
+        LOGF("av_audio_fifo_alloc error");
     }
 }
 
@@ -3289,59 +3336,71 @@ void Caster::initAvVideoBsf(OutCtx *outCtx) {
 
     // extract_extradata
     const auto *extractBsf = av_bsf_get_by_name("extract_extradata");
-    if (extractBsf == nullptr)
-        throw std::runtime_error("no extract_extradata bsf found");
+    if (extractBsf == nullptr) {
+        LOGF("no extract_extradata bsf found");
+    }
 
-    if (av_bsf_alloc(extractBsf, &m_videoBsfExtractExtraCtx) != 0)
-        throw std::runtime_error("extract_extradata av_bsf_alloc error");
+    if (av_bsf_alloc(extractBsf, &m_videoBsfExtractExtraCtx) != 0) {
+        LOGF("extract_extradata av_bsf_alloc error");
+    }
 
     if (avcodec_parameters_copy(m_videoBsfExtractExtraCtx->par_in,
-                                outCtx->videoStream->codecpar) < 0)
-        throw std::runtime_error("bsf avcodec_parameters_copy error");
+                                outCtx->videoStream->codecpar) < 0) {
+        LOGF("bsf avcodec_parameters_copy error");
+    }
 
     m_videoBsfExtractExtraCtx->time_base_in = outCtx->videoStream->time_base;
 
-    if (av_bsf_init(m_videoBsfExtractExtraCtx) != 0)
-        throw std::runtime_error("extract_extradata av_bsf_init error");
+    if (av_bsf_init(m_videoBsfExtractExtraCtx) != 0) {
+        LOGF("extract_extradata av_bsf_init error");
+    }
 
     // dump_extra
 
     const auto *dumpBsf = av_bsf_get_by_name("dump_extra");
-    if (dumpBsf == nullptr) throw std::runtime_error("no dump_extra bsf found");
+    if (dumpBsf == nullptr) {
+        LOGF("no dump_extra bsf found");
+    }
 
-    if (av_bsf_alloc(dumpBsf, &m_videoBsfDumpExtraCtx) != 0)
-        throw std::runtime_error("dump_extra av_bsf_alloc error");
+    if (av_bsf_alloc(dumpBsf, &m_videoBsfDumpExtraCtx) != 0) {
+        LOGF("dump_extra av_bsf_alloc error");
+    }
 
     if (avcodec_parameters_copy(m_videoBsfDumpExtraCtx->par_in,
-                                outCtx->videoStream->codecpar) < 0)
-        throw std::runtime_error("bsf avcodec_parameters_copy error");
+                                outCtx->videoStream->codecpar) < 0) {
+        LOGF("bsf avcodec_parameters_copy error");
+    }
 
     av_opt_set(m_videoBsfDumpExtraCtx, "freq", "all", 0);
 
     m_videoBsfDumpExtraCtx->time_base_in = outCtx->videoStream->time_base;
 
-    if (av_bsf_init(m_videoBsfDumpExtraCtx) != 0)
-        throw std::runtime_error("dump_extra av_bsf_init error");
+    if (av_bsf_init(m_videoBsfDumpExtraCtx) != 0) {
+        LOGF("dump_extra av_bsf_init error");
+    }
 }
 
 void Caster::initAvVideoOutStreamFromInputFormat(OutCtx *outCtx) {
     auto idx = av_find_best_stream(m_inVideoFormatCtx, AVMEDIA_TYPE_VIDEO, -1,
                                    -1, nullptr, 0);
-    if (idx < 0) throw std::runtime_error("no video stream found in input");
+    if (idx < 0) {
+        LOGF("no video stream found in input");
+    }
 
     auto *stream = m_inVideoFormatCtx->streams[idx];
 
     av_dump_format(m_inVideoFormatCtx, idx, "", 0);
 
     outCtx->videoStream = avformat_new_stream(outCtx->avFormatCtx, nullptr);
-    if (!outCtx->videoStream)
-        throw std::runtime_error("avformat_new_stream for video error");
+    if (!outCtx->videoStream) {
+        LOGF("avformat_new_stream for video error");
+    }
 
     outCtx->videoStream->id = 0;
 
     if (avcodec_parameters_copy(outCtx->videoStream->codecpar,
                                 stream->codecpar) < 0) {
-        throw std::runtime_error("avcodec_parameters_copy for video error");
+        LOGF("avcodec_parameters_copy for video error");
     }
 
     outCtx->videoStream->time_base = AVRational{1, m_videoFramerate};
@@ -3353,16 +3412,17 @@ void Caster::initAvVideoRawDecoderFromInputStream() {
     m_inPixfmt = static_cast<AVPixelFormat>(stream->codecpar->format);
 
     const auto *decoder = avcodec_find_decoder(stream->codecpar->codec_id);
-    if (decoder == nullptr)
-        throw std::runtime_error("avcodec_find_decoder for video error");
+    if (decoder == nullptr) {
+        LOGF("avcodec_find_decoder for video error");
+    }
 
     m_inVideoCtx = avcodec_alloc_context3(decoder);
-    if (m_inVideoCtx == nullptr)
-        throw std::runtime_error("avcodec_alloc_context3 for in video error");
+    if (m_inVideoCtx == nullptr) {
+        LOGF("avcodec_alloc_context3 for in video error");
+    }
 
     if (avcodec_parameters_to_context(m_inVideoCtx, stream->codecpar) < 0) {
-        throw std::runtime_error(
-            "avcodec_parameters_to_context for video error");
+        LOGF("avcodec_parameters_to_context for video error");
     }
 
     m_inVideoCtx->time_base = stream->time_base;
@@ -3370,7 +3430,7 @@ void Caster::initAvVideoRawDecoderFromInputStream() {
         m_inVideoCtx->pix_fmt, m_inVideoCtx->width, m_inVideoCtx->height, 32);
 
     if (avcodec_open2(m_inVideoCtx, nullptr, nullptr) != 0) {
-        throw std::runtime_error("avcodec_open2 for in video error");
+        LOGF("avcodec_open2 for in video error");
     }
 
     LOGD("video decoder: tb=" << m_inVideoCtx->time_base
@@ -3385,26 +3445,29 @@ void Caster::initAvVideoRawDecoderFromInputStream() {
     //     LOGE("input stream has invalid params, expected: pixfmt="
     //          << m_inPixfmt << ", width=" << m_inDim.width
     //          << ", height=" << m_inDim.height);
-    //     throw std::runtime_error("decoder params are invalid");
+    //     LOGF("decoder params are invalid");
     // }
 
     m_videoFrameIn = av_frame_alloc();
 }
 
 void Caster::findAvAudioInputStreamIdx() {
-    if (avformat_find_stream_info(m_inAudioFormatCtx, nullptr) < 0)
-        throw std::runtime_error("avformat_find_stream_info for audio error");
+    if (avformat_find_stream_info(m_inAudioFormatCtx, nullptr) < 0) {
+        LOGF("avformat_find_stream_info for audio error");
+    }
 
     auto audioIdx = av_find_best_stream(m_inAudioFormatCtx, AVMEDIA_TYPE_AUDIO,
                                         -1, -1, nullptr, 0);
-    if (audioIdx < 0)
-        throw std::runtime_error("no audio stream found in input");
+    if (audioIdx < 0) {
+        LOGF("no audio stream found in input");
+    }
 
     auto dataIdx = av_find_best_stream(m_inAudioFormatCtx, AVMEDIA_TYPE_DATA,
                                        -1, -1, nullptr, 0);
-    if (dataIdx >= 0)
+    if (dataIdx >= 0) {
         LOGD("data stream found, type="
              << m_inAudioFormatCtx->streams[dataIdx]->codecpar->codec_id);
+    }
 
     av_dump_format(m_inAudioFormatCtx, audioIdx, "", 0);
 
@@ -3412,12 +3475,15 @@ void Caster::findAvAudioInputStreamIdx() {
 }
 
 void Caster::findAvVideoInputStreamIdx() {
-    if (avformat_find_stream_info(m_inVideoFormatCtx, nullptr) < 0)
-        throw std::runtime_error("avformat_find_stream_info for video error");
+    if (avformat_find_stream_info(m_inVideoFormatCtx, nullptr) < 0) {
+        LOGF("avformat_find_stream_info for video error");
+    }
 
     auto idx = av_find_best_stream(m_inVideoFormatCtx, AVMEDIA_TYPE_VIDEO, -1,
                                    -1, nullptr, 0);
-    if (idx < 0) throw std::runtime_error("no video stream found in input");
+    if (idx < 0) {
+        LOGF("no video stream found in input");
+    }
 
     av_dump_format(m_inVideoFormatCtx, idx, "", 0);
 
@@ -3426,16 +3492,16 @@ void Caster::findAvVideoInputStreamIdx() {
 
 void Caster::initAvVideoOutStreamFromEncoder(OutCtx *outCtx) {
     outCtx->videoStream = avformat_new_stream(outCtx->avFormatCtx, nullptr);
-    if (!outCtx->videoStream)
-        throw std::runtime_error("avformat_new_stream for video error");
+    if (!outCtx->videoStream) {
+        LOGF("avformat_new_stream for video error");
+    }
 
     outCtx->videoStream->id = 0;
     outCtx->videoStream->r_frame_rate = AVRational{m_videoFramerate, 1};
 
     if (avcodec_parameters_from_context(outCtx->videoStream->codecpar,
                                         m_outVideoCtx) < 0) {
-        throw std::runtime_error(
-            "avcodec_parameters_from_context for video error");
+        LOGF("avcodec_parameters_from_context for video error");
     }
 
     outCtx->videoStream->time_base = AVRational{1, m_videoFramerate};
@@ -3455,15 +3521,14 @@ void Caster::initAvAudioDurations(OutCtx *outCtx) {
 void Caster::initAvAudioOutStreamFromEncoder(OutCtx *outCtx) {
     outCtx->audioStream = avformat_new_stream(outCtx->avFormatCtx, nullptr);
     if (!outCtx->audioStream) {
-        throw std::runtime_error("avformat_new_stream for audio error");
+        LOGF("avformat_new_stream for audio error");
     }
 
     outCtx->audioStream->id = 1;
 
     if (avcodec_parameters_from_context(outCtx->audioStream->codecpar,
                                         m_outAudioCtx) < 0) {
-        throw std::runtime_error(
-            "avcodec_parameters_from_context for audio error");
+        LOGF("avcodec_parameters_from_context for audio error");
     }
 
     outCtx->audioStream->time_base = m_outAudioCtx->time_base;
@@ -3490,8 +3555,9 @@ void Caster::reInitAvOutputFormat(OutCtx *outCtx) {
             case VideoSourceType::File:
                 initAvVideoOutStreamFromEncoder(outCtx);
                 break;
-            default:
-                throw std::runtime_error("unknown video source type");
+            default: {
+                LOGF("unknown video source type");
+            }
         }
     }
 
@@ -3504,7 +3570,7 @@ void Caster::initAvOutputFormat(OutCtx *outCtx) {
     auto *outBuf = static_cast<uint8_t *>(av_malloc(m_videoBufSize));
     if (outBuf == nullptr) {
         av_freep(&outBuf);
-        throw std::runtime_error("unable to allocate out av buf");
+        LOGF("unable to allocate out av buf");
     }
 
     auto *outFormatCtx = outCtx->avFormatCtx;
@@ -3513,7 +3579,7 @@ void Caster::initAvOutputFormat(OutCtx *outCtx) {
         avio_alloc_context(outBuf, m_videoBufSize, 1, outCtx, nullptr,
                            avWritePacketCallbackStatic, nullptr);
     if (outFormatCtx->pb == nullptr) {
-        throw std::runtime_error("avio_alloc_context error");
+        LOGF("avio_alloc_context error");
     }
 
     AVDictionary *opts = nullptr;
@@ -3559,7 +3625,7 @@ void Caster::initAvOutputFormat(OutCtx *outCtx) {
     if (ret != AVSTREAM_INIT_IN_WRITE_HEADER &&
         ret != AVSTREAM_INIT_IN_INIT_OUTPUT) {
         av_dict_free(&opts);
-        throw std::runtime_error("avformat_write_header error");
+        LOGF("avformat_write_header error");
     }
     LOGD("format header written, ret="
          << (ret == AVSTREAM_INIT_IN_WRITE_HEADER  ? "write-header"
@@ -3613,7 +3679,7 @@ void Caster::startAv(OutCtx *outCtx) {
                 case VideoSourceType::Unknown:
                     break;
             }
-            throw std::runtime_error("unknown video source type");
+            LOGF("unknown video source type");
         }();
     }
 
@@ -3658,10 +3724,11 @@ void Caster::mutePaSinkInput([[maybe_unused]] PaSinkInput &si) {
         m_paCtx, si.idx, "sink.null",
         []([[maybe_unused]] pa_context *ctx, int success,
            [[maybe_unused]] void *userdata) {
-            if (success)
+            if (success) {
                 LOGD("pa sink input successfully muted");
-            else
+            } else {
                 LOGW("failed to mute pa sink input");
+            }
         },
         nullptr);
     if (o != nullptr) pa_operation_unref(o);
@@ -3675,10 +3742,11 @@ void Caster::unmutePaSinkInput([[maybe_unused]] PaSinkInput &si) {
         m_paCtx, si.idx, si.sinkIdx,
         []([[maybe_unused]] pa_context *ctx, int success,
            [[maybe_unused]] void *userdata) {
-            if (success)
+            if (success) {
                 LOGD("pa sink input successfully unmuted");
-            else
+            } else {
                 LOGW("failed to unmute pa sink input");
+            }
         },
         nullptr);
     if (o != nullptr) pa_operation_unref(o);
@@ -3736,7 +3804,7 @@ void Caster::connectPaSinkInput() {
 
     if (pa_stream_set_monitor_stream(m_paStream, idx) < 0) {
         if (muteSource) unmutePaSinkInput(*si);
-        throw std::runtime_error("pa_stream_set_monitor_stream error");
+        LOGF("pa_stream_set_monitor_stream error");
     }
 
     LOGD("connecting pa sink input: " << si->get());
@@ -3746,7 +3814,7 @@ void Caster::connectPaSinkInput() {
     if (pa_stream_connect_record(m_paStream, nullptr, &attr,
                                  PA_STREAM_ADJUST_LATENCY) != 0) {
         if (muteSource) unmutePaSinkInput(*si);
-        throw std::runtime_error("pa_stream_connect_record error");
+        LOGF("pa_stream_connect_record error");
     }
 
     if (m_audioSourceNameChangedHandler)
@@ -3777,7 +3845,7 @@ void Caster::connectPaSource() {
     if (pa_stream_connect_record(
             m_paStream, props.dev.empty() ? nullptr : props.dev.c_str(), &attr,
             PA_STREAM_ADJUST_LATENCY) != 0) {
-        throw std::runtime_error("pa_stream_connect_record error");
+        LOGF("pa_stream_connect_record error");
     }
 }
 
@@ -3798,7 +3866,7 @@ void Caster::startPa() {
             connectPaSinkInput();
             break;
         default:
-            throw std::runtime_error("invalid audio source type");
+            LOGF("invalid audio source type");
     }
 
     m_paDataReceived = false;
@@ -4033,7 +4101,7 @@ void Caster::startMuxing() {
         if (audioEnabled()) {
             startAudioOnlyMuxing();
         } else {
-            throw std::runtime_error("audio and video disabled");
+            LOGF("audio and video disabled");
         }
     }
 }
@@ -4083,22 +4151,24 @@ void Caster::setVideoStreamRotation(OutCtx *outCtx,
 
     if (rotation == 0) return;
 
-    if (outCtx->videoStream->side_data == nullptr) {
-        if (!av_stream_new_side_data(outCtx->videoStream,
-                                     AV_PKT_DATA_DISPLAYMATRIX,
-                                     sizeof(int32_t) * 9)) {
-            throw std::runtime_error("av_stream_new_side_data error");
+    if (outCtx->videoStream->codecpar->coded_side_data == nullptr) {
+        outCtx->videoStream->codecpar->coded_side_data =
+            av_packet_side_data_new(nullptr, nullptr, AV_PKT_DATA_DISPLAYMATRIX,
+                                    sizeof(int32_t) * 9, 0);
+        if (outCtx->videoStream->codecpar->coded_side_data == nullptr) {
+            LOGF("av_stream_new_side_data error");
         }
     }
 
     av_display_rotation_set(
-        reinterpret_cast<int32_t *>(outCtx->videoStream->side_data->data),
+        reinterpret_cast<int32_t *>(
+            outCtx->videoStream->codecpar->coded_side_data->data),
         rotation);
 }
 
 void Caster::readNullFrame(AVPacket *pkt) {
     if (av_new_packet(pkt, m_videoRawFrameSize) < 0) {
-        throw std::runtime_error("av_new_packet for video error");
+        LOGF("av_new_packet for video error");
     }
 
     memset(pkt->data, 0, m_videoRawFrameSize);
@@ -4117,7 +4187,7 @@ bool Caster::readVideoFrameFromBuf(AVPacket *pkt) {
     }
 
     if (av_new_packet(pkt, m_videoRawFrameSize) < 0) {
-        throw std::runtime_error("av_new_packet for video error");
+        LOGF("av_new_packet for video error");
     }
 
     m_videoBuf.pull(pkt->data, m_videoRawFrameSize);
@@ -4676,8 +4746,9 @@ void Caster::extractVideoExtradataFromRawDemuxer() {
 
     readVideoFrameFromDemuxer(pkt);
     if (encodeVideoFrame(pkt))
-        if (!extractExtradata(pkt))
+        if (!extractExtradata(pkt)) {
             LOGW("first time failed to extract extradata from video pkt");
+        }
 
     av_packet_unref(pkt);
 }
@@ -4698,8 +4769,9 @@ void Caster::extractVideoExtradataFromRawBuf() {
     while (!terminating()) {
         readNullFrame(pkt);
         if (!encodeVideoFrame(pkt)) continue;
-        if (!extractExtradata(pkt))
+        if (!extractExtradata(pkt)) {
             LOGW("failed to extract extradata from video pkt");
+        }
         break;
     }
 
@@ -4710,8 +4782,9 @@ bool Caster::extractExtradata(AVPacket *pkt) {
     if (!m_videoBsfExtractExtraCtx || !m_pktSideData.empty()) return false;
 
     if (auto ret = av_bsf_send_packet(m_videoBsfExtractExtraCtx, pkt);
-        ret != 0 && ret != AVERROR(EAGAIN))
-        throw std::runtime_error("av_bsf_send_packet error");
+        ret != 0 && ret != AVERROR(EAGAIN)) {
+        LOGF("av_bsf_send_packet error");
+    }
 
     if (auto ret = av_bsf_receive_packet(m_videoBsfExtractExtraCtx, pkt);
         ret != 0)
@@ -4733,14 +4806,16 @@ bool Caster::insertExtradata(AVPacket *pkt) const {
 
     auto *sd = av_packet_new_side_data(pkt, AV_PKT_DATA_NEW_EXTRADATA,
                                        m_pktSideData.size());
-    if (sd == nullptr)
-        throw std::runtime_error("av_packet_new_side_data error");
+    if (sd == nullptr) {
+        LOGF("av_packet_new_side_data error");
+    }
 
     memcpy(sd, &m_pktSideData.front(), m_pktSideData.size());
 
     if (auto ret = av_bsf_send_packet(m_videoBsfDumpExtraCtx, pkt);
-        ret != AVERROR(EAGAIN) && ret < 0)
-        throw std::runtime_error("av_bsf_send_packet error");
+        ret != AVERROR(EAGAIN) && ret < 0) {
+        LOGF("av_bsf_send_packet error");
+    }
 
     if (auto ret = av_bsf_receive_packet(m_videoBsfDumpExtraCtx, pkt);
         ret < 0 && ret != AVERROR(EAGAIN))
@@ -4835,8 +4910,9 @@ bool Caster::muxVideo(AVPacket *pkt) {
             if (!readVideoFrameFromBuf(pkt)) return false;
             if (!encodeVideoFrame(pkt)) return false;
             break;
-        default:
+        default: {
             LOGF("unknown video source type");
+        }
     }
 
     if (!avPktOk(pkt)) {
@@ -5004,11 +5080,11 @@ bool Caster::readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData) {
     }
 
     if (av_new_packet(pkt, m_audioInFrameSize) < 0) {
-        throw std::runtime_error("av_new_packet for audio error");
+        LOGF("av_new_packet for audio error");
     }
 
     if (!m_audioBuf.pullExact(pkt->data, m_audioInFrameSize)) {
-        throw std::runtime_error("failed to pull from buf");
+        LOGF("failed to pull from buf");
     }
 
     LOGT("audio read from buff successful");
@@ -5018,7 +5094,7 @@ bool Caster::readAudioPktFromBuf(AVPacket *pkt, bool nullWhenNoEnoughData) {
 
 void Caster::readAudioPktFromNull(AVPacket *pkt) {
     if (av_new_packet(pkt, m_audioInFrameSize) < 0) {
-        throw std::runtime_error("av_new_packet for audio error");
+        LOGF("av_new_packet for audio error");
     }
 
     std::fill(pkt->data, pkt->data + m_audioInFrameSize, 0);
@@ -5026,7 +5102,7 @@ void Caster::readAudioPktFromNull(AVPacket *pkt) {
 
 void Caster::readAudioPktFromNoise(AVPacket *pkt) {
     if (av_new_packet(pkt, m_audioInFrameSize) < 0) {
-        throw std::runtime_error("av_new_packet for audio error");
+        LOGF("av_new_packet for audio error");
     }
 
     std::random_device rnd_device;
@@ -5054,7 +5130,7 @@ bool Caster::readAudioPktFromDemuxer(AVPacket *pkt) {
 
             m_terminationReason = TerminationReason::Eof;
         }
-        throw std::runtime_error("av_read_frame from audio demuxer error");
+        LOGF("av_read_frame from audio demuxer error");
     }
 
     if (pkt->stream_index != m_inAudioStreamIdx) {
@@ -5102,20 +5178,19 @@ bool Caster::readAudioFrame(AVPacket *pkt, DataSource source) {
             ret != 0) {
             if (ret == AVERROR(EAGAIN)) continue;
 
-            throw std::runtime_error(
-                "avcodec_receive_frame from audio decoder error");
+            LOGF("avcodec_receive_frame from audio decoder error");
         }
 
         if (av_audio_fifo_realloc(m_audioFifo, av_audio_fifo_size(m_audioFifo) +
                                                    m_audioFrameIn->nb_samples) <
             0) {
-            throw std::runtime_error("av_audio_fifo_realloc error");
+            LOGF("av_audio_fifo_realloc error");
         }
 
         if (av_audio_fifo_write(
                 m_audioFifo, reinterpret_cast<void **>(m_audioFrameIn->data),
                 m_audioFrameIn->nb_samples) < m_audioFrameIn->nb_samples) {
-            throw std::runtime_error("av_audio_fifo_write error");
+            LOGF("av_audio_fifo_write error");
         }
 
         av_frame_unref(m_audioFrameIn);
@@ -5128,14 +5203,14 @@ bool Caster::readAudioFrame(AVPacket *pkt, DataSource source) {
     m_audioFrameIn->sample_rate = m_inAudioCtx->sample_rate;
 
     if (av_frame_get_buffer(m_audioFrameIn, 0) != 0) {
-        throw std::runtime_error("av_frame_get_buffer error");
+        LOGF("av_frame_get_buffer error");
     }
 
     if (av_audio_fifo_read(
             m_audioFifo, reinterpret_cast<void **>(m_audioFrameIn->data),
             m_outAudioCtx->frame_size) < m_outAudioCtx->frame_size) {
         av_frame_free(&m_audioFrameIn);
-        throw std::runtime_error("av_audio_fifo_read error");
+        LOGF("av_audio_fifo_read error");
     }
 
     return true;
@@ -5159,14 +5234,14 @@ bool Caster::filterAudioFrame(AudioTrans trans, AVFrame *frameIn,
     if (av_buffersrc_add_frame_flags(ctx.srcCtx, frameIn,
                                      AV_BUFFERSRC_FLAG_PUSH) < 0) {
         av_frame_unref(frameIn);
-        throw std::runtime_error("audio av_buffersrc_add_frame_flags error");
+        LOGF("audio av_buffersrc_add_frame_flags error");
     }
 
     auto ret = av_buffersink_get_frame(ctx.sinkCtx, frameOut);
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return false;
     if (ret < 0) {
         av_frame_unref(frameIn);
-        throw std::runtime_error("audio av_buffersink_get_frame error");
+        LOGF("audio av_buffersink_get_frame error");
     }
 
     return true;
@@ -5201,7 +5276,7 @@ void Caster::updateAudioVolumeFilter() {
             ctx.graph, "volume", "volume",
             fmt::format("{}dB", m_config.audioVolume).c_str(), res.data(),
             res.size(), 0) < 0) {
-        throw std::runtime_error("audio avfilter_graph_send_command error");
+        LOGF("audio avfilter_graph_send_command error");
     }
 }
 
@@ -5212,7 +5287,7 @@ bool Caster::encodeAudioFrame(AVPacket *pkt) {
     if (auto ret = avcodec_send_frame(m_outAudioCtx, frameOut);
         ret != 0 && ret != AVERROR(EAGAIN)) {
         av_frame_unref(frameOut);
-        throw std::runtime_error("audio avcodec_send_frame error");
+        LOGF("audio avcodec_send_frame error");
     }
 
     av_frame_unref(frameOut);
@@ -5223,7 +5298,7 @@ bool Caster::encodeAudioFrame(AVPacket *pkt) {
             return false;
         }
 
-        throw std::runtime_error("audio avcodec_receive_packet error");
+        LOGF("audio avcodec_receive_packet error");
     }
 
     return true;
@@ -5333,8 +5408,9 @@ int Caster::avWritePacketCallbackStatic(void *opaque, ff_buf_type buf,
 }
 
 int Caster::avWritePacketCallback(OutCtx *ctx, ff_buf_type buf, int bufSize) {
-    if (bufSize < 0)
-        throw std::runtime_error("invalid read packet callback buf size");
+    if (bufSize < 0) {
+        LOGF("invalid read packet callback buf size");
+    }
 
     LOGT("write packet: size=" << bufSize
                                << ", data=" << dataToStr(buf, bufSize));
@@ -5356,8 +5432,9 @@ int Caster::avReadPacketCallbackStatic(void *opaque, uint8_t *buf,
 }
 
 int Caster::avReadPacketCallback(uint8_t *buf, int bufSize) {
-    if (bufSize < 0)
-        throw std::runtime_error("invalid read_packet_callback buf size");
+    if (bufSize < 0) {
+        LOGF("invalid read_packet_callback buf size");
+    }
 
     LOGT("read packet: request");
 
@@ -5976,7 +6053,9 @@ static auto v4lDevFiles() {
     std::vector<std::string> files;
 
     auto *dir = opendir("/dev");
-    if (dir == nullptr) throw std::runtime_error("failed to open /dev dir");
+    if (dir == nullptr) {
+        LOGF("failed to open /dev dir");
+    }
 
     while (auto *entry = readdir(dir)) {
         if (isV4lDev(entry->d_name)) {
@@ -6256,7 +6335,9 @@ void Caster::detectV4l2Encoders() {
 std::pair<std::reference_wrapper<const Caster::VideoFormatExt>, AVPixelFormat>
 Caster::bestVideoFormatForV4l2Encoder(const VideoSourceInternalProps &props,
                                       VideoEncoder type) {
-    if (m_v4l2Encoders.empty()) throw std::runtime_error("no v4l2 encoder");
+    if (m_v4l2Encoders.empty()) {
+        LOGF("no v4l2 encoder");
+    }
 
     if (auto it = std::find_if(
             props.formats.cbegin(), props.formats.cend(),
@@ -6290,8 +6371,7 @@ Caster::bestVideoFormatForV4l2Encoder(const VideoSourceInternalProps &props,
                 if (f.codecId == AV_CODEC_ID_RAWVIDEO &&
                     nicePixfmt(f.pixfmt, type))
                     return f.pixfmt;
-            throw std::runtime_error(
-                "encoder does not support any nice formats");
+            LOGF("encoder does not support any nice formats");
         }();
         return {props.formats.front(), fmt};
     }
