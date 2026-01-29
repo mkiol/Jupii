@@ -191,13 +191,14 @@ QList<ListItem *> BcModel::makeSearchItems() {
                                    result.genre});
     }
 
-    if (!phrase.isEmpty()) {
-        std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b) {
-            // Artist = 1, Album = 2, Track = 3
-            return qobject_cast<BcItem *>(a)->type() <
-                   qobject_cast<BcItem *>(b)->type();
-        });
-    }
+    //    if (!phrase.isEmpty()) {
+    //        std::sort(items.begin(), items.end(), [](ListItem *a, ListItem *b)
+    //        {
+    //            // Artist = 1, Album = 2, Track = 3
+    //            return qobject_cast<BcItem *>(a)->type() <
+    //                   qobject_cast<BcItem *>(b)->type();
+    //        });
+    //    }
 
     return items;
 }

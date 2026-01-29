@@ -136,12 +136,6 @@ QString SoundcloudApi::extractClientId(const QString &text) {
     return {};
 }
 
-QString SoundcloudApi::extractUserId(const QString &text) {
-    static QRegExp rx("soundcloud://users:([0-9]+)$", Qt::CaseSensitive);
-    if (rx.indexIn(text) != -1) return rx.cap(1);
-    return {};
-}
-
 QString SoundcloudApi::extractPlaylistId(const QString &text) {
     static QRegExp rx("soundcloud://playlists:([0-9]+)$", Qt::CaseSensitive);
     if (rx.indexIn(text) != -1) return rx.cap(1);
@@ -544,44 +538,34 @@ void SoundcloudApi::user(const QUrl &url, User *user, int count) const {
 SoundcloudApi::User SoundcloudApi::user(const QUrl &url) {
     User user;
 
-    auto output = downloadHtmlData(url);
-    if (!output) {
-        qWarning() << "cannot parse html data";
+    auto json = downloadJsonData(makeUserApiUrlFromWebUrl(url));
+    if (json.isNull() || !json.isObject()) {
+        qWarning() << "cannot parse json data";
         return user;
     }
 
     if (QThread::currentThread()->isInterruptionRequested()) return user;
 
-    const auto userId = [&output] {
-        auto metas = gumbo::search_for_tag(output->root, GUMBO_TAG_META);
-        for (const auto &meta : metas) {
-            auto content = gumbo::attr_data(meta, "content");
-            if (!content.isEmpty()) {
-                auto id = extractUserId(content);
-                if (!id.isEmpty()) return id;
-            }
-        }
-        return QString{};
-    }();
+    auto jobj = json.object();
 
-    if (userId.isEmpty()) {
+    if (jobj.value(QLatin1String{"kind"}).toString() != "user") {
+        qWarning() << "no user kind in json";
+        return user;
+    }
+
+    auto userId =
+        static_cast<unsigned int>(jobj.value(QLatin1String{"id"}).toDouble());
+    if (userId == 0) {
         qWarning() << "empty user id";
         return user;
     }
 
-    this->user(makeUserStreamUrl(userId), &user);
+    this->user(makeUserStreamUrl(QString::number(userId)), &user);
 
-    user.name = [&output] {
-        auto tags = gumbo::search_for_tag(output->root, GUMBO_TAG_SCRIPT);
-        for (const auto &tag : tags) {
-            auto content = gumbo::node_text(tag);
-            if (!content.isEmpty()) {
-                auto id = extractUsernameFromPage(content);
-                if (!id.isEmpty()) return id;
-            }
-        }
-        return QString{};
-    }();
+    user.name = jobj.value(QLatin1String{"username"}).toString();
+    if (user.name.isEmpty()) {
+        user.name = QString::number(userId);
+    }
 
     user.webUrl = url;
 
@@ -786,6 +770,17 @@ QUrl SoundcloudApi::makeUserPlaylistsUrl(const QString &id) const {
     qurl.addQueryItem(QStringLiteral("linked_partitioning"),
                       QStringLiteral("1"));
     QUrl url{"https://api-v2.soundcloud.com/users/" + id + "/playlists"};
+    url.setQuery(qurl);
+    return url;
+}
+
+// https://api-v2.soundcloud.com/resolve?url=https://soundcloud.com/tycho&client_id=NwVtCCU9tTRfJy2s7fQ14DeUoYieb5OY
+QUrl SoundcloudApi::makeUserApiUrlFromWebUrl(const QUrl &webUrl) const {
+    QUrlQuery qurl;
+    qurl.addQueryItem(QStringLiteral("app_locale"), m_locale);
+    qurl.addQueryItem(QStringLiteral("client_id"), clientId);
+    qurl.addQueryItem(QStringLiteral("url"), webUrl.toString());
+    QUrl url{"https://api-v2.soundcloud.com/resolve"};
     url.setQuery(qurl);
     return url;
 }

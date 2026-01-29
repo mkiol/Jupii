@@ -127,9 +127,9 @@ class SoundcloudApi : public QObject {
     QUrl makeTrackUrl(const QString &id) const;
     QUrl makeFeaturedTracksUrl(int limit = maxFeatured) const;
     QUrl makeTracksUrl(const std::vector<QString> &ids) const;
+    QUrl makeUserApiUrlFromWebUrl(const QUrl &webUrl) const;
     static QString extractData(const QString &text);
     static QString extractClientId(const QString &text);
-    static QString extractUserId(const QString &text);
     static QString extractPlaylistId(const QString &text);
     static QString extractUsernameFromTitle(const QString &text);
     static QString extractUsernameFromPage(const QString &text);
