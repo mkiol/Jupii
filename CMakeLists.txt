@@ -119,7 +119,7 @@ Petr Tsymbarovich · Carmen Fernández B. · Priit Jõerüüt")
 set(info_libs_str "Qt · QHTTPServer · npupnp · Libupnpp · TagLib · FFmpeg · LAME · \
 x264 · Gumbo · yt-dlp · ytmusicapi · EasyEXIF · AudioTube · {fmt}")
 
-project(${id} VERSION 2.16.1)
+project(${id} VERSION 2.16.2)
 
 set(arch_arm32 OFF)
 set(arch_arm64 OFF)
@@ -192,6 +192,7 @@ set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # includes
 

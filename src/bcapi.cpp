@@ -783,7 +783,11 @@ std::vector<BcApi::Show> BcApi::makeShows(ShowType type) const {
     for (int i = 0; i < showsArray.size(); ++i) {
         auto ele = showsArray.at(i).toObject();
         Show show;
-        show.id = ele.value(QLatin1String{"showId"}).toInt();
+        if (ele.contains("itemId")) {
+            show.id = ele.value("itemId").toInt();
+        } else if (ele.contains("showId")) {
+            show.id = ele.value("showId").toInt();
+        }
         if (show.id <= 0) {
             continue;
         }
@@ -825,7 +829,10 @@ std::vector<BcApi::Show> BcApi::latestShows(ShowType type) {
     }
 
     std::vector<BcApi::Show> newShows;
-    std::copy(m_shows.cbegin(), std::next(m_shows.cbegin(), 10),
+    std::copy(m_shows.cbegin(),
+              std::next(m_shows.cbegin(),
+                        std::min(static_cast<size_t>(/*max nb of shows*/ 10),
+                                 m_shows.size())),
               std::back_inserter(newShows));
 
     return newShows;

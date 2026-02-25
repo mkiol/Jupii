@@ -34,6 +34,16 @@ Page {
 
             LogItem {
                 title: "<ul>
+                <li>Fix: Crash when adding Bandcamp item</li>
+                </ul>"
+            }        
+
+            SectionHeader {
+                text: qsTr("Version %1").arg("2.16.1")
+            }
+
+            LogItem {
+                title: "<ul>
                 <li>Bandcamp: Support for Bandcamp Radio shows</li>
                 <li>Fix: Currently playing item is not highlighted in the play queue for some Media Servers</li>
                 </ul>"
