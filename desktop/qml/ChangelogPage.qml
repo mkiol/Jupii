@@ -27,6 +27,7 @@ Kirigami.ScrollablePage {
         RichLabel {
             text: "<ul>
             <li>Fix: Crash when adding Bandcamp item</li>
+            <li>Fix: When adding folders, files were added to the playlist in random order.</li>
             </ul>"
         }
 

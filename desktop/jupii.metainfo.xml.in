@@ -63,10 +63,11 @@
   <launchable type="desktop-id">@info_app_icon_id@.desktop</launchable>
   <content_rating type="oars-1.1" />
   <releases>
-    <release version="2.16.2" date="2026-02-25">
+    <release version="2.16.2" date="2026-02-26">
       <description>
       <ul>
       <li>Fix: Crash when adding Bandcamp item</li>
+      <li>Fix: When adding folders, files were added to the playlist in random order.</li>
       </ul>
       </description>
     </release>

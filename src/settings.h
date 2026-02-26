@@ -62,6 +62,7 @@
     X(mpdPolicy,                      getMpdPolicy,                     setMpdPolicy,                     mpd_policy,                        Settings::MpdPolicy, Settings::MpdPolicy::MpdPolicy_None, false) \
     X(videoScaleAlgo,                 getVideoScaleAlgo,                setVideoScaleAlgo,                video_scale_algo,                  Settings::VideoScaleAlgo, Settings::VideoScaleAlgo::VideoScaleAlgo_FastBilinear, false) \
     X(relayPolicy,                    getRelayPolicy,                   setRelayPolicy,                   relay_policy,                      Settings::RelayPolicy, Settings::RelayPolicy::RelayPolicy_Auto, false) \
+    X(sortFolder,                     getSortFolder,                    setSortFolder,                    sort_folder,                       Settings::SortType, Settings::SortType::SortType_Ascending, false) \
     // clang-format on
 
 class Settings : public QSettings,
@@ -246,6 +247,13 @@ class Settings : public QSettings,
     };
     Q_ENUM(RelayPolicy)
     friend QDebug &operator<<(QDebug &dbg, RelayPolicy policy);
+
+    enum class SortType {
+        SortType_DontSort = 0,
+        SortType_Ascending = 1,
+        SortType_Descending = 2,
+    };
+    Q_ENUM(SortType)
 
 #ifdef USE_SFOS
     static constexpr const char *HW_RELEASE_FILE = "/etc/hw-release";

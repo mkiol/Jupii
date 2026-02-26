@@ -7,6 +7,8 @@
 
 #include "playlistmodel.h"
 
+#include <qnamespace.h>
+
 #include <QDataStream>
 #include <QDebug>
 #include <QDir>
@@ -842,15 +844,34 @@ void PlaylistModel::addItemFileUrls(const QList<QUrl> &urls,
     for (const auto &ext : ContentServer::extensionsForMediaTypes())
         nameFilter << QStringLiteral("*.%1").arg(ext);
 
+    auto folderSortType = Settings::instance()->getSortFolder();
+
     QList<UrlItem> items;
     foreach (const auto &url, urls) {
         if (QFileInfo fi{url.toLocalFile()}; fi.exists() && fi.isDir()) {
             QDirIterator it{url.toLocalFile(), nameFilter,
                             QDir::Files | QDir::NoSymLinks | QDir::Readable,
                             QDirIterator::Subdirectories};
+            QStringList files;
             while (it.hasNext()) {
+                files.push_back(it.next());
+            }
+
+            if (folderSortType != Settings::SortType::SortType_DontSort) {
+                std::sort(files.begin(), files.end(),
+                          [asc = folderSortType ==
+                                 Settings::SortType::SortType_Ascending](
+                              const auto &a, const auto &b) {
+                              return asc ? QString::compare(
+                                               a, b, Qt::CaseInsensitive) < 0
+                                         : QString::compare(
+                                               a, b, Qt::CaseInsensitive) >= 0;
+                          });
+            }
+
+            for (auto &f : files) {
                 UrlItem ui;
-                ui.url = QUrl::fromLocalFile(it.next());
+                ui.url = QUrl::fromLocalFile(f);
                 items << ui;
             }
         } else {

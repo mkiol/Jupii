@@ -853,6 +853,40 @@ Kirigami.ScrollablePage {
                 hoverEnabled: true
             }
 
+            Controls.ComboBox {
+                visible: root.showAdvanced
+                Kirigami.FormData.label: qsTr("Sort items in folder")
+                currentIndex: {
+                    switch (settings.sortFolder) {
+                    case Settings.SortType_DontSort:
+                        return 0;
+                    case Settings.SortType_Ascending:
+                        return 1;
+                    case Settings.SortType_Descending:
+                        return 2;
+                    }
+                    return 0;
+                }
+
+                model: [qsTr("Don't sort"), qsTr("Sort by file name in ascending order"), qsTr("Sort by file name in descending order")]
+
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0:
+                        settings.sortFolder = Settings.SortType_DontSort;
+                        break;
+                    case 1:
+                        settings.sortFolder = Settings.SortType_Ascending;
+                        break;
+                    case 2:
+                        settings.sortFolder = Settings.SortType_Descending;
+                        break;
+                    default:
+                        settings.sortFolder = Settings.SortType_DontSort;
+                    }
+                }
+            }
+
             RowLayout {
                 visible: root.showAdvanced
                 Kirigami.FormData.label: qsTr("Location of Python libraries")
