@@ -1,4 +1,5 @@
-# Generated with flatpak-pip-generator --yaml --output python3-modules yt_dlp==2025.12.8 ytmusicapi==1.11.1
+# Generated with flatpak-pip-generator --yaml --output python3-modules yt_dlp==2026.3.17 ytmusicapi==1.11.1
+name: python3-modules
 build-commands: []
 buildsystem: simple
 modules:
@@ -6,11 +7,12 @@ modules:
   buildsystem: simple
   build-commands:
   - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-    --prefix=${FLATPAK_DEST} "yt_dlp==2025.12.8" --no-build-isolation
+    --prefix=${FLATPAK_DEST} "yt_dlp" --no-build-isolation
   sources:
   - type: file
-    url: https://files.pythonhosted.org/packages/6e/2f/98c3596ad923f8efd32c90dca62e241e8ad9efcebf20831173c357042ba0/yt_dlp-2025.12.8-py3-none-any.whl
-    sha256: 36e2584342e409cfbfa0b5e61448a1c5189e345cf4564294456ee509e7d3e065
+    url: https://files.pythonhosted.org/packages/cd/13/5093bcb954878e50f7217fd2ab94282b53934022e4e4a03265582da83bf5/yt_dlp-2026.3.17-py3-none-any.whl
+    sha256: 32992db94303a8a5d211a183f2174834fe7f8c29d83ed2e7a324eae97a8f26d8
+
 - name: python3-ytmusicapi
   buildsystem: simple
   build-commands:
@@ -35,4 +37,19 @@ modules:
   - type: file
     url: https://files.pythonhosted.org/packages/88/ac/a91784a8f9be3eff10959ccd2a680181941194d7ee7da2c7be10e9c32ab5/ytmusicapi-1.11.1-py3-none-any.whl
     sha256: bcaf208fd18c9b5b8971bc4436b17af132a4296de98708049d7638fdba90f6c9
-name: python3-modules
+
+- name: deno
+  buildsystem: simple
+  build-commands:
+    - install -Dt /app/bin deno
+  sources:
+    - type: archive
+      url: https://github.com/denoland/deno/releases/download/v2.7.2/deno-x86_64-unknown-linux-gnu.zip
+      sha256: bc3af4d1bedd7893664b925c0f39fb08f7b12242e57ed4acdc0cf64540b4449c
+      only-arches:
+        - x86_64
+    - type: archive
+      url: https://github.com/denoland/deno/releases/download/v2.7.2/deno-aarch64-unknown-linux-gnu.zip
+      sha256: c36c0b284d084dfe7045a106e60bd98d919183fd69d7902a42f3c7a244bf4386
+      only-arches:
+        - aarch64

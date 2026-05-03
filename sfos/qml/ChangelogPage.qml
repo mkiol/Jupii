@@ -34,7 +34,7 @@ Page {
 
             LogItem {
                 title: "<ul>
-                <li>Fix: Bandcamp radio items were broken</li>
+                <li>Fix: Bandcamp Radio shows were broken</li>
                 </ul>"
             }      
 

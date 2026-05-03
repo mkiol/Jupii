@@ -26,7 +26,8 @@ Kirigami.ScrollablePage {
 
         RichLabel {
             text: "<ul>
-            <li>Fix: Bandcamp radio items were broken</li>
+            <li>Fix: Bandcamp Radio shows were broken</li>
+            <li>Fix: Failed to play YouTube Music items</li>
             </ul>"
         }
 
