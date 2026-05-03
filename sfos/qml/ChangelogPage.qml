@@ -34,6 +34,16 @@ Page {
 
             LogItem {
                 title: "<ul>
+                <li>Fix: Bandcamp radio items were broken</li>
+                </ul>"
+            }      
+
+            SectionHeader {
+                text: qsTr("Version %1").arg("2.16.2")
+            }
+
+            LogItem {
+                title: "<ul>
                 <li>Fix: Crash when adding Bandcamp item</li>
                 </ul>"
             }        

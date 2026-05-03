@@ -26,6 +26,16 @@ Kirigami.ScrollablePage {
 
         RichLabel {
             text: "<ul>
+            <li>Fix: Bandcamp radio items were broken</li>
+            </ul>"
+        }
+
+        SectionLabel {
+            text: qsTr("Version %1").arg("2.16.2")
+        }
+
+        RichLabel {
+            text: "<ul>
             <li>Fix: Crash when adding Bandcamp item</li>
             <li>Fix: When adding folders, files were added to the playlist in random order.</li>
             </ul>"

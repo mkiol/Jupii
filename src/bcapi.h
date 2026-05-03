@@ -111,9 +111,7 @@ class BcApi : public QObject {
     std::vector<SearchResultItem> search(const QString &query) const;
     std::vector<SearchResultItem> notableItems();
     void makeMoreNotableItems();
-    inline static bool canMakeMoreNotableItems() {
-        return m_notableIds.size() > m_notableItems.size();
-    }
+    inline static bool canMakeMoreNotableItems() { return true; }
     std::vector<SearchResultItem> notableItemsFirstPage();
     Track track(const QUrl &url) const;
     Album album(const QUrl &url) const;
@@ -135,16 +133,14 @@ class BcApi : public QObject {
     inline static const char *radioUrlStr = "https://bandcamp.com/radio";
     inline static const char *urlTypeQueryKey = "url_type";
     inline static const char *trackUrlTypeValue = "track";
-
+    inline static std::optional<QString> m_notableNextCursor;
     static std::vector<SearchResultItem> m_notableItems;
     static bool m_notableItemsDone;
-    static std::vector<double> m_notableIds;
     static std::vector<Show> m_shows;
     std::shared_ptr<QNetworkAccessManager> nam;
 
-    std::optional<QJsonDocument> parseNotableBlob() const;
+    std::optional<QJsonDocument> parseNextNotableBlob() const;
     std::optional<QJsonDocument> parseRadioBlob() const;
-    std::optional<SearchResultItem> notableItem(const QByteArray &bytes) const;
     static SearchResultItem notableItem(const QJsonObject &obj);
     static QUrl artUrl(const QString &id);
     static std::pair<QUrl, QByteArray> makeSearchUrl(const QString &phrase);
@@ -152,10 +148,7 @@ class BcApi : public QObject {
     static QUrl makeRadioShowTrackUrl(int showId);
     static QJsonDocument parseJsonData(const QByteArray &data);
     static Type textToType(const QString &text);
-    static void storeNotableIds(const QJsonObject &obj);
-    static void storeNotableIds(const QJsonArray &array);
     std::vector<Show> makeShows(ShowType type) const;
-    bool prepareNotableIds() const;
     Track trackFromBytes(const QUrl &url, const QByteArray &bytes) const;
     Album albumFromBytes(const QUrl &url, const QByteArray &bytes) const;
     static QUrl artUrl(long imageId);

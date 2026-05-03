@@ -1,7 +1,7 @@
 Name:       harbour-jupii
 
 # >> macros
-%define harbour 0
+%define harbour_build 0
 # << macros
 
 %{!?qtc_qmake:%define qtc_qmake %qmake}
@@ -9,7 +9,7 @@ Name:       harbour-jupii
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Jupii
-Version:    2.16.2
+Version:    2.16.3
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -69,18 +69,19 @@ Play audio, video and images on UPnP/DLNA devices
 %build
 # >> build pre
 # << build pre
-%cmake .
+%if 0%{?harbour_build} == 0
+echo Build type: normal
+%cmake . -DWITH_SFOS=ON -DWITH_SFOS_HARBOUR=OFF
+%else
+echo Build type: harbour
+%cmake . -DWITH_SFOS=ON -DWITH_SFOS_HARBOUR=ON -DCMAKE_VERBOSE_MAKEFILE=ON
+%endif
 make %{?_smp_mflags}
 
 # >> build post
 # << build post
 
 %install
-%if 0%{?harbour} == 0
-echo Build type: normal
-%else
-echo Build type: harbour
-%endif
 rm -rf %{buildroot}
 # >> install pre
 # << install pre
@@ -89,7 +90,7 @@ rm -rf %{buildroot}
 # >> install post
 # << install post
 
-%if 0%{?harbour} == 0
+%if 0%{?harbour_build} == 0
 desktop-file-install --delete-original \
   --dir %{buildroot}%{_datadir}/applications \
    %{buildroot}%{_datadir}/applications/*.desktop
@@ -101,13 +102,13 @@ desktop-file-install --delete-original \
 
 %files
 %defattr(-,root,root,-)
-%if 0%{?harbour} == 0
+%if 0%{?harbour_build} == 0
 %attr(2755, root, privileged) %{_bindir}/%{name}
 %endif
 %{_bindir}/%{name}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-%if 0%{?harbour} == 0
+%if 0%{?harbour_build} == 0
 %{_datadir}/applications/%{name}-open-url.desktop
 /etc/sailjail/permissions/*.permission
 %endif

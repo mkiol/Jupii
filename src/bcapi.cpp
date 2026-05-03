@@ -14,17 +14,18 @@
 #include <QJsonParseError>
 #include <QLatin1String>
 #include <QLocale>
+#include <QString>
 #include <QTextStream>
 #include <QThread>
 #include <QTime>
 #include <QTimeZone>
 #include <QTimer>
 #include <QUrlQuery>
+#include <optional>
 
 #include "downloader.h"
 #include "gumbotools.h"
 
-std::vector<double> BcApi::m_notableIds{};
 std::vector<BcApi::SearchResultItem> BcApi::m_notableItems{};
 std::vector<BcApi::Show> BcApi::m_shows{};
 bool BcApi::m_notableItemsDone = false;
@@ -415,98 +416,36 @@ QUrl BcApi::artUrl(const QString &id) {
     return QUrl{QStringLiteral("https://f4.bcbits.com/img/a%1_2.jpg").arg(id)};
 }
 
-std::optional<BcApi::SearchResultItem> BcApi::notableItem(
-    const QByteArray &bytes) const {
-    if (bytes.isEmpty()) {
-        qWarning() << "bytes is empty";
-        return std::nullopt;
-    }
-
-    if (QThread::currentThread()->isInterruptionRequested())
-        return std::nullopt;
-
-    auto json = parseJsonData(bytes);
-    if (json.isNull() || !json.isObject()) {
-        qWarning() << "cannot parse json data";
-        return std::nullopt;
-    }
-
-    return notableItem(json.object());
-}
-
 BcApi::SearchResultItem BcApi::notableItem(const QJsonObject &obj) {
     SearchResultItem item;
     item.album = obj.value(QLatin1String{"title"}).toString();
-    item.artist = obj.value(QLatin1String{"artist"}).toString();
-    item.imageUrl = artUrl(
-        QString::number(obj.value(QLatin1String{"art_id"}).toDouble(), 'd', 0));
-    item.webUrl = QUrl{obj.value(QLatin1String{"tralbum_url"}).toString()};
+    item.artist = obj.value(QLatin1String{"artistName"}).toString();
+    item.imageUrl = artUrl(QString::number(
+        obj.value(QLatin1String{"imageId"}).toDouble(), 'd', 0));
+    item.webUrl = QUrl{obj.value(QLatin1String{"itemUrl"}).toString()};
     item.genre = obj.value(QLatin1String{"genre"}).toString();
     item.type = Type::Album;
 
     return item;
 }
 
-void BcApi::storeNotableIds(const QJsonArray &array) {
-    auto size = array.size();
-    for (int i = 0; i < size; ++i) {
-        if (array.at(i).isArray()) {
-            storeNotableIds(array.at(i).toArray());
-        } else if (array.at(i).isDouble()) {
-            m_notableIds.push_back(array.at(i).toDouble());
-        }
-    }
-}
-
-void BcApi::storeNotableIds(const QJsonObject &obj) {
-    auto data = obj.value(QLatin1String{"data"}).toArray();
-    m_notableIds.clear();
-    storeNotableIds(data);
-}
-
-bool BcApi::prepareNotableIds() const {
-    if (m_notableIds.empty()) {
-        const auto json = parseNotableBlob();
-        if (!json) return false;
-        storeNotableIds(json.value().object());
-    }
-
-    return !m_notableIds.empty();
-}
-
 void BcApi::makeMoreNotableItems() {
-    if (!prepareNotableIds()) {
-        qWarning() << "no notable ids";
+    auto json = parseNextNotableBlob();
+    if (!json) {
+        qWarning() << "cant parse notable";
         return;
     }
 
-    if (!canMakeMoreNotableItems()) return;
-
-    auto size = std::min<decltype(maxNotable)>(
-        m_notableIds.size(), m_notableItems.size() + maxNotable);
-
-    std::vector<QUrl> urls;
-    urls.reserve(size);
-    for (decltype(size) i = m_notableItems.size(); i < size; ++i) {
-        urls.push_back(
-            QUrl{"https://bandcamp.com/api/notabletralbum/2/get?id=" +
-                 QString::number(m_notableIds[i], 'd', 0)});
+    auto jitems = json->object().value("items").toArray();
+    if (jitems.isEmpty()) {
+        qWarning() << "no notable items";
+        return;
     }
 
-    auto data = Downloader{nam}.downloadData(urls);
-
-    m_notableItems.reserve(size);
-
-    for (const auto &d : data) {
-        auto item = notableItem(d.bytes);
-        if (!item) break;
-        m_notableItems.push_back(item.value());
+    m_notableItems.reserve(m_notableItems.size() + jitems.size());
+    for (int i = 0; i < jitems.size(); ++i) {
+        m_notableItems.push_back(notableItem(jitems.at(i).toObject()));
     }
-
-    emit progressChanged(size, size);
-
-    if (!QThread::currentThread()->isInterruptionRequested())
-        m_notableItemsDone = true;
 }
 
 std::vector<BcApi::SearchResultItem> BcApi::notableItems() {
@@ -521,13 +460,28 @@ std::vector<BcApi::SearchResultItem> BcApi::notableItems() {
     return items;
 }
 
-std::optional<QJsonDocument> BcApi::parseNotableBlob() const {
+std::optional<QJsonDocument> BcApi::parseNextNotableBlob() const {
     Downloader::Data postData;
-    postData.bytes = "{}";
+    int count = 10;
+    if (m_notableNextCursor) {
+        if (m_notableNextCursor.value().isEmpty()) {
+            qWarning() << "can't get more notable items";
+            return std::nullopt;
+        }
+        postData.bytes =
+            QStringLiteral("{\"page_size\": \"%1\", \"next_cursor\": \"%2\"}")
+                .arg(count)
+                .arg(m_notableNextCursor.value())
+                .toUtf8();
+    } else {
+        postData.bytes =
+            QStringLiteral("{\"page_size\": \"%1\"}").arg(count).toUtf8();
+    }
+
     postData.mime = "application/json";
     auto data = Downloader{nam}.downloadData(
         QUrl{QStringLiteral(
-            "https://bandcamp.com/api/homepage_api/1/notable_tralbums_list")},
+            "https://bandcamp.com/api/homepage_api/1/notable_tralbums_data")},
         postData);
     if (data.bytes.isEmpty()) {
         qWarning() << "no data received";
@@ -537,11 +491,13 @@ std::optional<QJsonDocument> BcApi::parseNotableBlob() const {
     if (QThread::currentThread()->isInterruptionRequested())
         return std::nullopt;
 
-    auto json = parseJsonData("{\"data\":" + data.bytes + "}");
+    auto json = parseJsonData(data.bytes);
     if (json.isNull() || !json.isObject()) {
         qWarning() << "cannot parse json data";
         return std::nullopt;
     }
+
+    m_notableNextCursor = json.object().value("nextCursor").toString();
 
     return json;
 }
@@ -595,9 +551,6 @@ std::vector<BcApi::SearchResultItem> BcApi::notableItemsFirstPage() {
     std::vector<SearchResultItem> items;
 
     if (!m_notableItemsDone || m_notableItems.empty()) {
-        auto json = parseNotableBlob();
-        if (!json) return items;
-        storeNotableIds(json.value().object());
         makeMoreNotableItems();
     }
 
@@ -677,25 +630,22 @@ BcApi::Track BcApi::radioTrack(int showId) const {
         return t;
     }
 
-    auto radioShowAudio =
-        obj->value(QLatin1String{"radioShowAudio"}).toObject();
-
-    t.title = radioShowAudio.value(QLatin1String{"title"}).toString();
+    t.title = obj->value(QLatin1String{"title"}).toString();
     if (t.title.isEmpty()) {
         qWarning() << "show title is empty";
         return t;
     }
-    t.imageUrl =
-        artUrl(radioShowAudio.value(QLatin1String{"artId"}).toDouble());
-    t.streamUrl =
-        QUrl{radioShowAudio.value(QLatin1String{"streamUrl"}).toString()};
+    t.imageUrl = artUrl(obj->value(QLatin1String{"imageId"}).toDouble());
     t.webUrl = makeRadioShowUrl(showId);
-    t.duration = radioShowAudio.value(QLatin1String{"duration"}).toDouble();
     t.artist = QStringLiteral("Bandcamp");
+
+    auto ct = obj->value("compiledTrack").toObject();
+    t.duration = ct.value(QLatin1String{"duration"}).toDouble();
+    t.streamUrl = QUrl{ct.value(QLatin1String{"streamUrl"}).toString()};
 
     // add date to titile
     auto date = QLocale::c().toDateTime(
-        radioShowAudio.value(QLatin1String{"date"}).toString().remove(" GMT"),
+        obj->value(QLatin1String{"date"}).toString().remove(" GMT"),
         "dd MMM yyyy hh:mm:ss");
     if (date.isValid()) {
         t.title += (" · " + date.toString("d MMM yyyy"));
@@ -714,18 +664,14 @@ BcApi::ShowTracks BcApi::radioTracks(int showId) const {
 
     tracks.id = showId;
 
-    auto radioShowAudio =
-        obj->value(QLatin1String{"radioShowAudio"}).toObject();
-
-    tracks.title = radioShowAudio.value(QLatin1String{"title"}).toString();
+    tracks.title = obj->value(QLatin1String{"title"}).toString();
     if (tracks.title.isEmpty()) {
         qWarning() << "show title is empty";
         return tracks;
     }
-    tracks.imageUrl =
-        artUrl(radioShowAudio.value(QLatin1String{"artId"}).toDouble());
+    tracks.imageUrl = artUrl(obj->value(QLatin1String{"imageId"}).toDouble());
     tracks.date = QLocale::c().toDateTime(
-        radioShowAudio.value(QLatin1String{"date"}).toString().remove(" GMT"),
+        obj->value(QLatin1String{"date"}).toString().remove(" GMT"),
         "dd MMM yyyy hh:mm:ss");
     tracks.webUrl = makeRadioShowTrackUrl(showId);
 
@@ -734,7 +680,7 @@ BcApi::ShowTracks BcApi::radioTracks(int showId) const {
         tracks.title += (" · " + tracks.date.toString("d MMM yyyy"));
     }
 
-    auto tracklist = obj->value(QLatin1String{"tracklist"}).toArray();
+    auto tracklist = obj->value(QLatin1String{"tracks"}).toArray();
 
     for (int i = 0; i < tracklist.size(); ++i) {
         auto tobj = tracklist.at(i).toObject();
@@ -798,11 +744,20 @@ std::vector<BcApi::Show> BcApi::makeShows(ShowType type) const {
         if (show.title.isEmpty()) {
             continue;
         }
+        auto radioTitle =
+            ele.value(QLatin1String{"radioFranchiseTitle"}).toString();
         long imageId = ele.value(QLatin1String{"imageId"}).toDouble();
         if (imageId > 0) {
             show.imageUrl = artUrl(imageId);
         }
         show.description = ele.value(QLatin1String{"shortDesc"}).toString();
+        if (!radioTitle.isEmpty()) {
+            if (show.description.isEmpty()) {
+                show.description = std::move(radioTitle);
+            } else {
+                show.description = radioTitle + " · " + show.description;
+            }
+        }
         // "date": "16 Jan 2026 00:00:00 GMT",
         show.date = QLocale::c().toDateTime(
             ele.value(QLatin1String{"date"}).toString().remove(" GMT"),
