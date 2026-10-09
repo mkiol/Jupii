@@ -11,6 +11,7 @@
 #include <QGuiApplication>
 #include <QThread>
 #include <algorithm>
+#include <set>
 
 ContentDirectory::ContentDirectory(QObject *parent) : Service(parent) {}
 
@@ -27,7 +28,10 @@ UPnPClient::Service *ContentDirectory::createUpnpService(
 
 void ContentDirectory::postInit() {}
 
-void ContentDirectory::reset() {}
+void ContentDirectory::reset() {
+    m_searchCaps.clear();
+    m_searchCapsLoaded = false;
+}
 
 std::string ContentDirectory::type() const {
     return "urn:schemas-upnp-org:service:ContentDirectory:1";
@@ -125,4 +129,63 @@ bool ContentDirectory::readItem(const QString &id, const QString &pid,
     }
 
     return true;
+}
+
+bool ContentDirectory::search(const QString &criteria,
+                              UPnPClient::UPnPDirContent &content) {
+    int ret = 0;
+    {
+        QMutexLocker lock{&m_mtx};
+        auto srv = s();
+        if (!getInited() || !srv) {
+            qWarning() << "content-directory service is not inited";
+            return false;
+        }
+
+        ret = srv->search("0", criteria.toStdString(), content);
+    }
+
+    if (!handleError(ret)) {
+        return false;
+    }
+
+#ifdef QT_DEBUG
+    qDebug() << "search containers:";
+    for (const UPnPClient::UPnPDirObject &dir : content.m_containers) {
+        qDebug() << QString::fromStdString(dir.dump());
+    }
+    qDebug() << "search items:";
+    for (const UPnPClient::UPnPDirObject &dir : content.m_items) {
+        qDebug() << QString::fromStdString(dir.dump());
+    }
+#endif
+    return true;
+}
+
+QStringList ContentDirectory::searchCapabilities() {
+    QMutexLocker lock{&m_mtx};
+    auto srv = s();
+    if (!getInited() || !srv) {
+        qWarning() << "content-directory service is not inited";
+        return {};
+    }
+
+    if (m_searchCapsLoaded) {
+        return m_searchCaps;
+    }
+
+    std::set<std::string> caps;
+    int ret = srv->getSearchCapabilities(caps);
+    if (!handleError(ret)) {
+        // Do not cache a failure: allow retrying on next call.
+        return {};
+    }
+
+    m_searchCaps.clear();
+    for (const auto &cap : caps) {
+        m_searchCaps.append(QString::fromStdString(cap));
+    }
+    m_searchCapsLoaded = true;
+    qDebug() << "search capabilities:" << m_searchCaps;
+    return m_searchCaps;
 }
