@@ -51,6 +51,24 @@ Kirigami.ScrollablePage {
                     else
                         itemModel.setAllSelected(true)
                 }
+            },
+            Kirigami.Action {
+                text: itemModel.query.length > 0 ? qsTr("New search") :
+                          qsTr("Search server…")
+                iconName: "system-search"
+                enabled: cdir.inited && itemModel.searchSupported && !itemModel.busy
+                onTriggered: {
+                    searchDialog.open()
+                }
+            },
+            Kirigami.Action {
+                visible: itemModel.query.length > 0
+                text: qsTr("Clear search")
+                iconName: "edit-clear"
+                enabled: cdir.inited && !itemModel.busy
+                onTriggered: {
+                    itemModel.query = ""
+                }
             }
         ]
     }
@@ -198,7 +216,55 @@ Kirigami.ScrollablePage {
             anchors.centerIn: parent
             width: parent.width - (Kirigami.Units.largeSpacing * 4)
             visible: itemModel.count === 0 && !itemModel.busy && !cdir.busy
-            text: qsTr("No items")
+            text: itemModel.query.length > 0 ?
+                      qsTr("No results for “%1”").arg(itemModel.query) :
+                      qsTr("No items")
+        }
+    }
+
+    Controls.Dialog {
+        id: searchDialog
+        title: qsTr("Search %1").arg(cdir.deviceFriendlyName)
+        modal: true
+        anchors.centerIn: parent
+        width: Math.min(400, root.width - 2 * Kirigami.Units.largeSpacing)
+
+	ColumnLayout {
+		anchors.horizontalCenter: parent
+		width: searchDialog.width - 2* Kirigami.Units.largeSpacing
+		spacing: Kirigami.UnitslargeSpacing
+            Controls.Label {
+                text: qsTr("Searches the whole content directory of %1 for items matching your text.").arg(cdir.deviceFriendlyName)
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+
+            Controls.TextField {
+                id: searchField
+                placeholderText: qsTr("Title, artist or album")
+                Layout.fillWidth: true
+                onAccepted: {
+                    if (searchField.text.trim().length > 0)
+                        searchDialog.accept()
+                }
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignRight
+                Controls.Button {
+                    text: qsTr("Cancel")
+                    onClicked: searchDialog.reject()
+                }
+                Controls.Button {
+                    text: qsTr("Search")
+                    highlighted: true
+                    enabled: searchField.text.trim().length > 0
+                    onClicked: {
+                        itemModel.query = searchField.text.trim()
+                        searchDialog.accept()
+                    }
+                }
+            }
         }
     }
 

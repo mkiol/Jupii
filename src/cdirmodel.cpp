@@ -7,6 +7,8 @@
 
 #include "cdirmodel.h"
 
+#include <climits>
+
 #include <QDebug>
 
 #include "contentdirectory.h"
@@ -29,11 +31,26 @@ CDirModel::CDirModel(QObject *parent)
             this, &CDirModel::handleContentDirectoryInited,
             Qt::QueuedConnection);
 
-    if (Services::instance()->contentDir->getInited()) updateModel();
+    if (Services::instance()->contentDir->getInited()) {
+        updateSearchSupported();
+        updateModel();
+    }
 }
 
 void CDirModel::handleContentDirectoryInited() {
-    if (Services::instance()->contentDir->getInited()) updateModel();
+    if (Services::instance()->contentDir->getInited()) {
+        updateSearchSupported();
+        updateModel();
+    }
+}
+
+void CDirModel::updateSearchSupported() {
+    const auto supported = !Services::instance()->contentDir
+                               ->searchCapabilities().isEmpty();
+    if (m_searchSupported != supported) {
+        m_searchSupported = supported;
+        emit searchSupportedChanged();
+    }
 }
 
 CDirModel::Types CDirModel::typeFromItemClass(const QString &upnpClass) {
@@ -58,8 +75,6 @@ CDirModel::Types CDirModel::typeFromContainerClass(const QString &upnpClass) {
 QList<ListItem *> CDirModel::makeItems() {
     QList<ListItem *> items;
 
-    int maxItems = 500;
-
     auto cd = Services::instance()->contentDir;
     if (!cd->getInited()) {
         qWarning() << "content-directory is not inited";
@@ -68,130 +83,47 @@ QList<ListItem *> CDirModel::makeItems() {
 
     UPnPClient::UPnPDirContent content;
 
-    if (m_id != m_pid) {
-        const auto ppid = findPid(m_pid);
-        // const auto ptitle = findTitle(m_pid);
-        items.push_back(
-            new CDirItem{m_pid, ppid, QStringLiteral(".."), BackType});
+    bool ok;
+    int maxItems;
+    if (m_query.isEmpty()) {
+        // Browse mode: read the current container. No cap, as before.
+        maxItems = INT_MAX;
+
+        if (m_id != m_pid) {
+            const auto ppid = findPid(m_pid);
+            // const auto ptitle = findTitle(m_pid);
+            items.push_back(
+                new CDirItem{m_pid, ppid, QStringLiteral(".."), BackType});
+        }
+
+        ok = cd->readItems(m_id, content);
+    } else {
+        // Search mode: query the server with a UPnP searchcriteria.
+        maxItems = 500;
+
+        const auto criteria = buildSearchCriteria(
+            m_query, cd->searchCapabilities());
+        if (criteria.isEmpty()) {
+            qWarning() << "server does not support search";
+            return items;
+        }
+
+        ok = cd->search(criteria, content);
     }
 
-    if (cd->readItems(m_id, content)) {
-        auto did = cd->getDeviceId();
+    if (!ok) {
+        return items;
+    }
 
-        QList<ListItem *> items_dir;
+    auto did = cd->getDeviceId();
 
-        for (const auto &item : content.m_containers) {
-            if (items.size() > maxItems) {
-                qWarning() << "max cdir items";
-                break;
-            }
+    QList<ListItem *> items_dir;
+    makeContainerItems(content, items_dir, maxItems);
 
-            auto type = typeFromContainerClass(
-                QString::fromStdString(item.getprop("upnp:class")));
-            auto title = QString::fromStdString(item.m_title);
+    QList<ListItem *> items_file;
+    makeFileItems(content, did, items_file, maxItems);
 
-            if (type == MusicAlbumType || type == ArtistType) {
-                auto artist = Utils::parseArtist(
-                    QString::fromStdString(item.getprop("upnp:artist")));
-                auto album = QString::fromStdString(item.getprop("upnp:album"));
-
-                if (const auto &f = getFilter(); !f.isEmpty()) {
-                    if (!title.contains(f, Qt::CaseInsensitive) &&
-                        !artist.contains(f, Qt::CaseInsensitive) &&
-                        !album.contains(f, Qt::CaseInsensitive)) {
-                        // filtered out
-                        continue;
-                    }
-                }
-
-                items_dir.push_back(new CDirItem{
-                    QString::fromStdString(item.m_id),
-                    QString::fromStdString(item.m_pid), title, artist, album,
-                    QUrl{},
-                    QUrl{QString::fromStdString(
-                        item.getprop("upnp:albumArtURI"))},
-                    0,
-                    Utils::parseDate(
-                        QString::fromStdString(item.getprop("dc:date"))),
-                    item.getDurationSeconds(), type});
-            } else {
-                if (const auto &f = getFilter(); !f.isEmpty()) {
-                    if (!title.contains(f, Qt::CaseInsensitive)) {
-                        // filtered
-                        continue;
-                    }
-                }
-
-                items_dir.push_back(
-                    new CDirItem{QString::fromStdString(item.m_id),
-                                 QString::fromStdString(item.m_pid),
-                                 std::move(title), DirType});
-            }
-        }
-
-        QList<ListItem *> items_file;
-
-        for (UPnPClient::UPnPDirObject &item : content.m_items) {
-            if (items.size() > maxItems) {
-                qWarning() << "max cdir items";
-                break;
-            }
-
-            if (item.m_resources.empty())
-                continue;  // skip item without resource
-            if (item.m_resources[0].m_uri.empty())
-                continue;  // skip item with empty uri
-            auto type = typeFromItemClass(
-                QString::fromStdString(item.getprop("upnp:class")));
-            if (type == UnknownType) continue;  // skip item with unknown type
-
-            auto item_id = QString::fromStdString(item.m_id);
-            auto item_pid = QString::fromStdString(item.m_pid);
-
-            QUrl url = [&]() {
-                if (!item.m_resources.empty() &&
-                    !item.m_resources[0].m_uri.empty()) {
-                    QUrl url{QString::fromStdString(item.m_resources[0].m_uri)};
-                    if (url.host() != cd->getDeviceUrl().host()) {
-                        qDebug() << "upnp url does not match device host "
-                                    "address";
-                        return url;
-                    }
-                }
-
-                return QUrl{"jupii://upnp/" +
-                            QUrl::toPercentEncoding(did.toLatin1()) + "/" +
-                            QUrl::toPercentEncoding(item_id.toLatin1()) + "/" +
-                            QUrl::toPercentEncoding(item_pid.toLatin1())};
-            }();
-
-            auto title = QString::fromStdString(item.m_title);
-            auto artist = Utils::parseArtist(
-                QString::fromStdString(item.getprop("upnp:artist")));
-            auto album = QString::fromStdString(item.getprop("upnp:album"));
-
-            if (const auto &f = getFilter(); !f.isEmpty()) {
-                if (!title.contains(f, Qt::CaseInsensitive) &&
-                    !artist.contains(f, Qt::CaseInsensitive) &&
-                    !album.contains(f, Qt::CaseInsensitive)) {
-                    continue;  // skip item not matched against filter
-                }
-            }
-
-            items_file.push_back(new CDirItem{
-                std::move(item_id), std::move(item_pid), std::move(title),
-                std::move(artist), std::move(album), std::move(url),
-                type == ImageType ? QUrl{ContentServer::minResUrl(item)}
-                                  : QUrl{QString::fromStdString(
-                                        item.getprop("upnp:albumArtURI"))},
-                QString::fromStdString(item.getprop("upnp:originalTrackNumber"))
-                    .toInt(),
-                QDateTime::fromString(
-                    QString::fromStdString(item.getprop("dc:date")),
-                    Qt::ISODate),
-                item.getDurationSeconds(), type});
-        }
-
+    {
         // -- Sorting --
         // 0 - by title
         // 1 - by album
@@ -295,6 +227,12 @@ void CDirModel::setCurrentId(const QString &id) {
     if (m_id != id) {
         setAllSelected(false);
         setFilterNoUpdate(QString{});
+        // Navigating into a container (e.g. from search results) switches
+        // back to browse mode.
+        if (!m_query.isEmpty()) {
+            m_query.clear();
+            emit queryChanged();
+        }
         m_id = id;
         const auto item = qobject_cast<CDirItem *>(find(m_id));
         if (item) {
@@ -332,6 +270,188 @@ void CDirModel::setQueryType(int value) {
 }
 
 void CDirModel::switchQueryType() { setQueryType((getQueryType() + 1) % 5); }
+
+QString CDirModel::getQuery() const { return m_query; }
+
+void CDirModel::setQuery(const QString &query) {
+    if (m_query != query.trimmed()) {
+        setAllSelected(false);
+        setFilterNoUpdate(QString{});
+        m_query = query.trimmed();
+        emit queryChanged();
+        updateModel();
+    }
+}
+
+bool CDirModel::getSearchSupported() const { return m_searchSupported; }
+
+QString CDirModel::buildSearchCriteria(const QString &text,
+                                       const QStringList &caps) {
+    if (text.isEmpty() || caps.isEmpty()) {
+        // No search support advertised by the server.
+        return {};
+    }
+
+    // Quote the value for the UPnP searchcriteria. Drop double quotes from
+    // the input to keep the criteria valid on servers that do not implement
+    // escaping.
+    const QString quoted = QStringLiteral("\"") +
+                        QString(text).replace(QLatin1Char('"'), QLatin1Char('\'')) +
+                        QLatin1Char('"');
+
+    const auto fieldSupported = [&caps](const QString &field) {
+        return caps.contains(QLatin1String("*")) || caps.contains(field);
+    };
+
+    QStringList parts;
+
+    // dc:title is mandatory for a CDS that supports search, but be
+    // defensive and fall back to the first advertised field.
+    auto base = QStringLiteral("dc:title");
+    if (!fieldSupported(base)) {
+        base = caps.first();
+    }
+    parts.append(base + QStringLiteral(" contains ") + quoted);
+
+    for (const char *field : {"upnp:artist", "dc:creator", "upnp:album"}) {
+        const auto f = QString::fromLatin1(field);
+        if (f != base && fieldSupported(f)) {
+            parts.append(f + QStringLiteral(" contains ") + quoted);
+        }
+    }
+
+    return QStringLiteral("(") + parts.join(QStringLiteral(" or ")) +
+           QLatin1Char(')');
+}
+
+void CDirModel::makeContainerItems(const UPnPClient::UPnPDirContent &content,
+                                   QList<ListItem *> &items, int maxItems) {
+    for (const auto &item : content.m_containers) {
+        if (items.size() >= maxItems) {
+            qWarning() << "max cdir items";
+            break;
+        }
+
+        auto type = typeFromContainerClass(
+            QString::fromStdString(item.getprop("upnp:class")));
+        auto title = QString::fromStdString(item.m_title);
+
+        if (type == MusicAlbumType || type == ArtistType) {
+            auto artist = Utils::parseArtist(
+                QString::fromStdString(item.getprop("upnp:artist")));
+            auto album = QString::fromStdString(item.getprop("upnp:album"));
+
+            if (const auto &f = getFilter(); !f.isEmpty()) {
+                if (!title.contains(f, Qt::CaseInsensitive) &&
+                    !artist.contains(f, Qt::CaseInsensitive) &&
+                    !album.contains(f, Qt::CaseInsensitive)) {
+                    // filtered out
+                    continue;
+                }
+            }
+
+            const auto id = QString::fromStdString(item.m_id);
+            const auto pid = QString::fromStdString(item.m_pid);
+            // Remember the container so that back-navigation works when we
+            // drilled into it from search results.
+            idToTitle[id] = title;
+            idToPid[id] = pid;
+            idToType[id] = type;
+
+            items.push_back(new CDirItem{
+                id, pid, title, artist, album, QUrl{},
+                QUrl{QString::fromStdString(
+                    item.getprop("upnp:albumArtURI"))},
+                0,
+                Utils::parseDate(
+                    QString::fromStdString(item.getprop("dc:date"))),
+                item.getDurationSeconds(), type});
+        } else {
+            if (const auto &f = getFilter(); !f.isEmpty()) {
+                if (!title.contains(f, Qt::CaseInsensitive)) {
+                    // filtered
+                    continue;
+                }
+            }
+
+            const auto id = QString::fromStdString(item.m_id);
+            const auto pid = QString::fromStdString(item.m_pid);
+            idToTitle[id] = title;
+            idToPid[id] = pid;
+            idToType[id] = type;
+
+            items.push_back(
+                new CDirItem{id, pid, std::move(title), DirType});
+        }
+    }
+}
+
+void CDirModel::makeFileItems(const UPnPClient::UPnPDirContent &content,
+                              const QString &did, QList<ListItem *> &items,
+                              int maxItems) {
+    auto cd = Services::instance()->contentDir;
+    const auto deviceHost = cd->getDeviceUrl().host();
+
+    for (const UPnPClient::UPnPDirObject &item : content.m_items) {
+        if (items.size() >= maxItems) {
+            qWarning() << "max cdir items";
+            break;
+        }
+
+        if (item.m_resources.empty())
+            continue;  // skip item without resource
+        if (item.m_resources[0].m_uri.empty())
+            continue;  // skip item with empty uri
+        auto type = typeFromItemClass(
+            QString::fromStdString(item.getprop("upnp:class")));
+        if (type == UnknownType) continue;  // skip item with unknown type
+
+        auto item_id = QString::fromStdString(item.m_id);
+        auto item_pid = QString::fromStdString(item.m_pid);
+
+        QUrl url = [&]() {
+            if (!item.m_resources.empty() &&
+                !item.m_resources[0].m_uri.empty()) {
+                QUrl url{QString::fromStdString(item.m_resources[0].m_uri)};
+                if (url.host() != deviceHost) {
+                    qDebug() << "upnp url does not match device host "
+                                "address";
+                    return url;
+                }
+            }
+
+            return QUrl{"jupii://upnp/" +
+                        QUrl::toPercentEncoding(did.toLatin1()) + "/" +
+                        QUrl::toPercentEncoding(item_id.toLatin1()) + "/" +
+                        QUrl::toPercentEncoding(item_pid.toLatin1())};
+        }();
+
+        auto title = QString::fromStdString(item.m_title);
+        auto artist = Utils::parseArtist(
+            QString::fromStdString(item.getprop("upnp:artist")));
+        auto album = QString::fromStdString(item.getprop("upnp:album"));
+
+        if (const auto &f = getFilter(); !f.isEmpty()) {
+            if (!title.contains(f, Qt::CaseInsensitive) &&
+                !artist.contains(f, Qt::CaseInsensitive) &&
+                !album.contains(f, Qt::CaseInsensitive)) {
+                continue;  // skip item not matched against filter
+            }
+        }
+
+        items.push_back(new CDirItem{
+            std::move(item_id), std::move(item_pid), std::move(title),
+            std::move(artist), std::move(album), std::move(url),
+            type == ImageType ? QUrl{ContentServer::minResUrl(item)}
+                              : QUrl{QString::fromStdString(
+                                    item.getprop("upnp:albumArtURI"))},
+            QString::fromStdString(item.getprop("upnp:originalTrackNumber"))
+                .toInt(),
+            QDateTime::fromString(QString::fromStdString(item.getprop("dc:date")),
+                                  Qt::ISODate),
+            item.getDurationSeconds(), type});
+    }
+}
 
 CDirItem::CDirItem(QString id, QString pid, QString title, QString artist,
                    QString album, QUrl url, QUrl icon, int number,

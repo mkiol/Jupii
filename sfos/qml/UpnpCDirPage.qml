@@ -90,6 +90,24 @@ Dialog {
                     itemModel.switchQueryType()
                 }
             }
+
+            MenuItem {
+                enabled: itemModel.searchSupported && !itemModel.busy
+                text: itemModel.query.length > 0 ? qsTr("New search") :
+                          qsTr("Search server…")
+                onClicked: {
+                    searchDialog.open()
+                }
+            }
+
+            MenuItem {
+                visible: itemModel.query.length > 0
+                enabled: !itemModel.busy
+                text: qsTr("Clear search")
+                onClicked: {
+                    itemModel.query = ""
+                }
+            }
         }
 
         delegate: DoubleListItem {
@@ -160,7 +178,60 @@ Dialog {
 
         ViewPlaceholder {
             enabled: itemModel.count === 0 && !itemModel.busy && !cdir.busy
-            text: qsTr("No items")
+            text: itemModel.query.length > 0 ?
+                      qsTr("No results for “%1”").arg(itemModel.query) :
+                      qsTr("No items")
+        }
+    }
+
+    Dialog {
+        id: searchDialog
+
+        title: qsTr("Search %1").arg(cdir.deviceFriendlyName)
+        canAccept: searchField.text.trim().length > 0
+        onAccepted: {
+            itemModel.query = searchField.text.trim()
+        }
+
+        SilicaFlickable {
+            anchors.fill: parent
+
+            contentHeight: column.height
+
+            Column {
+                id: column
+
+                width: root.width
+                spacing: Theme.paddingLarge
+
+                DialogHeader {
+                    acceptText: qsTr("Search")
+                }
+
+                TextField {
+                    id: searchField
+                    width: parent.width
+                    placeholderText: qsTr("Title, artist or album")
+                    label: qsTr("Search")
+                    EnterKey.iconSource: searchDialog.canAccept ?
+                                             "image://theme/icon-m-enter-accept" :
+                                             "image://theme/icon-m-enter-next"
+                    EnterKey.onClicked: {
+                        if (searchDialog.canAccept)
+                            searchDialog.accept()
+                        else
+                            searchField.forceActiveFocus()
+                    }
+                }
+
+                SilicaLabel {
+                    width: parent.width
+                    visible: itemModel.searchSupported &&
+                             searchField.text.trim().length === 0
+                    textFormat: Text.RichText
+                    text: qsTr("Searches the whole content directory of %1 for items matching your text.").arg(cdir.deviceFriendlyName)
+                }
+            }
         }
     }
 

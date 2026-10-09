@@ -11,8 +11,11 @@
 #include <QDateTime>
 #include <QHash>
 #include <QString>
+#include <QStringList>
 #include <QUrl>
 #include <QVariant>
+
+#include "libupnpp/control/cdircontent.hxx"
 
 #include "itemmodel.h"
 #include "listmodel.h"
@@ -28,7 +31,11 @@ class CDirModel : public SelectableItemModel {
     Q_PROPERTY(Types currentType READ getCurrentType NOTIFY currentDirChanged)
     Q_PROPERTY(int queryType READ getQueryType WRITE setQueryType NOTIFY
                    queryTypeChanged)
-   public:
+    Q_PROPERTY(QString query READ getQuery WRITE setQuery NOTIFY
+                   queryChanged)
+    Q_PROPERTY(bool searchSupported READ getSearchSupported NOTIFY
+                   searchSupportedChanged)
+    public:
     enum Types {
         UnknownType,
         AudioType,
@@ -52,9 +59,15 @@ class CDirModel : public SelectableItemModel {
     void setQueryType(int value);
     Q_INVOKABLE void switchQueryType();
 
+    QString getQuery() const;
+    void setQuery(const QString &query);
+    bool getSearchSupported() const;
+
    signals:
     void currentDirChanged();
     void queryTypeChanged();
+    void queryChanged();
+    void searchSupportedChanged();
 
    private slots:
     void handleContentDirectoryInited();
@@ -77,6 +90,18 @@ class CDirModel : public SelectableItemModel {
     Types findType(const QString &id);
     static Types typeFromItemClass(const QString &upnpClass);
     static Types typeFromContainerClass(const QString &upnpClass);
+
+    void updateSearchSupported();
+    void makeContainerItems(const UPnPClient::UPnPDirContent &content,
+                            QList<ListItem *> &items, int maxItems);
+    void makeFileItems(const UPnPClient::UPnPDirContent &content,
+                       const QString &did, QList<ListItem *> &items,
+                       int maxItems);
+    static QString buildSearchCriteria(const QString &text,
+                                       const QStringList &caps);
+
+    QString m_query;
+    bool m_searchSupported = false;
 };
 
 class CDirItem : public SelectableItem {
